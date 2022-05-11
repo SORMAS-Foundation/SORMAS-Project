@@ -488,21 +488,6 @@ public class StartupShutdownService {
 		return user;
 	}
 
-	private UserRole editAndPersistDefaultUserRole(DefaultUserRole defaultUserRole) {
-		UserRole userRole = userRoleService.getByCaption(defaultUserRole.name());
-		userRole.setCaption(I18nProperties.getEnumCaption(defaultUserRole));
-		userRole.setPortHealthUser(defaultUserRole.isPortHealthUser());
-		userRole.setHasAssociatedOfficer(defaultUserRole.hasAssociatedOfficer());
-		userRole.setHasOptionalHealthFacility(DefaultUserRole.hasOptionalHealthFacility(Collections.singleton(defaultUserRole)));
-		userRole.setEnabled(true);
-		userRole.setJurisdictionLevel(defaultUserRole.getJurisdictionLevel());
-		userRole.setSmsNotifications(defaultUserRole.getSmsNotifications());
-		userRole.setEmailNotifications(defaultUserRole.getEmailNotifications());
-		userRole.setUserRights(defaultUserRole.getDefaultUserRights());
-		userRoleService.persist(userRole);
-		return userRole;
-	}
-
 	private void createOrUpdateSormasToSormasUser() {
 		if (sormasToSormasFacadeEjb.isFeatureConfigured()) {
 			// password is never used, just to prevent login as this user
@@ -767,7 +752,7 @@ public class StartupShutdownService {
 				}
 				break;
 			case 448:
-				editDefaultUserRoles();
+				fillDefaultUserRoles();
 				break;
 
 			default:
@@ -783,9 +768,23 @@ public class StartupShutdownService {
 		}
 	}
 
-	// UserRoles are created via SQL to support migration for existing users.
+	/**
+	 * UserRoles are created via SQL to support migration for existing users.
+ 	 */
 	private void fillDefaultUserRoles() {
-		Arrays.stream(DefaultUserRole.values()).forEach(role -> editAndPersistDefaultUserRole(role));
+		Arrays.stream(DefaultUserRole.values()).forEach(role -> {
+			UserRole userRole = userRoleService.getByCaption(role.name());
+			userRole.setCaption(I18nProperties.getEnumCaption(role));
+			userRole.setPortHealthUser(role.isPortHealthUser());
+			userRole.setHasAssociatedOfficer(role.hasAssociatedOfficer());
+			userRole.setHasOptionalHealthFacility(DefaultUserRole.hasOptionalHealthFacility(Collections.singleton(role)));
+			userRole.setEnabled(true);
+			userRole.setJurisdictionLevel(role.getJurisdictionLevel());
+			userRole.setSmsNotifications(role.getSmsNotifications());
+			userRole.setEmailNotifications(role.getEmailNotifications());
+			userRole.setUserRights(role.getDefaultUserRights());
+			userRoleService.persist(userRole);
+		});
 	}
 
 	private void createImportTemplateFiles(List<FeatureConfigurationDto> featureConfigurations) {

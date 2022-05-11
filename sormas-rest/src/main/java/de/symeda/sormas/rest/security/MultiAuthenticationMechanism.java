@@ -50,6 +50,8 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Mechanism which allows configuration of multiple providers trough a system property.
@@ -86,6 +88,8 @@ interface extractCallerFromRequest {
 @SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT")
 @ApplicationScoped
 public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private final extractCallerFromRequest extractor;
 	private final HttpAuthenticationMechanism authenticationMechanism;
@@ -170,6 +174,7 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 
 		UserDto s2sUser = FacadeProvider.getUserFacade().getByUserName(DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME);
 		if (s2sUser == null) {
+			logger.warn("validateRequestS2S failed. Could not find a SORMAS to SORMAS user by name '" + DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME + "'");
 			return AuthenticationStatus.SEND_FAILURE;
 		}
 		Set<UserRight> userRights = FacadeProvider.getUserFacade()

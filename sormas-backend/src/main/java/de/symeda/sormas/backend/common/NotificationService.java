@@ -29,6 +29,8 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import de.symeda.sormas.api.user.NotificationProtocol;
 import de.symeda.sormas.api.user.NotificationType;
@@ -41,10 +43,14 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserRoleService;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "NotificationService")
 @LocalBean
 public class NotificationService {
+
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	private EntityManager em;
 
 	@EJB
 	private MessagingService messagingService;
@@ -123,26 +129,16 @@ public class NotificationService {
 			messagingService.sendEmail(
 				filterUserMessagesByRoles(
 					emailUserMessagesSupplier.get(),
-					getWithNotificationTypes(NotificationProtocol.EMAIL, allowedNotificationTypes)),
+					userRoleService.getActiveByNotificationTypes(NotificationProtocol.EMAIL, allowedNotificationTypes)),
 				subject,
 				subjectParams);
 			messagingService.sendSms(
 				filterUserMessagesByRoles(
 					smsUserMessagesSupplier.get(),
-					getWithNotificationTypes(NotificationProtocol.SMS, allowedNotificationTypes)),
+					userRoleService.getActiveByNotificationTypes(NotificationProtocol.SMS, allowedNotificationTypes)),
 				subject,
 				subjectParams);
 		}
-	}
-
-	private UserRole[] getWithNotificationTypes(NotificationProtocol protocol, Set<NotificationType> allowedNotificationTypes) {
-		return userRoleService.getAll()
-			.stream()
-			.filter(
-				userRole -> NotificationProtocol.EMAIL.equals(protocol)
-					? userRole.getEmailNotifications().stream().anyMatch(type -> allowedNotificationTypes.contains(type))
-					: userRole.getSmsNotifications().stream().anyMatch(type -> allowedNotificationTypes.contains(type)))
-			.toArray(UserRole[]::new);
 	}
 
 	private Map<User, String> buildUserMessages(
@@ -153,7 +149,8 @@ public class NotificationService {
 		Collection<NotificationType> notificationTypes) {
 		List<User> recipients = new ArrayList<>();
 		if (regions != null) {
-			recipients.addAll(userService.getAllByRegionsAndNotificationTypes(regions, notificationProtocol, notificationTypes));
+			// fetch notification types, because the filterUserMessagesByRoles logic will need it anyway
+			recipients.addAll(userService.getAllByRegionsAndNotificationTypes(regions, notificationProtocol, notificationTypes, true));
 		}
 
 		if (additionalUsers != null) {
@@ -173,7 +170,7 @@ public class NotificationService {
 		return recipients.stream().collect(Collectors.toMap(Function.identity(), (u) -> message));
 	}
 
-	private Map<User, String> filterUserMessagesByRoles(Map<User, String> userStringMap, UserRole[] userRoles) {
+	private Map<User, String> filterUserMessagesByRoles(Map<User, String> userStringMap, Collection<UserRole> userRoles) {
 		return userStringMap.entrySet()
 			.stream()
 			.filter(e -> e.getKey().hasAnyUserRole(userRoles))

@@ -65,7 +65,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testCaseExport() {
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		PersonDto personDto = creator.createPerson("James", "Smith", p -> {
 			LocationDto homeAddress = p.getAddress();
@@ -251,7 +251,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testContactExport() {
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		PersonDto personDto = creator.createPerson("James", "Smith", p -> {
 			LocationDto homeAddress = p.getAddress();

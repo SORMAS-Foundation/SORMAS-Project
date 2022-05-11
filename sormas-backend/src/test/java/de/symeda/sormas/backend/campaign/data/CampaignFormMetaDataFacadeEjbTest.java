@@ -45,7 +45,7 @@ public class CampaignFormMetaDataFacadeEjbTest extends AbstractBeanTest {
 	public void testSaveCampaignFormData() throws Exception {
 
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		ObjectMapper mapper = new ObjectMapper();
 
 		final CampaignDto campaign = creator.createCampaign(user);
@@ -81,7 +81,7 @@ public class CampaignFormMetaDataFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetCampaignFormDataByUuid() throws Exception {
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		ObjectMapper mapper = new ObjectMapper();
 
 		final CampaignDto campaign = creator.createCampaign(user);
@@ -102,7 +102,7 @@ public class CampaignFormMetaDataFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testDeleteCampaignFormData() throws Exception {
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		ObjectMapper mapper = new ObjectMapper();
 
 		final CampaignDto campaign = creator.createCampaign(user);

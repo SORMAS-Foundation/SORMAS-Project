@@ -128,7 +128,7 @@ public class TravelEntryImporterTest extends AbstractBeanTest {
 			null,
 			"James",
 			"Smith",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		loginWith(user);
 
@@ -172,7 +172,7 @@ public class TravelEntryImporterTest extends AbstractBeanTest {
 			null,
 			"James",
 			"Smith",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		loginWith(user);
 

@@ -181,7 +181,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -225,7 +225,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -275,7 +275,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
 		creator.createCase(
 			user.toReference(),
@@ -313,7 +313,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
 		creator.createCase(
 			user.toReference(),
@@ -351,7 +351,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
 		creator.createCase(
 			user.toReference(),
@@ -387,7 +387,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -462,7 +462,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			newRDCF.facility.getUuid(),
 			"Case",
 			"Officer",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.CASE_OFFICER));
+			creator.getUserRoleReference(DefaultUserRole.CASE_OFFICER));
 		TaskDto pendingTask = creator.createTask(
 			TaskContext.CASE,
 			TaskType.CASE_INVESTIGATION,
@@ -526,7 +526,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person", p -> {
 			p.getAddress().setLatitude(0.0);
 			p.getAddress().setLongitude(0.0);
@@ -574,7 +574,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		String lastName = "Person";
 		PersonDto cazePerson = creator.createPerson("Case", lastName);
 		creator.createCase(
@@ -638,7 +638,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		PersonDto person1 = creator.createPerson("FirstName1", "LastName1", p -> {
 			p.getAddress().setPostalCode("10115");
@@ -703,7 +703,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		PersonDto person1 = creator.createPerson();
 		PersonDto person2 = creator.createPerson();
@@ -967,7 +967,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		cazePerson.getAddress().setCity("City");
@@ -1021,7 +1021,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		UserDto admin = getUserFacade().getByUserName("AdMin");
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -1088,7 +1088,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto firstCase = creator.createCase(
 			user.toReference(),
@@ -1219,7 +1219,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto firstCase = creator.createCase(
 			user.toReference(),
@@ -1254,7 +1254,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -1299,7 +1299,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -1332,7 +1332,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -1367,7 +1367,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -1427,8 +1427,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.ADMIN));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
+			creator.getUserRoleReference(DefaultUserRole.ADMIN));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
 
@@ -1746,8 +1746,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(
 			rdcf,
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.ADMIN));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
+			creator.getUserRoleReference(DefaultUserRole.ADMIN));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		String diseaseDetails = "this is a test disease";
 		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf, c -> {
@@ -1894,12 +1894,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	public void testCreateInvestigationTask() {
 		RDCF rdcf = creator.createRDCF();
 		UserReferenceDto supervisor =
-			creator.createUser(rdcf, "First", "User", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR))
-				.toReference();
+			creator.createUser(rdcf, "First", "User", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR)).toReference();
 		UserReferenceDto officer =
-			creator.createUser(rdcf, "Second", "User", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, "Second", "User", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		UserReferenceDto informant =
-			creator.createUser(rdcf, "Third", "User", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.COMMUNITY_INFORMANT)).toReference();
+			creator.createUser(rdcf, "Third", "User", creator.getUserRoleReference(DefaultUserRole.COMMUNITY_INFORMANT)).toReference();
 		PersonReferenceDto person = creator.createPerson("Case", "Person").toReference();
 
 		CaseDataDto caze = creator.createCase(informant, person, rdcf);
@@ -1913,12 +1912,12 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF();
 		RDCF rdcf2 = creator.createRDCF("Region2", "District2", "Community2", "Facility2");
 		RDCF rdcf3 = creator.createRDCF("Region3", "District3", "Community3", "Facility3");
-		creator.createUser(rdcf, "First", "User", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		creator.createUser(rdcf, "First", "User", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		UserReferenceDto survOff2 =
-			creator.createUser(rdcf, "Second", "User", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, "Second", "User", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		UserReferenceDto survOff3 =
-			creator.createUser(rdcf2, "Third", "User", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
-		UserDto informant = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.HOSPITAL_INFORMANT));
+			creator.createUser(rdcf2, "Third", "User", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserDto informant = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.HOSPITAL_INFORMANT));
 		informant.setAssociatedOfficer(survOff3);
 		getUserFacade().saveUser(informant);
 
@@ -1946,8 +1945,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testSearchCasesFreetext() {
 		RDCF rdcf = creator.createRDCF();
-		final UserReferenceDto user =
-			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		final UserReferenceDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto caze = creator.createCase(user, creator.createPerson().toReference(), rdcf);
 		caze.setInternalToken("internalToken");
 		caze.setExternalToken("externalToken");
@@ -1997,7 +1995,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	public void testSearchCasesWithExtendedQuarantine() {
 		RDCF rdcf = creator.createRDCF();
 		CaseDataDto caze = creator.createCase(
-			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference(),
+			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference(),
 			creator.createPerson().toReference(),
 			rdcf);
 		caze.setQuarantineExtended(true);
@@ -2017,7 +2015,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	public void testSearchCasesWithReducedQuarantine() {
 		RDCF rdcf = creator.createRDCF();
 		CaseDataDto caze = creator.createCase(
-			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference(),
+			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference(),
 			creator.createPerson().toReference(),
 			rdcf);
 		caze.setQuarantineReduced(true);
@@ -2044,8 +2042,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			p.setBirthdateYYYY(1968);
 		});
 
-		final UserReferenceDto user =
-			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		final UserReferenceDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto caze = creator.createCase(user, rdcf, (c) -> {
 			c.setPerson(person.toReference());
 			c.setExternalID("test-ext-id");
@@ -2148,7 +2145,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto caze = new CaseDataDto();
 
 		caze.setReportDate(new Date());
-		caze.setReportingUser(creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference());
+		caze.setReportingUser(creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference());
 		caze.setCaseClassification(CaseClassification.PROBABLE);
 		caze.setInvestigationStatus(InvestigationStatus.PENDING);
 		caze.setDisease(Disease.CORONAVIRUS);
@@ -2213,7 +2210,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		caze1.setReportDate(new Date());
 		UserDto user = getUserFacade().getByUserName("SomeUser");
 		if (user == null) {
-			user = creator.createUser(rdcf, "Some", "User", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+			user = creator.createUser(rdcf, "Some", "User", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 		}
 		caze1.setReportingUser(user.toReference());
 		caze1.setCaseClassification(CaseClassification.PROBABLE);
@@ -2246,8 +2243,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			p.setBirthdateYYYY(1968);
 		});
 
-		final UserReferenceDto user =
-			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		final UserReferenceDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto caze = creator.createCase(user, rdcf, (c) -> {
 			c.setPerson(person.toReference());
 			c.setDisease(Disease.CORONAVIRUS);
@@ -2287,8 +2283,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	public void testGetCasesByPersonUuids() {
 
 		UserReferenceDto user =
-			creator.createUser(creator.createRDCFEntities(), creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR))
-				.toReference();
+			creator.createUser(creator.createRDCFEntities(), creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR)).toReference();
 		RDCF rdcf = creator.createRDCF();
 
 		PersonReferenceDto person1 = creator.createPerson().toReference();
@@ -2320,7 +2315,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -2377,7 +2372,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testCaseCriteriaSharedWithReportingTool() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		CaseDataDto sharedCase = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
 		ExternalShareInfo shareInfo = new ExternalShareInfo();
@@ -2406,7 +2401,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testCaseCriteriaChangedSinceLastShareWithReportingTool() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		CaseDataDto sharedCase = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
 		ExternalShareInfo shareInfo = new ExternalShareInfo();
@@ -2433,7 +2428,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testCaseCriteriaLastShareWithReportingToolBetweenDates() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		CaseDataDto sharedCase = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
 		ExternalShareInfo shareInfoMarch = new ExternalShareInfo();
@@ -2485,7 +2480,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testCaseCompletenessWhenCaseFound() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		int casesWithNoCompletenessFound = getCaseFacade().updateCompleteness();
 		MatcherAssert.assertThat(casesWithNoCompletenessFound, is(0));
@@ -2535,7 +2530,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testStringLengthValidations() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		CaseDataDto caze = creator.createCase(user.toReference(), creator.createPerson().toReference(), rdcf);
 
@@ -2556,7 +2551,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		RDCF rdcf1 = creator.createRDCF("Region", "District1", "Community", "Facility");
 		RDCF rdcf2 = creator.createRDCF("Region", "District2", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf1, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createUser(rdcf1, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		CaseDataDto caze = creator.createCase(user.toReference(), creator.createPerson("Person", "One").toReference(), rdcf1);
 
@@ -2597,7 +2592,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	public void testGetMostRecentPreviousCase() {
 
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person1 = creator.createPerson();
 		PersonDto person2 = creator.createPerson();
 		Date now = new Date();
@@ -2631,7 +2626,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testDeleteWithContacts() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person1 = creator.createPerson();
 		PersonDto person2 = creator.createPerson();
 
@@ -2664,7 +2659,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcfEntities.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 	}
 
 	private CaseDataDto getCaze(UserDto user, PersonDto cazePerson, RDCFEntities rdcfEntities) {

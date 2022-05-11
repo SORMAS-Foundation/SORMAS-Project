@@ -142,12 +142,14 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 		sheet.setColumnWidth(1, 256 * 50);
 		sheet.setColumnWidth(2, 256 * 75);
 		sheet.createFreezePane(2, 2, 2, 2);
-		for (DefaultUserRole userRole : DefaultUserRole.values()) {
+		int columnIndex = 3;
+		for (UserRoleDto userRole : userRoleRights.keySet()) {
 			String columnCaption = userRole.toString();
-			Cell headerCell = headerRow.createCell(userRole.ordinal() + 3);
+			Cell headerCell = headerRow.createCell(columnIndex);
 			headerCell.setCellValue(columnCaption);
 			headerCell.setCellStyle(boldStyle);
-			sheet.setColumnWidth(userRole.ordinal() + 3, 256 * 14);
+			sheet.setColumnWidth(columnIndex, 256 * 14);
+			columnIndex++;
 		}
 
 		// Jurisdiction row (header)
@@ -158,11 +160,14 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 		final Cell jurDescHeadlineCell = jurisdictionRow.createCell(1);
 		jurDescHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRight_jurisdictionOfRole));
 		jurDescHeadlineCell.setCellStyle(boldStyle);
-		for (DefaultUserRole userRole : DefaultUserRole.values()) {
+
+		columnIndex = 3;
+		for (UserRoleDto userRole : userRoleRights.keySet()) {
 			final String columnCaption = userRole.getJurisdictionLevel().toString();
-			final Cell headerCell = jurisdictionRow.createCell(userRole.ordinal() + 3);
+			final Cell headerCell = jurisdictionRow.createCell(columnIndex);
 			headerCell.setCellValue(columnCaption);
 			headerCell.setCellStyle(boldStyle);
+			columnIndex++;
 		}
 
 		// User right rows

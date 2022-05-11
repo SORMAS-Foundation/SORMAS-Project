@@ -102,7 +102,6 @@
 			<property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
 			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="false" />
-			<property name="hibernate.enable_lazy_load_no_trans" value="true" />
 
 			<!-- 			
 			<property name="eclipselink.ddl-generation" value="drop-and-create-tables" /> 

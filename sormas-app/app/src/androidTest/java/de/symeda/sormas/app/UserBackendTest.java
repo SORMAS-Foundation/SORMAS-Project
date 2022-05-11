@@ -67,9 +67,9 @@ public class UserBackendTest {
 		Region secondRegion = DatabaseHelper.getRegionDao().queryUuid(SECOND_REGION_UUID);
 
 		User firstRegionUser =
-			TestEntityCreator.createUser("Region1User", firstRegion, null, TestHelper.getUserRoleMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			TestEntityCreator.createUser("Region1User", firstRegion, null, TestHelper.getUserRole(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		User secondRegionUser =
-			TestEntityCreator.createUser("Region2User", secondRegion, null, TestHelper.getUserRoleMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			TestEntityCreator.createUser("Region2User", secondRegion, null, TestHelper.getUserRole(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		User randomRegion1User = DatabaseHelper.getUserDao().getRandomRegionUser(firstRegion, UserRight.CASE_RESPONSIBLE);
 		assertThat(randomRegion1User, is(firstRegionUser));

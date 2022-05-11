@@ -32,7 +32,7 @@ public class FeatureConfigurationFacadeEjbTest extends AbstractBeanTest {
 
 		RDCFEntities rdcf = creator.createRDCFEntities();
 		UserReferenceDto user =
-			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR)).toReference();
 		PersonReferenceDto person = creator.createPerson("Case", "Person").toReference();
 
 		CaseDataDto caze = creator.createCase(user, person, rdcf);

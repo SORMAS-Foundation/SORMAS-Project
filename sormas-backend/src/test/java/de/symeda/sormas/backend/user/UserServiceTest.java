@@ -68,7 +68,7 @@ public class UserServiceTest extends AbstractBeanTest {
 		UserReference admin = result.get(0);
 		assertThat(
 			admin.getUserRoles(),
-			containsInAnyOrder(creator.getUserRoleMap().get(DefaultUserRole.ADMIN), creator.getUserRoleMap().get(DefaultUserRole.NATIONAL_USER)));
+			containsInAnyOrder(creator.getUserRole(DefaultUserRole.ADMIN), creator.getUserRole(DefaultUserRole.NATIONAL_USER)));
 
 		// 1a. Find admin with several conditions
 		jurisdictionLevels = Arrays.asList(JurisdictionLevel.NATION);
@@ -85,7 +85,7 @@ public class UserServiceTest extends AbstractBeanTest {
 
 		// 2. Exclude inactive user as overall condition
 		RDCF rdcf = creator.createRDCF();
-		UserDto supervisor = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.CONTACT_SUPERVISOR));
+		UserDto supervisor = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.CONTACT_SUPERVISOR));
 		jurisdictionLevels = Arrays.asList(JurisdictionLevel.REGION);
 		result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, communityUuids, jurisdictionLevels, null);
 		assertThat(result.get(0).getUuid(), equalTo(supervisor.getUuid()));
@@ -99,7 +99,7 @@ public class UserServiceTest extends AbstractBeanTest {
 		assertThat(result, hasSize(1));
 		assertThat(result.get(0).getUuid(), equalTo(supervisor.getUuid()));
 
-		UserDto officer = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.CONTACT_OFFICER));
+		UserDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.CONTACT_OFFICER));
 		result = getUserService().getUserReferencesByJurisdictions(Arrays.asList(rdcf.region.getUuid()), null, null, null, null);
 		assertThat(result, hasSize(2));
 

@@ -61,7 +61,7 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 			rdcf1.facility.getUuid(),
 			"Nat",
 			"User",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
+			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 	}
 
 	@Test

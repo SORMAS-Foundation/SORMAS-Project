@@ -153,6 +153,7 @@ public class TestDataCreator {
 			UserRoleDto userRoleDto =
 				UserRoleDto.build(defaultUserRole.getDefaultUserRights().toArray(new UserRight[defaultUserRole.getDefaultUserRights().size()]));
 			userRoleDto.setCaption(defaultUserRole.toString());
+			userRoleDto.setEnabled(true);
 			userRoleDto.setPortHealthUser(defaultUserRole.isPortHealthUser());
 			userRoleDto.setHasAssociatedOfficer(defaultUserRole.hasAssociatedOfficer());
 			userRoleDto.setHasOptionalHealthFacility(defaultUserRole.hasOptionalHealthFacility());
@@ -161,23 +162,23 @@ public class TestDataCreator {
 			userRoleDto.setJurisdictionLevel(defaultUserRole.getJurisdictionLevel());
 			userRoleDto = beanTest.getUserRoleFacade().saveUserRole(userRoleDto);
 			userRoleDtoMap.put(defaultUserRole, userRoleDto.toReference());
-			UserRole userRole = beanTest.getUserRoleService().getByUuid(userRoleDto.getUuid());
+			UserRole userRole = beanTest.getUserRoleService().getByUuidEager(userRoleDto.getUuid());
 			userRoleMap.put(defaultUserRole, userRole);
 		});
 	}
 
-	public Map<DefaultUserRole, UserRoleReferenceDto> getUserRoleReferenceDtoMap() {
+	public UserRoleReferenceDto getUserRoleReference(DefaultUserRole userRole) {
 		if (userRoleDtoMap.isEmpty()) {
 			createUserRoles();
 		}
-		return userRoleDtoMap;
+		return userRoleDtoMap.get(userRole);
 	}
 
-	public Map<DefaultUserRole, UserRole> getUserRoleMap() {
+	public UserRole getUserRole(DefaultUserRole userRole) {
 		if (userRoleMap.isEmpty()) {
 			createUserRoles();
 		}
-		return userRoleMap;
+		return userRoleMap.get(userRole);
 	}
 
 	public UserDto createUser(RDCF rdcf, UserRoleReferenceDto userRole, Consumer<UserDto> customConfig) {
@@ -419,7 +420,7 @@ public class TestDataCreator {
 				rdcf.facility.getUuid(),
 				"Surv",
 				"Sup",
-				getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+				getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		}
 
 		PersonDto cazePerson = createPerson("Case", "Person", Sex.UNKNOWN);

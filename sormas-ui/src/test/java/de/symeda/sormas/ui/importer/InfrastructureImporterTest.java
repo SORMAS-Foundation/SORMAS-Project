@@ -53,7 +53,7 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Default",
 			"User",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN));
+			creator.getUserRoleReference(DefaultUserRole.ADMIN));
 
 		// Import region
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test.csv").toURI());
@@ -102,7 +102,7 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Default",
 			"User",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN));
+			creator.getUserRoleReference(DefaultUserRole.ADMIN));
 
 		// Import region
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test_iso_8859_1.csv").toURI());
@@ -124,7 +124,7 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Default",
 			"User",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN));
+			creator.getUserRoleReference(DefaultUserRole.ADMIN));
 
 		// Import region
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test_windows_1252.csv").toURI());
@@ -145,7 +145,7 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Default",
 			"User",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN));
+			creator.getUserRoleReference(DefaultUserRole.ADMIN));
 
 		// Import region
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test_large_file_utf8.csv").toURI());
@@ -166,7 +166,7 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Default",
 			"User",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN));
+			creator.getUserRoleReference(DefaultUserRole.ADMIN));
 
 		// Import region
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test_large_file_utf8_with_bom.csv").toURI());
@@ -187,7 +187,7 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Default",
 			"User",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN));
+			creator.getUserRoleReference(DefaultUserRole.ADMIN));
 
 		// Import region
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test_large_file_iso8859_1.csv").toURI());
@@ -209,7 +209,7 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Default",
 			"User",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN));
+			creator.getUserRoleReference(DefaultUserRole.ADMIN));
 
 		// Import region
 		File regionCsvFile = new File(getClass().getClassLoader().getResource("sormas_region_import_test.csv").toURI());
@@ -252,7 +252,7 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Default",
 			"User",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN));
+			creator.getUserRoleReference(DefaultUserRole.ADMIN));
 
 		File districtCsvFile = new File(getClass().getClassLoader().getResource("sormas_district_bom_test.csv").toURI());
 		InfrastructureImporter importer = new InfrastructureImporterExtension(districtCsvFile, user, InfrastructureType.DISTRICT);

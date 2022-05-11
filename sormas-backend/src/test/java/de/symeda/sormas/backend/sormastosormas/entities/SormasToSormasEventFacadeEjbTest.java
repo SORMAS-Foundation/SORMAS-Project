@@ -88,7 +88,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testShareEvent() throws SormasToSormasException {
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		useSurveillanceOfficerLogin(rdcf);
 
@@ -159,7 +159,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testShareEventWithSamples() throws SormasToSormasException {
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		useSurveillanceOfficerLogin(rdcf);
 
@@ -373,7 +373,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 		useSurveillanceOfficerLogin(rdcf);
 
 		UserReferenceDto officer =
-			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 
 		EventDto event =
 			creator.createEvent(EventStatus.SCREENING, EventInvestigationStatus.ONGOING, "Test event title", "Test description", officer, (e) -> {
@@ -428,7 +428,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 	@Test
 	public void testSaveReturnedEvent() throws SormasToSormasException, SormasToSormasValidationException {
 		UserReferenceDto officer =
-			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 
 		EventDto event = creator.createEvent(officer);
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), creator.createPerson(), officer);
@@ -495,7 +495,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 		useSurveillanceOfficerLogin(rdcf);
 
 		UserReferenceDto officer =
-			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 
 		EventDto event =
 			creator.createEvent(EventStatus.SCREENING, EventInvestigationStatus.ONGOING, "Test event title", "Test description", officer, e -> {
@@ -588,7 +588,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 	@Test
 	public void testSaveSyncedEvent() throws SormasToSormasException, SormasToSormasValidationException {
 		UserReferenceDto officer =
-			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 
 		EventDto event =
 			creator.createEvent(EventStatus.SCREENING, EventInvestigationStatus.ONGOING, "Test event title", "Test description", officer, e -> {
@@ -645,7 +645,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 	@Test
 	public void testSyncRecursively() throws SormasToSormasException, SormasToSormasValidationException {
 		UserReferenceDto officer =
-			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 
 		EventDto event =
 			creator.createEvent(EventStatus.SCREENING, EventInvestigationStatus.ONGOING, "Test event title", "Test description", officer, e -> {

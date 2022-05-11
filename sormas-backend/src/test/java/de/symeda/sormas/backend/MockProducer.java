@@ -62,10 +62,12 @@ public class MockProducer implements InitialContextFactory {
 
 	@Override
 	public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
+
 		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
 		CurrentUserService currentUserService = mock(CurrentUserService.class);
 		InitialContext mockCtx = mock(InitialContext.class);
 		when(mockCtx.lookup("java:global/sormas-ear/sormas-backend/CurrentUserService")).thenReturn(currentUserService);
+
 		return mockCtx;
 	}
 
@@ -170,6 +172,11 @@ public class MockProducer implements InitialContextFactory {
 	public static Principal getPrincipal() {
 		return principal;
 	}
+
+//	public static boolean hasRight(UserRight userRight) {
+//		User user = currentUserService.getCurrentUser();
+//		return user.getUserRoles().stream().anyMatch(userRole -> userRole.getUserRights().contains(userRight));
+//	}
 
 	public static SormasToSormasRestClient getSormasToSormasClient() {
 		return s2sRestClient;

@@ -110,6 +110,7 @@ public final class ConfigProvider {
 	private String password;
 	private String pin;
 	private User user;
+	private Set<UserRight> userRights; // just a cache
 	private Date lastNotificationDate;
 	private Date lastArchivedSyncDate;
 	private Date lastDeletedSyncDate;
@@ -188,15 +189,22 @@ public final class ConfigProvider {
 	}
 
 	public static Set<UserRight> getUserRights() {
-		User user = getUser();
-		if (user != null) {
-			Set<UserRight> userRights = new HashSet();
-			for (UserRole userRole : user.getUserRoles()) {
-				userRights.addAll(userRole.getUserRights());
+		synchronized (ConfigProvider.class) {
+			if (instance.userRights == null) {
+				User user = getUser();
+				if (user != null) {
+					Set<UserRight> userRights = new HashSet();
+					for (UserRole userRole : user.getUserRoles()) {
+						userRights.addAll(userRole.getUserRights());
+					}
+					instance.userRights = userRights;
+				}
+				else {
+					return new HashSet();
+				}
 			}
-			return userRights;
+			return instance.userRights;
 		}
-		return new HashSet();
 	}
 
 	public static boolean hasUserRight(UserRight userRight) {

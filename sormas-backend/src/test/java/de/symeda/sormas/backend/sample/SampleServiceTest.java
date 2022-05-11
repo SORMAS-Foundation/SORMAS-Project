@@ -28,8 +28,8 @@ public class SampleServiceTest extends AbstractBeanTest {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(
 			rdcf,
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.ADMIN),
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
+			creator.getUserRoleReference(DefaultUserRole.ADMIN),
+			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);

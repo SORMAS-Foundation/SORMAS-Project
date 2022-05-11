@@ -103,7 +103,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		lab.setDistrict(rdcf.district.toReference());
 		getFacilityFacade().save(lab);
 
-		userRef = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER)).toReference();
+		userRef = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER)).toReference();
 		person = creator.createPerson("James", "Smith", Sex.MALE);
 
 		personChangesHandler = Mockito.mock(CorrectedEntityHandler.class);

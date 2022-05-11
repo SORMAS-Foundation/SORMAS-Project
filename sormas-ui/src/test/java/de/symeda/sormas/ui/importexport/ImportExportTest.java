@@ -74,7 +74,7 @@ public class ImportExportTest extends AbstractBeanTest {
 	@Test
 	public void testImportExportedCase() throws IOException, CsvException, InvalidColumnException, InterruptedException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Health facility");
-		UserDto user = creator.createUser(null, null, null, "james", "Smith", creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createUser(null, null, null, "james", "Smith", creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson("John", "Doe");
 
 		Date dateNow = new Date();
@@ -230,7 +230,7 @@ public class ImportExportTest extends AbstractBeanTest {
 	@Test
 	public void testImportExportedContact() throws IOException, CsvException, InvalidColumnException, InterruptedException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Health facility");
-		UserDto user = creator.createUser(null, null, null, "james", "Smith", creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createUser(null, null, null, "james", "Smith", creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson("John", "Doe");
 
 		Date dateNow = new Date();

@@ -21,23 +21,23 @@ public class UserTest extends AbstractBeanTest {
 		Set<UserRole> userRoles = new HashSet<>();
 		u.setUserRoles(userRoles);
 
-		MatcherAssert.assertThat(u.hasAnyUserRole(creator.getUserRoleMap().get(DefaultUserRole.ADMIN)), Matchers.is(false));
+		MatcherAssert.assertThat(u.hasAnyUserRole(creator.getUserRole(DefaultUserRole.ADMIN)), Matchers.is(false));
 
-		userRoles.add(creator.getUserRoleMap().get(DefaultUserRole.ADMIN));
-		MatcherAssert.assertThat(u.hasAnyUserRole(creator.getUserRoleMap().get(DefaultUserRole.ADMIN)), Matchers.is(true));
+		userRoles.add(creator.getUserRole(DefaultUserRole.ADMIN));
+		MatcherAssert.assertThat(u.hasAnyUserRole(creator.getUserRole(DefaultUserRole.ADMIN)), Matchers.is(true));
 
-		userRoles.add(creator.getUserRoleMap().get(DefaultUserRole.CASE_OFFICER));
-		MatcherAssert.assertThat(u.hasAnyUserRole(creator.getUserRoleMap().get(DefaultUserRole.ADMIN)), Matchers.is(true));
-		MatcherAssert.assertThat(u.hasAnyUserRole(creator.getUserRoleMap().get(DefaultUserRole.CASE_OFFICER)), Matchers.is(true));
-		MatcherAssert.assertThat(u.hasAnyUserRole(creator.getUserRoleMap().get(DefaultUserRole.CASE_SUPERVISOR)), Matchers.is(false));
+		userRoles.add(creator.getUserRole(DefaultUserRole.CASE_OFFICER));
+		MatcherAssert.assertThat(u.hasAnyUserRole(creator.getUserRole(DefaultUserRole.ADMIN)), Matchers.is(true));
+		MatcherAssert.assertThat(u.hasAnyUserRole(creator.getUserRole(DefaultUserRole.CASE_OFFICER)), Matchers.is(true));
+		MatcherAssert.assertThat(u.hasAnyUserRole(creator.getUserRole(DefaultUserRole.CASE_SUPERVISOR)), Matchers.is(false));
 
 		MatcherAssert.assertThat(
-			u.hasAnyUserRole(creator.getUserRoleMap().get(DefaultUserRole.ADMIN), creator.getUserRoleMap().get(DefaultUserRole.CASE_OFFICER)),
+			u.hasAnyUserRole(creator.getUserRole(DefaultUserRole.ADMIN), creator.getUserRole(DefaultUserRole.CASE_OFFICER)),
 			Matchers.is(true));
 		MatcherAssert.assertThat(
 			u.hasAnyUserRole(
-				creator.getUserRoleMap().get(DefaultUserRole.CASE_OFFICER),
-				creator.getUserRoleMap().get(DefaultUserRole.CASE_SUPERVISOR)),
+				creator.getUserRole(DefaultUserRole.CASE_OFFICER),
+				creator.getUserRole(DefaultUserRole.CASE_SUPERVISOR)),
 			Matchers.is(true));
 	}
 }

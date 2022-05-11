@@ -30,6 +30,7 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -42,7 +43,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.NotificationProtocol;
 import de.symeda.sormas.api.user.NotificationType;
@@ -51,7 +51,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -112,7 +111,8 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	public List<User> getAllByRegionsAndNotificationTypes(
 		List<Region> regions,
 		NotificationProtocol notificationProtocol,
-		Collection<NotificationType> notificationTypes) {
+		Collection<NotificationType> notificationTypes,
+		boolean fetchNotificationTypes) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
@@ -126,6 +126,11 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 				JoinType.LEFT);
 			Predicate notificationsFilter = notificationsJoin.in(notificationTypes);
 			filter = CriteriaBuilderHelper.and(cb, filter, notificationsFilter);
+		}
+		if (fetchNotificationTypes) {
+			from.fetch(User.USER_ROLES, JoinType.LEFT).fetch(
+					NotificationProtocol.EMAIL.equals(notificationProtocol) ? UserRole.EMAIL_NOTIFICATIONS : UserRole.SMS_NOTIFICATIONS,
+					JoinType.LEFT);
 		}
 		cq.where(CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from)));
 
@@ -493,18 +498,20 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(User.ACTIVE), userCriteria.getActive()));
 		}
 		if (userCriteria.getUserRole() != null) {
-			Join<User, DefaultUserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
-			filter = CriteriaBuilderHelper.and(cb, filter, joinRoles.in(Collections.singletonList(userCriteria.getUserRole())));
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.equal(from.join(User.USER_ROLES, JoinType.LEFT).get(AbstractDomainObject.UUID), userCriteria.getUserRole().getUuid()));
 		}
 		if (userCriteria.getRegion() != null) {
 			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.equal(from.join(Case.REGION, JoinType.LEFT).get(AbstractDomainObject.UUID), userCriteria.getRegion().getUuid()));
+				.and(cb, filter, cb.equal(from.join(User.REGION, JoinType.LEFT).get(AbstractDomainObject.UUID), userCriteria.getRegion().getUuid()));
 		}
 		if (userCriteria.getDistrict() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.equal(from.join(Case.DISTRICT, JoinType.LEFT).get(AbstractDomainObject.UUID), userCriteria.getDistrict().getUuid()));
+				cb.equal(from.join(User.DISTRICT, JoinType.LEFT).get(AbstractDomainObject.UUID), userCriteria.getDistrict().getUuid()));
 		}
 		if (userCriteria.getFreeText() != null) {
 			String[] textFilters = userCriteria.getFreeText().split("\\s+");
@@ -661,16 +668,26 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return getCurrentUser().getUserRoles().contains(userRole);
 	}
 
-	public boolean hasRight(UserRight right) {
-		return getCurrentUser().getUserRoles().stream().flatMap(role -> role.getUserRights().stream()).collect(Collectors.toSet()).contains(right);
-	}
-
 	public boolean hasRegion(RegionReferenceDto regionReference) {
 		User currentUser = getCurrentUser();
 		if (currentUser.getRegion() == null) {
 			return false;
 		}
 		return currentUser.getRegion().getUuid().equals(regionReference.getUuid());
+	}
+
+	/**
+	 * Make sure lazy loaded roles are loaded
+	 */
+	public User loadRoles(User user) {
+		if (!em.contains(user)) {
+			user = em.merge(user);
+		}
+		for (UserRole userRole : user.getUserRoles()) {
+			userRole.getEmailNotifications().size();
+			userRole.getSmsNotifications().size();
+		}
+		return user;
 	}
 
 	/**

@@ -123,6 +123,8 @@ public class UserFacadeEjb implements UserFacade {
 	private EntityManager em;
 
 	@EJB
+	private CurrentUserService currentUserService;
+	@EJB
 	private UserService userService;
 	@EJB
 	private LocationFacadeEjbLocal locationFacade;
@@ -767,10 +769,7 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	public List<UserDto> getUsersWithDefaultPassword() {
-		User currentUser = userService.getCurrentUser();
-		if (userRoleFacade.hasUserRight(
-			currentUser.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toDto(userRole)).collect(Collectors.toSet()),
-			UserRight.USER_EDIT)) {
+		if (userService.hasRight(UserRight.USER_EDIT)) {
 			// user is allowed to change all passwords
 			// a list of all users with a default password is returned
 			return userService.getAllDefaultUsers()
@@ -782,6 +781,7 @@ public class UserFacadeEjb implements UserFacade {
 		} else {
 			// user has only access to himself
 			// the list will include him/her or will be empty
+			User currentUser = userService.getCurrentUser();
 			if (DefaultEntityHelper.isDefaultUser(currentUser.getUserName())
 				&& DefaultEntityHelper.usesDefaultPassword(currentUser.getUserName(), currentUser.getPassword(), currentUser.getSeed())) {
 				return Collections.singletonList(UserFacadeEjb.toDto(currentUser));

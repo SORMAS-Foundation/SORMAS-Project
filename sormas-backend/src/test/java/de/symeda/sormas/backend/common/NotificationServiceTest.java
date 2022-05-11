@@ -18,12 +18,14 @@ package de.symeda.sormas.backend.common;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -70,7 +72,10 @@ public class NotificationServiceTest extends AbstractBeanTest {
 		super.init();
 
 		Mockito.when(configurationFacade.isFeatureEnabled(any())).thenReturn(true);
-		Mockito.when(userRoleService.getAll()).thenReturn(getUserRoleService().getAll());
+		Mockito.when(userRoleService.getActiveByNotificationTypes(any(), any())).then(invocation -> {
+			return getUserRoleService()
+				.getActiveByNotificationTypes((NotificationProtocol) invocation.getArgument(0), (Set<NotificationType>) invocation.getArgument(1));
+		});
 	}
 
 	@Test
@@ -87,14 +92,15 @@ public class NotificationServiceTest extends AbstractBeanTest {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		Region region = getRegionService().getByReferenceDto(rdcf.region);
 
-		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
-		UserDto caseSup = creator.createUser(rdcf, "Case", "Sup", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.CASE_SUPERVISOR));
+		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto caseSup = creator.createUser(rdcf, "Case", "Sup", creator.getUserRoleReference(DefaultUserRole.CASE_SUPERVISOR));
 
-		Mockito.when(userService.getAllByRegionsAndNotificationTypes(any(), any(), any())).then(invocation -> {
+		Mockito.when(userService.getAllByRegionsAndNotificationTypes(any(), any(), any(), anyBoolean())).then(invocation -> {
 			return getUserService().getAllByRegionsAndNotificationTypes(
 				(List<Region>) invocation.getArgument(0),
 				(NotificationProtocol) invocation.getArgument(1),
-				(Collection<NotificationType>) invocation.getArgument(2));
+				(Collection<NotificationType>) invocation.getArgument(2),
+				(boolean) invocation.getArgument(3));
 		});
 		Mockito.doAnswer(invocation -> {
 			Map<User, String> userMessages = (Map<User, String>) invocation.getArgument(0);
@@ -122,10 +128,11 @@ public class NotificationServiceTest extends AbstractBeanTest {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		Region region = getRegionService().getByReferenceDto(rdcf.region);
 
-		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
-		UserDto survOff = creator.createUser(rdcf, "Case", "Sup", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto survOff = creator.createUser(rdcf, "Case", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		User survOffUser = getUserService().getByUuid(survOff.getUuid());
+		survOffUser = getUserService().loadRoles(survOffUser);
 
 //		Mockito.when(userService.getAllByRegionsAndNotificationTypes(any(),any(), any())).then(invocation -> {
 //			// load only for SURVEILLANCE_SUPERVISOR, so the additional CASE_SUPERVISOR user will be added in the notification service
@@ -157,16 +164,16 @@ public class NotificationServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testSendNotifications_filterUserMessagesByroles() throws NotificationDeliveryFailedException {
+	public void testSendNotifications_filterUserMessagesByRoles() throws NotificationDeliveryFailedException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
-		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
-		UserDto caseSup = creator.createUser(rdcf, "Case", "Sup", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.CASE_SUPERVISOR));
-		UserDto contSup = creator.createUser(rdcf, "Cont", "Sup", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.CONTACT_SUPERVISOR));
+		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto caseSup = creator.createUser(rdcf, "Case", "Sup", creator.getUserRoleReference(DefaultUserRole.CASE_SUPERVISOR));
+		UserDto contSup = creator.createUser(rdcf, "Cont", "Sup", creator.getUserRoleReference(DefaultUserRole.CONTACT_SUPERVISOR));
 
-		User survSupUser = getUserService().getByReferenceDto(survSup.toReference());
-		User survOffUser = getUserService().getByReferenceDto(caseSup.toReference());
-		User contSupUser = getUserService().getByReferenceDto(contSup.toReference());
+		User survSupUser = getUserService().loadRoles(getUserService().getByReferenceDto(survSup.toReference()));
+		User survOffUser = getUserService().loadRoles(getUserService().getByReferenceDto(caseSup.toReference()));
+		User contSupUser = getUserService().loadRoles(getUserService().getByReferenceDto(contSup.toReference()));
 
 		Mockito.doAnswer(invocation -> {
 			Map<User, String> userMessages = (Map<User, String>) invocation.getArgument(0);
@@ -195,7 +202,7 @@ public class NotificationServiceTest extends AbstractBeanTest {
 	public void testSendNotifications_notificationFeatureNotAllowed() throws NotificationDeliveryFailedException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
-		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		User survSupUser = getUserService().getByReferenceDto(survSup.toReference());
 

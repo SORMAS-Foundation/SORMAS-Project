@@ -42,7 +42,7 @@ public class CountryImporterTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Default",
 			"User",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN));
+			creator.getUserRoleReference(DefaultUserRole.ADMIN));
 
 		File countryCsvFile = new File(getClass().getClassLoader().getResource("sormas_country_import_test.csv").toURI());
 		InfrastructureImporter importer = new CountryImporterExtension(countryCsvFile, user);
@@ -61,7 +61,7 @@ public class CountryImporterTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Default",
 			"User",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN));
+			creator.getUserRoleReference(DefaultUserRole.ADMIN));
 
 		File countryCsvFile = new File(getClass().getClassLoader().getResource("sormas_country_import_test.csv").toURI());
 		InfrastructureImporter importer = new CountryImporterExtension(countryCsvFile, user);

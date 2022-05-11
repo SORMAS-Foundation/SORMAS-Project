@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.backend;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.lang.annotation.Annotation;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.backend.common.NotificationService;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -89,6 +91,7 @@ import de.symeda.sormas.api.therapy.TreatmentFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRightsFacade;
 import de.symeda.sormas.api.vaccination.VaccinationFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
@@ -241,15 +244,25 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		initH2Functions();
 		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
 		System.setProperty("java.naming.factory.initial", MockProducer.class.getCanonicalName());
-		creator.createUser(
+		UserDto user = creator.createUser(
 			null,
 			null,
 			null,
 			"ad",
 			"min",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.ADMIN),
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
-		when(MockProducer.getPrincipal().getName()).thenReturn("admin");
+			creator.getUserRoleReference(DefaultUserRole.ADMIN),
+			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+
+		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
+
+		when(MockProducer.getSessionContext().isCallerInRole(any(String.class))).thenAnswer(invocationOnMock -> {
+			String role = invocationOnMock.getArgument(0);
+			UserRight userRight = UserRight.valueOf(role);
+			return getCurrentUserService().getCurrentUser()
+				.getUserRoles()
+				.stream()
+				.anyMatch(userRole -> userRole.getUserRights().contains(userRight));
+		});
 
 		I18nProperties.setUserLanguage(Language.EN);
 
@@ -645,6 +658,10 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(LabMessageService.class);
 	}
 
+	public NotificationService getNotificationService() {
+		return getBean(NotificationService.class);
+	}
+
 	public SormasToSormasLabMessageFacade getSormasToSormasLabMessageFacade() {
 		return getBean(SormasToSormasLabMessageFacadeEjbLocal.class);
 	}
@@ -712,7 +729,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Off",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff");
 
 		return survOff;
@@ -731,7 +748,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 	}
 
 	protected UserDto useNationalUserLogin() {
-		UserDto natUser = creator.createUser("", "", "", "Nat", "Usr", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto natUser = creator.createUser("", "", "", "Nat", "Usr", creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		when(MockProducer.getPrincipal().getName()).thenReturn("NatUsr");
 
 		return natUser;

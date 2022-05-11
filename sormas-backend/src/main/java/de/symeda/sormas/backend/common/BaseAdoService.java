@@ -78,8 +78,8 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		return currentUserService.getCurrentUser();
 	}
 
-	public boolean hasCurrentUserRight(UserRight userRight) {
-		return currentUserService.hasUserRight(userRight);
+	public boolean hasRight(UserRight right) {
+		return currentUserService.hasUserRight(right);
 	}
 
 	protected Class<ADO> getElementClass() {

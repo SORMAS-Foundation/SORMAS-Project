@@ -265,9 +265,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.clearTable(connectionSource, LbdsSync.class);
 
 			if (clearInfrastructure) {
+				TableUtils.clearTable(connectionSource, UserUserRole.class);
 				TableUtils.clearTable(connectionSource, User.class);
 				TableUtils.clearTable(connectionSource, UserRole.class);
-				TableUtils.clearTable(connectionSource, UserUserRole.class);
 				TableUtils.clearTable(connectionSource, DiseaseConfiguration.class);
 				TableUtils.clearTable(connectionSource, CustomizableEnumValue.class);
 				TableUtils.clearTable(connectionSource, FeatureConfiguration.class);

@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.user;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -337,6 +338,10 @@ public class User extends AbstractDomainObject {
 	 */
 	public boolean hasAnyUserRole(UserRole... userRoles) {
 		return Arrays.stream(userRoles).anyMatch(getUserRoles()::contains);
+	}
+
+	public boolean hasAnyUserRole(Collection<UserRole> userRoles) {
+		return userRoles.stream().anyMatch(getUserRoles()::contains);
 	}
 
 	public static String buildCaptionForNotification(User user) {

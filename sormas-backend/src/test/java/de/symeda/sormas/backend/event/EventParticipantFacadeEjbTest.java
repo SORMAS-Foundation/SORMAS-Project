@@ -223,7 +223,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testCreateWithoutUuid() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 		EventParticipantDto eventParticipant = new EventParticipantDto();
 		eventParticipant.setEvent(creator.createEvent(user.toReference()).toReference());
 		eventParticipant.setPerson(creator.createPerson());
@@ -238,7 +238,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	public void testGetByEventUuids() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		EventDto event1 = creator.createEvent(user.toReference());
 		EventDto event2 = creator.createEvent(user.toReference());
@@ -259,7 +259,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	public void testGetByPersonUuids() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		EventDto event1 = creator.createEvent(user.toReference());
 		EventDto event2 = creator.createEvent(user.toReference());
@@ -279,7 +279,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testExistEventParticipantWithDeletedFalse() {
 		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		EventDto event = creator.createEvent(user.toReference());
 		PersonDto person = creator.createPerson();
 
@@ -292,7 +292,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testExistEventParticipantWithDeletedTrue() {
 		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		EventDto event = creator.createEvent(user.toReference());
 		PersonDto person = creator.createPerson();
 
@@ -310,7 +310,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 	}
 
 	private EventDto createEvent(UserDto user, TestDataCreator.RDCF rdcf) {

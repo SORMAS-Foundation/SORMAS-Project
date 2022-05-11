@@ -25,8 +25,8 @@ public class ClinicalCourseFacadeEjbTest extends AbstractBeanTest {
 		RDCFEntities rdcf = creator.createRDCFEntities();
 		UserDto user = creator.createUser(
 			rdcf,
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.CASE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
+			creator.getUserRoleReference(DefaultUserRole.CASE_SUPERVISOR));
 		UserDto admin = getUserFacade().getByUserName("admin");
 		PersonDto casePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), casePerson.toReference(), rdcf);
@@ -47,8 +47,8 @@ public class ClinicalCourseFacadeEjbTest extends AbstractBeanTest {
 		RDCFEntities rdcf = creator.createRDCFEntities();
 		UserDto user = creator.createUser(
 			rdcf,
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.CASE_SUPERVISOR));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
+			creator.getUserRoleReference(DefaultUserRole.CASE_SUPERVISOR));
 		PersonDto casePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), casePerson.toReference(), rdcf);
 		creator.createClinicalVisit(caze);

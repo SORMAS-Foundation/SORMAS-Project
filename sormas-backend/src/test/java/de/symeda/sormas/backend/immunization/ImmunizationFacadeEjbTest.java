@@ -66,7 +66,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			rdcf1.facility.getUuid(),
 			"Nat",
 			"User",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
+			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		districtUser1 = creator.createUser(
 			rdcf1.region.getUuid(),
@@ -74,7 +74,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			rdcf1.facility.getUuid(),
 			"Surv",
 			"Off1",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		districtUser2 = creator.createUser(
 			rdcf2.region.getUuid(),
@@ -82,7 +82,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			rdcf2.facility.getUuid(),
 			"Surv",
 			"Off2",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		covidLimitedDistrictUser = creator.createUser(
 			rdcf1.region.getUuid(),
@@ -90,7 +90,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			rdcf1.facility.getUuid(),
 			"Surv",
 			"OffCovid",
-			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 		covidLimitedDistrictUser.setLimitedDisease(Disease.CORONAVIRUS);
 		getUserFacade().saveUser(covidLimitedDistrictUser);
 	}

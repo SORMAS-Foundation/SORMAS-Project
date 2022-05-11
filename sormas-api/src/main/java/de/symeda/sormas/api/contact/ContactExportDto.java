@@ -1238,7 +1238,7 @@ public class ContactExportDto implements Serializable {
 	}
 
 	public void setReportingUserRoles(Set<UserRoleReferenceDto> roles) {
-		this.reportingUserRoles = StringUtils.join(roles.stream().map(role -> role.getCaption()).collect(Collectors.toList()), ", ");
+		this.reportingUserRoles = StringUtils.join(roles, ", ");
 	}
 
 	@Order(177)
@@ -1266,7 +1266,7 @@ public class ContactExportDto implements Serializable {
 	}
 
 	public void setFollowUpStatusChangeUserRoles(Set<UserRoleReferenceDto> roles) {
-		this.followUpStatusChangeUserRoles = StringUtils.join(roles.stream().map(role -> role.getCaption()).collect(Collectors.toList()), ", ");
+		this.followUpStatusChangeUserRoles = StringUtils.join(roles, ", ");
 	}
 
 	public void setEventCount(Long eventCount) {

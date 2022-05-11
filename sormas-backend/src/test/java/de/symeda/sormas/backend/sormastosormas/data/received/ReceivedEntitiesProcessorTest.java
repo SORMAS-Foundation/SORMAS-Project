@@ -57,7 +57,7 @@ public class ReceivedEntitiesProcessorTest extends SormasToSormasTest {
 	public void testIgnoredPropertiesAreNotOverwrittenWithNewValuesForCase() throws CloneNotSupportedException {
 		PersonDto personDto = creator.createPerson();
 		UserReferenceDto officer =
-			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto existingCaseDto = creator.createCase(officer, rdcf, dto -> {
 			dto.setPerson(personDto.toReference());
 			dto.setSurveillanceOfficer(officer);
@@ -93,7 +93,7 @@ public class ReceivedEntitiesProcessorTest extends SormasToSormasTest {
 
 		PersonDto personDto = creator.createPerson();
 		UserReferenceDto officer =
-			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto existingCaseDto = creator.createCase(officer, rdcf, dto -> {
 			dto.setPerson(personDto.toReference());
 			dto.setSurveillanceOfficer(officer);
@@ -124,7 +124,7 @@ public class ReceivedEntitiesProcessorTest extends SormasToSormasTest {
 
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
 		UserReferenceDto officerReferenceDto =
-			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		ContactDto existingContactDto = creator.createContact(officerReferenceDto, personReferenceDto);
 		existingContactDto.setAdditionalDetails("oldAdditionalDetails");
 		existingContactDto.setExternalID("oldExternalId");
@@ -155,7 +155,7 @@ public class ReceivedEntitiesProcessorTest extends SormasToSormasTest {
 
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
 		UserReferenceDto officerReferenceDto =
-			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		ContactDto existingContactDto = creator.createContact(officerReferenceDto, personReferenceDto);
 		existingContactDto.setAdditionalDetails("oldAdditionalDetails");
 		existingContactDto.setExternalID("oldExternalId");
@@ -180,7 +180,7 @@ public class ReceivedEntitiesProcessorTest extends SormasToSormasTest {
 	public void testIgnoredPropertiesAreNotOverwrittenWithNewValuesForEvent() throws CloneNotSupportedException {
 
 		UserReferenceDto officerReferenceDto =
-			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		EventDto existingEventDto = creator.createEvent(officerReferenceDto);
 		existingEventDto.setDisease(Disease.CORONAVIRUS);
 		existingEventDto.setExternalId("oldExternalId");
@@ -208,7 +208,7 @@ public class ReceivedEntitiesProcessorTest extends SormasToSormasTest {
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
 		UserReferenceDto officerReferenceDto =
-			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		EventDto existingEventDto = creator.createEvent(officerReferenceDto);
 		existingEventDto.setDisease(Disease.CORONAVIRUS);
 		existingEventDto.setExternalId("oldExternalId");
@@ -285,7 +285,7 @@ public class ReceivedEntitiesProcessorTest extends SormasToSormasTest {
 
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
 		UserReferenceDto officerReferenceDto =
-			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		ImmunizationDto existingImmunizationDto = creator.createImmunization(
 			Disease.CORONAVIRUS,
 			personReferenceDto,
@@ -322,7 +322,7 @@ public class ReceivedEntitiesProcessorTest extends SormasToSormasTest {
 
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
 		UserReferenceDto officerReferenceDto =
-			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		ImmunizationDto existingImmunizationDto = creator.createImmunization(
 			Disease.CORONAVIRUS,
 			personReferenceDto,
@@ -354,7 +354,7 @@ public class ReceivedEntitiesProcessorTest extends SormasToSormasTest {
 
 		PersonDto personDto = creator.createPerson();
 		UserReferenceDto officerReferenceDto =
-			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto caseDataDto = creator.createCase(officerReferenceDto, rdcf, dto -> {
 			dto.setPerson(personDto.toReference());
 			dto.setSurveillanceOfficer(officerReferenceDto);
@@ -390,7 +390,7 @@ public class ReceivedEntitiesProcessorTest extends SormasToSormasTest {
 
 		PersonDto personDto = creator.createPerson();
 		UserReferenceDto officerReferenceDto =
-			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto caseDataDto = creator.createCase(officerReferenceDto, rdcf, dto -> {
 			dto.setPerson(personDto.toReference());
 			dto.setSurveillanceOfficer(officerReferenceDto);

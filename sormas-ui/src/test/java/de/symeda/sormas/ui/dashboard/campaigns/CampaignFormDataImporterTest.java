@@ -44,7 +44,7 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Nat",
 			"User",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		final CampaignDto campaign = creator.createCampaign(user);
 
@@ -70,7 +70,7 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Nat",
 			"User",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		final CampaignDto campaign = creator.createCampaign(user);
 
@@ -96,7 +96,7 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Nat",
 			"User",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		final CampaignDto campaign = creator.createCampaign(user);
 

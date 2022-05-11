@@ -90,7 +90,7 @@ public class TestHelper {
 		user.setActive(true);
 		user.setFirstName("Sana");
 		user.setLastName("Obas");
-		user.setUserRoles(new HashSet(Arrays.asList(getUserRoleMap().get(DefaultUserRole.SURVEILLANCE_OFFICER))));
+		user.setUserRoles(new HashSet(Arrays.asList(getUserRole(DefaultUserRole.SURVEILLANCE_OFFICER))));
 		user.setCreationDate(new Date());
 		user.setChangeDate(new Date());
 		user.setUuid(USER_UUID);
@@ -110,7 +110,7 @@ public class TestHelper {
 		secondUser.setLastName("Anas");
 		secondUser.setUserRoles(
 			new HashSet(
-				Arrays.asList(getUserRoleMap().get(DefaultUserRole.SURVEILLANCE_OFFICER), getUserRoleMap().get(DefaultUserRole.CASE_OFFICER))));
+				Arrays.asList(getUserRole(DefaultUserRole.SURVEILLANCE_OFFICER), getUserRole(DefaultUserRole.CASE_OFFICER))));
 		secondUser.setCreationDate(new Date());
 		secondUser.setChangeDate(new Date());
 		secondUser.setUuid(SECOND_USER_UUID);
@@ -125,7 +125,7 @@ public class TestHelper {
 		informant.setActive(true);
 		informant.setFirstName("Info");
 		informant.setLastName("User");
-		informant.setUserRoles(new HashSet(Arrays.asList(getUserRoleMap().get(DefaultUserRole.HOSPITAL_INFORMANT))));
+		informant.setUserRoles(new HashSet(Arrays.asList(getUserRole(DefaultUserRole.HOSPITAL_INFORMANT))));
 		informant.setCreationDate(new Date());
 		informant.setChangeDate(new Date());
 		informant.setUuid(INFORMANT_USER_UUID);
@@ -247,16 +247,17 @@ public class TestHelper {
 		DatabaseHelper.getFacilityDao().create(noneFacility);
 	}
 
-	public static Map<DefaultUserRole, UserRole> getUserRoleMap() {
+	public static UserRole getUserRole(DefaultUserRole userRole) {
 		if (userRoleMap.isEmpty()) {
 			createUserRoles();
 		}
-		return userRoleMap;
+		return userRoleMap.get(userRole);
 	}
 
 	private static void createUserRoles() {
 		Arrays.stream(DefaultUserRole.values()).forEach(defaultUserRole -> {
 			UserRole userRole = new UserRole();
+			userRole.setEnabled(true);
 			userRole.setUserRights(defaultUserRole.getDefaultUserRights());
 			userRole.setCaption(defaultUserRole.toString());
 			userRole.setPortHealthUser(defaultUserRole.isPortHealthUser());

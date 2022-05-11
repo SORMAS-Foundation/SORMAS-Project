@@ -35,8 +35,7 @@ public class UserTestHelper {
 			u.setUserName(UUID.randomUUID().toString());
 			u.setSeed(PasswordHelper.createPass(16));
 			u.setPassword(PasswordHelper.encodePassword(PasswordHelper.createPass(12), u.getSeed()));
-			List<UserRole> userRoles = new ArrayList<>(creator.getUserRoleMap().values());
-			u.setUserRoles(Collections.singleton(userRoles.get(rand.nextInt(userRoles.size()))));
+			u.setUserRoles(Collections.singleton(creator.getUserRole(DefaultUserRole.values()[rand.nextInt(DefaultUserRole.values().length)])));
 			u.updateJurisdictionLevel();
 			randomUsers.add(u);
 		}
@@ -74,7 +73,7 @@ public class UserTestHelper {
 		user.setUserName(userpass.getElement0());
 		user.setSeed(PasswordHelper.createPass(16));
 		user.setPassword(PasswordHelper.encodePassword(userpass.getElement1(), user.getSeed()));
-		user.setUserRoles(Collections.singleton(creator.getUserRoleMap().get(role)));
+		user.setUserRoles(Collections.singleton(creator.getUserRole(role)));
 		user.updateJurisdictionLevel();
 		return user;
 	}

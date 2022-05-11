@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.user;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
@@ -29,9 +30,13 @@ import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.user.NotificationProtocol;
+import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
@@ -66,6 +71,15 @@ public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
 		return entity;
 	}
 
+	public UserRole getByUuidEager(String uuid) {
+		UserRole userRole = getByUuid(uuid);
+		if (userRole != null) {
+			userRole.getEmailNotifications().size();
+			userRole.getSmsNotifications().size();
+		}
+		return userRole;
+	}
+
 	public List<String> getDeletedUuids(Date since) {
 
 		String queryString = "SELECT " + AbstractDomainObject.UUID + " FROM " + UserRole.TABLE_NAME + AbstractDomainObject.HISTORY_TABLE_SUFFIX + " h"
@@ -83,6 +97,23 @@ public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
 		CriteriaQuery<UserRole> cq = cb.createQuery(UserRole.class);
 		Root<UserRole> from = cq.from(UserRole.class);
 		cq.where(cb.isTrue(from.get(UserRole.ENABLED)));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+
+	public List<UserRole> getActiveByNotificationTypes(NotificationProtocol protocol, Set<NotificationType> notificationTypes) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<UserRole> cq = cb.createQuery(UserRole.class);
+		Root<UserRole> from = cq.from(UserRole.class);
+
+		Join<UserRole, NotificationType> notificationsJoin = from.join(
+				NotificationProtocol.EMAIL.equals(protocol) ? UserRole.EMAIL_NOTIFICATIONS : UserRole.SMS_NOTIFICATIONS,
+				JoinType.LEFT);
+		Predicate notificationsFilter = notificationsJoin.in(notificationTypes);
+
+		cq.where(cb.and(cb.isTrue(from.get(UserRole.ENABLED)), notificationsFilter));
 
 		return em.createQuery(cq).getResultList();
 	}

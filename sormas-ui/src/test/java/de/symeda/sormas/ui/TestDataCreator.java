@@ -752,6 +752,7 @@ public class TestDataCreator {
 			UserRoleDto userRoleDto =
 				UserRoleDto.build(defaultUserRole.getDefaultUserRights().toArray(new UserRight[defaultUserRole.getDefaultUserRights().size()]));
 			userRoleDto.setCaption(defaultUserRole.toString());
+			userRoleDto.setEnabled(true);
 			userRoleDto.setPortHealthUser(defaultUserRole.isPortHealthUser());
 			userRoleDto.setHasAssociatedOfficer(defaultUserRole.hasAssociatedOfficer());
 			userRoleDto.setHasOptionalHealthFacility(defaultUserRole.hasOptionalHealthFacility());
@@ -763,11 +764,10 @@ public class TestDataCreator {
 		});
 	}
 
-	public Map<DefaultUserRole, UserRoleReferenceDto> getUserRoleDtoMap() {
+	public UserRoleReferenceDto getUserRoleReference(DefaultUserRole userRole) {
 		if (userRoleDtoMap.isEmpty()) {
 			createUserRoles();
 		}
-		return userRoleDtoMap;
+		return userRoleDtoMap.get(userRole);
 	}
-
 }
