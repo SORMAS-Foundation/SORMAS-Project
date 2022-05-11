@@ -50,6 +50,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_CLAS
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_IDENTIFICATION_SOURCE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_PERSON_TAB;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_TAB;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CLINICAL_CONFIRMATION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CLINICAL_COURSE_TAB;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY_COMBOBOX;
@@ -108,6 +109,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_SELECTED_VALUE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.POPUPS_INPUTS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PREGNANCY_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PROHIBITION_TO_WORK_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_CHANGE_COMMENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_COMBOBOX;
@@ -141,6 +143,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_AND_
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SEQUELAE_DETAILS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SEQUELAE_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SYMPTOMS_TAB;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.TRIMESTER_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UPLOAD_DOCUMENT_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
@@ -335,6 +338,15 @@ public class EditCaseSteps implements En {
     And(
         "I navigate to case person tab",
         () -> webDriverHelpers.clickOnWebElementBySelector(CASE_PERSON_TAB));
+
+    And(
+        "I navigate to case tab",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_TAB);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+        });
+
     And(
         "I click on Create button in Document Templates box in Edit Case directory",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_TEMPLATES));
@@ -1337,6 +1349,17 @@ public class EditCaseSteps implements En {
               "The case classification is incorrect!");
           softly.assertAll();
         });
+
+    When(
+        "I set pregnancy to ([^\"]*)",
+        (String option) -> {
+          webDriverHelpers.clickWebElementByText(PREGNANCY_OPTIONS, option);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I check that trimester field is present",
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(TRIMESTER_OPTIONS));
   }
 
   private Case collectCasePersonUuid() {

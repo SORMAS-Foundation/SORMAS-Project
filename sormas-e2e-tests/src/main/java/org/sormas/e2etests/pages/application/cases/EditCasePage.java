@@ -40,6 +40,7 @@ public class EditCasePage {
   public static final By DISEASE_VARIANT_INPUT = By.cssSelector("#diseaseVariant input");
   public static final By USER_INFORMATION =
       By.cssSelector(".v-slot-view-header .v-slot-primary div");
+  public static final By CASE_TAB = By.cssSelector("div#tab-cases-data");
   public static final By CASE_PERSON_TAB = By.cssSelector("div#tab-cases-person");
   public static final By NEW_TASK_BUTTON = By.cssSelector("div#taskNewTask");
   public static final By EDIT_TASK_BUTTON = By.cssSelector("div[id*='edit-task']");
@@ -68,6 +69,8 @@ public class EditCasePage {
   public static final By DATE_OF_OUTCOME_INPUT = By.cssSelector("#outcomeDate input");
   public static final By SEQUELAE_OPTIONS = By.cssSelector("#sequelae label");
   public static final By SEQUELAE_DETAILS = By.cssSelector("#sequelaeDetails");
+  public static final By PREGNANCY_OPTIONS = By.cssSelector("#pregnant label");
+  public static final By TRIMESTER_OPTIONS = By.cssSelector("#trimester label");
   public static final By PLACE_OF_STAY_CHECKBOX_LABEL =
       By.xpath("//*[@id='differentPlaceOfStayJurisdiction']/label");
   public static final By PLACE_OF_STAY_CHECKBOX_INPUT =
