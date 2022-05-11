@@ -199,6 +199,22 @@ public class TaskManagementSteps implements En {
               GENERAL_SEARCH_INPUT, apiState.getCreatedContact().getUuid());
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+
+    When(
+        "^I open last created task by API using Contact UUID$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              GENERAL_SEARCH_INPUT, 50);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              GENERAL_SEARCH_INPUT, apiState.getCreatedContact().getUuid());
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              EDIT_FIRST_SEARCH_RESULT);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_FIRST_SEARCH_RESULT);
+          System.out.println("UUID" + apiState.getCreatedContact().getUuid());
+          TimeUnit.SECONDS.sleep(6);
+        });
     When(
         "^I select first (\\d+) results in grid in Task Directory$",
         (Integer number) -> {
