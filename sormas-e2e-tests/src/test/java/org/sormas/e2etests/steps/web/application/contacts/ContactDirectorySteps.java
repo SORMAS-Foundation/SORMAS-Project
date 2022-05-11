@@ -86,6 +86,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DIRECTORY_DETAILED_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DISEASE_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DISEASE_VARIANT_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DISPLAY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_FOLLOW_UP_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONVERTED_TO_CASE_BUTTON;
@@ -929,6 +930,14 @@ public class ContactDirectorySteps implements En {
                               GRID_RESULTS_COUNTER_CONTACT_DIRECTORY)),
                       number.intValue(),
                       "Number of displayed contacts is not correct"));
+        });
+
+    When(
+        "I choose ([^\"]*) form combobox on Contact Directory Page",
+        (String contactType) -> {
+          webDriverHelpers.selectFromCombobox(CONTACT_DISPLAY_FILTER_COMBOBOX, contactType);
+          TimeUnit.SECONDS.sleep(3); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
   }
 
