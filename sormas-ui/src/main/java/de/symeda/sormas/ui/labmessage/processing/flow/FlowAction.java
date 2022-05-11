@@ -19,9 +19,8 @@
 package de.symeda.sormas.ui.labmessage.processing.flow;
 
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
 
-public interface FlowAction<R, RR> {
+public interface FlowAction<T, R> {
 
-	CompletionStage<ProcessingResult<RR>> apply(ProcessingResult<R> currentResult);
+	CompletionStage<ProcessingResult<R>> apply(ProcessingResult<T> currentResult);
 }

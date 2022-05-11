@@ -17,46 +17,48 @@ package de.symeda.sormas.ui.labmessage.processing.flow;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Class used for building conditional async flow/chain
  * 
  * @param <T>
- * @param <R>
+ *            Data type of current result
+ * @param <X>
+ *            Data type of the result of switch
  */
-public class FlowSwitch<T, R> {
+public class FlowSwitch<T, X> {
 
 	private final CompletionStage<ProcessingResult<T>> currentResult;
-	private final CompletionStage<ProcessingResult<R>> switchResult;
+	private final CompletionStage<ProcessingResult<X>> switchResult;
 
 	public FlowSwitch(CompletionStage<ProcessingResult<T>> currentResult) {
 		this(currentResult, null);
 	}
 
-	private FlowSwitch(CompletionStage<ProcessingResult<T>> currentResult, CompletionStage<ProcessingResult<R>> switchResult) {
+	private FlowSwitch(CompletionStage<ProcessingResult<T>> currentResult, CompletionStage<ProcessingResult<X>> switchResult) {
 		this.currentResult = currentResult;
 		this.switchResult = switchResult;
 	}
 
-	public <RR> FlowSwitch<T, RR> when(Function<T, Boolean> condition, SwitchFlow<T, RR> switchFlow) {
+	public <Y> FlowSwitch<T, Y> when(Predicate<T> condition, SwitchFlow<T, Y> switchFlow) {
 
 		//noinspection unchecked,rawtypes,rawtypes
 		return new FlowSwitch<>(currentResult, currentResult.thenCompose(r -> {
 			ProcessingResultStatus status = r.getStatus();
 			if (status.isCanceled() || status.isDone()) {
 				//noinspection unchecked
-				return ProcessingResult.of(status, (RR) r.getData()).asCompletedFuture();
+				return ProcessingResult.of(status, (Y) r.getData()).asCompletedFuture();
 			}
 
-			if (condition.apply(r.getData())) {
-				return switchFlow.apply(new FlowThen<>(currentResult), r.getData()).getResult().thenCompose(switchResult -> {
-					ProcessingResultStatus switchStatus = switchResult.getStatus();
+			if (condition.test(r.getData())) {
+				return switchFlow.apply(new FlowThen<>(currentResult), r.getData()).getResult().thenCompose(switchFlowResult -> {
+					ProcessingResultStatus switchStatus = switchFlowResult.getStatus();
 					if (switchStatus.isCanceled() || switchStatus.isDone()) {
-						return ProcessingResult.of(switchStatus, switchResult.getData()).asCompletedFuture();
+						return ProcessingResult.of(switchStatus, switchFlowResult.getData()).asCompletedFuture();
 					}
 
-					return CompletableFuture.completedFuture(switchResult);
+					return CompletableFuture.completedFuture(switchFlowResult);
 				});
 			}
 
@@ -65,12 +67,12 @@ public class FlowSwitch<T, R> {
 		}));
 	}
 
-	public <RR> FlowThen<RR> then(FlowAction<R, RR> action) {
+	public <Y> FlowThen<Y> then(FlowAction<X, Y> action) {
 		return new FlowThen<>(switchResult).then(action);
 	}
 
-	public interface SwitchFlow<T, R> {
+	public interface SwitchFlow<T, Y> {
 
-		FlowThen<R> apply(FlowThen<T> flow, T currentResult);
+		FlowThen<Y> apply(FlowThen<T> flow, T currentResult);
 	}
 }

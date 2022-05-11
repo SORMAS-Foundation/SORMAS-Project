@@ -20,37 +20,37 @@ import java.util.concurrent.CompletionStage;
 /**
  * Class used for initializing and building async flow/chain
  * 
- * @param <R>
+ * @param <T>
  */
-public class FlowThen<R> {
+public class FlowThen<T> {
 
-	private final CompletionStage<ProcessingResult<R>> currentResult;
+	private final CompletionStage<ProcessingResult<T>> currentResult;
 
 	public FlowThen() {
-		this(ProcessingResult.<R> continueWith(null).asCompletedFuture());
+		this(ProcessingResult.<T> continueWith(null).asCompletedFuture());
 	}
 
-	public FlowThen(CompletionStage<ProcessingResult<R>> currentResult) {
+	public FlowThen(CompletionStage<ProcessingResult<T>> currentResult) {
 		this.currentResult = currentResult;
 	}
 
-	public <RR> FlowThen<RR> then(FlowAction<R, RR> action) {
+	public <R> FlowThen<R> then(FlowAction<T, R> action) {
 		return new FlowThen<>(currentResult.thenCompose((r) -> {
 			ProcessingResultStatus status = r.getStatus();
 			if (status.isCanceled() || status.isDone()) {
 				//noinspection unchecked
-				return ProcessingResult.of(status, (RR) r.getData()).asCompletedFuture();
+				return ProcessingResult.of(status, (R) r.getData()).asCompletedFuture();
 			}
 
 			return action.apply(r);
 		}));
 	}
 
-	public <RR> FlowSwitch<R, RR> thenSwitch() {
+	public <R> FlowSwitch<T, R> thenSwitch() {
 		return new FlowSwitch<>(currentResult);
 	}
 
-	public CompletionStage<ProcessingResult<R>> getResult() {
+	public CompletionStage<ProcessingResult<T>> getResult() {
 		return currentResult;
 	}
 }
