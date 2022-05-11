@@ -28,6 +28,8 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.REPORT_DA
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.ARRIVAL_DATE;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DATE_OF_ARRIVAL_LABEL_DE;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DATE_OF_ARRIVAL_POPUP_CLOSE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_TRAVEL_ENTRY_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.LAST_NAME_OF_CONTACT_PERSON_INPUT;
@@ -187,12 +189,53 @@ public class CreateNewTravelEntrySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(PERSON_SEARCH_LOCATOR_BUTTON);
         });
+    When(
+        "^I change a Date of Arrival for wrong date from next day",
+        () -> {
+          fillDateOfArrival(travelEntry.getDateOfArrival().plusDays(1), Locale.GERMAN);
+        });
+
+    When(
+        "^I change a Date of Arrival for correct date",
+        () -> {
+          fillDateOfArrival(travelEntry.getDateOfArrival(), Locale.GERMAN);
+        });
+
+    When(
+        "I check that word Date of arrival is appropriate translated to German language",
+        () -> {
+          String expectedWordToTranslateInGerman = "EINREISEDATUM";
+          String wordGettingFromLabel =
+              webDriverHelpers.getTextFromWebElement(DATE_OF_ARRIVAL_LABEL_DE);
+          softly.assertEquals(
+              wordGettingFromLabel,
+              expectedWordToTranslateInGerman,
+              "The translation is not proper");
+          softly.assertAll();
+        });
+
+    When(
+        "I check the information about Dates for imported travel entry on Edit Travel entry page",
+        () -> {
+          String reportDate = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
+          String arrivalDate = webDriverHelpers.getValueFromWebElement(ARRIVAL_DATE);
+
+          softly.assertEquals(reportDate, "03.10.2021");
+          softly.assertEquals(arrivalDate, "02.10.2021");
+          softly.assertAll();
+        });
+
+    When(
+        "^I check that Date of Arrival validation popup is appear",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(DATE_OF_ARRIVAL_POPUP_CLOSE);
+          webDriverHelpers.clickOnWebElementBySelector(DATE_OF_ARRIVAL_POPUP_CLOSE);
+        });
 
     When(
         "^I click on Save button from the new travel entry form$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
 
     When(
