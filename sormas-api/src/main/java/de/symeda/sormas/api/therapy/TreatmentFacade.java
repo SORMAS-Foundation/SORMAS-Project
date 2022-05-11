@@ -14,7 +14,7 @@ public interface TreatmentFacade {
 
 	List<TreatmentIndexDto> getIndexList(TreatmentCriteria criteria);
 
-	List<TreatmentIndexDto> getTreatmentForPrescription(String prescriptionUuid);
+	List<TreatmentIndexDto> getTreatmentForPrescription(List<String> prescriptionUuids);
 
 	TreatmentDto getTreatmentByUuid(String uuid);
 

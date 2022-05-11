@@ -75,7 +75,10 @@ public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 			t.setPrescription(prescription.toReference());
 		});
 
-		List<TreatmentIndexDto> results = getTreatmentFacade().getTreatmentForPrescription(prescription.getUuid());
+		List<String> prescriptionUuids = new ArrayList<>();
+		prescriptionUuids.add(prescription.getUuid());
+
+		List<TreatmentIndexDto> results = getTreatmentFacade().getTreatmentForPrescription(prescriptionUuids);
 		assertEquals(2, results.size());
 		List<String> treatmentUuids = results.stream().map(t->t.getUuid()).collect(Collectors.toList());
 		assertTrue(treatmentUuids.contains(prescriptionTreatment1.getUuid()));

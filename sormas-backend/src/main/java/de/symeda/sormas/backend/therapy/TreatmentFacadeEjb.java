@@ -97,7 +97,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 
 	@Override
-	public List<TreatmentIndexDto> getTreatmentForPrescription(String prescriptionUuid) {
+	public List<TreatmentIndexDto> getTreatmentForPrescription(List<String> prescriptionUuids) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<TreatmentIndexDto> cq = cb.createQuery(TreatmentIndexDto.class);
 		Root<Treatment> treatment = cq.from(Treatment.class);
@@ -116,7 +116,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 				JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaseJoins()))));
 
 		Predicate filter = null;
-		filter = cb.equal(joins.getPrescription().get(Prescription.UUID), prescriptionUuid);
+		filter = joins.getPrescription().get(Prescription.UUID).in(prescriptionUuids);
 
 		if(filter != null) {
 			cq.where(filter);

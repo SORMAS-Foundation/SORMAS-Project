@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.therapy;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
@@ -93,9 +94,11 @@ public class TherapyController {
 
 				@Override
 				public void onDelete() {
-					List<TreatmentIndexDto> treatmentDtos = FacadeProvider.getTreatmentFacade().getTreatmentForPrescription(prescription.getUuid());
+					List<String> prescriptionUuids = new ArrayList<>();
+					prescriptionUuids.add(prescription.getUuid());
+					List<TreatmentIndexDto> treatmentDtos = FacadeProvider.getTreatmentFacade().getTreatmentForPrescription(prescriptionUuids);
 					if(treatmentDtos.size() > 0 ){
-						handleDeletePrescriptionWithTreatments(treatmentDtos, prescription.getUuid());
+						handleDeletePrescriptionWithTreatments(treatmentDtos, prescriptionUuids);
 					}
 					else {
 						FacadeProvider.getPrescriptionFacade().deletePrescription(prescription.getUuid());
@@ -109,7 +112,7 @@ public class TherapyController {
 		}
 	}
 
-	private void handleDeletePrescriptionWithTreatments(List<TreatmentIndexDto> treatmentIndexDtos , String prescriptionUuid){
+	private void handleDeletePrescriptionWithTreatments(List<TreatmentIndexDto> treatmentIndexDtos , List<String> prescriptionUuids){
 		Consumer<Boolean> resultConsumer = new Consumer<Boolean>() {
 
 			@Override
@@ -124,7 +127,9 @@ public class TherapyController {
 					//delete the prescription and all the treatments assign with
 					FacadeProvider.getTreatmentFacade().deleteTreatments(treatmentUuids);
 				}
-				FacadeProvider.getPrescriptionFacade().deletePrescription(prescriptionUuid);
+				for(String prescriptionUuid : prescriptionUuids){
+					FacadeProvider.getPrescriptionFacade().deletePrescription(prescriptionUuid);
+				}
 				SormasUI.refreshView();
 			}
 		};
@@ -239,9 +244,22 @@ public class TherapyController {
 				new Runnable() {
 
 					public void run() {
+						List<String> prescriptionUuids = new ArrayList<>();
 						for (Object selectedRow : selectedRows) {
-							FacadeProvider.getPrescriptionFacade().deletePrescription(((PrescriptionIndexDto) selectedRow).getUuid());
+							prescriptionUuids.add(((PrescriptionIndexDto) selectedRow).getUuid());
+
 						}
+
+						List<TreatmentIndexDto> treatmentDtos = FacadeProvider.getTreatmentFacade().getTreatmentForPrescription(prescriptionUuids);
+						if(treatmentDtos.size() > 0 ){
+							handleDeletePrescriptionWithTreatments(treatmentDtos, prescriptionUuids);
+						}
+						else {
+							for(String prescriptionUuid : prescriptionUuids) {
+								FacadeProvider.getPrescriptionFacade().deletePrescription(prescriptionUuid);
+							}
+						}
+
 						callback.run();
 						new Notification(
 							I18nProperties.getString(Strings.headingPrescriptionsDeleted),
