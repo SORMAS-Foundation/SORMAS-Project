@@ -53,7 +53,7 @@ public class CommonModule extends PrivateModule {
   @Provides
   @Singleton
   @Exposed
-  RunningConfiguration provideEnvManager() {
+  RunningConfiguration provideRunningConfiguration() {
     return new RunningConfiguration();
   }
 

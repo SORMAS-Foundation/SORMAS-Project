@@ -35,7 +35,9 @@ public class FollowUpVisitsTabSteps implements En {
 
   @Inject
   public FollowUpVisitsTabSteps(
-      WebDriverHelpers webDriverHelpers, ApiState apiState, RunningConfiguration runningConfiguration) {
+      WebDriverHelpers webDriverHelpers,
+      ApiState apiState,
+      RunningConfiguration runningConfiguration) {
 
     When(
         "^I am accessing the Follow-up visits tab using of created contact via api$",
@@ -44,7 +46,8 @@ public class FollowUpVisitsTabSteps implements En {
               NavBarPage.CONTACTS_BUTTON);
           String visitLinkPath = "/sormas-webdriver/#!contacts/visits/";
           String uuid = apiState.getCreatedContact().getUuid();
-          String URL = runningConfiguration.getEnvironmentUrlForMarket(locale) + visitLinkPath + uuid;
+          String URL =
+              runningConfiguration.getEnvironmentUrlForMarket(locale) + visitLinkPath + uuid;
           webDriverHelpers.accessWebSite(URL);
         });
 

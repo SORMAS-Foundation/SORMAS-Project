@@ -35,23 +35,30 @@ import org.sormas.e2etests.enums.immunizations.ImmunizationManagementStatusValue
 import org.sormas.e2etests.enums.immunizations.MeansOfImmunizationValues;
 import org.sormas.e2etests.enums.immunizations.StatusValues;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
+import org.sormas.e2etests.helpers.RestAssuredClient;
+import org.sormas.e2etests.helpers.environmentdata.manager.EnvironmentManager;
 import org.sormas.e2etests.steps.BaseSteps;
 
 public class ImmunizationApiService {
   private final Faker faker;
   private static RunningConfiguration runningConfiguration;
+  private RestAssuredClient restAssuredClient;
 
   @Inject
   public ImmunizationApiService(
-      Faker faker, BaseSteps baseSteps, RunningConfiguration runningConfiguration) {
+      Faker faker,
+      BaseSteps baseSteps,
+      RunningConfiguration runningConfiguration,
+      RestAssuredClient restAssuredClient) {
+    this.restAssuredClient = restAssuredClient;
     this.faker = faker;
     this.runningConfiguration = runningConfiguration;
   }
 
   public Immunization buildGeneratedImmunizationForPerson(Person person) {
-    String immunizationUUID = UUID.randomUUID().toString();
+    EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
     return Immunization.builder()
-        .uuid(immunizationUUID)
+        .uuid(UUID.randomUUID().toString())
         .pseudonymized(false)
         .person(person)
         .reportDate(Calendar.getInstance().getTimeInMillis())
@@ -69,14 +76,11 @@ public class ImmunizationApiService {
         .immunizationManagementStatus(
             ImmunizationManagementStatusValues.getRandomImmunizationManagementStatus())
         .responsibleRegion(
-            RegionsValues.getUuidValueForLocale(
-                RegionsValues.VoreingestellteBundeslander.getName(), locale))
+            environmentManager.getRegionUUID(RegionsValues.VoreingestellteBundeslander.getName()))
         .responsibleDistrict(
-            DistrictsValues.getUuidValueForLocale(
-                DistrictsValues.VoreingestellterLandkreis.name(), locale))
+            environmentManager.getDistrictUUID(DistrictsValues.VoreingestellterLandkreis.getName()))
         .responsibleCommunity(
-            CommunityValues.getUuidValueForLocale(
-                CommunityValues.VoreingestellteGemeinde.name(), locale))
+            environmentManager.getCommunityUUID(CommunityValues.VoreingestellteGemeinde.getName()))
         .build();
   }
 }

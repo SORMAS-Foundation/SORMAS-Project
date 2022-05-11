@@ -36,20 +36,28 @@ import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.UserRoles;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
+import org.sormas.e2etests.helpers.RestAssuredClient;
+import org.sormas.e2etests.helpers.environmentdata.manager.EnvironmentManager;
 
 public class ContactApiService {
 
   private static PersonApiService personApiService;
   private static RunningConfiguration runningConfiguration;
+  private RestAssuredClient restAssuredClient;
+  private EnvironmentManager environmentManager;
 
   @Inject
   public ContactApiService(
-      PersonApiService personApiService, RunningConfiguration runningConfiguration) {
+      PersonApiService personApiService,
+      RunningConfiguration runningConfiguration,
+      RestAssuredClient restAssuredClient) {
+    this.restAssuredClient = restAssuredClient;
     this.personApiService = personApiService;
     this.runningConfiguration = runningConfiguration;
   }
 
   public Contact buildGeneratedContact(Person person) {
+    environmentManager = new EnvironmentManager(restAssuredClient);
     return Contact.builder()
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
         .uuid(UUID.randomUUID().toString())
@@ -65,15 +73,15 @@ public class ContactApiService {
             District.builder()
                 .caption(DistrictsValues.VoreingestellterLandkreis.getName())
                 .uuid(
-                    DistrictsValues.getUuidValueForLocale(
-                        DistrictsValues.VoreingestellterLandkreis.name(), locale))
+                    environmentManager.getDistrictUUID(
+                        DistrictsValues.VoreingestellterLandkreis.getName()))
                 .build())
         .region(
             Region.builder()
                 .caption(RegionsValues.VoreingestellteBundeslander.getName())
                 .uuid(
-                    RegionsValues.getUuidValueForLocale(
-                        RegionsValues.VoreingestellteBundeslander.getName(), locale))
+                    environmentManager.getRegionUUID(
+                        RegionsValues.VoreingestellteBundeslander.getName()))
                 .build())
         .relationToCase("")
         .contactClassification("UNCONFIRMED")
@@ -91,6 +99,7 @@ public class ContactApiService {
   }
 
   public Contact buildGeneratedContactWithLinkedCase(Person person, Case caze) {
+    environmentManager = new EnvironmentManager(restAssuredClient);
     return Contact.builder()
         .uuid(UUID.randomUUID().toString())
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
@@ -106,15 +115,15 @@ public class ContactApiService {
             District.builder()
                 .caption(DistrictsValues.VoreingestellterLandkreis.getName())
                 .uuid(
-                    DistrictsValues.getUuidValueForLocale(
-                        DistrictsValues.VoreingestellterLandkreis.name(), locale))
+                    environmentManager.getDistrictUUID(
+                        DistrictsValues.VoreingestellterLandkreis.getName()))
                 .build())
         .region(
             Region.builder()
                 .caption(RegionsValues.VoreingestellteBundeslander.getName())
                 .uuid(
-                    RegionsValues.getUuidValueForLocale(
-                        RegionsValues.VoreingestellteBundeslander.getName(), locale))
+                    environmentManager.getRegionUUID(
+                        RegionsValues.VoreingestellteBundeslander.getName()))
                 .build())
         .relationToCase("")
         .contactClassification("UNCONFIRMED")

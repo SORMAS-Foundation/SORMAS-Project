@@ -19,20 +19,13 @@ package org.sormas.e2etests.enums;
 
 import lombok.Getter;
 
-// TODO refactor class usage
 @Getter
-public enum FacilityUUIDs {
-  OtherFacility("SORMAS-CONSTID-OTHERS-FACILITY"),
+public enum HealthFacilityValues {
   StandardEinrichtung("Standard Einrichtung");
 
-  private final String option;
+  private final String name;
 
-  FacilityUUIDs(String option) {
-    this.option = option;
-  }
-
-  @Override
-  public String toString() {
-    return this.option;
+  HealthFacilityValues(String name) {
+    this.name = name;
   }
 }

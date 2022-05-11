@@ -25,24 +25,25 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.UUID;
 import org.sormas.e2etests.entities.pojo.api.*;
-import org.sormas.e2etests.enums.CaseClassification;
-import org.sormas.e2etests.enums.CommunityValues;
-import org.sormas.e2etests.enums.DiseasesValues;
-import org.sormas.e2etests.enums.DistrictsValues;
-import org.sormas.e2etests.enums.RegionsValues;
-import org.sormas.e2etests.enums.UserRoles;
+import org.sormas.e2etests.enums.*;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
+import org.sormas.e2etests.helpers.RestAssuredClient;
+import org.sormas.e2etests.helpers.environmentdata.manager.EnvironmentManager;
 
 public class CaseApiService {
 
   private static RunningConfiguration runningConfiguration;
+  private RestAssuredClient restAssuredClient;
 
   @Inject
-  public CaseApiService(RunningConfiguration runningConfiguration) {
+  public CaseApiService(
+      RunningConfiguration runningConfiguration, RestAssuredClient restAssuredClient) {
+    this.restAssuredClient = restAssuredClient;
     this.runningConfiguration = runningConfiguration;
   }
 
   public Case buildGeneratedCase(Person person) {
+    EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
     return Case.builder()
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
         .diseaseDetails("Test Disease")
@@ -59,32 +60,32 @@ public class CaseApiService {
         .district(
             District.builder()
                 .uuid(
-                    DistrictsValues.getUuidValueForLocale(
-                        DistrictsValues.VoreingestellterLandkreis.name(), locale))
+                    environmentManager.getDistrictUUID(
+                        DistrictsValues.VoreingestellterLandkreis.getName()))
                 .build())
         .region(
             Region.builder()
                 .uuid(
-                    RegionsValues.getUuidValueForLocale(
-                        RegionsValues.VoreingestellteBundeslander.getName(), locale))
+                    environmentManager.getRegionUUID(
+                        RegionsValues.VoreingestellteBundeslander.getName()))
                 .build())
         .responsibleDistrict(
             District.builder()
                 .uuid(
-                    DistrictsValues.getUuidValueForLocale(
-                        DistrictsValues.VoreingestellterLandkreis.name(), locale))
+                    environmentManager.getDistrictUUID(
+                        DistrictsValues.VoreingestellterLandkreis.getName()))
                 .build())
         .responsibleRegion(
             Region.builder()
                 .uuid(
-                    RegionsValues.getUuidValueForLocale(
-                        RegionsValues.VoreingestellteBundeslander.getName(), locale))
+                    environmentManager.getRegionUUID(
+                        RegionsValues.VoreingestellteBundeslander.getName()))
                 .build())
         .community(
             Community.builder()
                 .uuid(
-                    CommunityValues.getUuidValueForLocale(
-                        CommunityValues.VoreingestellteGemeinde.name(), locale))
+                    environmentManager.getCommunityUUID(
+                        CommunityValues.VoreingestellteGemeinde.getName()))
                 .build())
         .followUpStatus("FOLLOW_UP")
         .person(
@@ -105,7 +106,13 @@ public class CaseApiService {
                 .symptomatic(false)
                 .build())
         .therapy(Therapy.builder().uuid(UUID.randomUUID().toString()).build())
-        .healthFacility(HealthFacility.builder().uuid("WYPOCQ-IWVWGQ-XU7YCF-OSQJSAD4").build())
+        .healthFacility(
+            HealthFacility.builder()
+                .uuid(
+                    environmentManager.getHealthFacilityUUID(
+                        RegionsValues.VoreingestellteBundeslander.getName(),
+                        HealthFacilityValues.StandardEinrichtung.getName()))
+                .build())
         .maternalHistory(
             MaternalHistory.builder()
                 .uuid(UUID.randomUUID().toString())

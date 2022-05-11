@@ -105,7 +105,9 @@ public class ContactsDetailedTableViewSteps implements En {
           softly.assertEquals(
               detailedContactDTableRow.get(
                   ContactsDetailedTableViewHeaders.REPORTING_USER.toString()),
-              runningConfiguration.getUserByRole(locale, UserRoles.RestUser.getRole()).getUserRole(),
+              runningConfiguration
+                  .getUserByRole(locale, UserRoles.RestUser.getRole())
+                  .getUserRole(),
               "Reporting user is not correct");
           softly.assertAll();
         });

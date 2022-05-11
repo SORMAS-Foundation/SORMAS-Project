@@ -58,7 +58,8 @@ public class LoginSteps implements En {
     And(
         "I log in with National User",
         () -> {
-          EnvUser user = runningConfiguration.getUserByRole(locale, UserRoles.NationalUser.getRole());
+          EnvUser user =
+              runningConfiguration.getUserByRole(locale, UserRoles.NationalUser.getRole());
           webDriverHelpers.accessWebSite(runningConfiguration.getEnvironmentUrlForMarket(locale));
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
