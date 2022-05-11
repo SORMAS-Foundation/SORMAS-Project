@@ -197,7 +197,6 @@ public class TravelEntryDirectorySteps implements En {
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(
               PERSON_FILTER_INPUT, CreateNewTravelEntrySteps.aTravelEntry.getUuid());
-          System.out.println("UUID: " + CreateNewTravelEntrySteps.aTravelEntry.getUuid());
         });
     When(
         "I check if popup deletion message appeared",
@@ -317,7 +316,8 @@ public class TravelEntryDirectorySteps implements En {
         "I apply the last epi week for week from combobox on Travel Entry directory page",
         () -> {
           int week =
-              CreateNewTravelEntrySteps.previousWeekDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) + 1; //because weeks are counting since end of december previous year
+              CreateNewTravelEntrySteps.previousWeekDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR)
+                  + 1; // because weeks are counting since end of december previous year
           String lastEpiWeek = "Wo " + week + "-" + LocalDate.now().getYear();
           webDriverHelpers.selectFromCombobox(WEEK_FROM_OPTION_COMBOBOX, lastEpiWeek);
         });
@@ -326,7 +326,8 @@ public class TravelEntryDirectorySteps implements En {
         "I apply the last epi week for week to combobox on Travel Entry directory page",
         () -> {
           int week =
-              CreateNewTravelEntrySteps.previousWeekDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) + 1; //because weeks are counting since end of december previous year
+              CreateNewTravelEntrySteps.previousWeekDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR)
+                  + 1; // because weeks are counting since end of december previous year
           String lastEpiWeek = "Wo " + week + "-" + LocalDate.now().getYear();
           webDriverHelpers.selectFromCombobox(WEEK_TO_OPTION_COMBOBOX, lastEpiWeek);
         });
