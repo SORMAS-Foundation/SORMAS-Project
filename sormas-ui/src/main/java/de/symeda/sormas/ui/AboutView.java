@@ -52,6 +52,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Video;
 import com.vaadin.ui.Window;
@@ -106,7 +107,7 @@ public class AboutView extends VerticalLayout implements View {
 		VerticalLayout copyrightSection = createCustomHtmlSection(I18nProperties.getCaption(Captions.aboutCopyright),
 				"copyrightnotices.html");
 		if (copyrightSection != null) {
-			aboutLayout.addComponent(copyrightSection);
+		//	aboutLayout.addComponent(copyrightSection);
 		}
 
 		setSizeFull();
@@ -121,8 +122,8 @@ public class AboutView extends VerticalLayout implements View {
 	}
 
 	private VerticalLayout createInfoSection() {
-		
-		AboutViewVideoWindow  newwind = null; 
+
+		AboutViewVideoWindow newwind = null;
 
 		VerticalLayout infoLayout = new VerticalLayout();
 		infoLayout.setSpacing(false);
@@ -255,133 +256,164 @@ public class AboutView extends VerticalLayout implements View {
 		 * hzilink18.setTargetName("_blank"); hziguideLayout.addComponent(hzilink18);
 		 */
 
+		HorizontalLayout abou_vid_tLayout = new HorizontalLayout();
+		
 		VerticalLayout videoguideLayout = new VerticalLayout();
+		VerticalLayout videoguideLayout_ = new VerticalLayout();
+		VerticalLayout videoguideLayout_a = new VerticalLayout();
 
-		ThemeResource videoresource1 = new ThemeResource("img/5_UserManagement_subtitles.mp4");
-		Link videolink1 = new Link("User Management", videoresource1);
-		videolink1.setTargetName("_blank");
+		final Button videolink1 = new Button("User Management");
+		videolink1.addClickListener(e -> {
+			AboutViewVideoWindow as = new AboutViewVideoWindow("User Management",
+					"img/3_a_ViewCampaigns_21032021_subtitles.mp4");
+			UI.getCurrent().addWindow(as);
+		});
 		videoguideLayout.addComponent(videolink1);
 
-		ThemeResource videoresource2 = new ThemeResource("img/4_Configuration_10052021_subtitles.mp4");
-		Link videolink2 = new Link("Configurationt", videoresource2);
-		videolink2.setTargetName("_blank");
+		final Button videolink2 = new Button("Configuration");
+		videolink2.addClickListener(e -> {
+			AboutViewVideoWindow as = new AboutViewVideoWindow("Configuration",
+					"img/4_Configuration_10052021_subtitles.mp4");
+			UI.getCurrent().addWindow(as);
+		});
 		videoguideLayout.addComponent(videolink2);
 
-		ThemeResource videoresource3 = new ThemeResource("img/3_l_CreateCampaignDataForm_21032021_subtitles.mp4");
-		Link videolink3 = new Link("Create Campaign Data Form", videoresource3);
-		videolink3.setTargetName("_blank");
+		final Button videolink3 = new Button("Create Campaign Data Form");
+		videolink3.addClickListener(e -> {
+			AboutViewVideoWindow as = new AboutViewVideoWindow("Create Campaign Data Form",
+					"img/3_l_CreateCampaignDataForm_21032021_subtitles.mp4");
+			UI.getCurrent().addWindow(as);
+		});
 		videoguideLayout.addComponent(videolink3);
 
-		ThemeResource videoresource4 = new ThemeResource("img/3_k_EditCampaignFormData_21032021_subtitles.mp4");
-		Link videolink4 = new Link("Edit Campaign Form Data", videoresource4);
-		videolink4.setTargetName("_blank");
+		final Button videolink4 = new Button("Edit Campaign Form Data");
+		videolink4.addClickListener(e -> {
+			AboutViewVideoWindow as = new AboutViewVideoWindow("Edit Campaign Form Data",
+					"img/3_k_EditCampaignFormData_21032021_subtitles.mp4");
+			UI.getCurrent().addWindow(as);
+		});
 		videoguideLayout.addComponent(videolink4);
 
-		ThemeResource videoresource5 = new ThemeResource(
-				"img/3_j_EditExistingCampaignConfiguration_21032021_subtitles.mp4");
-		Link videolink5 = new Link("Edit Existing Campaign Configuration", videoresource5);
-		videolink5.setTargetName("_blank");
+		final Button videolink5 = new Button("Edit Existing Campaign Configuration");
+		videolink5.addClickListener(e -> {
+			AboutViewVideoWindow as = new AboutViewVideoWindow("Edit Existing Campaign Configuration",
+					"img/3_j_EditExistingCampaignConfiguration_21032021_subtitles.mp4");
+			UI.getCurrent().addWindow(as);
+		});
 		videoguideLayout.addComponent(videolink5);
 
-		ThemeResource videoresource6 = new ThemeResource("img/3_i_EditExistingCampaign_21032021_subtitles.mp4");
-		Link videolink6 = new Link("Edit Existing Campaign", videoresource6);
-		videolink6.setTargetName("_blank");
+		final Button videolink6 = new Button("Edit Existing Campaign");
+		videolink6.addClickListener(e -> {
+			AboutViewVideoWindow as = new AboutViewVideoWindow("Dashboard",
+					"img/3_i_EditExistingCampaign_21032021_subtitles.mp4");
+			UI.getCurrent().addWindow(as);
+		});
 		videoguideLayout.addComponent(videolink6);
 
-		ThemeResource videoresource7 = new ThemeResource("img/3_h_CreateNewCampaign_21032021_subtitles.mp4");
-		Link videolink7 = new Link("Create New Campaign", videoresource7);
-		videolink7.setTargetName("_blank");
-		videoguideLayout.addComponent(videolink7);
-
-		ThemeResource videoresource8 = new ThemeResource("img/3_g_Export_SpecificCampaign_Data.mp4");
-		Link videolink8 = new Link("Export Specific Campaign Data", videoresource8);
-		videolink8.setTargetName("_blank");
-		videoguideLayout.addComponent(videolink8);
-
-		ThemeResource videoresource9 = new ThemeResource("img/3_f_ExportAllCampaignData_21032021_subtitles.mp4");
-		Link videolink9 = new Link("Export All Campaign Data", videoresource9);
-		videolink9.setTargetName("_blank");
-		videoguideLayout.addComponent(videolink9);
-
-		ThemeResource videoresource10 = new ThemeResource("img/3_e_ValidateCampaigns_21032021_subtitles.mp4");
-		Link videolink10 = new Link("Validate Campaigns", videoresource10);
-		videolink10.setTargetName("_blank");
-		videoguideLayout.addComponent(videolink10);
-
-		ThemeResource videoresource11 = new ThemeResource("img/3_d_EditCampaignsData_21032021_subtitles.mp4");
-		Link videolink11 = new Link("Edit Campaigns Data", videoresource11);
-		videolink11.setTargetName("_blank");
-		videoguideLayout.addComponent(videolink11);
-
-		ThemeResource videoresource12 = new ThemeResource("img/3_c_ViewCampaignData2_21032021_subtitles.mp4");
-		Link videolink12 = new Link("View Campaign Data", videoresource12);
-		videolink12.setTargetName("_blank");
-		videoguideLayout.addComponent(videolink12);
-
-		ThemeResource videoresource13 = new ThemeResource("img/3_b_SearchCampaigns_21032021_subtitles.mp4");
-		Link videolink13 = new Link("Search Campaigns", videoresource13);
-		videolink13.setTargetName("_blank");
-		videoguideLayout.addComponent(videolink13);
-
-		ThemeResource videoresource14 = new ThemeResource("img/3_a_ViewCampaigns_21032021_subtitles.mp4");
-		Link videolink14 = new Link("View Campaigns", videoresource14);
-		videolink14.setTargetName("_blank");
-		videoguideLayout.addComponent(videolink14);
-
-		ThemeResource videoresource15 = new ThemeResource("img/2_Dashboard_21032021_subtitles.mp4");
-		Link videolink15 = new Link("Dashboard", videoresource15);
-		videolink15.setTargetName("_blank");
-		videoguideLayout.addComponent(videolink15);
-
-		ThemeResource videoresource16 = new ThemeResource("img/1_b_SettingsPersonalisation_subtitles.mp4");
-		Link videolink16 = new Link("Settings Personalisation", videoresource16);
-		videolink16.setTargetName("_blank");
-		videoguideLayout.addComponent(videolink16);
-
-		ThemeResource videoresource17 = new ThemeResource("img/1_a_LoginLogout_subtitles.mp4");
-		Link videolink17 = new Link("Login and Logout", videoresource17);
-		videolink17.setTargetName("_blank");
-		videoguideLayout.addComponent(videolink17);
-		videolink17.addContextClickListener(e -> {
-			if (e.isDoubleClick()) {
-				Video v = new Video( "video" ); // Instantiate video player widget.
-				// Specify a list of your video in one or more formats.
-				// Different browsers support various different video formats.
-				v.setSources( 
-				    new ThemeResource( "img/1_a_LoginLogout_subtitles.mp4" )
-				    
-				); 
-				v.setWidth( "640px" ); // Set size of the video player's display area on-screen.
-				v.setHeight( "360px" );
-				videoguideLayout.addComponent( v ); // Add the component to the window or layout.
-			}
-			
+		final Button opendx = new Button("Create New Campaign");
+		opendx.addClickListener(e -> {
+			AboutViewVideoWindow as = new AboutViewVideoWindow("Create New Campaign",
+					"img/3_h_CreateNewCampaign_21032021_subtitles.mp4");
+			UI.getCurrent().addWindow(as);
 		});
+		videoguideLayout_.addComponent(opendx);
+
+		final Button videolink8 = new Button("Export Specific Campaign Data");
+		videolink8.addClickListener(e -> {
+			AboutViewVideoWindow as = new AboutViewVideoWindow("Export Specific Campaign Data",
+					"img/3_g_Export_SpecificCampaign_Data.mp4");
+			UI.getCurrent().addWindow(as);
+		});
+		videoguideLayout_.addComponent(videolink8);
+
+		final Button videolink9 = new Button("Export All Campaign Data");
+		videolink9.addClickListener(e -> {
+			AboutViewVideoWindow as = new AboutViewVideoWindow("Export All Campaign Data",
+					"img/3_f_ExportAllCampaignData_21032021_subtitles.mp4");
+			UI.getCurrent().addWindow(as);
+		});
+		videoguideLayout_.addComponent(videolink9);
+
+		final Button videolink10 = new Button("Validate Campaigns");
+		videolink10.addClickListener(e -> {
+			AboutViewVideoWindow as = new AboutViewVideoWindow("Validate Campaigns",
+					"img/3_e_ValidateCampaigns_21032021_subtitles.mp4");
+			UI.getCurrent().addWindow(as);
+		});
+		videoguideLayout_.addComponent(videolink10);
+
+		final Button videolink11 = new Button("Edit Campaigns Data");
+		videolink11.addClickListener(e -> {
+			AboutViewVideoWindow as = new AboutViewVideoWindow("Edit Campaigns Data",
+					"img/3_d_EditCampaignsData_21032021_subtitles.mp4");
+			UI.getCurrent().addWindow(as);
+		});
+		videoguideLayout_.addComponent(videolink11);
+
+		final Button opendxz = new Button("View Campaign Data");
+		opendxz.addClickListener(e -> {
+			AboutViewVideoWindow as = new AboutViewVideoWindow("View Campaign Data",
+					"img/3_c_ViewCampaignData2_21032021_subtitles.mp4");
+			UI.getCurrent().addWindow(as);
+		});
+		videoguideLayout_.addComponent(opendxz);
 		
 
+		final Button opends = new Button("Search Campaigns");
+		opends.addClickListener(e -> {
+			AboutViewVideoWindow as = new AboutViewVideoWindow("Search Campaigns",
+					"img/3_b_SearchCampaigns_21032021_subtitles.mp4");
+			UI.getCurrent().addWindow(as);
+		});
+		videoguideLayout_a.addComponent(opends);
+
+
+		final Button opendz = new Button("View Campaigns");
+		opendz.addClickListener(e -> {
+			AboutViewVideoWindow as = new AboutViewVideoWindow("View Campaigns",
+					"img/3_a_ViewCampaigns_21032021_subtitles.mp4");
+			UI.getCurrent().addWindow(as);
+		});
+		videoguideLayout_a.addComponent(opendz);
+
+
+		final Button opendxc = new Button("Dashboard");
+		opendxc.addClickListener(e -> {
+			AboutViewVideoWindow as = new AboutViewVideoWindow("Dashboard",
+					"img/3_a_ViewCampaigns_21032021_subtitles.mp4");
+			UI.getCurrent().addWindow(as);
+		});
+		videoguideLayout.addComponent(opendxc);
+
+		final Button openx = new Button("Settings Personalisation");
+		openx.addClickListener(e -> {
+			AboutViewVideoWindow as = new AboutViewVideoWindow("Settings Personalisation",
+					"img/1_b_SettingsPersonalisation_subtitles.mp4");
+			UI.getCurrent().addWindow(as);
+		});
+		videoguideLayout_a.addComponent(openx);
+
+		final Button open = new Button("Login and Logout");
+		open.addClickListener(e -> {
+			AboutViewVideoWindow as = new AboutViewVideoWindow("Login and Logout", "img/1_a_LoginLogout_subtitles.mp4");
+			UI.getCurrent().addWindow(as);
+		});
+
+		videoguideLayout_a.addComponent(open);
 		
-				Video v = new Video( "video" ); // Instantiate video player widget.
-				// Specify a list of your video in one or more formats.
-				// Different browsers support various different video formats.
-				v.setSources( 
-				    new ThemeResource( "img/1_a_LoginLogout_subtitles.mp4" )
-				    
-				); 
-				v.setWidth( "640px" ); // Set size of the video player's display area on-screen.
-				v.setHeight( "360px" );
-			
-				PopupView popup = new PopupView("Pop it up", v);
-				
-				videoguideLayout.addComponent(popup);
-				
-				
-				
+		
+		abou_vid_tLayout.addComponent(videoguideLayout);
+		abou_vid_tLayout.addComponent(videoguideLayout_);
+		abou_vid_tLayout.addComponent(videoguideLayout_a);
+		
+		
+
 		TabSheet tabs = new TabSheet();
 		tabs.addTab(apmisguideLayout, I18nProperties.getCaption(Captions.apmisaboutguides));
 		// tabs.addTab(hziguideLayout,
 		// I18nProperties.getCaption(Captions.apmishziguides));
 		tabs.addTab(techguideLayout, I18nProperties.getCaption(Captions.abouttechguides));
-		tabs.addTab(videoguideLayout, I18nProperties.getCaption(Captions.aboutvideos));
+		tabs.addTab(abou_vid_tLayout, I18nProperties.getCaption(Captions.aboutvideos));
 
 		infoLayout.addComponent(tabs);
 
@@ -548,27 +580,26 @@ public class AboutView extends VerticalLayout implements View {
 	private String getCustomDocumentsPath() {
 		return FacadeProvider.getConfigFacade().getCustomFilesPath() + "aboutfiles";
 	}
-	
-	/*public void DialogHeader() {
-        Dialog dialog = new Dialog();
-        
-        Video v = new Video( "video" ); // Instantiate video player widget.
-		// Specify a list of your video in one or more formats.
-		// Different browsers support various different video formats.
-		v.setSources( 
-		    new ThemeResource( "img/1_a_LoginLogout_subtitles.mp4" )
-		    
-		); 
-		v.setWidth( "640px" ); // Set size of the video player's display area on-screen.
-		v.setHeight( "360px" );
-		videoguideLayout.addComponent( v ); // Add the component to the window or layout.
 
-     //   Button closeButton = new Button(new Icon("lumo", "cross"), (e) -> dialog.close());
-      //  closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-       // dialog.getHeader().add(closeButton);
-
-        Button button = new Button("Show dialog", e -> dialog.open());
-        add(dialog, button);
-    }*/
+	/*
+	 * public void DialogHeader() { Dialog dialog = new Dialog();
+	 * 
+	 * Video v = new Video( "video" ); // Instantiate video player widget. //
+	 * Specify a list of your video in one or more formats. // Different browsers
+	 * support various different video formats. v.setSources( new ThemeResource(
+	 * "img/1_a_LoginLogout_subtitles.mp4" )
+	 * 
+	 * ); v.setWidth( "640px" ); // Set size of the video player's display area
+	 * on-screen. v.setHeight( "360px" ); videoguideLayout.addComponent( v ); // Add
+	 * the component to the window or layout.
+	 * 
+	 * // Button closeButton = new Button(new Icon("lumo", "cross"), (e) ->
+	 * dialog.close()); //
+	 * closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY); //
+	 * dialog.getHeader().add(closeButton);
+	 * 
+	 * Button button = new Button("Show dialog", e -> dialog.open()); add(dialog,
+	 * button); }
+	 */
 
 }

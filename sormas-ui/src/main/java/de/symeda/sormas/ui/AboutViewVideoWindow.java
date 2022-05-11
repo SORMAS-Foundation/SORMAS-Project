@@ -8,48 +8,47 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Video;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
 
-public class AboutViewVideoWindow extends UI {
-    
-	
-	
-    public String viewVid(String one, String two) {
-        // Some other UI content
-        setContent(new Label("Here's my UI"));
+import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 
-        // Create a sub-window and set the content
-        Window subWindow = new Window("Sub-window");
-        VerticalLayout subContent = new VerticalLayout();
-        subContent.setMargin(true);
-        subWindow.setContent(subContent);
+public class AboutViewVideoWindow extends Window {
+	public AboutViewVideoWindow(String caption, String url) {
+        super(caption); // Set window caption
+        center();
 
-        // Put some components in it
-        subContent.addComponent(new Label("VIDEO TEST"));
+        // Some basic content for the window
+        VerticalLayout content = new VerticalLayout();
         
-        Video v = new Video( "video" ); // Instantiate video player widget.
+        Video v = new Video(); // Instantiate video player widget.
 		// Specify a list of your video in one or more formats.
 		// Different browsers support various different video formats.
 		v.setSources( 
-		    new ThemeResource( "img/1_a_LoginLogout_subtitles.mp4" )
+		    new ThemeResource( url )
 		    
 		); 
+		//v.setResponsive(true);
 		v.setWidth( "640px" ); // Set size of the video player's display area on-screen.
 		v.setHeight( "360px" );
 		
 		
-        subContent.addComponent(v);
+        content.addComponent(v);
+        content.setMargin(true);
+        setContent(content);
 
-        // Center it in the browser window
-        subWindow.center();
+        // Disable the close button
+        setClosable(true);
 
-        // Open it in the UI
-        addWindow(subWindow);
-        return "";
+        // Trivial logic for closing the sub-window
+        Button ok = new Button("Close Video");
+        ok.addClickListener(e -> {
+          
+                close(); // Close the sub-window
+            
+        });
+        
+        
+        content.addComponent(ok);
     }
-
-	@Override
-	protected void init(VaadinRequest request) {
-		// TODO Auto-generated method stub
-		
-	}
 }
