@@ -29,7 +29,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 
-import de.symeda.sormas.api.RequestContext;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.RequestContextHolder;
+import de.symeda.sormas.api.RequestContextTO;
 
 @WebFilter(asyncSupported = true, urlPatterns = "/*")
 public class SessionFilter implements Filter {
@@ -47,11 +49,14 @@ public class SessionFilter implements Filter {
 		try {
 			sessionFilterBean.doFilter((req, resp) -> {
 				final String isMobileSyncHeader = ((HttpServletRequest) request).getHeader("mobile-sync");
-				RequestContext.setIsMobileSync(isMobileSyncHeader != null ? Boolean.valueOf(isMobileSyncHeader) : false);
+				final RequestContextTO requestContext = new RequestContextTO(isMobileSyncHeader != null ? Boolean.valueOf(isMobileSyncHeader) : false);
+				RequestContextHolder.setRequestContext(requestContext);
+				FacadeProvider.getConfigFacade().setRequestContext(requestContext);
 				chain.doFilter(req, response);
 			}, request, response);
 		} finally {
-			RequestContext.removeMobileSync();
+			RequestContextHolder.reset();
+			FacadeProvider.getConfigFacade().resetRequestContext();
 		}
 	}
 

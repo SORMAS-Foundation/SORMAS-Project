@@ -28,6 +28,8 @@ import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.RequestContextHolder;
+import de.symeda.sormas.api.RequestContextTO;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
@@ -756,6 +758,14 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public long getImportFileSizeLimitMb() {
 		return getLong(IMPORT_FILE_SIZE_LIMIT_MB, DEFAULT_IMPOR_FILE_SIZE_LIMIT_MB);
+	}
+
+	@Override public void setRequestContext(RequestContextTO requestContext) {
+		RequestContextHolder.setRequestContext(requestContext);
+	}
+
+	@Override public void resetRequestContext() {
+		RequestContextHolder.reset();
 	}
 
 	@LocalBean

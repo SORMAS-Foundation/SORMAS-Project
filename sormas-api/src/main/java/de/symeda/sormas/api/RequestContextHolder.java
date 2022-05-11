@@ -15,31 +15,23 @@
 
 package de.symeda.sormas.api;
 
-public final class RequestContext {
+public final class RequestContextHolder {
 
-	private static final ThreadLocal<Boolean> mobileSync = new ThreadLocal<>();
+	private static final ThreadLocal<RequestContextTO> requestContextHolder = new ThreadLocal<>();
 
-	public static Boolean setIsMobileSync(Boolean isMobileSncRequest) {
-
-		if (mobileSync.get() != null && isMobileSncRequest == mobileSync.get()) {
-			return isMobileSncRequest;
-		}
-
-		if (isMobileSncRequest == null) {
-			isMobileSncRequest = false;
-		}
-
-		mobileSync.set(isMobileSncRequest);
-
-		return isMobileSncRequest;
+	public static void reset() {
+		requestContextHolder.remove();
 	}
 
-	public static Boolean getIsMobileSync() {
-		Boolean isMobileSncRequest = mobileSync.get();
-		return isMobileSncRequest == null ? false : isMobileSncRequest;
+	public static Boolean isMobileSync() {
+		return requestContextHolder.get() != null ? requestContextHolder.get().getMobileSync() : false;
 	}
 
-	public static void removeMobileSync() {
-		mobileSync.remove();
+	public static void setRequestContext(RequestContextTO requestContext) {
+		if (requestContextHolder == null) {
+			reset();
+		} else {
+			requestContextHolder.set(requestContext);
+		}
 	}
 }

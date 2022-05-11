@@ -53,7 +53,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
-import de.symeda.sormas.api.RequestContext;
+import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
@@ -1203,7 +1203,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		filter = CriteriaBuilderHelper.or(cb, filter, filterResponsible);
 
 		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
-			&& RequestContext.getIsMobileSync()) {
+			&& RequestContextHolder.isMobileSync()) {
 			final Predicate limitedCaseSyncPredicate = CriteriaBuilderHelper.and(
 				cb,
 				cb.notEqual(casePath.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE),
