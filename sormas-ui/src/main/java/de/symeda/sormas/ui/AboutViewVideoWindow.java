@@ -28,7 +28,6 @@ public class AboutViewVideoWindow extends Window {
 		    new ThemeResource( url )
 		    
 		); 
-		//v.setResponsive(true);
 		v.setWidth( "640px" ); // Set size of the video player's display area on-screen.
 		v.setHeight( "360px" );
 		

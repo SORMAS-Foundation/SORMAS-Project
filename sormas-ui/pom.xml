@@ -177,6 +177,19 @@
 			<version>18.0.5</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-dialog-flow</artifactId>
+			<version>18.0.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>flow-server</artifactId>
+			<version>23.0.6</version>
+			<scope>provided</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>
