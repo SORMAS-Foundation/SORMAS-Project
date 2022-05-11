@@ -24,17 +24,22 @@ import java.util.Date;
 import java.util.UUID;
 import org.sormas.e2etests.entities.pojo.api.AssigneeUser;
 import org.sormas.e2etests.entities.pojo.api.Task;
+import org.sormas.e2etests.helpers.RestAssuredClient;
+import org.sormas.e2etests.helpers.environmentdata.manager.EnvironmentManager;
 
 public class TaskApiService {
 
   private final Faker faker;
+  private RestAssuredClient restAssuredClient;
 
   @Inject
-  public TaskApiService(Faker faker) {
+  public TaskApiService(Faker faker, RestAssuredClient restAssuredClient) {
+    this.restAssuredClient = restAssuredClient;
     this.faker = faker;
   }
 
   public Task buildGeneratedTask() {
+    EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
     return Task.builder()
         .uuid(UUID.randomUUID().toString())
         .taskContext("CONTACT")
@@ -45,10 +50,7 @@ public class TaskApiService {
         .taskStatus("PENDING")
         .assigneeUser(
             AssigneeUser.builder()
-                .caption("Contact OFFICER - Kontaktbeauftragte*r")
-                .firstName("Contact")
-                .lastName("Officer")
-                .uuid("TWJCUP-I3VN2G-QL5UG3-WXX6SOPA")
+                .uuid(environmentManager.getUserUUIDByFullName("Contact Officer"))
                 .build())
         .assigneeReply(faker.music().instrument())
         .creatorComment(faker.book().title())

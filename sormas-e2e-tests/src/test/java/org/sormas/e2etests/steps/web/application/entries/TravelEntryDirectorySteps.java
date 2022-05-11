@@ -57,8 +57,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.IsoFields;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.openqa.selenium.By;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -73,7 +73,7 @@ public class TravelEntryDirectorySteps implements En {
   @Inject
   public TravelEntryDirectorySteps(
       WebDriverHelpers webDriverHelpers,
-      EnvironmentManager environmentManager,
+      RunningConfiguration runningConfiguration,
       ApiState apiState,
       AssertHelpers assertHelpers,
       SoftAssert softly) {

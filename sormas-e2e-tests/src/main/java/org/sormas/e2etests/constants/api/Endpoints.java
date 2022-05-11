@@ -22,15 +22,22 @@ public interface Endpoints {
   /** Main paths */
   String PERSONS_PATH = "persons/";
 
+  String USERS_PATH = "users/";
   String IMMUNIZATIONS_PATH = "immunizations/";
   String CASES_PATH = "cases/";
   String COMMUNITIES_PATH = "communities/";
   String COUNTRIES_PATH = "countries/";
+  String CONTINENTS_PATH = "continents/";
+  String SUBCONTINENTS_PATH = "subcontinents/";
+  String REGIONS_PATH = "regions/";
+  String DISTRICTS_PATH = "districts/";
   String FACILITIES_PATH = "facilities/";
   String CONTACTS_PATH = "contacts/";
   String EVENTS_PATH = "events/";
   String SAMPLES_PATH = "samples/";
   String TASKS_PATH = "tasks/";
+
+  String ALL_FROM_0 = "all/0";
 
   /** End points actions */
   String POST_PATH = "push";
