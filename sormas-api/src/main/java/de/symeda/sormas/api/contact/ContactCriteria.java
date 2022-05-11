@@ -34,7 +34,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRoleDto;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -76,7 +76,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
-	private UserRoleDto reportingUserRole;
+	private UserRoleReferenceDto reportingUserRole;
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
 	private CaseReferenceDto caze;
@@ -139,11 +139,11 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private String reportingUserLike;
 	private String personLike;
 
-	public UserRoleDto getReportingUserRole() {
+	public UserRoleReferenceDto getReportingUserRole() {
 		return reportingUserRole;
 	}
 
-	public void setReportingUserRole(UserRoleDto reportingUserRole) {
+	public void setReportingUserRole(UserRoleReferenceDto reportingUserRole) {
 		this.reportingUserRole = reportingUserRole;
 	}
 

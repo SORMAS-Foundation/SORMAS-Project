@@ -60,8 +60,8 @@ import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnUserRight;
 import de.symeda.sormas.api.utils.HideForCountries;
@@ -2328,7 +2328,7 @@ public class CaseExportDto implements Serializable {
 		return reportingUserRoles;
 	}
 
-	public void setReportingUserRoles(Set<UserRoleDto> roles) {
+	public void setReportingUserRoles(Set<UserRoleReferenceDto> roles) {
 		this.reportingUserRoles = StringUtils.join(roles.stream().map(role -> role.getCaption()).collect(Collectors.toList()), ", ");
 	}
 
@@ -2356,7 +2356,7 @@ public class CaseExportDto implements Serializable {
 		return followUpStatusChangeUserRoles;
 	}
 
-	public void setFollowUpStatusChangeUserRoles(Set<UserRoleDto> roles) {
+	public void setFollowUpStatusChangeUserRoles(Set<UserRoleReferenceDto> roles) {
 		this.followUpStatusChangeUserRoles = StringUtils.join(roles.stream().map(role -> role.getCaption()).collect(Collectors.toList()), ", ");
 	}
 

@@ -1,12 +1,10 @@
 package de.symeda.sormas.api.user;
 
-import java.util.Set;
-
 public class UserReferenceWithTaskNumbersDto extends UserReferenceDto {
 
 	private Long numberOfTasks;
 
-	public UserReferenceWithTaskNumbersDto(String uuid, String firstName, String lastName, Set<UserRoleDto> userRoles, Long numberOfTasks) {
+	public UserReferenceWithTaskNumbersDto(String uuid, String firstName, String lastName, Long numberOfTasks) {
 		super(uuid, firstName, lastName);
 		this.numberOfTasks = numberOfTasks == null ? 0 : numberOfTasks;
 	}

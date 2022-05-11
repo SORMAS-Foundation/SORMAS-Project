@@ -326,11 +326,6 @@ public class StartupShutdownService {
 		}
 	}
 
-	// UserRoles are created via SQL
-	private void editDefaultUserRoles() {
-		Arrays.stream(DefaultUserRole.values()).forEach(role -> editAndPersistDefaultUserRole(role));
-	}
-
 	private void createDefaultUsers() {
 
 		if (userService.count() == 0) {
@@ -786,6 +781,11 @@ public class StartupShutdownService {
 				logger.error("Could not UPDATE schema_version table. Missing user rights?");
 			}
 		}
+	}
+
+	// UserRoles are created via SQL to support migration for existing users.
+	private void fillDefaultUserRoles() {
+		Arrays.stream(DefaultUserRole.values()).forEach(role -> editAndPersistDefaultUserRole(role));
 	}
 
 	private void createImportTemplateFiles(List<FeatureConfigurationDto> featureConfigurations) {

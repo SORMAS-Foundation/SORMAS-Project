@@ -71,7 +71,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -1217,7 +1216,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 						exportDto.setReportingUserName(user.getName());
 						exportDto.setReportingUserRoles(
-							user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toDto(userRole)).collect(Collectors.toSet()));
+							user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toReferenceDto(userRole)).collect(Collectors.toSet()));
 					}
 
 					if (exportDto.getFollowUpStatusChangeUserId() != null) {
@@ -1225,7 +1224,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 						exportDto.setFollowUpStatusChangeUserName(user.getName());
 						exportDto.setFollowUpStatusChangeUserRoles(
-							user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toDto(userRole)).collect(Collectors.toSet()));
+							user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toReferenceDto(userRole)).collect(Collectors.toSet()));
 					}
 				}
 
@@ -2536,8 +2535,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RolesAllowed({
-			UserRight._CASE_CREATE,
-			UserRight._CASE_EDIT })
+		UserRight._CASE_CREATE,
+		UserRight._CASE_EDIT })
 	public void setResultingCase(EventParticipantReferenceDto eventParticipantReferenceDto, CaseReferenceDto caseReferenceDto) {
 		final EventParticipant eventParticipant = eventParticipantService.getByUuid(eventParticipantReferenceDto.getUuid());
 		if (eventParticipant != null) {

@@ -887,7 +887,7 @@ public class ContactFacadeEjb
 
 						exportContact.setReportingUserName(user.getName());
 						exportContact.setReportingUserRoles(
-							user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toDto(userRole)).collect(Collectors.toSet()));
+							user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toReferenceDto(userRole)).collect(Collectors.toSet()));
 					}
 
 					if (exportContact.getFollowUpStatusChangeUserId() != null) {
@@ -895,7 +895,7 @@ public class ContactFacadeEjb
 
 						exportContact.setFollowUpStatusChangeUserName(user.getName());
 						exportContact.setFollowUpStatusChangeUserRoles(
-							user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toDto(userRole)).collect(Collectors.toSet()));
+							user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toReferenceDto(userRole)).collect(Collectors.toSet()));
 					}
 				}
 

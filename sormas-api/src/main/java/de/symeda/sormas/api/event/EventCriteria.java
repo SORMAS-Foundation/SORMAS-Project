@@ -34,7 +34,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.share.ExternalShareCriteria;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRoleDto;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
@@ -68,7 +68,7 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 	private EventInvestigationStatus eventInvestigationStatus;
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
-	private UserRoleDto reportingUserRole;
+	private UserRoleReferenceDto reportingUserRole;
 	private Boolean deleted = Boolean.FALSE;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -205,11 +205,11 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 		this.userFilterIncluded = userFilterIncluded;
 	}
 
-	public UserRoleDto getReportingUserRole() {
+	public UserRoleReferenceDto getReportingUserRole() {
 		return reportingUserRole;
 	}
 
-	public void setReportingUserRole(UserRoleDto reportingUserRole) {
+	public void setReportingUserRole(UserRoleReferenceDto reportingUserRole) {
 		this.reportingUserRole = reportingUserRole;
 	}
 

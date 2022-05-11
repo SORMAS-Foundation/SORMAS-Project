@@ -49,9 +49,7 @@ import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinitionFacade
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb.UserRoleFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -351,13 +349,6 @@ public class CampaignFacadeEjb
 	@Override
 	@RolesAllowed(UserRight._CAMPAIGN_DELETE)
 	public void delete(String campaignUuid) {
-
-		User user = userService.getCurrentUser();
-		if (!UserRole.getUserRights(user.getUserRoles()).contains(UserRight.CAMPAIGN_DELETE)) {
-			throw new UnsupportedOperationException(
-				I18nProperties.getString(Strings.entityUser) + " " + user.getUuid() + " is not allowed to delete "
-					+ I18nProperties.getString(Strings.entityCampaigns).toLowerCase() + ".");
-		}
 
 		service.delete(service.getByUuid(campaignUuid));
 	}
