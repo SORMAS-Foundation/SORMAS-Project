@@ -58,6 +58,7 @@ import com.vaadin.ui.Video;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.Grid;
+import com.vaadin.v7.ui.themes.BaseTheme;
 import com.vaadin.flow.component.dialog.Dialog;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -128,15 +129,23 @@ public class AboutView extends VerticalLayout implements View {
 		VerticalLayout infoLayout = new VerticalLayout();
 		infoLayout.setSpacing(false);
 		infoLayout.setMargin(false);
-
+		
 		// ADD HEADER IMAGE TO THE ABOUT PAGE
-		// Image image = new Image(null, new ThemeResource("img/About_us.jpg"));
-		// infoLayout.addComponent(image); To
+		HorizontalLayout imagelay = new HorizontalLayout();
+		//imagelay.setHeight("200px");
+		//imagelay.setWidth("100px");
+		imagelay.setSpacing(false);
+		imagelay.setMargin(false);
+		 //Image image = new Image(null, new ThemeResource("img/About_us.jpg"));
+		 //imagelay.addComponent(image);
+		 infoLayout.addComponent(imagelay); 
 
 		Label aboutLabel = new Label(I18nProperties.getCaption(Captions.about), ContentMode.HTML);
 		aboutLabel.addStyleName(CssStyles.H2);
+		
 		// setComponentAlignment(aboutLabel, Alignment.MIDDLE_CENTER);
 		infoLayout.addComponent(aboutLabel);
+		
 
 		ConfigFacade configFacade = FacadeProvider.getConfigFacade();
 		String infoLabelStr = configFacade.isCustomBranding()
@@ -146,12 +155,13 @@ public class AboutView extends VerticalLayout implements View {
 		Label infoLabel = new Label(
 				I18nProperties.getCaption(Captions.aboutApmisVersion) + ": " + InfoProvider.InfoProvider_apmis(),
 				ContentMode.HTML);
-		Label aboutText = new Label(I18nProperties.getCaption(Captions.aboutText), ContentMode.TEXT);
+		Label aboutText = new Label(I18nProperties.getCaption(Captions.aboutText), ContentMode.HTML); 
+		aboutText.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
 		Label guideLabel = new Label(I18nProperties.getCaption(Captions.aboutGuides), ContentMode.HTML);
 		guideLabel.addStyleName(CssStyles.H2);
 
 		infoLayout.addComponent(infoLabel);
-		infoLayout.addComponent(aboutText);
+		infoLayout.addComponent(aboutText); 
 
 		infoLayout.addComponent(guideLabel);
 
@@ -262,144 +272,185 @@ public class AboutView extends VerticalLayout implements View {
 		VerticalLayout videoguideLayout_ = new VerticalLayout();
 		VerticalLayout videoguideLayout_a = new VerticalLayout();
 
-		final Button videolink1 = new Button("User Management");
+		final Button videolink1 = new Button("05. User Management");
+		videolink1.addStyleName(BaseTheme.BUTTON_LINK);
 		videolink1.addClickListener(e -> {
 			AboutViewVideoWindow as = new AboutViewVideoWindow("User Management",
 					"img/3_a_ViewCampaigns_21032021_subtitles.mp4");
 			UI.getCurrent().addWindow(as);
 		});
-		videoguideLayout.addComponent(videolink1);
+		
 
-		final Button videolink2 = new Button("Configuration");
+		final Button videolink2 = new Button("03. Configuration");
+		videolink2.addStyleName(BaseTheme.BUTTON_LINK);
 		videolink2.addClickListener(e -> {
 			AboutViewVideoWindow as = new AboutViewVideoWindow("Configuration",
 					"img/4_Configuration_10052021_subtitles.mp4");
 			UI.getCurrent().addWindow(as);
 		});
-		videoguideLayout.addComponent(videolink2);
-
-		final Button videolink3 = new Button("Create Campaign Data Form");
+		
+		final Button videolink3 = new Button("10. Create Campaign Data Form");
+		videolink3.addStyleName(BaseTheme.BUTTON_LINK);
 		videolink3.addClickListener(e -> {
 			AboutViewVideoWindow as = new AboutViewVideoWindow("Create Campaign Data Form",
 					"img/3_l_CreateCampaignDataForm_21032021_subtitles.mp4");
 			UI.getCurrent().addWindow(as);
 		});
-		videoguideLayout.addComponent(videolink3);
+	
 
-		final Button videolink4 = new Button("Edit Campaign Form Data");
+		final Button videolink4 = new Button("11. Edit Campaign Form Data");
+		videolink4.addStyleName(BaseTheme.BUTTON_LINK);
 		videolink4.addClickListener(e -> {
 			AboutViewVideoWindow as = new AboutViewVideoWindow("Edit Campaign Form Data",
 					"img/3_k_EditCampaignFormData_21032021_subtitles.mp4");
 			UI.getCurrent().addWindow(as);
 		});
-		videoguideLayout.addComponent(videolink4);
+	
 
-		final Button videolink5 = new Button("Edit Existing Campaign Configuration");
+		final Button videolink5 = new Button("13. Edit Existing Campaign Configuration");
+		videolink5.addStyleName(BaseTheme.BUTTON_LINK);
 		videolink5.addClickListener(e -> {
 			AboutViewVideoWindow as = new AboutViewVideoWindow("Edit Existing Campaign Configuration",
 					"img/3_j_EditExistingCampaignConfiguration_21032021_subtitles.mp4");
 			UI.getCurrent().addWindow(as);
 		});
-		videoguideLayout.addComponent(videolink5);
+		
 
-		final Button videolink6 = new Button("Edit Existing Campaign");
+		final Button videolink6 = new Button("09. Edit Existing Campaign");
+		videolink6.addStyleName(BaseTheme.BUTTON_LINK);
 		videolink6.addClickListener(e -> {
 			AboutViewVideoWindow as = new AboutViewVideoWindow("Dashboard",
 					"img/3_i_EditExistingCampaign_21032021_subtitles.mp4");
 			UI.getCurrent().addWindow(as);
 		});
-		videoguideLayout.addComponent(videolink6);
+		
 
-		final Button opendx = new Button("Create New Campaign");
+		final Button opendx = new Button("06. Create New Campaign");
+		opendx.addStyleName(BaseTheme.BUTTON_LINK);
 		opendx.addClickListener(e -> {
 			AboutViewVideoWindow as = new AboutViewVideoWindow("Create New Campaign",
 					"img/3_h_CreateNewCampaign_21032021_subtitles.mp4");
 			UI.getCurrent().addWindow(as);
 		});
-		videoguideLayout_.addComponent(opendx);
+		
 
-		final Button videolink8 = new Button("Export Specific Campaign Data");
+		final Button videolink8 = new Button("12. Export Specific Campaign Data");
+		videolink8.addStyleName(BaseTheme.BUTTON_LINK);
 		videolink8.addClickListener(e -> {
 			AboutViewVideoWindow as = new AboutViewVideoWindow("Export Specific Campaign Data",
 					"img/3_g_Export_SpecificCampaign_Data.mp4");
 			UI.getCurrent().addWindow(as);
 		});
-		videoguideLayout_.addComponent(videolink8);
+		
 
-		final Button videolink9 = new Button("Export All Campaign Data");
+		final Button videolink9 = new Button("17. Export All Campaign Data");
+		videolink9.addStyleName(BaseTheme.BUTTON_LINK);
 		videolink9.addClickListener(e -> {
 			AboutViewVideoWindow as = new AboutViewVideoWindow("Export All Campaign Data",
 					"img/3_f_ExportAllCampaignData_21032021_subtitles.mp4");
 			UI.getCurrent().addWindow(as);
 		});
-		videoguideLayout_.addComponent(videolink9);
+	
 
-		final Button videolink10 = new Button("Validate Campaigns");
+		final Button videolink10 = new Button("16. Validate Campaigns");
+		videolink10.addStyleName(BaseTheme.BUTTON_LINK);
 		videolink10.addClickListener(e -> {
 			AboutViewVideoWindow as = new AboutViewVideoWindow("Validate Campaigns",
 					"img/3_e_ValidateCampaigns_21032021_subtitles.mp4");
 			UI.getCurrent().addWindow(as);
 		});
-		videoguideLayout_.addComponent(videolink10);
+		
 
-		final Button videolink11 = new Button("Edit Campaigns Data");
+		final Button videolink11 = new Button("15. Edit Campaigns Data");
+		videolink11.addStyleName(BaseTheme.BUTTON_LINK);
 		videolink11.addClickListener(e -> {
 			AboutViewVideoWindow as = new AboutViewVideoWindow("Edit Campaigns Data",
 					"img/3_d_EditCampaignsData_21032021_subtitles.mp4");
 			UI.getCurrent().addWindow(as);
 		});
-		videoguideLayout_.addComponent(videolink11);
+		
 
-		final Button opendxz = new Button("View Campaign Data");
+		final Button opendxz = new Button("14. View Campaign Data");
+		opendxz.addStyleName(BaseTheme.BUTTON_LINK);
 		opendxz.addClickListener(e -> {
 			AboutViewVideoWindow as = new AboutViewVideoWindow("View Campaign Data",
 					"img/3_c_ViewCampaignData2_21032021_subtitles.mp4");
 			UI.getCurrent().addWindow(as);
 		});
-		videoguideLayout_.addComponent(opendxz);
+		
 		
 
-		final Button opends = new Button("Search Campaigns");
+		final Button opends = new Button("07. Search Campaigns");
+		opends.addStyleName(BaseTheme.BUTTON_LINK);
 		opends.addClickListener(e -> {
 			AboutViewVideoWindow as = new AboutViewVideoWindow("Search Campaigns",
 					"img/3_b_SearchCampaigns_21032021_subtitles.mp4");
 			UI.getCurrent().addWindow(as);
 		});
-		videoguideLayout_a.addComponent(opends);
+		
 
 
-		final Button opendz = new Button("View Campaigns");
+		final Button opendz = new Button("08. View Campaigns");
+		opendz.addStyleName(BaseTheme.BUTTON_LINK);
 		opendz.addClickListener(e -> {
 			AboutViewVideoWindow as = new AboutViewVideoWindow("View Campaigns",
 					"img/3_a_ViewCampaigns_21032021_subtitles.mp4");
 			UI.getCurrent().addWindow(as);
 		});
-		videoguideLayout_a.addComponent(opendz);
+		
 
 
-		final Button opendxc = new Button("Dashboard");
+		final Button opendxc = new Button("02. Dashboard");
+		opendxc.addStyleName(BaseTheme.BUTTON_LINK);
 		opendxc.addClickListener(e -> {
-			AboutViewVideoWindow as = new AboutViewVideoWindow("Dashboard",
+			AboutViewVideoWindow as = new AboutViewVideoWindow("02. Dashboard",
 					"img/3_a_ViewCampaigns_21032021_subtitles.mp4");
 			UI.getCurrent().addWindow(as);
 		});
-		videoguideLayout.addComponent(opendxc);
+		
 
-		final Button openx = new Button("Settings Personalisation");
+		final Button openx = new Button("04. Settings Personalisation");
+		openx.addStyleName(BaseTheme.BUTTON_LINK);
 		openx.addClickListener(e -> {
 			AboutViewVideoWindow as = new AboutViewVideoWindow("Settings Personalisation",
 					"img/1_b_SettingsPersonalisation_subtitles.mp4");
 			UI.getCurrent().addWindow(as);
 		});
-		videoguideLayout_a.addComponent(openx);
+		
 
-		final Button open = new Button("Login and Logout");
+		final Button open = new Button("01. Login and Logout");
+		open.addStyleName(BaseTheme.BUTTON_LINK);
 		open.addClickListener(e -> {
 			AboutViewVideoWindow as = new AboutViewVideoWindow("Login and Logout", "img/1_a_LoginLogout_subtitles.mp4");
 			UI.getCurrent().addWindow(as);
 		});
 
-		videoguideLayout_a.addComponent(open);
+		
+		//First Column
+		videoguideLayout.addComponent(open);
+		videoguideLayout.addComponent(opendxc);
+		videoguideLayout.addComponent(videolink2);
+		videoguideLayout.addComponent(openx);
+		videoguideLayout.addComponent(videolink1);
+		videoguideLayout.addComponent(opendx);
+		videoguideLayout.addComponent(opends);
+		
+		
+		//Second Column
+		videoguideLayout_.addComponent(opendz);
+		videoguideLayout_.addComponent(videolink6);
+		videoguideLayout_.addComponent(videolink3);
+		videoguideLayout_.addComponent(videolink4);
+		videoguideLayout_.addComponent(videolink8);
+		videoguideLayout_.addComponent(videolink5);
+		videoguideLayout_.addComponent(opendxz);
+		
+		
+		//Third Column
+		videoguideLayout_a.addComponent(videolink11);
+		videoguideLayout_a.addComponent(videolink10);	
+		videoguideLayout_a.addComponent(videolink9);
+		
 		
 		
 		abou_vid_tLayout.addComponent(videoguideLayout);
