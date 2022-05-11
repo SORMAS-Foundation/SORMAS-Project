@@ -23,8 +23,8 @@ public interface AuditLoggerFacade {
 
 	void logGetExternalLabMessagesError(String outcome, String error, Date start, Date end);
 
-	void logExternalLabMessagesHtmlError(String outcome, String error, Date start, Date end);
+	void logExternalLabMessagesHtmlError(String messageUuid, String outcome, String error, Date start, Date end);
 
-	void logExternalLabMessagesPdfError(String outcome, String error, Date start, Date end);
+	void logExternalLabMessagesPdfError(String messageUuid, String outcome, String error, Date start, Date end);
 
 }

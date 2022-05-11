@@ -166,18 +166,13 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		accept(applicationStartAudit);
 	}
 
-	public void logBackendCall(Method calledMethod, List<String> params, String returnValue, Date start) {
+	public void logBackendCall(Method calledMethod, List<String> params, String returnValue, Date start, Date end) {
 		AuditEvent backendCall = new AuditEvent();
 
 		backendCall.setAction(inferBackendAction(calledMethod.getName()));
-		Period period = new Period();
-		period.setStart(start);
-		Date end = Calendar.getInstance(TimeZone.getDefault()).getTime();
-		period.setEnd(end);
-		backendCall.setPeriod(period);
+		makePeriod(start, end, backendCall);
 
-		backendCall.setRecorded(end);
-
+		backendCall.setRecorded(Calendar.getInstance(TimeZone.getDefault()).getTime());
 		backendCall.setOutcomeDesc(returnValue);
 
 		AuditEvent.AuditEventAgentComponent agent = new AuditEvent.AuditEventAgentComponent();
@@ -225,6 +220,13 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		backendCall.addEntity(entity);
 
 		accept(backendCall);
+	}
+
+	private void makePeriod(Date start, Date end, AuditEvent event) {
+		Period period = new Period();
+		period.setStart(start);
+		period.setEnd(end);
+		event.setPeriod(period);
 	}
 
 	private AuditEvent.AuditEventAction inferBackendAction(String calledMethod) {
@@ -408,6 +410,8 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 
 		logLabMessage.setType(type);
 		logLabMessage.setAction(AuditEvent.AuditEventAction.E);
+
+		makePeriod(start, end, logLabMessage);
 		logLabMessage.setRecorded(Calendar.getInstance(TimeZone.getDefault()).getTime());
 
 		logLabMessage.setOutcome(AuditEvent.AuditEventOutcome._0);
@@ -433,28 +437,29 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	public void logGetExternalLabMessagesError(String outcome, String error, Date start, Date end) {
 		Coding type = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110107", "Import");
 		Reference what = new Reference("getExternalLabMessages");
-		logLabMessageError(type, what, outcome, error, start, end);
+		logLabMessageError("", type, what, outcome, error, start, end);
 	}
 
 	@Override
-	public void logExternalLabMessagesHtmlError(String outcome, String error, Date start, Date end) {
+	public void logExternalLabMessagesHtmlError(String messageUuid, String outcome, String error, Date start, Date end) {
 		Coding type = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110107", "Import");
 		Reference what = new Reference("getExternalLabMessages");
-		logLabMessageError(type, what, outcome, error, start, end);
+		logLabMessageError(messageUuid, type, what, outcome, error, start, end);
 	}
 
 	@Override
-	public void logExternalLabMessagesPdfError(String outcome, String error, Date start, Date end) {
+	public void logExternalLabMessagesPdfError(String messageUuid, String outcome, String error, Date start, Date end) {
 		Coding type = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110107", "Import");
 		Reference what = new Reference("getExternalLabMessages");
-		logLabMessageError(type, what, outcome, error, start, end);
+		logLabMessageError(messageUuid, type, what, outcome, error, start, end);
 	}
 
-	private void logLabMessageError(Coding type, Reference what, String outcome, String error, Date start, Date end) {
+	private void logLabMessageError(String messageUuid, Coding type, Reference what, String outcome, String error, Date start, Date end) {
 		AuditEvent logLabMessage = new AuditEvent();
 
 		logLabMessage.setType(type);
 		logLabMessage.setAction(AuditEvent.AuditEventAction.E);
+		makePeriod(start, end, logLabMessage);
 		logLabMessage.setRecorded(Calendar.getInstance(TimeZone.getDefault()).getTime());
 
 		logLabMessage.setOutcome(AuditEvent.AuditEventOutcome._8);
@@ -469,6 +474,9 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 
 		AuditEvent.AuditEventEntityComponent entity = new AuditEvent.AuditEventEntityComponent();
 		entity.setWhat(what);
+		AuditEvent.AuditEventEntityDetailComponent uuid =
+			new AuditEvent.AuditEventEntityDetailComponent(new StringType("messageUuid"), new StringType(messageUuid));
+		entity.addDetail(uuid);
 		AuditEvent.AuditEventEntityDetailComponent errorMessage =
 			new AuditEvent.AuditEventEntityDetailComponent(new StringType("errorMessage"), new StringType(error));
 		entity.addDetail(errorMessage);
