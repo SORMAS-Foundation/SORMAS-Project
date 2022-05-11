@@ -126,7 +126,7 @@ import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.FacilityCategory;
 import org.sormas.e2etests.enums.FollowUpStatus;
 import org.sormas.e2etests.enums.PresentCondition;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -151,7 +151,7 @@ public class CaseDirectorySteps implements En {
       AssertHelpers assertHelpers,
       SoftAssert softly,
       Faker faker,
-      EnvironmentManager environmentManager) {
+      RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
 
@@ -347,7 +347,7 @@ public class CaseDirectorySteps implements En {
         "^I navigate to the last created case via the url$",
         () -> {
           String LAST_CREATED_CASE_URL =
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!cases/data/"
                   + apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);

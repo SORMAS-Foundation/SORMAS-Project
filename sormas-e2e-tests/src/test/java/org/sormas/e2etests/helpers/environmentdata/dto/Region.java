@@ -15,24 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.enums;
+package org.sormas.e2etests.helpers.environmentdata.dto;
 
-import lombok.Getter;
+import lombok.*;
 
-// TODO refactor class usage
-@Getter
-public enum FacilityUUIDs {
-  OtherFacility("SORMAS-CONSTID-OTHERS-FACILITY"),
-  StandardEinrichtung("Standard Einrichtung");
+@Value
+@AllArgsConstructor
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true, builderClassName = "builder")
+public class Region {
 
-  private final String option;
-
-  FacilityUUIDs(String option) {
-    this.option = option;
-  }
-
-  @Override
-  public String toString() {
-    return this.option;
-  }
+  String uuid;
+  String name;
 }
