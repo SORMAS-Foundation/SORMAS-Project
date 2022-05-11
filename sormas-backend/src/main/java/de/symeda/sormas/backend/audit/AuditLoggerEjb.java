@@ -358,7 +358,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	}
 
 	@Override
-	public void logGetExternalLabMessagesSuccess(Date since, List<String> externalLabMessages, Date start, Date end) {
+	public void logGetExternalLabMessagesSuccess(Date since, List<String> externalLabMessages, Date start, Date end, String authAlias) {
 		Coding type = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110107", "Import");
 		String outcome = String.format("%d external lab messages since %s fetched", externalLabMessages.size(), since);
 		Reference what = new Reference("getExternalLabMessages");
@@ -368,7 +368,10 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 				new AuditEvent.AuditEventEntityDetailComponent(new StringType("externalLabMessage"), new StringType(m));
 			details.add(detail);
 		});
-		logLabMessageSuccess(type, what, outcome, details, start, end);
+
+		AuditEvent.AuditEventAgentComponent agent = getAuditEventAgentComponent();
+		agent.setAltId(authAlias);
+		logLabMessageSuccess(type, what, outcome, details, start, end, agent);
 	}
 
 	@Override
@@ -382,7 +385,8 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		details.add(new AuditEvent.AuditEventEntityDetailComponent(new StringType("uuid"), new StringType(uuid)));
 		details.add(new AuditEvent.AuditEventEntityDetailComponent(new StringType("length"), new StringType(String.valueOf(length))));
 
-		logLabMessageSuccess(type, what, outcome, details, start, end);
+		AuditEvent.AuditEventAgentComponent agent = getAuditEventAgentComponent();
+		logLabMessageSuccess(type, what, outcome, details, start, end, agent);
 	}
 
 	@Override
@@ -396,7 +400,8 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		details.add(new AuditEvent.AuditEventEntityDetailComponent(new StringType("uuid"), new StringType(uuid)));
 		details.add(new AuditEvent.AuditEventEntityDetailComponent(new StringType("length"), new StringType(String.valueOf(length))));
 
-		logLabMessageSuccess(type, what, outcome, details, start, end);
+		AuditEvent.AuditEventAgentComponent agent = getAuditEventAgentComponent();
+		logLabMessageSuccess(type, what, outcome, details, start, end, agent);
 	}
 
 	private void logLabMessageSuccess(
@@ -405,7 +410,8 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		String outcome,
 		List<AuditEvent.AuditEventEntityDetailComponent> details,
 		Date start,
-		Date end) {
+		Date end,
+		AuditEvent.AuditEventAgentComponent agent) {
 		AuditEvent logLabMessage = new AuditEvent();
 
 		logLabMessage.setType(type);
@@ -417,7 +423,6 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		logLabMessage.setOutcome(AuditEvent.AuditEventOutcome._0);
 		logLabMessage.setOutcomeDesc(outcome);
 
-		AuditEvent.AuditEventAgentComponent agent = getAuditEventAgentComponent();
 		logLabMessage.addAgent(agent);
 
 		AuditEvent.AuditEventSourceComponent source = new AuditEvent.AuditEventSourceComponent();
