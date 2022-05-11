@@ -22,6 +22,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
+import com.google.common.base.Strings;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -377,7 +378,20 @@ public class PersonDto extends PseudonymizableDto {
 	}
 
 	public static String buildCaption(String firstName, String lastName) {
-		return DataHelper.toStringNullable(firstName) + " " + DataHelper.toStringNullable(lastName).toUpperCase();
+		return DataHelper.toStringNullable(firstName) + " " + DataHelper.toStringNullable(replaceGermanChars(lastName)).toUpperCase();
+	}
+
+	/*
+		Since there is a common problem in jdk when we call 'ß'.toUpperCase() => 'SS' , the simple workaround is to
+		replace all 'ß' (lower-case) with the 'ẞ' (upper-case) using chars unicodes.
+		- ß (lowercase) 00DF
+		- ẞ (capital)   1E9E
+	 */
+	private static String replaceGermanChars(String value){
+		if(Strings.isNullOrEmpty(value)){
+			return value;
+		}
+		return value.replaceAll("\u00DF", "\u1E9E");
 	}
 
 	public static PersonDto build() {

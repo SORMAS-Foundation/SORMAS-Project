@@ -21,10 +21,17 @@ package org.sormas.e2etests.steps.web.application.entries;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_FROM_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.getCheckboxByUUID;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_DATA_IMPORT_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CONVERTE_TO_CASE_ENTRIES;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.DELETE_BULK;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.FIRST_NAME_IMPORTED_PERSON;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.FIRST_RESULT_ID;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPORT_SUCCESS_DE;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.LAST_NAME_IMPORTED_PERSON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEGATIVE_TESTES_ENTRIES;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_PERSON_RADIOBUTTON_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_TRAVEL_ENTRY_BUTTON;
@@ -37,31 +44,61 @@ import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAV
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_FIRST_RECORD_IN_TABLE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_GRID_RESULTS_ROWS;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.VACCINATED_ENTRIES;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.getCheckboxByIndex;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
+import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.BULK_EDIT_BUTTON;
 
 import cucumber.api.java8.En;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 public class TravelEntryDirectorySteps implements En {
   public static final String userDirPath = System.getProperty("user.dir");
+  private final WebDriverHelpers webDriverHelpers;
+  public static String fullName;
 
   @Inject
   public TravelEntryDirectorySteps(
       WebDriverHelpers webDriverHelpers,
       EnvironmentManager environmentManager,
       ApiState apiState,
-      AssertHelpers assertHelpers) {
+      AssertHelpers assertHelpers,
+      SoftAssert softly) {
+    this.webDriverHelpers = webDriverHelpers;
 
     When(
         "I click on the Import button from Travel Entries directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(IMPORT_BUTTON);
+        });
+
+    When(
+        "I close Import Travel Entries form",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON);
+        });
+
+    When(
+        "I close Data import popup for Travel Entries",
+        () -> {
+          TimeUnit.SECONDS.sleep(4);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CLOSE_DATA_IMPORT_POPUP_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CLOSE_DATA_IMPORT_POPUP_BUTTON);
+        });
+
+    When(
+        "I select the attached CSV file in the file picker from Travel Entries directory",
+        () -> {
+          webDriverHelpers.sendFile(FILE_PICKER, userDirPath + "/uploads/DEA_TestImport.csv");
         });
 
     When(
@@ -75,6 +112,14 @@ public class TravelEntryDirectorySteps implements En {
         "I click on the START DATA IMPORT button from the Import Travel Entries popup",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(START_DATA_IMPORT_BUTTON);
+        });
+
+    When(
+        "I acquire the first name and last name imported person",
+        () -> {
+          String firstName = webDriverHelpers.getTextFromWebElement(FIRST_NAME_IMPORTED_PERSON);
+          String lastName = webDriverHelpers.getTextFromWebElement(LAST_NAME_IMPORTED_PERSON);
+          fullName = firstName + " " + lastName;
         });
 
     When(
@@ -96,15 +141,83 @@ public class TravelEntryDirectorySteps implements En {
         });
 
     When(
+        "^I select chosen Travel Entry result",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.scrollToElement(
+              getCheckboxByUUID(CreateNewTravelEntrySteps.TravelEntryUuid.getUuid()));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getCheckboxByUUID(CreateNewTravelEntrySteps.TravelEntryUuid.getUuid()));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+    When(
         "I click on the New Travel Entry button from Travel Entries directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(NEW_TRAVEL_ENTRY_BUTTON);
         });
     When(
+        "^I select last created UI result in grid in Travel Entry Directory for Bulk Action$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.scrollToElement(
+              getCheckboxByUUID(CreateNewTravelEntrySteps.TravelEntryUuid.getUuid()));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getCheckboxByUUID(CreateNewTravelEntrySteps.TravelEntryUuid.getUuid()));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+    When(
+        "^I select (\\d+) results in grid in Travel Entry Directory$",
+        (Integer number) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          for (int i = 10; i < number + 10; i++) {
+            webDriverHelpers.scrollToElement(getCheckboxByIndex(String.valueOf(i)));
+            webDriverHelpers.clickOnWebElementBySelector(getCheckboxByIndex(String.valueOf(i)));
+          }
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+    When(
+        "I click on Enter Bulk Edit Mode from Travel Entry Directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(BULK_EDIT_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+    And(
+        "I click on Bulk Actions combobox in Travel Entry Directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS_EVENT_DIRECTORY));
+    And(
+        "I click on Delete button from Bulk Actions Combobox in Travel Entry Directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(DELETE_BULK));
+    When(
         "I filter by Person ID on Travel Entry directory page",
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(
               PERSON_FILTER_INPUT, CreateNewTravelEntrySteps.aTravelEntry.getUuid());
+        });
+    When(
+        "I check if popup deletion message appeared",
+        () -> {
+          String expectedText = "Alle ausgew\u00E4hlten Einreisen wurden gel\u00F6scht";
+          softly.assertEquals(
+              webDriverHelpers.getTextFromPresentWebElement(
+                  By.cssSelector(".v-Notification-description")),
+              expectedText,
+              "Bulk action went wrong");
+          softly.assertAll();
+        });
+    When(
+        "I filter by Person full name on Travel Entry directory page",
+        () -> {
+          TimeUnit.SECONDS.sleep(3); // waiting for grid refresh
+          webDriverHelpers.fillAndSubmitInWebElement(PERSON_FILTER_INPUT, fullName);
+          webDriverHelpers.clickOnWebElementBySelector(
+              TRAVEL_ENTRY_DIRECTORY_PAGE_APPLY_FILTER_BUTTON);
+        });
+    When(
+        "I open the imported person on Travel entry directory page",
+        () -> {
+          TimeUnit.SECONDS.sleep(3); // waiting for grid refresh
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_RESULT_ID);
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_RESULT_ID);
         });
     And(
         "I click {string} checkbox on Travel Entry directory page",

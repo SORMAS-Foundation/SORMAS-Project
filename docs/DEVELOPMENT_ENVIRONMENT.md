@@ -73,7 +73,7 @@ If you plan to work on the Android App as well, you will also need the **Java 8 
   - Ensure that the Android SDK installation path does not contain whitespaces; you can also change this later via `Tools -> SDK Manager -> Android SDK Location`
 - Open Android Studio and import the `sormas-app` module from the SORMAS-Project repository
 - Make a copy of `keystore.properties.example` and rename it to `keystore.properties`
-- Make sure to use the JDK version 8 (`File -> Project Structure -> SDK Location -> JDK Location`)
+- Make sure to use the JDK version 11 (`File -> Project Structure -> SDK Location -> JDK Location`)
 - Build the Android Studio project by executing the Gradle build (this may be done automatically)
 - Add an emulator and set the SDK version to the `minSdkVersion` or `targetSdkVersion` from `build.gradle`; we suggest to test your code on both, but `minSdkVersion` should be preferred to ensure compatibility to the minimum supported SDK
 - Click on `Run 'app'` to install and run the app on your emulator; enter `http://10.0.2.2:6080/sormas-rest` as the server URL when you start the newly installed app for the first time
