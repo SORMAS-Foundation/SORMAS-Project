@@ -212,8 +212,6 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               EDIT_FIRST_SEARCH_RESULT);
           webDriverHelpers.clickOnWebElementBySelector(EDIT_FIRST_SEARCH_RESULT);
-          System.out.println("UUID" + apiState.getCreatedContact().getUuid());
-          TimeUnit.SECONDS.sleep(6);
         });
     When(
         "^I select first (\\d+) results in grid in Task Directory$",

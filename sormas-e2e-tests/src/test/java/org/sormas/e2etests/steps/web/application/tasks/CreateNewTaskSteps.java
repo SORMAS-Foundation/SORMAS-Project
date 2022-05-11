@@ -95,7 +95,7 @@ public class CreateNewTaskSteps implements En {
         "I check that respected user is selected on Edit Task page",
         () -> {
           String currentUser = webDriverHelpers.getTextFromWebElement(SELECTED_OBSERVER_USER);
-          softly.assertEquals(currentUser, user);
+          softly.assertEquals(currentUser, user, "The respected user is not selected");
           softly.assertAll();
         });
   }
