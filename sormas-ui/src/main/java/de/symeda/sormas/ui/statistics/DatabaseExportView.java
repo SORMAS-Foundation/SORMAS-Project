@@ -17,8 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.statistics;
 
+import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.vaadin.icons.VaadinIcons;
@@ -157,7 +161,21 @@ public class DatabaseExportView extends AbstractStatisticsView {
 		CssStyles.style(configurationDataHeadline, CssStyles.H4);
 		configurationDataLayout.addComponent(configurationDataHeadline);
 
+		VerticalLayout externalDataLayout = new VerticalLayout();
+		externalDataLayout.setMargin(false);
+		externalDataLayout.setSpacing(false);
+		Label externalDataHeadline = new Label(I18nProperties.getCaption(Captions.exportExternalData));
+		CssStyles.style(externalDataHeadline, CssStyles.H4);
+		externalDataLayout.addComponent(externalDataHeadline);
+
+		List<FeatureConfigurationDto> featureConfigurations = FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations();
+		ConfigFacade configFacade = FacadeProvider.getConfigFacade();
+
 		for (DatabaseTable databaseTable : DatabaseTable.values()) {
+			if(!databaseTable.isEnabled(featureConfigurations, configFacade)) {
+				continue;
+			}
+
 			CheckBox checkBox = new CheckBox(databaseTable.toString());
 			int indent = getIndent(databaseTable);
 			if (indent == 1) {
@@ -178,6 +196,9 @@ public class DatabaseExportView extends AbstractStatisticsView {
 			case CONFIGURATION:
 				configurationDataLayout.addComponent(checkBox);
 				break;
+			case EXTERNAL:
+				externalDataLayout.addComponent(checkBox);
+				break;
 			default:
 				throw new IllegalArgumentException(databaseTable.getDatabaseTableType().toString());
 			}
@@ -188,6 +209,7 @@ public class DatabaseExportView extends AbstractStatisticsView {
 		databaseTablesLayout.addComponent(sormasDataLayout);
 		databaseTablesLayout.addComponent(infrastructureDataLayout);
 		databaseTablesLayout.addComponent(configurationDataLayout);
+		databaseTablesLayout.addComponent(externalDataLayout);
 		return databaseTablesLayout;
 	}
 

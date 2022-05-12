@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -905,15 +906,7 @@ public class EventController {
 	}
 
 	public EventDto createNewEvent(Disease disease) {
-		EventDto event = EventDto.build();
-
-		event.getEventLocation().setCountry(FacadeProvider.getCountryFacade().getServerCountry());
-		event.getEventLocation().setRegion(UserProvider.getCurrent().getUser().getRegion());
-		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
-		event.setReportingUser(userReference);
-		event.setDisease(disease);
-
-		return event;
+		return EventDto.build(FacadeProvider.getCountryFacade().getServerCountry(), UserProvider.getCurrent().getUser(), disease);
 	}
 
 	public void deleteAllSelectedItems(Collection<EventIndexDto> selectedRows, Runnable callback) {

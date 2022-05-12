@@ -309,7 +309,7 @@ public class NavBarSteps implements En {
             String totalTime = new SimpleDateFormat("s:SS").format(diff).replace(":", ".");
             elapsedTime = totalTime;
           } catch (Exception exception) {
-            elapsedTime = "Couldn't load page under 20s";
+            elapsedTime = "Couldn't load page under 60s";
           }
           log.info("Adding page [ {} ] loading results to report", page);
           TableDataManager.addPagesRowEntity(page + " page", elapsedTime);

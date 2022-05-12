@@ -896,7 +896,7 @@ public class WebDriverHelpers {
           .pollInterval(ONE_HUNDRED_MILLISECONDS)
           .ignoreExceptions()
           .catchUncaughtExceptions()
-          .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
+          .timeout(ofSeconds(60))
           .until(
               () ->
                   baseSteps.getDriver().findElement(selector).isDisplayed()
@@ -905,7 +905,7 @@ public class WebDriverHelpers {
     } catch (ConditionTimeoutException ignored) {
       throw new NoSuchElementException(
           String.format(
-              "Element: %s is not visible under 20 seconds or loading spinner didn't finished",
+              "Element: %s is not visible under 60 seconds or loading spinner didn't finished",
               selector));
     }
   }

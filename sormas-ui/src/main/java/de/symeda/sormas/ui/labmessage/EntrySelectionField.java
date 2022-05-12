@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.labmessage;
 
+import de.symeda.sormas.ui.labmessage.processing.PickOrCreateEntryResult;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -17,14 +18,13 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.api.labmessage.SimilarEntriesDto;
 import de.symeda.sormas.ui.caze.components.caseselection.CaseSelectionGrid;
 import de.symeda.sormas.ui.contact.ContactSelectionGrid;
 import de.symeda.sormas.ui.events.EventParticipantSelectionGrid;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
+public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 
 	private static final Object CREATE_CASE = "createCase";
 	private static final Object CREATE_CONTACT = "createContact";
@@ -318,47 +318,47 @@ public class EntrySelectionField extends CustomField<SimilarEntriesDto> {
 	}
 
 	@Override
-	protected void doSetValue(SimilarEntriesDto similarEntriesDto) {
-		if (similarEntriesDto == null) {
+	protected void doSetValue(PickOrCreateEntryResult pickOrCreateEntryResult) {
+		if (pickOrCreateEntryResult == null) {
 			throw new IllegalArgumentException();
 		}
 
-		if (similarEntriesDto.getCaze() != null) {
+		if (pickOrCreateEntryResult.getCaze() != null) {
 			rbSelectCase.setValue(SELECT_CASE);
-			caseGrid.select(similarEntriesDto.getCaze());
-		} else if (similarEntriesDto.getContact() != null) {
+			caseGrid.select(pickOrCreateEntryResult.getCaze());
+		} else if (pickOrCreateEntryResult.getContact() != null) {
 			rbSelectContact.setValue(SELECT_CONTACT);
-			contactGrid.select(similarEntriesDto.getContact());
-		} else if (similarEntriesDto.getEventParticipant() != null) {
+			contactGrid.select(pickOrCreateEntryResult.getContact());
+		} else if (pickOrCreateEntryResult.getEventParticipant() != null) {
 			rbSelectEventParticipant.setValue(SELECT_EVENT_PARTICIPANT);
-			eventParticipantGrid.select(similarEntriesDto.getEventParticipant());
+			eventParticipantGrid.select(pickOrCreateEntryResult.getEventParticipant());
 		}
 	}
 
 	@Override
-	public SimilarEntriesDto getValue() {
+	public PickOrCreateEntryResult getValue() {
 		if (caseGrid != null && rbSelectCase.getValue() != null) {
-			SimilarEntriesDto value = new SimilarEntriesDto();
+			PickOrCreateEntryResult value = new PickOrCreateEntryResult();
 			value.setCaze((CaseSelectionDto) caseGrid.getSelectedRow());
 			return value;
 		} else if (contactGrid != null && rbSelectContact.getValue() != null) {
-			SimilarEntriesDto value = new SimilarEntriesDto();
+			PickOrCreateEntryResult value = new PickOrCreateEntryResult();
 			value.setContact((SimilarContactDto) contactGrid.getSelectedRow());
 			return value;
 		} else if (eventParticipantGrid != null && rbSelectEventParticipant.getValue() != null) {
-			SimilarEntriesDto value = new SimilarEntriesDto();
+			PickOrCreateEntryResult value = new PickOrCreateEntryResult();
 			value.setEventParticipant((SimilarEventParticipantDto) eventParticipantGrid.getSelectedRow());
 			return value;
 		} else if (CREATE_CASE.equals(rbCreateEntity.getValue())) {
-			SimilarEntriesDto value = new SimilarEntriesDto();
+			PickOrCreateEntryResult value = new PickOrCreateEntryResult();
 			value.setNewCase(true);
 			return value;
 		} else if (CREATE_CONTACT.equals(rbCreateEntity.getValue())) {
-			SimilarEntriesDto value = new SimilarEntriesDto();
+			PickOrCreateEntryResult value = new PickOrCreateEntryResult();
 			value.setNewContact(true);
 			return value;
 		} else if (CREATE_EVENT_PARTICIPANT.equals(rbCreateEntity.getValue())) {
-			SimilarEntriesDto value = new SimilarEntriesDto();
+			PickOrCreateEntryResult value = new PickOrCreateEntryResult();
 			value.setNewEventParticipant(true);
 			return value;
 		}
