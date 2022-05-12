@@ -188,9 +188,9 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 			descCell.setCellValue(userRight.getDescription());
 
 			// Add styled cells for all user roles
-			ArrayList<UserRoleDto> userRoles = (ArrayList<UserRoleDto>) userRoleFacade.getAll();
-			for (UserRoleDto userRole : userRoles) {
-				Cell roleRightCell = row.createCell(userRoles.indexOf(userRole) + 2);
+			columnIndex = 3;
+			for (UserRoleDto userRole : userRoleRights.keySet()) {
+				Cell roleRightCell = row.createCell(columnIndex);
 				if (userRoleRights.containsKey(userRole) && userRoleRights.get(userRole).contains(userRight)
 					|| userRoleFacade.hasUserRight(Collections.singletonList(userRole), userRight)) {
 					roleRightCell.setCellStyle(authorizedStyle);
@@ -199,6 +199,7 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 					roleRightCell.setCellStyle(unauthorizedStyle);
 					roleRightCell.setCellValue(I18nProperties.getString(Strings.no));
 				}
+				columnIndex++;
 			}
 		}
 

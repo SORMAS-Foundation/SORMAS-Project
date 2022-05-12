@@ -190,4 +190,9 @@ public class UserRoleDto extends EntityDto {
 			return forbiddenUserRole;
 		}
 	}
+
+	@Override
+	public String toString() {
+		return caption;
+	}
 }

@@ -5,6 +5,8 @@ import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
 public class UserRoleReferenceDto extends ReferenceDto implements StatisticsGroupingKey {
 
+	public UserRoleReferenceDto() { super(); }
+
 	public UserRoleReferenceDto(String uuid, String caption) {
 		super(uuid, caption);
 	}
