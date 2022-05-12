@@ -96,7 +96,7 @@ task createReportFolderIfNotExist() {
 	delete("logs/file.log")
 }
 
-task startTests(){}
+task startTests{}
 
 task printConfiguration(type: Exec) {
 	println "Available configuration json"
