@@ -25,6 +25,8 @@ public class EditCasePersonPage {
   public static final By LAST_NAME_INPUT = By.cssSelector("#lastName");
   public static final By PRESENT_CONDITION_INPUT = By.cssSelector("#presentCondition input");
   public static final By SEX_INPUT = By.cssSelector("#sex input");
+  public static final By SEX_COMBOBOX =
+      By.cssSelector("[id='sex'] [class='v-filterselect-button']");
   public static final By EMAIL_FIELD =
       By.xpath(
           "//tr[contains(@class, 'v-table-row')]//div[@class='v-table-cell-wrapper' and contains(text(),'Email')]/../following-sibling::td//div");

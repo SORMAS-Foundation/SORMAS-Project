@@ -8,6 +8,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
@@ -154,5 +155,17 @@ public class TreatmentService extends AdoServiceWithUserFilter<Treatment> {
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Treatment> from) {
 		Join<Treatment, Therapy> therapy = from.join(Treatment.THERAPY, JoinType.LEFT);
 		return caseService.createUserFilter(new CaseQueryContext(cb, cq, new CaseJoins(therapy.join(Therapy.CASE, JoinType.LEFT))));
+	}
+
+	public void unlinkPrescriptionFromTreatments(List<String> treatmentUuids){
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Treatment> criteriaUpdate = cb.createCriteriaUpdate(getElementClass());
+		Root<Treatment> from = criteriaUpdate.from(getElementClass());
+
+		criteriaUpdate.set(Treatment.PRESCRIPTION, null);
+
+		criteriaUpdate.where(from.get(Treatment.UUID).in(treatmentUuids));
+
+		this.em.createQuery(criteriaUpdate).executeUpdate();
 	}
 }

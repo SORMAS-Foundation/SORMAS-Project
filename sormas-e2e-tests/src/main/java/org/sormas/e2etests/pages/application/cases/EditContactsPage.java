@@ -46,4 +46,8 @@ public class EditContactsPage {
   public static final By FIRST_RESULT_IN_GRID_IMPORT_POPUP =
       By.xpath(
           " //div[contains(@class, 'popupContent')]//tr[contains(@class, 'v-grid-row-has-data')]//td");
+
+  public static By getContactByUUID(String uuid) {
+    return By.xpath(String.format("//a[text()=\"%s\"]", uuid.substring(0, 6).toUpperCase()));
+  }
 }
