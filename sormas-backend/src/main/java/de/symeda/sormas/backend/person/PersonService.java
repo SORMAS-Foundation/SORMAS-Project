@@ -114,6 +114,7 @@ import de.symeda.sormas.backend.util.ChangeDateUuidComparator;
 import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless
 @LocalBean
@@ -139,6 +140,8 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private ManualMessageLogService manualMessageLogService;
+	@EJB
+	private VisitService visitService;
 
 	public PersonService() {
 		super(Person.class);
@@ -960,6 +963,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		Root<Person> personRoot,
 		Class<? extends CoreAdo> subqueryClass,
 		String personField) {
+
 		final Subquery<String> subquery = cq.subquery(String.class);
 		final Root<? extends CoreAdo> from = subquery.from(subqueryClass);
 		subquery.where(cb.equal(from.get(personField), personRoot));
@@ -969,9 +973,17 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 	@Override
 	public void deletePermanent(Person person) {
+
 		manualMessageLogService.getByPersonUuid(person.getUuid())
 			.forEach(manualMessageLog -> manualMessageLogService.deletePermanent(manualMessageLog));
 
 		super.deletePermanent(person);
+	}
+
+	@Override
+	public void deletePermanentByUuids(List<String> uuids) {
+
+		visitService.deletePersonVisits(uuids);
+		super.deletePermanentByUuids(uuids);
 	}
 }
