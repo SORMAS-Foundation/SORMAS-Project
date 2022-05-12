@@ -959,7 +959,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				Expression<String> caseIdsExpr = samplesCaseJoin.get(Case.ID);
 				samplesCq.where(caseIdsExpr.in(resultCaseIds));
 				samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-				samples = samplesList.stream().collect(Collectors.groupingBy(s -> s.getAssociatedCase().getId()));
+				samples = samplesList.stream().filter(s -> !s.isDeleted()).collect(Collectors.groupingBy(s -> s.getAssociatedCase().getId()));
 			}
 
 			List<VisitSummaryExportDetails> visitSummaries = null;

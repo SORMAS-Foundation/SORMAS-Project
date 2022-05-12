@@ -50,7 +50,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import de.symeda.sormas.api.disease.DiseaseVariant;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
@@ -949,6 +948,33 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(exportDto.getEpiDataId());
 		assertThat(exportDto.getUuid(), equalTo(caze.getUuid()));
 		assertTrue(exportDto.isTraveled());
+	}
+
+	@Test
+	public void testGetExportListWithoutDeletedSamples() {
+		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCF rdcf = new RDCF(rdcfEntities);
+		UserDto user = getUser(rdcfEntities);
+
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = getCaze(user, cazePerson, rdcfEntities);
+		cazePerson.getAddress().setCity("City");
+		getPersonFacade().savePerson(cazePerson);
+
+		SampleDto sample1 = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		SampleDto sample2 = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		getSampleFacade().deleteSample(sample1.toReference());
+
+		List<CaseExportDto> results =
+			getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
+
+		// List should have one entry
+		assertEquals(1, results.size());
+		CaseExportDto exportDto = results.get(0);
+
+		assertEquals(exportDto.getSample1().getUuid(), sample2.getUuid());
+		assertNull(exportDto.getSample2().getUuid());
+		assertNull(exportDto.getSample3().getUuid());
 	}
 
 	@Test
