@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.api.person;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -55,6 +57,10 @@ import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
+@DependingOnFeatureType(featureType = {
+	FeatureType.CASE_SURVEILANCE,
+	FeatureType.CONTACT_TRACING,
+	FeatureType.EVENT_SURVEILLANCE })
 public class PersonDto extends PseudonymizableDto {
 
 	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 42953;

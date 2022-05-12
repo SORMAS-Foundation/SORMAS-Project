@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
+import de.symeda.sormas.api.utils.FeatureIndependent;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -26,6 +27,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 
+@FeatureIndependent
 public class UserReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -8558187171374254398L;

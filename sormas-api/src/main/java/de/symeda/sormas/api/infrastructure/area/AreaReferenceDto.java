@@ -1,7 +1,10 @@
 package de.symeda.sormas.api.infrastructure.area;
 
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 
+@DependingOnFeatureType(featureType = FeatureType.INFRASTRUCTURE_TYPE_AREA)
 public class AreaReferenceDto extends InfrastructureDataReferenceDto {
 
 	private static final long serialVersionUID = -6241927331721175673L;

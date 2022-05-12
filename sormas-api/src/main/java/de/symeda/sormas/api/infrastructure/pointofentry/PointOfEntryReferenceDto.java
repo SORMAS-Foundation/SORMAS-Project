@@ -1,7 +1,10 @@
 package de.symeda.sormas.api.infrastructure.pointofentry;
 
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 
+@DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
 public class PointOfEntryReferenceDto extends InfrastructureDataReferenceDto {
 
 	private static final long serialVersionUID = 4124483408068181854L;
