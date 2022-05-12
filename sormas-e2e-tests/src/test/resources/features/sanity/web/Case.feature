@@ -967,3 +967,58 @@ Feature: Case end to end tests
     And I click on save button to Save Person data in Case Person Tab
     When I navigate to case tab
     And I check that trimester field is present
+
+  @issue=SORDEV-10265 @env_main
+  Scenario: Manual archiving for case contacts
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    When I open the Case Contacts tab of the created case via api
+    Then I click on new contact button from Case Contacts tab
+    Then I create a new contact from Cases Contacts tab
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    Then I click on the Archive case button
+    Then I check the end of processing date in the archive popup and select Archive contacts checkbox
+    And I check if Archive button changed name to De-Archive
+    Then I click on the Contacts button from navbar
+    When I choose Archived contacts form combobox on Contact Directory Page
+    Then I filter by last created contact via api
+    Then I open the first contact from contacts list
+    And I check if Archive button changed name to De-Archive
+
+  @issue=SORDEV-10265 @env_main
+  Scenario: Manual archiving for bulk case contacts
+    When API: I create 2 new cases
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    When I open the Case Contacts tab of the first created case via api
+    Then I click on new contact button from Case Contacts tab
+    And I create a new contact from Cases Contacts tab
+    When I open the Case Contacts tab of the second created case via api
+    Then I click on new contact button from Case Contacts tab
+    And I create a new contact from Cases Contacts tab
+    And I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I apply Date type filter to "Case report date" on Case directory page
+    And I fill Cases from input to 0 days before mocked two Case created on Case directory page via api
+    And I click APPLY BUTTON in Case Directory Page
+    Then I click on the More button on Case directory page
+    And I click Enter Bulk Edit Mode on Case directory page
+    Then I select two last created API result in grid in Case Directory for Bulk Action
+    Then I click on Bulk Actions combobox on Case Directory Page
+    And I click on the Archive bulk cases on Case Directory page
+    Then I confirm archive bulk cases and select Archive related contacts checkbox
+    Then I click on the Contacts button from navbar
+    When I choose Archived contacts form combobox on Contact Directory Page
+    Then I click on first created contact in Contact directory page by UUID
+    And I check if Archive button changed name to De-Archive
+    Then I click on the Contacts button from navbar
+    When I choose Archived contacts form combobox on Contact Directory Page
+    Then I click on second created contact in Contact directory page by UUID
+    And I check if Archive button changed name to De-Archive
