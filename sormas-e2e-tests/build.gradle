@@ -96,15 +96,14 @@ task createReportFolderIfNotExist() {
 	delete("logs/file.log")
 }
 
-task startTests(type: Exec) {
-	println "Printing json configuration file"
+task startTests() {
+	//println "Printing json configuration file"
 	//commandLine "cat", "/srv/dockerdata/jenkins_new/sormas-files/envData.json"
 }
 
-tasks.register('testBoth') {
-	doFirst {
-		commandLine "cat", "/srv/dockerdata/jenkins_new/sormas-files/envData.json"
-	}
+task printConfiguration(type: Exec) {
+	println "Printing json configuration file"
+	commandLine "cat", "/srv/dockerdata/jenkins_new/sormas-files/envData.json"
 }
 
 task copyToGeneratedReport(type: Copy) {
@@ -147,6 +146,7 @@ test {
 }
 
 compileJava.dependsOn format
+startTests.dependsOn printConfiguration
 startTests.finalizedBy copyToGeneratedReport
 copyToGeneratedReport.finalizedBy test
 test.finalizedBy copyAllureFiles
