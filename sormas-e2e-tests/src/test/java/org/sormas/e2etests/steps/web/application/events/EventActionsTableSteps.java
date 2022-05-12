@@ -74,7 +74,7 @@ public class EventActionsTableSteps implements En {
               "Event ID is not correct");
           softly.assertEquals(
               eventActionTableEntry.getActionTitle(),
-              apiState.getCreatedAction().getMeasure(),
+              apiState.getCreatedAction().getTitle(),
               "Action title is not correct");
           softly.assertEquals(
               eventActionTableEntry.getActionCreationDate().toString().substring(0, 10),

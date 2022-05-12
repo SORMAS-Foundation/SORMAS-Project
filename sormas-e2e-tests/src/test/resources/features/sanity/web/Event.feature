@@ -100,7 +100,7 @@ Feature: Create events
     And I click on the searched event
     Then I check the modified event data is correctly displayed
 
-  @env_main
+  @env_main @check
   Scenario: Add a New action from event and verify the fields
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -114,7 +114,7 @@ Feature: Create events
     And I open the Action recently created from Event tab
     And I check that Action created from Event tab is correctly displayed in Event Actions tab
 
-    @issue=SORDEV-5520 @env_main
+    @issue=SORDEV-5520 @env_main @check
   Scenario: Add a New action from Event Actions tab and verify the fields.
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -129,7 +129,7 @@ Feature: Create events
     Then I open the last created event via api
     And I check that number of actions in Edit Event Tab is 1
 
-  @env_main
+  @env_main @check
   Scenario: Add a New action for an Event and verify the Action in EventActions table
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -274,7 +274,7 @@ Feature: Create events
     And I apply on the APPLY FILTERS button from Event
     And I check the number of displayed Event results from All button is 1
 
-  @issue=SORDEV-5572 @env_main
+  @issue=SORDEV-5572 @env_main @check
   Scenario: Testing Event group adding for new event
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -317,7 +317,7 @@ Feature: Create events
     Then I click on Apply filters button in event participant list
     Then I check if filtered participant appears in the event participants list
 
-  @issue=SORDEV-7138  @env_main
+  @issue=SORDEV-7138  @env_main @check
   Scenario: Add a participant to an event and bulk create contacts
     Given I log in as a Admin User
     And I click on the Events button from navbar
@@ -349,7 +349,7 @@ Feature: Create events
     And I close the Import Events popups
     And I check that four new events have appeared in Events directory
 
-  @issue=SORDEV-5569 @env_main
+  @issue=SORDEV-5569 @env_main @check
   Scenario: Testing Event groups view filters with sorting actions
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -475,7 +475,7 @@ Feature: Create events
       And I click on the Navigate to event directory filtered on this event group
       And I check the if Event is displayed correctly in Events Directory table
 
-  @issue=SORDEV-7461 @env_main
+  @issue=SORDEV-7461 @env_main @check
   Scenario: Testing bulk edit of Events
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
