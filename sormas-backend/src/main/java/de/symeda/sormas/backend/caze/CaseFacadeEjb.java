@@ -847,8 +847,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				caseRoot.get(Case.CLINICIAN_NAME),
 				caseRoot.get(Case.CLINICIAN_PHONE),
 				caseRoot.get(Case.CLINICIAN_EMAIL),
-				joins.getReportingUser().get(User.ID),
-				joins.getFollowUpStatusChangeUser().get(User.ID),
+				caseRoot.get(Case.REPORTING_USER).get(User.ID),
+				caseRoot.get(Case.FOLLOW_UP_STATUS_CHANGE_USER).get(User.ID),
 				caseRoot.get(Case.PREVIOUS_QUARANTINE_TO),
 				caseRoot.get(Case.QUARANTINE_CHANGE_COMMENT),
 				exportOutbreakInfo ? cb.selectCase().when(cb.exists(outbreakSq(caseQueryContext)), cb.literal(I18nProperties.getString(Strings.yes)))
