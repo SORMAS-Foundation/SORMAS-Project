@@ -722,7 +722,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<CaseExportMapperDto> cq = cb.createQuery(CaseExportMapperDto.class);
+		CriteriaQuery<CaseExportDto> cq = cb.createQuery(CaseExportDto.class);
 		Root<Case> caseRoot = cq.from(Case.class);
 
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caseRoot);
@@ -876,9 +876,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		 */
 		cq.orderBy(cb.desc(caseRoot.get(Case.REPORT_DATE)), cb.desc(caseRoot.get(Case.ID)));
 
-		List<CaseExportMapperDto> caseExportMapperDtos =
-			em.createQuery(cq).setFirstResult(first).setMaxResults(max).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-		List<CaseExportDto> resultList = caseExportMapperDtos.stream().collect(Collectors.toList());
+		List<CaseExportDto> resultList = QueryHelper.getResultList(em, cq, first, max);
 
 		List<Long> resultCaseIds = resultList.stream().map(CaseExportDto::getId).collect(Collectors.toList());
 		if (!resultList.isEmpty()) {
@@ -1247,7 +1245,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return outbreakSubquery;
 	}
 
-	private Subquery<Long> clinicalVisitSq(CriteriaBuilder cb, CriteriaQuery<CaseExportMapperDto> cq, Root<Case> caseRoot) {
+	private Subquery<Long> clinicalVisitSq(CriteriaBuilder cb, CriteriaQuery<CaseExportDto> cq, Root<Case> caseRoot) {
 		Subquery<Long> clinicalVisitCountSq = cq.subquery(Long.class);
 		Root<ClinicalVisit> clinicalVisitRoot = clinicalVisitCountSq.from(ClinicalVisit.class);
 		Join<ClinicalVisit, ClinicalCourse> clinicalVisitClinicalCourseJoin = clinicalVisitRoot.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
