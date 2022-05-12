@@ -96,14 +96,13 @@ task createReportFolderIfNotExist() {
 	delete("logs/file.log")
 }
 
-task startTests() {
-	//println "Printing json configuration file"
-	//commandLine "cat", "/srv/dockerdata/jenkins_new/sormas-files/envData.json"
-}
+task startTests() {}
 
 task printConfiguration(type: Exec) {
-	println "Printing json configuration file"
+	println "Current Json configuration file is:"
+	println "********************************[ENVIRONMENT CONFIGURATION DATA]********************************"
 	commandLine "cat", "/srv/dockerdata/jenkins_new/sormas-files/envData.json"
+	println "********************************[ENVIRONMENT CONFIGURATION DATA]********************************"
 }
 
 task copyToGeneratedReport(type: Copy) {
