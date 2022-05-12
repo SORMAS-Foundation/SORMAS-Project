@@ -124,6 +124,8 @@ task createAllureReport(type: Exec) {
 		commandLine "cmd", "/c", "allure.bat", "generate", "$buildDir/allure-results", "-c", "-o", "./allureReports"
 	} else {
 		commandLine "allure", "generate", "$buildDir/allure-results", "-c", "-o", "./allureReports"
+		println "Printing json configuration file"
+		commandLine "cat", "/srv/dockerdata/jenkins_new/sormas-files/envData.json"
 	}
 }
 
