@@ -98,7 +98,13 @@ task createReportFolderIfNotExist() {
 
 task startTests(type: Exec) {
 	println "Printing json configuration file"
-	commandLine "cat", "/srv/dockerdata/jenkins_new/sormas-files/envData.json"
+	//commandLine "cat", "/srv/dockerdata/jenkins_new/sormas-files/envData.json"
+}
+
+tasks.register('testBoth') {
+	doFirst {
+		commandLine "cat", "/srv/dockerdata/jenkins_new/sormas-files/envData.json"
+	}
 }
 
 task copyToGeneratedReport(type: Copy) {
