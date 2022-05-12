@@ -602,6 +602,90 @@ Feature: Create events
     Then I add a participant created by API create person
     Then I check if participant appears in the participants list of event created with API
 
+  @issue=SORDEV-10265 @env_main
+  Scenario: Manual archiving for events
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with status EVENT
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    And I collect the UUID displayed on Edit event page
+    Given I add a participant to the event
+    Then I click on the Archive event participant button
+    And I check if Archive event popup is displayed correctly
+    Then I check the end of processing date in the archive popup
+    And I check if Archive button changed name to De-Archive
+    Then I click on the Event participant tab
+    And I choose Archived event participants from combobox in the Event participant tab
+    Then I check if participant appears in the event participants list
+    And I click on the first row from archived event participant
+    Then I check if Archive button changed name to De-Archive
+
+  @issue=SORDEV-10265 @env_main
+  Scenario: Manual archiving for event participats
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with status EVENT
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    And I collect the UUID displayed on Edit event page
+    Given I add a participant to the event
+    Then I click on the Event participant tab
+    And I choose Archived event participants from combobox in the Event participant tab
+    Then I back to the Event tab
+    Then I click on the Archive event button
+    Then I check the end of processing date in the archive popup
+    And I check if Archive button changed name to De-Archive
+    Then I click on the Event participant tab
+    Then I check if participant appears in the event participants list
+
+  @issue=SORDEV-10265 @env_main
+  Scenario: Manual archiving for bulk event participats
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    When I create a new event with specific data
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    Then I check the created data is correctly displayed in event edit page
+    And I click on the Events button from navbar
+    Then I click on the RESET FILTERS button from Event
+    And I click on the More button on Event directory page
+    And I click Enter Bulk Edit Mode on Event directory page
+    And I click on last created UI result in grid in Event Directory for Bulk Action
+    Given I add a participant to the event
+    Then I click on the Event participant tab
+    And I choose Archived event participants from combobox in the Event participant tab
+    And I click on the Events button from navbar
+    Then I click on the RESET FILTERS button from Event
+    And I click on last created API result in grid in Event Directory for Bulk Action
+    Given I add a participant to the event
+    Then I click on the Event participant tab
+    And I choose Archived event participants from combobox in the Event participant tab
+    And I click on the Events button from navbar
+    Then I click on the RESET FILTERS button from Event
+    And I select last created UI result in grid in Event Directory for Bulk Action
+    And I select last created API result in grid in Event Directory for Bulk Action
+    And I click on Bulk Actions combobox on Event Directory Page
+    Then I click on the Archive bulk events on Event Directory page
+    And I confirm archive bulk events
+    Then I set Relevance Status Filter to Archived events on Event Directory page
+    And I click on last created UI result in grid in Event Directory for Bulk Action
+    Then I click on the Event participant tab
+    Then I check if participant added form UI appears in the event participants list
+    And I click on the Events button from navbar
+    And I click on last created API result in grid in Event Directory for Bulk Action
+    Then I click on the Event participant tab
+    Then I check if participant added form API appears in the event participants list
+
   @issue=SORDEV-8665 @env_main
   Scenario: Test Move the responsible user filter in the event directory next to the jurisdiction filters
     Given I log in with National User
