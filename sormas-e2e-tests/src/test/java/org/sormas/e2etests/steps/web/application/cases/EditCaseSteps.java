@@ -1324,6 +1324,7 @@ public class EditCaseSteps implements En {
           TimeUnit.SECONDS.sleep(
               3); // Required to ensure that the value we're asserting is refreshed after saving
           // sample
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           String caseClassification =
               webDriverHelpers.getValueFromCombobox(CASE_CLASSIFICATION_COMBOBOX);
           softly.assertTrue(
