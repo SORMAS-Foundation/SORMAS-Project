@@ -154,7 +154,7 @@ Feature: Case end to end tests
     And I click on save button from Edit Case page with current hospitalization
     Then I check if the specific data is correctly displayed
 
-  @env_main @check
+  @env_main
   Scenario: Delete created case
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -207,7 +207,7 @@ Feature: Case end to end tests
     When I create and download a case document from template
     Then I verify that the case document is downloaded and correctly named
 
-  @issue=SORDEV-5527 @env_main @check
+  @issue=SORDEV-5527 @env_main
   Scenario: Fill the therapy tab
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -270,7 +270,7 @@ Feature: Case end to end tests
     And I click on save button to Save Person data in Case Person Tab
     Then I check if saved Person data is correct
 
-  @issue=SORDEV-5529 @env_main @check
+  @issue=SORDEV-5529 @env_main
   Scenario: Fill the clinical course tab
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -297,7 +297,7 @@ Feature: Case end to end tests
     And I check if created data is correctly displayed in Symptoms tab for Set cleared to Unknown
     Then I click on Clinical Course tab from Edit Case page
 
-  @issue=SORDEV-8412 @env_main @check
+  @issue=SORDEV-8412 @env_main
   Scenario: Change of Isolation/Quarantine should be documented
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -573,7 +573,7 @@ Feature: Case end to end tests
     And I check if Cause of death is Other cause
     And I check if Date of dead for specified case is correct
 
-  @issue=SORDEV-6612 @env_main @check
+  @issue=SORDEV-6612 @env_main
   Scenario: Manually triggered calculation of case classification
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -732,7 +732,7 @@ Feature: Case end to end tests
     And I click on the APPLY FILTERS button
     Then I check that the number of cases fulfilling the reference definition is larger than 0
 
-  @issue=SORDEV-5479 @env_main @check
+  @issue=SORDEV-5479 @env_main
   Scenario: Test for exporting and importing case contact
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -815,7 +815,7 @@ Feature: Case end to end tests
     And And I click on the Download Data Dictionary button in Import Cases
     Then I check if Data Dictionary for cases was downloaded correctly
 
-  @issue=SORDEV-5526 @env_main @check
+  @issue=SORDEV-5526 @env_main
     Scenario: Create a contact with source case
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -842,7 +842,7 @@ Feature: Case end to end tests
     And I click on SAVE new contact button in the CHOOSE SOURCE popup of Create Contact window
     Then I check that Selected case is listed as Source Case in the CONTACTS WITH SOURCE CASE Box
 
-  @issue=SORDEV-9124 @env_main @check
+  @issue=SORDEV-9124 @env_main
   Scenario: Document Templates create quarantine order
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -862,7 +862,7 @@ Feature: Case end to end tests
     And I check if generated document based on "ExampleDocumentTemplateCases.docx" appeared in Documents tab for API created case in Edit Case directory
     And I delete downloaded file created from "ExampleDocumentTemplateCases.docx" Document Template
 
-  @issue=SORDEV-9124 @env_main @check
+  @issue=SORDEV-9124 @env_main
   Scenario: Document Templates create quarantine order for Case bulk
     When API: I create a new person
     Then API: I check that POST call body is "OK"
