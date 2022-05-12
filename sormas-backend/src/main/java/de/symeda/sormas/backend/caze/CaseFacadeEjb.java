@@ -696,7 +696,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@RolesAllowed({
-			UserRight._CASE_EDIT})
+		UserRight._CASE_EDIT})
 	public CaseDataDto postUpdate(String uuid, JsonNode caseDataDtoJson) {
 		CaseDataDto existingCaseDto = getCaseDataWithoutPseudonyimization(uuid);
 		PatchHelper.postUpdate(caseDataDtoJson, existingCaseDto);
@@ -760,9 +760,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			&& ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.NUMBER_OF_TREATMENTS);
 		boolean exportClinicalVisitNumber = (exportType == null || exportType == CaseExportType.CASE_MANAGEMENT)
 			&& ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.NUMBER_OF_CLINICAL_VISITS);
-		boolean exportHealthConditions = (exportType == null || exportType == CaseExportType.CASE_MANAGEMENT)
-			&& ExportHelper.shouldExportFields(exportConfiguration, CaseDataDto.HEALTH_CONDITIONS);
-		boolean exportSymptoms = ExportHelper.shouldExportFields(exportConfiguration, CaseDataDto.SYMPTOMS);
 		boolean exportOutbreakInfo = ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.ASSOCIATED_WITH_OUTBREAK);
 
 		//@formatter:off
@@ -771,9 +768,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				exportGpsCoordinates ? joins.getPersonAddress().get(Location.LONGITUDE) : cb.nullLiteral(Double.class),
 				exportGpsCoordinates ? joins.getPersonAddress().get(Location.LATLONACCURACY) : cb.nullLiteral(Float.class),
 				joins.getEpiData().get(EpiData.ID),
-				exportSymptoms ? joins.getSymptoms() : cb.nullLiteral(Symptoms.class),
+				joins.getRoot().get(Case.SYMPTOMS).get(Symptoms.ID),
 				joins.getHospitalization().get(Hospitalization.ID),
-				exportHealthConditions ? joins.getHealthConditions() : cb.nullLiteral(HealthConditions.class),
+				joins.getRoot().get(Case.HEALTH_CONDITIONS).get(HealthConditions.ID),
 				caseRoot.get(Case.UUID),
 				caseRoot.get(Case.EPID_NUMBER), caseRoot.get(Case.DISEASE), caseRoot.get(Case.DISEASE_VARIANT), caseRoot.get(Case.DISEASE_DETAILS),
 				caseRoot.get(Case.DISEASE_VARIANT_DETAILS), joins.getPerson().get(Person.UUID), joins.getPerson().get(Person.FIRST_NAME), joins.getPerson().get(Person.LAST_NAME),
@@ -881,11 +878,34 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		List<CaseExportMapperDto> caseExportMapperDtos =
 			em.createQuery(cq).setFirstResult(first).setMaxResults(max).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-		List<CaseExportDto> resultList =
-			caseExportMapperDtos.stream().map(caseExportMapperDto -> caseExportMapperDto.toCaseExportDto()).collect(Collectors.toList());
+		List<CaseExportDto> resultList = caseExportMapperDtos.stream().collect(Collectors.toList());
 
 		List<Long> resultCaseIds = resultList.stream().map(CaseExportDto::getId).collect(Collectors.toList());
 		if (!resultList.isEmpty()) {
+			Map<Long, Symptoms> symptoms = null;
+			if (ExportHelper.shouldExportFields(exportConfiguration, CaseDataDto.SYMPTOMS)) {
+				List<Symptoms> symptomsList = null;
+				CriteriaQuery<Symptoms> symptomsCq = cb.createQuery(Symptoms.class);
+				Root<Symptoms> symptomsRoot = symptomsCq.from(Symptoms.class);
+				Expression<String> symptomsIdsExpr = symptomsRoot.get(Symptoms.ID);
+				symptomsCq.where(symptomsIdsExpr.in(resultList.stream().map(CaseExportDto::getSymptomsId).collect(Collectors.toList())));
+				symptomsList = em.createQuery(symptomsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				symptoms = symptomsList.stream().collect(Collectors.toMap(Symptoms::getId, Function.identity()));
+			}
+
+			Map<Long, HealthConditions> healthConditions = null;
+			if (exportType == null || exportType == CaseExportType.CASE_MANAGEMENT) {
+				if (ExportHelper.shouldExportFields(exportConfiguration, CaseDataDto.HEALTH_CONDITIONS)) {
+					List<HealthConditions> healthConditionsList = null;
+					CriteriaQuery<HealthConditions> healthConditionsCq = cb.createQuery(HealthConditions.class);
+					Root<HealthConditions> healthConditionsRoot = healthConditionsCq.from(HealthConditions.class);
+					Expression<String> healthConditionsIdsExpr = healthConditionsRoot.get(HealthConditions.ID);
+					healthConditionsCq.where(
+						healthConditionsIdsExpr.in(resultList.stream().map(CaseExportDto::getHealthConditionsId).collect(Collectors.toList())));
+					healthConditionsList = em.createQuery(healthConditionsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+					healthConditions = healthConditionsList.stream().collect(Collectors.toMap(HealthConditions::getId, Function.identity()));
+				}
+			}
 
 			Map<Long, PreviousHospitalization> firstPreviousHospitalizations = null;
 			if (ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.INITIAL_DETECTION_PLACE)) {
@@ -1022,6 +1042,14 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 				if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.COUNTRY)) {
 					exportDto.setCountry(configFacade.getEpidPrefix());
+				}
+				if (symptoms != null) {
+					Optional.ofNullable(symptoms.get(exportDto.getSymptomsId()))
+						.ifPresent(symptom -> exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptom)));
+				}
+				if (healthConditions != null) {
+					Optional.ofNullable(healthConditions.get(exportDto.getHealthConditionsId()))
+						.ifPresent(healthCondition -> exportDto.setHealthConditions(HealthConditionsMapper.toDto(healthCondition)));
 				}
 				if (firstPreviousHospitalizations != null) {
 					Optional.ofNullable(firstPreviousHospitalizations.get(exportDto.getHospitalizationId()))

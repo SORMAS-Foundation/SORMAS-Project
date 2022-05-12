@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.caze;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
@@ -33,7 +32,6 @@ import de.symeda.sormas.api.caze.ReinfectionStatus;
 import de.symeda.sormas.api.caze.ScreeningType;
 import de.symeda.sormas.api.caze.Trimester;
 import de.symeda.sormas.api.caze.VaccinationStatus;
-import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
@@ -49,186 +47,11 @@ import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
-import de.symeda.sormas.backend.clinicalcourse.HealthConditionsMapper;
 import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.symptoms.Symptoms;
-import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 
-public class CaseExportMapperDto implements Serializable {
-
-	private long id;
-	private long personId;
-	private long epiDataId;
-	private long hospitalizationId;
-	private String uuid;
-	private String epidNumber;
-	private Disease disease;
-	private String diseaseDetails;
-	private DiseaseVariant diseaseVariant;
-	private String diseaseVariantDetails;
-	private String personUuid;
-
-	private String firstName;
-
-	private String lastName;
-	private Salutation salutation;
-
-	private String otherSalutation;
-	private Sex sex;
-	private YesNoUnknown pregnant;
-	private String approximateAge;
-	private String ageGroup;
-	private BirthDateDto birthdate;
-	private Date reportDate;
-	private String region;
-	private String district;
-
-	private String community;
-	private FacilityType facilityType;
-
-	private String healthFacility;
-
-	private String healthFacilityDetails;
-
-	private String pointOfEntry;
-
-	private String pointOfEntryDetails;
-	private CaseClassification caseClassification;
-	private YesNoUnknown clinicalConfirmation;
-	private YesNoUnknown epidemiologicalConfirmation;
-	private YesNoUnknown laboratoryDiagnosticConfirmation;
-	private Boolean notACaseReasonNegativeTest;
-	private Boolean notACaseReasonPhysicianInformation;
-	private Boolean notACaseReasonDifferentPathogen;
-	private Boolean notACaseReasonOther;
-	private String notACaseReasonDetails;
-	private CaseIdentificationSource caseIdentificationSource;
-	private ScreeningType screeningType;
-	private InvestigationStatus investigationStatus;
-	private Date investigatedDate;
-	private CaseOutcome outcome;
-	private Date outcomeDate;
-	private YesNoUnknown sequelae;
-
-	private String sequelaeDetails;
-	private YesNoUnknown bloodOrganOrTissueDonated;
-	private String associatedWithOutbreak;
-	private YesNoUnknown admittedToHealthFacility;
-	private Date admissionDate;
-	private Date dischargeDate;
-	private YesNoUnknown leftAgainstAdvice;
-
-	private PresentCondition presentCondition;
-	private Date deathDate;
-	private BurialInfoDto burialInfo;
-	private String addressRegion;
-	private String addressDistrict;
-
-	private String addressCommunity;
-
-	private String city;
-
-	private String street;
-
-	private String houseNumber;
-
-	private String additionalInformation;
-
-	private String postalCode;
-
-	private String addressGpsCoordinates;
-
-	private String facility;
-
-	private String facilityDetails;
-
-	private String phone;
-
-	private String phoneOwner;
-
-	private String emailAddress;
-
-	private String otherContactDetails;
-	private OccupationType occupationType;
-
-	private String occupationDetails;
-	private ArmedForcesRelationType armedForcesRelationType;
-	private EducationType educationType;
-
-	private String educationDetails;
-	private YesNoUnknown contactWithSourceCaseKnown;
-	private SymptomsDto symptoms;
-	private VaccinationStatus vaccinationStatus;
-	private HealthConditionsDto healthConditions;
-	private int numberOfPrescriptions;
-	private int numberOfTreatments;
-	private int numberOfClinicalVisits;
-
-	private Boolean nosocomialOutbreak;
-	private InfectionSetting infectionSetting;
-
-	private YesNoUnknown prohibitionToWork;
-	private Date prohibitionToWorkFrom;
-	private Date prohibitionToWorkUntil;
-
-	private YesNoUnknown reInfection;
-	private Date previousInfectionDate;
-	private ReinfectionStatus reinfectionStatus;
-	private String reinfectionDetails;
-
-	private QuarantineType quarantine;
-
-	private String quarantineTypeDetails;
-	private Date quarantineFrom;
-	private Date quarantineTo;
-
-	private String quarantineHelpNeeded;
-	private boolean quarantineOrderedVerbally;
-	private boolean quarantineOrderedOfficialDocument;
-	private Date quarantineOrderedVerballyDate;
-	private Date quarantineOrderedOfficialDocumentDate;
-	private boolean quarantineExtended;
-	private boolean quarantineReduced;
-	private boolean quarantineOfficialOrderSent;
-	private Date quarantineOfficialOrderSentDate;
-
-	private YesNoUnknown postpartum;
-	private Trimester trimester;
-
-	private FollowUpStatus followUpStatus;
-	private Date followUpUntil;
-
-	private Long eventCount;
-	private String externalID;
-	private String externalToken;
-	private String internalToken;
-
-	private String birthName;
-	private String birthCountry;
-	private String citizenship;
-
-	private String responsibleRegion;
-	private String responsibleDistrict;
-	private String responsibleCommunity;
-
-	private String clinicianName;
-
-	private String clinicianPhone;
-
-	private String clinicianEmail;
-
-	private Long reportingUserId;
-	private Long followUpStatusChangeUserId;
-
-	private Date previousQuarantineTo;
-
-	private String quarantineChangeComment;
-
-	private Boolean isInJurisdiction;
+public class CaseExportMapperDto extends CaseExportDto {
 
 	public CaseExportMapperDto(
 		long id,
@@ -237,9 +60,9 @@ public class CaseExportMapperDto implements Serializable {
 		Double personAddressLongitude,
 		Float personAddressLatLonAcc,
 		long epiDataId,
-		Symptoms symptoms,
+		long symptomsId,
 		long hospitalizationId,
-		HealthConditions healthConditions,
+		long healthConditionsId,
 		String uuid,
 		String epidNumber,
 		Disease disease,
@@ -338,7 +161,7 @@ public class CaseExportMapperDto implements Serializable {
 		String educationDetails,
 		OccupationType occupationType,
 		String occupationDetails,
-		ArmedForcesRelationType ArmedForcesRelationType,
+		ArmedForcesRelationType armedForcesRelationType,
 		YesNoUnknown contactWithSourceCaseKnown,
 		//Date onsetDate,
 		VaccinationStatus vaccinationStatus,
@@ -374,275 +197,137 @@ public class CaseExportMapperDto implements Serializable {
 		String associatedWithOutbreak,
 		boolean isInJurisdiction) {
 
-		this.id = id;
-		this.personId = personId;
-		this.addressGpsCoordinates = Location.buildGpsCoordinatesCaption(personAddressLatitude, personAddressLongitude, personAddressLatLonAcc);
-		this.epiDataId = epiDataId;
-		this.symptoms = SymptomsFacadeEjb.toDto(symptoms);
-		this.hospitalizationId = hospitalizationId;
-		this.healthConditions = HealthConditionsMapper.toDto(healthConditions);
-		this.uuid = uuid;
-		this.epidNumber = epidNumber;
-		this.armedForcesRelationType = ArmedForcesRelationType;
-		this.disease = disease;
-		this.diseaseDetails = diseaseDetails;
-		this.diseaseVariant = diseaseVariant;
-		this.diseaseVariantDetails = diseaseVariantDetails;
-		this.personUuid = personUuid;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.salutation = salutation;
-		this.otherSalutation = otherSalutation;
-		this.sex = sex;
-		this.pregnant = pregnant;
-		this.approximateAge = ApproximateAgeType.ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
-		this.ageGroup = ApproximateAgeType.ApproximateAgeHelper.getAgeGroupFromAge(approximateAge, approximateAgeType);
-		this.birthdate = new BirthDateDto(birthdateDD, birthdateMM, birthdateYYYY);
-		this.reportDate = reportDate;
-		this.region = region;
-		this.district = district;
-		this.community = community;
-		this.caseClassification = caseClassification;
-		this.clinicalConfirmation = clinicalConfirmation;
-		this.epidemiologicalConfirmation = epidemiologicalConfirmation;
-		this.laboratoryDiagnosticConfirmation = laboratoryDiagnosticConfirmation;
-		this.notACaseReasonNegativeTest = notACaseReasonNegativeTest;
-		this.notACaseReasonPhysicianInformation = notACaseReasonPhysicianInformation;
-		this.notACaseReasonDifferentPathogen = notACaseReasonDifferentPathogen;
-		this.notACaseReasonOther = notACaseReasonOther;
-		this.notACaseReasonDetails = notACaseReasonDetails;
-		this.investigationStatus = investigationStatus;
-		this.investigatedDate = investigatedDate;
-		this.outcome = outcome;
-		this.outcomeDate = outcomeDate;
-		this.sequelae = sequelae;
-		this.sequelaeDetails = sequelaeDetails;
-		this.bloodOrganOrTissueDonated = bloodOrganOrTissueDonated;
-		this.nosocomialOutbreak = nosocomialOutbreak;
-		this.infectionSetting = infectionSetting;
-		this.prohibitionToWork = prohibitionToWork;
-		this.prohibitionToWorkFrom = prohibitionToWorkFrom;
-		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
-		this.reInfection = reInfection;
-		this.previousInfectionDate = previousInfectionDate;
-		this.reinfectionStatus = reinfectionStatus;
-		this.reinfectionDetails = DataHelper.buildStringFromTrueValues((Map<ReinfectionDetail, Boolean>) reinfectionDetails);
-		this.quarantine = quarantine;
-		this.quarantineTypeDetails = quarantineTypeDetails;
-		this.quarantineFrom = quarantineFrom;
-		this.quarantineTo = quarantineTo;
-		this.quarantineHelpNeeded = quarantineHelpNeeded;
-		this.quarantineOrderedVerbally = quarantineOrderedVerbally;
-		this.quarantineOrderedOfficialDocument = quarantineOrderedOfficialDocument;
-		this.quarantineOrderedVerballyDate = quarantineOrderedVerballyDate;
-		this.quarantineOrderedOfficialDocumentDate = quarantineOrderedOfficialDocumentDate;
-		this.quarantineExtended = quarantineExtended;
-		this.quarantineReduced = quarantineReduced;
-		this.quarantineOfficialOrderSent = quarantineOfficialOrderSent;
-		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
-		this.facilityType = facilityType;
-		this.healthFacility = FacilityHelper.buildFacilityString(healthFacilityUuid, healthFacility);
-		this.healthFacilityDetails = healthFacilityDetails;
-		this.pointOfEntry = InfrastructureHelper.buildPointOfEntryString(pointOfEntryUuid, pointOfEntry);
-		this.pointOfEntryDetails = pointOfEntryDetails;
-		this.admittedToHealthFacility = admittedToHealthFacility;
-		this.admissionDate = admissionDate;
-		this.dischargeDate = dischargeDate;
-		this.leftAgainstAdvice = leftAgainstAdvice;
-		this.presentCondition = presentCondition;
-		this.deathDate = deathDate;
-		this.burialInfo = new BurialInfoDto(burialDate, burialConductor, burialPlaceDescription);
-		this.addressRegion = addressRegion;
-		this.addressDistrict = addressDistrict;
-		this.addressCommunity = addressCommunity;
-		this.city = city;
-		this.street = street;
-		this.houseNumber = houseNumber;
-		this.additionalInformation = additionalInformation;
-		this.postalCode = postalCode;
-		this.facility = FacilityHelper.buildFacilityString(facilityUuid, facility);
-		this.facilityDetails = facilityDetails;
-		this.phone = phone;
-		this.phoneOwner = phoneOwner;
-		this.emailAddress = emailAddress;
-		this.otherContactDetails = otherContactDetails;
-		this.educationType = educationType;
-		this.educationDetails = educationDetails;
-		this.occupationType = occupationType;
-		this.occupationDetails = occupationDetails;
-		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
-		this.vaccinationStatus = vaccinationStatus;
+		setId(id);
+		setPersonId(personId);
+		setAddressGpsCoordinates(Location.buildGpsCoordinatesCaption(personAddressLatitude, personAddressLongitude, personAddressLatLonAcc));
+		setEpiDataId(epiDataId);
+		setSymptomsId(symptomsId);
+		setHospitalizationId(hospitalizationId);
+		setHealthConditionsId(healthConditionsId);
+		setUuid(uuid);
+		setEpidNumber(epidNumber);
+		setArmedForcesRelationType(armedForcesRelationType);
+		setDisease(disease);
+		setDiseaseDetails(diseaseDetails);
+		setDiseaseVariant(diseaseVariant);
+		setDiseaseVariantDetails(diseaseVariantDetails);
+		setPersonUuid(personUuid);
+		setFirstName(firstName);
+		setLastName(lastName);
+		setSalutation(salutation);
+		setOtherSalutation(otherSalutation);
+		setSex(sex);
+		setPregnant(pregnant);
+		setApproximateAge(ApproximateAgeType.ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType));
+		setAgeGroup(ApproximateAgeType.ApproximateAgeHelper.getAgeGroupFromAge(approximateAge, approximateAgeType));
+		setBirthdate(new BirthDateDto(birthdateDD, birthdateMM, birthdateYYYY));
+		setReportDate(reportDate);
+		setRegion(region);
+		setDistrict(district);
+		setCommunity(community);
+		setCaseClassification(caseClassification);
+		setClinicalConfirmation(clinicalConfirmation);
+		setEpidemiologicalConfirmation(epidemiologicalConfirmation);
+		setLaboratoryDiagnosticConfirmation(laboratoryDiagnosticConfirmation);
+		setNotACaseReasonNegativeTest(notACaseReasonNegativeTest);
+		setNotACaseReasonPhysicianInformation(notACaseReasonPhysicianInformation);
+		setNotACaseReasonDifferentPathogen(notACaseReasonDifferentPathogen);
+		setNotACaseReasonOther(notACaseReasonOther);
+		setNotACaseReasonDetails(notACaseReasonDetails);
+		setInvestigationStatus(investigationStatus);
+		setInvestigatedDate(investigatedDate);
+		setOutcome(outcome);
+		setOutcomeDate(outcomeDate);
+		setSequelae(sequelae);
+		setSequelaeDetails(sequelaeDetails);
+		setBloodOrganOrTissueDonated(bloodOrganOrTissueDonated);
+		setNosocomialOutbreak(nosocomialOutbreak);
+		setInfectionSetting(infectionSetting);
+		setProhibitionToWork(prohibitionToWork);
+		setProhibitionToWorkFrom(prohibitionToWorkFrom);
+		setProhibitionToWorkUntil(prohibitionToWorkUntil);
+		setReInfection(reInfection);
+		setPreviousInfectionDate(previousInfectionDate);
+		setReinfectionStatus(reinfectionStatus);
+		setReinfectionDetails(DataHelper.buildStringFromTrueValues((Map<ReinfectionDetail, Boolean>) reinfectionDetails));
+		setQuarantine(quarantine);
+		setQuarantineTypeDetails(quarantineTypeDetails);
+		setQuarantineFrom(quarantineFrom);
+		setQuarantineTo(quarantineTo);
+		setQuarantineHelpNeeded(quarantineHelpNeeded);
+		setQuarantineOrderedVerbally(quarantineOrderedVerbally);
+		setQuarantineOrderedOfficialDocument(quarantineOrderedOfficialDocument);
+		setQuarantineOrderedVerballyDate(quarantineOrderedVerballyDate);
+		setQuarantineOrderedOfficialDocumentDate(quarantineOrderedOfficialDocumentDate);
+		setQuarantineExtended(quarantineExtended);
+		setQuarantineReduced(quarantineReduced);
+		setQuarantineOfficialOrderSent(quarantineOfficialOrderSent);
+		setQuarantineOfficialOrderSentDate(quarantineOfficialOrderSentDate);
+		setFacilityType(facilityType);
+		setHealthFacility(FacilityHelper.buildFacilityString(healthFacilityUuid, healthFacility));
+		setHealthFacilityDetails(healthFacilityDetails);
+		setPointOfEntry(InfrastructureHelper.buildPointOfEntryString(pointOfEntryUuid, pointOfEntry));
+		setPointOfEntryDetails(pointOfEntryDetails);
+		setAdmittedToHealthFacility(admittedToHealthFacility);
+		setAdmissionDate(admissionDate);
+		setDischargeDate(dischargeDate);
+		setLeftAgainstAdvice(leftAgainstAdvice);
+		setPresentCondition(presentCondition);
+		setDeathDate(deathDate);
+		setBurialInfo(new BurialInfoDto(burialDate, burialConductor, burialPlaceDescription));
+		setAddressRegion(addressRegion);
+		setAddressDistrict(addressDistrict);
+		setAddressCommunity(addressCommunity);
+		setCity(city);
+		setStreet(street);
+		setHouseNumber(houseNumber);
+		setAdditionalInformation(additionalInformation);
+		setPostalCode(postalCode);
+		setFacility(FacilityHelper.buildFacilityString(facilityUuid, facility));
+		setFacilityDetails(facilityDetails);
+		setPhone(phone);
+		setPhoneOwner(phoneOwner);
+		setEmailAddress(emailAddress);
+		setOtherContactDetails(otherContactDetails);
+		setEducationType(educationType);
+		setEducationDetails(educationDetails);
+		setOccupationType(occupationType);
+		setOccupationDetails(occupationDetails);
+		setContactWithSourceCaseKnown(contactWithSourceCaseKnown);
+		setVaccinationStatus(vaccinationStatus);
 
-		this.postpartum = postpartum;
-		this.trimester = trimester;
-		this.followUpStatus = followUpStatus;
-		this.followUpUntil = followUpUntil;
-		this.eventCount = eventCount;
-		this.numberOfPrescriptions = prescriptionCount != null ? prescriptionCount.intValue() : 0;
-		this.numberOfTreatments = treatmentCount != null ? treatmentCount.intValue() : 0;
-		this.numberOfClinicalVisits = clinicalVisitCount != null ? clinicalVisitCount.intValue() : 0;
-		this.externalID = externalID;
-		this.externalToken = externalToken;
-		this.internalToken = internalToken;
-		this.birthName = birthName;
-		this.birthCountry = I18nProperties.getCountryName(birthCountryIsoCode, birthCountryName);
-		this.citizenship = I18nProperties.getCountryName(citizenshipIsoCode, citizenshipCountryName);
-		this.caseIdentificationSource = caseIdentificationSource;
-		this.screeningType = screeningType;
+		setPostpartum(postpartum);
+		setTrimester(trimester);
+		setFollowUpStatus(followUpStatus);
+		setFollowUpUntil(followUpUntil);
+		setEventCount(eventCount);
+		setNumberOfPrescriptions(prescriptionCount != null ? prescriptionCount.intValue() : 0);
+		setNumberOfTreatments(treatmentCount != null ? treatmentCount.intValue() : 0);
+		setNumberOfClinicalVisits(clinicalVisitCount != null ? clinicalVisitCount.intValue() : 0);
+		setExternalID(externalID);
+		setExternalToken(externalToken);
+		setInternalToken(internalToken);
+		setBirthName(birthName);
+		setBirthCountry(I18nProperties.getCountryName(birthCountryIsoCode, birthCountryName));
+		setCitizenship(I18nProperties.getCountryName(citizenshipIsoCode, citizenshipCountryName));
+		setCaseIdentificationSource(caseIdentificationSource);
+		setScreeningType(screeningType);
 
-		this.responsibleRegion = responsibleRegion;
-		this.responsibleDistrict = responsibleDistrict;
-		this.responsibleCommunity = responsibleCommunity;
+		setResponsibleRegion(responsibleRegion);
+		setResponsibleDistrict(responsibleDistrict);
+		setResponsibleCommunity(responsibleCommunity);
 
-		this.clinicianName = clinicianName;
-		this.clinicianPhone = clinicianPhone;
-		this.clinicianEmail = clinicianEmail;
+		setClinicianName(clinicianName);
+		setClinicianPhone(clinicianPhone);
+		setClinicianEmail(clinicianEmail);
+		setReportingUserId(reportingUserId);
+		setFollowUpStatusChangeUserId(followUpStatusChangeUserId);
 
-		this.reportingUserId = reportingUserId;
-		this.followUpStatusChangeUserId = followUpStatusChangeUserId;
+		setPreviousQuarantineTo(previousQuarantineTo);
+		setQuarantineChangeComment(quarantineChangeComment);
 
-		this.previousQuarantineTo = previousQuarantineTo;
-		this.quarantineChangeComment = quarantineChangeComment;
+		setAssociatedWithOutbreak(associatedWithOutbreak);
 
-		this.associatedWithOutbreak = associatedWithOutbreak;
-		this.isInJurisdiction = isInJurisdiction;
+		setInJurisdiction(isInJurisdiction);
 	}
-
-	public CaseExportDto toCaseExportDto() {
-		CaseExportDto caseExportDto = new CaseExportDto(
-			id,
-			personId,
-			addressGpsCoordinates,
-			epiDataId,
-			symptoms,
-			hospitalizationId,
-			healthConditions,
-			uuid,
-			epidNumber,
-			disease,
-			diseaseVariant,
-			diseaseDetails,
-			diseaseVariantDetails,
-			personUuid,
-			firstName,
-			lastName,
-			salutation,
-			otherSalutation,
-			sex,
-			pregnant,
-			approximateAge,
-			ageGroup,
-			birthdate,
-			reportDate,
-			region,
-			district,
-			community,
-			facilityType,
-			healthFacility,
-			healthFacilityDetails,
-			pointOfEntry,
-			pointOfEntryDetails,
-			caseClassification,
-			clinicalConfirmation,
-			epidemiologicalConfirmation,
-			laboratoryDiagnosticConfirmation,
-			notACaseReasonNegativeTest,
-			notACaseReasonPhysicianInformation,
-			notACaseReasonDifferentPathogen,
-			notACaseReasonOther,
-			notACaseReasonDetails,
-			investigationStatus,
-			investigatedDate,
-			outcome,
-			outcomeDate,
-			sequelae,
-			sequelaeDetails,
-			bloodOrganOrTissueDonated,
-			followUpStatus,
-			followUpUntil,
-			nosocomialOutbreak,
-			infectionSetting,
-			prohibitionToWork,
-			prohibitionToWorkFrom,
-			prohibitionToWorkUntil,
-			reInfection,
-			previousInfectionDate,
-			reinfectionStatus,
-			reinfectionDetails,
-			// Quarantine
-			quarantine,
-			quarantineTypeDetails,
-			quarantineFrom,
-			quarantineTo,
-			quarantineHelpNeeded,
-			quarantineOrderedVerbally,
-			quarantineOrderedOfficialDocument,
-			quarantineOrderedVerballyDate,
-			quarantineOrderedOfficialDocumentDate,
-			quarantineExtended,
-			quarantineReduced,
-			quarantineOfficialOrderSent,
-			quarantineOfficialOrderSentDate,
-			admittedToHealthFacility,
-			admissionDate,
-			dischargeDate,
-			leftAgainstAdvice,
-			presentCondition,
-			deathDate,
-			burialInfo,
-			addressRegion,
-			addressDistrict,
-			addressCommunity,
-			city,
-			street,
-			houseNumber,
-			additionalInformation,
-			postalCode,
-			facility,
-			facilityDetails,
-			phone,
-			phoneOwner,
-			emailAddress,
-			otherContactDetails,
-			educationType,
-			educationDetails,
-			occupationType,
-			occupationDetails,
-			armedForcesRelationType,
-			contactWithSourceCaseKnown,
-			//Date onsetDate,
-			vaccinationStatus,
-			postpartum,
-			trimester,
-			eventCount,
-			externalID,
-			externalToken,
-			internalToken,
-			birthName,
-			birthCountry,
-			citizenship,
-			caseIdentificationSource,
-			screeningType,
-			// responsible jurisdiction
-			responsibleRegion,
-			responsibleDistrict,
-			responsibleCommunity,
-			// clinician
-			clinicianName,
-			clinicianPhone,
-			clinicianEmail,
-			// users
-			reportingUserId,
-			followUpStatusChangeUserId,
-			previousQuarantineTo,
-			quarantineChangeComment,
-			isInJurisdiction);
-
-		caseExportDto.setNumberOfPrescriptions(numberOfPrescriptions);
-		caseExportDto.setNumberOfTreatments(numberOfTreatments);
-		caseExportDto.setNumberOfClinicalVisits(numberOfClinicalVisits);
-		caseExportDto.setAssociatedWithOutbreak(associatedWithOutbreak);
-		return caseExportDto;
-	}
-
 }
