@@ -31,6 +31,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -257,6 +258,9 @@ public class TestHelper {
 	private static void createUserRoles() {
 		Arrays.stream(DefaultUserRole.values()).forEach(defaultUserRole -> {
 			UserRole userRole = new UserRole();
+			userRole.setCreationDate(new Date());
+			userRole.setChangeDate(new Date());
+			userRole.setUuid(DataHelper.createUuid());
 			userRole.setEnabled(true);
 			userRole.setUserRights(defaultUserRole.getDefaultUserRights());
 			userRole.setCaption(defaultUserRole.toString());
@@ -265,8 +269,8 @@ public class TestHelper {
 			userRole.setHasOptionalHealthFacility(defaultUserRole.hasOptionalHealthFacility());
 			userRole.setJurisdictionLevel(defaultUserRole.getJurisdictionLevel());
 			try {
-				userRole = DatabaseHelper.getUserRoleDao().saveAndSnapshot(userRole);
-			} catch (DaoException e) {
+				DatabaseHelper.getUserRoleDao().create(userRole);
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 			userRoleMap.put(defaultUserRole, userRole);

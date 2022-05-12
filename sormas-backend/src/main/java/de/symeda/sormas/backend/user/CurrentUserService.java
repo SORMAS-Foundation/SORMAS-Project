@@ -63,7 +63,10 @@ public class CurrentUserService {
 	}
 
 	public boolean hasUserRight(UserRight userRight) {
-		return context.isCallerInRole(userRight.name());
+		// this only works for user rights that are used in RolesAllowed or DeclareRoles annotations.
+		// return context.isCallerInRole(userRight.name());
+		// We don't want to have to do this for all the user rights, so we check against the user rights of the current user instead
+		return getCurrentUser().getUserRoles().stream().anyMatch(userRole -> userRole.getUserRights().contains(userRight)); // TODO cache?
 	}
 
 	// We need a clean transaction as we do not want call potential entity listeners which would lead to recursion

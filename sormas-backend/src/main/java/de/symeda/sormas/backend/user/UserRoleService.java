@@ -45,9 +45,6 @@ import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 @LocalBean
 public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
 
-	@Resource
-	private SessionContext sessionContext;
-
 	public UserRoleService() {
 		super(UserRole.class);
 	}

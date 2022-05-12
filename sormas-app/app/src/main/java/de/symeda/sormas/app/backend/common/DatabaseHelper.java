@@ -186,7 +186,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 335;
+	public static final int DATABASE_VERSION = 336;
 
 	private static DatabaseHelper instance = null;
 
@@ -2985,7 +2985,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						+ "localChangeDate timestamp, modified integer, snapshot integer, userRights varchar(1024), enabled boolean, caption varchar(512), description varchar(4096), "
 						+ "hasOptionalHealthFacility boolean, hasAssociatedOfficer boolean, portHealthUser boolean, jurisdictionLevel varchar(255));");
 				getDao(UserRole.class).executeRaw(
-					"CREATE TABLE users_userRoles(user_id integer, userRole_id integer, CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE), "
+					"CREATE TABLE users_userRoles(user_id integer, userRole_id integer, "
+						+ "CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE, "
 						+ "CONSTRAINT fk_userRole_id FOREIGN KEY (userRole_id) REFERENCES userRoles (id) ON DELETE CASCADE);");
 				// ATTENTION: break should only be done after last version
 				break;

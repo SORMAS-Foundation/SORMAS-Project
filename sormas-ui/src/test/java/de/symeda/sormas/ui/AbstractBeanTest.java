@@ -109,14 +109,15 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
 
-		when(MockProducer.getSessionContext().isCallerInRole(any(String.class))).thenAnswer(invocationOnMock -> {
-			String role = invocationOnMock.getArgument(0);
-			UserRight userRight = UserRight.valueOf(role);
-			return getCurrentUserService().getCurrentUser()
-				.getUserRoles()
-				.stream()
-				.anyMatch(userRole -> userRole.getUserRights().contains(userRight));
-		});
+		// see CurrentUserService.hasRight
+//		when(MockProducer.getSessionContext().isCallerInRole(any(String.class))).thenAnswer(invocationOnMock -> {
+//			String role = invocationOnMock.getArgument(0);
+//			UserRight userRight = UserRight.valueOf(role);
+//			return getCurrentUserService().getCurrentUser()
+//				.getUserRoles()
+//				.stream()
+//				.anyMatch(userRole -> userRole.getUserRights().contains(userRight));
+//		});
 	}
 
 	private void initH2Functions() {
