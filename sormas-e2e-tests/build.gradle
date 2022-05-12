@@ -100,7 +100,15 @@ task startTests{}
 
 task printConfiguration(type: Exec) {
 	println "Available configuration json"
-	commandLine "cat", "/srv/dockerdata/jenkins_new/sormas-files/envData.json"
+	File file = new File("/srv/dockerdata/jenkins_new/sormas-files/envData.json")
+	println file.exists()
+	def exists = file.exists()
+	if(exists) {
+		commandLine "cat", "/srv/dockerdata/jenkins_new/sormas-files/envData.json"
+	}
+	else{
+		commandLine "echo", "Available configuration is not displayed for local run"
+	}
 }
 
 task copyToGeneratedReport(type: Copy) {
