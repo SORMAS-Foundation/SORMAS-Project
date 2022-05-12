@@ -676,18 +676,21 @@ public class CaseController {
 					FacadeProvider.getPersonFacade().savePerson(person);
 
 					saveCase(dto);
-					// retrieve the contact just in case it has been changed during case saving
-					ContactDto updatedContact = FacadeProvider.getContactFacade().getByUuid(convertedContact.getUuid());
-					// automatically change the contact status to "converted"
-					updatedContact.setContactStatus(ContactStatus.CONVERTED);
-					// automatically change the contact classification to "confirmed"
-					updatedContact.setContactClassification(ContactClassification.CONFIRMED);
-					// set resulting case on contact and save it
-					if (updatedContact.getResultingCase() == null && updatedContact.getDisease() == dto.getDisease()) {
-						updatedContact.setResultingCase(dto.toReference());
+
+					if(convertedContact.getDisease().equals(dto.getDisease())) {
+						// retrieve the contact just in case it has been changed during case saving
+						ContactDto updatedContact = FacadeProvider.getContactFacade().getByUuid(convertedContact.getUuid());
+						// automatically change the contact status to "converted"
+						updatedContact.setContactStatus(ContactStatus.CONVERTED);
+						// automatically change the contact classification to "confirmed"
+						updatedContact.setContactClassification(ContactClassification.CONFIRMED);
+						// set resulting case on contact and save it
+						if (updatedContact.getResultingCase() == null && updatedContact.getDisease() == dto.getDisease()) {
+							updatedContact.setResultingCase(dto.toReference());
+						}
+						FacadeProvider.getContactFacade().save(updatedContact);
 					}
-					FacadeProvider.getContactFacade().save(updatedContact);
-					FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), dto.toReference());
+					FacadeProvider.getCaseFacade().setSampleAssociations(convertedContact.toReference(), dto.toReference());
 					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
 					if (!createdFromLabMessage) {
 						navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);

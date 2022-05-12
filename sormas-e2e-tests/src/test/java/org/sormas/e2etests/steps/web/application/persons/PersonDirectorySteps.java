@@ -42,12 +42,13 @@ import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.PresentCondition;
 import org.sormas.e2etests.enums.RegionsValues;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
+import org.sormas.e2etests.steps.web.application.entries.CreateNewTravelEntrySteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
@@ -64,7 +65,7 @@ public class PersonDirectorySteps implements En {
       DataOperations dataOperations,
       Faker faker,
       AssertHelpers assertHelpers,
-      EnvironmentManager environmentManager,
+      RunningConfiguration runningConfiguration,
       SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
@@ -177,6 +178,14 @@ public class PersonDirectorySteps implements En {
                   apiState.getLastCreatedPerson().getUuid());
           webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, personUUID);
         });
+    Then(
+        "I fill UUID of the collected person from last created Travel Entry",
+        () -> {
+          String personUUID =
+              dataOperations.getPartialUuidFromAssociatedLink(
+                  CreateNewTravelEntrySteps.aTravelEntry.getUuid());
+          webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, personUUID);
+        });
 
     Then(
         "I select present condition field with condition of the last created person via API",
@@ -277,7 +286,7 @@ public class PersonDirectorySteps implements En {
         () -> {
           String createdPersonUUID = EditContactPersonSteps.fullyDetailedPerson.getUuid();
           String LAST_CREATED_PERSON_PAGE_URL =
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!persons/data/"
                   + createdPersonUUID;
           webDriverHelpers.accessWebSite(LAST_CREATED_PERSON_PAGE_URL);
@@ -290,7 +299,7 @@ public class PersonDirectorySteps implements En {
           String personLinkPath = "/sormas-ui/#!persons/data/";
           String uuid = apiState.getLastCreatedPerson().getUuid();
           webDriverHelpers.accessWebSite(
-              environmentManager.getEnvironmentUrlForMarket(locale) + personLinkPath + uuid);
+              runningConfiguration.getEnvironmentUrlForMarket(locale) + personLinkPath + uuid);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
         });

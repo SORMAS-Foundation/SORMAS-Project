@@ -28,24 +28,32 @@ import org.sormas.e2etests.entities.pojo.api.Case;
 import org.sormas.e2etests.entities.pojo.api.Lab;
 import org.sormas.e2etests.entities.pojo.api.ReportingUser;
 import org.sormas.e2etests.entities.pojo.api.Sample;
+import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.UserRoles;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
+import org.sormas.e2etests.helpers.RestAssuredClient;
+import org.sormas.e2etests.helpers.environmentdata.manager.EnvironmentManager;
 
 public class SampleApiService {
-  EnvironmentManager environmentManager;
+  RunningConfiguration runningConfiguration;
+
+  private RestAssuredClient restAssuredClient;
 
   @Inject
-  public SampleApiService(EnvironmentManager environmentManager) {
-    this.environmentManager = environmentManager;
+  public SampleApiService(
+      RunningConfiguration runningConfiguration, RestAssuredClient restAssuredClient) {
+    this.restAssuredClient = restAssuredClient;
+    this.runningConfiguration = runningConfiguration;
   }
 
   public Sample buildGeneratedSample(Case caze) {
+    EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
     return Sample.builder()
         .uuid(UUID.randomUUID().toString())
         .reportingUser(
             ReportingUser.builder()
                 .uuid(
-                    environmentManager
+                    runningConfiguration
                         .getUserByRole(locale, UserRoles.RestUser.getRole())
                         .getUuid())
                 .build())
@@ -58,10 +66,13 @@ public class SampleApiService {
         .pathogenTestResult("PENDING")
         .lab(
             Lab.builder()
-                .uuid("VQL6NJ-HPJY24-56F2R5-T5UV2HUI")
                 .caption("Voreingestelltes Labor")
+                .uuid(
+                    environmentManager.getLaboratoryUUID(
+                        RegionsValues.VoreingestellteBundeslander.getName(),
+                        "Voreingestelltes Labor"))
                 .build())
-        .labDetails("Dexter laboratory")
+        .labDetails("Dexter's laboratory")
         .build();
   }
 }

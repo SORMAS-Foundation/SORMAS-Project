@@ -69,7 +69,7 @@ import org.sormas.e2etests.enums.LaboratoryValues;
 import org.sormas.e2etests.enums.PathogenTestResults;
 import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.SpecimenConditions;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -83,7 +83,7 @@ public class SamplesDirectorySteps implements En {
   @Inject
   public SamplesDirectorySteps(
       WebDriverHelpers webDriverHelpers,
-      EnvironmentManager environmentManager,
+      RunningConfiguration runningConfiguration,
       ApiState apiState,
       AssertHelpers assertHelpers,
       SoftAssert softly) {
@@ -247,7 +247,7 @@ public class SamplesDirectorySteps implements En {
         "I am opening the last created via API Sample by url navigation",
         () -> {
           String CREATED_SAMPLE_VIA_API_URL =
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!samples/data/"
                   + apiState.getCreatedSample().getUuid();
           webDriverHelpers.accessWebSite(CREATED_SAMPLE_VIA_API_URL);

@@ -541,6 +541,59 @@ public class EditContactSteps implements En {
     When(
         "I collect the contact person UUID displayed on Edit contact page",
         () -> aContact = collectContactPersonUuid());
+
+    When(
+        "I click on the Archive contact button",
+        () -> {
+          webDriverHelpers.scrollToElement(ARCHIVE_CONTACT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_CONTACT_BUTTON);
+        });
+
+    When(
+        "I check if Archive contact popup is displayed correctly",
+        () -> {
+          String expectedString = "Archive contact";
+          String actualString = webDriverHelpers.getTextFromWebElement(ARCHIVE_POPUP_WINDOW_HEADER);
+          softly.assertEquals(actualString, expectedString, "Unexpected popup title displayed");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if Archive button changed name to ([^\"]*)",
+        (String actualLabel) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ARCHIVE_CONTACT_BUTTON_LABEL);
+          webDriverHelpers.scrollToElement(ARCHIVE_CONTACT_BUTTON_LABEL);
+          String expectedLabel =
+              webDriverHelpers.getTextFromWebElement(ARCHIVE_CONTACT_BUTTON_LABEL);
+          softly.assertEquals(
+              actualLabel, expectedLabel, "Unexpected archive button label displayed");
+          softly.assertAll();
+        });
+
+    When(
+        "I check the end of processing date in the archive popup",
+        () -> {
+          String endOfProcessingDate;
+          endOfProcessingDate =
+              webDriverHelpers.getValueFromWebElement(END_OF_PROCESSING_DATE_POPUP_INPUT);
+          softly.assertEquals(
+              endOfProcessingDate,
+              LocalDate.now().format(formatter),
+              "End of processing date is invalid");
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // wait for response after confirm
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I filter by last created contact via api",
+        () -> {
+          webDriverHelpers.fillAndSubmitInWebElement(
+              MULTIPLE_OPTIONS_SEARCH_INPUT, apiState.getCreatedCase().getUuid().substring(0, 6));
+          TimeUnit.SECONDS.sleep(2); // wait for filter
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
   }
 
   private void selectContactClassification(String classification) {

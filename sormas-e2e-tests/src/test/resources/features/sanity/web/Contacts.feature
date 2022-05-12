@@ -491,6 +491,26 @@ Feature: Contacts end to end tests
     And I open the last created Person via API
     And I check that SEE CONTACTS FOR THIS PERSON button appears on Edit Person page
 
+    @issue=SORDEV-10265 @env_main
+    Scenario: Manual archiving for contacts
+      When API: I create a new person
+      Then API: I check that POST call body is "OK"
+      And API: I check that POST call status code is 200
+      Then API: I create a new contact
+      Then API: I check that POST call body is "OK"
+      And API: I check that POST call status code is 200
+      Given I log in as a Admin User
+      When I click on the Contacts button from navbar
+      Then I search after last created contact via API by UUID and open
+      Then I click on the Archive contact button
+      And I check if Archive contact popup is displayed correctly
+      Then I check the end of processing date in the archive popup
+      And I check if Archive button changed name to De-Archive
+      Then I click on the Contacts button from navbar
+      When I choose Archived contacts form combobox on Contact Directory Page
+      Then I open the first contact from contacts list
+      And I check if Archive button changed name to De-Archive
+
   @env_main @issue=SORDEV-9155
   Scenario: Test Vaccinations get lost when merging contacts with duplicate persons
     Then API: I create a new person

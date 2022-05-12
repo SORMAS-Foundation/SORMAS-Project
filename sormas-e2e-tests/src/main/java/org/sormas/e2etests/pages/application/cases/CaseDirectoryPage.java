@@ -103,6 +103,7 @@ public class CaseDirectoryPage {
       By.cssSelector("[id='relevanceStatus'] [class='v-filterselect-button']");
   public static final By BULK_ACTIONS = By.id("bulkActions-2");
   public static final By BULK_ACTIONS_VALUES = By.id("bulkActions-10");
+  public static final By BULK_ACTIONS_ARCHIVE = By.id("bulkActions-5");
   public static final By BULK_CREATE_QUARANTINE_ORDER = By.id("bulkActions-9");
   public static final By CASE_REPORTING_USER_FILTER = By.cssSelector("[id='reportingUserLike']");
   public static final By CASE_YEAR_FILTER =

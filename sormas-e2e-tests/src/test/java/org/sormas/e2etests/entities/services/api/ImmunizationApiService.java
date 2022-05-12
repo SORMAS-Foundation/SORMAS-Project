@@ -34,24 +34,31 @@ import org.sormas.e2etests.enums.UserRoles;
 import org.sormas.e2etests.enums.immunizations.ImmunizationManagementStatusValues;
 import org.sormas.e2etests.enums.immunizations.MeansOfImmunizationValues;
 import org.sormas.e2etests.enums.immunizations.StatusValues;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
+import org.sormas.e2etests.helpers.RestAssuredClient;
+import org.sormas.e2etests.helpers.environmentdata.manager.EnvironmentManager;
 import org.sormas.e2etests.steps.BaseSteps;
 
 public class ImmunizationApiService {
   private final Faker faker;
-  private static EnvironmentManager environmentManager;
+  private static RunningConfiguration runningConfiguration;
+  private RestAssuredClient restAssuredClient;
 
   @Inject
   public ImmunizationApiService(
-      Faker faker, BaseSteps baseSteps, EnvironmentManager environmentManager) {
+      Faker faker,
+      BaseSteps baseSteps,
+      RunningConfiguration runningConfiguration,
+      RestAssuredClient restAssuredClient) {
+    this.restAssuredClient = restAssuredClient;
     this.faker = faker;
-    this.environmentManager = environmentManager;
+    this.runningConfiguration = runningConfiguration;
   }
 
   public Immunization buildGeneratedImmunizationForPerson(Person person) {
-    String immunizationUUID = UUID.randomUUID().toString();
+    EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
     return Immunization.builder()
-        .uuid(immunizationUUID)
+        .uuid(UUID.randomUUID().toString())
         .pseudonymized(false)
         .person(person)
         .reportDate(Calendar.getInstance().getTimeInMillis())
@@ -61,7 +68,7 @@ public class ImmunizationApiService {
         .endDate(Calendar.getInstance().getTimeInMillis())
         .externalId(faker.number().digits(9))
         .reportingUser(
-            environmentManager.getUserByRole(locale, UserRoles.NationalUser.getRole()).getUuid())
+            runningConfiguration.getUserByRole(locale, UserRoles.NationalUser.getRole()).getUuid())
         .archived(false)
         .disease(DiseasesValues.getRandomDiseaseName())
         .immunizationStatus(StatusValues.getRandomImmunizationStatus())
@@ -69,14 +76,11 @@ public class ImmunizationApiService {
         .immunizationManagementStatus(
             ImmunizationManagementStatusValues.getRandomImmunizationManagementStatus())
         .responsibleRegion(
-            RegionsValues.getUuidValueForLocale(
-                RegionsValues.VoreingestellteBundeslander.getName(), locale))
+            environmentManager.getRegionUUID(RegionsValues.VoreingestellteBundeslander.getName()))
         .responsibleDistrict(
-            DistrictsValues.getUuidValueForLocale(
-                DistrictsValues.VoreingestellterLandkreis.name(), locale))
+            environmentManager.getDistrictUUID(DistrictsValues.VoreingestellterLandkreis.getName()))
         .responsibleCommunity(
-            CommunityValues.getUuidValueForLocale(
-                CommunityValues.VoreingestellteGemeinde.name(), locale))
+            environmentManager.getCommunityUUID(CommunityValues.VoreingestellteGemeinde.getName()))
         .build();
   }
 }

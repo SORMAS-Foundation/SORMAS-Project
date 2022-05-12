@@ -24,6 +24,7 @@ public class LabMessageDto extends SormasToSormasShareableDto {
 
 	public static final String I18N_PREFIX = "LabMessage";
 
+	public static final String TYPE = "type";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String SAMPLE_RECEIVED_DATE = "sampleReceivedDate";
