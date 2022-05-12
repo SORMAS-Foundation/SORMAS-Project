@@ -99,9 +99,8 @@ task createReportFolderIfNotExist() {
 task startTests(){}
 
 task printConfiguration(type: Exec) {
-	println "********************************[ENVIRONMENT CONFIGURATION DATA]********************************"
+	println "Available configuration json"
 	commandLine "cat", "/srv/dockerdata/jenkins_new/sormas-files/envData.json"
-	//println "********************************[ENVIRONMENT CONFIGURATION DATA]********************************"
 }
 
 task copyToGeneratedReport(type: Copy) {
