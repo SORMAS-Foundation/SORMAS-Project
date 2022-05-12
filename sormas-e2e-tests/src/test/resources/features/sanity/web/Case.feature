@@ -948,3 +948,22 @@ Feature: Case end to end tests
     And I click on the RESET FILTERS button for Person
     And I open the last created Person via API
     And I check that SEE CONTACTS FOR THIS PERSON button appears on Edit Person page
+
+  @issue=SORDEV-9088 @env_main
+  Scenario: Check if all sexes have pregnancy attributes
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with specific data
+    And I navigate to case person tab
+    And I set case person's sex as Male
+    And I click on save button to Save Person data in Case Person Tab
+    When I navigate to case tab
+    And I set pregnancy to YES
+    And I check that trimester field is present
+    And I click on save button from Edit Case page
+    When I navigate to case person tab
+    And I set case person's sex as Other
+    And I click on save button to Save Person data in Case Person Tab
+    When I navigate to case tab
+    And I check that trimester field is present
