@@ -339,7 +339,7 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.fillAndSubmitInWebElement(NAME_UUID_EPID_NUMBER_LIKE_INPUT, caseUUID);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               getCaseResultsUuidLocator(caseUUID));
-          webDriverHelpers.clickOnWebElementBySelector(getCaseResultsUuidLocator(caseUUID));
+          webDriverHelpers.doubleClickOnWebElementBySelector(getCaseResultsUuidLocator(caseUUID));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
 
