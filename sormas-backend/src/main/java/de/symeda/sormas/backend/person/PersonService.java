@@ -976,6 +976,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 		manualMessageLogService.getByPersonUuid(person.getUuid())
 			.forEach(manualMessageLog -> manualMessageLogService.deletePermanent(manualMessageLog));
+		visitService.deletePersonVisits(Collections.singletonList(person.getUuid()));
 
 		super.deletePermanent(person);
 	}
