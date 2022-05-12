@@ -28,7 +28,7 @@ public final class RequestContextHolder {
 	}
 
 	public static void setRequestContext(RequestContextTO requestContext) {
-		if (requestContextHolder == null) {
+		if (requestContext == null) {
 			reset();
 		} else {
 			requestContextHolder.set(requestContext);

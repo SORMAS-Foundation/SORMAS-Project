@@ -19,9 +19,21 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
+import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
+import de.symeda.sormas.api.RequestContextHolder;
+import de.symeda.sormas.api.RequestContextTO;
+import de.symeda.sormas.api.caze.CaseExportDto;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.feature.FeatureConfiguration;
+import org.apache.commons.lang3.time.DateUtils;
+import org.hibernate.internal.SessionImpl;
+import org.hibernate.query.spi.QueryImplementor;
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,9 +45,12 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -104,6 +119,49 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 		labUser.setLaboratory(rdcf1.facility);
 		getUserFacade().saveUser(labUser);
 
+	}
+
+	@Test
+	public void testGetCasesWithLimitedSyncronization() {
+
+		FeatureConfigurationIndexDto featureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.LIMITED_SYNCHRONIZATION);
+
+		SessionImpl em = (SessionImpl) getEntityManager();
+		QueryImplementor query = em.createQuery("select f from featureconfiguration f");
+		FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
+		HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
+		properties.put(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, true);
+		singleResult.setProperties(properties);
+		em.save(singleResult);
+
+		RequestContextHolder.setRequestContext(new RequestContextTO(true)); // simulate mobile call
+
+		loginWith(districtUser1);
+
+		CaseDataDto case11 = createCase(rdcf1, districtUser1);
+		case11.setCreationVersion("1.70");
+		case11.setCaseClassification(CaseClassification.CONFIRMED);
+		getCaseFacade().save(case11);
+
+		CaseDataDto case12 = createCase(rdcf1, districtUser1);
+		case12.setCreationVersion("1.70");
+		case12.setCaseClassification(CaseClassification.NO_CASE);
+		getCaseFacade().save(case11);
+		CaseDataDto case13 = createCase(rdcf1, districtUser1);
+
+		loginWith(districtUser2);
+		CaseDataDto case21 = createCase(rdcf2, districtUser2);
+		case21.setCreationVersion("1.70");
+		getCaseFacade().save(case21);
+		CaseDataDto case22 = createCase(rdcf2, districtUser2);
+
+		loginWith(districtUser1);
+
+		List<CaseDataDto> allActiveCasesAfter = getCaseFacade().getAllActiveCasesAfter(new DateTime(new Date()).minusDays(1).toDate());
+		assertThat(allActiveCasesAfter, hasSize(1));
+		assertThat(allActiveCasesAfter.get(0).getUuid(), is(case11.getUuid()));
 	}
 
 	@Test

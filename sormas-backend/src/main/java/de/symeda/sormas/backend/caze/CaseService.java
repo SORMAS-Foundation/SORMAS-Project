@@ -1207,9 +1207,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			final Predicate limitedCaseSyncPredicate = CriteriaBuilderHelper.and(
 				cb,
 				cb.notEqual(casePath.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE),
-				cb.notEqual(casePath.get(Case.REPORTING_USER), currentUser),
+				cb.equal(casePath.get(Case.REPORTING_USER), currentUser),
 				cb.isNotNull(casePath.get(Case.CREATION_VERSION)));
-			filter = CriteriaBuilderHelper.or(cb, filter, limitedCaseSyncPredicate);
+			filter = CriteriaBuilderHelper.and(cb, filter, limitedCaseSyncPredicate);
 		}
 
 		return filter;
