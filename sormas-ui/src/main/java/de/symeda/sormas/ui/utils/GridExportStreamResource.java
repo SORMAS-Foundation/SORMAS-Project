@@ -54,6 +54,8 @@ import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
+import static java.util.Objects.isNull;
+
 @SuppressWarnings("serial")
 public class GridExportStreamResource {
 
@@ -128,6 +130,10 @@ public class GridExportStreamResource {
 				String[] rowValues = new String[columnValueProviders.length];
 
 				Set<?> selectedRows = getSelectedRows != null ? getSelectedRows.get() : Collections.emptySet();
+
+				if (isNull(selectedRows)) {
+					selectedRows = Collections.emptySet();
+				}
 
 				if (selectedRows.isEmpty()) {
 					int totalRowCount = dataProvider.size(new Query());
