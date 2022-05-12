@@ -22,12 +22,12 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
-import com.google.common.base.Strings;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Strings;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
@@ -382,13 +382,13 @@ public class PersonDto extends PseudonymizableDto {
 	}
 
 	/*
-		Since there is a common problem in jdk when we call 'ß'.toUpperCase() => 'SS' , the simple workaround is to
-		replace all 'ß' (lower-case) with the 'ẞ' (upper-case) using chars unicodes.
-		- ß (lowercase) 00DF
-		- ẞ (capital)   1E9E
+	 * Since there is a common problem in jdk when we call 'ß'.toUpperCase() => 'SS' , the simple workaround is to
+	 * replace all 'ß' (lower-case) with the 'ẞ' (upper-case) using chars unicodes.
+	 * - ß (lowercase) 00DF
+	 * - ẞ (capital) 1E9E
 	 */
-	private static String replaceGermanChars(String value){
-		if(Strings.isNullOrEmpty(value)){
+	private static String replaceGermanChars(String value) {
+		if (Strings.isNullOrEmpty(value)) {
 			return value;
 		}
 		return value.replaceAll("\u00DF", "\u1E9E");
@@ -614,6 +614,7 @@ public class PersonDto extends PseudonymizableDto {
 	 * @param phone
 	 *            is automatically set as primary phone number, removing the primary status from another phone number if necessary.
 	 */
+	@JsonIgnore
 	public void setPhone(String phone) {
 		setPersonContactInformation(phone, PersonContactDetailType.PHONE, true);
 	}
@@ -622,6 +623,7 @@ public class PersonDto extends PseudonymizableDto {
 	 * @param phone
 	 *            is set as an additional non-primary phone number
 	 */
+	@JsonIgnore
 	public void setAdditionalPhone(String phone) {
 		setPersonContactInformation(phone, PersonContactDetailType.PHONE, false);
 	}
@@ -680,6 +682,7 @@ public class PersonDto extends PseudonymizableDto {
 	 * @param email
 	 *            is automatically set as primary email address, removing the primary status from another email address if necessary.
 	 */
+	@JsonIgnore
 	public void setEmailAddress(String email) {
 		setPersonContactInformation(email, PersonContactDetailType.EMAIL, true);
 	}
