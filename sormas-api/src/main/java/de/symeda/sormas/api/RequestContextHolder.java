@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -13,25 +13,25 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.feature;
+package de.symeda.sormas.api;
 
-public enum FeatureTypeProperty {
+public final class RequestContextHolder {
 
-	REDUCED(Boolean.class),
-	AUTOMATIC_RESPONSIBILITY_ASSIGNMENT(Boolean.class),
-	ALLOW_FREE_FOLLOW_UP_OVERWRITE(Boolean.class),
-	ALLOW_FREE_EDITING(Boolean.class),
-	THRESHOLD_IN_DAYS(Integer.class),
-	EXCLUDE_NO_CASE_CLASSIFIED_CASES(Boolean.class);
+	private static final ThreadLocal<RequestContextTO> requestContextHolder = new ThreadLocal<>();
 
-	private final Class<?> returnType;
-
-	FeatureTypeProperty(Class<?> returnType) {
-		this.returnType = returnType;
+	public static void reset() {
+		requestContextHolder.remove();
 	}
 
-	public Class<?> getReturnType() {
-		return returnType;
+	public static Boolean isMobileSync() {
+		return requestContextHolder.get() != null ? requestContextHolder.get().getMobileSync() : false;
 	}
 
+	public static void setRequestContext(RequestContextTO requestContext) {
+		if (requestContext == null) {
+			reset();
+		} else {
+			requestContextHolder.set(requestContext);
+		}
+	}
 }

@@ -149,4 +149,8 @@ public interface ConfigFacade {
 	String getAuditLoggerConfig();
 
 	String getAuditSourceSite();
+
+	void setRequestContext(RequestContextTO requestContext);
+
+	void resetRequestContext();
 }
