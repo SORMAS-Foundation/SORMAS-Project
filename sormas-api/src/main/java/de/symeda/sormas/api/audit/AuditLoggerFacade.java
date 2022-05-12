@@ -15,14 +15,14 @@ public interface AuditLoggerFacade {
 
 	void logGetExternalLabMessagesSuccess(Date since, List<String> externalLabMessages, Date start, Date end, String authAlias);
 
-	void logExternalLabMessagesHtmlSuccess(String uuid, int length, Date start, Date end);
+	void logExternalLabMessagesHtmlSuccess(String uuid, int length, Date start, Date end, String authAlias);
 
-	void logExternalLabMessagesPdfSuccess(String uuid, int length, Date start, Date end);
+	void logExternalLabMessagesPdfSuccess(String uuid, int length, Date start, Date end, String authAlias);
 
-	void logGetExternalLabMessagesError(String outcome, String error, Date start, Date end);
+	void logGetExternalLabMessagesError(String outcome, String error, Date start, Date end, String authAlias);
 
-	void logExternalLabMessagesHtmlError(String messageUuid, String outcome, String error, Date start, Date end);
+	void logExternalLabMessagesHtmlError(String messageUuid, String outcome, String error, Date start, Date end, String authAlias);
 
-	void logExternalLabMessagesPdfError(String messageUuid, String outcome, String error, Date start, Date end);
+	void logExternalLabMessagesPdfError(String messageUuid, String outcome, String error, Date start, Date end, String authAlias);
 
 }
