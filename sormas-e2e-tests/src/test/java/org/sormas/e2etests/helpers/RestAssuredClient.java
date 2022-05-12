@@ -36,30 +36,30 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.entities.pojo.api.Request;
 import org.sormas.e2etests.enums.UserRoles;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.state.ApiState;
 
 @Slf4j
 public class RestAssuredClient {
   private RequestSpecification requestSpecification;
   private final ApiState apiState;
-  private final EnvironmentManager environmentManager;
+  private final RunningConfiguration runningConfiguration;
   private final boolean logRestAssuredInfo;
 
   @Inject
   public RestAssuredClient(
-      EnvironmentManager environmentManager,
+      RunningConfiguration runningConfiguration,
       @Named("LOG_RESTASSURED") boolean logRestAssuredInfo,
       ApiState apiState) {
     this.logRestAssuredInfo = logRestAssuredInfo;
     this.apiState = apiState;
-    this.environmentManager = environmentManager;
+    this.runningConfiguration = runningConfiguration;
   }
 
   private RequestSpecification request() {
     RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
     final String restEndpoint = "/sormas-rest";
-    RestAssured.baseURI = environmentManager.getEnvironmentUrlForMarket(locale) + restEndpoint;
+    RestAssured.baseURI = runningConfiguration.getEnvironmentUrlForMarket(locale) + restEndpoint;
     Filter filters[];
     if (logRestAssuredInfo) {
       filters =
@@ -74,10 +74,10 @@ public class RestAssuredClient {
             .auth()
             .preemptive()
             .basic(
-                environmentManager
+                runningConfiguration
                     .getUserByRole(locale, UserRoles.RestUser.getRole())
                     .getUsername(),
-                environmentManager
+                runningConfiguration
                     .getUserByRole(locale, UserRoles.RestUser.getRole())
                     .getPassword());
 

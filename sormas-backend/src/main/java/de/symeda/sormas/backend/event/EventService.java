@@ -363,7 +363,6 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		final CriteriaBuilder cb = queryContext.getCriteriaBuilder();
 		final EventJoins eventJoins = queryContext.getJoins();
 		final From<?, Event> eventJoin = queryContext.getRoot();
-		final From<?, EventParticipant> eventParticipantJoin = eventJoins.getEventParticipants();
 
 		if (jurisdictionLevel != JurisdictionLevel.NATION && !currentUser.hasUserRole(UserRole.REST_USER)) {
 			switch (jurisdictionLevel) {
@@ -395,6 +394,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				final Root<Sample> sampleRoot = sampleSubQuery.from(Sample.class);
 				final SampleJoins sampleJoins = new SampleJoins(sampleRoot);
 				final Join eventParticipant = sampleJoins.getEventParticipant();
+				final From<?, EventParticipant> eventParticipantJoin = eventJoins.getEventParticipants();
 				SampleJurisdictionPredicateValidator sampleJurisdictionPredicateValidator =
 					SampleJurisdictionPredicateValidator.withoutAssociations(cb, sampleJoins, currentUser);
 				sampleSubQuery
