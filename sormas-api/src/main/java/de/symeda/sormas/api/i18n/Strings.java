@@ -130,6 +130,7 @@ public interface Strings {
 	String confirmationDeleteLabMessages = "confirmationDeleteLabMessages";
 	String confirmationDeletePathogenTests = "confirmationDeletePathogenTests";
 	String confirmationDeletePrescriptions = "confirmationDeletePrescriptions";
+	String confirmationDeletePrescriptionWithTreatment = "confirmationDeletePrescriptionWithTreatment";
 	String confirmationDeleteSamples = "confirmationDeleteSamples";
 	String confirmationDeleteTasks = "confirmationDeleteTasks";
 	String confirmationDeleteTravelEntries = "confirmationDeleteTravelEntries";
