@@ -62,6 +62,8 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 	private TestDataCreator.RDCF rdcf2;
 
 	private UserDto districtUser1;
+	private UserDto districtUser11;
+	private UserDto districtUser12;
 	private UserDto districtUser2;
 	private UserDto nationalUser;
 	private UserDto regionUser;
@@ -77,6 +79,10 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
 		districtUser1 = creator
 			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off1", UserRole.SURVEILLANCE_OFFICER);
+		districtUser11 = creator
+			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off11", UserRole.SURVEILLANCE_OFFICER);
+		districtUser12 = creator
+			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off12", UserRole.SURVEILLANCE_OFFICER);
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
 		districtUser2 = creator
@@ -140,28 +146,48 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 
 		loginWith(districtUser1);
 
-		CaseDataDto case11 = createCase(rdcf1, districtUser1);
-		case11.setCreationVersion("1.70");
-		case11.setCaseClassification(CaseClassification.CONFIRMED);
-		getCaseFacade().save(case11);
+		CaseDataDto case1 = createCase(rdcf1, districtUser1);
+		case1.setCreationVersion("1.70");
+		case1.setCaseClassification(CaseClassification.CONFIRMED);
+		getCaseFacade().save(case1);
 
-		CaseDataDto case12 = createCase(rdcf1, districtUser1);
+		CaseDataDto case2 = createCase(rdcf1, districtUser1);
+		case2.setCreationVersion("1.70");
+		case2.setCaseClassification(CaseClassification.NO_CASE);
+		getCaseFacade().save(case2);
+		CaseDataDto case3 = createCase(rdcf1, districtUser1);
+
+		loginWith(districtUser11);
+		CaseDataDto case11 = createCase(rdcf1, districtUser11);
+		case11.setCaseClassification(CaseClassification.NO_CASE);
+		getCaseFacade().save(case11);
+		CaseDataDto case12 = createCase(rdcf1, districtUser11);
 		case12.setCreationVersion("1.70");
 		case12.setCaseClassification(CaseClassification.NO_CASE);
-		getCaseFacade().save(case11);
-		CaseDataDto case13 = createCase(rdcf1, districtUser1);
-
-		loginWith(districtUser2);
-		CaseDataDto case21 = createCase(rdcf2, districtUser2);
-		case21.setCreationVersion("1.70");
-		getCaseFacade().save(case21);
-		CaseDataDto case22 = createCase(rdcf2, districtUser2);
+		getCaseFacade().save(case12);
+		CaseDataDto case13 = createCase(rdcf1, districtUser11);
 
 		loginWith(districtUser1);
 
 		List<CaseDataDto> allActiveCasesAfter = getCaseFacade().getAllActiveCasesAfter(new DateTime(new Date()).minusDays(1).toDate());
-		assertThat(allActiveCasesAfter, hasSize(1));
-		assertThat(allActiveCasesAfter.get(0).getUuid(), is(case11.getUuid()));
+		assertThat(allActiveCasesAfter, hasSize(4));
+		Assert.assertFalse(allActiveCasesAfter.contains(case11));
+		Assert.assertFalse(allActiveCasesAfter.contains(case12));
+
+		loginWith(districtUser11);
+
+		List<CaseDataDto> allActiveCasesAfter2 = getCaseFacade().getAllActiveCasesAfter(new DateTime(new Date()).minusDays(1).toDate());
+		assertThat(allActiveCasesAfter2, hasSize(4));
+		Assert.assertFalse(allActiveCasesAfter2.contains(case2));
+		Assert.assertFalse(allActiveCasesAfter2.contains(case11));
+
+		loginWith(districtUser12);
+
+		List<CaseDataDto> allActiveCasesAfter3 = getCaseFacade().getAllActiveCasesAfter(new DateTime(new Date()).minusDays(1).toDate());
+		assertThat(allActiveCasesAfter3, hasSize(3));
+		Assert.assertFalse(allActiveCasesAfter3.contains(case2));
+		Assert.assertFalse(allActiveCasesAfter3.contains(case11));
+		Assert.assertFalse(allActiveCasesAfter3.contains(case12));
 	}
 
 	@Test
