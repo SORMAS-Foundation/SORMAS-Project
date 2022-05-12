@@ -781,7 +781,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		boolean hasOnlyCasesWithEventsCriteria = Boolean.TRUE.equals(caseCriteria.getOnlyCasesWithEvents());
 		if (hasEventLikeCriteria || hasOnlyCasesWithEventsCriteria) {
 			Join<Case, EventParticipant> eventParticipant = joins.getEventParticipants();
-			Join<EventParticipant, Event> event = joins.getEventParticipantJoins().getEvent(JoinType.LEFT);
+			Join<EventParticipant, Event> event = joins.getEventParticipantJoins().getEvent();
 
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.isFalse(event.get(Event.DELETED)), cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
