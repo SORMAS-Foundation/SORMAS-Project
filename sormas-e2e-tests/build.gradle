@@ -100,9 +100,9 @@ task startTests(type: Exec){}
 
 task printConfiguration(type: Exec) {
 	println "Current Json configuration file is:"
-	println "********************************[ENVIRONMENT CONFIGURATION DATA]********************************"
+	//println "********************************[ENVIRONMENT CONFIGURATION DATA]********************************"
 	commandLine "cat", "/srv/dockerdata/jenkins_new/sormas-files/envData.json"
-	println "********************************[ENVIRONMENT CONFIGURATION DATA]********************************"
+	//println "********************************[ENVIRONMENT CONFIGURATION DATA]********************************"
 }
 
 task copyToGeneratedReport(type: Copy) {
