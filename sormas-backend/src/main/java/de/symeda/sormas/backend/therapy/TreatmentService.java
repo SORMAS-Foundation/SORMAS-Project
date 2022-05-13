@@ -56,24 +56,6 @@ public class TreatmentService extends AdoServiceWithUserFilter<Treatment> {
 		return resultList;
 	}
 
-	public List<Object[]> getTreatmentCountByCases(List<Long> caseIds) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<Treatment> treatmentRoot = cq.from(getElementClass());
-		Join<Treatment, Therapy> therapyJoin = treatmentRoot.join(Treatment.THERAPY, JoinType.LEFT);
-		Root<Case> caseRoot = cq.from(Case.class);
-		Join<Case, Therapy> caseTherapyJoin = caseRoot.join(Case.THERAPY, JoinType.LEFT);
-
-		cq.multiselect(caseRoot.get(Case.ID), cb.count(treatmentRoot));
-
-		Expression<String> caseIdsExpression = caseRoot.get(Case.ID);
-		cq.where(cb.and(caseIdsExpression.in(caseIds), cb.equal(therapyJoin.get(Therapy.ID), caseTherapyJoin.get(Therapy.ID))));
-		cq.groupBy(caseRoot.get(Case.ID));
-
-		return em.createQuery(cq).getResultList();
-	}
-
 	public List<Treatment> getAllActiveTreatmentsAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
