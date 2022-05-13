@@ -55,27 +55,6 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Object[]> getClinicalVisitCountByCases(List<Long> caseIds) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<ClinicalVisit> clinicalVisitRoot = cq.from(getElementClass());
-		Join<ClinicalVisit, ClinicalCourse> clinicalCourseJoin = clinicalVisitRoot.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
-		Root<Case> caseRoot = cq.from(Case.class);
-		Join<Case, ClinicalCourse> caseClinicalCourseJoin = caseRoot.join(Case.CLINICAL_COURSE, JoinType.LEFT);
-
-		cq.multiselect(caseRoot.get(Case.ID), cb.count(clinicalVisitRoot));
-
-		Expression<String> caseIdsExpression = caseRoot.get(Case.ID);
-		cq.where(
-			cb.and(
-				caseIdsExpression.in(caseIds),
-				cb.equal(clinicalCourseJoin.get(ClinicalCourse.ID), caseClinicalCourseJoin.get(ClinicalCourse.ID))));
-		cq.groupBy(caseRoot.get(Case.ID));
-
-		return em.createQuery(cq).getResultList();
-	}
-
 	public List<ClinicalVisit> getAllActiveClinicalVisitsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
