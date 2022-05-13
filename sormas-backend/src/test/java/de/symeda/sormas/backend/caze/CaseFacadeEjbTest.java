@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.caze;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -50,7 +51,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import de.symeda.sormas.api.disease.DiseaseVariant;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
@@ -102,10 +102,14 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
+import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -675,7 +679,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 
-		CaseDataDto case2 = creator.createCase(
+		creator.createCase(
 			user.toReference(),
 			person2.toReference(),
 			Disease.EVD,
@@ -690,6 +694,78 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().eventLike("signal"), 0, 100, null).size());
 		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().eventLike(event1.getUuid()), 0, 100, null).size());
 		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().eventLike("signal description"), 0, 100, null).size());
+	}
+
+	@Test
+	public void testCaseExportWithPrescriptionsTreatmentsVisits() {
+		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = getUser(rdcfEntities);
+
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = getCaze(user, cazePerson, rdcfEntities);
+		cazePerson.getAddress().setCity("City");
+		getPersonFacade().savePerson(cazePerson);
+
+		ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
+		exposure.getLocation().setDetails("Ghana");
+		exposure.setStartDate(new Date());
+		exposure.setEndDate(new Date());
+		caze.getEpiData().getExposures().add(exposure);
+		caze.getSymptoms().setAbdominalPain(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		creator.createPrescription(caze);
+		creator.createTreatment(caze);
+		creator.createTreatment(caze);
+		creator.createClinicalVisit(caze);
+
+		getPersonFacade().savePerson(cazePerson);
+
+		List<CaseExportDto> results =
+			getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_MANAGEMENT, 0, 100, null, Language.EN);
+		assertEquals(1, results.size());
+		CaseExportDto exportDto = results.get(0);
+		assertNotNull(exportDto.getSymptoms());
+		assertEquals(1, exportDto.getNumberOfPrescriptions());
+		assertEquals(2, exportDto.getNumberOfTreatments());
+		assertEquals(1, exportDto.getNumberOfClinicalVisits());
+	}
+
+	@Test
+	public void testCaseExportWithSamples() {
+		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCF rdcf = new RDCF(rdcfEntities);
+		UserDto user = getUser(rdcfEntities);
+
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = getCaze(user, cazePerson, rdcfEntities);
+		cazePerson.getAddress().setCity("City");
+		getPersonFacade().savePerson(cazePerson);
+
+		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		SampleDto lastSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		lastSample.setPathogenTestResult(PathogenTestResultType.NEGATIVE);
+
+		List<CaseExportDto> results =
+			getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
+		assertEquals(1, results.size());
+		CaseExportDto exportDto = results.get(0);
+		assertNotNull(exportDto.getSymptoms());
+
+		assertEquals(lastSample.getUuid(), exportDto.getSample1().getUuid());
+		assertEquals("Facility", exportDto.getSample1().getLab());
+		assertEquals(lastSample.getPathogenTestResult(), PathogenTestResultType.NEGATIVE);
+
+		assertEquals(sample.getUuid(), exportDto.getSample2().getUuid());
+		assertEquals("Facility", exportDto.getSample2().getLab());
+		assertEquals(sample.getPathogenTestResult(), PathogenTestResultType.PENDING);
+		assertEquals(sample.getPathogenTestResult(), PathogenTestResultType.PENDING);
+
+		assertEquals(2, exportDto.getOtherSamples().size());
+		assertEquals("Facility", exportDto.getOtherSamples().get(0).getLab());
 	}
 
 	@Test
@@ -838,6 +914,17 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(secondVaccination.getVaccineBatchNumber(), exportDto.getVaccineBatchNumber());
 		assertEquals(secondVaccination.getVaccineAtcCode(), exportDto.getVaccineAtcCode());
 		assertEquals(secondVaccination.getVaccineDose(), exportDto.getNumberOfDoses());
+
+		// Test with full export columns
+		results = getCaseFacade().getExportList(
+			new CaseCriteria(),
+			Collections.emptySet(),
+			CaseExportType.CASE_SURVEILLANCE,
+			0,
+			100,
+			createFullExportConfig(),
+			Language.EN);
+		assertThat(results, hasSize(1));
 	}
 
 	@Test
@@ -846,8 +933,20 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = new RDCF(rdcfEntities);
 		UserDto user = getUser(rdcfEntities);
 
+		getOutbreakFacade().startOutbreak(rdcf.district, Disease.CORONAVIRUS);
+
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = getCaze(user, cazePerson, rdcfEntities);
+		CaseDataDto caze = creator.createCase(
+				user.toReference(),
+				cazePerson.toReference(),
+				Disease.CORONAVIRUS,
+				CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING,
+				DateHelper.addDays(new Date(), 1),
+				rdcfEntities);
+
+		caze.setRegion(rdcf.region);
+		caze.setDistrict(rdcf.district);
 		cazePerson.getAddress().setCity("City");
 		getPersonFacade().savePerson(cazePerson);
 
@@ -890,6 +989,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, results.size());
 		CaseExportDto exportDto = results.get(0);
 
+		assertEquals(I18nProperties.getString(Strings.yes), exportDto.getAssociatedWithOutbreak());
 		assertNull(exportDto.getFirstVaccinationDate());
 		assertNull(exportDto.getVaccineName());
 		assertNull(exportDto.getLastVaccinationDate());
@@ -910,7 +1010,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		PersonDto cazePerson = creator.createPerson("Case", "Person", p -> {
+			p.getAddress().setLatitude(50.0);
+			p.getAddress().setLongitude(10.0);
+			p.getAddress().setLatLonAccuracy(3F);
+		});
 		cazePerson.getAddress().setCity("City");
 		getPersonFacade().savePerson(cazePerson);
 
@@ -947,8 +1051,38 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertThat(result, hasSize(1));
 		CaseExportDto exportDto = result.get(0);
 		assertNotNull(exportDto.getEpiDataId());
+		assertEquals("50.0, 10.0 +-3m", exportDto.getAddressGpsCoordinates());
 		assertThat(exportDto.getUuid(), equalTo(caze.getUuid()));
 		assertTrue(exportDto.isTraveled());
+	}
+
+	/**
+	 * Test with {@link CaseExportType#CASE_MANAGEMENT} and full export columns.
+	 */
+	@Test
+	public void testGetExportListCaseManagement() {
+
+		// 0. Run without data
+		List<CaseExportDto> result = getCaseFacade()
+			.getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_MANAGEMENT, 0, 100, createFullExportConfig(), Language.EN);
+		assertThat(result, is(empty()));
+	}
+
+	private ExportConfigurationDto createFullExportConfig() {
+
+		boolean withFollowUp = true;
+		boolean withClinicalCourse = true;
+		boolean withTherapy = true;
+		String countryLocale = getConfigFacade().getCountryLocale();
+
+		ExportConfigurationDto config = new ExportConfigurationDto();
+		config.setProperties(
+			ImportExportUtils.getCaseExportProperties((a, b) -> "Case", withFollowUp, withClinicalCourse, withTherapy, countryLocale)
+				.stream()
+				.map(e -> e.getPropertyId())
+				.collect(Collectors.toSet()));
+
+		return config;
 	}
 
 	@Test

@@ -44,16 +44,18 @@ import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
+import org.sormas.e2etests.entities.pojo.api.Case;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.services.ContactService;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
@@ -76,19 +78,47 @@ public class EditContactsSteps implements En {
       ApiState apiState,
       ContactService contactService,
       SoftAssert softly,
-      EnvironmentManager environmentManager) {
+      RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
+    List<String> contactsUUIDList = new ArrayList<>();
 
     When(
         "I open the Case Contacts tab of the created case via api",
         () -> {
           LAST_CREATED_CASE_CONTACTS_TAB_URL =
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!cases/contacts/"
                   + apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_CONTACTS_TAB_URL);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_CONTACT_BUTTON);
         });
+
+    When(
+        "I open the Case Contacts tab of the first created case via api",
+        () -> {
+          List<Case> casesList;
+          casesList = apiState.getCreatedCases();
+          LAST_CREATED_CASE_CONTACTS_TAB_URL =
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
+                  + "/sormas-webdriver/#!cases/contacts/"
+                  + casesList.get(0).getUuid();
+          webDriverHelpers.accessWebSite(LAST_CREATED_CASE_CONTACTS_TAB_URL);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_CONTACT_BUTTON);
+        });
+
+    When(
+        "I open the Case Contacts tab of the second created case via api",
+        () -> {
+          List<Case> casesList;
+          casesList = apiState.getCreatedCases();
+          LAST_CREATED_CASE_CONTACTS_TAB_URL =
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
+                  + "/sormas-webdriver/#!cases/contacts/"
+                  + casesList.get(1).getUuid();
+          webDriverHelpers.accessWebSite(LAST_CREATED_CASE_CONTACTS_TAB_URL);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_CONTACT_BUTTON);
+        });
+
     When(
         "I open the Case Contacts tab",
         () -> {
@@ -194,8 +224,13 @@ public class EditContactsSteps implements En {
           fillRelationshipWithCase(contact.getRelationshipWithCase());
           fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP, 15)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_RADIO_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
+          }
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_CREATED_POPUP);
           contactUUID = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
+          contactsUUIDList.add(contactUUID);
         });
     When(
         "^I create a new basic contact to export from Cases Contacts tab$",
@@ -281,6 +316,18 @@ public class EditContactsSteps implements En {
               apiState.getCreatedContact().getPerson().getLastName().equalsIgnoreCase(lastName),
               "Last name doesn't match");
           softly.assertAll();
+        });
+
+    When(
+        "I click on first created contact in Contact directory page by UUID",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(getContactByUUID(contactsUUIDList.get(0)));
+        });
+
+    When(
+        "I click on second created contact in Contact directory page by UUID",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(getContactByUUID(contactsUUIDList.get(1)));
         });
   }
 

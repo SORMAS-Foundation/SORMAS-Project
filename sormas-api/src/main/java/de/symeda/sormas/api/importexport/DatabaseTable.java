@@ -15,93 +15,133 @@
 
 package de.symeda.sormas.api.importexport;
 
+import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.feature.FeatureConfigurationDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import org.apache.commons.lang3.ArrayUtils;
 
 public enum DatabaseTable {
 
-	CASES(DatabaseTableType.SORMAS, null, "cases"),
-	CASE_SYMPTOMS(DatabaseTableType.SORMAS, CASES, "case_symptoms"),
+	CASES(DatabaseTableType.SORMAS, "cases", dependingOnFeature(FeatureType.CASE_SURVEILANCE)),
 	HOSPITALIZATIONS(DatabaseTableType.SORMAS, CASES, "hospitalizations"),
 	PREVIOUSHOSPITALIZATIONS(DatabaseTableType.SORMAS, HOSPITALIZATIONS, "previous_hospitalizations"),
-	EPIDATA(DatabaseTableType.SORMAS, CASES, "epidemiological_data"),
-	EXPOSURES(DatabaseTableType.SORMAS, EPIDATA, "exposures"),
-	ACTIVITIES_AS_CASE(DatabaseTableType.SORMAS, EPIDATA, "activities_as_case"),
-	THERAPIES(DatabaseTableType.SORMAS, CASES, "therapies"),
+	THERAPIES(DatabaseTableType.SORMAS, CASES, "therapies", dependingOnFeature(FeatureType.CLINICAL_MANAGEMENT)),
 	PRESCRIPTIONS(DatabaseTableType.SORMAS, THERAPIES, "prescriptions"),
 	TREATMENTS(DatabaseTableType.SORMAS, THERAPIES, "treatments"),
-	CLINICAL_COURSES(DatabaseTableType.SORMAS, CASES, "clinical_courses"),
-	HEALTH_CONDITIONS(DatabaseTableType.SORMAS, CLINICAL_COURSES, "health_conditions"),
+	CLINICAL_COURSES(DatabaseTableType.SORMAS, CASES, "clinical_courses", dependingOnFeature(FeatureType.CLINICAL_MANAGEMENT)),
 	CLINICAL_VISITS(DatabaseTableType.SORMAS, CLINICAL_COURSES, "clinical_visits"),
-	CLINICAL_VISIT_SYMPTOMS(DatabaseTableType.SORMAS, CLINICAL_VISITS, "clinical_visit_symptoms"),
 	PORT_HEALTH_INFO(DatabaseTableType.SORMAS, CASES, "port_health_info"),
 	MATERNAL_HISTORIES(DatabaseTableType.SORMAS, CASES, "maternal_histories"),
-	CONTACTS(DatabaseTableType.SORMAS, null, "contacts"),
-	VISITS(DatabaseTableType.SORMAS, CONTACTS, "visits"),
-	VISIT_SYMPTOMS(DatabaseTableType.SORMAS, VISITS, "visit_symptoms"),
-	EVENTS(DatabaseTableType.SORMAS, null, "events"),
-	EVENTGROUPS(DatabaseTableType.SORMAS, EVENTS, "eventgroups"),
+	SURVEILLANCE_REPORTS(DatabaseTableType.SORMAS, CASES, "surveillance_reports", dependingOnFeature(FeatureType.SURVEILLANCE_REPORTS)),
+
+	EPIDATA(DatabaseTableType.SORMAS, "epidemiological_data", dependingOnFeature(FeatureType.CASE_SURVEILANCE, FeatureType.CONTACT_TRACING)),
+	EXPOSURES(DatabaseTableType.SORMAS, EPIDATA, "exposures"),
+	ACTIVITIES_AS_CASE(DatabaseTableType.SORMAS, EPIDATA, "activities_as_case"),
+
+	HEALTH_CONDITIONS(DatabaseTableType.SORMAS, "health_conditions", dependingOnFeature(FeatureType.CASE_SURVEILANCE, FeatureType.CONTACT_TRACING, FeatureType.IMMUNIZATION_MANAGEMENT)),
+
+	CONTACTS(DatabaseTableType.SORMAS, "contacts", dependingOnFeature(FeatureType.CONTACT_TRACING)),
+	VISITS(DatabaseTableType.SORMAS, "visits", dependingOnFeature(FeatureType.CONTACT_TRACING, FeatureType.CASE_FOLLOWUP)),
+
+	SYMPTOMS(DatabaseTableType.SORMAS, "symptoms", dependingOnFeature(FeatureType.CASE_SURVEILANCE, FeatureType.CONTACT_TRACING, FeatureType.CLINICAL_MANAGEMENT)),
+
+	EVENTS(DatabaseTableType.SORMAS, "events", dependingOnFeature(FeatureType.EVENT_SURVEILLANCE)),
+	EVENTGROUPS(DatabaseTableType.SORMAS, EVENTS, "eventgroups", dependingOnFeature(FeatureType.EVENT_GROUPS)),
 	EVENTPARTICIPANTS(DatabaseTableType.SORMAS, EVENTS, "event_persons_involved"),
 	ACTIONS(DatabaseTableType.SORMAS, EVENTS, "actions"),
-	TRAVEL_ENTRIES(DatabaseTableType.SORMAS, null, "travel_entries"),
-	IMMUNIZATIONS(DatabaseTableType.SORMAS, null, "immunizations"),
-	VACCINATIONS(DatabaseTableType.SORMAS, IMMUNIZATIONS, "vaccinations"),
-	SAMPLES(DatabaseTableType.SORMAS, null, "samples"),
-	PATHOGEN_TESTS(DatabaseTableType.SORMAS, SAMPLES, "pathogen_tests"),
-	ADDITIONAL_TESTS(DatabaseTableType.SORMAS, SAMPLES, "additional_tests"),
-	TASKS(DatabaseTableType.SORMAS, null, "tasks"),
-	PERSONS(DatabaseTableType.SORMAS, null, "persons"),
-	PERSON_CONTACT_DETAILS(DatabaseTableType.SORMAS, PERSONS, "person_contact_details"),
-	LOCATIONS(DatabaseTableType.SORMAS, null, "locations"),
-	OUTBREAKS(DatabaseTableType.SORMAS, null, "outbreaks"),
-	CONTINENTS(DatabaseTableType.INFRASTRUCTURE, null, "continents"),
-	SUBCONTINENTS(DatabaseTableType.INFRASTRUCTURE, null, "subcontinent"),
-	COUNTRIES(DatabaseTableType.INFRASTRUCTURE, null, "countries"),
-	AREAS(DatabaseTableType.INFRASTRUCTURE, null, "areas"),
-	REGIONS(DatabaseTableType.INFRASTRUCTURE, null, "regions"),
-	DISTRICTS(DatabaseTableType.INFRASTRUCTURE, null, "districts"),
-	COMMUNITIES(DatabaseTableType.INFRASTRUCTURE, null, "communities"),
-	FACILITIES(DatabaseTableType.INFRASTRUCTURE, null, "facilities"),
-	POINTS_OF_ENTRY(DatabaseTableType.INFRASTRUCTURE, null, "points_of_entry"),
-	CUSTOMIZABLE_ENUM_VALUES(DatabaseTableType.CONFIGURATION, null, "customizable_enum_values"),
 
-	CAMPAIGNS(DatabaseTableType.SORMAS, null, "campaigns"),
+	TRAVEL_ENTRIES(DatabaseTableType.SORMAS, "travel_entries", dependingOnFeature(FeatureType.TRAVEL_ENTRIES)),
+
+	IMMUNIZATIONS(DatabaseTableType.SORMAS, "immunizations", dependingOnFeature(FeatureType.IMMUNIZATION_MANAGEMENT)),
+	VACCINATIONS(DatabaseTableType.SORMAS, IMMUNIZATIONS, "vaccinations"),
+
+	SAMPLES(DatabaseTableType.SORMAS, "samples", dependingOnFeature(FeatureType.SAMPLES_LAB)),
+	PATHOGEN_TESTS(DatabaseTableType.SORMAS, SAMPLES, "pathogen_tests"),
+	ADDITIONAL_TESTS(DatabaseTableType.SORMAS, SAMPLES, "additional_tests", dependingOnFeature(FeatureType.ADDITIONAL_TESTS)),
+
+	TASKS(DatabaseTableType.SORMAS,"tasks", dependingOnFeature(FeatureType.TASK_MANAGEMENT)),
+
+	PERSONS(DatabaseTableType.SORMAS, "persons", dependingOnFeature(FeatureType.CASE_SURVEILANCE, FeatureType.CONTACT_TRACING, FeatureType.EVENT_SURVEILLANCE)),
+	PERSON_CONTACT_DETAILS(DatabaseTableType.SORMAS, PERSONS, "person_contact_details"),
+
+	LOCATIONS(DatabaseTableType.SORMAS, "locations", null),
+
+	OUTBREAKS(DatabaseTableType.SORMAS, "outbreaks", dependingOnFeature(FeatureType.OUTBREAKS)),
+	CONTINENTS(DatabaseTableType.INFRASTRUCTURE, "continents", null),
+	SUBCONTINENTS(DatabaseTableType.INFRASTRUCTURE, "subcontinent", null),
+	COUNTRIES(DatabaseTableType.INFRASTRUCTURE, "countries", null),
+	AREAS(DatabaseTableType.INFRASTRUCTURE, "areas", dependingOnFeature(FeatureType.INFRASTRUCTURE_TYPE_AREA)),
+	REGIONS(DatabaseTableType.INFRASTRUCTURE, "regions", null),
+	DISTRICTS(DatabaseTableType.INFRASTRUCTURE, "districts", null),
+	COMMUNITIES(DatabaseTableType.INFRASTRUCTURE, "communities", null),
+	FACILITIES(DatabaseTableType.INFRASTRUCTURE, "facilities", null),
+	POINTS_OF_ENTRY(DatabaseTableType.INFRASTRUCTURE, "points_of_entry", null),
+	CUSTOMIZABLE_ENUM_VALUES(DatabaseTableType.CONFIGURATION, "customizable_enum_values", null),
+
+	CAMPAIGNS(DatabaseTableType.SORMAS, "campaigns", dependingOnFeature(FeatureType.CAMPAIGNS)),
 	CAMPAIGN_FORM_META(DatabaseTableType.SORMAS, CAMPAIGNS, "campaign_from_meta"),
 	CAMPAIGN_FORM_DATA(DatabaseTableType.SORMAS, CAMPAIGNS, "campaign_from_data"),
 	CAMPAIGN_DIAGRAM_DEFINITIONS(DatabaseTableType.SORMAS, CAMPAIGNS, "campaign_diagram_definitions"),
 
-	LAB_MESSAGES(DatabaseTableType.SORMAS, null, "lab_messages"),
-	TEST_REPORTS(DatabaseTableType.SORMAS, LAB_MESSAGES, "test_reports"),
+	LAB_MESSAGES(DatabaseTableType.EXTERNAL, "lab_messages", dependingOnFeature(FeatureType.LAB_MESSAGES)),
+	TEST_REPORTS(DatabaseTableType.EXTERNAL, LAB_MESSAGES, "test_reports"),
 
-	SORMAS_TO_SORMAS_ORIGIN_INFO(DatabaseTableType.SORMAS, null, "sormas_to_sormas_origin_info"),
-	SORMAS_TO_SORMAS_SHARE_INFO(DatabaseTableType.SORMAS, null, "sormas_to_sormas_share_info"),
-	SORMAS_TO_SORMAS_SHARE_REQUESTS(DatabaseTableType.SORMAS, null, "sormas_to_sormas_share_requests"),
-	SHARE_REQUEST_INFO(DatabaseTableType.SORMAS, null, "share_request_info"),
-	EXTERNAL_SHARE_INFO(DatabaseTableType.SORMAS, null, "external_share_info"),
+	SORMAS_TO_SORMAS_ORIGIN_INFO(DatabaseTableType.EXTERNAL, null, "sormas_to_sormas_origin_info", dependingOnS2S()),
+	SORMAS_TO_SORMAS_SHARE_INFO(DatabaseTableType.EXTERNAL, null, "sormas_to_sormas_share_info", dependingOnS2S()),
+	SORMAS_TO_SORMAS_SHARE_REQUESTS(DatabaseTableType.EXTERNAL, null, "sormas_to_sormas_share_requests", dependingOnS2S()),
+	SHARE_REQUEST_INFO(DatabaseTableType.EXTERNAL, null, "share_request_info", dependingOnS2S()),
 
-	USERS(DatabaseTableType.SORMAS, null, "users"),
+	EXTERNAL_SHARE_INFO(DatabaseTableType.EXTERNAL, null, "external_share_info", dependingOnConfiguration(ConfigFacade::isExternalSurveillanceToolGatewayConfigured)),
+
+	USERS(DatabaseTableType.SORMAS, "users", null),
 	USER_ROLES(DatabaseTableType.SORMAS, USERS, "user_roles"),
 
-	POPULATION_DATA(DatabaseTableType.INFRASTRUCTURE, null, "population_data"),
-	SURVEILLANCE_REPORTS(DatabaseTableType.SORMAS, null, "surveillance_reports"),
-	AGGREGATE_REPORTS(DatabaseTableType.SORMAS, null, "aggregate_reports"),
-	WEEKLY_REPORTS(DatabaseTableType.SORMAS, null, "weekly_reports"),
-	WEEKLY_REPORT_ENTRIES(DatabaseTableType.SORMAS, null, "weekly_report_entries"),
-	DOCUMENTS(DatabaseTableType.SORMAS, null, "documents"),
+	POPULATION_DATA(DatabaseTableType.INFRASTRUCTURE, "population_data", null),
+	AGGREGATE_REPORTS(DatabaseTableType.SORMAS, "aggregate_reports", dependingOnFeature(FeatureType.AGGREGATE_REPORTING)),
+	WEEKLY_REPORTS(DatabaseTableType.SORMAS, "weekly_reports", dependingOnFeature(FeatureType.WEEKLY_REPORTING)),
+	WEEKLY_REPORT_ENTRIES(DatabaseTableType.SORMAS, WEEKLY_REPORTS, "weekly_report_entries"),
 
-	EXPORT_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, null, "export_configurations"),
-	FEATURE_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, null, "feature_configurations"),
-	DISEASE_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, null, "disease_configurations"),
-	DELETION_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, null, "deletion_configurations");
+	DOCUMENTS(DatabaseTableType.SORMAS, "documents", dependingOnFeature(FeatureType.DOCUMENTS)),
+
+	EXPORT_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, "export_configurations", dependingOnFeature(FeatureType.CASE_SURVEILANCE, FeatureType.CONTACT_TRACING, FeatureType.EVENT_SURVEILLANCE, FeatureType.SAMPLES_LAB, FeatureType.TASK_MANAGEMENT, FeatureType.CASE_FOLLOWUP)),
+	FEATURE_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, "feature_configurations", null),
+	DISEASE_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, "disease_configurations", null),
+	DELETION_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, "deletion_configurations", null);
+
+	private static BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> dependingOnFeature(FeatureType ...featureTypes) {
+		return (featureConfigurations, configFacade) -> featureConfigurations.stream().anyMatch(cc -> ArrayUtils.contains(featureTypes, cc.getFeatureType()) && cc.isEnabled());
+	}
+
+	private static BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> dependingOnS2S() {
+		return (featureConfigurations, configFacade) -> configFacade.isS2SConfigured();
+	}
+
+	private static BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> dependingOnConfiguration(Function<ConfigFacade, Boolean> isConfigured) {
+		return (featureConfigurations, configFacade) -> isConfigured.apply(configFacade);
+	}
 
 	private final DatabaseTableType databaseTableType;
 	private final DatabaseTable parentTable;
 	private final String fileName;
+	private final BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> enabledSupplier;
+
+	DatabaseTable(DatabaseTableType databaseTableType, String fileName, BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> enabledSupplier) {
+		this(databaseTableType, null, fileName, enabledSupplier);
+	}
 
 	DatabaseTable(DatabaseTableType databaseTableType, DatabaseTable parentTable, String fileName) {
+		this(databaseTableType, parentTable, fileName, null);
+	}
 
+	DatabaseTable(DatabaseTableType databaseTableType, DatabaseTable parentTable, String fileName, BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> enabledSupplier) {
 		this.databaseTableType = databaseTableType;
 		this.parentTable = parentTable;
 		this.fileName = fileName;
+		this.enabledSupplier = enabledSupplier;
 	}
 
 	public String toString() {
@@ -118,5 +158,15 @@ public enum DatabaseTable {
 
 	public String getFileName() {
 		return fileName;
+	}
+
+	public boolean isEnabled(List<FeatureConfigurationDto> featureConfigurations, ConfigFacade configFacade){
+		if(enabledSupplier != null) {
+			return enabledSupplier.apply(featureConfigurations, configFacade);
+		} else if(parentTable != null) {
+			return parentTable.isEnabled(featureConfigurations, configFacade);
+		}
+
+		return  true;
 	}
 }

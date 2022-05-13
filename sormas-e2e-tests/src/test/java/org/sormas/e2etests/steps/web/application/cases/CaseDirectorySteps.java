@@ -21,6 +21,7 @@ package org.sormas.e2etests.steps.web.application.cases;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALLBUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS_ARCHIVE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS_VALUES;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_CREATE_QUARANTINE_ORDER;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASES_FROM_OTHER_INSTANCES_CHECKBOX;
@@ -95,6 +96,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getC
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getCheckboxByIndex;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getResultByIndex;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE_DEFINITION_TEXT;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON;
@@ -126,9 +128,10 @@ import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.FacilityCategory;
 import org.sormas.e2etests.enums.FollowUpStatus;
 import org.sormas.e2etests.enums.PresentCondition;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
@@ -151,7 +154,7 @@ public class CaseDirectorySteps implements En {
       AssertHelpers assertHelpers,
       SoftAssert softly,
       Faker faker,
-      EnvironmentManager environmentManager) {
+      RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
 
@@ -281,6 +284,19 @@ public class CaseDirectorySteps implements En {
         });
 
     When(
+        "^I select two last created API result in grid in Case Directory for Bulk Action$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          for (int i = 0; i <= 1; i++) {
+            webDriverHelpers.scrollToElement(
+                getCheckboxByUUID(apiState.getCreatedCases().get(i).getUuid()));
+            webDriverHelpers.clickOnWebElementBySelector(
+                getCheckboxByUUID(apiState.getCreatedCases().get(i).getUuid()));
+            webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          }
+        });
+
+    When(
         "I click on the Epidemiological data button tab in Case form",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CASE_EPIDEMIOLOGICAL_DATA_TAB);
@@ -339,7 +355,8 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.fillAndSubmitInWebElement(NAME_UUID_EPID_NUMBER_LIKE_INPUT, caseUUID);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               getCaseResultsUuidLocator(caseUUID));
-          webDriverHelpers.clickOnWebElementBySelector(getCaseResultsUuidLocator(caseUUID));
+          TimeUnit.SECONDS.sleep(1); // wait for system reaction
+          webDriverHelpers.doubleClickOnWebElementBySelector(getCaseResultsUuidLocator(caseUUID));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
 
@@ -347,7 +364,7 @@ public class CaseDirectorySteps implements En {
         "^I navigate to the last created case via the url$",
         () -> {
           String LAST_CREATED_CASE_URL =
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!cases/data/"
                   + apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
@@ -602,6 +619,20 @@ public class CaseDirectorySteps implements En {
                           ZoneId.systemDefault())
                       .minusDays(number)));
         });
+
+    And(
+        "I fill Cases from input to {int} days before mocked two Case created on Case directory page via api",
+        (Integer number) -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+          webDriverHelpers.fillInWebElement(
+              DATE_FROM_COMBOBOX,
+              formatter.format(
+                  LocalDate.ofInstant(
+                          apiState.getCreatedCases().get(0).getReportDate().toInstant(),
+                          ZoneId.systemDefault())
+                      .minusDays(number)));
+        });
+
     And(
         "I fill Cases from input to {int} days before UI Case created on Case directory page",
         (Integer number) -> {
@@ -923,6 +954,21 @@ public class CaseDirectorySteps implements En {
                           "SORMAS_Import_Guide was not downloaded. Searching path was: %s",
                           path.toAbsolutePath())),
               20);
+        });
+
+    When(
+        "I click on the Archive bulk cases on Case Directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS_ARCHIVE);
+        });
+
+    When(
+        "I confirm archive bulk cases and select Archive related contacts checkbox",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_RELATED_CONTACTS_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(EditContactPage.DELETE_POPUP_YES_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // wait for response after confirm
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
   }
 
