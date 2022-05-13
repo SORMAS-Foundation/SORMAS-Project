@@ -19,6 +19,7 @@ package org.sormas.e2etests.enums;
 
 import lombok.Getter;
 
+// TODO refactor class usage
 @Getter
 public enum FacilityUUIDs {
   OtherFacility("SORMAS-CONSTID-OTHERS-FACILITY"),

@@ -125,6 +125,7 @@ public class EventDirectoryPage {
   public static final By CUSTOM_EXPORT_PARTICIPANT_BUTTON = By.id("exportCustom");
   public static final By DETAILED_EVENT_EXPORT_BUTTON = By.id("exportDetailed");
   public static final By BASIC_EVENT_EXPORT_BUTTON = By.id("exportBasic");
+  public static final By CONFIRM_POPUP_BUTTON = By.cssSelector(".popupContent #actionConfirm");
 
   public static By getCheckboxByIndex(String idx) {
     return By.xpath(String.format("(//input[@type=\"checkbox\"])[%s]", idx));

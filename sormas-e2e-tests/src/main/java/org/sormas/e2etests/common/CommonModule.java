@@ -31,7 +31,7 @@ import java.util.Locale;
 import java.util.Properties;
 import javax.inject.Singleton;
 import lombok.SneakyThrows;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.webdriver.DriverManager;
 import org.testng.asserts.SoftAssert;
 
@@ -53,8 +53,8 @@ public class CommonModule extends PrivateModule {
   @Provides
   @Singleton
   @Exposed
-  EnvironmentManager provideEnvManager() {
-    return new EnvironmentManager();
+  RunningConfiguration provideRunningConfiguration() {
+    return new RunningConfiguration();
   }
 
   @Provides

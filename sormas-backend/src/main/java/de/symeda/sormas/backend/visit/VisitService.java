@@ -230,6 +230,22 @@ public class VisitService extends BaseAdoService<Visit> {
 	}
 
 	/**
+	 * Should only be used with the UUIDs of persons that are not associated to any contact or case anymore
+	 * in order to avoid foreign key constraint errors.
+	 */
+	public void deletePersonVisits(List<String> personUuids) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Visit> cq = cb.createQuery(Visit.class);
+		Root<Visit> visitRoot = cq.from(Visit.class);
+		Join<Visit, Person> visitPersonJoin = visitRoot.join(Visit.PERSON, JoinType.LEFT);
+
+		cq.where(visitPersonJoin.get(AbstractDomainObject.UUID).in(personUuids));
+
+		em.createQuery(cq).getResultList().forEach(this::deletePermanent);
+	}
+
+	/**
 	 * Returns a filter that can be used to retrieve all visits with the specified person and disease
 	 * whose visit date is after the start date and before the end date.
 	 */
