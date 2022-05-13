@@ -364,9 +364,9 @@ public class CaseDirectorySteps implements En {
     When(
         "^I open the last created Case via API",
         () -> {
-          TimeUnit.SECONDS.sleep(2); // wait for system reaction
           String caseUUID = apiState.getCreatedCase().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(NAME_UUID_EPID_NUMBER_LIKE_INPUT, caseUUID);
+          TimeUnit.SECONDS.sleep(2); // wait for system reaction
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               getCaseResultsUuidLocator(caseUUID));
           TimeUnit.SECONDS.sleep(1); // wait for system reaction
