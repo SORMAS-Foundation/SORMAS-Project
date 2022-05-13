@@ -20,11 +20,27 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 
-public class LocationHelper {
+public final class LocationHelper {
 
 	private LocationHelper() {
+		// Hide Utility Class Constructor
+	}
+
+	public static String buildGpsCoordinatesCaption(Double latitude, Double longitude, Float latLonAccuracy) {
+
+		if (latitude == null && longitude == null) {
+			return "";
+		} else if (latitude == null || longitude == null) {
+			return I18nProperties.getString(Strings.messageIncompleteGpsCoordinates);
+		} else if (latLonAccuracy == null) {
+			return latitude + ", " + longitude;
+		} else {
+			return latitude + ", " + longitude + " +-" + Math.round(latLonAccuracy) + "m";
+		}
 	}
 
 	public static String buildLocationString(LocationDto location) {

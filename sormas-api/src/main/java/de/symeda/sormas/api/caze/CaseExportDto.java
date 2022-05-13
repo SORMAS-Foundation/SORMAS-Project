@@ -36,7 +36,6 @@ import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.importexport.ExportEntity;
 import de.symeda.sormas.api.importexport.ExportGroup;
@@ -65,6 +64,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnUserRight;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
+import de.symeda.sormas.api.utils.LocationHelper;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -119,10 +119,9 @@ public class CaseExportDto implements Serializable {
 	private String country;
 	private long id;
 	private long personId;
-	private long personAddressId;
 	private long epiDataId;
-	private long symptomsId;
 	private long hospitalizationId;
+	private long symptomsId;
 	private long healthConditionsId;
 	private String uuid;
 	private String epidNumber;
@@ -348,7 +347,8 @@ public class CaseExportDto implements Serializable {
 	private Boolean isInJurisdiction;
 
 	//@formatter:off
-	public CaseExportDto(long id, long personId, long personAddressId, long epiDataId, long symptomsId,
+	@SuppressWarnings("unchecked")
+	public CaseExportDto(long id, long personId, Double personAddressLatitude, Double personAddressLongitude, Float personAddressLatLonAcc, long epiDataId, long symptomsId,
 						 long hospitalizationId, long healthConditionsId, String uuid, String epidNumber,
 						 Disease disease, DiseaseVariant diseaseVariant, String diseaseDetails, String diseaseVariantDetails,
 						 String personUuid, String firstName, String lastName, Salutation salutation, String otherSalutation, Sex sex, YesNoUnknown pregnant,
@@ -380,7 +380,8 @@ public class CaseExportDto implements Serializable {
 						 OccupationType occupationType, String occupationDetails, ArmedForcesRelationType ArmedForcesRelationType, YesNoUnknown contactWithSourceCaseKnown,
 						 //Date onsetDate,
 						 VaccinationStatus vaccinationStatus, YesNoUnknown postpartum, Trimester trimester,
-						 long eventCount, String externalID, String externalToken, String internalToken,
+						 long eventCount, Long prescriptionCount, Long treatmentCount, Long clinicalVisitCount,
+						 String externalID, String externalToken, String internalToken,
 						 String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
 						 CaseIdentificationSource caseIdentificationSource, ScreeningType screeningType,
 						 // responsible jurisdiction
@@ -390,13 +391,13 @@ public class CaseExportDto implements Serializable {
 						 // users
 						 Long reportingUserId, Long followUpStatusChangeUserId,
 						 Date previousQuarantineTo, String quarantineChangeComment,
-						 boolean isInJurisdiction
+						 String associatedWithOutbreak, boolean isInJurisdiction
 	) {
 		//@formatter:on
 
 		this.id = id;
 		this.personId = personId;
-		this.personAddressId = personAddressId;
+		this.addressGpsCoordinates = LocationHelper.buildGpsCoordinatesCaption(personAddressLatitude, personAddressLongitude, personAddressLatLonAcc);
 		this.epiDataId = epiDataId;
 		this.symptomsId = symptomsId;
 		this.hospitalizationId = hospitalizationId;
@@ -498,7 +499,12 @@ public class CaseExportDto implements Serializable {
 		this.trimester = trimester;
 		this.followUpStatus = followUpStatus;
 		this.followUpUntil = followUpUntil;
+		
 		this.eventCount = eventCount;
+		this.numberOfPrescriptions = prescriptionCount != null ? prescriptionCount.intValue() : 0;
+		this.numberOfTreatments = treatmentCount != null ? treatmentCount.intValue() : 0;
+		this.numberOfClinicalVisits = clinicalVisitCount != null ? clinicalVisitCount.intValue() : 0;
+
 		this.externalID = externalID;
 		this.externalToken = externalToken;
 		this.internalToken = internalToken;
@@ -522,6 +528,7 @@ public class CaseExportDto implements Serializable {
 		this.previousQuarantineTo = previousQuarantineTo;
 		this.quarantineChangeComment = quarantineChangeComment;
 
+		this.associatedWithOutbreak = associatedWithOutbreak;
 		this.isInJurisdiction = isInJurisdiction;
 	}
 
@@ -557,10 +564,6 @@ public class CaseExportDto implements Serializable {
 		return personId;
 	}
 
-	public long getPersonAddressId() {
-		return personAddressId;
-	}
-
 	public long getEpiDataId() {
 		return epiDataId;
 	}
@@ -569,12 +572,12 @@ public class CaseExportDto implements Serializable {
 		return symptomsId;
 	}
 
-	public long getHospitalizationId() {
-		return hospitalizationId;
+	public void setSymptomsId(long symptomsId) {
+		this.symptomsId = symptomsId;
 	}
 
-	public long getHealthConditionsId() {
-		return healthConditionsId;
+	public long getHospitalizationId() {
+		return hospitalizationId;
 	}
 
 	@Order(2)
@@ -2371,24 +2374,36 @@ public class CaseExportDto implements Serializable {
 		this.personId = personId;
 	}
 
-	public void setPersonAddressId(long personAddressId) {
-		this.personAddressId = personAddressId;
-	}
-
 	public void setEpiDataId(long epiDataId) {
 		this.epiDataId = epiDataId;
 	}
 
-	public void setSymptomsId(long symptomsId) {
-		this.symptomsId = symptomsId;
-	}
-
-	public void setHospitalizationId(long hospitalizationId) {
-		this.hospitalizationId = hospitalizationId;
+	public long getHealthConditionsId() {
+		return healthConditionsId;
 	}
 
 	public void setHealthConditionsId(long healthConditionsId) {
 		this.healthConditionsId = healthConditionsId;
+	}
+
+	public void setDisease(Disease disease) {
+		this.disease = disease;
+	}
+
+	public void setDiseaseDetails(String diseaseDetails) {
+		this.diseaseDetails = diseaseDetails;
+	}
+
+	public void setDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.diseaseVariantDetails = diseaseVariantDetails;
+	}
+
+	public void setPersonUuid(String personUuid) {
+		this.personUuid = personUuid;
+	}
+
+	public void setHospitalizationId(long hospitalizationId) {
+		this.hospitalizationId = hospitalizationId;
 	}
 
 	public void setUuid(String uuid) {
@@ -2409,6 +2424,258 @@ public class CaseExportDto implements Serializable {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	public void setSalutation(Salutation salutation) {
+		this.salutation = salutation;
+	}
+
+	public void setOtherSalutation(String otherSalutation) {
+		this.otherSalutation = otherSalutation;
+	}
+
+	public void setBirthdate(BirthDateDto birthdate) {
+		this.birthdate = birthdate;
+	}
+
+	public void setFacilityType(FacilityType facilityType) {
+		this.facilityType = facilityType;
+	}
+
+	public void setHealthFacilityDetails(String healthFacilityDetails) {
+		this.healthFacilityDetails = healthFacilityDetails;
+	}
+
+	public void setPointOfEntryDetails(String pointOfEntryDetails) {
+		this.pointOfEntryDetails = pointOfEntryDetails;
+	}
+
+	public void setInvestigatedDate(Date investigatedDate) {
+		this.investigatedDate = investigatedDate;
+	}
+
+	public void setSequelae(YesNoUnknown sequelae) {
+		this.sequelae = sequelae;
+	}
+
+	public void setSequelaeDetails(String sequelaeDetails) {
+		this.sequelaeDetails = sequelaeDetails;
+	}
+
+	public void setBloodOrganOrTissueDonated(YesNoUnknown bloodOrganOrTissueDonated) {
+		this.bloodOrganOrTissueDonated = bloodOrganOrTissueDonated;
+	}
+
+	public void setBurialInfo(BurialInfoDto burialInfo) {
+		this.burialInfo = burialInfo;
+	}
+
+	public void setAddressRegion(String addressRegion) {
+		this.addressRegion = addressRegion;
+	}
+
+	public void setAddressDistrict(String addressDistrict) {
+		this.addressDistrict = addressDistrict;
+	}
+
+	public void setAddressCommunity(String addressCommunity) {
+		this.addressCommunity = addressCommunity;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	public void setHouseNumber(String houseNumber) {
+		this.houseNumber = houseNumber;
+	}
+
+	public void setAdditionalInformation(String additionalInformation) {
+		this.additionalInformation = additionalInformation;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
+	public void setFacilityDetails(String facilityDetails) {
+		this.facilityDetails = facilityDetails;
+	}
+
+	public void setPhoneOwner(String phoneOwner) {
+		this.phoneOwner = phoneOwner;
+	}
+
+	public void setOccupationType(OccupationType occupationType) {
+		this.occupationType = occupationType;
+	}
+
+	public void setOccupationDetails(String occupationDetails) {
+		this.occupationDetails = occupationDetails;
+	}
+
+	public void setEducationType(EducationType educationType) {
+		this.educationType = educationType;
+	}
+
+	public void setEducationDetails(String educationDetails) {
+		this.educationDetails = educationDetails;
+	}
+
+	public void setOtherSamples(List<EmbeddedSampleExportDto> otherSamples) {
+		this.otherSamples = otherSamples;
+	}
+
+	public void setNosocomialOutbreak(Boolean nosocomialOutbreak) {
+		this.nosocomialOutbreak = nosocomialOutbreak;
+	}
+
+	public void setInfectionSetting(InfectionSetting infectionSetting) {
+		this.infectionSetting = infectionSetting;
+	}
+
+	public void setProhibitionToWork(YesNoUnknown prohibitionToWork) {
+		this.prohibitionToWork = prohibitionToWork;
+	}
+
+	public void setProhibitionToWorkFrom(Date prohibitionToWorkFrom) {
+		this.prohibitionToWorkFrom = prohibitionToWorkFrom;
+	}
+
+	public void setProhibitionToWorkUntil(Date prohibitionToWorkUntil) {
+		this.prohibitionToWorkUntil = prohibitionToWorkUntil;
+	}
+
+	public void setReInfection(YesNoUnknown reInfection) {
+		this.reInfection = reInfection;
+	}
+
+	public void setPreviousInfectionDate(Date previousInfectionDate) {
+		this.previousInfectionDate = previousInfectionDate;
+	}
+
+	public void setReinfectionStatus(ReinfectionStatus reinfectionStatus) {
+		this.reinfectionStatus = reinfectionStatus;
+	}
+
+	public void setReinfectionDetails(String reinfectionDetails) {
+		this.reinfectionDetails = reinfectionDetails;
+	}
+
+	public void setQuarantine(QuarantineType quarantine) {
+		this.quarantine = quarantine;
+	}
+
+	public void setQuarantineTypeDetails(String quarantineTypeDetails) {
+		this.quarantineTypeDetails = quarantineTypeDetails;
+	}
+
+	public void setQuarantineFrom(Date quarantineFrom) {
+		this.quarantineFrom = quarantineFrom;
+	}
+
+	public void setQuarantineTo(Date quarantineTo) {
+		this.quarantineTo = quarantineTo;
+	}
+
+	public void setQuarantineHelpNeeded(String quarantineHelpNeeded) {
+		this.quarantineHelpNeeded = quarantineHelpNeeded;
+	}
+
+	public void setQuarantineOrderedVerbally(boolean quarantineOrderedVerbally) {
+		this.quarantineOrderedVerbally = quarantineOrderedVerbally;
+	}
+
+	public void setQuarantineOrderedOfficialDocument(boolean quarantineOrderedOfficialDocument) {
+		this.quarantineOrderedOfficialDocument = quarantineOrderedOfficialDocument;
+	}
+
+	public void setQuarantineOrderedVerballyDate(Date quarantineOrderedVerballyDate) {
+		this.quarantineOrderedVerballyDate = quarantineOrderedVerballyDate;
+	}
+
+	public void setQuarantineOrderedOfficialDocumentDate(Date quarantineOrderedOfficialDocumentDate) {
+		this.quarantineOrderedOfficialDocumentDate = quarantineOrderedOfficialDocumentDate;
+	}
+
+	public void setQuarantineExtended(boolean quarantineExtended) {
+		this.quarantineExtended = quarantineExtended;
+	}
+
+	public void setQuarantineReduced(boolean quarantineReduced) {
+		this.quarantineReduced = quarantineReduced;
+	}
+
+	public void setQuarantineOfficialOrderSent(boolean quarantineOfficialOrderSent) {
+		this.quarantineOfficialOrderSent = quarantineOfficialOrderSent;
+	}
+
+	public void setQuarantineOfficialOrderSentDate(Date quarantineOfficialOrderSentDate) {
+		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
+	}
+
+	public void setEventCount(Long eventCount) {
+		this.eventCount = eventCount;
+	}
+
+	public void setBirthName(String birthName) {
+		this.birthName = birthName;
+	}
+
+	public void setBirthCountry(String birthCountry) {
+		this.birthCountry = birthCountry;
+	}
+
+	public void setCitizenship(String citizenship) {
+		this.citizenship = citizenship;
+	}
+
+	public void setResponsibleRegion(String responsibleRegion) {
+		this.responsibleRegion = responsibleRegion;
+	}
+
+	public void setResponsibleDistrict(String responsibleDistrict) {
+		this.responsibleDistrict = responsibleDistrict;
+	}
+
+	public void setResponsibleCommunity(String responsibleCommunity) {
+		this.responsibleCommunity = responsibleCommunity;
+	}
+
+	public void setClinicianName(String clinicianName) {
+		this.clinicianName = clinicianName;
+	}
+
+	public void setClinicianPhone(String clinicianPhone) {
+		this.clinicianPhone = clinicianPhone;
+	}
+
+	public void setClinicianEmail(String clinicianEmail) {
+		this.clinicianEmail = clinicianEmail;
+	}
+
+	public void setReportingUserId(Long reportingUserId) {
+		this.reportingUserId = reportingUserId;
+	}
+
+	public void setFollowUpStatusChangeUserId(Long followUpStatusChangeUserId) {
+		this.followUpStatusChangeUserId = followUpStatusChangeUserId;
+	}
+
+	public void setReportingUserRoles(String reportingUserRoles) {
+		this.reportingUserRoles = reportingUserRoles;
+	}
+
+	public void setFollowUpStatusChangeUserRoles(String followUpStatusChangeUserRoles) {
+		this.followUpStatusChangeUserRoles = followUpStatusChangeUserRoles;
+	}
+
+	public void setInJurisdiction(Boolean inJurisdiction) {
+		isInJurisdiction = inJurisdiction;
 	}
 
 	public void setSex(Sex sex) {
@@ -2519,8 +2786,8 @@ public class CaseExportDto implements Serializable {
 		this.outcomeDate = outcomeDate;
 	}
 
-	public void setAssociatedWithOutbreak(boolean associatedWithOutbreak) {
-		this.associatedWithOutbreak = associatedWithOutbreak ? I18nProperties.getString(Strings.yes) : I18nProperties.getString(Strings.no);
+	public void setAssociatedWithOutbreak(String associatedWithOutbreak) {
+		this.associatedWithOutbreak = associatedWithOutbreak;
 	}
 
 	public void setDeathDate(Date deathDate) {
