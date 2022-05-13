@@ -24,6 +24,7 @@ public class EditEventPage {
   public static final By EVENT_PARTICIPANTS_TAB =
       By.cssSelector("#tab-events-eventparticipants span");
   public static final By FIRST_EVENT_PARTICIPANT = By.xpath("//table/tbody/tr[1]/td[1]//a");
+  public static final By FIRST_RESULT_IN_EVENT_PARTICIPANT_TABLE = By.xpath("//td//a");
   public static final By FIRST_ARCHIVED_EVENT_PARTICIPANT = By.xpath("//table/tbody/tr[1]/td[2]");
   public static final By EVENT_ACTIONS_TAB = By.cssSelector("#tab-events-eventactions span");
   public static final By UUID_INPUT = By.id("uuid");
@@ -134,6 +135,13 @@ public class EditEventPage {
       By.xpath("//label[text()='Wasserprobe']");
   public static final By OTHER_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE =
       By.xpath("//label[text()='Sonstiges']");
+  public static final By COUNTRY_INFO_POPUP_TEXT = By.xpath("//div[@class='v-tooltip-text']");
+  public static final By COUNTRY_INFO_ICON =
+      By.xpath("//span[contains(@class, 'v-icon-info_circle')]");
+  public static final By COUNTRY_COMBOBOX =
+      By.cssSelector("[id='country'] [class='v-filterselect-button']");
+  public static final By COUNTRY_COMBOBOX_DIABLED =
+      By.xpath("//div[@id=\"country\" and contains(@class, 'v-disabled')]");
   public static final By
       PATHOGEN_FINE_TYPING_COMPLIANT_WITH_THE_ONE_OF_CASES_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE =
           By.xpath(
