@@ -235,9 +235,11 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 
 		List<UserReferenceDto> usersHavingCaseInJurisdiction = getUserFacade().getUsersHavingCaseInJurisdiction(caze.toReference());
 		Assert.assertNotNull(usersHavingCaseInJurisdiction);
-		Assert.assertEquals(3, usersHavingCaseInJurisdiction.size()); // contains also admin as test admin user is also national user
+		Assert.assertEquals(5, usersHavingCaseInJurisdiction.size()); // contains also admin as test admin user is also national user
 		Assert.assertTrue(usersHavingCaseInJurisdiction.contains(nationalUser));
 		Assert.assertTrue(usersHavingCaseInJurisdiction.contains(districtUser1));
+		Assert.assertTrue(usersHavingCaseInJurisdiction.contains(districtUser11));
+		Assert.assertTrue(usersHavingCaseInJurisdiction.contains(districtUser12));
 		Assert.assertFalse(usersHavingCaseInJurisdiction.contains(inactiveUser));
 	}
 
