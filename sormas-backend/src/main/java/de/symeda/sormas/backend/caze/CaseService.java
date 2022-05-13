@@ -356,7 +356,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
 		final From<?, Case> root = caseQueryContext.getRoot();
-		final CriteriaQuery<?> cq = caseQueryContext.getQuery();
 		final CaseJoins joins = caseQueryContext.getJoins();
 
 		Predicate filter = createActiveCasesFilter(cb, root);
