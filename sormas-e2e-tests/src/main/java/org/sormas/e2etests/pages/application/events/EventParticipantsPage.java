@@ -60,7 +60,14 @@ public class EventParticipantsPage {
       By.cssSelector("[scroll] [role='dialog']:nth-of-type(5) #commit");
   public static final By DELETE_EVENT_PARTICIPANT_BUTTTON = By.cssSelector("div#delete");
   public static final By CONFIRM_DELETION_OF_EVENT_PARTICIPANT = By.id("actionConfirm");
+  public static final By CONFIRM_ACTION = By.id("actionConfirm");
   public static final By POPUP_DISCARD_CHANGES_BUTTON = By.id("actionCancel");
+  public static final By POPUP_CANCEL_ACTION_BUTTON = By.id("unsavedChanges.cancel");
+  public static final By EVENT_PARTICIPANT_UUID =
+      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(1) >a");
+  public static final By DESCRIPTION_OF_CREATE_CASE_FROM_EVENT_PARTICIPANT =
+      By.xpath(
+          "//div[@class='v-window-outerheader'][contains(.,'Create case from event participant with positive test result?')]");
 
   public static final By getEventsByCaseUuid(String uuid) {
     return By.cssSelector(String.format("[title = '%s']", uuid));

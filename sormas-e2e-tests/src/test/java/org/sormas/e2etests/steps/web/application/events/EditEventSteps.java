@@ -55,6 +55,7 @@ import java.util.concurrent.TimeUnit;
 import static org.sormas.e2etests.pages.application.actions.CreateNewActionPage.NEW_ACTION_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CASE_CONTROL_STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.COHORT_STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
@@ -127,6 +128,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.TO
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ADD_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.APPLY_FILTERS_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_ACTION;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_BUTTON_FOR_SELECT_PERSON_FROM_ADD_PARTICIPANTS_WINDOW;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_DELETION_OF_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_NAVIGATION_POPUP;
@@ -135,6 +137,7 @@ import static org.sormas.e2etests.pages.application.events.EventParticipantsPage
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ERROR_MESSAGE_TEXT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANTS_TAB;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANT_UUID;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PARTICIPANT_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PARTICIPANT_FIRST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PARTICIPANT_LAST_NAME_INPUT;
@@ -168,6 +171,7 @@ public class EditEventSteps implements En {
   public static Event createdEvent;
   public static EventGroup groupEvent;
   public static Person person;
+  public static String eventParticpantId;
   public static EventHandout aEventHandout;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
   public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
@@ -874,6 +878,75 @@ public class EditEventSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
         });
+
+    When(
+        "^I collect the event participant UUID displayed in event participants list$",
+        () -> {
+          eventParticpantId = collectEventParticipantUuid();
+        });
+
+    When(
+        "I navigate to a specific Event Participant of an Event based on UUID",
+        () -> {
+          String LAST_CREATED_EVENT_EVENT_PARTICIPANT_URL =
+              environmentManager.getEnvironmentUrlForMarket(locale)
+                  + "/sormas-ui/#!events/eventparticipants/data/"
+                  + eventParticpantId;
+          webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_EVENT_PARTICIPANT_URL);
+          webDriverHelpers.waitForPageLoaded();
+        });
+
+    When(
+        "^I click on New Sample and discard changes is asked$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(NEW_SAMPLE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(POPUP_DISCARD_CHANGES_BUTTON, 30)) {
+            webDriverHelpers.clickOnWebElementBySelector(POPUP_DISCARD_CHANGES_BUTTON);
+          }
+        });
+
+    //    When(
+    //        "^I discard changes popup window or cancel if not working$",
+    //        () -> {
+    //          if (webDriverHelpers.isElementVisibleWithTimeout(POPUP_DISCARD_CHANGES_BUTTON, 30))
+    // {
+    //            webDriverHelpers.clickOnWebElementBySelector(POPUP_DISCARD_CHANGES_BUTTON);
+    //          }
+    //          TimeUnit.SECONDS.sleep(2);
+    //          if (webDriverHelpers.isElementVisibleWithTimeout(POPUP_DISCARD_CHANGES_BUTTON, 30))
+    // {
+    //            webDriverHelpers.clickOnWebElementBySelector(POPUP_DISCARD_CHANGES_BUTTON);
+    //          }
+    //          TimeUnit.SECONDS.sleep(2);
+    //          if (webDriverHelpers.isElementVisibleWithTimeout(POPUP_DISCARD_CHANGES_BUTTON, 30))
+    // {
+    //            webDriverHelpers.clickOnWebElementBySelector(POPUP_CANCEL_ACTION_BUTTON);
+    //          }
+    //        });
+
+    When(
+        "^I confirm all actions until unsaved changes popup window disappears$",
+        () -> {
+          //          do {
+          //            WebElement element =
+          //                webDriverHelpers.returnTheVisibleAndClickableElement(CONFIRM_ACTION);
+          //            webDriverHelpers.clickOnWebElement(element);
+          //          } while (webDriverHelpers.isElementVisibleWithTimeout(CONFIRM_ACTION, 30));
+        });
+
+    When(
+        "^I confirm last popup window when there are multiple ones$",
+        () -> {
+          do {
+            int numberOfElements = webDriverHelpers.getNumberOfElements(CONFIRM_ACTION);
+            webDriverHelpers.clickOnWebElementBySelectorAndIndex(
+                CONFIRM_ACTION, numberOfElements - 1);
+          } while (webDriverHelpers.isElementVisibleWithTimeout(CONFIRM_ACTION, 30));
+        });
+  }
+
+  private String collectEventParticipantUuid() {
+    return webDriverHelpers.getAttributeFromWebElement(EVENT_PARTICIPANT_UUID, "title");
   }
 
   private Person collectPersonUuid() {

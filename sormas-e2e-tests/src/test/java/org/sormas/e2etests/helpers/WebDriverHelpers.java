@@ -950,4 +950,20 @@ public class WebDriverHelpers {
           "Cannot close active window and switch to parent window because only one is available!");
     }
   }
+
+  public WebElement returnTheVisibleAndClickableElement(By selector) {
+    List<WebElement> elements = baseSteps.getDriver().findElements(selector);
+    for (WebElement element : elements) {
+      if (element.isDisplayed() && element.isEnabled()) {
+        return element;
+      }
+    }
+    throw new NotFoundException("No element found by selector: " + selector.toString());
+  }
+
+  public void clickOnWebElement(WebElement element) {
+    log.info("Clicking on element [ {} ]", element);
+    element.click();
+    waitForPageLoaded();
+  }
 }

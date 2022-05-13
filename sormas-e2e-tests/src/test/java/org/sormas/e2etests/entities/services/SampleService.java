@@ -20,10 +20,13 @@ package org.sormas.e2etests.entities.services;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
+import org.sormas.e2etests.entities.pojo.web.Sample;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.LaboratoryValues;
+import org.sormas.e2etests.enums.PathogenTestedDisease;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
-import org.sormas.e2etests.entities.pojo.web.Sample;
-import org.sormas.e2etests.enums.*;
 
 public class SampleService {
   private final Faker faker;
@@ -62,6 +65,29 @@ public class SampleService {
         .reasonForSample("Presence of symptoms")
         .sampleID(faker.number().randomNumber(7, false))
         .commentsOnSample(currentTimeMillis + "Comment on Create Sample requests or received")
+        .build();
+  }
+
+  public Sample buildAlternateSampleWithSelectableDisease(String disease) {
+    long currentTimeMillis = System.currentTimeMillis();
+    return Sample.builder()
+        .purposeOfTheSample("INTERNAL/IN-HOUSE TESTING")
+        .dateOfCollection(LocalDate.now().minusDays(10))
+        .timeOfCollection(LocalTime.of(10, 30))
+        .sampleType("Blood")
+        .reasonForSample("Presence of symptoms")
+        .sampleID(faker.number().randomNumber(7, false))
+        .commentsOnSample(currentTimeMillis + "Comment on Create Sample requests or received")
+        .sampleTestResults("Positive")
+        .reportDate(LocalDate.now().minusDays(10))
+        .typeOfTest("Culture")
+        .testedDisease(disease)
+        .dateOfResult(LocalDate.now().minusDays(10))
+        .timeOfResult(LocalTime.of(10, 30))
+        .laboratory("Voreingestelltes Labor")
+        .resultVerifiedByLabSupervisor("YES")
+        .testResultsComment(currentTimeMillis + "Comment on new Pathogen requests or received")
+        .testResults("Positive")
         .build();
   }
 

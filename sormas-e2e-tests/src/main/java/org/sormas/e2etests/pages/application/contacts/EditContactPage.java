@@ -137,4 +137,6 @@ public class EditContactPage {
       By.cssSelector(".popupContent div[role='combobox'] div");
   public static final By CREATE_CASE_FROM_CONTACT_BUTTON = By.id("contactCreateContactCase");
   public static final By CONTACT_DATA_TITLE = By.cssSelector("[location='contactDataHeadingLoc']");
+  public static final By NUMBER_OF_TESTS_IN_SAMPLES =
+      By.cssSelector("div:nth-of-type(7) > .v-label.v-label-undef-w.v-widget");
 }

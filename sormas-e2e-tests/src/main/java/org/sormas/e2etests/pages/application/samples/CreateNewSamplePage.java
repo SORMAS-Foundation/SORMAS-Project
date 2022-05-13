@@ -116,4 +116,8 @@ public class CreateNewSamplePage {
   public static final By PROTHROMBIN_INPUT = By.cssSelector("[id='prothrombinTime']");
   public static final By HAEMOGLOBIN_INPUT = By.cssSelector("[id='haemoglobin']");
   public static final By OTHER_TESTS_INPUT = By.cssSelector("[id='otherTestResults']");
+  public static final By NEW_TEST_RESULTS_BUTTON_FOR_PATHOGEN_TESTS =
+      By.cssSelector("[id='New test result']");
+  public static final By ADD_PATHOGEN_TEST =
+      By.cssSelector(".v-window-contents .v-slot:nth-of-type(1) .v-button");
 }
