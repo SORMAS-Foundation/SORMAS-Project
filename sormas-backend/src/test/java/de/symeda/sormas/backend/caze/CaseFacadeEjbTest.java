@@ -221,7 +221,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		final SampleCriteria sampleCriteria = new SampleCriteria().region(new RegionReferenceDto(rdcf.region.getUuid(), null, null))
 			.district(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
-		Assert.assertEquals(3, getSampleFacade().getIndexList(sampleCriteria, 0, 100, null).size());
+		Assert.assertEquals(2, getSampleFacade().getIndexList(sampleCriteria, 0, 100, null).size());
 
 		Assert.assertEquals(1, getTaskFacade().getIndexList(new TaskCriteria(), 0, 100, null).size());
 
@@ -233,11 +233,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		final ContactCriteria contactCriteriaRdcf2 = new ContactCriteria().region(new RegionReferenceDto(rdcf2.region.getUuid(), null, null))
 				.district(new DistrictReferenceDto(rdcf2.district.getUuid(), null, null));
-		Assert.assertEquals(2, getContactFacade().getIndexList(contactCriteriaRdcf2, 0, 100, null).size());
+		Assert.assertEquals(1, getContactFacade().getIndexList(contactCriteriaRdcf2, 0, 100, null).size());
 
 		final ContactCriteria contactCriteriaRdcf1 = new ContactCriteria().region(new RegionReferenceDto(rdcf.region.getUuid(), null, null))
 			.district(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
-		Assert.assertEquals(2, getContactFacade().getIndexList(contactCriteriaRdcf1, 0, 100, null).size());
+		Assert.assertEquals(1, getContactFacade().getIndexList(contactCriteriaRdcf1, 0, 100, null).size());
 	}
 
 	@Test

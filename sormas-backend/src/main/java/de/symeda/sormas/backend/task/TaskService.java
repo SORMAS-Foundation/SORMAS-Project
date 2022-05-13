@@ -374,8 +374,6 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 					cb.equal(joins.getContactRegion().get(Region.UUID), regionUuid),
 					cb.equal(joins.getContactJoins().getCaseRegion().get(Region.UUID), regionUuid),
 					cb.equal(joins.getContactJoins().getCaseResponsibleRegion().get(Region.UUID), regionUuid),
-					cb.equal(joins.getContactJoins().getResultingCaseJoins().getRegion().get(Region.UUID), regionUuid),
-					cb.equal(joins.getContactJoins().getResultingCaseJoins().getResponsibleRegion().get(Region.UUID), regionUuid),
 					cb.equal(joins.getEventRegion().get(Region.UUID), regionUuid)));
 		}
 		if (taskCriteria.getDistrict() != null) {
@@ -390,8 +388,6 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 					cb.equal(joins.getContactDistrict().get(District.UUID), districtUuid),
 					cb.equal(joins.getContactJoins().getCaseDistrict().get(District.UUID), districtUuid),
 					cb.equal(joins.getContactJoins().getCaseResponsibleDistrict().get(District.UUID), districtUuid),
-					cb.equal(joins.getContactJoins().getResultingCaseJoins().getDistrict().get(District.UUID), districtUuid),
-					cb.equal(joins.getContactJoins().getResultingCaseJoins().getResponsibleDistrict().get(District.UUID), districtUuid),
 					cb.equal(joins.getEventDistrict().get(District.UUID), districtUuid)));
 		}
 		if (taskCriteria.getFreeText() != null) {

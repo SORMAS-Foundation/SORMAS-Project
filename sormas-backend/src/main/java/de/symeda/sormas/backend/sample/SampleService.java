@@ -737,9 +737,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 					cb.equal(joins.getContactRegion().get(Region.UUID), regionUuid),
 					cb.equal(joins.getContactCaseRegion().get(Region.UUID), regionUuid),
 					cb.equal(joins.getContactCaseResponsibleRegion().get(Region.UUID), regionUuid),
-					cb.equal(joins.getContactJoins().getResultingCaseJoins().getRegion().get(Region.UUID), regionUuid),
-					cb.equal(joins.getContactJoins().getResultingCaseJoins().getResponsibleRegion().get(Region.UUID), regionUuid),
-					cb.equal(joins.getEventRegion().get(Region.UUID), regionUuid)));
+					cb.equal(joins.getEventRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getEventParticipantJoins().getEventParticipantResponsibleRegion().get(Region.UUID), regionUuid)));
 		}
 		if (criteria.getDistrict() != null) {
 			final String districtUuid = criteria.getDistrict().getUuid();
@@ -753,9 +752,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 					cb.equal(joins.getContactDistrict().get(District.UUID), districtUuid),
 					cb.equal(joins.getContactCaseDistrict().get(District.UUID), districtUuid),
 					cb.equal(joins.getContactCaseResponsibleDistrict().get(District.UUID), districtUuid),
-					cb.equal(joins.getContactJoins().getResultingCaseJoins().getDistrict().get(District.UUID), districtUuid),
-					cb.equal(joins.getContactJoins().getResultingCaseJoins().getResponsibleDistrict().get(District.UUID), districtUuid),
-					cb.equal(joins.getEventDistrict().get(District.UUID), districtUuid)));
+					cb.equal(joins.getEventDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getEventParticipantJoins().getEventParticipantResponsibleDistrict().get(District.UUID), districtUuid)));
 		}
 		if (criteria.getLaboratory() != null) {
 			filter =

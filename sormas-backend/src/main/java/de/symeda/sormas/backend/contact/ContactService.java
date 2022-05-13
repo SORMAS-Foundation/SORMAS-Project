@@ -1108,9 +1108,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					cb,
 					cb.equal(joins.getDistrict().get(District.UUID), districtUuid),
 					cb.equal(joins.getCaseDistrict().get(District.UUID), districtUuid),
-					cb.equal(joins.getCaseResponsibleDistrict().get(District.UUID), districtUuid),
-					cb.equal(joins.getResultingCaseJoins().getDistrict().get(District.UUID), districtUuid),
-					cb.equal(joins.getResultingCaseJoins().getResponsibleDistrict().get(District.UUID), districtUuid)));
+					cb.equal(joins.getCaseResponsibleDistrict().get(District.UUID), districtUuid)));
 		}
 		if (contactCriteria.getCommunity() != null) {
 			String communityUuid = contactCriteria.getDistrict().getUuid();
@@ -1121,9 +1119,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					cb,
 					cb.equal(joins.getCommunity().get(Community.UUID), communityUuid),
 					cb.equal(joins.getCaseCommunity().get(Community.UUID), communityUuid),
-					cb.equal(joins.getCaseResponsibleCommunity().get(Community.UUID), communityUuid),
-					cb.equal(joins.getResultingCaseJoins().getCommunity().get(Community.UUID), communityUuid),
-					cb.equal(joins.getResultingCaseJoins().getResponsibleCommunity().get(Community.UUID), communityUuid)));
+					cb.equal(joins.getCaseResponsibleCommunity().get(Community.UUID), communityUuid)));
 		}
 		if (contactCriteria.getContactOfficer() != null) {
 			filter = CriteriaBuilderHelper
