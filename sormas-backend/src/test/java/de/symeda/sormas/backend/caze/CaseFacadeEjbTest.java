@@ -50,6 +50,8 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import de.symeda.sormas.api.common.DeleteDetails;
+import de.symeda.sormas.api.common.DeleteReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
@@ -1000,7 +1002,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
 		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
 
-		getCaseFacade().delete(caze.getUuid());
+		getCaseFacade().delete(caze.getUuid(), new DeleteDetails(DeleteReason.OTHER_REASON, null));
 
 		// Deleted flag should be set for case, sample and pathogen test; Additional test should be deleted; Contact should not have the deleted flag; Task should not be deleted
 		assertTrue(getCaseFacade().getDeletedUuidsSince(since).contains(caze.getUuid()));
@@ -1368,7 +1370,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("COU-REG-DIS-" + year + "-005", fourthCaze.getEpidNumber());
 
 		// Make sure that deleted cases are ignored when searching for the highest existing epid nummber
-		getCaseFacade().delete(fourthCaze.getUuid());
+		getCaseFacade().delete(fourthCaze.getUuid(), new DeleteDetails(DeleteReason.OTHER_REASON, null));
 
 		CaseDataDto fifthCaze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
 
@@ -2529,7 +2531,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getCaseFacade().getAllActiveUuids().size());
 		assertEquals(1, getContactFacade().getAllActiveUuids().size());
 
-		getCaseFacade().deleteWithContacts(caze.getUuid());
+		getCaseFacade().deleteWithContacts(caze.getUuid(), new DeleteDetails(DeleteReason.OTHER_REASON, null));
 
 		assertEquals(0, getCaseFacade().getAllActiveUuids().size());
 		assertEquals(0, getContactFacade().getAllActiveUuids().size());

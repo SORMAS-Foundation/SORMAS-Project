@@ -35,6 +35,8 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CoreAndPersonDto;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
+import de.symeda.sormas.api.common.DeleteDetails;
+import de.symeda.sormas.api.common.DeleteReason;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -152,7 +154,7 @@ public class ContactResource extends EntityDtoResource {
 	@POST
 	@Path("/delete")
 	public List<String> delete(List<String> uuids) {
-		return FacadeProvider.getContactFacade().deleteContacts(uuids);
+		return FacadeProvider.getContactFacade().deleteContacts(uuids, new DeleteDetails(DeleteReason.OTHER_REASON, null));
 	}
 
 	@GET

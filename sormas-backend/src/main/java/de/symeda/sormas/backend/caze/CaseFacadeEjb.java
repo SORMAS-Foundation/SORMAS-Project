@@ -71,7 +71,8 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
+import de.symeda.sormas.api.common.DeleteDetails;
+import de.symeda.sormas.api.common.DeleteReason;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -2432,25 +2433,25 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RolesAllowed(UserRight._CASE_DELETE)
-	public void delete(String caseUuid) throws ExternalSurveillanceToolException {
+	public void delete(String caseUuid, DeleteDetails deleteDetails) throws ExternalSurveillanceToolException {
 		Case caze = service.getByUuid(caseUuid);
-		deleteCase(caze);
+		deleteCase(caze, deleteDetails);
 	}
 
 	@Override
 	@RolesAllowed(UserRight._CASE_DELETE)
-	public void deleteWithContacts(String caseUuid) {
+	public void deleteWithContacts(String caseUuid, DeleteDetails deleteDetails) {
 
 		Case caze = service.getByUuid(caseUuid);
-		deleteCase(caze);
+		deleteCase(caze, deleteDetails);
 
-		Optional.of(caze.getContacts()).ifPresent(cl -> cl.forEach(c -> contactService.delete(c)));
+		Optional.of(caze.getContacts()).ifPresent(cl -> cl.forEach(c -> contactService.delete(c, deleteDetails)));
 	}
 
-	private void deleteCase(Case caze) throws ExternalSurveillanceToolException {
+	private void deleteCase(Case caze, DeleteDetails deleteDetails) throws ExternalSurveillanceToolException {
 
 		externalJournalService.handleExternalJournalPersonUpdateAsync(caze.getPerson().toReference());
-		service.delete(caze);
+		service.delete(caze, deleteDetails);
 	}
 
 	@RolesAllowed(UserRight._CASE_DELETE)
@@ -2463,7 +2464,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			casesToBeDeleted.forEach(caseToBeDeleted -> {
 				if (!caseToBeDeleted.isDeleted()) {
 					try {
-						deleteCase(caseToBeDeleted);
+						deleteCase(caseToBeDeleted, null);
 						deletedCasesUuids.add(caseToBeDeleted.getUuid());
 					} catch (ExternalSurveillanceToolException e) {
 						logger.error("The case with uuid:" + caseToBeDeleted.getUuid() + "could not be deleted");
@@ -2483,7 +2484,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		caze.setDuplicateOf(duplicateOfCase);
 		service.ensurePersisted(caze);
 
-		delete(caseUuid);
+		delete(caseUuid, new DeleteDetails(DeleteReason.DUPLICATE_ENTRIES, null));
 	}
 
 	@RolesAllowed({
@@ -2845,6 +2846,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			target.setExternalData(new HashMap<>(source.getExternalData()));
 		}
 
+		target.setDeleted(source.isDeleted());
+		target.setDeleteReason(source.getDeleteReason());
+		target.setOtherDeleteReason(source.getOtherDeleteReason());
+
 		return target;
 	}
 
@@ -3026,6 +3031,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (source.getExternalData() != null) {
 			target.setExternalData(source.getExternalData());
 		}
+
+		target.setDeleted(source.isDeleted());
+		target.setDeleteReason(source.getDeleteReason());
+		target.setOtherDeleteReason(source.getOtherDeleteReason());
 
 		return target;
 	}

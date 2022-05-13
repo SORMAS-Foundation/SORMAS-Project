@@ -42,6 +42,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.DeleteDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -230,6 +231,10 @@ public class ImmunizationFacadeEjb
 		dto.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(entity.getSormasToSormasOriginInfo()));
 		dto.setOwnershipHandedOver(entity.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
+		dto.setDeleted(entity.isDeleted());
+		dto.setDeleteReason(entity.getDeleteReason());
+		dto.setOtherDeleteReason(entity.getOtherDeleteReason());
+
 		return dto;
 	}
 
@@ -290,9 +295,9 @@ public class ImmunizationFacadeEjb
 
 	@Override
 	@RolesAllowed(UserRight._IMMUNIZATION_DELETE)
-	public void delete(String uuid) {
+	public void delete(String uuid, DeleteDetails deleteDetails) {
 		Immunization immunization = service.getByUuid(uuid);
-		service.delete(immunization);
+		service.delete(immunization, deleteDetails);
 	}
 
 	@Override
@@ -446,12 +451,12 @@ public class ImmunizationFacadeEjb
 	}
 
 	@RolesAllowed(UserRight._IMMUNIZATION_DELETE)
-	public List<String> deleteImmunizations(List<String> immunizationUuids) {
+	public List<String> deleteImmunizations(List<String> immunizationUuids, DeleteDetails deleteDetails) {
 		List<String> deletedImmunizationUuids = new ArrayList<>();
 		List<Immunization> immunizationsToBeDeleted = service.getByUuids(immunizationUuids);
 		if (immunizationsToBeDeleted != null) {
 			immunizationsToBeDeleted.forEach(immunizationToBeDeleted -> {
-				service.delete(immunizationToBeDeleted);
+				service.delete(immunizationToBeDeleted, deleteDetails);
 				deletedImmunizationUuids.add(immunizationToBeDeleted.getUuid());
 			});
 		}
@@ -521,6 +526,10 @@ public class ImmunizationFacadeEjb
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(originInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
 		}
+
+		target.setDeleted(source.isDeleted());
+		target.setDeleteReason(source.getDeleteReason());
+		target.setOtherDeleteReason(source.getOtherDeleteReason());
 
 		return target;
 	}

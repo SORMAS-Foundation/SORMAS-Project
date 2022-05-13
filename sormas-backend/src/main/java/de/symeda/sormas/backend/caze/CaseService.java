@@ -48,6 +48,7 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.DeleteDetails;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -942,19 +943,21 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@Override
-	public void delete(Case caze) {
+	public void delete(Case caze, DeleteDetails deleteDetails) {
 
 		// Soft-delete all samples that are only associated with this case
 		caze.getSamples()
 			.stream()
 			.filter(sample -> sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null)
-			.forEach(sample -> sampleService.delete(sample));
+			.forEach(sample -> sampleService.delete(sample, deleteDetails));
 
 		caseFacade.deleteCaseInExternalSurveillanceTool(caze);
 		deleteCaseLinks(caze);
+		caze.setDeleteReason(deleteDetails.getDeleteReason());
+		caze.setOtherDeleteReason(deleteDetails.getOtherDeleteReason());
 
 		// Mark the case as deleted
-		super.delete(caze);
+		super.delete(caze, deleteDetails);
 	}
 
 	private void deleteCaseLinks(Case caze) {

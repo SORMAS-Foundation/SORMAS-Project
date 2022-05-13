@@ -25,6 +25,8 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.common.DeleteDetails;
+import de.symeda.sormas.api.common.DeleteReason;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
@@ -263,12 +265,12 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 		creator.createContact(user.toReference(), person.toReference());
 		creator.createContact(user.toReference(), person5.toReference());
 		ContactDto deletedContact = creator.createContact(user.toReference(), person2.toReference());
-		getContactFacade().delete(deletedContact.getUuid());
+		getContactFacade().delete(deletedContact.getUuid(), new DeleteDetails(DeleteReason.OTHER_REASON, null));
 		// cases
 		creator.createCase(user.toReference(), person.toReference(), rdcf);
 		creator.createCase(user.toReference(), person3.toReference(), rdcf);
 		CaseDataDto deletedCase = creator.createCase(user.toReference(), person4.toReference(), rdcf);
-		getCaseFacade().delete(deletedCase.getUuid());
+		getCaseFacade().delete(deletedCase.getUuid(), new DeleteDetails(DeleteReason.OTHER_REASON, null));
 
 		// Attached to case and contact
 		creator.createVisit(person.toReference());
@@ -299,11 +301,11 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 		creator.createContact(user.toReference(), person.toReference());
 		creator.createContact(user.toReference(), person3.toReference());
 		ContactDto deletedContact = creator.createContact(user.toReference(), person2.toReference());
-		getContactFacade().delete(deletedContact.getUuid());
+		getContactFacade().delete(deletedContact.getUuid(), new DeleteDetails(DeleteReason.OTHER_REASON, null));
 		creator.createCase(user.toReference(), person3.toReference(), rdcf);
 		creator.createCase(user.toReference(), person4.toReference(), rdcf);
 		CaseDataDto deletedCaseDto = creator.createCase(user.toReference(), person5.toReference(), rdcf);
-		getCaseFacade().delete(deletedCaseDto.getUuid());
+		getCaseFacade().delete(deletedCaseDto.getUuid(), new DeleteDetails(DeleteReason.OTHER_REASON, null));
 
 		creator.createVisit(person.toReference());
 		creator.createVisit(person3.toReference());

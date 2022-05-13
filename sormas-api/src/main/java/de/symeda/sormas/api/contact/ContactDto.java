@@ -30,6 +30,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.common.DeleteReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -140,6 +141,8 @@ public class ContactDto extends SormasToSormasShareableDto {
 	public static final String VACCINATION_INFO = "vaccinationInfo";
 	public static final String PREVIOUS_QUARANTINE_TO = "previousQuarantineTo";
 	public static final String QUARANTINE_CHANGE_COMMENT = "quarantineChangeComment";
+	public static final String DELETE_REASON = "deleteReason";
+	public static final String OTHER_DELETE_REASON = "otherDeleteReason";
 
 	private CaseReferenceDto caze;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
@@ -342,6 +345,9 @@ public class ContactDto extends SormasToSormasShareableDto {
 	@SensitiveData
 	@Size(max = CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String quarantineChangeComment;
+	private boolean deleted;
+	private DeleteReason deleteReason;
+	private String otherDeleteReason;
 
 	public static ContactDto build() {
 		final ContactDto contact = new ContactDto();
@@ -1006,5 +1012,29 @@ public class ContactDto extends SormasToSormasShareableDto {
 
 	public void setQuarantineChangeComment(String quarantineChangeComment) {
 		this.quarantineChangeComment = quarantineChangeComment;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public DeleteReason getDeleteReason() {
+		return deleteReason;
+	}
+
+	public void setDeleteReason(DeleteReason deleteReason) {
+		this.deleteReason = deleteReason;
+	}
+
+	public String getOtherDeleteReason() {
+		return otherDeleteReason;
+	}
+
+	public void setOtherDeleteReason(String otherDeleteReason) {
+		this.otherDeleteReason = otherDeleteReason;
 	}
 }

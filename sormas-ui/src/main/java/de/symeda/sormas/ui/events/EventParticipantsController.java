@@ -20,6 +20,9 @@ package de.symeda.sormas.ui.events;
 import java.util.Collection;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.common.DeleteReason;
+import de.symeda.sormas.ui.utils.DeletableUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.Page;
@@ -169,11 +172,11 @@ public class EventParticipantsController {
 				Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(
+			DeletableUtils.showDeleteWithReasonPopUp(
 				String.format(I18nProperties.getString(Strings.confirmationDeleteEventParticipants), selectedRows.size()),
-				() -> {
+				(deleteDetails) -> {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getEventParticipantFacade().delete(((EventParticipantIndexDto) selectedRow).getUuid());
+						FacadeProvider.getEventParticipantFacade().delete(((EventParticipantIndexDto) selectedRow).getUuid(), deleteDetails);
 					}
 					callback.run();
 					new Notification(
@@ -186,13 +189,13 @@ public class EventParticipantsController {
 	}
 
 	public void deleteEventParticipant(String eventUuid, String personUuid, Runnable callback) {
-		VaadinUiUtil.showDeleteConfirmationWindow(
+		DeletableUtils.showDeleteWithReasonPopUp(
 			String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getString(Strings.entityEventParticipant)),
-			() -> {
+			(deleteDetails) -> {
 				EventParticipantReferenceDto eventParticipantRef =
 					FacadeProvider.getEventParticipantFacade().getReferenceByEventAndPerson(eventUuid, personUuid);
 				if (eventParticipantRef != null) {
-					FacadeProvider.getEventParticipantFacade().delete(eventParticipantRef.getUuid());
+					FacadeProvider.getEventParticipantFacade().delete(eventParticipantRef.getUuid(), deleteDetails);
 					callback.run();
 				} else {
 					Notification.show(I18nProperties.getString(Strings.errorOccurred), Type.ERROR_MESSAGE);
@@ -216,9 +219,16 @@ public class EventParticipantsController {
 			editComponent.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel(automaticDeletionInfoDto));
 		}
 
+		if (eventParticipant.isDeleted()) {
+			editComponent.getWrappedComponent().getField(EventParticipantDto.DELETE_REASON).setVisible(true);
+			if (editComponent.getWrappedComponent().getField(EventParticipantDto.DELETE_REASON).getValue()== DeleteReason.OTHER_REASON){
+				editComponent.getWrappedComponent().getField(EventParticipantDto.OTHER_DELETE_REASON).setVisible(true);
+			}
+		}
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
-			editComponent.addDeleteListener(() -> {
-				FacadeProvider.getEventParticipantFacade().delete(eventParticipant.getUuid());
+			editComponent.addDeleteWithReasonListener((deleteDetails) -> {
+				FacadeProvider.getEventParticipantFacade().delete(eventParticipant.getUuid(), deleteDetails);
 				ControllerProvider.getEventController().navigateToParticipants(eventParticipant.getEvent().getUuid());
 			}, I18nProperties.getString(Strings.entityEventParticipant));
 		}

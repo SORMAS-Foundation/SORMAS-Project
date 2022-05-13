@@ -43,6 +43,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.common.DeleteDetails;
+import de.symeda.sormas.api.common.DeleteReason;
 import de.symeda.sormas.api.i18n.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -336,7 +338,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(ContactStatus.CONVERTED, contact.getContactStatus());
 		assertEquals(FollowUpStatus.CANCELED, contact.getFollowUpStatus());
 
-		getCaseFacade().delete(caze.getUuid());
+		getCaseFacade().delete(caze.getUuid(), new DeleteDetails(DeleteReason.OTHER_REASON, null));
 		List<ContactDto> contactDtos = getContactFacade().getByPersonUuids(Arrays.asList(contactPerson.getUuid()));
 		assertEquals(1, contactDtos.size());
 		contact = contactDtos.get(0);
@@ -496,7 +498,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getVisitFacade().getVisitByUuid(visit.getUuid()));
 		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
 
-		getContactFacade().delete(contact.getUuid());
+		getContactFacade().delete(contact.getUuid(), new DeleteDetails(DeleteReason.OTHER_REASON, null));
 
 		// Deleted flag should be set for contact; Task should be deleted
 		assertTrue(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));

@@ -10,6 +10,7 @@ import javax.validation.constraints.Size;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
+import de.symeda.sormas.api.common.DeleteReason;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -27,6 +28,8 @@ public class CampaignDto extends EntityDto {
 	public static final String END_DATE = "endDate";
 	public static final String CREATING_USER = "creatingUser";
 	public static final String CAMPAIGN_FORM_METAS = "campaignFormMetas";
+	public static final String DELETE_REASON = "deleteReason";
+	public static final String OTHER_DELETE_REASON = "otherDeleteReason";
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
@@ -38,6 +41,10 @@ public class CampaignDto extends EntityDto {
 	private Set<CampaignFormMetaReferenceDto> campaignFormMetas;
 	@Valid
 	private List<CampaignDashboardElement> campaignDashboardElements;
+
+	private boolean deleted;
+	private DeleteReason deleteReason;
+	private String otherDeleteReason;
 
 	public static CampaignDto build() {
 		CampaignDto campaign = new CampaignDto();
@@ -99,5 +106,29 @@ public class CampaignDto extends EntityDto {
 
 	public void setCampaignDashboardElements(List<CampaignDashboardElement> campaignDashboardElements) {
 		this.campaignDashboardElements = campaignDashboardElements;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public DeleteReason getDeleteReason() {
+		return deleteReason;
+	}
+
+	public void setDeleteReason(DeleteReason deleteReason) {
+		this.deleteReason = deleteReason;
+	}
+
+	public String getOtherDeleteReason() {
+		return otherDeleteReason;
+	}
+
+	public void setOtherDeleteReason(String otherDeleteReason) {
+		this.otherDeleteReason = otherDeleteReason;
 	}
 }

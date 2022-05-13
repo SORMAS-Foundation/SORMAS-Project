@@ -275,7 +275,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			fluidRowLocs(6, CaseDataDto.SURVEILLANCE_OFFICER) +
 					loc(PAPER_FORM_DATES_LOC) +
 					fluidRowLocs(CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE, CaseDataDto.NATIONAL_LEVEL_DATE) +
-					loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS);
+					loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS) +
+					fluidRowLocs(CaseDataDto.DELETE_REASON) +
+					fluidRowLocs(CaseDataDto.OTHER_DELETE_REASON);
 	//@formatter:on
 
 	private final String caseUuid;
@@ -1245,6 +1247,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 			getContent().addComponent(classificationRulesButton, CLASSIFICATION_RULES_LOC);
 		}
+
+		addField(CaseDataDto.DELETE_REASON);
+		addField(CaseDataDto.OTHER_DELETE_REASON, TextArea.class).setRows(3);
+		setVisible(false, CaseDataDto.DELETE_REASON);
+		setVisible(false, CaseDataDto.OTHER_DELETE_REASON);
 
 		addValueChangeListener(e -> {
 			diseaseField.addValueChangeListener(new DiseaseChangeListener(diseaseField, getValue().getDisease()));

@@ -163,7 +163,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     fluidRowLocs(ContactDto.FOLLOW_UP_UNTIL, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC, ContactDto.OVERWRITE_FOLLOW_UP_UTIL) +
                     fluidRowLocs(ContactDto.FOLLOW_UP_COMMENT) +
                     fluidRowLocs(ContactDto.CONTACT_OFFICER, "") + loc(GENERAL_COMMENT_LOC)
-                    + fluidRowLocs(ContactDto.ADDITIONAL_DETAILS);
+                    + fluidRowLocs(ContactDto.ADDITIONAL_DETAILS) +
+					fluidRowLocs(CaseDataDto.DELETE_REASON) +
+					fluidRowLocs(CaseDataDto.OTHER_DELETE_REASON);;
     //@formatter:on
 
 	private final ViewMode viewMode;
@@ -527,6 +529,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			I18nProperties.getPrefixDescription(ContactDto.I18N_PREFIX, ContactDto.ADDITIONAL_DETAILS, "") + "\n"
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
+
+		addField(ContactDto.DELETE_REASON);
+		addField(ContactDto.OTHER_DELETE_REASON, TextArea.class).setRows(3);
+		setVisible(false, ContactDto.DELETE_REASON);
+		setVisible(false, ContactDto.OTHER_DELETE_REASON);
 
 		addFields(ContactDto.END_OF_QUARANTINE_REASON, ContactDto.END_OF_QUARANTINE_REASON_DETAILS);
 		FieldHelper.setVisibleWhen(

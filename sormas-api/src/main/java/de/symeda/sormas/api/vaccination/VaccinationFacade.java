@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.DeleteDetails;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -87,7 +88,7 @@ public interface VaccinationFacade {
 	 * Deletes the vaccination with the specified UUID, and also deletes the associated immunization if it
 	 * is not associated with any other vaccination in the database.
 	 */
-	void deleteWithImmunization(String uuid);
+	void deleteWithImmunization(String uuid, DeleteDetails deleteDetails);
 
 	VaccinationDto getByUuid(String uuid);
 

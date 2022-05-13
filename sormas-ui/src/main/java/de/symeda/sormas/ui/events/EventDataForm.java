@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -152,7 +153,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 					loc(EventDto.MEANS_OF_TRANSPORT_DETAILS) +
 					fluidRowLocs(4, EventDto.CONNECTION_NUMBER, 4, EventDto.TRAVEL_DATE) +
 					fluidRowLocs(EventDto.EVENT_LOCATION) +
-					fluidRowLocs("", EventDto.RESPONSIBLE_USER);
+					fluidRowLocs("", EventDto.RESPONSIBLE_USER) +
+					fluidRowLocs(CaseDataDto.DELETE_REASON) +
+					fluidRowLocs(CaseDataDto.OTHER_DELETE_REASON);
 	//@formatter:on
 
 	private final Boolean isCreateForm;
@@ -387,6 +390,11 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		ComboBox districtField = (ComboBox) locationForm.getFieldGroup().getField(LocationDto.DISTRICT);
 		ComboBox responsibleUserField = addField(EventDto.RESPONSIBLE_USER, ComboBox.class);
 		responsibleUserField.setNullSelectionAllowed(true);
+
+		addField(EventDto.DELETE_REASON);
+		addField(EventDto.OTHER_DELETE_REASON, TextArea.class).setRows(3);
+		setVisible(false, EventDto.DELETE_REASON);
+		setVisible(false, EventDto.OTHER_DELETE_REASON);
 
 		if (isCreateForm) {
 			locationForm.hideValidationUntilNextCommit();

@@ -1,52 +1,53 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.ui.labmessage.processing;
 
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.ui.utils.ButtonHelper;
-import de.symeda.sormas.ui.utils.CssStyles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import javax.naming.CannotProceedException;
+
+import org.apache.commons.lang3.mutable.MutableObject;
+
 import com.vaadin.server.ClientConnector;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.Registration;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.common.DeleteDetails;
+import de.symeda.sormas.api.common.DeleteReason;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
@@ -59,20 +60,25 @@ import de.symeda.sormas.ui.samples.PathogenTestForm;
 import de.symeda.sormas.ui.samples.SampleController;
 import de.symeda.sormas.ui.samples.SampleCreateForm;
 import de.symeda.sormas.ui.samples.SampleEditForm;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import javax.naming.CannotProceedException;
-import org.apache.commons.lang3.mutable.MutableObject;
 
 /**
  * Collection of common UI related functions used by processing related code placed in multiple classes
  */
 public class LabMessageProcessingUIHelper {
+
 	private LabMessageProcessingUIHelper() {
 	}
 
-	public static void showEditSampleWindow(SampleDto sample, List<PathogenTestDto> newPathogenTests, LabMessageDto labMessage, Consumer<SampleAndPathogenTests> commitHandler,
-											Runnable cancelHandler) {
+	public static void showEditSampleWindow(
+		SampleDto sample,
+		List<PathogenTestDto> newPathogenTests,
+		LabMessageDto labMessage,
+		Consumer<SampleAndPathogenTests> commitHandler,
+		Runnable cancelHandler) {
 		Window window = VaadinUiUtil.createPopupWindow();
 		MutableObject<CommitDiscardWrapperComponent<SampleEditForm>> editComponentWrapper = new MutableObject<>();
 		// discard on close without commit or discard button clicked
@@ -80,31 +86,33 @@ public class LabMessageProcessingUIHelper {
 			editComponentWrapper.getValue().discard();
 		});
 
-		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent = LabMessageProcessingUIHelper.getSampleEditComponent(sample, newPathogenTests, labMessage, commitHandler, cancelHandler, () -> {
-			// do not discard
-			closeListener.remove();
-			window.close();
-		});
+		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent =
+			LabMessageProcessingUIHelper.getSampleEditComponent(sample, newPathogenTests, labMessage, commitHandler, cancelHandler, () -> {
+				// do not discard
+				closeListener.remove();
+				window.close();
+			});
 
 		showFormWithLabMessage(labMessage, sampleEditComponent, window, I18nProperties.getString(Strings.headingEditSample), false, false);
-		sampleEditComponent.addDoneListener(() -> {
-			// prevent discard on close
-			closeListener.remove();
-			// close after commit/discard
-			window.close();
-		});
+		sampleEditComponent.addDoneListener(
+			() -> {
+				// prevent discard on close
+				closeListener.remove();
+				// close after commit/discard
+				window.close();
+			});
 	}
 
 	private static CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(
-			SampleDto sample,
-			List<PathogenTestDto> newPathogenTests,
-			LabMessageDto labMessage,
-			Consumer<SampleAndPathogenTests> commitHandler,
-			Runnable cancelHandler,
-			Runnable closeOnNavigateToRefer) {
+		SampleDto sample,
+		List<PathogenTestDto> newPathogenTests,
+		LabMessageDto labMessage,
+		Consumer<SampleAndPathogenTests> commitHandler,
+		Runnable cancelHandler,
+		Runnable closeOnNavigateToRefer) {
 		SampleController sampleController = ControllerProvider.getSampleController();
 		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent =
-				sampleController.getSampleEditComponent(sample.getUuid(), sample.isPseudonymized(), sampleController.getDiseaseOf(sample), false);
+			sampleController.getSampleEditComponent(sample.getUuid(), sample.isPseudonymized(), sampleController.getDiseaseOf(sample), false);
 
 		// add existing tests to edit component
 		int caseSampleCount = sampleController.caseSampleCountOf(sample);
@@ -114,15 +122,20 @@ public class LabMessageProcessingUIHelper {
 			PathogenTestForm pathogenTestForm = sampleController.addPathogenTestComponent(sampleEditComponent, existingTest, caseSampleCount);
 			// when the user removes the pathogen test from the sampleEditComponent, mark the pathogen test as to be removed on commit
 			pathogenTestForm.addDetachListener(
-					(ClientConnector.DetachEvent detachEvent) -> sampleEditComponent.getWrappedComponent()
-							.getTestsToBeRemovedOnCommit()
-							.add(pathogenTestForm.getValue().toReference()));
+				(ClientConnector.DetachEvent detachEvent) -> sampleEditComponent.getWrappedComponent()
+					.getTestsToBeRemovedOnCommit()
+					.add(pathogenTestForm.getValue().toReference()));
 		}
 		if (!existingTests.isEmpty()) {
 			// delete all pathogen test marked as removed on commit
 			sampleEditComponent.addCommitListener(() -> {
 				for (PathogenTestReferenceDto pathogenTest : sampleEditComponent.getWrappedComponent().getTestsToBeRemovedOnCommit()) {
-					FacadeProvider.getPathogenTestFacade().deletePathogenTest(pathogenTest.getUuid());
+					FacadeProvider.getPathogenTestFacade()
+						.deletePathogenTest(
+							pathogenTest.getUuid(),
+							new DeleteDetails(
+								DeleteReason.OTHER_REASON,
+								I18nProperties.getString(Strings.pathogenTestDeletedDuringLabMessageConversion)));
 				}
 			});
 		}
@@ -131,10 +144,10 @@ public class LabMessageProcessingUIHelper {
 
 		// add newly submitted tests to sample edit component
 		List<String> existingTestExternalIds =
-				existingTests.stream().filter(Objects::nonNull).map(PathogenTestDto::getExternalId).filter(Objects::nonNull).collect(Collectors.toList());
+			existingTests.stream().filter(Objects::nonNull).map(PathogenTestDto::getExternalId).filter(Objects::nonNull).collect(Collectors.toList());
 
 		List<PathogenTestDto> newTestsToAdd =
-				newPathogenTests.stream().filter(p -> !existingTestExternalIds.contains(p.getExternalId())).collect(Collectors.toList());
+			newPathogenTests.stream().filter(p -> !existingTestExternalIds.contains(p.getExternalId())).collect(Collectors.toList());
 
 		for (PathogenTestDto test : newTestsToAdd) {
 			PathogenTestForm form = sampleController.addPathogenTestComponent(sampleEditComponent, test, caseSampleCount);
@@ -143,14 +156,17 @@ public class LabMessageProcessingUIHelper {
 
 		// always add at least one PathogenTest
 		if (existingTests.isEmpty() && newTestsToAdd.isEmpty()) {
-			sampleController.addPathogenTestComponent(sampleEditComponent, LabMessageProcessingHelper.buildPathogenTest(null, labMessage, sample, UserProvider.getCurrent().getUser()), caseSampleCount);
+			sampleController.addPathogenTestComponent(
+				sampleEditComponent,
+				LabMessageProcessingHelper.buildPathogenTest(null, labMessage, sample, UserProvider.getCurrent().getUser()),
+				caseSampleCount);
 		}
 
 		// button configuration
 		Consumer<Disease> createReferral = (disease) -> {
 			// discard current changes and create sample referral
 			SampleDto existingSample =
-					FacadeProvider.getSampleFacade().getSampleByUuid(sampleEditComponent.getWrappedComponent().getValue().getUuid());
+				FacadeProvider.getSampleFacade().getSampleByUuid(sampleEditComponent.getWrappedComponent().getValue().getUuid());
 			createSampleReferral(existingSample, disease, labMessage, commitHandler, cancelHandler);
 
 			closeOnNavigateToRefer.run();
@@ -184,20 +200,21 @@ public class LabMessageProcessingUIHelper {
 	}
 
 	public static void showFormWithLabMessage(
-			LabMessageDto labMessage,
-			CommitDiscardWrapperComponent<? extends Component> editComponent,
-			Window window,
-			String heading,
-			boolean entityCreated) {
+		LabMessageDto labMessage,
+		CommitDiscardWrapperComponent<? extends Component> editComponent,
+		Window window,
+		String heading,
+		boolean entityCreated) {
 		showFormWithLabMessage(labMessage, editComponent, window, heading, entityCreated, true);
 	}
+
 	public static void showFormWithLabMessage(
-			LabMessageDto labMessage,
-			CommitDiscardWrapperComponent<? extends Component> editComponent,
-			Window window,
-			String heading,
-			boolean entityCreated,
-			boolean discardOnClose) {
+		LabMessageDto labMessage,
+		CommitDiscardWrapperComponent<? extends Component> editComponent,
+		Window window,
+		String heading,
+		boolean entityCreated,
+		boolean discardOnClose) {
 
 		addProcessedInMeantimeCheck(editComponent, labMessage, entityCreated);
 		LabMessageForm form = new LabMessageForm();
@@ -226,7 +243,7 @@ public class LabMessageProcessingUIHelper {
 
 		// discard on close without clicking discard/commit button
 		Registration closeListener = window.addCloseListener((e) -> {
-			if(discardOnClose) {
+			if (discardOnClose) {
 				editComponent.discard();
 			}
 		});
@@ -240,16 +257,16 @@ public class LabMessageProcessingUIHelper {
 	}
 
 	private static void createSampleReferral(
-			SampleDto existingSample,
-			Disease disease,
-			LabMessageDto labMessage,
-			Consumer<SampleAndPathogenTests> commitHandler,
-			Runnable cancelHandler) {
+		SampleDto existingSample,
+		Disease disease,
+		LabMessageDto labMessage,
+		Consumer<SampleAndPathogenTests> commitHandler,
+		Runnable cancelHandler) {
 		Window window = VaadinUiUtil.createPopupWindow();
 
 		SampleController sampleController = ControllerProvider.getSampleController();
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
-				sampleController.getSampleReferralCreateComponent(existingSample, disease);
+			sampleController.getSampleReferralCreateComponent(existingSample, disease);
 		addAllTestReportsOf(labMessage, sampleCreateComponent);
 		// add option to create additional pathogen tests
 		sampleController.addPathogenTestButton(sampleCreateComponent, true);
@@ -276,20 +293,21 @@ public class LabMessageProcessingUIHelper {
 
 		SampleController sampleController = ControllerProvider.getSampleController();
 		SampleDto sample = sampleCreateComponent.getWrappedComponent().getValue();
-		List<PathogenTestDto> pathogenTests = LabMessageProcessingHelper.buildPathogenTests(sample, labMessageDto, UserProvider.getCurrent().getUser());
+		List<PathogenTestDto> pathogenTests =
+			LabMessageProcessingHelper.buildPathogenTests(sample, labMessageDto, UserProvider.getCurrent().getUser());
 		int caseSampleCount = sampleController.caseSampleCountOf(sample);
 
 		for (PathogenTestDto pathogenTest : pathogenTests) {
 			PathogenTestForm pathogenTestCreateComponent =
-					sampleController.addPathogenTestComponent(sampleCreateComponent, pathogenTest, caseSampleCount);
+				sampleController.addPathogenTestComponent(sampleCreateComponent, pathogenTest, caseSampleCount);
 			sampleController.setViaLimsFieldChecked(pathogenTestCreateComponent);
 		}
 	}
 
 	private static void addProcessedInMeantimeCheck(
-			CommitDiscardWrapperComponent<? extends Component> createComponent,
-			LabMessageDto labMessageDto,
-			boolean entityCreated) {
+		CommitDiscardWrapperComponent<? extends Component> createComponent,
+		LabMessageDto labMessageDto,
+		boolean entityCreated) {
 		createComponent.setPrimaryCommitListener(() -> {
 			if (FacadeProvider.getLabMessageFacade().isProcessed(labMessageDto.getUuid())) {
 				createComponent.getCommitButton().setEnabled(false);
@@ -335,7 +353,8 @@ public class LabMessageProcessingUIHelper {
 			if (sample.getAssociatedCase() != null) {
 				return ButtonHelper.createButton(Captions.labMessage_deleteNewlyCreatedCase, e -> {
 					try {
-						FacadeProvider.getCaseFacade().delete(sample.getAssociatedCase().getUuid());
+						FacadeProvider.getCaseFacade()
+							.delete(sample.getAssociatedCase().getUuid(), new DeleteDetails(DeleteReason.DUPLICATE_ENTRIES, null));
 					} catch (ExternalSurveillanceToolException survToolException) {
 						// should not happen because the new case was not shared
 						throw new RuntimeException(survToolException);
@@ -343,14 +362,16 @@ public class LabMessageProcessingUIHelper {
 				}, ValoTheme.BUTTON_PRIMARY);
 			} else if (sample.getAssociatedContact() != null) {
 				return ButtonHelper.createButton(
-						Captions.labMessage_deleteNewlyCreatedContact,
-						e -> FacadeProvider.getContactFacade().delete(sample.getAssociatedContact().getUuid()),
-						ValoTheme.BUTTON_PRIMARY);
+					Captions.labMessage_deleteNewlyCreatedContact,
+					e -> FacadeProvider.getContactFacade()
+						.delete(sample.getAssociatedContact().getUuid(), new DeleteDetails(DeleteReason.DUPLICATE_ENTRIES, null)),
+					ValoTheme.BUTTON_PRIMARY);
 			} else if (sample.getAssociatedEventParticipant() != null) {
 				return ButtonHelper.createButton(
-						Captions.labMessage_deleteNewlyCreatedEventParticipant,
-						e -> FacadeProvider.getEventParticipantFacade().delete(sample.getAssociatedEventParticipant().getUuid()),
-						ValoTheme.BUTTON_PRIMARY);
+					Captions.labMessage_deleteNewlyCreatedEventParticipant,
+					e -> FacadeProvider.getEventParticipantFacade()
+						.delete(sample.getAssociatedEventParticipant().getUuid(), new DeleteDetails(DeleteReason.DUPLICATE_ENTRIES, null)),
+					ValoTheme.BUTTON_PRIMARY);
 			}
 		}
 		throw new UnsupportedOperationException("The created entity to be deleted could net be determined.");

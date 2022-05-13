@@ -12,6 +12,7 @@ import com.vaadin.ui.UI;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.DeleteReason;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -28,6 +29,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.travelentry.components.TravelEntryCreateForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
+import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
@@ -140,6 +142,13 @@ public class TravelEntryController {
 			editComponent.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel(automaticDeletionInfoDto));
 		}
 
+		if (travelEntry.isDeleted()) {
+			editComponent.getWrappedComponent().getField(TravelEntryDto.DELETE_REASON).setVisible(true);
+			if (editComponent.getWrappedComponent().getField(TravelEntryDto.DELETE_REASON).getValue() == DeleteReason.OTHER_REASON) {
+				editComponent.getWrappedComponent().getField(TravelEntryDto.OTHER_DELETE_REASON).setVisible(true);
+			}
+		}
+
 		editComponent.addCommitListener(() -> {
 			if (!travelEntryEditForm.getFieldGroup().isModified()) {
 				TravelEntryDto travelEntryDto = travelEntryEditForm.getValue();
@@ -153,8 +162,8 @@ public class TravelEntryController {
 
 		// Initialize 'Delete' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_DELETE)) {
-			editComponent.addDeleteListener(() -> {
-				FacadeProvider.getTravelEntryFacade().delete(travelEntry.getUuid());
+			editComponent.addDeleteWithReasonListener((deleteDetails) -> {
+				FacadeProvider.getTravelEntryFacade().delete(travelEntry.getUuid(), deleteDetails);
 				UI.getCurrent().getNavigator().navigateTo(TravelEntriesView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityTravel));
 		}
@@ -205,11 +214,11 @@ public class TravelEntryController {
 				Notification.Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(
+			DeletableUtils.showDeleteWithReasonPopUp(
 				String.format(I18nProperties.getString(Strings.confirmationDeleteTravelEntries), selectedRows.size()),
-				() -> {
+				(deleteDetails) -> {
 					for (TravelEntryIndexDto selectedRow : selectedRows) {
-						FacadeProvider.getTravelEntryFacade().delete(selectedRow.getUuid());
+						FacadeProvider.getTravelEntryFacade().delete(selectedRow.getUuid(), deleteDetails);
 					}
 					callback.run();
 					new Notification(

@@ -1,17 +1,14 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
@@ -24,6 +21,7 @@ import javax.validation.constraints.Size;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.common.DeleteReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -71,6 +69,8 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EXTERNAL_ORDER_ID = "externalOrderId";
 	public static final String PRELIMINARY = "preliminary";
+	public static final String DELETE_REASON = "deleteReason";
+	public static final String OTHER_DELETE_REASON = "otherDeleteReason";
 
 	@Required
 	private SampleReferenceDto sample;
@@ -124,6 +124,10 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalOrderId;
 	private Boolean preliminary;
+
+	private boolean deleted;
+	private DeleteReason deleteReason;
+	private String otherDeleteReason;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
 
@@ -350,6 +354,30 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setPreliminary(Boolean preliminary) {
 		this.preliminary = preliminary;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public DeleteReason getDeleteReason() {
+		return deleteReason;
+	}
+
+	public void setDeleteReason(DeleteReason deleteReason) {
+		this.deleteReason = deleteReason;
+	}
+
+	public String getOtherDeleteReason() {
+		return otherDeleteReason;
+	}
+
+	public void setOtherDeleteReason(String otherDeleteReason) {
+		this.otherDeleteReason = otherDeleteReason;
 	}
 
 	@Override

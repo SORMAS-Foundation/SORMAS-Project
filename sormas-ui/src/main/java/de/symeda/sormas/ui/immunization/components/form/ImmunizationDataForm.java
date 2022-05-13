@@ -29,6 +29,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.ui.Button;
@@ -112,7 +114,9 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		+ fluidRowLocs(ImmunizationDto.VACCINATIONS)
 		+ fluidRowLocs(RECOVERY_HEADING_LOC)
 		+ fluidRowLocs(ImmunizationDto.POSITIVE_TEST_RESULT_DATE, ImmunizationDto.RECOVERY_DATE, LINK_IMMUNIZATION_TO_CASE_BTN_LOC)
-		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.COUNTRY));
+		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.COUNTRY))
+		+ fluidRowLocs(CaseDataDto.DELETE_REASON)
+		+ fluidRowLocs(CaseDataDto.OTHER_DELETE_REASON);
 	//@formatter:on
 
 	private final CaseReferenceDto relatedCase;
@@ -246,6 +250,11 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		DateField positiveTestResultDate = addField(ImmunizationDto.POSITIVE_TEST_RESULT_DATE, DateField.class);
 
 		DateField recoveryDate = addField(ImmunizationDto.RECOVERY_DATE, DateField.class);
+
+		addField(ImmunizationDto.DELETE_REASON);
+		addField(ImmunizationDto.OTHER_DELETE_REASON, TextArea.class).setRows(3);
+		setVisible(false, ImmunizationDto.DELETE_REASON);
+		setVisible(false, ImmunizationDto.OTHER_DELETE_REASON);
 
 		Button linkImmunizationToCaseButton;
 		if (relatedCase != null) {

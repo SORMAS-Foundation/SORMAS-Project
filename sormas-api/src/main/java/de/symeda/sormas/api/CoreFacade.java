@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.common.DeleteDetails;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
@@ -28,7 +29,7 @@ public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 
     boolean isArchived(String uuid);
 
-    void delete(String uuid);
+    void delete(String uuid, DeleteDetails deleteDetails);
 
     boolean exists(String uuid);
 

@@ -23,6 +23,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.common.DeleteReason;
+import de.symeda.sormas.ui.utils.DeletableUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -575,6 +577,13 @@ public class ContactController {
 			editComponent.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel(automaticDeletionInfoDto));
 		}
 
+		if (contact.isDeleted()) {
+			editComponent.getWrappedComponent().getField(CaseDataDto.DELETE_REASON).setVisible(true);
+			if (editComponent.getWrappedComponent().getField(CaseDataDto.DELETE_REASON).getValue()== DeleteReason.OTHER_REASON){
+				editComponent.getWrappedComponent().getField(CaseDataDto.OTHER_DELETE_REASON).setVisible(true);
+			}
+		}
+
 		editComponent.addCommitListener(() -> {
 			if (!editForm.getFieldGroup().isModified()) {
 				ContactDto dto = editForm.getValue();
@@ -589,8 +598,8 @@ public class ContactController {
 		});
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
-			editComponent.addDeleteListener(() -> {
-				FacadeProvider.getContactFacade().delete(contact.getUuid());
+			editComponent.addDeleteWithReasonListener((deleteDetails) -> {
+				FacadeProvider.getContactFacade().delete(contact.getUuid(), deleteDetails);
 				UI.getCurrent().getNavigator().navigateTo(ContactsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityContact));
 		}
@@ -693,22 +702,25 @@ public class ContactController {
 				Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(
+			DeletableUtils.showDeleteWithReasonPopUp(
 				String.format(I18nProperties.getString(Strings.confirmationDeleteContacts), selectedRows.size()),
-				new Runnable() {
+				(deleteDetails) -> {
+//							new Runnable() {
 
-					public void run() {
-						for (ContactIndexDto selectedRow : selectedRows) {
-							FacadeProvider.getContactFacade().delete(selectedRow.getUuid());
-						}
-						callback.run();
-						new Notification(
-							I18nProperties.getString(Strings.headingContactsDeleted),
-							I18nProperties.getString(Strings.messageContactsDeleted),
-							Type.HUMANIZED_MESSAGE,
-							false).show(Page.getCurrent());
+//								public void run() {
+					for (ContactIndexDto selectedRow : selectedRows) {
+						FacadeProvider.getContactFacade().delete(selectedRow.getUuid(), deleteDetails);
 					}
+					callback.run();
+					new Notification(
+						I18nProperties.getString(Strings.headingContactsDeleted),
+						I18nProperties.getString(Strings.messageContactsDeleted),
+						Type.HUMANIZED_MESSAGE,
+						false).show(Page.getCurrent());
+//								}
+//							});	
 				});
+
 		}
 	}
 
@@ -828,10 +840,10 @@ public class ContactController {
 	}
 
 	public void deleteContact(ContactIndexDto contact, Runnable callback) {
-		VaadinUiUtil.showDeleteConfirmationWindow(
+		DeletableUtils.showDeleteWithReasonPopUp(
 			String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getString(Strings.entityContact)),
-			() -> {
-				FacadeProvider.getContactFacade().delete(contact.getUuid());
+			(deleteDetails) -> {
+				FacadeProvider.getContactFacade().delete(contact.getUuid(), deleteDetails);
 				callback.run();
 			});
 	}

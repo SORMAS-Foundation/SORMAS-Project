@@ -33,6 +33,8 @@ import javax.ws.rs.core.MediaType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
+import de.symeda.sormas.api.common.DeleteDetails;
+import de.symeda.sormas.api.common.DeleteReason;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -108,7 +110,7 @@ public class SampleResource extends EntityDtoResource {
 	@POST
 	@Path("/delete")
 	public List<String> delete(List<String> uuids) {
-		return FacadeProvider.getSampleFacade().deleteSamples(uuids);
+		return FacadeProvider.getSampleFacade().deleteSamples(uuids, new DeleteDetails(DeleteReason.OTHER_REASON, null));
 	}
 
 }

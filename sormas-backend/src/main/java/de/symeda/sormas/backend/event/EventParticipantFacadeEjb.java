@@ -51,6 +51,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.DeleteDetails;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -456,9 +457,9 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	@RolesAllowed(UserRight._EVENTPARTICIPANT_DELETE)
-	public void delete(String uuid) throws ExternalSurveillanceToolException {
+	public void delete(String uuid, DeleteDetails deleteDetails) throws ExternalSurveillanceToolException {
 		EventParticipant eventParticipant = service.getByUuid(uuid);
-		service.delete(eventParticipant);
+		service.delete(eventParticipant, deleteDetails);
 	}
 
 	@Override
@@ -961,6 +962,10 @@ public class EventParticipantFacadeEjb
 			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
 		}
 
+		target.setDeleted(source.isDeleted());
+		target.setDeleteReason(source.getDeleteReason());
+		target.setOtherDeleteReason(source.getOtherDeleteReason());
+
 		return target;
 	}
 
@@ -1011,6 +1016,10 @@ public class EventParticipantFacadeEjb
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
+
+		target.setDeleted(source.isDeleted());
+		target.setDeleteReason(source.getDeleteReason());
+		target.setOtherDeleteReason(source.getOtherDeleteReason());
 
 		return target;
 	}

@@ -36,6 +36,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.common.DeleteDetails;
+import de.symeda.sormas.api.common.DeleteReason;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -102,7 +104,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid()));
 		assertNotNull(getActionFacade().getByUuid(action.getUuid()));
 
-		getEventFacade().delete(event.getUuid());
+		getEventFacade().delete(event.getUuid(), new DeleteDetails(DeleteReason.OTHER_REASON, null));
 
 		// Event should be marked as deleted; Event participant should be deleted
 		assertTrue(getEventFacade().getDeletedUuidsSince(since).contains(event.getUuid()));

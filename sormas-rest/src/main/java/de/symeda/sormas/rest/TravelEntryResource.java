@@ -17,6 +17,8 @@ import javax.ws.rs.core.Response;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
+import de.symeda.sormas.api.common.DeleteDetails;
+import de.symeda.sormas.api.common.DeleteReason;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
@@ -54,7 +56,7 @@ public class TravelEntryResource extends EntityDtoResource {
 	@DELETE
 	@Path("/{uuid}")
 	public Response delete(@PathParam("uuid") String uuid) {
-		FacadeProvider.getTravelEntryFacade().delete(uuid);
+		FacadeProvider.getTravelEntryFacade().delete(uuid, new DeleteDetails(DeleteReason.OTHER_REASON, null));
 		return Response.ok("OK").build();
 	}
 

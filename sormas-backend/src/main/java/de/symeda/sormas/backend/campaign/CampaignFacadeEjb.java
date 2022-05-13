@@ -25,6 +25,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.DeleteDetails;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -196,6 +197,11 @@ public class CampaignFacadeEjb
 					.collect(Collectors.toSet()));
 		}
 		target.setDashboardElements(source.getCampaignDashboardElements());
+
+		target.setDeleted(source.isDeleted());
+		target.setDeleteReason(source.getDeleteReason());
+		target.setOtherDeleteReason(source.getOtherDeleteReason());
+
 		return target;
 	}
 
@@ -298,6 +304,10 @@ public class CampaignFacadeEjb
 
 		target.setCampaignDashboardElements(source.getDashboardElements());
 
+		target.setDeleted(source.isDeleted());
+		target.setDeleteReason(source.getDeleteReason());
+		target.setOtherDeleteReason(source.getOtherDeleteReason());
+
 		return target;
 	}
 
@@ -350,7 +360,7 @@ public class CampaignFacadeEjb
 
 	@Override
 	@RolesAllowed(UserRight._CAMPAIGN_DELETE)
-	public void delete(String campaignUuid) {
+	public void delete(String campaignUuid, DeleteDetails deleteDetails) {
 
 		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
@@ -360,7 +370,7 @@ public class CampaignFacadeEjb
 					+ I18nProperties.getString(Strings.entityCampaigns).toLowerCase() + ".");
 		}
 
-		service.delete(service.getByUuid(campaignUuid));
+		service.delete(service.getByUuid(campaignUuid), deleteDetails);
 	}
 
 	@Override

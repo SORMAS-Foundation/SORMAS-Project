@@ -28,6 +28,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.common.DeleteReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.i18n.Validations;
@@ -114,6 +115,8 @@ public class EventDto extends SormasToSormasShareableDto {
 	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String EVENT_GROUP = "eventGroup";
 	public static final String EVENT_IDENTIFICATION_SOURCE = "eventIdentificationSource";
+	public static final String DELETE_REASON = "deleteReason";
+	public static final String OTHER_DELETE_REASON = "otherDeleteReason";
 
 	private EventReferenceDto superordinateEvent;
 
@@ -221,6 +224,9 @@ public class EventDto extends SormasToSormasShareableDto {
 	private String internalToken;
 
 	private EventIdentificationSource eventIdentificationSource;
+	private boolean deleted;
+	private DeleteReason deleteReason;
+	private String otherDeleteReason;
 
 	public static EventDto build() {
 		EventDto event = new EventDto();
@@ -715,5 +721,29 @@ public class EventDto extends SormasToSormasShareableDto {
 
 	public EventReferenceDto toReference() {
 		return new EventReferenceDto(getUuid());
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public DeleteReason getDeleteReason() {
+		return deleteReason;
+	}
+
+	public void setDeleteReason(DeleteReason deleteReason) {
+		this.deleteReason = deleteReason;
+	}
+
+	public String getOtherDeleteReason() {
+		return otherDeleteReason;
+	}
+
+	public void setOtherDeleteReason(String otherDeleteReason) {
+		this.otherDeleteReason = otherDeleteReason;
 	}
 }

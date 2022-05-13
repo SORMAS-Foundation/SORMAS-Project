@@ -23,6 +23,7 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.DeleteReason;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Validations;
@@ -72,6 +73,8 @@ public class SampleDto extends SormasToSormasShareableDto {
 	public static final String REQUESTED_OTHER_ADDITIONAL_TESTS = "requestedOtherAdditionalTests";
 	public static final String SAMPLING_REASON = "samplingReason";
 	public static final String SAMPLING_REASON_DETAILS = "samplingReasonDetails";
+	public static final String DELETE_REASON = "deleteReason";
+	public static final String OTHER_DELETE_REASON = "otherDeleteReason";
 
 	private CaseReferenceDto associatedCase;
 	private ContactReferenceDto associatedContact;
@@ -141,6 +144,10 @@ public class SampleDto extends SormasToSormasShareableDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String samplingReasonDetails;
+
+	private boolean deleted;
+	private DeleteReason deleteReason;
+	private String otherDeleteReason;
 
 	@ImportIgnore
 	public CaseReferenceDto getAssociatedCase() {
@@ -521,5 +528,29 @@ public class SampleDto extends SormasToSormasShareableDto {
 	@Override
 	public SampleDto clone() throws CloneNotSupportedException {
 		return (SampleDto) super.clone();
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public DeleteReason getDeleteReason() {
+		return deleteReason;
+	}
+
+	public void setDeleteReason(DeleteReason deleteReason) {
+		this.deleteReason = deleteReason;
+	}
+
+	public String getOtherDeleteReason() {
+		return otherDeleteReason;
+	}
+
+	public void setOtherDeleteReason(String otherDeleteReason) {
+		this.otherDeleteReason = otherDeleteReason;
 	}
 }

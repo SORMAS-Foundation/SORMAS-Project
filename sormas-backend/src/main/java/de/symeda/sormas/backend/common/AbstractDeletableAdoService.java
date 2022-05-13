@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.common;
 
+import de.symeda.sormas.api.common.DeleteDetails;
+
 import java.sql.Timestamp;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -13,8 +15,10 @@ public abstract class AbstractDeletableAdoService<ADO extends DeletableAdo> exte
 		super(elementClass);
 	}
 
-	public void delete(ADO ado) {
+	public void delete(ADO ado, DeleteDetails deleteDetails) {
 
+		ado.setDeleteReason(deleteDetails.getDeleteReason());
+		ado.setOtherDeleteReason(deleteDetails.getOtherDeleteReason());
 		ado.setDeleted(true);
 		em.persist(ado);
 		em.flush();

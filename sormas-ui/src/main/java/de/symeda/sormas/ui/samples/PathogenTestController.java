@@ -35,6 +35,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.DeleteReason;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactStatus;
@@ -105,8 +106,8 @@ public class PathogenTestController {
 		Window popupWindow = VaadinUiUtil.createPopupWindow();
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_DELETE)) {
-			editView.addDeleteListener(() -> {
-				FacadeProvider.getPathogenTestFacade().deletePathogenTest(pathogenTestUuid);
+			editView.addDeleteWithReasonListener((deleteDetails) -> {
+				FacadeProvider.getPathogenTestFacade().deletePathogenTest(pathogenTestUuid, deleteDetails);
 				UI.getCurrent().removeWindow(popupWindow);
 				doneCallback.run();
 			}, I18nProperties.getCaption(PathogenTestDto.I18N_PREFIX));
@@ -140,6 +141,13 @@ public class PathogenTestController {
 				SormasUI.refreshView();
 			}
 		});
+
+		if (pathogenTest.isDeleted()) {
+			editView.getWrappedComponent().getField(PathogenTestDto.DELETE_REASON).setVisible(true);
+			if (editView.getWrappedComponent().getField(PathogenTestDto.DELETE_REASON).getValue() == DeleteReason.OTHER_REASON) {
+				editView.getWrappedComponent().getField(PathogenTestDto.OTHER_DELETE_REASON).setVisible(true);
+			}
+		}
 
 		return editView;
 	}

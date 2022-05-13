@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeleteDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.i18n.Captions;
@@ -112,9 +113,9 @@ public class TravelEntryFacadeEjb
 
 	@Override
 	@RolesAllowed(UserRight._TRAVEL_ENTRY_DELETE)
-	public void delete(String travelEntryUuid) {
+	public void delete(String travelEntryUuid, DeleteDetails deleteDetails) {
 		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
-		service.delete(travelEntry);
+		service.delete(travelEntry, deleteDetails);
 
 		if (travelEntry.getResultingCase() != null) {
 			caseFacade.onCaseChanged(caseFacade.toDto(travelEntry.getResultingCase()), travelEntry.getResultingCase());
@@ -310,6 +311,9 @@ public class TravelEntryFacadeEjb
 		dto.setQuarantineOfficialOrderSentDate(entity.getQuarantineOfficialOrderSentDate());
 		dto.setDateOfArrival(entity.getDateOfArrival());
 
+		dto.setDeleteReason(entity.getDeleteReason());
+		dto.setOtherDeleteReason(entity.getOtherDeleteReason());
+
 		return dto;
 	}
 
@@ -370,6 +374,9 @@ public class TravelEntryFacadeEjb
 		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
 		target.setDateOfArrival(source.getDateOfArrival());
+
+		target.setDeleteReason(source.getDeleteReason());
+		target.setOtherDeleteReason(source.getOtherDeleteReason());
 
 		return target;
 	}

@@ -20,6 +20,7 @@ import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
+import de.symeda.sormas.api.common.DeleteReason;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DependingOnUserRight;
 import java.util.Date;
@@ -214,6 +215,8 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	public static final String QUARANTINE_CHANGE_COMMENT = "quarantineChangeComment";
 
 	public static final String EXTERNAL_DATA = "externalData";
+	public static final String DELETE_REASON = "deleteReason";
+	public static final String OTHER_DELETE_REASON = "otherDeleteReason";
 
 	// Fields are declared in the order they should appear in the import template
 
@@ -580,6 +583,9 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	private String quarantineChangeComment;
 
 	private Map<String, String> externalData;
+	private boolean deleted;
+	private DeleteReason deleteReason;
+	private String otherDeleteReason;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
 		return build(person, disease, HealthConditionsDto.build());
@@ -1669,6 +1675,30 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 
 	public void setQuarantineChangeComment(String quarantineChangeComment) {
 		this.quarantineChangeComment = quarantineChangeComment;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public DeleteReason getDeleteReason() {
+		return deleteReason;
+	}
+
+	public void setDeleteReason(DeleteReason deleteReason) {
+		this.deleteReason = deleteReason;
+	}
+
+	public String getOtherDeleteReason() {
+		return otherDeleteReason;
+	}
+
+	public void setOtherDeleteReason(String otherDeleteReason) {
+		this.otherDeleteReason = otherDeleteReason;
 	}
 
 	public Map<String, String> getExternalData() {

@@ -30,6 +30,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.common.DeleteReason;
+import de.symeda.sormas.ui.utils.DeletableUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -756,6 +758,13 @@ public class EventController {
 			editView.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel(automaticDeletionInfoDto));
 		}
 
+		if (event.isDeleted()) {
+			editView.getWrappedComponent().getField(EventDto.DELETE_REASON).setVisible(true);
+			if (editView.getWrappedComponent().getField(EventDto.DELETE_REASON).getValue()== DeleteReason.OTHER_REASON){
+				editView.getWrappedComponent().getField(EventDto.OTHER_DELETE_REASON).setVisible(true);
+			}
+		}
+
 		editView.addCommitListener(() -> {
 			if (!eventEditForm.getFieldGroup().isModified()) {
 				EventDto eventDto = eventEditForm.getValue();
@@ -787,10 +796,10 @@ public class EventController {
 		});
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
-			editView.addDeleteListener(() -> {
+			editView.addDeleteWithReasonListener((deleteDetails) -> {
 				if (!existEventParticipantsLinkedToEvent(event)) {
 					try {
-						FacadeProvider.getEventFacade().delete(event.getUuid());
+						FacadeProvider.getEventFacade().delete(event.getUuid(), deleteDetails);
 					} catch (ExternalSurveillanceToolException e) {
 						Notification.show(
 							String.format(
@@ -918,8 +927,7 @@ public class EventController {
 				Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil
-				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEvents), selectedRows.size()), () -> {
+			DeletableUtils.showDeleteWithReasonPopUp(String.format(I18nProperties.getString(Strings.confirmationDeleteEvents), selectedRows.size()), (deleteDetails) -> {
 					StringBuilder nonDeletableEventsWithParticipants = new StringBuilder();
 					int countNotDeletedEventsWithParticipants = 0;
 					StringBuilder nonDeletableEventsFromExternalTool = new StringBuilder();
@@ -931,7 +939,7 @@ public class EventController {
 							nonDeletableEventsWithParticipants.append(selectedRow.getUuid(), 0, 6).append(", ");
 						} else {
 							try {
-								FacadeProvider.getEventFacade().delete(eventDto.getUuid());
+								FacadeProvider.getEventFacade().delete(eventDto.getUuid(), deleteDetails);
 							} catch (ExternalSurveillanceToolException e) {
 								countNotDeletedEventsFromExternalTool = countNotDeletedEventsFromExternalTool + 1;
 								nonDeletableEventsFromExternalTool.append(selectedRow.getUuid(), 0, 6).append(", ");

@@ -41,6 +41,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.VaccinationStatus;
+import de.symeda.sormas.api.common.DeleteDetails;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -305,14 +306,14 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	}
 
 	@Override
-	public void delete(EventParticipant eventParticipant) {
+	public void delete(EventParticipant eventParticipant, DeleteDetails deleteDetails) {
 
 		eventParticipant.getSamples()
 			.stream()
 			.filter(sample -> sample.getAssociatedCase() == null && sample.getAssociatedContact() == null)
-			.forEach(sample -> sampleService.delete(sample));
+			.forEach(sample -> sampleService.delete(sample, deleteDetails));
 
-		super.delete(eventParticipant);
+		super.delete(eventParticipant, deleteDetails);
 	}
 
 	public List<String> getAllUuidsByEventUuids(List<String> eventUuids) {

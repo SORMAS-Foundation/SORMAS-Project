@@ -20,12 +20,12 @@ package de.symeda.sormas.api.sample;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
 import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.common.DeleteDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -61,11 +61,11 @@ public interface SampleFacade {
 
 	List<SampleDto> getByUuids(List<String> uuids);
 
-	void deleteSample(SampleReferenceDto sampleRef);
+	void deleteSample(SampleReferenceDto sampleRef, DeleteDetails deleteDetails);
 
 	void deleteAllSamples(List<String> sampleUuids);
 
-	List<String> deleteSamples(List<String> sampleUuids);
+	List<String> deleteSamples(List<String> sampleUuids, DeleteDetails deleteDetails);
 
 	void validate(SampleDto sample) throws ValidationRuntimeException;
 

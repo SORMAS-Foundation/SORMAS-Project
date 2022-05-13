@@ -28,7 +28,9 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -104,7 +106,9 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
                     fluidRowLocs(SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON) +
                     fluidRowLocs(SampleDto.COMMENT) +
-                    fluidRowLocs(SampleDto.PATHOGEN_TEST_RESULT);
+                    fluidRowLocs(SampleDto.PATHOGEN_TEST_RESULT) +
+					fluidRowLocs(CaseDataDto.DELETE_REASON) +
+					fluidRowLocs(CaseDataDto.OTHER_DELETE_REASON);
     //@formatter:on
 
 	protected AbstractSampleForm(Class<SampleDto> type, String propertyI18nPrefix, Disease disease, UiFieldAccessCheckers fieldAccessCheckers) {
@@ -158,6 +162,11 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			SampleDto.SAMPLING_REASON,
 			Collections.singletonList(SamplingReason.OTHER_REASON),
 			true);
+
+		addField(SampleDto.DELETE_REASON);
+		addField(SampleDto.OTHER_DELETE_REASON, TextArea.class).setRows(3);
+		setVisible(false, SampleDto.DELETE_REASON);
+		setVisible(false, SampleDto.OTHER_DELETE_REASON);
 
 	}
 

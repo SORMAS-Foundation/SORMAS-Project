@@ -23,6 +23,7 @@ import java.util.List;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.common.DeleteDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -42,7 +43,7 @@ public interface PathogenTestFacade {
 
 	List<PathogenTestDto> getByUuids(List<String> uuids);
 
-	void deletePathogenTest(String pathogenTestUuid);
+	void deletePathogenTest(String pathogenTestUuid, DeleteDetails deleteDetails);
 
 	boolean hasPathogenTest(SampleReferenceDto sample);
 

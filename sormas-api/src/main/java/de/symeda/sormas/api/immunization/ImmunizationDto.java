@@ -24,6 +24,7 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.DeleteReason;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
@@ -85,6 +86,8 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 	public static final String VALID_FROM = "validFrom";
 	public static final String VALID_UNTIL = "validUntil";
 	public static final String VACCINATIONS = "vaccinations";
+	public static final String DELETE_REASON = "deleteReason";
+	public static final String OTHER_DELETE_REASON = "otherDeleteReason";
 
 	@Outbreaks
 	@Required
@@ -153,6 +156,10 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 	private Date validUntil;
 
 	private CaseReferenceDto relatedCase;
+
+	private boolean deleted;
+	private DeleteReason deleteReason;
+	private String otherDeleteReason;
 
 	@Valid
 	private List<VaccinationDto> vaccinations = new ArrayList<>();
@@ -422,4 +429,27 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 		this.vaccinations = vaccinations;
 	}
 
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public DeleteReason getDeleteReason() {
+		return deleteReason;
+	}
+
+	public void setDeleteReason(DeleteReason deleteReason) {
+		this.deleteReason = deleteReason;
+	}
+
+	public String getOtherDeleteReason() {
+		return otherDeleteReason;
+	}
+
+	public void setOtherDeleteReason(String otherDeleteReason) {
+		this.otherDeleteReason = otherDeleteReason;
+	}
 }

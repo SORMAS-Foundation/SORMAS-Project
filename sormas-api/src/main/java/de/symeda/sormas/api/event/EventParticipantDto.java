@@ -20,6 +20,7 @@ import javax.validation.constraints.Size;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
+import de.symeda.sormas.api.common.DeleteReason;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -50,6 +51,8 @@ public class EventParticipantDto extends SormasToSormasShareableDto {
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
+	public static final String DELETE_REASON = "deleteReason";
+	public static final String OTHER_DELETE_REASON = "otherDeleteReason";
 
 	@Required
 	private UserReferenceDto reportingUser;
@@ -80,6 +83,10 @@ public class EventParticipantDto extends SormasToSormasShareableDto {
 		Disease.OTHER })
 	@Outbreaks
 	private VaccinationStatus vaccinationStatus;
+
+	private boolean deleted;
+	private DeleteReason deleteReason;
+	private String otherDeleteReason;
 
 	public static EventParticipantDto build(EventReferenceDto event, UserReferenceDto reportingUser) {
 		EventParticipantDto eventParticipant = new EventParticipantDto();
@@ -181,5 +188,29 @@ public class EventParticipantDto extends SormasToSormasShareableDto {
 
 	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
 		this.vaccinationStatus = vaccinationStatus;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public DeleteReason getDeleteReason() {
+		return deleteReason;
+	}
+
+	public void setDeleteReason(DeleteReason deleteReason) {
+		this.deleteReason = deleteReason;
+	}
+
+	public String getOtherDeleteReason() {
+		return otherDeleteReason;
+	}
+
+	public void setOtherDeleteReason(String otherDeleteReason) {
+		this.otherDeleteReason = otherDeleteReason;
 	}
 }
