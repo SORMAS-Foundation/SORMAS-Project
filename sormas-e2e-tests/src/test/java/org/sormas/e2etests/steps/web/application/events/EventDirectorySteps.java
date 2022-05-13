@@ -95,6 +95,8 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LI
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.MORE_BUTTON_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.NEW_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESET_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESPONSIBLE_USER_INFO_ICON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESPONSIBLE_USER_INFO_POPUP_TEXT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SAVE_BUTTON_IN_LINK_FORM;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SEARCH_EVENT_BY_FREE_TEXT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SEARCH_EVENT_BY_FREE_TEXT_INPUT;
@@ -196,7 +198,24 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.fillInWebElement(
               EVENT_GROUP_INPUT, dataOperations.getPartialUuidFromAssociatedLink(eventGroupId));
         });
-
+    When(
+        "I check that Responsible User Info icon is visible on Event Directory Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(RESPONSIBLE_USER_INFO_ICON);
+        });
+    When(
+        "I check the displayed message is correct after hover to Responsible User Info icon",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(RESPONSIBLE_USER_INFO_ICON);
+          webDriverHelpers.hoverToElement(RESPONSIBLE_USER_INFO_ICON);
+          String displayedText =
+              webDriverHelpers.getTextFromWebElement(RESPONSIBLE_USER_INFO_POPUP_TEXT);
+          softly.assertEquals(
+              "The responsible user filter requires a region to be selected in the region filter.",
+              displayedText,
+              "Message is incorrect");
+          softly.assertAll();
+        });
     When(
         "I click checkbox to choose all Event results on Event Directory Page",
         () -> {
