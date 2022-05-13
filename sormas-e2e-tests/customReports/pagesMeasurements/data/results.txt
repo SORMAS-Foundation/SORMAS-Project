@@ -1,9 +1,8 @@
-Contacts page=Couldn't load page under 20s/
-Persons page=Couldn't load page under 20s/
-Immunizations page=Couldn't load page under 20s/
-Events page=Couldn't load page under 20s/
-Samples page=Couldn't load page under 20s/
-Surveillance Dashboard page=Couldn't load page under 20s/
-Cases page=19.697/
-Tasks page=30.694/
-Contacts Dashboard page=0.343/
+Samples page=8.254/
+Cases page=8.622/
+Tasks page=19.590/
+Immunizations page=28.422/
+Surveillance Dashboard page=34.630/
+Contacts page=53.367/
+Events page=53.829/
+Contacts Dashboard page=0.298/

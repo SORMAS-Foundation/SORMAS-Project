@@ -103,7 +103,6 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
@@ -330,7 +329,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 				sampleIdExpr.in(samples.stream().map(SampleIndexDto::getUuid).collect(Collectors.toList())));
 			testCq.orderBy(cb.desc(testRoot.get(PathogenTest.CHANGE_DATE)));
 
-			List<Object[]> testList = em.createQuery(testCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+			List<Object[]> testList = em.createQuery(testCq).getResultList();
 
 			Map<String, Object[]> tests = testList.stream()
 				.filter(distinctByKey(pathogenTest -> pathogenTest[2]))

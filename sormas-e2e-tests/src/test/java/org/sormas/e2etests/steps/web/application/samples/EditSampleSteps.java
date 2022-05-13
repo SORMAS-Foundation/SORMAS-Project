@@ -31,7 +31,7 @@ import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Sample;
 import org.sormas.e2etests.entities.services.SampleService;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 
@@ -45,7 +45,7 @@ public class EditSampleSteps implements En {
   @Inject
   public EditSampleSteps(
       WebDriverHelpers webDriverHelpers,
-      EnvironmentManager environmentManager,
+      RunningConfiguration runningConfiguration,
       SampleService sampleService,
       ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
@@ -54,7 +54,7 @@ public class EditSampleSteps implements En {
         "I open the last created sample via API",
         () -> {
           String LAST_CREATED_SAMPLE_URL =
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!samples/data/"
                   + apiState.getCreatedSample().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_SAMPLE_URL);

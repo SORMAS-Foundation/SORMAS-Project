@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
+import com.vaadin.shared.Registration;
+import com.vaadin.ui.Window;
 import java.util.Date;
 import java.util.function.Consumer;
 
@@ -54,6 +56,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class PersonController {
 
@@ -81,7 +84,7 @@ public class PersonController {
 	}
 
 	public void selectOrCreatePerson(final PersonDto person, String infoText, Consumer<PersonReferenceDto> resultConsumer, boolean saveNewPerson) {
-		selectOrCreatePerson(person, infoText, resultConsumer, saveNewPerson, null);
+		selectOrCreatePerson(person, infoText, resultConsumer, null, saveNewPerson, null);
 	}
 
 	/**
@@ -104,6 +107,7 @@ public class PersonController {
 		final PersonDto person,
 		String infoText,
 		Consumer<PersonReferenceDto> resultConsumer,
+		Runnable discardCallback,
 		boolean saveNewPerson,
 		String infoTextWithoutMatches) {
 
@@ -134,11 +138,17 @@ public class PersonController {
 				}
 			});
 
+			component.addDiscardListener(() -> {
+				if (discardCallback != null) {
+					discardCallback.run();
+				}
+			});
+
 			personSelect.setSelectionChangeCallback((commitAllowed) -> {
 				component.getCommitButton().setEnabled(commitAllowed);
 			});
 
-			VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreatePerson));
+			VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreatePerson), true);
 			personSelect.selectBestMatch();
 		} else if (saveNewPerson) {
 			// no duplicate persons found so save a new person

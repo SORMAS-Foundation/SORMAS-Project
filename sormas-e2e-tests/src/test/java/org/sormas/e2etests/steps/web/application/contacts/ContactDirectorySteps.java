@@ -86,6 +86,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DIRECTORY_DETAILED_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DISEASE_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DISEASE_VARIANT_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DISPLAY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_FOLLOW_UP_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONVERTED_TO_CASE_BUTTON;
@@ -144,7 +145,7 @@ import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfGathering;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -168,14 +169,14 @@ public class ContactDirectorySteps implements En {
       ContactService contactService,
       DataOperations dataOperations,
       Faker faker,
-      EnvironmentManager environmentManager) {
+      RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
         "^I navigate to the last created contact via the url$",
         () -> {
           String LAST_CREATED_CONTACT_URL =
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!contacts/data/"
                   + apiState.getCreatedContact().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CONTACT_URL);
@@ -185,7 +186,7 @@ public class ContactDirectorySteps implements En {
         "^I navigate to the last created UI contact via the url$",
         () -> {
           String LAST_CREATED_CONTACT_URL =
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!contacts/data/"
                   + collectedContact.getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CONTACT_URL);
@@ -929,6 +930,14 @@ public class ContactDirectorySteps implements En {
                               GRID_RESULTS_COUNTER_CONTACT_DIRECTORY)),
                       number.intValue(),
                       "Number of displayed contacts is not correct"));
+        });
+
+    When(
+        "I choose ([^\"]*) form combobox on Contact Directory Page",
+        (String contactType) -> {
+          webDriverHelpers.selectFromCombobox(CONTACT_DISPLAY_FILTER_COMBOBOX, contactType);
+          TimeUnit.SECONDS.sleep(3); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
   }
 
