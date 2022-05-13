@@ -98,10 +98,10 @@ task createReportFolderIfNotExist() {
 
 task startTests{}
 
-task printConfiguration(type: Exec) {
-	// enable this to print on jenkins existing environment json configuration
-	// commandLine "cat", "/srv/dockerdata/jenkins_new/sormas-files/envData.json"
-}
+//task printConfiguration(type: Exec) {
+//	// enable this to print on jenkins existing environment json configuration
+//	// commandLine "cat", "/srv/dockerdata/jenkins_new/sormas-files/envData.json"
+//}
 
 task copyToGeneratedReport(type: Copy) {
 	dependsOn "createReportFolderIfNotExist"
@@ -143,7 +143,7 @@ test {
 }
 
 compileJava.dependsOn format
-startTests.dependsOn printConfiguration
+//startTests.dependsOn printConfiguration
 startTests.finalizedBy copyToGeneratedReport
 copyToGeneratedReport.finalizedBy test
 test.finalizedBy copyAllureFiles
