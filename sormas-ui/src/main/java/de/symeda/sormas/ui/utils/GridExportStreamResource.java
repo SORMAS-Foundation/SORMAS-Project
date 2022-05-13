@@ -32,6 +32,8 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.opencsv.CSVWriter;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.DataProvider;
@@ -53,8 +55,6 @@ import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-
-import static java.util.Objects.isNull;
 
 @SuppressWarnings("serial")
 public class GridExportStreamResource {
@@ -131,7 +131,7 @@ public class GridExportStreamResource {
 
 				Set<?> selectedRows = getSelectedRows != null ? getSelectedRows.get() : Collections.emptySet();
 
-				if (isNull(selectedRows)) {
+				if (CollectionUtils.isEmpty(selectedRows)) {
 					selectedRows = Collections.emptySet();
 				}
 
