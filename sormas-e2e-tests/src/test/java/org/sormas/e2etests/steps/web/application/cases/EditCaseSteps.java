@@ -270,6 +270,14 @@ public class EditCaseSteps implements En {
               DATE_OF_OUTCOME_INPUT, DATE_FORMATTER.format(LocalDate.now().minusDays(1)));
         });
 
+    When(
+        "I check that the value selected from Disease combobox is {string} on Edit Case page",
+        (String disease) -> {
+          String chosenDisease = webDriverHelpers.getValueFromCombobox(DISEASE_COMBOBOX);
+          softly.assertEquals(chosenDisease, disease, "The disease is other then expected");
+          softly.assertAll();
+        });
+
     And(
         "I click on save button from Edit Case page",
         () -> {
@@ -1291,6 +1299,7 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_DATA_TAB);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          TimeUnit.SECONDS.sleep(6);
         });
     When(
         "I navigate to Contacts tab in Edit case page",

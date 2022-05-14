@@ -484,6 +484,15 @@ public class EditEventSteps implements En {
         });
 
     When(
+        "I check that the value selected from Disease combobox is {string} on Edit Event page",
+        (String disease) -> {
+          String chosenDisease =
+              webDriverHelpers.getValueFromCombobox(EditEventPage.DISEASE_COMBOBOX);
+          softly.assertEquals(chosenDisease, disease, "The disease is other then expected");
+          softly.assertAll();
+        });
+
+    When(
         "^I click on the person search button in add new event participant form$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(PERSON_SEARCH_LOCATOR_BUTTON);

@@ -1023,6 +1023,21 @@ Feature: Case end to end tests
     Then I click on second created contact in Contact directory page by UUID
     And I check if Archive button changed name to De-Archive
 
+  @issue=SORDEV-9786 @env_main
+  Scenario: Test The "urine p.m." enum value should be hidden when Covid19 is selected as disease
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    And I check that the value selected from Disease combobox is "COVID-19" on Edit Case page
+    Then I click on New Sample
+    And I check if value "Urine p.m" is unavailable in Type of Sample combobox on Create new Sample page
+
   @env_main @issue=SORDEV-9155
   Scenario: Test Vaccinations get lost when merging cases with duplicate persons
     Given I log in as a Admin User

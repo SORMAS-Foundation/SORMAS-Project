@@ -21,6 +21,7 @@ package org.sormas.e2etests.steps.web.application.contacts;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UPLOAD_DOCUMENT_CHECKBOX;
@@ -343,6 +344,14 @@ public class EditContactSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+        });
+
+    When(
+        "I check that the value selected from Disease combobox is {string} on Edit Contact page",
+        (String disease) -> {
+          String chosenDisease = webDriverHelpers.getValueFromCombobox(DISEASE_COMBOBOX);
+          softly.assertEquals(chosenDisease, disease, "The disease is other then expected");
+          softly.assertAll();
         });
 
     When(

@@ -111,6 +111,15 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
+        "I check if value {string} is unavailable in Type of Sample combobox on Create new Sample page",
+        (String sampleMaterial) -> {
+          softly.assertFalse(
+              webDriverHelpers.checkIfElementExistsInCombobox(
+                  SAMPLE_TYPE_COMBOBOX, sampleMaterial));
+          softly.assertAll();
+        });
+
+    When(
         "I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup",
         () -> {
           selectTypeOfTest("Antigen-Nachweistest");
