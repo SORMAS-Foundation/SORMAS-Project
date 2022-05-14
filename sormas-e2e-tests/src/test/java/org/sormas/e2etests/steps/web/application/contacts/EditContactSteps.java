@@ -20,6 +20,13 @@ package org.sormas.e2etests.steps.web.application.contacts;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_DOCUMENT_EMPTY_TEXT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_UPLOADED_TEST_FILE;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DELETE_LAST_UPDATED_CASE_DOCUMENT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DOWNLOAD_LAST_UPDATED_CASE_DOCUMENT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NEW_DOCUMENT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.START_DATA_IMPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
@@ -28,6 +35,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFO
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_INPUT;
+import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.MULTIPLE_OPTIONS_SEARCH_INPUT;
@@ -506,16 +514,16 @@ public class EditContactSteps implements En {
           webDriverHelpers.scrollToElement(CREATE_CASE_FROM_CONTACT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_FROM_CONTACT_BUTTON);
         });
-      When(
-              "I check if Vaccination Status is set to {string} on Edit Contact page",
-              (String expected) -> {
-                  webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditContactPage.UUID_INPUT);
-                  String vaccinationStatus =
-                          webDriverHelpers.getValueFromWebElement(VACCINATION_STATUS_INPUT);
-                  softly.assertEquals(
-                          expected, vaccinationStatus, "Vaccination status is different than expected");
-                  softly.assertAll();
-              });
+    When(
+        "I check if Vaccination Status is set to {string} on Edit Contact page",
+        (String expected) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditContactPage.UUID_INPUT);
+          String vaccinationStatus =
+              webDriverHelpers.getValueFromWebElement(VACCINATION_STATUS_INPUT);
+          softly.assertEquals(
+              expected, vaccinationStatus, "Vaccination status is different than expected");
+          softly.assertAll();
+        });
     When(
         "I check the created data for complex contact is correctly displayed on Edit Contact page",
         () -> {
@@ -593,6 +601,61 @@ public class EditContactSteps implements En {
               MULTIPLE_OPTIONS_SEARCH_INPUT, apiState.getCreatedCase().getUuid().substring(0, 6));
           TimeUnit.SECONDS.sleep(2); // wait for filter
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I click on ([^\"]*) button from New document in contact tab",
+        (String buttonName) -> {
+          webDriverHelpers.clickOnWebElementBySelector(NEW_DOCUMENT_BUTTON);
+          webDriverHelpers.clickWebElementByText(START_DATA_IMPORT_BUTTON, buttonName);
+        });
+
+    When(
+        "I upload ([^\"]*) file to the contact",
+        (String fileType) -> {
+          webDriverHelpers.sendFile(
+              FILE_PICKER, userDirPath + "/uploads/testContact_" + fileType + "." + fileType);
+          TimeUnit.SECONDS.sleep(2); // wait for upload file
+        });
+
+    When(
+        "I check if ([^\"]*) file is available in contact documents",
+        (String fileType) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              By.xpath(String.format(CASE_UPLOADED_TEST_FILE, fileType)), 5);
+        });
+
+    When(
+        "I download last updated document file from contact tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DOWNLOAD_LAST_UPDATED_CASE_DOCUMENT);
+          TimeUnit.SECONDS.sleep(3); // wait for download
+        });
+
+    When(
+        "I delete last uploaded document file from contact tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_LAST_UPDATED_CASE_DOCUMENT);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_POPUP_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for system reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I check if last uploaded file was deleted from document files in contact tab",
+        () -> {
+          webDriverHelpers.checkWebElementContainsText(
+              CASE_DOCUMENT_EMPTY_TEXT, "There are no documents for this Contact");
+        });
+
+    When(
+        "I check if ([^\"]*) file for contact is downloaded correctly",
+        (String fileType) -> {
+          String file = "./downloads/testContact_" + fileType + "." + fileType;
+          Path path = Paths.get(file);
+          softly.assertTrue(Files.exists(path));
+          softly.assertAll();
+          Files.delete(path); // clean
         });
   }
 

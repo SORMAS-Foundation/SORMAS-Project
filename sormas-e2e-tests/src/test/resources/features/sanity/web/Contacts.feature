@@ -550,3 +550,36 @@ Feature: Contacts end to end tests
     And I apply filter by duplicated contact Person data on Contact Directory Page
     Then I open the first contact from contacts list
     And I check if Vaccination Status is set to "Vaccinated" on Edit Contact page
+
+  @env_main @issue=SORDEV-5613
+  Scenario: Option to attach document like pdf, word, jpeg to contacts
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    When I click on the Contacts button from navbar
+    Then I search after last created contact via API by name and uuid then open
+    Then I click on START DATA IMPORT button from New document in contact tab
+    And I upload pdf file to the contact
+    And I check if pdf file is available in contact documents
+    Then I download last updated document file from contact tab
+    And I check if pdf file for contact is downloaded correctly
+    Then I delete last uploaded document file from contact tab
+    And I check if last uploaded file was deleted from document files in contact tab
+    Then I click on START DATA IMPORT button from New document in contact tab
+    And I upload docx file to the contact
+    And I check if docx file is available in contact documents
+    Then I download last updated document file from contact tab
+    And I check if docx file for contact is downloaded correctly
+    Then I delete last uploaded document file from contact tab
+    And I check if last uploaded file was deleted from document files in contact tab
+    Then I click on START DATA IMPORT button from New document in contact tab
+    And I upload jpg file to the contact
+    And I check if jpg file is available in contact documents
+    Then I download last updated document file from contact tab
+    And I check if jpg file for contact is downloaded correctly
+    Then I delete last uploaded document file from contact tab
+    And I check if last uploaded file was deleted from document files in contact tab
