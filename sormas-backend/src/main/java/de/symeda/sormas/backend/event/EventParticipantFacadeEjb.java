@@ -963,8 +963,8 @@ public class EventParticipantFacadeEjb
 		}
 
 		target.setDeleted(source.isDeleted());
-		target.setDeleteReason(source.getDeletionReason());
-		target.setOtherDeleteReason(source.getOtherDeletionReason());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
 	}
@@ -1018,8 +1018,8 @@ public class EventParticipantFacadeEjb
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
 		target.setDeleted(source.isDeleted());
-		target.setDeletionReason(source.getDeleteReason());
-		target.setOtherDeletionReason(source.getOtherDeleteReason());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
 	}

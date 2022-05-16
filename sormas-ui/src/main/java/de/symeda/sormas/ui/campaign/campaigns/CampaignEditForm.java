@@ -70,8 +70,8 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		+ fluidRowLocs(CAMPAIGN_DATA_LOC)
 		+ fluidRowLocs(CAMPAIGN_DASHBOARD_LOC)
 		+ fluidRowLocs(SPACE_LOC)
-		+ fluidRowLocs(CaseDataDto.DELETION_REASON)
-		+ fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
+		+ fluidRowLocs(CampaignDto.DELETION_REASON)
+		+ fluidRowLocs(CampaignDto.OTHER_DELETION_REASON);
 
 	private final VerticalLayout statusChangeLayout;
 	private Boolean isCreateForm = null;

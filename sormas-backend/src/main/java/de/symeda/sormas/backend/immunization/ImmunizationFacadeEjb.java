@@ -232,8 +232,8 @@ public class ImmunizationFacadeEjb
 		dto.setOwnershipHandedOver(entity.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
 		dto.setDeleted(entity.isDeleted());
-		dto.setDeletionReason(entity.getDeleteReason());
-		dto.setOtherDeletionReason(entity.getOtherDeleteReason());
+		dto.setDeletionReason(entity.getDeletionReason());
+		dto.setOtherDeletionReason(entity.getOtherDeletionReason());
 
 		return dto;
 	}
@@ -528,8 +528,8 @@ public class ImmunizationFacadeEjb
 		}
 
 		target.setDeleted(source.isDeleted());
-		target.setDeleteReason(source.getDeletionReason());
-		target.setOtherDeleteReason(source.getOtherDeletionReason());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
 	}

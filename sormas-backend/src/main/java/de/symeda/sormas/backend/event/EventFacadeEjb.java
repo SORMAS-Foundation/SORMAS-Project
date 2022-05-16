@@ -1100,8 +1100,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		target.setEventIdentificationSource(source.getEventIdentificationSource());
 
 		target.setDeleted(source.isDeleted());
-		target.setDeletionReason(source.getDeleteReason());
-		target.setOtherDeletionReason(source.getOtherDeleteReason());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
 	}
@@ -1208,8 +1208,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		}
 
 		target.setDeleted(source.isDeleted());
-		target.setDeleteReason(source.getDeletionReason());
-		target.setOtherDeleteReason(source.getOtherDeletionReason());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
 	}

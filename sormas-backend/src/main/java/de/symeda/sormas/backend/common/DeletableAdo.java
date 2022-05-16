@@ -20,12 +20,12 @@ public abstract class DeletableAdo extends AbstractDomainObject {
 	private static final long serialVersionUID = 6512756286608581221L;
 
 	public static final String DELETED = "deleted";
-	public static final String DELETE_REASON = "deleteReason";
-	public static final String OTHER_DELETE_REASON = "otherDeleteReason";
+	public static final String DELETION_REASON = "deletionReason";
+	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	private boolean deleted;
 	private DeletionReason deletionReason;
-	private String otherDeleteReason;
+	private String otherDeletionReason;
 
 	@Column
 	public boolean isDeleted() {
@@ -37,20 +37,20 @@ public abstract class DeletableAdo extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public DeletionReason getDeleteReason() {
+	public DeletionReason getDeletionReason() {
 		return deletionReason;
 	}
 
-	public void setDeleteReason(DeletionReason deletionReason) {
+	public void setDeletionReason(DeletionReason deletionReason) {
 		this.deletionReason = deletionReason;
 	}
 
 	@Column(columnDefinition = "text")
-	public String getOtherDeleteReason() {
-		return otherDeleteReason;
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
 	}
 
-	public void setOtherDeleteReason(String deleteOtherReason) {
-		this.otherDeleteReason = deleteOtherReason;
+	public void setOtherDeletionReason(String deleteOtherReason) {
+		this.otherDeletionReason = deleteOtherReason;
 	}
 }
