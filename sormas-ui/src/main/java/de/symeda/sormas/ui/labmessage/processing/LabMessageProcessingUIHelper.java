@@ -291,7 +291,7 @@ public class LabMessageProcessingUIHelper {
 			LabMessageDto labMessageDto,
 			boolean entityCreated) {
 		createComponent.setPrimaryCommitListener(() -> {
-			if (FacadeProvider.getLabMessageFacade().isProcessed(labMessageDto.getUuid())) {
+			if (Boolean.TRUE.equals(FacadeProvider.getLabMessageFacade().isProcessed(labMessageDto.getUuid()))) {
 				createComponent.getCommitButton().setEnabled(false);
 				showAlreadyProcessedPopup(createComponent.getWrappedComponent(), entityCreated);
 				throw new CannotProceedException("The lab message was processed in the meantime");

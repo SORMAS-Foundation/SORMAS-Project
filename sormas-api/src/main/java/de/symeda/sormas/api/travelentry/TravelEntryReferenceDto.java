@@ -1,8 +1,11 @@
 package de.symeda.sormas.api.travelentry;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 
+@DependingOnFeatureType(featureType = FeatureType.TRAVEL_ENTRIES)
 public class TravelEntryReferenceDto extends ReferenceDto {
 
 	private String externalId;

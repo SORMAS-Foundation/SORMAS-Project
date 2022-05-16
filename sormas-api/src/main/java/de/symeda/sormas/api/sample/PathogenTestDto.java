@@ -17,6 +17,8 @@
  */
 package de.symeda.sormas.api.sample;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 
 import javax.validation.constraints.Size;
@@ -39,6 +41,7 @@ import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
+@DependingOnFeatureType(featureType = FeatureType.SAMPLES_LAB)
 public class PathogenTestDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -5213210080802372054L;

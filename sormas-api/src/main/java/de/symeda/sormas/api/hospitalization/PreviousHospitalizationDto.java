@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.hospitalization;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 
 import javax.validation.constraints.Size;
@@ -34,6 +36,7 @@ import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
+@DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
 public class PreviousHospitalizationDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -7544440109802739018L;

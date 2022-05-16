@@ -43,6 +43,7 @@ public class TaskManagementPage {
   public static final By CHANGE_STATUS_CHECKBOX = By.xpath("//label[text()='Change task status']");
   public static final By TASK_ASSIGNEE_COMBOBOX = By.cssSelector("#taskAssignee div");
   public static final By TASK_RADIOBUTTON = By.cssSelector(".v-radiobutton");
+  public static final By EDIT_FIRST_SEARCH_RESULT = By.xpath("//table/tbody/tr[1]/td[1]");
 
   public static By getCheckboxByIndex(String idx) {
     return By.xpath(String.format("(//input[@type=\"checkbox\"])[%s]", idx));

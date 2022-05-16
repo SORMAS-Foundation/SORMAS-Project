@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.api.infrastructure.community;
 
+import de.symeda.sormas.api.utils.FeatureIndependent;
 import java.util.Date;
 
 import javax.validation.constraints.Size;
@@ -25,6 +26,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
+@FeatureIndependent
 public class CommunityDto extends InfrastructureDto {
 
 	private static final long serialVersionUID = -8833267932522978860L;

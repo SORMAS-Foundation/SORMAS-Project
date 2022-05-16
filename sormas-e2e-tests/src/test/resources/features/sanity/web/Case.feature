@@ -1022,3 +1022,59 @@ Feature: Case end to end tests
     When I choose Archived contacts form combobox on Contact Directory Page
     Then I click on second created contact in Contact directory page by UUID
     And I check if Archive button changed name to De-Archive
+
+  @env_main @issue=SORDEV-9155
+  Scenario: Test Vaccinations get lost when merging cases with duplicate persons
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill new case data for duplicates merge with for one person data
+    And I click on Save button in Case form
+    Then I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill new case data for duplicates merge with for one person data
+    And I click on Save button in Case form
+    And I Pick a new person in Pick or create person popup during case creation
+    Then I check the created data for duplicated case is correctly displayed on Edit case page
+    And I set Vaccination status to "Vaccinated" on Edit Case page
+    And I click on save button from Edit Case page
+    And I click on the Cases button from navbar
+    And I click on the More button on Case directory page
+    Then I click on Merge Duplicates on Case directory page
+    And I apply Report on onset date type filter to "Case report date" on Merge duplicate cases page
+    And I fill date from input to today on Merge Duplicate Cases page
+    Then I click to CONFIRM FILTERS on Merge Duplicate Cases page
+    And I click on Merge button of leading case in Merge Duplicate Cases page
+    Then I click to Confirm action in Merge Duplicates Cases popup
+    And I click on the Cases button from navbar
+    And I filter Cases by created person name
+    And I open last created case
+    And I check if Vaccination Status is set to "Vaccinated" on Edit Case page
+
+    @env_main @issue=SORDEV-5613
+      Scenario: Option to attach document like pdf, word, jpeg to cases
+      Given I log in with National User
+      When I click on the Cases button from navbar
+      Then I click on the NEW CASE button
+      And I create a new case with specific data
+      Then I click on START DATA IMPORT button from New document in case tab
+      And I upload pdf file to the case
+      And I check if pdf file is available in case documents
+      Then I download last updated document file from case tab
+      And I check if pdf file is downloaded correctly
+      Then I delete last uploaded document file from case tab
+      And I check if last uploaded file was deleted from document files in case tab
+      Then I click on START DATA IMPORT button from New document in case tab
+      And I upload docx file to the case
+      And I check if docx file is available in case documents
+      Then I download last updated document file from case tab
+      And I check if docx file is downloaded correctly
+      Then I delete last uploaded document file from case tab
+      And I check if last uploaded file was deleted from document files in case tab
+      Then I click on START DATA IMPORT button from New document in case tab
+      And I upload jpg file to the case
+      And I check if jpg file is available in case documents
+      Then I download last updated document file from case tab
+      And I check if jpg file is downloaded correctly
+      Then I delete last uploaded document file from case tab
+      And I check if last uploaded file was deleted from document files in case tab
