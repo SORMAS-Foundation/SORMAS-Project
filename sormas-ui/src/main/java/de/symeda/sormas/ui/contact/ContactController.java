@@ -578,9 +578,9 @@ public class ContactController {
 		}
 
 		if (contact.isDeleted()) {
-			editComponent.getWrappedComponent().getField(ContactDto.DELETE_REASON).setVisible(true);
-			if (editComponent.getWrappedComponent().getField(ContactDto.DELETE_REASON).getValue() == DeletionReason.OTHER_REASON) {
-				editComponent.getWrappedComponent().getField(ContactDto.OTHER_DELETE_REASON).setVisible(true);
+			editComponent.getWrappedComponent().getField(ContactDto.DELETION_REASON).setVisible(true);
+			if (editComponent.getWrappedComponent().getField(ContactDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
+				editComponent.getWrappedComponent().getField(ContactDto.OTHER_DELETION_REASON).setVisible(true);
 			}
 		}
 

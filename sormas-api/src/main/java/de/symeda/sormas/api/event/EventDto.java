@@ -116,8 +116,8 @@ public class EventDto extends SormasToSormasShareableDto {
 	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String EVENT_GROUP = "eventGroup";
 	public static final String EVENT_IDENTIFICATION_SOURCE = "eventIdentificationSource";
-	public static final String DELETE_REASON = "deleteReason";
-	public static final String OTHER_DELETE_REASON = "otherDeleteReason";
+	public static final String DELETION_REASON = "deletionReason";
+	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	private EventReferenceDto superordinateEvent;
 
@@ -227,7 +227,7 @@ public class EventDto extends SormasToSormasShareableDto {
 	private EventIdentificationSource eventIdentificationSource;
 	private boolean deleted;
 	private DeletionReason deletionReason;
-	private String otherDeleteReason;
+	private String otherDeletionReason;
 
 	public static EventDto build() {
 		EventDto event = new EventDto();
@@ -732,19 +732,19 @@ public class EventDto extends SormasToSormasShareableDto {
 		this.deleted = deleted;
 	}
 
-	public DeletionReason getDeleteReason() {
+	public DeletionReason getDeletionReason() {
 		return deletionReason;
 	}
 
-	public void setDeleteReason(DeletionReason deletionReason) {
+	public void setDeletionReason(DeletionReason deletionReason) {
 		this.deletionReason = deletionReason;
 	}
 
-	public String getOtherDeleteReason() {
-		return otherDeleteReason;
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
 	}
 
-	public void setOtherDeleteReason(String otherDeleteReason) {
-		this.otherDeleteReason = otherDeleteReason;
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
 	}
 }

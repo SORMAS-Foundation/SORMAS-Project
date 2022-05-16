@@ -311,8 +311,8 @@ public class TravelEntryFacadeEjb
 		dto.setQuarantineOfficialOrderSentDate(entity.getQuarantineOfficialOrderSentDate());
 		dto.setDateOfArrival(entity.getDateOfArrival());
 
-		dto.setDeleteReason(entity.getDeleteReason());
-		dto.setOtherDeleteReason(entity.getOtherDeleteReason());
+		dto.setDeletionReason(entity.getDeleteReason());
+		dto.setOtherDeletionReason(entity.getOtherDeleteReason());
 
 		return dto;
 	}
@@ -375,8 +375,8 @@ public class TravelEntryFacadeEjb
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
 		target.setDateOfArrival(source.getDateOfArrival());
 
-		target.setDeleteReason(source.getDeleteReason());
-		target.setOtherDeleteReason(source.getOtherDeleteReason());
+		target.setDeleteReason(source.getDeletionReason());
+		target.setOtherDeleteReason(source.getOtherDeletionReason());
 
 		return target;
 	}

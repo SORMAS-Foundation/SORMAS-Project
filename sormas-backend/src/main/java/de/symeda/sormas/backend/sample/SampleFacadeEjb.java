@@ -777,8 +777,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		target.setDeleted(source.isDeleted());
-		target.setDeleteReason(source.getDeleteReason());
-		target.setOtherDeleteReason(source.getOtherDeleteReason());
+		target.setDeleteReason(source.getDeletionReason());
+		target.setOtherDeleteReason(source.getOtherDeletionReason());
 
 		return target;
 	}
@@ -906,8 +906,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
 		target.setDeleted(source.isDeleted());
-		target.setDeleteReason(source.getDeleteReason());
-		target.setOtherDeleteReason(source.getOtherDeleteReason());
+		target.setDeletionReason(source.getDeleteReason());
+		target.setOtherDeletionReason(source.getOtherDeleteReason());
 
 		return target;
 	}

@@ -154,8 +154,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 					fluidRowLocs(4, EventDto.CONNECTION_NUMBER, 4, EventDto.TRAVEL_DATE) +
 					fluidRowLocs(EventDto.EVENT_LOCATION) +
 					fluidRowLocs("", EventDto.RESPONSIBLE_USER) +
-					fluidRowLocs(CaseDataDto.DELETE_REASON) +
-					fluidRowLocs(CaseDataDto.OTHER_DELETE_REASON);
+					fluidRowLocs(CaseDataDto.DELETION_REASON) +
+					fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
 	//@formatter:on
 
 	private final Boolean isCreateForm;
@@ -391,9 +391,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		ComboBox responsibleUserField = addField(EventDto.RESPONSIBLE_USER, ComboBox.class);
 		responsibleUserField.setNullSelectionAllowed(true);
 
-		addField(EventDto.DELETE_REASON);
-		addField(EventDto.OTHER_DELETE_REASON, TextArea.class).setRows(3);
-		setVisible(false, EventDto.DELETE_REASON, EventDto.OTHER_DELETE_REASON);
+		addField(EventDto.DELETION_REASON);
+		addField(EventDto.OTHER_DELETION_REASON, TextArea.class).setRows(3);
+		setVisible(false, EventDto.DELETION_REASON, EventDto.OTHER_DELETION_REASON);
 
 		if (isCreateForm) {
 			locationForm.hideValidationUntilNextCommit();

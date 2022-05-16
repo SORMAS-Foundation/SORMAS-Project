@@ -17,8 +17,8 @@ public abstract class AbstractDeletableAdoService<ADO extends DeletableAdo> exte
 
 	public void delete(ADO ado, DeletionDetails deletionDetails) {
 
-		ado.setDeleteReason(deletionDetails.getDeleteReason());
-		ado.setOtherDeleteReason(deletionDetails.getOtherDeleteReason());
+		ado.setDeleteReason(deletionDetails.getDeletionReason());
+		ado.setOtherDeleteReason(deletionDetails.getOtherDeletionReason());
 		ado.setDeleted(true);
 		em.persist(ado);
 		em.flush();

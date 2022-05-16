@@ -862,9 +862,9 @@ public class CaseController {
 		}
 
 		if (caze.isDeleted()) {
-			editView.getWrappedComponent().getField(CaseDataDto.DELETE_REASON).setVisible(true);
-			if (editView.getWrappedComponent().getField(CaseDataDto.DELETE_REASON).getValue() == DeletionReason.OTHER_REASON) {
-				editView.getWrappedComponent().getField(CaseDataDto.OTHER_DELETE_REASON).setVisible(true);
+			editView.getWrappedComponent().getField(CaseDataDto.DELETION_REASON).setVisible(true);
+			if (editView.getWrappedComponent().getField(CaseDataDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
+				editView.getWrappedComponent().getField(CaseDataDto.OTHER_DELETION_REASON).setVisible(true);
 			}
 		}
 

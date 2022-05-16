@@ -76,8 +76,8 @@ public class SampleDto extends SormasToSormasShareableDto {
 	public static final String REQUESTED_OTHER_ADDITIONAL_TESTS = "requestedOtherAdditionalTests";
 	public static final String SAMPLING_REASON = "samplingReason";
 	public static final String SAMPLING_REASON_DETAILS = "samplingReasonDetails";
-	public static final String DELETE_REASON = "deleteReason";
-	public static final String OTHER_DELETE_REASON = "otherDeleteReason";
+	public static final String DELETION_REASON = "deletionReason";
+	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	private CaseReferenceDto associatedCase;
 	private ContactReferenceDto associatedContact;
@@ -150,7 +150,7 @@ public class SampleDto extends SormasToSormasShareableDto {
 
 	private boolean deleted;
 	private DeletionReason deletionReason;
-	private String otherDeleteReason;
+	private String otherDeletionReason;
 
 	@ImportIgnore
 	public CaseReferenceDto getAssociatedCase() {
@@ -541,19 +541,19 @@ public class SampleDto extends SormasToSormasShareableDto {
 		this.deleted = deleted;
 	}
 
-	public DeletionReason getDeleteReason() {
+	public DeletionReason getDeletionReason() {
 		return deletionReason;
 	}
 
-	public void setDeleteReason(DeletionReason deletionReason) {
+	public void setDeletionReason(DeletionReason deletionReason) {
 		this.deletionReason = deletionReason;
 	}
 
-	public String getOtherDeleteReason() {
-		return otherDeleteReason;
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
 	}
 
-	public void setOtherDeleteReason(String otherDeleteReason) {
-		this.otherDeleteReason = otherDeleteReason;
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
 	}
 }

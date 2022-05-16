@@ -143,9 +143,9 @@ public class PathogenTestController {
 		});
 
 		if (pathogenTest.isDeleted()) {
-			editView.getWrappedComponent().getField(PathogenTestDto.DELETE_REASON).setVisible(true);
-			if (editView.getWrappedComponent().getField(PathogenTestDto.DELETE_REASON).getValue() == DeletionReason.OTHER_REASON) {
-				editView.getWrappedComponent().getField(PathogenTestDto.OTHER_DELETE_REASON).setVisible(true);
+			editView.getWrappedComponent().getField(PathogenTestDto.DELETION_REASON).setVisible(true);
+			if (editView.getWrappedComponent().getField(PathogenTestDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
+				editView.getWrappedComponent().getField(PathogenTestDto.OTHER_DELETION_REASON).setVisible(true);
 			}
 		}
 

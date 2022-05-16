@@ -89,8 +89,8 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 	public static final String VALID_FROM = "validFrom";
 	public static final String VALID_UNTIL = "validUntil";
 	public static final String VACCINATIONS = "vaccinations";
-	public static final String DELETE_REASON = "deleteReason";
-	public static final String OTHER_DELETE_REASON = "otherDeleteReason";
+	public static final String DELETION_REASON = "deletionReason";
+	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	@Outbreaks
 	@Required
@@ -162,7 +162,7 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 
 	private boolean deleted;
 	private DeletionReason deletionReason;
-	private String otherDeleteReason;
+	private String otherDeletionReason;
 
 	@Valid
 	private List<VaccinationDto> vaccinations = new ArrayList<>();
@@ -440,19 +440,19 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 		this.deleted = deleted;
 	}
 
-	public DeletionReason getDeleteReason() {
+	public DeletionReason getDeletionReason() {
 		return deletionReason;
 	}
 
-	public void setDeleteReason(DeletionReason deletionReason) {
+	public void setDeletionReason(DeletionReason deletionReason) {
 		this.deletionReason = deletionReason;
 	}
 
-	public String getOtherDeleteReason() {
-		return otherDeleteReason;
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
 	}
 
-	public void setOtherDeleteReason(String otherDeleteReason) {
-		this.otherDeleteReason = otherDeleteReason;
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
 	}
 }

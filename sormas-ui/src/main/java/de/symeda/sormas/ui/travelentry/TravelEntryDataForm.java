@@ -96,8 +96,8 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 			fluidRowLocs(TravelEntryDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, TravelEntryDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
 			fluidRowLocs(TravelEntryDto.QUARANTINE_OFFICIAL_ORDER_SENT, TravelEntryDto.QUARANTINE_OFFICIAL_ORDER_SENT_DATE) +
 			fluidRowLocs(TravelEntryDto.QUARANTINE_HELP_NEEDED) +
-			fluidRowLocs(TravelEntryDto.DELETE_REASON) +
-			fluidRowLocs(TravelEntryDto.OTHER_DELETE_REASON);
+			fluidRowLocs(TravelEntryDto.DELETION_REASON) +
+			fluidRowLocs(TravelEntryDto.OTHER_DELETION_REASON);
 	//@formatter:on
 
 	private final String travelEntryUuid;
@@ -270,9 +270,9 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		addField(TravelEntryDto.QUARANTINE_HOME_SUPPLY_ENSURED, NullableOptionGroup.class);
 		addField(TravelEntryDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT, TextField.class);
 
-		addField(TravelEntryDto.DELETE_REASON);
-		addField(TravelEntryDto.OTHER_DELETE_REASON, TextArea.class).setRows(3);
-		setVisible(false, TravelEntryDto.DELETE_REASON, TravelEntryDto.OTHER_DELETE_REASON);
+		addField(TravelEntryDto.DELETION_REASON);
+		addField(TravelEntryDto.OTHER_DELETION_REASON, TextArea.class).setRows(3);
+		setVisible(false, TravelEntryDto.DELETION_REASON, TravelEntryDto.OTHER_DELETION_REASON);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),

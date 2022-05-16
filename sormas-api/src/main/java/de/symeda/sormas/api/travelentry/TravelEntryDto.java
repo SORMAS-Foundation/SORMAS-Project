@@ -78,8 +78,8 @@ public class TravelEntryDto extends PseudonymizableDto {
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
 	public static final String QUARANTINE_HELP_NEEDED = "quarantineHelpNeeded";
 	public static final String DATE_OF_ARRIVAL = "dateOfArrival";
-	public static final String DELETE_REASON = "deleteReason";
-	public static final String OTHER_DELETE_REASON = "otherDeleteReason";
+	public static final String DELETION_REASON = "deletionReason";
+	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	@Required
 	@EmbeddedPersonalData
@@ -143,7 +143,7 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private Date dateOfArrival;
 
 	private DeletionReason deletionReason;
-	private String otherDeleteReason;
+	private String otherDeletionReason;
 
 	public static TravelEntryDto build(PersonReferenceDto person) {
 
@@ -478,19 +478,19 @@ public class TravelEntryDto extends PseudonymizableDto {
 		this.dateOfArrival = dateOfArrival;
 	}
 
-	public DeletionReason getDeleteReason() {
+	public DeletionReason getDeletionReason() {
 		return deletionReason;
 	}
 
-	public void setDeleteReason(DeletionReason deletionReason) {
+	public void setDeletionReason(DeletionReason deletionReason) {
 		this.deletionReason = deletionReason;
 	}
 
-	public String getOtherDeleteReason() {
-		return otherDeleteReason;
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
 	}
 
-	public void setOtherDeleteReason(String otherDeleteReason) {
-		this.otherDeleteReason = otherDeleteReason;
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
 	}
 }

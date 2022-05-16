@@ -952,8 +952,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		caseFacade.deleteCaseInExternalSurveillanceTool(caze);
 		deleteCaseLinks(caze);
-		caze.setDeleteReason(deletionDetails.getDeleteReason());
-		caze.setOtherDeleteReason(deletionDetails.getOtherDeleteReason());
+		caze.setDeleteReason(deletionDetails.getDeletionReason());
+		caze.setOtherDeleteReason(deletionDetails.getOtherDeletionReason());
 
 		// Mark the case as deleted
 		super.delete(caze, deletionDetails);

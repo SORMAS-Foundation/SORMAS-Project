@@ -28,7 +28,6 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -56,8 +55,8 @@ public class EventParticipantEditForm extends PersonDependentEditForm<EventParti
 		+ fluidRowLocs(EventParticipantDto.PERSON)
 		+ loc(MEDICAL_INFORMATION_LOC)
 		+ fluidRowLocs(EventParticipantDto.VACCINATION_STATUS)
-		+ fluidRowLocs(CaseDataDto.DELETE_REASON)
-		+ fluidRowLocs(CaseDataDto.OTHER_DELETE_REASON);
+		+ fluidRowLocs(CaseDataDto.DELETION_REASON)
+		+ fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
 
 	private final EventDto event;
 	private final Boolean searchPerson;
@@ -132,9 +131,9 @@ public class EventParticipantEditForm extends PersonDependentEditForm<EventParti
 
 		addField(EventParticipantDto.VACCINATION_STATUS);
 
-		addField(EventParticipantDto.DELETE_REASON);
-		addField(EventParticipantDto.OTHER_DELETE_REASON, TextArea.class).setRows(3);
-		setVisible(false, EventParticipantDto.DELETE_REASON, EventParticipantDto.OTHER_DELETE_REASON);
+		addField(EventParticipantDto.DELETION_REASON);
+		addField(EventParticipantDto.OTHER_DELETION_REASON, TextArea.class).setRows(3);
+		setVisible(false, EventParticipantDto.DELETION_REASON, EventParticipantDto.OTHER_DELETION_REASON);
 	}
 
 	public String getPersonFirstName() {

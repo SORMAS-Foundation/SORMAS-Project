@@ -156,9 +156,9 @@ public class ImmunizationController {
 		}
 
 		if (immunizationDto.isDeleted()) {
-			editComponent.getWrappedComponent().getField(ImmunizationDto.DELETE_REASON).setVisible(true);
-			if (editComponent.getWrappedComponent().getField(ImmunizationDto.DELETE_REASON).getValue() == DeletionReason.OTHER_REASON) {
-				editComponent.getWrappedComponent().getField(ImmunizationDto.OTHER_DELETE_REASON).setVisible(true);
+			editComponent.getWrappedComponent().getField(ImmunizationDto.DELETION_REASON).setVisible(true);
+			if (editComponent.getWrappedComponent().getField(ImmunizationDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
+				editComponent.getWrappedComponent().getField(ImmunizationDto.OTHER_DELETION_REASON).setVisible(true);
 			}
 		}
 

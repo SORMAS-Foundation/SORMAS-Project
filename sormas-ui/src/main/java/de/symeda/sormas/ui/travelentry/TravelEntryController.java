@@ -143,9 +143,9 @@ public class TravelEntryController {
 		}
 
 		if (travelEntry.isDeleted()) {
-			editComponent.getWrappedComponent().getField(TravelEntryDto.DELETE_REASON).setVisible(true);
-			if (editComponent.getWrappedComponent().getField(TravelEntryDto.DELETE_REASON).getValue() == DeletionReason.OTHER_REASON) {
-				editComponent.getWrappedComponent().getField(TravelEntryDto.OTHER_DELETE_REASON).setVisible(true);
+			editComponent.getWrappedComponent().getField(TravelEntryDto.DELETION_REASON).setVisible(true);
+			if (editComponent.getWrappedComponent().getField(TravelEntryDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
+				editComponent.getWrappedComponent().getField(TravelEntryDto.OTHER_DELETION_REASON).setVisible(true);
 			}
 		}
 

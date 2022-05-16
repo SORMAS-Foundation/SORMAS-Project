@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.contact.ContactDto;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.ui.Label;
@@ -89,8 +87,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			fluidRowLocs(PathogenTestDto.SEROTYPE, "") + 
 			fluidRowLocs(PathogenTestDto.CQ_VALUE, "") + 
 			fluidRowLocs(PathogenTestDto.TEST_RESULT_TEXT) +
-			fluidRowLocs(PathogenTestDto.DELETE_REASON) +
-			fluidRowLocs(PathogenTestDto.OTHER_DELETE_REASON);
+			fluidRowLocs(PathogenTestDto.DELETION_REASON) +
+			fluidRowLocs(PathogenTestDto.OTHER_DELETION_REASON);
 	//@formatter:on
 
 	private final SampleDto sample;
@@ -182,9 +180,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		addField(PathogenTestDto.TEST_RESULT_TEXT, TextArea.class).setRows(6);
 		addField(PathogenTestDto.PRELIMINARY).addStyleName(CssStyles.VSPACE_4);
 
-		addField(PathogenTestDto.DELETE_REASON);
-		addField(PathogenTestDto.OTHER_DELETE_REASON, TextArea.class).setRows(3);
-		setVisible(false, PathogenTestDto.DELETE_REASON, PathogenTestDto.OTHER_DELETE_REASON);
+		addField(PathogenTestDto.DELETION_REASON);
+		addField(PathogenTestDto.OTHER_DELETION_REASON, TextArea.class).setRows(3);
+		setVisible(false, PathogenTestDto.DELETION_REASON, PathogenTestDto.OTHER_DELETION_REASON);
 
 		initializeAccessAndAllowedAccesses();
 		initializeVisibilitiesAndAllowedVisibilities();

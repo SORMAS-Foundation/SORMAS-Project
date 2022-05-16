@@ -2863,8 +2863,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 
 		target.setDeleted(source.isDeleted());
-		target.setDeleteReason(source.getDeleteReason());
-		target.setOtherDeleteReason(source.getOtherDeleteReason());
+		target.setDeletionReason(source.getDeleteReason());
+		target.setOtherDeletionReason(source.getOtherDeleteReason());
 
 		return target;
 	}
@@ -3049,8 +3049,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 
 		target.setDeleted(source.isDeleted());
-		target.setDeleteReason(source.getDeleteReason());
-		target.setOtherDeleteReason(source.getOtherDeleteReason());
+		target.setDeleteReason(source.getDeletionReason());
+		target.setOtherDeleteReason(source.getOtherDeletionReason());
 
 		return target;
 	}

@@ -15,19 +15,19 @@ public class DeletionDetails implements Serializable {
         this.otherDeleteReason = otherDeleteReason;
     }
 
-    public DeletionReason getDeleteReason() {
+    public DeletionReason getDeletionReason() {
         return deletionReason;
     }
 
-    public void setDeleteReason(DeletionReason deletionReason) {
+    public void setDeletionReason(DeletionReason deletionReason) {
         this.deletionReason = deletionReason;
     }
 
-    public String getOtherDeleteReason() {
+    public String getOtherDeletionReason() {
         return otherDeleteReason;
     }
 
-    public void setOtherDeleteReason(String otherDeleteReason) {
+    public void setOtherDeletionReason(String otherDeleteReason) {
         this.otherDeleteReason = otherDeleteReason;
     }
 }

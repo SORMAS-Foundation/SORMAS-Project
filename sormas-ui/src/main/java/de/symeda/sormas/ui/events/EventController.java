@@ -757,9 +757,9 @@ public class EventController {
 		}
 
 		if (event.isDeleted()) {
-			editView.getWrappedComponent().getField(EventDto.DELETE_REASON).setVisible(true);
-			if (editView.getWrappedComponent().getField(EventDto.DELETE_REASON).getValue() == DeletionReason.OTHER_REASON) {
-				editView.getWrappedComponent().getField(EventDto.OTHER_DELETE_REASON).setVisible(true);
+			editView.getWrappedComponent().getField(EventDto.DELETION_REASON).setVisible(true);
+			if (editView.getWrappedComponent().getField(EventDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
+				editView.getWrappedComponent().getField(EventDto.OTHER_DELETION_REASON).setVisible(true);
 			}
 		}
 

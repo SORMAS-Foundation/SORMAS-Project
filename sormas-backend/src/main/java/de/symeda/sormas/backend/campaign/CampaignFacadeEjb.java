@@ -199,8 +199,8 @@ public class CampaignFacadeEjb
 		target.setDashboardElements(source.getCampaignDashboardElements());
 
 		target.setDeleted(source.isDeleted());
-		target.setDeleteReason(source.getDeleteReason());
-		target.setOtherDeleteReason(source.getOtherDeleteReason());
+		target.setDeleteReason(source.getDeletionReason());
+		target.setOtherDeleteReason(source.getOtherDeletionReason());
 
 		return target;
 	}
@@ -305,8 +305,8 @@ public class CampaignFacadeEjb
 		target.setCampaignDashboardElements(source.getDashboardElements());
 
 		target.setDeleted(source.isDeleted());
-		target.setDeleteReason(source.getDeleteReason());
-		target.setOtherDeleteReason(source.getOtherDeleteReason());
+		target.setDeletionReason(source.getDeleteReason());
+		target.setOtherDeletionReason(source.getOtherDeleteReason());
 
 		return target;
 	}

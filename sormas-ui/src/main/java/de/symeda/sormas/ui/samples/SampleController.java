@@ -351,9 +351,9 @@ public class SampleController {
 		}
 
 		if (dto.isDeleted()) {
-			editView.getWrappedComponent().getField(SampleDto.DELETE_REASON).setVisible(true);
-			if (editView.getWrappedComponent().getField(SampleDto.DELETE_REASON).getValue() == DeletionReason.OTHER_REASON) {
-				editView.getWrappedComponent().getField(SampleDto.OTHER_DELETE_REASON).setVisible(true);
+			editView.getWrappedComponent().getField(SampleDto.DELETION_REASON).setVisible(true);
+			if (editView.getWrappedComponent().getField(SampleDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
+				editView.getWrappedComponent().getField(SampleDto.OTHER_DELETION_REASON).setVisible(true);
 			}
 		}
 

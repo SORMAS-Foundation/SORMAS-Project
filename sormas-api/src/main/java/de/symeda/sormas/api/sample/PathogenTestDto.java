@@ -72,8 +72,8 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EXTERNAL_ORDER_ID = "externalOrderId";
 	public static final String PRELIMINARY = "preliminary";
-	public static final String DELETE_REASON = "deleteReason";
-	public static final String OTHER_DELETE_REASON = "otherDeleteReason";
+	public static final String DELETION_REASON = "deletionReason";
+	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	@Required
 	private SampleReferenceDto sample;
@@ -130,7 +130,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	private boolean deleted;
 	private DeletionReason deletionReason;
-	private String otherDeleteReason;
+	private String otherDeletionReason;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
 
@@ -367,20 +367,20 @@ public class PathogenTestDto extends PseudonymizableDto {
 		this.deleted = deleted;
 	}
 
-	public DeletionReason getDeleteReason() {
+	public DeletionReason getDeletionReason() {
 		return deletionReason;
 	}
 
-	public void setDeleteReason(DeletionReason deletionReason) {
+	public void setDeletionReason(DeletionReason deletionReason) {
 		this.deletionReason = deletionReason;
 	}
 
-	public String getOtherDeleteReason() {
-		return otherDeleteReason;
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
 	}
 
-	public void setOtherDeleteReason(String otherDeleteReason) {
-		this.otherDeleteReason = otherDeleteReason;
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
 	}
 
 	@Override

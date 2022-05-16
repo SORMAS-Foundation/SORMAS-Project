@@ -156,9 +156,9 @@ public class CampaignController {
 		});
 
 		if (campaignDto.isDeleted()) {
-			campaignComponent.getWrappedComponent().getField(CampaignDto.DELETE_REASON).setVisible(true);
-			if (campaignComponent.getWrappedComponent().getField(CampaignDto.DELETE_REASON).getValue()== DeletionReason.OTHER_REASON){
-				campaignComponent.getWrappedComponent().getField(CampaignDto.OTHER_DELETE_REASON).setVisible(true);
+			campaignComponent.getWrappedComponent().getField(CampaignDto.DELETION_REASON).setVisible(true);
+			if (campaignComponent.getWrappedComponent().getField(CampaignDto.DELETION_REASON).getValue()== DeletionReason.OTHER_REASON){
+				campaignComponent.getWrappedComponent().getField(CampaignDto.OTHER_DELETION_REASON).setVisible(true);
 			}
 		}
 

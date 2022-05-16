@@ -219,9 +219,9 @@ public class EventParticipantsController {
 		}
 
 		if (eventParticipant.isDeleted()) {
-			editComponent.getWrappedComponent().getField(EventParticipantDto.DELETE_REASON).setVisible(true);
-			if (editComponent.getWrappedComponent().getField(EventParticipantDto.DELETE_REASON).getValue() == DeletionReason.OTHER_REASON) {
-				editComponent.getWrappedComponent().getField(EventParticipantDto.OTHER_DELETE_REASON).setVisible(true);
+			editComponent.getWrappedComponent().getField(EventParticipantDto.DELETION_REASON).setVisible(true);
+			if (editComponent.getWrappedComponent().getField(EventParticipantDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
+				editComponent.getWrappedComponent().getField(EventParticipantDto.OTHER_DELETION_REASON).setVisible(true);
 			}
 		}
 
