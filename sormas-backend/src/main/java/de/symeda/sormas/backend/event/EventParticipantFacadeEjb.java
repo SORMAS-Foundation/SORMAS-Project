@@ -51,6 +51,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.DeletionDetails;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -456,9 +457,9 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	@RolesAllowed(UserRight._EVENTPARTICIPANT_DELETE)
-	public void delete(String uuid) throws ExternalSurveillanceToolException {
+	public void delete(String uuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
 		EventParticipant eventParticipant = service.getByUuid(uuid);
-		service.delete(eventParticipant);
+		service.delete(eventParticipant, deletionDetails);
 	}
 
 	@Override
@@ -480,7 +481,7 @@ public class EventParticipantFacadeEjb
 
 		Join<EventParticipant, Person> person = joins.getPerson();
 		Join<EventParticipant, Case> resultingCase = joins.getResultingCase();
-		Join<EventParticipant, Event> event = joins.getEvent(JoinType.LEFT);
+		Join<EventParticipant, Event> event = joins.getEvent();
 		final Join<EventParticipant, Sample> samples = eventParticipant.join(EventParticipant.SAMPLES, JoinType.LEFT);
 		samples.on(
 			cb.and(
@@ -643,7 +644,7 @@ public class EventParticipantFacadeEjb
 		Join<Person, Country> birthCountry = person.join(Person.BIRTH_COUNTRY, JoinType.LEFT);
 		Join<Person, Country> citizenship = person.join(Person.CITIZENSHIP, JoinType.LEFT);
 
-		Join<EventParticipant, Event> event = joins.getEvent(JoinType.LEFT);
+		Join<EventParticipant, Event> event = joins.getEvent();
 		Join<Event, Location> eventLocation = joins.getEventAddress();
 
 		Join<EventParticipant, Case> resultingCase = joins.getResultingCase();
@@ -961,6 +962,10 @@ public class EventParticipantFacadeEjb
 			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
 		}
 
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -1011,6 +1016,10 @@ public class EventParticipantFacadeEjb
 
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
 	}

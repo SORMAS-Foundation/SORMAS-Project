@@ -28,14 +28,14 @@ import org.sormas.e2etests.envconfig.dto.Environments;
 import org.testng.Assert;
 
 @Slf4j
-public class EnvironmentManager {
+public class RunningConfiguration {
 
   private ObjectMapper objectMapper;
   private static Environments environments;
   private static boolean wasJsonChecked;
 
   @SneakyThrows
-  public EnvironmentManager() {
+  public RunningConfiguration() {
     objectMapper = new ObjectMapper();
     environments =
         objectMapper.readValue(ConfigFileReader.getConfigurationFile(), Environments.class);

@@ -19,13 +19,14 @@ package org.sormas.e2etests.steps.api.commonSteps;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
+import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.Assert;
 
 public class ResponseChecksSteps implements En {
 
   @Inject
-  public ResponseChecksSteps(ApiState apiState) {
+  public ResponseChecksSteps(ApiState apiState, RestAssuredClient restAssuredClient) {
 
     Then(
         "API: I check that POST call body is {string}",

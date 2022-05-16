@@ -31,12 +31,11 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 
 import de.symeda.auditlog.api.Audited;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationReferenceDto;
 import de.symeda.sormas.api.person.PersonAddressType;
+import de.symeda.sormas.api.utils.LocationHelper;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.continent.Continent;
@@ -66,6 +65,7 @@ public class Location extends AbstractDomainObject {
 	public static final String COMMUNITY = "community";
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
+	public static final String LATLONACCURACY = "latLonAccuracy";
 	public static final String POSTAL_CODE = "postalCode";
 	public static final String STREET = "street";
 	public static final String HOUSE_NUMBER = "houseNumber";
@@ -348,15 +348,7 @@ public class Location extends AbstractDomainObject {
 	}
 
 	public String buildGpsCoordinatesCaption() {
-		if (latitude == null && longitude == null) {
-			return "";
-		} else if (latitude == null || longitude == null) {
-			return I18nProperties.getString(Strings.messageIncompleteGpsCoordinates);
-		} else if (latLonAccuracy == null) {
-			return latitude + ", " + longitude;
-		} else {
-			return latitude + ", " + longitude + " +-" + Math.round(latLonAccuracy) + "m";
-		}
+		return LocationHelper.buildGpsCoordinatesCaption(latitude, longitude, latLonAccuracy);
 	}
 
 	@Override

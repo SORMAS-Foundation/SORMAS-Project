@@ -124,10 +124,10 @@ public class VaccinationController {
 		});
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
-			cdwComponent.addDeleteListener(() -> {
+			cdwComponent.addDeleteWithReasonListener((deleteDetails) -> {
 				popupWindow.close();
 				if (doSave) {
-					FacadeProvider.getVaccinationFacade().deleteWithImmunization(vaccination.getUuid());
+					FacadeProvider.getVaccinationFacade().deleteWithImmunization(vaccination.getUuid(), deleteDetails);
 				}
 				if (deleteCallback != null) {
 					deleteCallback.run();

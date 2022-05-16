@@ -22,12 +22,14 @@ import lombok.SneakyThrows;
 
 @Getter
 public enum SubcontinentUUIDs {
-  WesternEurope("VMRXWX-EAGV7L-JFKP26-F3DBSBFU", "ST63QN-LZAE3C-L5QMQJ-LCTEKGIA");
+  WesternEurope("Western Europe", "VMRXWX-EAGV7L-JFKP26-F3DBSBFU", "ST63QN-LZAE3C-L5QMQJ-LCTEKGIA");
 
+  private final String name;
   private final String uuidMain;
   private final String uuidDe;
 
-  SubcontinentUUIDs(String uuidMain, String uuidDe) {
+  SubcontinentUUIDs(String name, String uuidMain, String uuidDe) {
+    this.name = name;
     this.uuidMain = uuidMain;
     this.uuidDe = uuidDe;
   }

@@ -33,7 +33,7 @@ import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Symptoms;
 import org.sormas.e2etests.entities.services.SymptomService;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.state.ApiState;
@@ -49,7 +49,7 @@ public class SymptomsTabSteps implements En {
       WebDriverHelpers webDriverHelpers,
       SymptomService symptomService,
       ApiState apiState,
-      EnvironmentManager environmentManager) {
+      RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
     String firstSymptom = "Sore throat/pharyngitis";
 
@@ -75,7 +75,7 @@ public class SymptomsTabSteps implements En {
           String caseLinkPath = "/sormas-webdriver/#!cases/symptoms/";
           String uuid = apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(
-              environmentManager.getEnvironmentUrlForMarket(locale) + caseLinkPath + uuid);
+              runningConfiguration.getEnvironmentUrlForMarket(locale) + caseLinkPath + uuid);
         });
 
     When(

@@ -18,9 +18,11 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_OKAY;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALLBUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS_ARCHIVE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS_VALUES;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_CREATE_QUARANTINE_ORDER;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASES_FROM_OTHER_INSTANCES_CHECKBOX;
@@ -65,8 +67,10 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_VACCINATION_STATUS_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_YEAR_FILTER;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CLOSE_FORM_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONFIRM_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_FROM_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TYPE_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DETAILED_IMPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DOWNLOAD_DATA_DICTIONARY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DOWNLOAD_IMPORT_GUIDE_BUTTON;
@@ -81,9 +85,11 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.INVE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.INVESTIGATION_PENDING_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LEAVE_BULK_EDIT_MODE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LINE_LISTING_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MERGE_DUPLICATES_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MORE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NAME_UUID_EPID_NUMBER_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_CASE_DATE_FROM_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_EVENT_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.RESULTS_GRID_HEADER;
@@ -93,8 +99,10 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.TOTA
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getCaseResultsUuidLocator;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getCheckboxByIndex;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getMergeDuplicatesButtonById;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getResultByIndex;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE_DEFINITION_TEXT;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON;
@@ -126,9 +134,10 @@ import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.FacilityCategory;
 import org.sormas.e2etests.enums.FollowUpStatus;
 import org.sormas.e2etests.enums.PresentCondition;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
@@ -151,7 +160,7 @@ public class CaseDirectorySteps implements En {
       AssertHelpers assertHelpers,
       SoftAssert softly,
       Faker faker,
-      EnvironmentManager environmentManager) {
+      RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
 
@@ -230,6 +239,13 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(MORE_BUTTON);
         });
     When(
+        "I click on Merge Duplicates on Case directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(MERGE_DUPLICATES_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ACTION_OKAY);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_OKAY);
+        });
+    When(
         "I click Enter Bulk Edit Mode on Case directory page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE);
@@ -278,6 +294,19 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(
               getCheckboxByUUID(apiState.getCreatedCase().getUuid()));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "^I select two last created API result in grid in Case Directory for Bulk Action$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          for (int i = 0; i <= 1; i++) {
+            webDriverHelpers.scrollToElement(
+                getCheckboxByUUID(apiState.getCreatedCases().get(i).getUuid()));
+            webDriverHelpers.clickOnWebElementBySelector(
+                getCheckboxByUUID(apiState.getCreatedCases().get(i).getUuid()));
+            webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          }
         });
 
     When(
@@ -339,7 +368,8 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.fillAndSubmitInWebElement(NAME_UUID_EPID_NUMBER_LIKE_INPUT, caseUUID);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               getCaseResultsUuidLocator(caseUUID));
-          webDriverHelpers.clickOnWebElementBySelector(getCaseResultsUuidLocator(caseUUID));
+          TimeUnit.SECONDS.sleep(1); // wait for system reaction
+          webDriverHelpers.doubleClickOnWebElementBySelector(getCaseResultsUuidLocator(caseUUID));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
 
@@ -347,7 +377,7 @@ public class CaseDirectorySteps implements En {
         "^I navigate to the last created case via the url$",
         () -> {
           String LAST_CREATED_CASE_URL =
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!cases/data/"
                   + apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_URL);
@@ -589,7 +619,31 @@ public class CaseDirectorySteps implements En {
         "I apply Date type filter to {string} on Case directory page",
         (String dataType) ->
             webDriverHelpers.selectFromCombobox(CASE_DATA_TYPE_FILTER_COMBOBOX, dataType));
+    And(
+        "I apply Report on onset date type filter to {string} on Merge duplicate cases page",
+        (String dataType) ->
+            webDriverHelpers.selectFromCombobox(DATE_TYPE_FILTER_COMBOBOX, dataType));
 
+    And(
+        "I fill date from input to today on Merge Duplicate Cases page",
+        () -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+          webDriverHelpers.fillInWebElement(
+              NEW_CASE_DATE_FROM_COMBOBOX, formatter.format(LocalDate.now()));
+        });
+    And(
+        "I click to CONFIRM FILTERS on Merge Duplicate Cases page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(By.id("actionConfirmFilters"));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(500);
+        });
+    And(
+        "I click on Merge button of leading case in Merge Duplicate Cases page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              getMergeDuplicatesButtonById(EditCaseSteps.aCase.getUuid()));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
+        });
     And(
         "I fill Cases from input to {int} days before mocked Case created on Case directory page",
         (Integer number) -> {
@@ -602,6 +656,20 @@ public class CaseDirectorySteps implements En {
                           ZoneId.systemDefault())
                       .minusDays(number)));
         });
+
+    And(
+        "I fill Cases from input to {int} days before mocked two Case created on Case directory page via api",
+        (Integer number) -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+          webDriverHelpers.fillInWebElement(
+              DATE_FROM_COMBOBOX,
+              formatter.format(
+                  LocalDate.ofInstant(
+                          apiState.getCreatedCases().get(0).getReportDate().toInstant(),
+                          ZoneId.systemDefault())
+                      .minusDays(number)));
+        });
+
     And(
         "I fill Cases from input to {int} days before UI Case created on Case directory page",
         (Integer number) -> {
@@ -733,6 +801,12 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.fillInWebElement(
               DATE_TO_COMBOBOX,
               formatter.format(CreateNewCaseSteps.caze.getDateOfReport().plusDays(number)));
+        });
+    When(
+        "I click to Confirm action in Merge Duplicates Cases popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POPUP);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(500);
         });
     And(
         "I apply Year filter different than Person has on Case directory page",
@@ -923,6 +997,21 @@ public class CaseDirectorySteps implements En {
                           "SORMAS_Import_Guide was not downloaded. Searching path was: %s",
                           path.toAbsolutePath())),
               20);
+        });
+
+    When(
+        "I click on the Archive bulk cases on Case Directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS_ARCHIVE);
+        });
+
+    When(
+        "I confirm archive bulk cases and select Archive related contacts checkbox",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_RELATED_CONTACTS_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(EditContactPage.DELETE_POPUP_YES_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // wait for response after confirm
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
   }
 

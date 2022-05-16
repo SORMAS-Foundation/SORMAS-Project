@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -26,7 +25,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -40,7 +38,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
@@ -57,6 +54,7 @@ import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -69,7 +67,6 @@ import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleJurisdictionFlagsDto;
 import de.symeda.sormas.api.sample.SampleListEntryDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -91,6 +88,7 @@ import de.symeda.sormas.backend.event.EventParticipantQueryContext;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.labmessage.LabMessageService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
@@ -102,7 +100,6 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
@@ -329,7 +326,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 				sampleIdExpr.in(samples.stream().map(SampleIndexDto::getUuid).collect(Collectors.toList())));
 			testCq.orderBy(cb.desc(testRoot.get(PathogenTest.CHANGE_DATE)));
 
-			List<Object[]> testList = em.createQuery(testCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+			List<Object[]> testList = em.createQuery(testCq).getResultList();
 
 			Map<String, Object[]> tests = testList.stream()
 				.filter(distinctByKey(pathogenTest -> pathogenTest[2]))
@@ -725,44 +722,35 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		} else if (sampleAssociationType == SampleAssociationType.EVENT_PARTICIPANT) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(joins.getEventParticipant()));
 		}
-
 		if (criteria.getRegion() != null) {
-			Expression<Object> regionExpression = cb.selectCase()
-				.when(cb.isNotNull(joins.getCaseRegion()), joins.getCaseRegion().get(AbstractDomainObject.UUID))
-				.otherwise(
-					cb.selectCase()
-						.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(AbstractDomainObject.UUID))
-						.otherwise(
-							cb.selectCase()
-								.when(cb.isNotNull(joins.getContactCaseRegion()), joins.getContactCaseRegion().get(AbstractDomainObject.UUID))
-								.otherwise(joins.getEventRegion().get(AbstractDomainObject.UUID))));
+			final String regionUuid = criteria.getRegion().getUuid();
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.or(
-					cb.and(
-						cb.isNotNull(joins.getCaze()),
-						cb.equal(joins.getCaseResponsibleRegion().get(AbstractDomainObject.UUID), criteria.getRegion().getUuid())),
-					cb.equal(regionExpression, criteria.getRegion().getUuid())));
+				CriteriaBuilderHelper.or(
+					cb,
+					cb.equal(joins.getCaseRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getCaseResponsibleRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getContactRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getContactCaseRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getContactCaseResponsibleRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getEventRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getEventParticipantJoins().getEventParticipantResponsibleRegion().get(Region.UUID), regionUuid)));
 		}
 		if (criteria.getDistrict() != null) {
-			Expression<Object> districtExpression = cb.selectCase()
-				.when(cb.isNotNull(joins.getCaseDistrict()), joins.getCaseDistrict().get(AbstractDomainObject.UUID))
-				.otherwise(
-					cb.selectCase()
-						.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(AbstractDomainObject.UUID))
-						.otherwise(
-							cb.selectCase()
-								.when(cb.isNotNull(joins.getContactCaseDistrict()), joins.getContactCaseDistrict().get(AbstractDomainObject.UUID))
-								.otherwise(joins.getEventDistrict().get(AbstractDomainObject.UUID))));
+			final String districtUuid = criteria.getDistrict().getUuid();
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.or(
-					cb.and(
-						cb.isNotNull(joins.getCaze()),
-						cb.equal(joins.getCaseResponsibleDistrict().get(AbstractDomainObject.UUID), criteria.getDistrict().getUuid())),
-					cb.equal(districtExpression, criteria.getDistrict().getUuid())));
+				CriteriaBuilderHelper.or(
+					cb,
+					cb.equal(joins.getCaseDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getCaseResponsibleDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getContactDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getContactCaseDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getContactCaseResponsibleDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getEventDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getEventParticipantJoins().getEventParticipantResponsibleDistrict().get(District.UUID), districtUuid)));
 		}
 		if (criteria.getLaboratory() != null) {
 			filter =
@@ -923,16 +911,16 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 	}
 
 	@Override
-	public void delete(Sample sample) {
+	public void delete(Sample sample, DeletionDetails deletionDetails) {
 
 		// Mark all pathogen tests of this sample as deleted
 		for (PathogenTest pathogenTest : sample.getPathogenTests()) {
-			pathogenTestService.delete(pathogenTest);
+			pathogenTestService.delete(pathogenTest, deletionDetails);
 		}
 
 		deleteSampleLinks(sample);
 
-		super.delete(sample);
+		super.delete(sample, deletionDetails);
 	}
 
 	private void deleteSampleLinks(Sample sample) {

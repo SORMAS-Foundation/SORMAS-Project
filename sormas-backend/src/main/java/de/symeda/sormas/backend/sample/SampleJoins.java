@@ -29,13 +29,13 @@ import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantJoins;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 
 public class SampleJoins extends QueryJoins<Sample> {
@@ -172,7 +172,7 @@ public class SampleJoins extends QueryJoins<Sample> {
 	}
 
 	public Join<EventParticipant, Event> getEvent() {
-		return getEventParticipantJoins().getEvent(JoinType.LEFT);
+		return getEventParticipantJoins().getEvent();
 	}
 
 	public Join<Event, Location> getEventLocation() {

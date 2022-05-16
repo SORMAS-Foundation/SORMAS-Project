@@ -140,8 +140,8 @@ public class EventParticipantJoins extends QueryJoins<EventParticipant> {
 		return getCaseJoins().getPointOfEntry();
 	}
 
-	public Join<EventParticipant, Event> getEvent(JoinType joinType) {
-		return getOrCreate(event, EventParticipant.EVENT, joinType, this::setEvent);
+	public Join<EventParticipant, Event> getEvent() {
+		return getOrCreate(event, EventParticipant.EVENT, JoinType.LEFT, this::setEvent);
 	}
 
 	private void setEvent(Join<EventParticipant, Event> event) {
@@ -189,7 +189,7 @@ public class EventParticipantJoins extends QueryJoins<EventParticipant> {
 	}
 
 	public EventJoins getEventJoins() {
-		return getOrCreate(eventJoins, () -> new EventJoins(getEvent(JoinType.LEFT)), this::setEventJoins);
+		return getOrCreate(eventJoins, () -> new EventJoins(getEvent()), this::setEventJoins);
 	}
 
 	private void setEventJoins(EventJoins eventJoins) {

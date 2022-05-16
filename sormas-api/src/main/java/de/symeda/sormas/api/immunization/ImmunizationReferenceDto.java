@@ -16,7 +16,10 @@
 package de.symeda.sormas.api.immunization;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 
+@DependingOnFeatureType(featureType = FeatureType.IMMUNIZATION_MANAGEMENT)
 public class ImmunizationReferenceDto extends ReferenceDto {
 
 	private String externalId;

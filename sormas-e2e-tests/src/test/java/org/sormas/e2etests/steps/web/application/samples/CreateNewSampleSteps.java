@@ -187,6 +187,15 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
+        "I check if value {string} is unavailable in Type of Sample combobox on Create new Sample page",
+        (String sampleMaterial) -> {
+          softly.assertFalse(
+              webDriverHelpers.checkIfElementExistsInCombobox(
+                  SAMPLE_TYPE_COMBOBOX, sampleMaterial));
+          softly.assertAll();
+        });
+
+    When(
         "^I create a new Sample with positive test result with ([^\"]*) as disease$",
         (String diseaseType) -> {
           sample = sampleService.buildAlternateSampleWithSelectableDisease(diseaseType);

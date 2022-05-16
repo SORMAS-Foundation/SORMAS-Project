@@ -48,11 +48,13 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.DeletionDetails;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
@@ -355,7 +357,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
 		final From<?, Case> root = caseQueryContext.getRoot();
-		final CriteriaQuery<?> cq = caseQueryContext.getQuery();
 		final CaseJoins joins = caseQueryContext.getJoins();
 
 		Predicate filter = createActiveCasesFilter(cb, root);
@@ -781,7 +782,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		boolean hasOnlyCasesWithEventsCriteria = Boolean.TRUE.equals(caseCriteria.getOnlyCasesWithEvents());
 		if (hasEventLikeCriteria || hasOnlyCasesWithEventsCriteria) {
 			Join<Case, EventParticipant> eventParticipant = joins.getEventParticipants();
-			Join<EventParticipant, Event> event = joins.getEventParticipantJoins().getEvent(JoinType.LEFT);
+			Join<EventParticipant, Event> event = joins.getEventParticipantJoins().getEvent();
 
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.isFalse(event.get(Event.DELETED)), cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
@@ -941,19 +942,21 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@Override
-	public void delete(Case caze) {
+	public void delete(Case caze, DeletionDetails deletionDetails) {
 
 		// Soft-delete all samples that are only associated with this case
 		caze.getSamples()
 			.stream()
 			.filter(sample -> sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null)
-			.forEach(sample -> sampleService.delete(sample));
+			.forEach(sample -> sampleService.delete(sample, deletionDetails));
 
 		caseFacade.deleteCaseInExternalSurveillanceTool(caze);
 		deleteCaseLinks(caze);
+		caze.setDeletionReason(deletionDetails.getDeletionReason());
+		caze.setOtherDeletionReason(deletionDetails.getOtherDeletionReason());
 
 		// Mark the case as deleted
-		super.delete(caze);
+		super.delete(caze, deletionDetails);
 	}
 
 	private void deleteCaseLinks(Case caze) {
@@ -1200,6 +1203,17 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 
 		filter = CriteriaBuilderHelper.or(cb, filter, filterResponsible);
+
+		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
+			&& RequestContextHolder.isMobileSync()) {
+			final Predicate limitedCaseSyncPredicate = cb.not(
+				cb.and(
+					cb.equal(casePath.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE),
+					cb.or(
+						cb.notEqual(casePath.get(Case.REPORTING_USER), currentUser),
+						cb.and(cb.equal(casePath.get(Case.REPORTING_USER), currentUser), cb.isNull(casePath.get(Case.CREATION_VERSION))))));
+			filter = CriteriaBuilderHelper.and(cb, filter, limitedCaseSyncPredicate);
+		}
 
 		return filter;
 	}

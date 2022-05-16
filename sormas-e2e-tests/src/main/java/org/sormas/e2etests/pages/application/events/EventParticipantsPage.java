@@ -68,6 +68,12 @@ public class EventParticipantsPage {
   public static final By DESCRIPTION_OF_CREATE_CASE_FROM_EVENT_PARTICIPANT =
       By.xpath(
           "//div[@class='v-window-outerheader'][contains(.,'Create case from event participant with positive test result?')]");
+  public static final By ARCHIVE_EVENT_PARTICIPANT_BUTTON = By.id("archiveDearchive");
+  public static final By EVENT_PARTICIPANT_DISPLAY_FILTER_COMBOBOX =
+      By.cssSelector("[id='relevanceStatusFilter'] [class='v-filterselect-button']");
+  public static final By EVENT_PARTICIPANT_DISPLAY_FILTER_INPUT =
+      By.cssSelector("[id='relevanceStatusFilter'] input");
+  public static final By EVENT_TAB = By.id("tab-events-data");
 
   public static final By getEventsByCaseUuid(String uuid) {
     return By.cssSelector(String.format("[title = '%s']", uuid));

@@ -28,6 +28,9 @@ import de.symeda.sormas.ui.samples.AbstractSampleForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 
+/**
+ * Collection of lab message UI related functions
+ */
 public class LabMessageUiHelper {
 
 	public static Button addCancelAndUpdateLabels(CommitDiscardWrapperComponent<?> component, String discardCaptionTag) {

@@ -602,6 +602,146 @@ Feature: Create events
     Then I add a participant created by API create person
     Then I check if participant appears in the participants list of event created with API
 
+  @issue=SORDEV-10265 @env_main
+  Scenario: Manual archiving for events
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with status EVENT
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    And I collect the UUID displayed on Edit event page
+    Given I add a participant to the event
+    Then I click on the Archive event participant button
+    And I check if Archive event popup is displayed correctly
+    Then I check the end of processing date in the archive popup
+    And I check if Archive button changed name to De-Archive
+    Then I click on the Event participant tab
+    And I choose Archived event participants from combobox in the Event participant tab
+    Then I check if participant appears in the event participants list
+    And I click on the first row from archived event participant
+    Then I check if Archive button changed name to De-Archive
+
+  @issue=SORDEV-10265 @env_main
+  Scenario: Manual archiving for event participats
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with status EVENT
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    And I collect the UUID displayed on Edit event page
+    Given I add a participant to the event
+    Then I click on the Event participant tab
+    And I choose Archived event participants from combobox in the Event participant tab
+    Then I back to the Event tab
+    Then I click on the Archive event button
+    Then I check the end of processing date in the archive popup
+    And I check if Archive button changed name to De-Archive
+    Then I click on the Event participant tab
+    Then I check if participant appears in the event participants list
+
+  @issue=SORDEV-10265 @env_main
+  Scenario: Manual archiving for bulk event participats
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    When I create a new event with specific data
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    Then I check the created data is correctly displayed in event edit page
+    And I click on the Events button from navbar
+    Then I click on the RESET FILTERS button from Event
+    And I click on the More button on Event directory page
+    And I click Enter Bulk Edit Mode on Event directory page
+    And I click on last created UI result in grid in Event Directory for Bulk Action
+    Given I add a participant to the event
+    Then I click on the Event participant tab
+    And I choose Archived event participants from combobox in the Event participant tab
+    And I click on the Events button from navbar
+    Then I click on the RESET FILTERS button from Event
+    And I click on last created API result in grid in Event Directory for Bulk Action
+    Given I add a participant to the event
+    Then I click on the Event participant tab
+    And I choose Archived event participants from combobox in the Event participant tab
+    And I click on the Events button from navbar
+    Then I click on the RESET FILTERS button from Event
+    And I select last created UI result in grid in Event Directory for Bulk Action
+    And I select last created API result in grid in Event Directory for Bulk Action
+    And I click on Bulk Actions combobox on Event Directory Page
+    Then I click on the Archive bulk events on Event Directory page
+    And I confirm archive bulk events
+    Then I set Relevance Status Filter to Archived events on Event Directory page
+    And I click on last created UI result in grid in Event Directory for Bulk Action
+    Then I click on the Event participant tab
+    Then I check if participant added form UI appears in the event participants list
+    And I click on the Events button from navbar
+    And I click on last created API result in grid in Event Directory for Bulk Action
+    Then I click on the Event participant tab
+    Then I check if participant added form API appears in the event participants list
+
+  @issue=SORDEV-9786 @env_main
+  Scenario: Test The "urine p.m." enum value should be hidden when Covid19 is selected as disease
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Events button from navbar
+    Then I open the last created event via api
+    And I check that the value selected from Disease combobox is "COVID-19" on Edit Event page
+    And I navigate to Event Participants tab in Edit case page
+    Then I add a participant to the event
+    And I click on New Sample
+    And I check if value "Urine p.m" is unavailable in Type of Sample combobox on Create new Sample page
+
+  @issue=SORDEV-8665 @env_main
+  Scenario: Test Move the responsible user filter in the event directory next to the jurisdiction filters
+    Given I log in with National User
+    Then I click on the Events button from navbar
+    And I click on Show more filters in Events
+    And I check that Responsible User Info icon is visible on Event Directory Page
+    And I check the displayed message is correct after hover to Responsible User Info icon
+
+  @issue=SORDEV-8667 @env_main
+  Scenario: Test Adjustments to the jurisdiction definition process of event participants
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    Then I open the last created event via api
+    Then I click on the Event participant tab
+    And I add only required data for event participant creation
+    And I click on the Event participant tab
+    Then I check that number of displayed Event Participants is 1
+    And I back to the Event tab
+    And I check if Country combobox on Edit Event page is disabled
+    And I check that message appearing in hover of Info icon is equal to expected on Edit Event page
+    And I click on the Event participant tab
+    And I click on the first result in table from event participant
+    And I edit participants responsible region and responsible district
+    And I click on Save Button in Edit Event directory
+    And I click on the Event participant tab
+    And I back to the Event tab
+    And I set Country combobox to "Germany" from Edit Event Page
+    And I set Country combobox to empty value from Edit Event Page
+    And I clear Region and District fields from Edit Event Directory
+    And I click on Save Button in Edit Event directory
+    Then I click on the Event participant tab
+    And I add a participant to the event
+
   @#8556 @ignore
   Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of an Event Participant
     Given API: I create a new event

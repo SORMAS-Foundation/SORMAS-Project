@@ -1,29 +1,5 @@
 package org.sormas.e2etests.steps.web.application;
 
-import com.detectlanguage.DetectLanguage;
-import com.google.inject.Inject;
-import cucumber.api.java8.En;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.sormas.e2etests.common.MoreResources;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.testng.asserts.SoftAssert;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import static org.sormas.e2etests.pages.application.AboutPage.CASE_CLASSIFICATION_RULES_HYPERLINK;
 import static org.sormas.e2etests.pages.application.AboutPage.DATA_DICTIONARY_BUTTON;
 import static org.sormas.e2etests.pages.application.AboutPage.FULL_CHANGELOG_HYPERLINK;
@@ -35,6 +11,29 @@ import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LIN
 import static org.sormas.e2etests.pages.application.AboutPage.WHATS_NEW_HYPERLINK;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.LANGUAGE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.SAVE_BUTTON;
+
+import com.detectlanguage.DetectLanguage;
+import com.google.inject.Inject;
+import cucumber.api.java8.En;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sormas.e2etests.common.MoreResources;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.testng.asserts.SoftAssert;
 
 public class AboutDirectorySteps implements En {
   public static final String userDirPath = System.getProperty("user.dir");
