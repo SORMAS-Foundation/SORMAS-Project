@@ -1392,6 +1392,14 @@ public class EditCaseSteps implements En {
           softly.assertAll();
         });
 
+    And(
+        "^I select \"([^\"]*)\" as Outcome of Case in Edit case page$",
+        (String outcomeStatus) -> {
+          webDriverHelpers.clickWebElementByText(
+              OUTCOME_OF_CASE_OPTIONS, CaseOutcome.getValueFor(outcomeStatus).toUpperCase());
+          TimeUnit.SECONDS.sleep(1);
+        });
+
     When(
         "I set pregnancy to ([^\"]*)",
         (String option) -> {

@@ -408,4 +408,35 @@ Feature: Case filter functionality
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
 
+  @issue=SORDEV-8629 @env_main
+  Scenario Outline: Check option <option> in Outcome of case filter
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill new case with for one person with specified date for month ago
+    Then I click on save case button
+    And I select <option> as Outcome of Case in Edit case page
+    And I confirm changes in selected Case
+    And I back to the cases list from edit case
+    And I filter with first Case ID
+    And I apply Outcome of case filter "No Outcome Yet" on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is <result1>
+    And I apply Outcome of case filter "Deceased" on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is <result2>
+    And I apply Outcome of case filter "Recovered" on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is <result3>
+    And I apply Outcome of case filter "Unknown" on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is <result4>
+
+    Examples:
+      | option           | result1 | result2 | result3 | result4 |
+      | "No Outcome Yet" | 1       | 0       | 0       | 0       |
+      | "Deceased"       | 0       | 1       | 0       | 0       |
+      | "Recovered"      | 0       | 0       | 1       | 0       |
+      | "Unknown"        | 0       | 0       | 0       | 1       |
+
     
