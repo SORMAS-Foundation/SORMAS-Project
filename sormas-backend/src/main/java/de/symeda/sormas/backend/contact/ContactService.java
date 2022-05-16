@@ -1088,34 +1088,39 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(resultingCase.get(Case.UUID), contactCriteria.getResultingCase().getUuid()));
 		}
 		if (contactCriteria.getRegion() != null) {
+			String regionUuid = contactCriteria.getRegion().getUuid();
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.or(
-					cb.equal(joins.getRegion().get(Region.UUID), contactCriteria.getRegion().getUuid()),
-					cb.and(
-						cb.isNull(from.get(Contact.REGION)),
-						cb.equal(caseJoins.getRegion().get(Region.UUID), contactCriteria.getRegion().getUuid()))));
+				CriteriaBuilderHelper.or(
+					cb,
+					cb.equal(joins.getRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getCaseRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getCaseResponsibleRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getResultingCaseJoins().getRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getResultingCaseJoins().getResponsibleRegion().get(Region.UUID), regionUuid)));
 		}
 		if (contactCriteria.getDistrict() != null) {
+			String districtUuid = contactCriteria.getDistrict().getUuid();
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.or(
-					cb.equal(joins.getDistrict().get(District.UUID), contactCriteria.getDistrict().getUuid()),
-					cb.and(
-						cb.isNull(from.get(Contact.DISTRICT)),
-						cb.equal(caseJoins.getDistrict().get(District.UUID), contactCriteria.getDistrict().getUuid()))));
+				CriteriaBuilderHelper.or(
+					cb,
+					cb.equal(joins.getDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getCaseDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getCaseResponsibleDistrict().get(District.UUID), districtUuid)));
 		}
 		if (contactCriteria.getCommunity() != null) {
+			String communityUuid = contactCriteria.getDistrict().getUuid();
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.or(
-					cb.equal(joins.getCommunity().get(Community.UUID), contactCriteria.getCommunity().getUuid()),
-					cb.and(
-						cb.isNull(from.get(Contact.COMMUNITY)),
-						cb.equal(caseJoins.getCommunity().get(Community.UUID), contactCriteria.getCommunity().getUuid()))));
+				CriteriaBuilderHelper.or(
+					cb,
+					cb.equal(joins.getCommunity().get(Community.UUID), communityUuid),
+					cb.equal(joins.getCaseCommunity().get(Community.UUID), communityUuid),
+					cb.equal(joins.getCaseResponsibleCommunity().get(Community.UUID), communityUuid)));
 		}
 		if (contactCriteria.getContactOfficer() != null) {
 			filter = CriteriaBuilderHelper
