@@ -324,12 +324,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Community.class);
 			TableUtils.createTable(connectionSource, Facility.class);
 			TableUtils.createTable(connectionSource, PointOfEntry.class);
-			TableUtils.createTable(connectionSource, UserRole.class);
-			TableUtils.createTable(connectionSource, UserUserRole.class);
 			TableUtils.createTable(connectionSource, DiseaseConfiguration.class);
 			TableUtils.createTable(connectionSource, CustomizableEnumValue.class);
 			TableUtils.createTable(connectionSource, FeatureConfiguration.class);
+			TableUtils.createTable(connectionSource, UserRole.class);
 			TableUtils.createTable(connectionSource, User.class);
+			TableUtils.createTable(connectionSource, UserUserRole.class);
 			TableUtils.createTable(connectionSource, Person.class);
 			TableUtils.createTable(connectionSource, PersonContactDetail.class);
 			TableUtils.createTable(connectionSource, Case.class);
@@ -873,7 +873,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						+ "localChangeDate timestamp not null," + "modified integer," + "snapshot integer," + "weeklyReport_id bigint,"
 						+ "disease character varying(255)," + "numberOfCases integer,"
 						+ "CONSTRAINT fk_weeklyreportentry_weeklyreport_id FOREIGN KEY (weeklyReport_id) REFERENCES weeklyreport (id) ON DELETE CASCADE"
-						+ ");");
+						+ ");"); // TODO remove foreign key. When db is created fresh, this is not executed anyway
 				getDao(WeeklyReportEntry.class).executeRaw(
 					"INSERT INTO weeklyreportentry(id, uuid, changeDate, creationDate, lastOpenedDate, localChangeDate, modified, snapshot, weeklyReport_id, "
 						+ "disease, numberOfCases) "
@@ -2985,9 +2985,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						+ "localChangeDate timestamp, modified integer, snapshot integer, userRights varchar(1024), enabled boolean, caption varchar(512), description varchar(4096), "
 						+ "hasOptionalHealthFacility boolean, hasAssociatedOfficer boolean, portHealthUser boolean, jurisdictionLevel varchar(255));");
 				getDao(UserRole.class).executeRaw(
-					"CREATE TABLE users_userRoles(user_id integer, userRole_id integer, "
-						+ "CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE, "
-						+ "CONSTRAINT fk_userRole_id FOREIGN KEY (userRole_id) REFERENCES userRoles (id) ON DELETE CASCADE);");
+					"CREATE TABLE users_userRoles(user_id integer, userRole_id integer);");
+
+
 				// ATTENTION: break should only be done after last version
 				break;
 

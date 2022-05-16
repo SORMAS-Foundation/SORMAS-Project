@@ -69,6 +69,7 @@ public class TestHelper {
 		DatabaseHelper.init(context, TEST_DATABASE_NAME);
 		// Make sure that no database/user is still set from the last run
 		DatabaseHelper.clearTables(true);
+		userRoleMap.clear();
 		DatabaseHelper.clearConfigTable();
 		ConfigProvider.clearUserLogin();
 		ConfigProvider.init(context);
@@ -271,7 +272,7 @@ public class TestHelper {
 			try {
 				DatabaseHelper.getUserRoleDao().create(userRole);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 			userRoleMap.put(defaultUserRole, userRole);
 		});
