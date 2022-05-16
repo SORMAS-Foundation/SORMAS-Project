@@ -1,40 +1,41 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.backend.importexport;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import org.junit.Test;
+import org.mockito.Mockito;
 
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.importexport.DatabaseTable;
 import de.symeda.sormas.api.importexport.DatabaseTableType;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import org.junit.Test;
-import org.mockito.Mockito;
-
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 public class DatabaseTableTest {
+
 	@Test
-	public void test_cases_and_visit_enabled() {
+	public void testCasesAndVisitsEnabled() {
+
 		FeatureConfigurationDto caseSurveillanceFeatureConfiguration = new FeatureConfigurationDto();
 		caseSurveillanceFeatureConfiguration.setFeatureType(FeatureType.CASE_SURVEILANCE);
 		caseSurveillanceFeatureConfiguration.setEnabled(true);
@@ -44,7 +45,7 @@ public class DatabaseTableTest {
 		caseFollowupFeatureConfiguration.setEnabled(true);
 
 		List<FeatureConfigurationDto> caseFeatureCOnfigurations =
-				Arrays.asList(caseSurveillanceFeatureConfiguration, caseFollowupFeatureConfiguration);
+			Arrays.asList(caseSurveillanceFeatureConfiguration, caseFollowupFeatureConfiguration);
 
 		assertThat(DatabaseTable.CASES.isEnabled(caseFeatureCOnfigurations, new ConfigFacadeEjb()), is(true));
 		assertThat(DatabaseTable.HOSPITALIZATIONS.isEnabled(caseFeatureCOnfigurations, new ConfigFacadeEjb()), is(true));
@@ -64,19 +65,26 @@ public class DatabaseTableTest {
 	}
 
 	@Test
-	public void test_infrastructure_tables_enabled(){
-		Arrays.stream(DatabaseTable.values()).filter(t -> t.getDatabaseTableType() == DatabaseTableType.INFRASTRUCTURE)
-				.forEach(table -> {
-					if(table != DatabaseTable.AREAS) {
-						assertThat(table.name() + " should be enabled without any feature configuration", table.isEnabled(Collections.emptyList(), new ConfigFacadeEjb()), is(true));
-					} else {
-						assertThat(table.name() + " should not be enabled without feature configuration", table.isEnabled(Collections.emptyList(), new ConfigFacadeEjb()), is(false));
-					}
-				});
+	public void testInfrastructureTablesEnabled() {
+
+		Arrays.stream(DatabaseTable.values()).filter(t -> t.getDatabaseTableType() == DatabaseTableType.INFRASTRUCTURE).forEach(table -> {
+			if (table != DatabaseTable.AREAS) {
+				assertThat(
+					table.name() + " should be enabled without any feature configuration",
+					table.isEnabled(Collections.emptyList(), new ConfigFacadeEjb()),
+					is(true));
+			} else {
+				assertThat(
+					table.name() + " should not be enabled without feature configuration",
+					table.isEnabled(Collections.emptyList(), new ConfigFacadeEjb()),
+					is(false));
+			}
+		});
 	}
 
 	@Test
-	public void test_s2s_tables_enabled(){
+	public void testS2sTablesEnabled() {
+
 		ConfigFacadeEjb configFacadeMock = Mockito.mock(ConfigFacadeEjb.class);
 		Mockito.when(configFacadeMock.isS2SConfigured()).thenReturn(true);
 		Mockito.when(configFacadeMock.isExternalSurveillanceToolGatewayConfigured()).thenReturn(false);

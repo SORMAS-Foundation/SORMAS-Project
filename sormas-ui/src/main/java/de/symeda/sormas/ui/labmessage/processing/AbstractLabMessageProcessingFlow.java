@@ -72,10 +72,10 @@ public abstract class AbstractLabMessageProcessingFlow {
 		AbstractRelatedLabMessageHandler relatedLabMessageHandler) {
 
 		return new FlowThen<Void>().then((ignored) -> checkDisease(labMessage))
-			.then((ignored) -> checkRelatedForwardedMessages(labMessage))
-			.then((ignored) -> handleRelatedLabMessages(relatedLabMessageHandler, labMessage))
-			.then((ignored) -> pickOrCreatePerson(labMessage))
-			.then((p) -> pickOrCreateEntry(p.getData(), labMessage))
+			.then(ignored -> checkRelatedForwardedMessages(labMessage))
+			.then(ignored -> handleRelatedLabMessages(relatedLabMessageHandler, labMessage))
+			.then(ignored -> pickOrCreatePerson(labMessage))
+			.then(p -> pickOrCreateEntry(p.getData(), labMessage))
 			//@formatter:off
 				.thenSwitch()
 				.when(PersonAndPickOrCreateEntryResult::isNewCase, (f, p) -> doCreateCaseFlow(f, labMessage))
@@ -85,30 +85,32 @@ public abstract class AbstractLabMessageProcessingFlow {
 				.when(PersonAndPickOrCreateEntryResult::isSelectedContact, (f, p) -> doContactSelectedFlow(p.getContact(), f, labMessage))
 				.when(PersonAndPickOrCreateEntryResult::isEventParticipantSelected, (f, p) -> doEventParticipantSelectedFlow(p.getEventParticipant(), f, labMessage))
 			//@formatter:on
-			.then((sampleResult) -> ProcessingResult.of(ProcessingResultStatus.DONE, sampleResult.getData()).asCompletedFuture())
+			.then(sampleResult -> ProcessingResult.of(ProcessingResultStatus.DONE, sampleResult.getData()).asCompletedFuture())
 			.getResult();
 	}
 
 	private FlowThen<SampleAndPathogenTests> doCreateCaseFlow(FlowThen<PersonAndPickOrCreateEntryResult> flow, LabMessageDto labMessage) {
-		return flow.then((p) -> createCase(p.getData().getPerson(), labMessage))
-			.then((c) -> createSampleAndPathogenTests(c.getData(), labMessage, true));
+
+		return flow.then(p -> createCase(p.getData().getPerson(), labMessage)).then(c -> createSampleAndPathogenTests(c.getData(), labMessage, true));
 	}
 
 	private FlowThen<SampleAndPathogenTests> doCreateContactFlow(FlowThen<PersonAndPickOrCreateEntryResult> flow, LabMessageDto labMessage) {
-		return flow.then((p) -> createContact(p.getData().getPerson(), labMessage))
-			.then((c) -> createSampleAndPathogenTests(c.getData(), labMessage, true));
+
+		return flow.then(p -> createContact(p.getData().getPerson(), labMessage))
+			.then(c -> createSampleAndPathogenTests(c.getData(), labMessage, true));
 	}
 
 	private FlowThen<SampleAndPathogenTests> doCreateEventParticipantFlow(FlowThen<PersonAndPickOrCreateEntryResult> flow, LabMessageDto labMessage) {
-		return flow.then((p) -> pickOrCreateEvent(p.getData().getPerson(), labMessage))
+
+		return flow.then(p -> pickOrCreateEvent(p.getData().getPerson(), labMessage))
 			.thenSwitch()
 			.when(
 				PersonAndPickOrCreateEventResult::isNewEvent,
-				(f, p) -> f.then((ignored) -> createEvent(labMessage))
-					.then((ef) -> doCreateEventParticipantAndSampleFlow(ef.getData(), p.getPerson(), f, labMessage).getResult()))
+				(f, p) -> f.then(ignored -> createEvent(labMessage))
+					.then(ef -> doCreateEventParticipantAndSampleFlow(ef.getData(), p.getPerson(), f, labMessage).getResult()))
 			.when(
 				PersonAndPickOrCreateEventResult::isEventSelected,
-				(f, p) -> f.then((e) -> validateSelectedEvent(e.getData().getPickOrCreateEventResult().getEvent(), p.getPerson()))
+				(f, p) -> f.then(e -> validateSelectedEvent(e.getData().getPickOrCreateEventResult().getEvent(), p.getPerson()))
 					.thenSwitch()
 					.when(
 						EventValidationResult::isEventSelected,
@@ -122,7 +124,7 @@ public abstract class AbstractLabMessageProcessingFlow {
 						}, vf, labMessage))
 					.when(
 						EventValidationResult::isEventSelectionCanceled,
-						(vf, v) -> vf.then((ignored) -> doCreateEventParticipantFlow(flow, labMessage).getResult()))
+						(vf, v) -> vf.then(ignored -> doCreateEventParticipantFlow(flow, labMessage).getResult()))
 					.then(s -> ProcessingResult.continueWith(s.getData()).asCompletedFuture()))
 			.then(s -> ProcessingResult.continueWith(s.getData()).asCompletedFuture());
 	}
@@ -132,14 +134,16 @@ public abstract class AbstractLabMessageProcessingFlow {
 		PersonDto person,
 		FlowThen<?> flow,
 		LabMessageDto labMessage) {
-		return flow.then((ignored) -> createEventParticipant(event, person, labMessage))
-			.then((ep) -> createSampleAndPathogenTests(ep.getData().getEventParticipant().toReference(), ep.getData().getEvent(), labMessage, true));
+
+		return flow.then(ignored -> createEventParticipant(event, person, labMessage))
+			.then(ep -> createSampleAndPathogenTests(ep.getData().getEventParticipant().toReference(), ep.getData().getEvent(), labMessage, true));
 	}
 
 	private FlowThen<SampleAndPathogenTests> doCaseSelectedFlow(
 		CaseSelectionDto caseSelection,
 		FlowThen<PersonAndPickOrCreateEntryResult> flow,
 		LabMessageDto labMessage) {
+
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseSelection.getUuid());
 
 		return doPickOrCreateSampleFlow(
@@ -166,8 +170,8 @@ public abstract class AbstractLabMessageProcessingFlow {
 		SimilarContactDto contactSelection,
 		FlowThen<PersonAndPickOrCreateEntryResult> flow,
 		LabMessageDto labMessage) {
-		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactSelection.getUuid());
 
+		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactSelection.getUuid());
 		return doPickOrCreateSampleFlow(
 			c -> c.contact(contact.toReference()),
 			() -> createSampleAndPathogenTests(contact, labMessage, false),
@@ -179,6 +183,7 @@ public abstract class AbstractLabMessageProcessingFlow {
 		SimilarEventParticipantDto eventParticipantSelection,
 		FlowThen<PersonAndPickOrCreateEntryResult> flow,
 		LabMessageDto labMessage) {
+
 		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getByUuid(eventParticipantSelection.getUuid());
 		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
 
@@ -190,6 +195,7 @@ public abstract class AbstractLabMessageProcessingFlow {
 	}
 
 	private CompletionStage<ProcessingResult<Void>> checkDisease(LabMessageDto labMessage) {
+
 		if (labMessage.getTestedDisease() == null) {
 			return handleMissingDisease().thenCompose(
 				next -> ProcessingResult.<Void> withStatus(next ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED)
@@ -202,6 +208,7 @@ public abstract class AbstractLabMessageProcessingFlow {
 	protected abstract CompletionStage<Boolean> handleMissingDisease();
 
 	private CompletionStage<ProcessingResult<Void>> checkRelatedForwardedMessages(LabMessageDto labMessage) {
+
 		if (FacadeProvider.getLabMessageFacade().existsForwardedLabMessageWith(labMessage.getReportId())) {
 			return handleRelatedForwardedMessages().thenCompose(
 				next -> ProcessingResult.<Void> withStatus(next ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED)
@@ -216,7 +223,8 @@ public abstract class AbstractLabMessageProcessingFlow {
 	private CompletionStage<ProcessingResult<SampleAndPathogenTests>> handleRelatedLabMessages(
 		AbstractRelatedLabMessageHandler relatedLabMessageHandler,
 		LabMessageDto labMessage) {
-		return relatedLabMessageHandler.handle(labMessage).thenCompose((result) -> {
+
+		return relatedLabMessageHandler.handle(labMessage).thenCompose(result -> {
 			HandlerResultStatus status = result.getStatus();
 			if (status == HandlerResultStatus.CANCELED) {
 				return ProcessingResult.<SampleAndPathogenTests> withStatus(ProcessingResultStatus.CANCELED).asCompletedFuture();
@@ -240,6 +248,7 @@ public abstract class AbstractLabMessageProcessingFlow {
 	}
 
 	private CompletionStage<ProcessingResult<PersonDto>> pickOrCreatePerson(LabMessageDto labMessage) {
+
 		final PersonDto person = buildPerson(LabMessageMapper.forLabMessage(labMessage));
 
 		HandlerCallback<PersonDto> callback = new HandlerCallback<>();
@@ -251,6 +260,7 @@ public abstract class AbstractLabMessageProcessingFlow {
 	protected abstract void handlePickOrCreatePerson(PersonDto person, HandlerCallback<PersonDto> callback);
 
 	private PersonDto buildPerson(LabMessageMapper mapper) {
+
 		final PersonDto personDto = PersonDto.build();
 
 		mapper.mapToPerson(personDto);
@@ -260,6 +270,7 @@ public abstract class AbstractLabMessageProcessingFlow {
 	}
 
 	private CompletionStage<ProcessingResult<PersonAndPickOrCreateEntryResult>> pickOrCreateEntry(PersonDto person, LabMessageDto labMessage) {
+
 		PersonReferenceDto personRef = person.toReference();
 		List<CaseSelectionDto> similarCases = getSimilarCases(personRef, labMessage);
 		List<SimilarContactDto> similarContacts = getSimilarContacts(personRef, labMessage);
@@ -286,6 +297,7 @@ public abstract class AbstractLabMessageProcessingFlow {
 		HandlerCallback<PickOrCreateEntryResult> callback);
 
 	private List<CaseSelectionDto> getSimilarCases(PersonReferenceDto selectedPerson, LabMessageDto labMessage) {
+
 		CaseCriteria caseCriteria = new CaseCriteria();
 		caseCriteria.person(selectedPerson);
 		caseCriteria.disease(labMessage.getTestedDisease());
@@ -297,6 +309,7 @@ public abstract class AbstractLabMessageProcessingFlow {
 	}
 
 	private List<SimilarContactDto> getSimilarContacts(PersonReferenceDto selectedPerson, LabMessageDto labMessage) {
+
 		ContactSimilarityCriteria contactSimilarityCriteria = new ContactSimilarityCriteria();
 		contactSimilarityCriteria.setPerson(selectedPerson);
 		contactSimilarityCriteria.setDisease(labMessage.getTestedDisease());
@@ -305,6 +318,7 @@ public abstract class AbstractLabMessageProcessingFlow {
 	}
 
 	private List<SimilarEventParticipantDto> getSimilarEventParticipants(LabMessageDto labMessage, PersonReferenceDto selectedPerson) {
+
 		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
 		eventParticipantCriteria.setPerson(selectedPerson);
 		eventParticipantCriteria.setDisease(labMessage.getTestedDisease());
@@ -313,6 +327,7 @@ public abstract class AbstractLabMessageProcessingFlow {
 	}
 
 	private CompletionStage<ProcessingResult<CaseDataDto>> createCase(PersonDto person, LabMessageDto labMessage) {
+
 		CaseDataDto caze = buildCase(person, labMessage);
 
 		HandlerCallback<CaseDataDto> callback = new HandlerCallback<>();
@@ -324,6 +339,7 @@ public abstract class AbstractLabMessageProcessingFlow {
 	protected abstract void handleCreateCase(CaseDataDto caze, PersonDto person, LabMessageDto labMessage, HandlerCallback<CaseDataDto> callback);
 
 	private CaseDataDto buildCase(PersonDto person, LabMessageDto labMessage) {
+
 		CaseDataDto caseDto = CaseDataDto.build(person.toReference(), labMessage.getTestedDisease());
 		caseDto.setReportingUser(user.toReference());
 		return caseDto;
@@ -333,8 +349,8 @@ public abstract class AbstractLabMessageProcessingFlow {
 		CaseDataDto caze,
 		LabMessageDto labMessage,
 		boolean entityCreated) {
-		SampleDto sample = SampleDto.build(user.toReference(), caze.toReference());
 
+		SampleDto sample = SampleDto.build(user.toReference(), caze.toReference());
 		return createSampleAndPathogenTests(sample, caze.getDisease(), labMessage, entityCreated);
 	}
 
@@ -343,8 +359,8 @@ public abstract class AbstractLabMessageProcessingFlow {
 		EventDto event,
 		LabMessageDto labMessage,
 		boolean entityCreated) {
-		SampleDto sample = SampleDto.build(user.toReference(), eventParticipant);
 
+		SampleDto sample = SampleDto.build(user.toReference(), eventParticipant);
 		return createSampleAndPathogenTests(sample, event.getDisease(), labMessage, entityCreated);
 	}
 
@@ -353,10 +369,9 @@ public abstract class AbstractLabMessageProcessingFlow {
 		Disease disease,
 		LabMessageDto labMessage,
 		boolean entityCreated) {
+
 		LabMessageMapper.forLabMessage(labMessage).mapToSample(sample);
-
 		List<PathogenTestDto> pathogenTests = LabMessageProcessingHelper.buildPathogenTests(sample, labMessage, user);
-
 		HandlerCallback<SampleAndPathogenTests> callback = new HandlerCallback<>();
 		handleCreateSampleAndPathogenTests(sample, pathogenTests, disease, labMessage, entityCreated, callback);
 
@@ -375,31 +390,31 @@ public abstract class AbstractLabMessageProcessingFlow {
 		ContactDto contact,
 		LabMessageDto labMessage,
 		boolean entityCreated) {
-		SampleDto sample = SampleDto.build(user.toReference(), contact.toReference());
 
+		SampleDto sample = SampleDto.build(user.toReference(), contact.toReference());
 		return createSampleAndPathogenTests(sample, contact.getDisease(), labMessage, entityCreated);
 	}
 
 	private CompletionStage<ProcessingResult<ContactDto>> createContact(PersonDto person, LabMessageDto labMessage) {
-		ContactDto contact = buildContact(labMessage, person);
 
+		ContactDto contact = buildContact(labMessage, person);
 		HandlerCallback<ContactDto> callback = new HandlerCallback<>();
 		handleCreateContact(contact, person, labMessage, callback);
-
 		return callback.futureResult;
 	}
 
 	protected abstract void handleCreateContact(ContactDto contact, PersonDto person, LabMessageDto labMessage, HandlerCallback<ContactDto> callback);
 
 	private ContactDto buildContact(LabMessageDto labMessageDto, PersonDto person) {
+
 		ContactDto contactDto = ContactDto.build(null, labMessageDto.getTestedDisease(), null, null);
 		contactDto.setReportingUser(user.toReference());
 		contactDto.setPerson(person.toReference());
-
 		return contactDto;
 	}
 
 	private CompletionStage<ProcessingResult<PersonAndPickOrCreateEventResult>> pickOrCreateEvent(PersonDto person, LabMessageDto labMessageDto) {
+
 		HandlerCallback<PickOrCreateEventResult> callback = new HandlerCallback<>();
 		handlePickOrCreateEvent(labMessageDto, callback);
 
@@ -415,6 +430,7 @@ public abstract class AbstractLabMessageProcessingFlow {
 	protected abstract void handlePickOrCreateEvent(LabMessageDto labMessage, HandlerCallback<PickOrCreateEventResult> callback);
 
 	private CompletionStage<ProcessingResult<EventDto>> createEvent(LabMessageDto labMessage) {
+
 		EventDto event = EventDto.build(country, user, labMessage.getTestedDisease());
 
 		HandlerCallback<EventDto> callback = new HandlerCallback<>();
@@ -429,12 +445,12 @@ public abstract class AbstractLabMessageProcessingFlow {
 		EventDto event,
 		PersonDto person,
 		LabMessageDto labMessage) {
-		EventParticipantDto eventParticipant = buildEventParticipant(event, person);
 
+		EventParticipantDto eventParticipant = buildEventParticipant(event, person);
 		HandlerCallback<EventParticipantDto> callback = new HandlerCallback<>();
 		handleCreateEventParticipant(eventParticipant, event, labMessage, callback);
 
-		return callback.futureResult.thenCompose((ep) -> {
+		return callback.futureResult.thenCompose(ep -> {
 			if (ep.getStatus().isCanceled()) {
 				return ProcessingResult.<EventAndParticipant> withStatus(ep.getStatus()).asCompletedFuture();
 			}
@@ -450,13 +466,14 @@ public abstract class AbstractLabMessageProcessingFlow {
 		HandlerCallback<EventParticipantDto> callback);
 
 	private EventParticipantDto buildEventParticipant(EventDto eventDto, PersonDto person) {
+
 		EventParticipantDto eventParticipant = EventParticipantDto.build(eventDto.toReference(), user.toReference());
 		eventParticipant.setPerson(person);
-
 		return eventParticipant;
 	}
 
 	private CompletionStage<ProcessingResult<EventValidationResult>> validateSelectedEvent(EventIndexDto event, PersonDto person) {
+
 		CompletableFuture<ProcessingResult<EventValidationResult>> ret = new CompletableFuture<>();
 
 		EventCriteria eventCriteria = new EventCriteria();
@@ -514,6 +531,7 @@ public abstract class AbstractLabMessageProcessingFlow {
 		HandlerCallback<PickOrCreateSampleResult> callback);
 
 	private SampleSimilarityCriteria createSampleCriteria(LabMessageDto labMessage) {
+
 		SampleSimilarityCriteria sampleCriteria = new SampleSimilarityCriteria();
 		sampleCriteria.setLabSampleId(labMessage.getLabSampleId());
 		sampleCriteria.setSampleDateTime(labMessage.getSampleDateTime());
@@ -523,8 +541,8 @@ public abstract class AbstractLabMessageProcessingFlow {
 	}
 
 	private CompletionStage<ProcessingResult<SampleAndPathogenTests>> editSample(SampleDto sample, LabMessageDto labMessage) {
-		List<PathogenTestDto> newTests = LabMessageProcessingHelper.buildPathogenTests(sample, labMessage, user);
 
+		List<PathogenTestDto> newTests = LabMessageProcessingHelper.buildPathogenTests(sample, labMessage, user);
 		HandlerCallback<SampleAndPathogenTests> callback = new HandlerCallback<>();
 		handleEditSample(sample, newTests, labMessage, callback);
 
@@ -695,5 +713,4 @@ public abstract class AbstractLabMessageProcessingFlow {
 			return eventParticipant;
 		}
 	}
-
 }
