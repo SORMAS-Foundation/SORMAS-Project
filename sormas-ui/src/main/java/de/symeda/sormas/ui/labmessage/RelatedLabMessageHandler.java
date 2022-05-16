@@ -211,7 +211,7 @@ public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
 			}, true);
 
 		pathogenTestCreateComponent.addDiscardListener(() -> {
-			if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
+			if (Boolean.TRUE.equals(FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid()))) {
 				showAlreadyProcessedPopup(null, false);
 				pathogenTestCreateComponent.getCommitButton().setEnabled(false);
 				pathogenTestCreateComponent.getDiscardButton().setEnabled(false);
@@ -245,7 +245,7 @@ public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
 			false);
 
 		pathogenTestCreateComponent.setPrimaryCommitListener(() -> {
-			if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
+			if (Boolean.TRUE.equals(FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid()))) {
 				pathogenTestCreateComponent.getCommitButton().setEnabled(false);
 				pathogenTestCreateComponent.getDiscardButton().setEnabled(false);
 				showAlreadyProcessedPopup(pathogenTestCreateComponent.getWrappedComponent(), false);
@@ -268,7 +268,7 @@ public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
 			window.close();
 		});
 		correctionPanel.setDiscardListener(() -> {
-			if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
+			if (Boolean.TRUE.equals(FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid()))) {
 				showAlreadyProcessedPopup(null, false);
 				correctionPanel.disableContinueButtons();
 			} else {
@@ -277,7 +277,7 @@ public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
 			}
 		});
 		correctionPanel.setCommitListener(updated -> {
-			if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
+			if (Boolean.TRUE.equals(FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid()))) {
 				showAlreadyProcessedPopup(null, false);
 				correctionPanel.disableContinueButtons();
 			} else {

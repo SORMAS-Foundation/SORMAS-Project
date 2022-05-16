@@ -159,7 +159,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		caseCreateComponent.addDiscardListener(callback::cancel);
 
 		caseCreateComponent.getWrappedComponent().setValue(caze);
-		if (FacadeProvider.getPersonFacade().isValidPersonUuid(person.getUuid())) {
+		if (Boolean.TRUE.equals(FacadeProvider.getPersonFacade().isValidPersonUuid(person.getUuid()))) {
 			caseCreateComponent.getWrappedComponent().setSearchedPerson(person);
 		}
 		caseCreateComponent.getWrappedComponent().setPerson(person);

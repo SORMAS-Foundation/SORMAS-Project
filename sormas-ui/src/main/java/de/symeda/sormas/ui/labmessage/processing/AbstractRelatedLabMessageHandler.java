@@ -150,7 +150,7 @@ public abstract class AbstractRelatedLabMessageHandler {
 			.thenCompose((correctionResult) -> {
 				if (correctionResult.shouldContinue) {
 					return confirmShortcut(relatedEntities.relatedLabMessagesFound).thenCompose(confirmed -> {
-						if (confirmed) {
+						if (Boolean.TRUE.equals(confirmed)) {
 							return chainHandler.run((chain) -> handleShortcut(labMessage, relatedEntities.sample, chain))
 								.thenCompose(handled -> CompletableFuture.completedFuture(new HandlerResult(HandlerResultStatus.HANDLED, relatedEntities.sample)));
 						}
@@ -295,7 +295,7 @@ public abstract class AbstractRelatedLabMessageHandler {
 		}
 
 		return confirmationSupplier.get().thenCompose((confirmed) -> {
-			if (confirmed) {
+			if (Boolean.TRUE.equals(confirmed)) {
 				return chainHandler.run(chain -> correctionHandler.handle(labMessage, entity, updatedEntity, changedFields, chain));
 			}
 
@@ -311,7 +311,7 @@ public abstract class AbstractRelatedLabMessageHandler {
 		ChainHandler chainHandler) {
 
 		return confirmationSupplier.get().thenCompose((confirmed) -> {
-			if (confirmed) {
+			if (Boolean.TRUE.equals(confirmed)) {
 				return chainHandler.run((chain) -> handlePathogenTestCreation(labMessage, testReport, sample, chain));
 			}
 

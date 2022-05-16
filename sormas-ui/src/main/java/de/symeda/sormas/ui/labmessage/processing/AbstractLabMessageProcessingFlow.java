@@ -198,7 +198,8 @@ public abstract class AbstractLabMessageProcessingFlow {
 
 		if (labMessage.getTestedDisease() == null) {
 			return handleMissingDisease().thenCompose(
-				next -> ProcessingResult.<Void> withStatus(next ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED)
+				next -> ProcessingResult
+					.<Void> withStatus(Boolean.TRUE.equals(next) ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED)
 					.asCompletedFuture());
 		} else {
 			return ProcessingResult.<Void> continueWith(null).asCompletedFuture();
@@ -211,7 +212,8 @@ public abstract class AbstractLabMessageProcessingFlow {
 
 		if (FacadeProvider.getLabMessageFacade().existsForwardedLabMessageWith(labMessage.getReportId())) {
 			return handleRelatedForwardedMessages().thenCompose(
-				next -> ProcessingResult.<Void> withStatus(next ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED)
+				next -> ProcessingResult
+					.<Void> withStatus(Boolean.TRUE.equals(next) ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED)
 					.asCompletedFuture());
 		} else {
 			return ProcessingResult.<Void> continueWith(null).asCompletedFuture();
@@ -485,7 +487,7 @@ public abstract class AbstractLabMessageProcessingFlow {
 		if (personEvents.contains(event)) {
 			// event participant already exists
 			return confirmPickExistingEventParticipant().thenCompose(useEventParticipant -> {
-				if (useEventParticipant) {
+				if (Boolean.TRUE.equals(useEventParticipant)) {
 					validationResult.setEventParticipant(
 						FacadeProvider.getEventParticipantFacade().getReferenceByEventAndPerson(event.getUuid(), person.getUuid()));
 				} else {
