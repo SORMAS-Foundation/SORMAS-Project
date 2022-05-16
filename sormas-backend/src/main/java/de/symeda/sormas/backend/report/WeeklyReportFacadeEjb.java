@@ -207,8 +207,8 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	}
 
 	public boolean isNationOrNoneJurisdiction(JurisdictionLevel jurisdictionLevel) {
-       return jurisdictionLevel == JurisdictionLevel.NONE || jurisdictionLevel == JurisdictionLevel.NATION;
-    }
+		return jurisdictionLevel == JurisdictionLevel.NONE || jurisdictionLevel == JurisdictionLevel.NATION;
+	}
 
 	@Override
 	public List<WeeklyReportOfficerSummaryDto> getSummariesPerOfficer(RegionReferenceDto regionRef, EpiWeek epiWeek) {

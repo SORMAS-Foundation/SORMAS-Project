@@ -81,9 +81,9 @@ public class ReportsView extends AbstractView {
 		addComponent(gridLayout);
 	}
 
-    public boolean isNationOrNoneJurisdiction(JurisdictionLevel jurisdictionLevel) {
-        return jurisdictionLevel == JurisdictionLevel.NONE || jurisdictionLevel == JurisdictionLevel.NATION;
-    }
+	public boolean isNationOrNoneJurisdiction(JurisdictionLevel jurisdictionLevel) {
+		return jurisdictionLevel == JurisdictionLevel.NONE || jurisdictionLevel == JurisdictionLevel.NATION;
+	}
 
 	public HorizontalLayout createFilterBar() {
 		HorizontalLayout filterLayout = new HorizontalLayout();
