@@ -65,6 +65,8 @@ import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
@@ -131,6 +133,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
@@ -302,7 +305,7 @@ public class CaseController {
 			matchingContacts = Collections.emptyList();
 		}
 
-		List<SimilarEventParticipantDto> matchingEventParticipants ;
+		List<SimilarEventParticipantDto> matchingEventParticipants;
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT)) {
 			EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria().withPerson(caze.getPerson())
 				.withDisease(caze.getDisease())
@@ -677,7 +680,7 @@ public class CaseController {
 
 					saveCase(dto);
 
-					if(convertedContact.getDisease().equals(dto.getDisease())) {
+					if (convertedContact.getDisease().equals(dto.getDisease())) {
 						// retrieve the contact just in case it has been changed during case saving
 						ContactDto updatedContact = FacadeProvider.getContactFacade().getByUuid(convertedContact.getUuid());
 						// automatically change the contact status to "converted"
@@ -856,6 +859,13 @@ public class CaseController {
 
 		if (automaticDeletionInfoDto != null) {
 			editView.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel(automaticDeletionInfoDto));
+		}
+
+		if (caze.isDeleted()) {
+			editView.getWrappedComponent().getField(CaseDataDto.DELETION_REASON).setVisible(true);
+			if (editView.getWrappedComponent().getField(CaseDataDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
+				editView.getWrappedComponent().getField(CaseDataDto.OTHER_DELETION_REASON).setVisible(true);
+			}
 		}
 
 		editView.addCommitListener(() -> {
@@ -1068,7 +1078,7 @@ public class CaseController {
 	private void appendSpecialCommands(CaseDataDto caze, CommitDiscardWrapperComponent<? extends Component> editView) {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)) {
-			editView.addDeleteListener(() -> {
+			editView.addDeleteWithReasonListener((deleteDetails) -> {
 				long contactCount = FacadeProvider.getContactFacade().getContactCount(caze.toReference());
 				if (contactCount > 0) {
 					VaadinUiUtil.showThreeOptionsPopup(
@@ -1080,14 +1090,14 @@ public class CaseController {
 						null,
 						option -> {
 							if (option == VaadinUiUtil.PopupOption.OPTION1) {
-								deleteCase(caze, true);
+								deleteCase(caze, true, deleteDetails);
 							} else if (option == VaadinUiUtil.PopupOption.OPTION2) {
-								deleteCase(caze, false);
+								deleteCase(caze, false, deleteDetails);
 							}
 							// Option 3 does not need to be handled because it would just return
 						});
 				} else {
-					deleteCase(caze, false);
+					deleteCase(caze, false, deleteDetails);
 				}
 			}, I18nProperties.getString(Strings.entityCase));
 		}
@@ -1115,12 +1125,12 @@ public class CaseController {
 		}
 	}
 
-	private void deleteCase(CaseDataDto caze, boolean withContacts) {
+	private void deleteCase(CaseDataDto caze, boolean withContacts, DeletionDetails deletionDetails) {
 		try {
 			if (withContacts) {
-				FacadeProvider.getCaseFacade().deleteWithContacts(caze.getUuid());
+				FacadeProvider.getCaseFacade().deleteWithContacts(caze.getUuid(), deletionDetails);
 			} else {
-				FacadeProvider.getCaseFacade().delete(caze.getUuid());
+				FacadeProvider.getCaseFacade().delete(caze.getUuid(), deletionDetails);
 			}
 			UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
 		} catch (ExternalSurveillanceToolException e) {
@@ -1522,13 +1532,14 @@ public class CaseController {
 				Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil
-				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteCases), selectedRows.size()), () -> {
+			DeletableUtils.showDeleteWithReasonPopup(
+				String.format(I18nProperties.getString(Strings.confirmationDeleteCases), selectedRows.size()),
+				(deleteDetails) -> {
 					int countNotDeletedCases = 0;
 					StringBuilder nonDeletableCases = new StringBuilder();
 					for (CaseIndexDto selectedRow : selectedRows) {
 						try {
-							FacadeProvider.getCaseFacade().delete(selectedRow.getUuid());
+							FacadeProvider.getCaseFacade().delete(selectedRow.getUuid(), deleteDetails);
 						} catch (ExternalSurveillanceToolException e) {
 							countNotDeletedCases++;
 							nonDeletableCases.append(selectedRow.getUuid(), 0, 6).append(", ");
