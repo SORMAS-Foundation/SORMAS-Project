@@ -10,12 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.therapy.PrescriptionDto;
-import de.symeda.sormas.api.therapy.TreatmentRoute;
 import org.junit.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentIndexDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
@@ -68,7 +67,10 @@ public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 	public void testTreatmentForPrescription() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf,
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
+			creator.getUserRoleReference(DefaultUserRole.CASE_SUPERVISOR));
 		PersonDto casePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), casePerson.toReference(), rdcf);
 		PrescriptionDto prescription =  creator.createPrescription(caze);
@@ -96,7 +98,9 @@ public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testDeleteTreatmentsByUuids() {
 		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
+		UserDto user = creator.createUser(rdcf,
+				creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
+				creator.getUserRoleReference(DefaultUserRole.CASE_SUPERVISOR));
 		PersonDto casePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), casePerson.toReference(), rdcf);
 
@@ -122,7 +126,9 @@ public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 	public void testUnbindTreatmentsFromPrescription() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
+		UserDto user = creator.createUser(rdcf,
+				creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
+				creator.getUserRoleReference(DefaultUserRole.CASE_SUPERVISOR));
 		PersonDto casePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), casePerson.toReference(), rdcf);
 		PrescriptionDto prescription =  creator.createPrescription(caze);
