@@ -748,7 +748,7 @@ public class EditCaseSteps implements En {
     When(
         "I check if Vaccination Status is set to {string} on Edit Case page",
         (String expected) -> {
-            webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
           String vaccinationStatus =
               webDriverHelpers.getValueFromWebElement(VACCINATION_STATUS_INPUT);
           softly.assertEquals(
@@ -1391,14 +1391,15 @@ public class EditCaseSteps implements En {
               "The case classification is incorrect!");
           softly.assertAll();
         });
-    
+
     And(
         "^I select \"([^\"]*)\" as Outcome of Case in Edit case page$",
         (String outcomeStatus) -> {
           webDriverHelpers.clickWebElementByText(
               OUTCOME_OF_CASE_OPTIONS, CaseOutcome.getValueFor(outcomeStatus).toUpperCase());
           TimeUnit.SECONDS.sleep(1);
-          
+        });
+
     When(
         "I set pregnancy to ([^\"]*)",
         (String option) -> {
