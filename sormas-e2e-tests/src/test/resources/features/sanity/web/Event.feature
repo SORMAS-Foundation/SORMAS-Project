@@ -602,7 +602,7 @@ Feature: Create events
     Then I add a participant created by API create person
     Then I check if participant appears in the participants list of event created with API
 
-  @env_main @#8556 @ignore
+  @#8556 @ignore
   Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of an Event Participant
     Given API: I create a new event
     Then API: I check that POST call body is "OK"

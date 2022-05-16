@@ -20,13 +20,12 @@ package org.sormas.e2etests.entities.services;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import org.sormas.e2etests.entities.pojo.web.Sample;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.LaboratoryValues;
 import org.sormas.e2etests.enums.PathogenTestedDisease;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 public class SampleService {
   private final Faker faker;
