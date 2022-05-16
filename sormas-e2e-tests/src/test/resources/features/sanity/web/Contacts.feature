@@ -511,6 +511,21 @@ Feature: Contacts end to end tests
       Then I open the first contact from contacts list
       And I check if Archive button changed name to De-Archive
 
+  @issue=SORDEV-9786 @env_main
+  Scenario: Test The "urine p.m." enum value should be hidden when Covid19 is selected as disease
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    When I click on the Contacts button from navbar
+    Then I search after last created contact via API by UUID and open
+    And I check that the value selected from Disease combobox is "COVID-19" on Edit Contact page
+    Then I click on New Sample
+    And I check if value "Urine p.m" is unavailable in Type of Sample combobox on Create new Sample page
+
   @env_main @issue=SORDEV-9155
   Scenario: Test Vaccinations get lost when merging contacts with duplicate persons
     Then API: I create a new person

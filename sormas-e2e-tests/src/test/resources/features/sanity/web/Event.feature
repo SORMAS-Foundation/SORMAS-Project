@@ -686,6 +686,26 @@ Feature: Create events
     Then I click on the Event participant tab
     Then I check if participant added form API appears in the event participants list
 
+  @issue=SORDEV-9786 @env_main
+  Scenario: Test The "urine p.m." enum value should be hidden when Covid19 is selected as disease
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Events button from navbar
+    Then I open the last created event via api
+    And I check that the value selected from Disease combobox is "COVID-19" on Edit Event page
+    And I navigate to Event Participants tab in Edit case page
+    Then I add a participant to the event
+    And I click on New Sample
+    And I check if value "Urine p.m" is unavailable in Type of Sample combobox on Create new Sample page
+
   @issue=SORDEV-8665 @env_main
   Scenario: Test Move the responsible user filter in the event directory next to the jurisdiction filters
     Given I log in with National User
