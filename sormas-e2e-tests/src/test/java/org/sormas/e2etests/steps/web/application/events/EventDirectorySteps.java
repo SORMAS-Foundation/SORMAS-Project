@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS_ARCHIVE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_COMMUNITY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DATA_TYPE_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISTRICT_FILTER_COMBOBOX;
@@ -29,6 +30,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERS
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_MANAGEMENT_STATUS_CHECK;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_PARTICIPANTS_TAB;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_ARCHIVED_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
@@ -40,6 +42,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BU
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CHANGE_EVENT_MANAGEMENT_STATUS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CLOSE_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.COMMIT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CONFIRM_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATED_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATE_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CUSTOM_EXPORT_PARTICIPANT_BUTTON;
@@ -92,6 +95,8 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LI
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.MORE_BUTTON_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.NEW_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESET_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESPONSIBLE_USER_INFO_ICON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESPONSIBLE_USER_INFO_POPUP_TEXT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SAVE_BUTTON_IN_LINK_FORM;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SEARCH_EVENT_BY_FREE_TEXT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SEARCH_EVENT_BY_FREE_TEXT_INPUT;
@@ -100,6 +105,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.UN
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByIndex;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByUUID;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANT_DISPLAY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
@@ -192,7 +198,24 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.fillInWebElement(
               EVENT_GROUP_INPUT, dataOperations.getPartialUuidFromAssociatedLink(eventGroupId));
         });
-
+    When(
+        "I check that Responsible User Info icon is visible on Event Directory Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(RESPONSIBLE_USER_INFO_ICON);
+        });
+    When(
+        "I check the displayed message is correct after hover to Responsible User Info icon",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(RESPONSIBLE_USER_INFO_ICON);
+          webDriverHelpers.hoverToElement(RESPONSIBLE_USER_INFO_ICON);
+          String displayedText =
+              webDriverHelpers.getTextFromWebElement(RESPONSIBLE_USER_INFO_POPUP_TEXT);
+          softly.assertEquals(
+              "The responsible user filter requires a region to be selected in the region filter.",
+              displayedText,
+              "Message is incorrect");
+          softly.assertAll();
+        });
     When(
         "I click checkbox to choose all Event results on Event Directory Page",
         () -> {
@@ -741,6 +764,10 @@ public class EventDirectorySteps implements En {
         });
 
     When(
+        "I click on the first row from archived event participant",
+        () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_ARCHIVED_EVENT_PARTICIPANT));
+
+    When(
         "I check if filtered participant for existing person appears in the event participants list",
         () -> {
           final String personUuid = apiState.getLastCreatedPerson().getUuid();
@@ -808,6 +835,16 @@ public class EventDirectorySteps implements En {
               getCheckboxByUUID(apiState.getCreatedEvent().getUuid()));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+
+    When(
+        "I click on last created API result in grid in Event Directory for Bulk Action",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.scrollToElement(getByEventUuid(apiState.getCreatedEvent().getUuid()));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getByEventUuid(apiState.getCreatedEvent().getUuid()));
+        });
+
     When(
         "^I select last created UI result in grid in Event Directory for Bulk Action$",
         () -> {
@@ -818,6 +855,16 @@ public class EventDirectorySteps implements En {
               getCheckboxByUUID(CreateNewEventSteps.newEvent.getUuid()));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+
+    When(
+        "I click on last created UI result in grid in Event Directory for Bulk Action",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.scrollToElement(getByEventUuid(CreateNewEventSteps.newEvent.getUuid()));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getByEventUuid(CreateNewEventSteps.newEvent.getUuid()));
+        });
+
     When(
         "I click on the More button on Event directory page",
         () -> webDriverHelpers.clickOnWebElementBySelector(MORE_BUTTON_EVENT_DIRECTORY));
@@ -1050,6 +1097,28 @@ public class EventDirectorySteps implements En {
           TimeUnit.SECONDS.sleep(8); // wait for basic download if in parallel
           webDriverHelpers.clickOnWebElementBySelector(DETAILED_EVENT_EXPORT_BUTTON);
           TimeUnit.SECONDS.sleep(4); // wait for download
+        });
+
+    When(
+        "I click on the Archive bulk events on Event Directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS_ARCHIVE);
+        });
+
+    When(
+        "I confirm archive bulk events",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POPUP_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for spinner
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I set Relevance Status Filter to ([^\"]*) on Event Directory page",
+        (String option) -> {
+          webDriverHelpers.selectFromCombobox(EVENT_PARTICIPANT_DISPLAY_FILTER_COMBOBOX, option);
+          TimeUnit.SECONDS.sleep(3); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
   }
 

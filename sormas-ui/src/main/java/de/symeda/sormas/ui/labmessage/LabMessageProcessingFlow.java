@@ -136,7 +136,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		selectionField.addCommitListener(() -> callback.done(selectField.getValue()));
 		selectionField.addDiscardListener(callback::cancel);
 
-		selectField.setSelectionChangeCallback((commitAllowed) -> selectionField.getCommitButton().setEnabled(commitAllowed));
+		selectField.setSelectionChangeCallback(commitAllowed -> selectionField.getCommitButton().setEnabled(commitAllowed));
 		selectionField.getCommitButton().setEnabled(false);
 
 		VaadinUiUtil.showModalPopupWindow(selectionField, I18nProperties.getString(Strings.headingPickOrCreateEntry), true);
@@ -159,7 +159,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		caseCreateComponent.addDiscardListener(callback::cancel);
 
 		caseCreateComponent.getWrappedComponent().setValue(caze);
-		if (FacadeProvider.getPersonFacade().isValidPersonUuid(person.getUuid())) {
+		if (Boolean.TRUE.equals(FacadeProvider.getPersonFacade().isValidPersonUuid(person.getUuid()))) {
 			caseCreateComponent.getWrappedComponent().setSearchedPerson(person);
 		}
 		caseCreateComponent.getWrappedComponent().setPerson(person);
@@ -245,7 +245,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 			window.close();
 		});
 
-		eventSelect.setSelectionChangeCallback((commitAllowed) -> component.getCommitButton().setEnabled(commitAllowed));
+		eventSelect.setSelectionChangeCallback(commitAllowed -> component.getCommitButton().setEnabled(commitAllowed));
 
 		window.setContent(component);
 		window.setCaption(I18nProperties.getString(Strings.headingPickOrCreateEvent));
@@ -356,7 +356,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		});
 		selectionField.addDiscardListener(callback::cancel);
 
-		selectField.setSelectionChangeCallback((commitAllowed) -> selectionField.getCommitButton().setEnabled(commitAllowed));
+		selectField.setSelectionChangeCallback(commitAllowed -> selectionField.getCommitButton().setEnabled(commitAllowed));
 		selectionField.getCommitButton().setEnabled(false);
 
 		showFormWithLabMessage(labMessage, selectionField, window, I18nProperties.getString(Strings.headingPickOrCreateSample), false);

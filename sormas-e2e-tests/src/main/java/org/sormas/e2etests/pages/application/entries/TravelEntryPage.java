@@ -56,4 +56,10 @@ public class TravelEntryPage {
   public static final By LAST_NAME_IMPORTED_PERSON =
       By.xpath("//span[text()='Nachname']/../following-sibling::div");
   public static final By FIRST_RESULT_ID = By.xpath("//table/tbody/tr[2]/td[1]");
+  public static final By TRAVEL_ENTRY_DATA_FILTER_OPTION_COMBOBOX =
+      By.cssSelector("[id='dateFilterOption'] [class='v-filterselect-button']");
+  public static final By WEEK_FROM_OPTION_COMBOBOX =
+      By.cssSelector("[id='weekFrom'] [class='v-filterselect-button']");
+  public static final By WEEK_TO_OPTION_COMBOBOX =
+      By.cssSelector("[id='weekTo'] [class='v-filterselect-button']");
 }
