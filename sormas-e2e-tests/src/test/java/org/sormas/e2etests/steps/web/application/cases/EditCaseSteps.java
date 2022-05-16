@@ -45,11 +45,14 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONTACTS_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EPIDEMIOLOGICAL_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BLOOD_ORGAN_TISSUE_DONATION_IN_THE_LAST_6_MONTHS_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_CLASSIFICATION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_IDENTIFICATION_SOURCE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_PERSON_TAB;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_TAB;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CLINICAL_CONFIRMATION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CLINICAL_COURSE_TAB;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY_COMBOBOX;
@@ -108,6 +111,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_SELECTED_VALUE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.POPUPS_INPUTS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PREGNANCY_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PROHIBITION_TO_WORK_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_CHANGE_COMMENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_COMBOBOX;
@@ -141,6 +145,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_AND_
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SEQUELAE_DETAILS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SEQUELAE_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SYMPTOMS_TAB;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.TRIMESTER_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UPLOAD_DOCUMENT_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
@@ -170,6 +175,7 @@ import static org.sormas.e2etests.pages.application.cases.SymptomsTabPage.SAVE_B
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_FIRST_RESULT_OPTION;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_WINDOW_CONTACT_DE;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.END_OF_PROCESSING_DATE_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.FOLLOW_UP_UNTIL_DATE;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
@@ -209,6 +215,7 @@ import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
+import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
@@ -335,6 +342,15 @@ public class EditCaseSteps implements En {
     And(
         "I navigate to case person tab",
         () -> webDriverHelpers.clickOnWebElementBySelector(CASE_PERSON_TAB));
+
+    And(
+        "I navigate to case tab",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_TAB);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+        });
+
     And(
         "I click on Create button in Document Templates box in Edit Case directory",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_TEMPLATES));
@@ -1324,6 +1340,7 @@ public class EditCaseSteps implements En {
           TimeUnit.SECONDS.sleep(
               3); // Required to ensure that the value we're asserting is refreshed after saving
           // sample
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           String caseClassification =
               webDriverHelpers.getValueFromCombobox(CASE_CLASSIFICATION_COMBOBOX);
           softly.assertTrue(
@@ -1336,6 +1353,41 @@ public class EditCaseSteps implements En {
                   .contains(caseClassification),
               "The case classification is incorrect!");
           softly.assertAll();
+        });
+
+    When(
+        "I set pregnancy to ([^\"]*)",
+        (String option) -> {
+          webDriverHelpers.clickWebElementByText(PREGNANCY_OPTIONS, option);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I check that trimester field is present",
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(TRIMESTER_OPTIONS));
+
+    When(
+        "I click on the Archive case button",
+        () -> {
+          webDriverHelpers.scrollToElement(ARCHIVE_CASE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_CASE_BUTTON);
+        });
+
+    When(
+        "I check the end of processing date in the archive popup and select Archive contacts checkbox",
+        () -> {
+          String endOfProcessingDate;
+          endOfProcessingDate =
+              webDriverHelpers.getValueFromWebElement(END_OF_PROCESSING_DATE_POPUP_INPUT);
+          softly.assertEquals(
+              endOfProcessingDate,
+              LocalDate.now().format(DATE_FORMATTER),
+              "End of processing date is invalid");
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_RELATED_CONTACTS_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(EditContactPage.DELETE_POPUP_YES_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // wait for response after confirm
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
   }
 

@@ -61,6 +61,12 @@ public class EventParticipantsPage {
   public static final By DELETE_EVENT_PARTICIPANT_BUTTTON = By.cssSelector("div#delete");
   public static final By CONFIRM_DELETION_OF_EVENT_PARTICIPANT = By.id("actionConfirm");
   public static final By POPUP_DISCARD_CHANGES_BUTTON = By.id("actionCancel");
+  public static final By ARCHIVE_EVENT_PARTICIPANT_BUTTON = By.id("archiveDearchive");
+  public static final By EVENT_PARTICIPANT_DISPLAY_FILTER_COMBOBOX =
+      By.cssSelector("[id='relevanceStatusFilter'] [class='v-filterselect-button']");
+  public static final By EVENT_PARTICIPANT_DISPLAY_FILTER_INPUT =
+      By.cssSelector("[id='relevanceStatusFilter'] input");
+  public static final By EVENT_TAB = By.id("tab-events-data");
 
   public static final By getEventsByCaseUuid(String uuid) {
     return By.cssSelector(String.format("[title = '%s']", uuid));

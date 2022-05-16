@@ -23,6 +23,7 @@ package de.symeda.sormas.api.caze;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -34,6 +35,7 @@ public class EmbeddedSampleExportDto implements Serializable {
 	@SensitiveData
 	private String lab;
 	private PathogenTestResultType result;
+	private Long caseId;
 
 	public EmbeddedSampleExportDto() {
 	}
@@ -43,6 +45,14 @@ public class EmbeddedSampleExportDto implements Serializable {
 		this.dateTime = dateTime;
 		this.lab = lab;
 		this.result = result;
+	}
+
+	public EmbeddedSampleExportDto(String uuid, Date dateTime, String labUuid, String labName, String labDetails, PathogenTestResultType result, Long caseId) {
+		this.uuid = uuid;
+		this.dateTime = dateTime;
+		this.lab = labUuid != null ? FacilityHelper.buildFacilityString(labUuid, labName, labDetails) : null;
+		this.result = result;
+		this.caseId = caseId;
 	}
 
 	public String formatString() {
@@ -87,5 +97,13 @@ public class EmbeddedSampleExportDto implements Serializable {
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+
+	public Long getCaseId() {
+		return caseId;
+	}
+
+	public void setCaseId(Long caseId) {
+		this.caseId = caseId;
 	}
 }

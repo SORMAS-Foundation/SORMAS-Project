@@ -66,6 +66,7 @@ public class SampleApiService {
         .pathogenTestResult("PENDING")
         .lab(
             Lab.builder()
+                .caption("Voreingestelltes Labor")
                 .uuid(
                     environmentManager.getLaboratoryUUID(
                         RegionsValues.VoreingestellteBundeslander.getName(),

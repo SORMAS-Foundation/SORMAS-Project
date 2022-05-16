@@ -50,6 +50,9 @@ public class TaskApiService {
         .taskStatus("PENDING")
         .assigneeUser(
             AssigneeUser.builder()
+                .caption("Contact OFFICER - Kontaktbeauftragte*r")
+                .firstName("Contact")
+                .lastName("Officer")
                 .uuid(environmentManager.getUserUUIDByFullName("Contact Officer"))
                 .build())
         .assigneeReply(faker.music().instrument())
