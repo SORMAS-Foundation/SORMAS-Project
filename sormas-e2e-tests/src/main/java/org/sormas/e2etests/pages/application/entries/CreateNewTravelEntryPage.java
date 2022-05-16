@@ -53,4 +53,6 @@ public class CreateNewTravelEntryPage {
           "//div[@class='v-Notification error v-Notification-error']//div[@class='popupContent']");
   public static final By DATE_OF_ARRIVAL_LABEL_DE =
       By.xpath("//div[@location='dateOfArrival']//div/div/div[@class='v-captiontext']");
+  public static final By FIRST_TRAVEL_ENTRY_ID_BUTTON =
+      By.cssSelector(".v-grid-row-has-data a[title]");
 }

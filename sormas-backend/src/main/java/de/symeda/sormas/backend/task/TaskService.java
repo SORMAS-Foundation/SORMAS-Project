@@ -454,7 +454,6 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		TaskJoins joins = taskQueryContext.getJoins();
 
 		Join<Task, Case> caze = joins.getCaze();
-		Join<Task, Contact> contact = joins.getContact();
 		Join<Contact, Case> contactCaze = joins.getContactCase();
 		Join<Task, Event> event = joins.getEvent();
 		Join<Task, TravelEntry> travelEntry = joins.getTravelEntry();

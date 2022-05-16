@@ -125,3 +125,22 @@ Feature: Tasks functionalities
     And I click on Save button in New Task form
     And I check if popup message after bulk edit is "All tasks have been edited"
     And I check that number of displayed tasks results is 0
+
+  @issue=SORDEV-9156 @env_main
+  Scenario: Check the task observer is added
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new task
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    And I click on the Tasks button from navbar
+    Then I open last created task by API using Contact UUID
+    And I select "Surveillance SUPERVISOR - Surveillance Supervisor" user from Observed by combobox on Edit Task page
+    And I click on Save button in New Task form
+    Then I open last created task by API using Contact UUID
+    And I check that respected user is selected on Edit Task page

@@ -41,6 +41,7 @@ public class EditTravelEntryPage {
   public static final By CREATE_CASE_FROM_TRAVEL_ENTRY = By.id("travelEntryCreateCase");
   public static final By SAVE_NEW_CASE_FOR_TRAVEL_ENTRY_POPUP =
       By.cssSelector(".popupContent #commit");
+  public static final By SAVE_EDIT_TRAVEL_PAGE = By.id("commit");
   public static final By POINT_OF_ENTRY_CASE = By.xpath("//*[@id='pointOfEntry']/input");
   public static final By DISEASE_NAME_INPUT = By.cssSelector(".popupContent #diseaseDetails");
   public static final By TRAVEL_ENTRY_CASE_UUID = By.cssSelector("#caseIdLabel");
