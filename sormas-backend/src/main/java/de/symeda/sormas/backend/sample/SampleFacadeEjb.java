@@ -224,11 +224,8 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, root);
 
-		SampleCriteria sampleCriteria = new SampleCriteria();
-		sampleCriteria.caze(criteria.getCaze()).contact(criteria.getContact()).eventParticipant(criteria.getEventParticipant());
-
-		Predicate filter = sampleService.createUserFilter(sampleQueryContext, sampleCriteria);
-		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(sampleCriteria, sampleQueryContext));
+		Predicate filter = sampleService.createUserFilter(sampleQueryContext, criteria.getSampleCriteria());
+		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(criteria.getSampleCriteria(), sampleQueryContext));
 
 		Predicate similarityFilter = null;
 		if (criteria.getLabSampleId() != null) {
@@ -257,15 +254,11 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		List<Sample> samples = em.createQuery(cq).getResultList();
 
-		if (samples.size() == 0 && (sampleDateTime == null || sampleMaterial == null)) {
-			return getByCriteria(sampleCriteria);
-		}
-
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return samples.stream().map(s -> convertToDto(s, pseudonymizer)).collect(Collectors.toList());
 	}
 
-	private List<SampleDto> getByCriteria(SampleCriteria criteria) {
+	public List<SampleDto> getSamplesByCriteria(SampleCriteria criteria) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
 		final Root<Sample> root = cq.from(Sample.class);

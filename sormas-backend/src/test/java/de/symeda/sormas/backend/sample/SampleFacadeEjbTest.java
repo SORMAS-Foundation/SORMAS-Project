@@ -572,7 +572,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 			.createSample(eventParticipant.toReference(), sampleDateTime1, new Date(), officer.toReference(), SampleMaterial.BLOOD, rdcf.facility);
 
 		SampleSimilarityCriteria criteria = new SampleSimilarityCriteria();
-		criteria.caze(caze.toReference());
+		criteria.sampleCriteria(new SampleCriteria().caze(caze.toReference()));
 
 		criteria.setLabSampleId("case_sample_id");
 		List<SampleDto> similarSamples = getSampleFacade().getSimilarSamples(criteria);
@@ -602,7 +602,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		MatcherAssert.assertThat(similarSamples, hasSize(0));
 
 		// contact samples
-		SampleSimilarityCriteria contactSampleCriteria = new SampleSimilarityCriteria().contact(contact);
+		SampleSimilarityCriteria contactSampleCriteria = new SampleSimilarityCriteria().sampleCriteria(new SampleCriteria().contact(contact));
 		contactSampleCriteria.setSampleDateTime(sampleDateTime1);
 		contactSampleCriteria.setSampleMaterial(SampleMaterial.BLOOD);
 
@@ -611,7 +611,8 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		MatcherAssert.assertThat(contactSimilarSamples.get(0).getUuid(), is(contactSample.getUuid()));
 
 		// event participant samples
-		SampleSimilarityCriteria eventParticipantSampleCriteria = new SampleSimilarityCriteria().eventParticipant(eventParticipant.toReference());
+		SampleSimilarityCriteria eventParticipantSampleCriteria =
+			new SampleSimilarityCriteria().sampleCriteria(new SampleCriteria().eventParticipant(eventParticipant.toReference()));
 		eventParticipantSampleCriteria.setSampleDateTime(sampleDateTime1);
 		eventParticipantSampleCriteria.setSampleMaterial(SampleMaterial.BLOOD);
 

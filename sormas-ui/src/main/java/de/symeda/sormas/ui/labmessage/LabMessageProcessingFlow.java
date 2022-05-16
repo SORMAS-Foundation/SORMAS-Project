@@ -334,8 +334,13 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 	}
 
 	@Override
-	protected void handlePickOrCreateSample(List<SampleDto> samples, LabMessageDto labMessage, HandlerCallback<PickOrCreateSampleResult> callback) {
-		SampleSelectionField selectField = new SampleSelectionField(samples, I18nProperties.getString(Strings.infoPickOrCreateSample));
+	protected void handlePickOrCreateSample(
+		List<SampleDto> similarSamples,
+		List<SampleDto> otherSamples,
+		LabMessageDto labMessage,
+		HandlerCallback<PickOrCreateSampleResult> callback) {
+		SampleSelectionField selectField =
+			new SampleSelectionField(similarSamples, otherSamples, I18nProperties.getString(Strings.infoPickOrCreateSample));
 
 		Window window = VaadinUiUtil.createPopupWindow();
 
