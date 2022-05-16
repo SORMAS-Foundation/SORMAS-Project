@@ -416,6 +416,7 @@ public enum DefaultUserRole {
 					EXPORT_DATA_PROTECTION_DATA,
 					OUTBREAK_VIEW,
 					OUTBREAK_EDIT,
+					SORMAS_REST,
 					SORMAS_UI,
 					DEV_MODE));
 			break;
@@ -512,6 +513,7 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_DELETE,
 					OUTBREAK_VIEW,
 					OUTBREAK_EDIT,
+					SORMAS_REST,
 					SORMAS_UI));
 			break;
 		case BAG_USER:
@@ -641,6 +643,7 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
+					SORMAS_REST,
 					SORMAS_UI));
 			break;
 		case COMMUNITY_INFORMANT:
@@ -672,6 +675,7 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
+					SORMAS_REST,
 					SORMAS_UI));
 			break;
 		case COMMUNITY_OFFICER:
@@ -853,6 +857,7 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
+					SORMAS_REST,
 					SORMAS_UI));
 			break;
 		case DISTRICT_OBSERVER:
@@ -880,6 +885,7 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_MANAGEMENT_ACCESS,
 					TRAVEL_ENTRY_VIEW,
 					OUTBREAK_VIEW,
+					SORMAS_REST,
 					SORMAS_UI));
 			break;
 		case EVENT_OFFICER:
@@ -929,6 +935,7 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
+					SORMAS_REST,
 					SORMAS_UI));
 			break;
 		case EXTERNAL_LAB_USER:
@@ -945,6 +952,7 @@ public enum DefaultUserRole {
 					TASK_VIEW,
 					TASK_EDIT,
 					TASK_EXPORT,
+					SORMAS_REST,
 					SORMAS_UI));
 			break;
 		case HOSPITAL_INFORMANT:
@@ -1031,6 +1039,7 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_VIEW,
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
+					SORMAS_REST,
 					SORMAS_UI));
 			break;
 		case NATIONAL_CLINICIAN:
@@ -1103,6 +1112,7 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
 					OUTBREAK_VIEW,
+					SORMAS_REST,
 					SORMAS_UI));
 			break;
 		case NATIONAL_OBSERVER:
@@ -1130,6 +1140,7 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_MANAGEMENT_ACCESS,
 					TRAVEL_ENTRY_VIEW,
 					OUTBREAK_VIEW,
+					SORMAS_REST,
 					SORMAS_UI));
 			break;
 		case NATIONAL_USER:
@@ -1240,6 +1251,7 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_DELETE,
 					OUTBREAK_VIEW,
 					OUTBREAK_EDIT,
+					SORMAS_REST,
 					SORMAS_UI));
 			break;
 		case POE_INFORMANT:
@@ -1309,6 +1321,7 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
 					OUTBREAK_VIEW,
+					SORMAS_REST,
 					SORMAS_UI));
 			break;
 		case POE_SUPERVISOR:
@@ -1356,6 +1369,7 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_CREATE,
 					TRAVEL_ENTRY_EDIT,
 					OUTBREAK_VIEW,
+					SORMAS_REST,
 					SORMAS_UI));
 			break;
 		case REST_EXTERNAL_VISITS_USER:
@@ -1407,6 +1421,7 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_MANAGEMENT_ACCESS,
 					TRAVEL_ENTRY_VIEW,
 					OUTBREAK_VIEW,
+					SORMAS_REST,
 					SORMAS_UI));
 			break;
 		case SURVEILLANCE_OFFICER:
@@ -1561,6 +1576,7 @@ public enum DefaultUserRole {
 					TRAVEL_ENTRY_EDIT,
 					OUTBREAK_VIEW,
 					OUTBREAK_EDIT,
+					SORMAS_REST,
 					SORMAS_UI));
 			break;
 		default:
