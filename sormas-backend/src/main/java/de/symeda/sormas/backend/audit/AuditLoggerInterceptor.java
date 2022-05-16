@@ -108,15 +108,15 @@ public class AuditLoggerInterceptor {
 		// start auditing
 
 		// AuditContextProducer
-		Date start = Calendar.getInstance(TimeZone.getDefault()).getTime();
 		List<String> parameters = getParameters(context);
 
 		// do the actual call
+		Date start = Calendar.getInstance(TimeZone.getDefault()).getTime();
 		Object result = context.proceed();
-
+		Date end = Calendar.getInstance(TimeZone.getDefault()).getTime();
 		String returnValue = printObject(result);
 
-		auditLogger.logBackendCall(calledMethod, parameters, returnValue, start);
+		auditLogger.logBackendCall(calledMethod, parameters, returnValue, start, end);
 
 		return result;
 	}
