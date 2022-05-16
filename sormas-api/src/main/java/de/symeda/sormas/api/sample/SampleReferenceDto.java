@@ -14,6 +14,8 @@
  */
 package de.symeda.sormas.api.sample;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
@@ -21,6 +23,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 
+@DependingOnFeatureType(featureType = FeatureType.SAMPLES_LAB)
 public class SampleReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -6975445672442728938L;

@@ -18,10 +18,13 @@
 package de.symeda.sormas.api.caze;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.PersonalData;
 
+@DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
 public class CaseReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = 5007131477733638086L;

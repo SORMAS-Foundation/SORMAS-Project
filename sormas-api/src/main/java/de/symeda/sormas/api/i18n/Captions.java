@@ -890,6 +890,7 @@ public interface Captions {
 	String dashboardViewAsColumnChart = "dashboardViewAsColumnChart";
 	String dashboardWeekBefore = "dashboardWeekBefore";
 	String dashboardYesterday = "dashboardYesterday";
+	String dataProtectionAllFieldsSheet = "dataProtectionAllFieldsSheet";
 	String date = "date";
 	String dearchiveReason = "dearchiveReason";
 	String defaultCommunity = "defaultCommunity";

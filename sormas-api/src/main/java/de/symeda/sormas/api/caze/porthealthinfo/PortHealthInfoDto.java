@@ -1,5 +1,7 @@
 package de.symeda.sormas.api.caze.porthealthinfo;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 
 import javax.validation.constraints.Size;
@@ -10,6 +12,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
+@DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
 public class PortHealthInfoDto extends EntityDto {
 
 	private static final long serialVersionUID = 3289289799891965437L;

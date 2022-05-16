@@ -297,6 +297,11 @@ public enum FeatureType {
 		null,
 		null);
 
+	public static final FeatureType[] SURVEILLANCE_FEATURE_TYPES = {
+		FeatureType.CASE_SURVEILANCE,
+		FeatureType.EVENT_SURVEILLANCE,
+		FeatureType.AGGREGATE_REPORTING };
+
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system
 	 * is supposed to operate.

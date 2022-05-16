@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.feature;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;

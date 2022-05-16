@@ -10,11 +10,12 @@ import de.symeda.sormas.api.feature.FeatureTypeProperty;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({
+	ElementType.TYPE,
 	ElementType.METHOD,
 	ElementType.FIELD })
 public @interface DependingOnFeatureType {
 
-	FeatureType featureType();
+	FeatureType[] featureType();
 
 	FeatureProperty[] properties() default {};
 

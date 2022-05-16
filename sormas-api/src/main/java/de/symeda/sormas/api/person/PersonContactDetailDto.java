@@ -1,5 +1,7 @@
 package de.symeda.sormas.api.person;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.i18n.Validations;
@@ -8,6 +10,10 @@ import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
+@DependingOnFeatureType(featureType = {
+	FeatureType.CASE_SURVEILANCE,
+	FeatureType.CONTACT_TRACING,
+	FeatureType.EVENT_SURVEILLANCE })
 public class PersonContactDetailDto extends PseudonymizableDto {
 
 	public static final String I18N_PREFIX = "PersonContactDetail";
