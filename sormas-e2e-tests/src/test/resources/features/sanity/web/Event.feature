@@ -693,3 +693,31 @@ Feature: Create events
     And I click on Show more filters in Events
     And I check that Responsible User Info icon is visible on Event Directory Page
     And I check the displayed message is correct after hover to Responsible User Info icon
+
+  @issue=SORDEV-8667 @env_main
+  Scenario: Test Adjustments to the jurisdiction definition process of event participants
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    Then I open the last created event via api
+    Then I click on the Event participant tab
+    And I add only required data for event participant creation
+    And I click on the Event participant tab
+    Then I check that number of displayed Event Participants is 1
+    And I back to the Event tab
+    And I check if Country combobox on Edit Event page is disabled
+    And I check that message appearing in hover of Info icon is equal to expected on Edit Event page
+    And I click on the Event participant tab
+    And I click on the first result in table from event participant
+    And I edit participants responsible region and responsible district
+    And I click on Save Button in Edit Event directory
+    And I click on the Event participant tab
+    And I back to the Event tab
+    And I set Country combobox to "Germany" from Edit Event Page
+    And I set Country combobox to empty value from Edit Event Page
+    And I clear Region and District fields from Edit Event Directory
+    And I click on Save Button in Edit Event directory
+    Then I click on the Event participant tab
+    And I add a participant to the event
