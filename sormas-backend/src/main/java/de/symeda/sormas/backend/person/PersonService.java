@@ -73,6 +73,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.PerformanceLoggingStopWatch;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
@@ -379,6 +380,10 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	// todo refactor this to use the create user filter form persons
 	public List<Person> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
+		PerformanceLoggingStopWatch stopWatch;
+
+		stopWatch = new PerformanceLoggingStopWatch("PersonService.getAllAfter.setupQuery");
+
 		User user = getCurrentUser();
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -387,7 +392,10 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, personsQuery, personsRoot);
 		final PersonJoins joins = personQueryContext.getJoins();
 
+		stopWatch.stop();
+
 		// persons by district
+		stopWatch = new PerformanceLoggingStopWatch("PersonService.getAllAfter.byDistrict");
 
 		Join<Person, Location> address = joins.getAddress();
 		Predicate districtFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
@@ -399,7 +407,11 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		personsQuery.where(districtFilter);
 		List<Person> districtResultList = getBatchedQueryResults(cb, personsQuery, personsRoot, batchSize);
 
+		stopWatch.stop();
+
 		// persons by case
+		stopWatch = new PerformanceLoggingStopWatch("PersonService.getAllAfter.byCase");
+
 		CriteriaQuery<Person> casePersonsQuery = cb.createQuery(Person.class);
 		Root<Case> casePersonsRoot = casePersonsQuery.from(Case.class);
 		Join<Person, Person> casePersonsSelect = casePersonsRoot.join(Case.PERSON);
@@ -426,7 +438,11 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		casePersonsQuery.distinct(true);
 		List<Person> casePersonsResultList = getBatchedQueryResults(cb, casePersonsQuery, casePersonsSelect, batchSize);
 
+		stopWatch.stop();
+
 		// persons by contact
+		stopWatch = new PerformanceLoggingStopWatch("PersonService.getAllAfter.byContact");
+
 		CriteriaQuery<Person> contactPersonsQuery = cb.createQuery(Person.class);
 		Root<Contact> contactPersonsRoot = contactPersonsQuery.from(Contact.class);
 		Join<Person, Person> contactPersonsSelect = contactPersonsRoot.join(Contact.PERSON);
@@ -449,7 +465,11 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		contactPersonsQuery.distinct(true);
 		List<Person> contactPersonsResultList = getBatchedQueryResults(cb, contactPersonsQuery, contactPersonsSelect, batchSize);
 
+		stopWatch.stop();
+
 		// persons by event participant
+		stopWatch = new PerformanceLoggingStopWatch("PersonService.getAllAfter.byEventParticipant");
+
 		CriteriaQuery<Person> eventPersonsQuery = cb.createQuery(Person.class);
 		Root<EventParticipant> eventPersonsRoot = eventPersonsQuery.from(EventParticipant.class);
 		Join<Person, Person> eventPersonsSelect = eventPersonsRoot.join(EventParticipant.PERSON);
@@ -473,7 +493,11 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		eventPersonsQuery.distinct(true);
 		List<Person> eventPersonsResultList = getBatchedQueryResults(cb, eventPersonsQuery, eventPersonsSelect, batchSize);
 
+		stopWatch.stop();
+
 		// persons by immunization
+		stopWatch = new PerformanceLoggingStopWatch("PersonService.getAllAfter.byImmunization");
+
 		List<Person> immunizationPersonsResultList = new ArrayList<>();
 		if (!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 			CriteriaQuery<Person> immunizationPersonsQuery = cb.createQuery(Person.class);
@@ -500,6 +524,12 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			immunizationPersonsResultList = getBatchedQueryResults(cb, immunizationPersonsQuery, immunizationPersonsSelect, batchSize);
 		}
 
+		stopWatch.stop();
+
+		// persons by TravelEntry
+
+		stopWatch = new PerformanceLoggingStopWatch("PersonService.getAllAfter.byTravelEntry");
+
 		List<Person> travelEntryPersonsResultList = new ArrayList<>();
 		// if a batch size is given, this is a sync from the mobile app where travel entries are not relevant for now
 		if (batchSize == null) {
@@ -523,7 +553,10 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			travelEntryPersonsResultList = em.createQuery(tepQuery).getResultList();
 		}
 
-		return Stream
+		stopWatch.stop();
+
+		stopWatch = new PerformanceLoggingStopWatch("PersonService.getAllAfter.processResult");
+		List<Person> result = Stream
 			.of(
 				districtResultList,
 				casePersonsResultList,
@@ -536,6 +569,10 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			.sorted(new ChangeDateUuidComparator<>())
 			.limit(batchSize == null ? Long.MAX_VALUE : batchSize)
 			.collect(Collectors.toList());
+
+		stopWatch.stop();
+
+		return result;
 	}
 
 	public List<Long> getInJurisdictionIDs(final List<Person> selectedEntities) {

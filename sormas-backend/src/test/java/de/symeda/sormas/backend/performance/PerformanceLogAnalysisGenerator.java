@@ -56,9 +56,9 @@ import org.jetbrains.annotations.NotNull;
 public class PerformanceLogAnalysisGenerator {
 
 	private static final Pattern LOG_LINE_PATTERN_START =
-		Pattern.compile("([^ ]* [^ ]*) TRACE *(.*) d.s.s.b.u.PerformanceLoggingInterceptor - Started: ([^ ]*) with parameters .*$");
+		Pattern.compile("([^ ]* [^ ]*) TRACE *(.*) d.s.s...u.PerformanceLogging[^ ]* - Started: ([^ ]*) with parameters .*$");
 	private static final Pattern LOG_LINE_PATTERN_FINISH =
-		Pattern.compile("([^ ]* [^ ]*) DEBUG *(.*) d.s.s.b.u.PerformanceLoggingInterceptor - Finished in ([0-9]*) ms: (.*)$");
+		Pattern.compile("([^ ]* [^ ]*) DEBUG *(.*) d.s.s...u.PerformanceLogging[^ ]* - Finished in ([0-9]*) ms: (.*)$");
 
 	//@formatter:off
     private static final String HTML_HEADER = "<html>\n" +
