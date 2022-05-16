@@ -21,6 +21,7 @@ public class DeletableUtils {
 
 	public static void showDeleteWithReasonPopup(String message, Consumer<DeletionDetails> handler) {
 		VerticalLayout verticalLayout = new VerticalLayout();
+		verticalLayout.setMargin(false);
 		Label contentLabel = new Label(message);
 		verticalLayout.addComponent(contentLabel);
 
