@@ -873,15 +873,12 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public String updateUserPassword(String uuid, String newPassword, String currentPassword) {
-		if (!validatePassword(uuid, currentPassword)) {
-			return null;
-		} else {
-			String updatePassword = userService.updatePassword(uuid, newPassword);
-			passwordResetEvent.fire(new PasswordResetEvent(userService.getByUuid(uuid)));
+	public String updateUserPassword(String uuid, String password, String currentPassword) {
+		String updatePassword = userService.updatePassword(uuid, password);
+		passwordResetEvent.fire(new PasswordResetEvent(userService.getByUuid(uuid)));
 
-			return updatePassword;
-		}
+		return updatePassword;
+
 	}
 
 	@Override
@@ -924,46 +921,9 @@ public class UserFacadeEjb implements UserFacade {
 	public boolean validatePassword(String uuid, String password) {
 		User user = userService.getCurrentUser();
 		if (user != null) {
-			if (DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()))) {
-				return true;
-			}
+			return DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()));
 		}
 		return false;
-	}
-
-	@Override
-	public boolean validatePasswordPattern(String password) {
-		//Password must be between 8 and
-		LengthRule lengthRule = new LengthRule(8, 16);
-		// don't allow whitespace
-		WhitespaceRule whitespaceRule = new WhitespaceRule();
-		// control allowed characters
-		CharacterCharacteristicsRule charRule = new CharacterCharacteristicsRule();
-		// require at least 1 digit in passwords
-		charRule.getRules().add(new DigitCharacterRule(1));
-		// require at least 1 non-alphanumeric char
-		charRule.getRules().add(new NonAlphanumericCharacterRule(1));
-		// require at least 1 upper case char
-		charRule.getRules().add(new UppercaseCharacterRule(1));
-		// require at least 1 lower case char
-		charRule.getRules().add(new LowercaseCharacterRule(1));
-		// require at least 3 of the previous rules be met
-		charRule.setNumberOfCharacteristics(4);
-
-		List<Rule> ruleList = new ArrayList<Rule>();
-
-		ruleList.add(lengthRule);
-		ruleList.add(whitespaceRule);
-		ruleList.add(charRule);
-		PasswordValidator validator = new PasswordValidator(ruleList);
-		PasswordData passwordData = new PasswordData(new Password(password));
-		RuleResult result = validator.validate(passwordData);
-
-		if (result.isValid()) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	@Override
