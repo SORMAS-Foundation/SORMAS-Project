@@ -532,8 +532,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		addField(ContactDto.DELETE_REASON);
 		addField(ContactDto.OTHER_DELETE_REASON, TextArea.class).setRows(3);
-		setVisible(false, ContactDto.DELETE_REASON);
-		setVisible(false, ContactDto.OTHER_DELETE_REASON);
+		setVisible(false, ContactDto.DELETE_REASON, ContactDto.OTHER_DELETE_REASON);
 
 		addFields(ContactDto.END_OF_QUARANTINE_REASON, ContactDto.END_OF_QUARANTINE_REASON_DETAILS);
 		FieldHelper.setVisibleWhen(

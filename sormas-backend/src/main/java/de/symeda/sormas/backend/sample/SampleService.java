@@ -54,7 +54,7 @@ import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.common.DeleteDetails;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -919,16 +919,16 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 	}
 
 	@Override
-	public void delete(Sample sample, DeleteDetails deleteDetails) {
+	public void delete(Sample sample, DeletionDetails deletionDetails) {
 
 		// Mark all pathogen tests of this sample as deleted
 		for (PathogenTest pathogenTest : sample.getPathogenTests()) {
-			pathogenTestService.delete(pathogenTest, deleteDetails);
+			pathogenTestService.delete(pathogenTest, deletionDetails);
 		}
 
 		deleteSampleLinks(sample);
 
-		super.delete(sample, deleteDetails);
+		super.delete(sample, deletionDetails);
 	}
 
 	private void deleteSampleLinks(Sample sample) {

@@ -53,7 +53,7 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.RichTextArea;
 import com.vaadin.v7.ui.TextArea;
 
-import de.symeda.sormas.api.common.DeleteDetails;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -92,12 +92,12 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	public static interface DeleteListener {
 
-
 		void onDelete();
 	}
 
 	public static interface DeleteWithDetailsListener {
-		void onDelete(DeleteDetails deleteDetails);
+
+		void onDelete(DeletionDetails deletionDetails);
 	}
 
 	private transient PreCommitListener preCommitListener;
@@ -432,11 +432,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	public Button getDeleteWithReasonButton(String entityName) {
 		if (deleteButton == null) {
-
 			deleteButton = ButtonHelper.createButton("delete", I18nProperties.getCaption(Captions.actionDelete), (ClickListener) event -> {
-
-				DeletableUtils.showDeleteWithReasonPopUp(String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName), this::onDeleteWithReason);
-
+				DeletableUtils.showDeleteWithReasonPopup(
+					String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
+					this::onDeleteWithReason);
 			}, ValoTheme.BUTTON_DANGER, CssStyles.BUTTON_BORDER_NEUTRAL);
 		}
 
@@ -737,7 +736,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			deleteListeners.add(listener);
 	}
 
-	public void addDeleteWithReasonListener(DeleteWithDetailsListener listener , String entityName) {
+	public void addDeleteWithReasonListener(DeleteWithDetailsListener listener, String entityName) {
 
 		if (deleteWithDetailsListeners.isEmpty()) {
 			buttonsPanel.addComponent(getDeleteWithReasonButton(entityName), 0);
@@ -746,7 +745,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			deleteWithDetailsListeners.add(listener);
 		}
 	}
-
 
 	public boolean hasDeleteListener() {
 		return !deleteListeners.isEmpty();
@@ -757,9 +755,9 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			listener.onDelete();
 	}
 
-	private void onDeleteWithReason(DeleteDetails deleteDetails) {
-		for (DeleteWithDetailsListener listener : deleteWithDetailsListeners){
-			listener.onDelete(deleteDetails);
+	private void onDeleteWithReason(DeletionDetails deletionDetails) {
+		for (DeleteWithDetailsListener listener : deleteWithDetailsListeners) {
+			listener.onDelete(deletionDetails);
 		}
 	}
 

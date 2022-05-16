@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
-import de.symeda.sormas.api.common.DeleteDetails;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -440,14 +440,14 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 	@Override
 	@RolesAllowed(UserRight._IMMUNIZATION_DELETE)
-	public void deleteWithImmunization(String uuid, DeleteDetails deleteDetails) {
+	public void deleteWithImmunization(String uuid, DeletionDetails deletionDetails) {
 		Vaccination vaccination = vaccinationService.getByUuid(uuid);
 		Immunization immunization = vaccination.getImmunization();
 		immunization.getVaccinations().remove(vaccination);
 		immunizationService.ensurePersisted(immunization);
 
 		if (immunization.getVaccinations().isEmpty()) {
-			immunizationService.delete(immunization, deleteDetails);
+			immunizationService.delete(immunization, deletionDetails);
 		}
 	}
 

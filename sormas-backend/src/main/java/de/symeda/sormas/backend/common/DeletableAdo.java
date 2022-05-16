@@ -6,7 +6,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.MappedSuperclass;
 
 import de.symeda.auditlog.api.Audited;
-import de.symeda.sormas.api.common.DeleteReason;
+import de.symeda.sormas.api.common.DeletionReason;
 
 /**
  * An extension of the {@link AbstractDomainObject} that defines data that is essential to the system.
@@ -24,7 +24,7 @@ public abstract class DeletableAdo extends AbstractDomainObject {
 	public static final String OTHER_DELETE_REASON = "otherDeleteReason";
 
 	private boolean deleted;
-	private DeleteReason deleteReason;
+	private DeletionReason deletionReason;
 	private String otherDeleteReason;
 
 	@Column
@@ -37,15 +37,15 @@ public abstract class DeletableAdo extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	public DeleteReason getDeleteReason() {
-		return deleteReason;
+	public DeletionReason getDeleteReason() {
+		return deletionReason;
 	}
 
-	public void setDeleteReason(DeleteReason deleteReason) {
-		this.deleteReason = deleteReason;
+	public void setDeleteReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
 	}
 
-	@Column
+	@Column(columnDefinition = "text")
 	public String getOtherDeleteReason() {
 		return otherDeleteReason;
 	}

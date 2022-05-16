@@ -184,8 +184,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 		addField(PathogenTestDto.DELETE_REASON);
 		addField(PathogenTestDto.OTHER_DELETE_REASON, TextArea.class).setRows(3);
-		setVisible(false, PathogenTestDto.DELETE_REASON);
-		setVisible(false, PathogenTestDto.OTHER_DELETE_REASON);
+		setVisible(false, PathogenTestDto.DELETE_REASON, PathogenTestDto.OTHER_DELETE_REASON);
 
 		initializeAccessAndAllowedAccesses();
 		initializeVisibilitiesAndAllowedVisibilities();

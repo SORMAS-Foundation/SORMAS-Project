@@ -134,8 +134,7 @@ public class EventParticipantEditForm extends PersonDependentEditForm<EventParti
 
 		addField(EventParticipantDto.DELETE_REASON);
 		addField(EventParticipantDto.OTHER_DELETE_REASON, TextArea.class).setRows(3);
-		setVisible(false, EventParticipantDto.DELETE_REASON);
-		setVisible(false, EventParticipantDto.OTHER_DELETE_REASON);
+		setVisible(false, EventParticipantDto.DELETE_REASON, EventParticipantDto.OTHER_DELETE_REASON);
 	}
 
 	public String getPersonFirstName() {

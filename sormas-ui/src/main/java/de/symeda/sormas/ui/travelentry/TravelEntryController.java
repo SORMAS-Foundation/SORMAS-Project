@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.travelentry;
 
 import java.util.Collection;
 
+import de.symeda.sormas.api.common.DeletionReason;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -12,7 +13,6 @@ import com.vaadin.ui.UI;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.common.DeleteReason;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -144,7 +144,7 @@ public class TravelEntryController {
 
 		if (travelEntry.isDeleted()) {
 			editComponent.getWrappedComponent().getField(TravelEntryDto.DELETE_REASON).setVisible(true);
-			if (editComponent.getWrappedComponent().getField(TravelEntryDto.DELETE_REASON).getValue() == DeleteReason.OTHER_REASON) {
+			if (editComponent.getWrappedComponent().getField(TravelEntryDto.DELETE_REASON).getValue() == DeletionReason.OTHER_REASON) {
 				editComponent.getWrappedComponent().getField(TravelEntryDto.OTHER_DELETE_REASON).setVisible(true);
 			}
 		}
@@ -214,7 +214,7 @@ public class TravelEntryController {
 				Notification.Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
-			DeletableUtils.showDeleteWithReasonPopUp(
+			DeletableUtils.showDeleteWithReasonPopup(
 				String.format(I18nProperties.getString(Strings.confirmationDeleteTravelEntries), selectedRows.size()),
 				(deleteDetails) -> {
 					for (TravelEntryIndexDto selectedRow : selectedRows) {

@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.travelentry;
 
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
@@ -10,7 +11,6 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.common.DeleteReason;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.i18n.Validations;
@@ -142,7 +142,7 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private Date quarantineOfficialOrderSentDate;
 	private Date dateOfArrival;
 
-	private DeleteReason deleteReason;
+	private DeletionReason deletionReason;
 	private String otherDeleteReason;
 
 	public static TravelEntryDto build(PersonReferenceDto person) {
@@ -478,12 +478,12 @@ public class TravelEntryDto extends PseudonymizableDto {
 		this.dateOfArrival = dateOfArrival;
 	}
 
-	public DeleteReason getDeleteReason() {
-		return deleteReason;
+	public DeletionReason getDeleteReason() {
+		return deletionReason;
 	}
 
-	public void setDeleteReason(DeleteReason deleteReason) {
-		this.deleteReason = deleteReason;
+	public void setDeleteReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
 	}
 
 	public String getOtherDeleteReason() {

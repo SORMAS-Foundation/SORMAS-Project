@@ -1250,8 +1250,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		addField(CaseDataDto.DELETE_REASON);
 		addField(CaseDataDto.OTHER_DELETE_REASON, TextArea.class).setRows(3);
-		setVisible(false, CaseDataDto.DELETE_REASON);
-		setVisible(false, CaseDataDto.OTHER_DELETE_REASON);
+		setVisible(false, CaseDataDto.DELETE_REASON, CaseDataDto.OTHER_DELETE_REASON);
 
 		addValueChangeListener(e -> {
 			diseaseField.addValueChangeListener(new DiseaseChangeListener(diseaseField, getValue().getDisease()));

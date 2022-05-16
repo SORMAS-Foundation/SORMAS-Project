@@ -1,6 +1,6 @@
 package de.symeda.sormas.backend.common;
 
-import de.symeda.sormas.api.common.DeleteDetails;
+import de.symeda.sormas.api.common.DeletionDetails;
 
 import java.sql.Timestamp;
 
@@ -15,10 +15,10 @@ public abstract class AbstractDeletableAdoService<ADO extends DeletableAdo> exte
 		super(elementClass);
 	}
 
-	public void delete(ADO ado, DeleteDetails deleteDetails) {
+	public void delete(ADO ado, DeletionDetails deletionDetails) {
 
-		ado.setDeleteReason(deleteDetails.getDeleteReason());
-		ado.setOtherDeleteReason(deleteDetails.getOtherDeleteReason());
+		ado.setDeleteReason(deletionDetails.getDeleteReason());
+		ado.setOtherDeleteReason(deletionDetails.getOtherDeleteReason());
 		ado.setDeleted(true);
 		em.persist(ado);
 		em.flush();

@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.api.sample;
 
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
@@ -23,7 +24,6 @@ import javax.validation.constraints.Size;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
-import de.symeda.sormas.api.common.DeleteReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -129,7 +129,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private Boolean preliminary;
 
 	private boolean deleted;
-	private DeleteReason deleteReason;
+	private DeletionReason deletionReason;
 	private String otherDeleteReason;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
@@ -367,12 +367,12 @@ public class PathogenTestDto extends PseudonymizableDto {
 		this.deleted = deleted;
 	}
 
-	public DeleteReason getDeleteReason() {
-		return deleteReason;
+	public DeletionReason getDeleteReason() {
+		return deletionReason;
 	}
 
-	public void setDeleteReason(DeleteReason deleteReason) {
-		this.deleteReason = deleteReason;
+	public void setDeleteReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
 	}
 
 	public String getOtherDeleteReason() {

@@ -393,8 +393,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		addField(EventDto.DELETE_REASON);
 		addField(EventDto.OTHER_DELETE_REASON, TextArea.class).setRows(3);
-		setVisible(false, EventDto.DELETE_REASON);
-		setVisible(false, EventDto.OTHER_DELETE_REASON);
+		setVisible(false, EventDto.DELETE_REASON, EventDto.OTHER_DELETE_REASON);
 
 		if (isCreateForm) {
 			locationForm.hideValidationUntilNextCommit();

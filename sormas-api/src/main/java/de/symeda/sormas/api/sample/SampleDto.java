@@ -25,7 +25,7 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.common.DeleteReason;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Validations;
@@ -149,7 +149,7 @@ public class SampleDto extends SormasToSormasShareableDto {
 	private String samplingReasonDetails;
 
 	private boolean deleted;
-	private DeleteReason deleteReason;
+	private DeletionReason deletionReason;
 	private String otherDeleteReason;
 
 	@ImportIgnore
@@ -541,12 +541,12 @@ public class SampleDto extends SormasToSormasShareableDto {
 		this.deleted = deleted;
 	}
 
-	public DeleteReason getDeleteReason() {
-		return deleteReason;
+	public DeletionReason getDeleteReason() {
+		return deletionReason;
 	}
 
-	public void setDeleteReason(DeleteReason deleteReason) {
-		this.deleteReason = deleteReason;
+	public void setDeleteReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
 	}
 
 	public String getOtherDeleteReason() {

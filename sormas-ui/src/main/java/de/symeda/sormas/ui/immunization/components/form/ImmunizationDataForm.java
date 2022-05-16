@@ -253,8 +253,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 		addField(ImmunizationDto.DELETE_REASON);
 		addField(ImmunizationDto.OTHER_DELETE_REASON, TextArea.class).setRows(3);
-		setVisible(false, ImmunizationDto.DELETE_REASON);
-		setVisible(false, ImmunizationDto.OTHER_DELETE_REASON);
+		setVisible(false, ImmunizationDto.DELETE_REASON, ImmunizationDto.OTHER_DELETE_REASON);
 
 		Button linkImmunizationToCaseButton;
 		if (relatedCase != null) {

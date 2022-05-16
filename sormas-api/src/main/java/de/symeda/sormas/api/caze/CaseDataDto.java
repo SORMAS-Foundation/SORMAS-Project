@@ -20,7 +20,7 @@ import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
-import de.symeda.sormas.api.common.DeleteReason;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
@@ -587,7 +587,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 
 	private Map<String, String> externalData;
 	private boolean deleted;
-	private DeleteReason deleteReason;
+	private DeletionReason deletionReason;
 	private String otherDeleteReason;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
@@ -1688,12 +1688,12 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		this.deleted = deleted;
 	}
 
-	public DeleteReason getDeleteReason() {
-		return deleteReason;
+	public DeletionReason getDeleteReason() {
+		return deletionReason;
 	}
 
-	public void setDeleteReason(DeleteReason deleteReason) {
-		this.deleteReason = deleteReason;
+	public void setDeleteReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
 	}
 
 	public String getOtherDeleteReason() {

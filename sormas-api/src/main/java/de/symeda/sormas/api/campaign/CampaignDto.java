@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
-import de.symeda.sormas.api.common.DeleteReason;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -43,7 +43,7 @@ public class CampaignDto extends EntityDto {
 	private List<CampaignDashboardElement> campaignDashboardElements;
 
 	private boolean deleted;
-	private DeleteReason deleteReason;
+	private DeletionReason deletionReason;
 	private String otherDeleteReason;
 
 	public static CampaignDto build() {
@@ -116,12 +116,12 @@ public class CampaignDto extends EntityDto {
 		this.deleted = deleted;
 	}
 
-	public DeleteReason getDeleteReason() {
-		return deleteReason;
+	public DeletionReason getDeleteReason() {
+		return deletionReason;
 	}
 
-	public void setDeleteReason(DeleteReason deleteReason) {
-		this.deleteReason = deleteReason;
+	public void setDeleteReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
 	}
 
 	public String getOtherDeleteReason() {

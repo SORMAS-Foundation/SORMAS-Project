@@ -11,8 +11,7 @@ import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.common.DeleteReason;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -158,7 +157,7 @@ public class ImmunizationController {
 
 		if (immunizationDto.isDeleted()) {
 			editComponent.getWrappedComponent().getField(ImmunizationDto.DELETE_REASON).setVisible(true);
-			if (editComponent.getWrappedComponent().getField(ImmunizationDto.DELETE_REASON).getValue()== DeleteReason.OTHER_REASON){
+			if (editComponent.getWrappedComponent().getField(ImmunizationDto.DELETE_REASON).getValue() == DeletionReason.OTHER_REASON) {
 				editComponent.getWrappedComponent().getField(ImmunizationDto.OTHER_DELETE_REASON).setVisible(true);
 			}
 		}

@@ -2,7 +2,7 @@ package de.symeda.sormas.api.common;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
-public enum DeleteReason {
+public enum DeletionReason {
 
     GDPR,
     DELETION_REQUEST,

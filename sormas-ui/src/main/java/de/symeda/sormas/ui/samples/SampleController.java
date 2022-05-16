@@ -50,7 +50,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.common.DeleteReason;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -352,7 +352,7 @@ public class SampleController {
 
 		if (dto.isDeleted()) {
 			editView.getWrappedComponent().getField(SampleDto.DELETE_REASON).setVisible(true);
-			if (editView.getWrappedComponent().getField(SampleDto.DELETE_REASON).getValue() == DeleteReason.OTHER_REASON) {
+			if (editView.getWrappedComponent().getField(SampleDto.DELETE_REASON).getValue() == DeletionReason.OTHER_REASON) {
 				editView.getWrappedComponent().getField(SampleDto.OTHER_DELETE_REASON).setVisible(true);
 			}
 		}

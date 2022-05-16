@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.ui.caze;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,11 +26,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.ui.TextField;
-import de.symeda.sormas.api.common.DeleteDetails;
-import de.symeda.sormas.api.common.DeleteReason;
-import de.symeda.sormas.ui.utils.DeletableUtils;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -71,6 +65,8 @@ import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
@@ -137,6 +133,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
@@ -866,7 +863,7 @@ public class CaseController {
 
 		if (caze.isDeleted()) {
 			editView.getWrappedComponent().getField(CaseDataDto.DELETE_REASON).setVisible(true);
-			if (editView.getWrappedComponent().getField(CaseDataDto.DELETE_REASON).getValue()==DeleteReason.OTHER_REASON){
+			if (editView.getWrappedComponent().getField(CaseDataDto.DELETE_REASON).getValue() == DeletionReason.OTHER_REASON) {
 				editView.getWrappedComponent().getField(CaseDataDto.OTHER_DELETE_REASON).setVisible(true);
 			}
 		}
@@ -1128,12 +1125,12 @@ public class CaseController {
 		}
 	}
 
-	private void deleteCase(CaseDataDto caze, boolean withContacts, DeleteDetails deleteDetails) {
+	private void deleteCase(CaseDataDto caze, boolean withContacts, DeletionDetails deletionDetails) {
 		try {
 			if (withContacts) {
-				FacadeProvider.getCaseFacade().deleteWithContacts(caze.getUuid(), deleteDetails);
+				FacadeProvider.getCaseFacade().deleteWithContacts(caze.getUuid(), deletionDetails);
 			} else {
-				FacadeProvider.getCaseFacade().delete(caze.getUuid(), deleteDetails);
+				FacadeProvider.getCaseFacade().delete(caze.getUuid(), deletionDetails);
 			}
 			UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
 		} catch (ExternalSurveillanceToolException e) {
@@ -1535,7 +1532,7 @@ public class CaseController {
 				Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
-			DeletableUtils.showDeleteWithReasonPopUp(
+			DeletableUtils.showDeleteWithReasonPopup(
 				String.format(I18nProperties.getString(Strings.confirmationDeleteCases), selectedRows.size()),
 				(deleteDetails) -> {
 					int countNotDeletedCases = 0;

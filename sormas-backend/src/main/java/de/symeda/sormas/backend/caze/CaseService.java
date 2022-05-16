@@ -48,7 +48,7 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.common.DeleteDetails;
+import de.symeda.sormas.api.common.DeletionDetails;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -942,21 +942,21 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@Override
-	public void delete(Case caze, DeleteDetails deleteDetails) {
+	public void delete(Case caze, DeletionDetails deletionDetails) {
 
 		// Soft-delete all samples that are only associated with this case
 		caze.getSamples()
 			.stream()
 			.filter(sample -> sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null)
-			.forEach(sample -> sampleService.delete(sample, deleteDetails));
+			.forEach(sample -> sampleService.delete(sample, deletionDetails));
 
 		caseFacade.deleteCaseInExternalSurveillanceTool(caze);
 		deleteCaseLinks(caze);
-		caze.setDeleteReason(deleteDetails.getDeleteReason());
-		caze.setOtherDeleteReason(deleteDetails.getOtherDeleteReason());
+		caze.setDeleteReason(deletionDetails.getDeleteReason());
+		caze.setOtherDeleteReason(deletionDetails.getOtherDeleteReason());
 
 		// Mark the case as deleted
-		super.delete(caze, deleteDetails);
+		super.delete(caze, deletionDetails);
 	}
 
 	private void deleteCaseLinks(Case caze) {

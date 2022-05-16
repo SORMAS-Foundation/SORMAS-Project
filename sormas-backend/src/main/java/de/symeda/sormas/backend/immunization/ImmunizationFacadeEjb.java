@@ -42,7 +42,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.common.DeleteDetails;
+import de.symeda.sormas.api.common.DeletionDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -295,9 +295,9 @@ public class ImmunizationFacadeEjb
 
 	@Override
 	@RolesAllowed(UserRight._IMMUNIZATION_DELETE)
-	public void delete(String uuid, DeleteDetails deleteDetails) {
+	public void delete(String uuid, DeletionDetails deletionDetails) {
 		Immunization immunization = service.getByUuid(uuid);
-		service.delete(immunization, deleteDetails);
+		service.delete(immunization, deletionDetails);
 	}
 
 	@Override
@@ -451,12 +451,12 @@ public class ImmunizationFacadeEjb
 	}
 
 	@RolesAllowed(UserRight._IMMUNIZATION_DELETE)
-	public List<String> deleteImmunizations(List<String> immunizationUuids, DeleteDetails deleteDetails) {
+	public List<String> deleteImmunizations(List<String> immunizationUuids, DeletionDetails deletionDetails) {
 		List<String> deletedImmunizationUuids = new ArrayList<>();
 		List<Immunization> immunizationsToBeDeleted = service.getByUuids(immunizationUuids);
 		if (immunizationsToBeDeleted != null) {
 			immunizationsToBeDeleted.forEach(immunizationToBeDeleted -> {
-				service.delete(immunizationToBeDeleted, deleteDetails);
+				service.delete(immunizationToBeDeleted, deletionDetails);
 				deletedImmunizationUuids.add(immunizationToBeDeleted.getUuid());
 			});
 		}

@@ -72,8 +72,8 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.common.DeleteDetails;
-import de.symeda.sormas.api.common.DeleteReason;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -2449,25 +2449,25 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RolesAllowed(UserRight._CASE_DELETE)
-	public void delete(String caseUuid, DeleteDetails deleteDetails) throws ExternalSurveillanceToolException {
+	public void delete(String caseUuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
 		Case caze = service.getByUuid(caseUuid);
-		deleteCase(caze, deleteDetails);
+		deleteCase(caze, deletionDetails);
 	}
 
 	@Override
 	@RolesAllowed(UserRight._CASE_DELETE)
-	public void deleteWithContacts(String caseUuid, DeleteDetails deleteDetails) {
+	public void deleteWithContacts(String caseUuid, DeletionDetails deletionDetails) {
 
 		Case caze = service.getByUuid(caseUuid);
-		deleteCase(caze, deleteDetails);
+		deleteCase(caze, deletionDetails);
 
-		Optional.of(caze.getContacts()).ifPresent(cl -> cl.forEach(c -> contactService.delete(c, deleteDetails)));
+		Optional.of(caze.getContacts()).ifPresent(cl -> cl.forEach(c -> contactService.delete(c, deletionDetails)));
 	}
 
-	private void deleteCase(Case caze, DeleteDetails deleteDetails) throws ExternalSurveillanceToolException {
+	private void deleteCase(Case caze, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
 
 		externalJournalService.handleExternalJournalPersonUpdateAsync(caze.getPerson().toReference());
-		service.delete(caze, deleteDetails);
+		service.delete(caze, deletionDetails);
 	}
 
 	@RolesAllowed(UserRight._CASE_DELETE)
@@ -2500,7 +2500,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		caze.setDuplicateOf(duplicateOfCase);
 		service.ensurePersisted(caze);
 
-		delete(caseUuid, new DeleteDetails(DeleteReason.DUPLICATE_ENTRIES, null));
+		delete(caseUuid, new DeletionDetails(DeletionReason.DUPLICATE_ENTRIES, null));
 	}
 
 	@RolesAllowed({

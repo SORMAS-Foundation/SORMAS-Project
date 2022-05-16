@@ -51,7 +51,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.common.DeleteDetails;
+import de.symeda.sormas.api.common.DeletionDetails;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -457,9 +457,9 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	@RolesAllowed(UserRight._EVENTPARTICIPANT_DELETE)
-	public void delete(String uuid, DeleteDetails deleteDetails) throws ExternalSurveillanceToolException {
+	public void delete(String uuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
 		EventParticipant eventParticipant = service.getByUuid(uuid);
-		service.delete(eventParticipant, deleteDetails);
+		service.delete(eventParticipant, deletionDetails);
 	}
 
 	@Override

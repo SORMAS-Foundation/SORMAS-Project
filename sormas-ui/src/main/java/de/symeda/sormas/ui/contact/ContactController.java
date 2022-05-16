@@ -23,8 +23,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.common.DeleteReason;
-import de.symeda.sormas.ui.utils.DeletableUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +43,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactBulkEditData;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -85,6 +84,7 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -578,9 +578,9 @@ public class ContactController {
 		}
 
 		if (contact.isDeleted()) {
-			editComponent.getWrappedComponent().getField(CaseDataDto.DELETE_REASON).setVisible(true);
-			if (editComponent.getWrappedComponent().getField(CaseDataDto.DELETE_REASON).getValue()== DeleteReason.OTHER_REASON){
-				editComponent.getWrappedComponent().getField(CaseDataDto.OTHER_DELETE_REASON).setVisible(true);
+			editComponent.getWrappedComponent().getField(ContactDto.DELETE_REASON).setVisible(true);
+			if (editComponent.getWrappedComponent().getField(ContactDto.DELETE_REASON).getValue() == DeletionReason.OTHER_REASON) {
+				editComponent.getWrappedComponent().getField(ContactDto.OTHER_DELETE_REASON).setVisible(true);
 			}
 		}
 
@@ -702,12 +702,9 @@ public class ContactController {
 				Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
-			DeletableUtils.showDeleteWithReasonPopUp(
+			DeletableUtils.showDeleteWithReasonPopup(
 				String.format(I18nProperties.getString(Strings.confirmationDeleteContacts), selectedRows.size()),
 				(deleteDetails) -> {
-//							new Runnable() {
-
-//								public void run() {
 					for (ContactIndexDto selectedRow : selectedRows) {
 						FacadeProvider.getContactFacade().delete(selectedRow.getUuid(), deleteDetails);
 					}
@@ -717,8 +714,6 @@ public class ContactController {
 						I18nProperties.getString(Strings.messageContactsDeleted),
 						Type.HUMANIZED_MESSAGE,
 						false).show(Page.getCurrent());
-//								}
-//							});	
 				});
 
 		}
@@ -840,7 +835,7 @@ public class ContactController {
 	}
 
 	public void deleteContact(ContactIndexDto contact, Runnable callback) {
-		DeletableUtils.showDeleteWithReasonPopUp(
+		DeletableUtils.showDeleteWithReasonPopup(
 			String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getString(Strings.entityContact)),
 			(deleteDetails) -> {
 				FacadeProvider.getContactFacade().delete(contact.getUuid(), deleteDetails);

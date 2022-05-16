@@ -40,7 +40,7 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.common.DeleteDetails;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.sample.PathogenTestCriteria;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -320,8 +320,8 @@ public class PathogenTestService extends AbstractDeletableAdoService<PathogenTes
 	}
 
 	@Override
-	public void delete(PathogenTest pathogenTest, DeleteDetails deleteDetails) {
-		super.delete(pathogenTest, deleteDetails);
+	public void delete(PathogenTest pathogenTest, DeletionDetails deletionDetails) {
+		super.delete(pathogenTest, deletionDetails);
 	}
 
 	/**

@@ -20,8 +20,7 @@ package de.symeda.sormas.ui.events;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.common.DeleteReason;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.ui.utils.DeletableUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -172,7 +171,7 @@ public class EventParticipantsController {
 				Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
-			DeletableUtils.showDeleteWithReasonPopUp(
+			DeletableUtils.showDeleteWithReasonPopup(
 				String.format(I18nProperties.getString(Strings.confirmationDeleteEventParticipants), selectedRows.size()),
 				(deleteDetails) -> {
 					for (Object selectedRow : selectedRows) {
@@ -189,7 +188,7 @@ public class EventParticipantsController {
 	}
 
 	public void deleteEventParticipant(String eventUuid, String personUuid, Runnable callback) {
-		DeletableUtils.showDeleteWithReasonPopUp(
+		DeletableUtils.showDeleteWithReasonPopup(
 			String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getString(Strings.entityEventParticipant)),
 			(deleteDetails) -> {
 				EventParticipantReferenceDto eventParticipantRef =
@@ -221,7 +220,7 @@ public class EventParticipantsController {
 
 		if (eventParticipant.isDeleted()) {
 			editComponent.getWrappedComponent().getField(EventParticipantDto.DELETE_REASON).setVisible(true);
-			if (editComponent.getWrappedComponent().getField(EventParticipantDto.DELETE_REASON).getValue()== DeleteReason.OTHER_REASON){
+			if (editComponent.getWrappedComponent().getField(EventParticipantDto.DELETE_REASON).getValue() == DeletionReason.OTHER_REASON) {
 				editComponent.getWrappedComponent().getField(EventParticipantDto.OTHER_DELETE_REASON).setVisible(true);
 			}
 		}

@@ -172,10 +172,9 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		final Label spacer = new Label();
 		getContent().addComponent(spacer, SPACE_LOC);
 
-		addField(ContactDto.DELETE_REASON);
-		addField(ContactDto.OTHER_DELETE_REASON, TextArea.class).setRows(3);
-		setVisible(false, ContactDto.DELETE_REASON);
-		setVisible(false, ContactDto.OTHER_DELETE_REASON);
+		addField(CampaignDto.DELETE_REASON);
+		addField(CampaignDto.OTHER_DELETE_REASON, TextArea.class).setRows(3);
+		setVisible(false, CampaignDto.DELETE_REASON, CampaignDto.OTHER_DELETE_REASON);
 	}
 
 	@Override

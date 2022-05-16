@@ -9,8 +9,8 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import de.symeda.sormas.api.common.DeleteDetails;
-import de.symeda.sormas.api.common.DeleteReason;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
@@ -92,7 +92,7 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 			person.toReference(),
 			caze.getDisease(),
 			contactDto -> contactDto.setResultingCase(caze.toReference()));
-		getContactFacade().delete(deletedSourceContact.getUuid(), new DeleteDetails(DeleteReason.OTHER_REASON, null));
+		getContactFacade().delete(deletedSourceContact.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
 		EventDto event = creator.createEvent(user.toReference(), caze.getDisease());
 		EventParticipantDto eventParticipant = creator.createEventParticipant(
 			event.toReference(),
@@ -324,7 +324,7 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 
 		assertEquals(1, getImmunizationService().count());
 
-		getImmunizationFacade().delete(immunization.getUuid(), new DeleteDetails(DeleteReason.OTHER_REASON, null));
+		getImmunizationFacade().delete(immunization.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
 
 		assertEquals(1, getImmunizationService().count());
 

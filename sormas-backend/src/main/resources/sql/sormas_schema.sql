@@ -11361,59 +11361,59 @@ DROP FUNCTION IF EXISTS create_additional_healthconditions();
 INSERT INTO schema_version (version_number, comment) VALUES (458, 'Permanent Deletion | Immunization | healthconditions_id violates not-null constraint error #8983');
 
 -- 2022-05-10 Add reason for deletion to confirmation dialogue - #8162
-ALTER TABLE cases ADD COLUMN deletereason character varying(512);
-ALTER TABLE cases ADD COLUMN otherdeletereason character varying(512);
+ALTER TABLE cases ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE cases ADD COLUMN  otherdeletionreason text;
 
-ALTER TABLE cases_history ADD COLUMN deletereason character varying(512);
-ALTER TABLE cases_history ADD COLUMN otherdeletereason character varying(512);
+ALTER TABLE cases_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE cases_history ADD COLUMN  otherdeletionreason text;
 
-ALTER TABLE contact ADD COLUMN deletereason character varying(512);
-ALTER TABLE contact ADD COLUMN otherdeletereason character varying(512);
+ALTER TABLE contact ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE contact ADD COLUMN  otherdeletionreason text;
 
-ALTER TABLE contact_history ADD COLUMN deletereason character varying(512);
-ALTER TABLE contact_history ADD COLUMN otherdeletereason character varying(512);
+ALTER TABLE contact_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE contact_history ADD COLUMN  otherdeletionreason text;
 
-ALTER TABLE events ADD COLUMN deletereason character varying(512);
-ALTER TABLE events ADD COLUMN otherdeletereason character varying(512);
+ALTER TABLE events ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE events ADD COLUMN  otherdeletionreason text;
 
-ALTER TABLE events_history ADD COLUMN deletereason character varying(512);
-ALTER TABLE events_history ADD COLUMN otherdeletereason character varying(512);
+ALTER TABLE events_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE events_history ADD COLUMN  otherdeletionreason text;
 
-ALTER TABLE eventparticipant ADD COLUMN deletereason character varying(512);
-ALTER TABLE eventparticipant ADD COLUMN otherdeletereason character varying(512);
+ALTER TABLE eventparticipant ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE eventparticipant ADD COLUMN  otherdeletionreason text;
 
-ALTER TABLE eventparticipant_history ADD COLUMN deletereason character varying(512);
-ALTER TABLE eventparticipant_history ADD COLUMN otherdeletereason character varying(512);
+ALTER TABLE eventparticipant_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE eventparticipant_history ADD COLUMN  otherdeletionreason text;
 
-ALTER TABLE immunization ADD COLUMN deletereason character varying(512);
-ALTER TABLE immunization ADD COLUMN otherdeletereason character varying(512);
+ALTER TABLE immunization ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE immunization ADD COLUMN  otherdeletionreason text;
 
-ALTER TABLE immunization_history ADD COLUMN deletereason character varying(512);
-ALTER TABLE immunization_history ADD COLUMN otherdeletereason character varying(512);
+ALTER TABLE immunization_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE immunization_history ADD COLUMN  otherdeletionreason text;
 
-ALTER TABLE travelentry ADD COLUMN deletereason character varying(512);
-ALTER TABLE travelentry ADD COLUMN otherdeletereason character varying(512);
+ALTER TABLE travelentry ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE travelentry ADD COLUMN  otherdeletionreason text;
 
-ALTER TABLE travelentry_history ADD COLUMN deletereason character varying(512);
-ALTER TABLE travelentry_history ADD COLUMN otherdeletereason character varying(512);
+ALTER TABLE travelentry_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE travelentry_history ADD COLUMN  otherdeletionreason text;
 
-ALTER TABLE campaigns ADD COLUMN deletereason character varying(512);
-ALTER TABLE campaigns ADD COLUMN otherdeletereason character varying(512);
+ALTER TABLE campaigns ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE campaigns ADD COLUMN  otherdeletionreason text;
 
-ALTER TABLE campaigns_history ADD COLUMN deletereason character varying(512);
-ALTER TABLE campaigns_history ADD COLUMN otherdeletereason character varying(512);
+ALTER TABLE campaigns_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE campaigns_history ADD COLUMN  otherdeletionreason text;
 
-ALTER TABLE samples ADD COLUMN deletereason character varying(512);
-ALTER TABLE samples ADD COLUMN otherdeletereason character varying(512);
+ALTER TABLE samples ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE samples ADD COLUMN  otherdeletionreason text;
 
-ALTER TABLE samples_history ADD COLUMN deletereason character varying(512);
-ALTER TABLE samples_history ADD COLUMN otherdeletereason character varying(512);
+ALTER TABLE samples_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE samples_history ADD COLUMN  otherdeletionreason text;
 
-ALTER TABLE pathogentest ADD COLUMN deletereason character varying(512);
-ALTER TABLE pathogentest ADD COLUMN otherdeletereason character varying(512);
+ALTER TABLE pathogentest ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE pathogentest ADD COLUMN  otherdeletionreason text;
 
-ALTER TABLE pathogentest_history ADD COLUMN deletereason character varying(512);
-ALTER TABLE pathogentest_history ADD COLUMN otherdeletereason character varying(512);
+ALTER TABLE pathogentest_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN  otherdeletionreason text;
 
 INSERT INTO schema_version (version_number, comment) VALUES (459, 'Add reason for deletion to confirmation dialogue - #8162');
 

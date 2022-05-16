@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import javax.naming.CannotProceedException;
 
+import de.symeda.sormas.api.common.DeletionReason;
 import org.apache.commons.lang3.mutable.MutableObject;
 
 import com.vaadin.server.ClientConnector;
@@ -41,8 +42,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.common.DeleteDetails;
-import de.symeda.sormas.api.common.DeleteReason;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -133,8 +133,8 @@ public class LabMessageProcessingUIHelper {
 					FacadeProvider.getPathogenTestFacade()
 						.deletePathogenTest(
 							pathogenTest.getUuid(),
-							new DeleteDetails(
-								DeleteReason.OTHER_REASON,
+							new DeletionDetails(
+								DeletionReason.OTHER_REASON,
 								I18nProperties.getString(Strings.pathogenTestDeletedDuringLabMessageConversion)));
 				}
 			});
@@ -354,7 +354,7 @@ public class LabMessageProcessingUIHelper {
 				return ButtonHelper.createButton(Captions.labMessage_deleteNewlyCreatedCase, e -> {
 					try {
 						FacadeProvider.getCaseFacade()
-							.delete(sample.getAssociatedCase().getUuid(), new DeleteDetails(DeleteReason.DUPLICATE_ENTRIES, null));
+							.delete(sample.getAssociatedCase().getUuid(), new DeletionDetails(DeletionReason.DUPLICATE_ENTRIES, null));
 					} catch (ExternalSurveillanceToolException survToolException) {
 						// should not happen because the new case was not shared
 						throw new RuntimeException(survToolException);
@@ -364,13 +364,13 @@ public class LabMessageProcessingUIHelper {
 				return ButtonHelper.createButton(
 					Captions.labMessage_deleteNewlyCreatedContact,
 					e -> FacadeProvider.getContactFacade()
-						.delete(sample.getAssociatedContact().getUuid(), new DeleteDetails(DeleteReason.DUPLICATE_ENTRIES, null)),
+						.delete(sample.getAssociatedContact().getUuid(), new DeletionDetails(DeletionReason.DUPLICATE_ENTRIES, null)),
 					ValoTheme.BUTTON_PRIMARY);
 			} else if (sample.getAssociatedEventParticipant() != null) {
 				return ButtonHelper.createButton(
 					Captions.labMessage_deleteNewlyCreatedEventParticipant,
 					e -> FacadeProvider.getEventParticipantFacade()
-						.delete(sample.getAssociatedEventParticipant().getUuid(), new DeleteDetails(DeleteReason.DUPLICATE_ENTRIES, null)),
+						.delete(sample.getAssociatedEventParticipant().getUuid(), new DeletionDetails(DeletionReason.DUPLICATE_ENTRIES, null)),
 					ValoTheme.BUTTON_PRIMARY);
 			}
 		}

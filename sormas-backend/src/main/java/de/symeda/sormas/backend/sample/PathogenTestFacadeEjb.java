@@ -36,7 +36,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.common.DeleteDetails;
+import de.symeda.sormas.api.common.DeletionDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -275,7 +275,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	}
 
 	@Override
-	public void deletePathogenTest(String pathogenTestUuid, DeleteDetails deleteDetails) {
+	public void deletePathogenTest(String pathogenTestUuid, DeletionDetails deletionDetails) {
 		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
 			.contains(UserRight.PATHOGEN_TEST_DELETE)) {
@@ -283,7 +283,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		}
 
 		PathogenTest pathogenTest = pathogenTestService.getByUuid(pathogenTestUuid);
-		pathogenTestService.delete(pathogenTest, deleteDetails);
+		pathogenTestService.delete(pathogenTest, deletionDetails);
 
 		handleAssotiatedObjectChanges(pathogenTest, true);
 	}

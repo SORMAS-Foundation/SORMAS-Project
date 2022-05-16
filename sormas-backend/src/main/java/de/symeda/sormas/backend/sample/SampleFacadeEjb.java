@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.common.DeleteDetails;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -700,9 +700,9 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	@RolesAllowed(UserRight._SAMPLE_DELETE)
-	public void deleteSample(SampleReferenceDto sampleRef, DeleteDetails deleteDetails) {
+	public void deleteSample(SampleReferenceDto sampleRef, DeletionDetails deletionDetails) {
 		Sample sample = sampleService.getByReferenceDto(sampleRef);
-		sampleService.delete(sample, deleteDetails);
+		sampleService.delete(sample, deletionDetails);
 
 		handleAssotiatedObjectChanges(sample, true);
 	}
@@ -717,13 +717,13 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@RolesAllowed(UserRight._SAMPLE_DELETE)
-	public List<String> deleteSamples(List<String> sampleUuids, DeleteDetails deleteDetails) {
+	public List<String> deleteSamples(List<String> sampleUuids, DeletionDetails deletionDetails) {
 		List<String> deletedSampleUuids = new ArrayList<>();
 		List<Sample> samplesToBeDeleted = sampleService.getByUuids(sampleUuids);
 		if (samplesToBeDeleted != null) {
 			samplesToBeDeleted.forEach(sampleToBeDeleted -> {
 				if (!sampleToBeDeleted.isDeleted()) {
-					sampleService.delete(sampleToBeDeleted, deleteDetails);
+					sampleService.delete(sampleToBeDeleted, deletionDetails);
 					deletedSampleUuids.add(sampleToBeDeleted.getUuid());
 				}
 			});

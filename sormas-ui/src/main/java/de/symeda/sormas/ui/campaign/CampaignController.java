@@ -28,8 +28,7 @@ import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.common.DeleteReason;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -158,7 +157,7 @@ public class CampaignController {
 
 		if (campaignDto.isDeleted()) {
 			campaignComponent.getWrappedComponent().getField(CampaignDto.DELETE_REASON).setVisible(true);
-			if (campaignComponent.getWrappedComponent().getField(CampaignDto.DELETE_REASON).getValue()== DeleteReason.OTHER_REASON){
+			if (campaignComponent.getWrappedComponent().getField(CampaignDto.DELETE_REASON).getValue()== DeletionReason.OTHER_REASON){
 				campaignComponent.getWrappedComponent().getField(CampaignDto.OTHER_DELETE_REASON).setVisible(true);
 			}
 		}

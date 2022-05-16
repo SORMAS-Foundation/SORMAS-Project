@@ -38,8 +38,8 @@ import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.common.CoreEntityType;
-import de.symeda.sormas.api.common.DeleteDetails;
-import de.symeda.sormas.api.common.DeleteReason;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -121,9 +121,9 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	}
 
 	@DenyAll
-	public void delete(String uuid, DeleteDetails deleteDetails) {
+	public void delete(String uuid, DeletionDetails deletionDetails) {
 		ADO ado = service.getByUuid(uuid);
-		service.delete(ado, deleteDetails);
+		service.delete(ado, deletionDetails);
 	}
 
 	public boolean isArchived(String uuid) {
@@ -166,7 +166,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 			if (deletePermanent) {
 				service.deletePermanent(ado);
 			} else {
-				service.delete(ado, new DeleteDetails(DeleteReason.OTHER_REASON, I18nProperties.getString(Strings.entityAutomaticSoftDeletion)));
+				service.delete(ado, new DeletionDetails(DeletionReason.OTHER_REASON, I18nProperties.getString(Strings.entityAutomaticSoftDeletion)));
 			}
 		});
 	}

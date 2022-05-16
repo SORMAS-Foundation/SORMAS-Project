@@ -33,8 +33,8 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
-import de.symeda.sormas.api.common.DeleteDetails;
-import de.symeda.sormas.api.common.DeleteReason;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -299,7 +299,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person = creator.createPerson();
 
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
-		getEventParticipantFacade().delete(eventParticipant.toReference().getUuid(), new DeleteDetails(DeleteReason.OTHER_REASON, null));
+		getEventParticipantFacade().delete(eventParticipant.toReference().getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
 
 		boolean exist = getEventParticipantFacade().exists(person.getUuid(), event.getUuid());
 		Assert.assertFalse(exist);

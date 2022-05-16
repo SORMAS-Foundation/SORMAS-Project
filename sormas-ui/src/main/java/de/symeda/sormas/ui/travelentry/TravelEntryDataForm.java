@@ -272,8 +272,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 
 		addField(TravelEntryDto.DELETE_REASON);
 		addField(TravelEntryDto.OTHER_DELETE_REASON, TextArea.class).setRows(3);
-		setVisible(false, TravelEntryDto.DELETE_REASON);
-		setVisible(false, TravelEntryDto.OTHER_DELETE_REASON);
+		setVisible(false, TravelEntryDto.DELETE_REASON, TravelEntryDto.OTHER_DELETE_REASON);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),

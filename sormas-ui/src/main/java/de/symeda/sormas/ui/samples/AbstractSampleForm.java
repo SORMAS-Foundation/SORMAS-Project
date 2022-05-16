@@ -165,8 +165,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 		addField(SampleDto.DELETE_REASON);
 		addField(SampleDto.OTHER_DELETE_REASON, TextArea.class).setRows(3);
-		setVisible(false, SampleDto.DELETE_REASON);
-		setVisible(false, SampleDto.OTHER_DELETE_REASON);
+		setVisible(false, SampleDto.DELETE_REASON, SampleDto.OTHER_DELETE_REASON);
 
 	}
 
