@@ -46,6 +46,7 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.DeletionDetails;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -1383,7 +1384,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	@Override
-	public void delete(Contact contact) {
+	public void delete(Contact contact, DeletionDetails deletionDetails) {
 		// Delete all tasks associated with this contact
 		List<Task> tasks = taskService.findBy(new TaskCriteria().contact(new ContactReferenceDto(contact.getUuid())), true);
 		for (Task task : tasks) {
@@ -1394,7 +1395,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		contact.getSamples()
 			.stream()
 			.filter(sample -> sample.getAssociatedCase() == null && sample.getAssociatedEventParticipant() == null)
-			.forEach(sample -> sampleService.delete(sample));
+			.forEach(sample -> sampleService.delete(sample, deletionDetails));
 
 		// Remove this contact from all exposures that its referenced in
 		exposureService.removeContactFromExposures(contact.getId());
@@ -1403,7 +1404,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
 		deleteContactLinks(contact);
 
-		super.delete(contact);
+		super.delete(contact, deletionDetails);
 	}
 
 	@Override

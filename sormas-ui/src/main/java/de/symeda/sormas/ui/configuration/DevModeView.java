@@ -25,6 +25,7 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -202,11 +203,14 @@ public class DevModeView extends AbstractConfigurationView {
 			useManualSeed = e.getValue();
 		});
 
+		List<RegionReferenceDto> regions = FacadeProvider.getRegionFacade().getAllActiveByServerCountry();
 		Button performanceConfigButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.devModeLoadPerformanceTestConfig), e -> {
 			seedField.setValue("performance");
 			useManualSeedCheckbox.setValue(true);
-			RegionReferenceDto region = FacadeProvider.getRegionFacade().getAllActiveByServerCountry().get(0);
-			DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()).get(0);
+			RegionReferenceDto region = regions.isEmpty() ? null : regions.get(0);
+			List<DistrictReferenceDto> allActiveDistrictsByRegion =
+				region == null ? Collections.EMPTY_LIST : FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid());
+			DistrictReferenceDto district = allActiveDistrictsByRegion.isEmpty() ? null : allActiveDistrictsByRegion.get(0);
 
 			caseGenerationConfig.loadPerformanceTestConfig();
 			caseGenerationConfig.setRegion(region);
@@ -228,8 +232,10 @@ public class DevModeView extends AbstractConfigurationView {
 		}, CssStyles.FORCE_CAPTION);
 		Button defaultConfigButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.devModeLoadDefaultConfig), e -> {
 			useManualSeedCheckbox.setValue(false);
-			RegionReferenceDto region = FacadeProvider.getRegionFacade().getAllActiveByServerCountry().get(0);
-			DistrictReferenceDto district = FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()).get(0);
+			RegionReferenceDto region = regions.isEmpty() ? null : regions.get(0);
+			List<DistrictReferenceDto> allActiveDistrictsByRegion =
+				region == null ? Collections.EMPTY_LIST : FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid());
+			DistrictReferenceDto district = allActiveDistrictsByRegion.isEmpty() ? null : allActiveDistrictsByRegion.get(0);
 
 			caseGenerationConfig.loadDefaultConfig();
 			caseGenerationConfig.setRegion(region);
@@ -322,7 +328,9 @@ public class DevModeView extends AbstractConfigurationView {
 
 		caseGeneratorLayout.addComponent(caseOptionsLayout);
 
-		caseGenerationConfig.setRegion(regions.get(0));
+		if (!regions.isEmpty()) {
+			caseGenerationConfig.setRegion(regions.get(0));
+		}
 		caseGeneratorConfigBinder.setBean(caseGenerationConfig);
 
 		return caseGeneratorLayout;
@@ -415,7 +423,9 @@ public class DevModeView extends AbstractConfigurationView {
 
 		contactGeneratorLayout.addComponent(contactOptionsSecondLineLayout);
 
-		contactGenerationConfig.setRegion(regions.get(0));
+		if (!regions.isEmpty()) {
+			contactGenerationConfig.setRegion(regions.get(0));
+		}
 		contactGeneratorConfigBinder.setBean(contactGenerationConfig);
 
 		return contactGeneratorLayout;
@@ -523,8 +533,11 @@ public class DevModeView extends AbstractConfigurationView {
 
 		eventGeneratorLayout.addComponent(eventOptionsSecondLineLayout);
 		eventGenerationConfig.setRegion(regions.get(0));
-		eventGenerationConfig
-			.setDistrict(FacadeProvider.getDistrictFacade().getAllActiveByRegion(eventGenerationConfig.getRegion().getUuid()).get(0));
+		List<DistrictReferenceDto> allActiveDistrictsByRegion =
+			FacadeProvider.getDistrictFacade().getAllActiveByRegion(eventGenerationConfig.getRegion().getUuid());
+		if (!allActiveDistrictsByRegion.isEmpty()) {
+			eventGenerationConfig.setDistrict(allActiveDistrictsByRegion.get(0));
+		}
 		eventGeneratorConfigBinder.setBean(eventGenerationConfig);
 
 		return eventGeneratorLayout;
@@ -660,9 +673,14 @@ public class DevModeView extends AbstractConfigurationView {
 
 		sampleGeneratorLayout.addComponent(sampleOptionsThirdLineLayout);
 
-		sampleGenerationConfig.setRegion(regions.get(0));
-		sampleGenerationConfig
-			.setDistrict(FacadeProvider.getDistrictFacade().getAllActiveByRegion(sampleGenerationConfig.getRegion().getUuid()).get(0));
+		if (!regions.isEmpty()) {
+			sampleGenerationConfig.setRegion(regions.get(0));
+		}
+		List<DistrictReferenceDto> allActiveDistrictsByRegion =
+			FacadeProvider.getDistrictFacade().getAllActiveByRegion(sampleGenerationConfig.getRegion().getUuid());
+		if (!allActiveDistrictsByRegion.isEmpty()) {
+			sampleGenerationConfig.setDistrict(allActiveDistrictsByRegion.get(0));
+		}
 		sampleGeneratorConfigBinder.setBean(sampleGenerationConfig);
 
 		return sampleGeneratorLayout;

@@ -55,6 +55,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.DeletionDetails;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -289,30 +290,30 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	@RolesAllowed(UserRight._EVENT_DELETE)
-	public void delete(String eventUuid) throws ExternalSurveillanceToolException {
+	public void delete(String eventUuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
 		Event event = service.getByUuid(eventUuid);
-		deleteEvent(event);
+		deleteEvent(event, deletionDetails);
 	}
 
-	private void deleteEvent(Event event) throws ExternalSurveillanceToolException {
+	private void deleteEvent(Event event, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
 		if (event.getEventStatus() == EventStatus.CLUSTER
 			&& externalSurveillanceToolFacade.isFeatureEnabled()
 			&& externalShareInfoService.isEventShared(event.getId())) {
 			externalSurveillanceToolFacade.deleteEvents(Collections.singletonList(toDto(event)));
 		}
 
-		service.delete(event);
+		service.delete(event, deletionDetails);
 	}
 
 	@RolesAllowed(UserRight._EVENT_DELETE)
-	public List<String> deleteEvents(List<String> eventUuids) {
+	public List<String> deleteEvents(List<String> eventUuids, DeletionDetails deletionDetails) {
 		List<String> deletedEventUuids = new ArrayList<>();
 		List<Event> eventsToBeDeleted = service.getByUuids(eventUuids);
 		if (eventsToBeDeleted != null) {
 			eventsToBeDeleted.forEach(eventToBeDeleted -> {
 				if (!eventToBeDeleted.isDeleted()) {
 					try {
-						deleteEvent(eventToBeDeleted);
+						deleteEvent(eventToBeDeleted, deletionDetails);
 						deletedEventUuids.add(eventToBeDeleted.getUuid());
 					} catch (ExternalSurveillanceToolException e) {
 						logger.error("The event with uuid:" + eventToBeDeleted.getUuid() + "could not be deleted");
@@ -1098,6 +1099,10 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		target.setEventIdentificationSource(source.getEventIdentificationSource());
 
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -1201,6 +1206,10 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
 		}
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
 	}
