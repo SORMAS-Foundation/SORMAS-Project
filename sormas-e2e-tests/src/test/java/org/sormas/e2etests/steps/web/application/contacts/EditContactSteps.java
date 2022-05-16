@@ -26,6 +26,8 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTIN
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UPLOAD_DOCUMENT_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.MULTIPLE_OPTIONS_SEARCH_INPUT;
@@ -151,6 +153,32 @@ public class EditContactSteps implements En {
                   "relationshipWithCase",
                   "descriptionOfHowContactTookPlace"));
         });
+    When(
+        "I check the created data for duplicated contact is correctly displayed on Edit Contact page",
+        () -> {
+          collectedContact = collectContactData();
+          createdContact = CreateNewContactSteps.duplicatedContact;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              collectedContact,
+              createdContact,
+              List.of(
+                  "firstName",
+                  "lastName",
+                  "returningTraveler",
+                  "reportDate",
+                  "diseaseOfSourceCase",
+                  "caseIdInExternalSystem",
+                  "dateOfLastContact",
+                  "caseOrEventInformation",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "additionalInformationOnContactType",
+                  "typeOfContact",
+                  "contactCategory",
+                  "relationshipWithCase",
+                  "descriptionOfHowContactTookPlace"));
+        });
 
     When(
         "I check the created data for existing person is correctly displayed on Edit Contact page",
@@ -212,6 +240,12 @@ public class EditContactSteps implements En {
                   "descriptionOfHowContactTookPlace"));
         });
 
+    When(
+        "I set Vaccination status to {string} on Edit Contact page",
+        (String vaccination) -> {
+          webDriverHelpers.selectFromCombobox(
+              VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX, vaccination);
+        });
     When(
         "I check the created data is correctly displayed on Edit Contact page related with CHOSEN SOURCE CASE",
         () -> {
@@ -472,6 +506,16 @@ public class EditContactSteps implements En {
           webDriverHelpers.scrollToElement(CREATE_CASE_FROM_CONTACT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_FROM_CONTACT_BUTTON);
         });
+      When(
+              "I check if Vaccination Status is set to {string} on Edit Contact page",
+              (String expected) -> {
+                  webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditContactPage.UUID_INPUT);
+                  String vaccinationStatus =
+                          webDriverHelpers.getValueFromWebElement(VACCINATION_STATUS_INPUT);
+                  softly.assertEquals(
+                          expected, vaccinationStatus, "Vaccination status is different than expected");
+                  softly.assertAll();
+              });
     When(
         "I check the created data for complex contact is correctly displayed on Edit Contact page",
         () -> {

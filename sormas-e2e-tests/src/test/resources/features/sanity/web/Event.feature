@@ -686,6 +686,14 @@ Feature: Create events
     Then I click on the Event participant tab
     Then I check if participant added form API appears in the event participants list
 
+  @issue=SORDEV-8665 @env_main
+  Scenario: Test Move the responsible user filter in the event directory next to the jurisdiction filters
+    Given I log in with National User
+    Then I click on the Events button from navbar
+    And I click on Show more filters in Events
+    And I check that Responsible User Info icon is visible on Event Directory Page
+    And I check the displayed message is correct after hover to Responsible User Info icon
+
   @issue=SORDEV-8667 @env_main
   Scenario: Test Adjustments to the jurisdiction definition process of event participants
     Given API: I create a new event

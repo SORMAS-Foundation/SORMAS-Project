@@ -76,6 +76,7 @@ public class CreateNewCaseSteps implements En {
   private final Faker faker;
   private final SoftAssert softly;
   private static BaseSteps baseSteps;
+  protected static Case oneCase;
 
   @Inject
   public CreateNewCaseSteps(
@@ -100,6 +101,25 @@ public class CreateNewCaseSteps implements En {
             faker.number().numberBetween(1, 27));
     UUID randomUUID_first_user = UUID.randomUUID();
     UUID randomUUID_second_user = UUID.randomUUID();
+    oneCase = caseService.buildGeneratedCaseForOnePerson(firstName, lastName, dateOfBirth);
+    oneCase = oneCase.toBuilder().disease("COVID-19").build();
+
+    When(
+        "I fill new case data for duplicates merge with for one person data",
+        () -> {
+          selectCaseOrigin(oneCase.getCaseOrigin());
+          fillDisease(oneCase.getDisease());
+          selectResponsibleRegion(oneCase.getResponsibleRegion());
+          selectResponsibleDistrict(oneCase.getResponsibleDistrict());
+          selectResponsibleCommunity(oneCase.getResponsibleCommunity());
+          selectPlaceOfStay(oneCase.getPlaceOfStay());
+          fillFirstName(oneCase.getFirstName());
+          fillLastName(oneCase.getLastName());
+          fillDateOfBirth(oneCase.getDateOfBirth(), Locale.ENGLISH);
+          selectSex(oneCase.getSex());
+          selectPresentConditionOfPerson(oneCase.getPresentConditionOfPerson());
+          fillDateOfReport(oneCase.getDateOfReport(), Locale.ENGLISH);
+        });
 
     When(
         "I fill new case with for one person with specified date for month ago",
@@ -491,6 +511,13 @@ public class CreateNewCaseSteps implements En {
         "^I Pick an existing case in Pick or create person popup in Case entry$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_CASE_CONFIRMATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    When(
+        "^I Pick a new person in Pick or create person popup during case creation$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
 
