@@ -18,6 +18,41 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
+import com.github.javafaker.Faker;
+import cucumber.api.java8.En;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Event;
+import org.sormas.e2etests.entities.pojo.web.EventGroup;
+import org.sormas.e2etests.entities.pojo.web.EventHandout;
+import org.sormas.e2etests.entities.pojo.web.EventParticipant;
+import org.sormas.e2etests.entities.pojo.web.Person;
+import org.sormas.e2etests.entities.services.EventDocumentService;
+import org.sormas.e2etests.entities.services.EventGroupService;
+import org.sormas.e2etests.entities.services.EventParticipantService;
+import org.sormas.e2etests.entities.services.EventService;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.GenderValues;
+import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
+import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.events.EditEventPage;
+import org.sormas.e2etests.state.ApiState;
+import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
 import static org.sormas.e2etests.pages.application.actions.CreateNewActionPage.NEW_ACTION_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
@@ -109,8 +144,8 @@ import static org.sormas.e2etests.pages.application.events.EventParticipantsPage
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ERROR_MESSAGE_TEXT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANTS_TAB;
-import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANT_UUID;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANT_DISPLAY_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANT_UUID;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_TAB;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PARTICIPANT_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PARTICIPANT_FIRST_NAME_INPUT;
@@ -138,40 +173,6 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_EVENTS_FOR_PERSON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
-
-import com.github.javafaker.Faker;
-import cucumber.api.java8.En;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
-import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.entities.pojo.web.Event;
-import org.sormas.e2etests.entities.pojo.web.EventGroup;
-import org.sormas.e2etests.entities.pojo.web.EventHandout;
-import org.sormas.e2etests.entities.pojo.web.EventParticipant;
-import org.sormas.e2etests.entities.pojo.web.Person;
-import org.sormas.e2etests.entities.services.EventDocumentService;
-import org.sormas.e2etests.entities.services.EventGroupService;
-import org.sormas.e2etests.entities.services.EventParticipantService;
-import org.sormas.e2etests.entities.services.EventService;
-import org.sormas.e2etests.enums.DistrictsValues;
-import org.sormas.e2etests.enums.GenderValues;
-import org.sormas.e2etests.enums.RegionsValues;
-import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
-import org.sormas.e2etests.helpers.AssertHelpers;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.events.EditEventPage;
-import org.sormas.e2etests.state.ApiState;
-import org.testng.Assert;
-import org.testng.asserts.SoftAssert;
 
 public class EditEventSteps implements En {
 
@@ -1019,7 +1020,7 @@ public class EditEventSteps implements En {
         "I navigate to a specific Event Participant of an Event based on UUID",
         () -> {
           String LAST_CREATED_EVENT_EVENT_PARTICIPANT_URL =
-              environmentManager.getEnvironmentUrlForMarket(locale)
+                  runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-ui/#!events/eventparticipants/data/"
                   + eventParticpantId;
           webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_EVENT_PARTICIPANT_URL);
