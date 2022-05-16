@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.reports;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -60,7 +61,8 @@ public class ReportsView extends AbstractView {
 	public ReportsView() {
 		super(VIEW_NAME);
 
-		if (UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles()) == JurisdictionLevel.NATION) {
+		JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(Objects.requireNonNull(UserProvider.getCurrent()).getUserRoles());
+		if (isNationOrNoneJurisdiction(jurisdictionLevel)) {
 			grid = new WeeklyReportRegionsGrid();
 		} else {
 			grid = new WeeklyReportOfficersGrid();
@@ -78,6 +80,10 @@ public class ReportsView extends AbstractView {
 
 		addComponent(gridLayout);
 	}
+
+    public boolean isNationOrNoneJurisdiction(JurisdictionLevel jurisdictionLevel) {
+        return jurisdictionLevel == JurisdictionLevel.NONE || jurisdictionLevel == JurisdictionLevel.NATION;
+    }
 
 	public HorizontalLayout createFilterBar() {
 		HorizontalLayout filterLayout = new HorizontalLayout();

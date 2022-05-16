@@ -155,8 +155,9 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
 	@Override
 	public List<WeeklyReportRegionSummaryDto> getSummariesPerRegion(EpiWeek epiWeek) {
+		JurisdictionLevel jurisdictionLevel = userService.getCurrentUser().getJurisdictionLevel();
 
-		if (userService.getCurrentUser().getJurisdictionLevel() != JurisdictionLevel.NATION) {
+		if (!isNationOrNoneJurisdiction(jurisdictionLevel)) {
 			return new ArrayList<>();
 		}
 
@@ -204,6 +205,10 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
 		return summaryDtos;
 	}
+
+	public boolean isNationOrNoneJurisdiction(JurisdictionLevel jurisdictionLevel) {
+       return jurisdictionLevel == JurisdictionLevel.NONE || jurisdictionLevel == JurisdictionLevel.NATION;
+    }
 
 	@Override
 	public List<WeeklyReportOfficerSummaryDto> getSummariesPerOfficer(RegionReferenceDto regionRef, EpiWeek epiWeek) {
