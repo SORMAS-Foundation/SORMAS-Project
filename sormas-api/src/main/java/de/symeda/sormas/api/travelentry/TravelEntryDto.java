@@ -1,5 +1,7 @@
 package de.symeda.sormas.api.travelentry;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +28,7 @@ import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
+@DependingOnFeatureType(featureType = FeatureType.TRAVEL_ENTRIES)
 public class TravelEntryDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = 4503438472222204446L;

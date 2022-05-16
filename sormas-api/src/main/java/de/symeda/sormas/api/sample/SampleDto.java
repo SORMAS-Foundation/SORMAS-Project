@@ -14,6 +14,8 @@
  */
 package de.symeda.sormas.api.sample;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 import java.util.Set;
 
@@ -35,6 +37,7 @@ import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 
+@DependingOnFeatureType(featureType = FeatureType.SAMPLES_LAB)
 public class SampleDto extends SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = -6975445672442728938L;

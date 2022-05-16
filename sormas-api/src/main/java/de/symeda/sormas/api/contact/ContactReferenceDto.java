@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.api.contact;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +32,7 @@ import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 
+@DependingOnFeatureType(featureType = FeatureType.CONTACT_TRACING)
 public class ContactReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -7764607075875188799L;

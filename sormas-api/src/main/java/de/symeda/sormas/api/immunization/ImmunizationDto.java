@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.api.immunization;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -47,6 +49,7 @@ import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 
+@DependingOnFeatureType(featureType = FeatureType.IMMUNIZATION_MANAGEMENT)
 public class ImmunizationDto extends SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = -6538566879882613529L;

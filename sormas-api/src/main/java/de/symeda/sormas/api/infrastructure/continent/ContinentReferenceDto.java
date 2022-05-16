@@ -1,9 +1,15 @@
 package de.symeda.sormas.api.infrastructure.continent;
 
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 
+@DependingOnFeatureType(featureType = {
+	FeatureType.CASE_SURVEILANCE,
+	FeatureType.EVENT_SURVEILLANCE,
+	FeatureType.AGGREGATE_REPORTING })
 public class ContinentReferenceDto extends InfrastructureDataReferenceDto implements StatisticsGroupingKey {
 
 	public ContinentReferenceDto() {

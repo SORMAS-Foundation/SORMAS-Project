@@ -14,6 +14,8 @@
  */
 package de.symeda.sormas.api.event;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
@@ -35,6 +37,7 @@ import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 
+@DependingOnFeatureType(featureType = FeatureType.EVENT_SURVEILLANCE)
 public class EventParticipantDto extends SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = -8725734604520880084L;

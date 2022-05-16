@@ -1,29 +1,36 @@
 package de.symeda.sormas.backend;
 
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
+
 import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.security.PermitAll;
-import de.symeda.sormas.backend.action.ActionFacadeEjb;
-import de.symeda.sormas.backend.event.EventFacadeEjb;
-import de.symeda.sormas.backend.event.EventGroupFacadeEjb;
-import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
-import de.symeda.sormas.backend.event.eventimport.EventImportFacadeEjb;
 import javax.annotation.security.RolesAllowed;
 import javax.validation.constraints.NotNull;
 
 import org.junit.runner.RunWith;
 
+import com.tngtech.archunit.base.DescribedPredicate;
+import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
+import com.tngtech.archunit.core.domain.JavaField;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.junit.ArchUnitRunner;
+import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
+import com.tngtech.archunit.lang.ConditionEvents;
+import com.tngtech.archunit.lang.SimpleConditionEvent;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import com.tngtech.archunit.lang.syntax.elements.GivenMethodsConjunction;
 import com.tngtech.archunit.lang.syntax.elements.MethodsShouldConjunction;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
+import de.symeda.sormas.api.utils.FeatureIndependent;
+import de.symeda.sormas.backend.action.ActionFacadeEjb;
 import de.symeda.sormas.backend.bagexport.BAGExportFacadeEjb;
 import de.symeda.sormas.backend.campaign.CampaignFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
@@ -32,8 +39,13 @@ import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacade
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.dashboard.DashboardFacadeEjb;
+import de.symeda.sormas.backend.event.EventFacadeEjb;
+import de.symeda.sormas.backend.event.EventGroupFacadeEjb;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
+import de.symeda.sormas.backend.event.eventimport.EventImportFacadeEjb;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
+import de.symeda.sormas.backend.info.InfoFacadeEjb;
 import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb;
 import de.symeda.sormas.backend.labmessage.TestReportFacadeEjb;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb;
@@ -56,6 +68,54 @@ public class ArchitectureTest {
 	@ArchTest
 	public static final ArchRule dontUseFacadeProviderRule =
 		ArchRuleDefinition.theClass(FacadeProvider.class).should().onlyBeAccessed().byClassesThat().belongToAnyOf(FacadeProvider.class);
+
+	private static final DescribedPredicate<JavaClass> classesInDataDictionary =
+		new DescribedPredicate<JavaClass>("are used as data dictionary entity") {
+
+			@Override
+			public boolean apply(JavaClass javaClass) {
+				return InfoFacadeEjb.DATA_DICTIONARY_ENTITIES.stream().anyMatch(e -> javaClass.isEquivalentTo(e.getEntityClass()));
+			}
+		};
+
+	@ArchTest
+	public static final ArchRule dataDictionaryClassesHaveAnnotation = classes().that(classesInDataDictionary)
+		.should()
+		.beAnnotatedWith(DependingOnFeatureType.class)
+		.orShould()
+		.beAnnotatedWith(FeatureIndependent.class);
+
+	@ArchTest
+	public void testDataDictionaryReferencedClassesAreAnnotated(JavaClasses classes) {
+		fields().that()
+			.areDeclaredInClassesThat(classesInDataDictionary)
+			.and()
+			.areNotStatic()
+			.and()
+			.haveRawType(new DescribedPredicate<JavaClass>("*Dto") {
+
+				@Override
+				public boolean apply(JavaClass javaClass) {
+					return javaClass.getSimpleName().toLowerCase().endsWith("dto");
+				}
+			})
+			.should(new ArchCondition<JavaField>("have type annotated") {
+
+				@Override
+				public void check(JavaField javaField, ConditionEvents conditionEvents) {
+					if (!javaField.getRawType().isAnnotatedWith(DependingOnFeatureType.class)
+						&& !javaField.getRawType().isAnnotatedWith(FeatureIndependent.class)) {
+						conditionEvents.add(
+							SimpleConditionEvent.violated(
+								javaField.getRawType(),
+								"Class <" + javaField.getRawType().getFullName()
+									+ "> is not annotated with @DependingOnFeatureType or @FeatureIndependent in "
+									+ javaField.getRawType().getSourceCodeLocation()));
+					}
+				}
+			})
+			.check(classes);
+	}
 
 	@ArchTest
 	public void testCaseFacadeEjbAuthorization(JavaClasses classes) {
