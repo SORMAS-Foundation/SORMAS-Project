@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.therapy;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 
 import javax.validation.constraints.Size;
@@ -27,6 +29,7 @@ import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
+@DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
 public class TreatmentDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = 816932182306785932L;

@@ -19,9 +19,21 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
+import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
+import de.symeda.sormas.api.RequestContextHolder;
+import de.symeda.sormas.api.RequestContextTO;
+import de.symeda.sormas.api.caze.CaseExportDto;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.backend.feature.FeatureConfiguration;
+import org.apache.commons.lang3.time.DateUtils;
+import org.hibernate.internal.SessionImpl;
+import org.hibernate.query.spi.QueryImplementor;
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,9 +45,12 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -47,6 +62,8 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 	private TestDataCreator.RDCF rdcf2;
 
 	private UserDto districtUser1;
+	private UserDto districtUser11;
+	private UserDto districtUser12;
 	private UserDto districtUser2;
 	private UserDto nationalUser;
 	private UserDto regionUser;
@@ -60,12 +77,14 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 		super.init();
 
 		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
-		districtUser1 = creator.createUser(
-			rdcf1.region.getUuid(),
-			rdcf1.district.getUuid(),
-			rdcf1.facility.getUuid(),
-			"Surv",
-			"Off1",
+		districtUser1 = creator
+			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off1", 
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		districtUser11 = creator
+			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off11", 
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		districtUser12 = creator
+			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off12", 
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
@@ -117,6 +136,69 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testGetCasesWithLimitedSyncronization() {
+
+		FeatureConfigurationIndexDto featureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.LIMITED_SYNCHRONIZATION);
+
+		SessionImpl em = (SessionImpl) getEntityManager();
+		QueryImplementor query = em.createQuery("select f from featureconfiguration f");
+		FeatureConfiguration singleResult = (FeatureConfiguration) query.getSingleResult();
+		HashMap<FeatureTypeProperty, Object> properties = new HashMap<>();
+		properties.put(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, true);
+		singleResult.setProperties(properties);
+		em.save(singleResult);
+
+		RequestContextHolder.setRequestContext(new RequestContextTO(true)); // simulate mobile call
+
+		loginWith(districtUser1);
+
+		CaseDataDto case1 = createCase(rdcf1, districtUser1);
+		case1.setCreationVersion("1.70");
+		case1.setCaseClassification(CaseClassification.CONFIRMED);
+		getCaseFacade().save(case1);
+
+		CaseDataDto case2 = createCase(rdcf1, districtUser1);
+		case2.setCreationVersion("1.70");
+		case2.setCaseClassification(CaseClassification.NO_CASE);
+		getCaseFacade().save(case2);
+		CaseDataDto case3 = createCase(rdcf1, districtUser1);
+
+		loginWith(districtUser11);
+		CaseDataDto case11 = createCase(rdcf1, districtUser11);
+		case11.setCaseClassification(CaseClassification.NO_CASE);
+		getCaseFacade().save(case11);
+		CaseDataDto case12 = createCase(rdcf1, districtUser11);
+		case12.setCreationVersion("1.70");
+		case12.setCaseClassification(CaseClassification.NO_CASE);
+		getCaseFacade().save(case12);
+		CaseDataDto case13 = createCase(rdcf1, districtUser11);
+
+		loginWith(districtUser1);
+
+		List<CaseDataDto> allActiveCasesAfter = getCaseFacade().getAllActiveCasesAfter(new DateTime(new Date()).minusDays(1).toDate());
+		assertThat(allActiveCasesAfter, hasSize(4));
+		Assert.assertFalse(allActiveCasesAfter.contains(case11));
+		Assert.assertFalse(allActiveCasesAfter.contains(case12));
+
+		loginWith(districtUser11);
+
+		List<CaseDataDto> allActiveCasesAfter2 = getCaseFacade().getAllActiveCasesAfter(new DateTime(new Date()).minusDays(1).toDate());
+		assertThat(allActiveCasesAfter2, hasSize(4));
+		Assert.assertFalse(allActiveCasesAfter2.contains(case2));
+		Assert.assertFalse(allActiveCasesAfter2.contains(case11));
+
+		loginWith(districtUser12);
+
+		List<CaseDataDto> allActiveCasesAfter3 = getCaseFacade().getAllActiveCasesAfter(new DateTime(new Date()).minusDays(1).toDate());
+		assertThat(allActiveCasesAfter3, hasSize(3));
+		Assert.assertFalse(allActiveCasesAfter3.contains(case2));
+		Assert.assertFalse(allActiveCasesAfter3.contains(case11));
+		Assert.assertFalse(allActiveCasesAfter3.contains(case12));
+	}
+
+	@Test
 	public void testGetOwnedCases() {
 		loginWith(districtUser2);
 
@@ -162,9 +244,11 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 
 		List<UserReferenceDto> usersHavingCaseInJurisdiction = getUserFacade().getUsersHavingCaseInJurisdiction(caze.toReference());
 		Assert.assertNotNull(usersHavingCaseInJurisdiction);
-		Assert.assertEquals(3, usersHavingCaseInJurisdiction.size()); // contains also admin as test admin user is also national user
+		Assert.assertEquals(5, usersHavingCaseInJurisdiction.size()); // contains also admin as test admin user is also national user
 		Assert.assertTrue(usersHavingCaseInJurisdiction.contains(nationalUser));
 		Assert.assertTrue(usersHavingCaseInJurisdiction.contains(districtUser1));
+		Assert.assertTrue(usersHavingCaseInJurisdiction.contains(districtUser11));
+		Assert.assertTrue(usersHavingCaseInJurisdiction.contains(districtUser12));
 		Assert.assertFalse(usersHavingCaseInJurisdiction.contains(inactiveUser));
 	}
 

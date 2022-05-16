@@ -18,7 +18,10 @@
 package de.symeda.sormas.api.clinicalcourse;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 
+@DependingOnFeatureType(featureType = FeatureType.CLINICAL_MANAGEMENT)
 public class ClinicalCourseReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -2664896907352864261L;

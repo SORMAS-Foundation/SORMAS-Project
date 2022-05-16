@@ -85,7 +85,7 @@ import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfGathering;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
@@ -103,7 +103,7 @@ public class EpidemiologicalDataCaseSteps implements En {
       WebDriverHelpers webDriverHelpers,
       ApiState apiState,
       EpidemiologicalDataService epidemiologicalDataService,
-      EnvironmentManager environmentManager,
+      RunningConfiguration runningConfiguration,
       SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
@@ -160,7 +160,7 @@ public class EpidemiologicalDataCaseSteps implements En {
         () -> {
           String uuid = apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!cases/epidata/"
                   + uuid);
         });

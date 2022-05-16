@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
+import de.symeda.sormas.api.utils.FeatureIndependent;
 import java.util.Set;
 
 import javax.validation.Valid;
@@ -35,6 +36,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
+@FeatureIndependent
 public class UserDto extends EntityDto {
 
 	private static final long serialVersionUID = -8558187171374254398L;

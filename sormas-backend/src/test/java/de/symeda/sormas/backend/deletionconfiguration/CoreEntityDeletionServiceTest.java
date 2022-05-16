@@ -278,7 +278,13 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 			creator.getUserRoleReference(DefaultUserRole.ADMIN),
 			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
-		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf, c -> c.setDisease(Disease.EVD));
+		creator.createVisit(Disease.EVD, person.toReference());
+		// Change the case disease in order to remove the association with the visit to ensure that the visit is properly deleted
+		// alongside the person
+		caze = getCaseFacade().getByUuid(caze.getUuid());
+		caze.setDisease(Disease.CHOLERA);
+		getCaseFacade().save(caze);
 		ImmunizationDto immunization = creator.createImmunization(Disease.EVD, person.toReference(), user.toReference(), rdcf);
 
 		final Date tenYearsPlusAgoCases = DateUtils.addDays(new Date(), (-1) * caseCoreEntityTypeConfig.deletionPeriod - 1);
@@ -298,13 +304,13 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 
 		assertEquals(1, getPersonService().count());
 
-		final Date tenYearsPlusAgoContacts = DateUtils.addDays(new Date(), (-1) * immunizationCoreEntityTypeConfig.deletionPeriod - 1);
+		final Date tenYearsPlusAgoImmunizations = DateUtils.addDays(new Date(), (-1) * immunizationCoreEntityTypeConfig.deletionPeriod - 1);
 		em = (SessionImpl) getEntityManager();
 		query = em.createQuery("select i from immunization i where i.uuid=:uuid");
 		query.setParameter("uuid", immunization.getUuid());
 		Immunization singleResultImmunization = (Immunization) query.getSingleResult();
-		singleResultImmunization.setCreationDate(new Timestamp(tenYearsPlusAgoContacts.getTime()));
-		singleResultImmunization.setChangeDate(new Timestamp(tenYearsPlusAgoContacts.getTime()));
+		singleResultImmunization.setCreationDate(new Timestamp(tenYearsPlusAgoImmunizations.getTime()));
+		singleResultImmunization.setChangeDate(new Timestamp(tenYearsPlusAgoImmunizations.getTime()));
 		em.save(singleResultImmunization);
 
 		useSystemUser();

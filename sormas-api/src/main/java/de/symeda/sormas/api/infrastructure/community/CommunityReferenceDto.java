@@ -19,7 +19,9 @@ package de.symeda.sormas.api.infrastructure.community;
 
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
+import de.symeda.sormas.api.utils.FeatureIndependent;
 
+@FeatureIndependent
 public class CommunityReferenceDto extends InfrastructureDataReferenceDto implements StatisticsGroupingKey {
 
 	private static final long serialVersionUID = -8833267932522978860L;

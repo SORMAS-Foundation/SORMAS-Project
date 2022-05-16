@@ -72,6 +72,7 @@ public enum FeatureType {
 	TRAVEL_ENTRIES(true, false, null, null, null),
 
 	DASHBOARD(true, true, null, null, null),
+	LIMITED_SYNCHRONIZATION(true, false, null, null, ImmutableMap.of(FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES, Boolean.FALSE)),
 
 	// FEATURE EXTENSIONS
 	ASSIGN_TASKS_TO_HIGHER_LEVEL(true,
@@ -295,6 +296,11 @@ public enum FeatureType {
 			TASK_MANAGEMENT },
 		null,
 		null);
+
+	public static final FeatureType[] SURVEILLANCE_FEATURE_TYPES = {
+		FeatureType.CASE_SURVEILANCE,
+		FeatureType.EVENT_SURVEILLANCE,
+		FeatureType.AGGREGATE_REPORTING };
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system

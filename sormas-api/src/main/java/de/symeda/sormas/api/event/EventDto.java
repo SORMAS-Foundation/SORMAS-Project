@@ -15,6 +15,12 @@
 
 package de.symeda.sormas.api.event;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 import java.util.Map;
 
@@ -41,6 +47,7 @@ import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
+@DependingOnFeatureType(featureType = FeatureType.EVENT_SURVEILLANCE)
 public class EventDto extends SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = 2430932452606853497L;
@@ -226,6 +233,17 @@ public class EventDto extends SormasToSormasShareableDto {
 		event.setEventInvestigationStatus(EventInvestigationStatus.PENDING);
 		event.setEventLocation(LocationDto.build());
 		event.setReportDateTime(new Date());
+
+		return event;
+	}
+
+	public static EventDto build(CountryReferenceDto country, UserDto user, Disease disease) {
+		EventDto event = build();
+
+		event.getEventLocation().setCountry(country);
+		event.getEventLocation().setRegion(user.getRegion());
+		event.setReportingUser(user.toReference());
+		event.setDisease(disease);
 
 		return event;
 	}

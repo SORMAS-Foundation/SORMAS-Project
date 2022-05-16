@@ -18,8 +18,14 @@
 package de.symeda.sormas.api.infrastructure.facility;
 
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 
+@DependingOnFeatureType(featureType = {
+	FeatureType.CASE_SURVEILANCE,
+	FeatureType.EVENT_SURVEILLANCE,
+	FeatureType.AGGREGATE_REPORTING })
 public class FacilityReferenceDto extends InfrastructureDataReferenceDto implements StatisticsGroupingKey {
 
 	private static final long serialVersionUID = -7987228795475507196L;

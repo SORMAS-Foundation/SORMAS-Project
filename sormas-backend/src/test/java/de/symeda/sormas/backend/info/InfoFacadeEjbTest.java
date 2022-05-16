@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.info;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import de.symeda.sormas.backend.feature.FeatureConfigurationService;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -76,12 +77,15 @@ public class InfoFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testDataDictionaryAllowed() {
+	public void testDataProtectionDictionaryAllowed() {
 		assertThat(getInfoFacade().isGenerateDataProtectionDictionaryAllowed(), is(true));
 	}
 
 	@Test
 	public void testFieldsAddedBasedOnServerCountryForDataProtectionDictionary() throws IOException, InvalidFormatException {
+		FeatureConfigurationService featureConfigurationService = getBean(FeatureConfigurationService.class);
+		featureConfigurationService.createMissingFeatureConfigurations();
+
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "en");
 		XSSFWorkbook workbook = new XSSFWorkbook(new File(getInfoFacade().generateDataProtectionDictionary()));
 

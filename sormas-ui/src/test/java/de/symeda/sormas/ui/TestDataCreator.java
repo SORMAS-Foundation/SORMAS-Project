@@ -560,6 +560,17 @@ public class TestDataCreator {
 		UserReferenceDto reportingUser,
 		SampleMaterial sampleMaterial,
 		FacilityReferenceDto lab) {
+		return createSample(associatedEventParticipant, sampleDateTime, reportDateTime, reportingUser, sampleMaterial, lab, null);
+	}
+
+	public SampleDto createSample(
+		EventParticipantReferenceDto associatedEventParticipant,
+		Date sampleDateTime,
+		Date reportDateTime,
+		UserReferenceDto reportingUser,
+		SampleMaterial sampleMaterial,
+		FacilityReferenceDto lab,
+		Consumer<SampleDto> customConfig) {
 
 		SampleDto sample = SampleDto.build(reportingUser, associatedEventParticipant);
 		sample.setSampleDateTime(sampleDateTime);
@@ -567,6 +578,10 @@ public class TestDataCreator {
 		sample.setSampleMaterial(sampleMaterial);
 		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
 		sample.setLab(lab);
+
+		if(customConfig != null){
+			customConfig.accept(sample);
+		}
 
 		sample = FacadeProvider.getSampleFacade().saveSample(sample);
 		return sample;

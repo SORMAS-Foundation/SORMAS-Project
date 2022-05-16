@@ -25,15 +25,20 @@ import javax.validation.constraints.Min;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.VisitOrigin;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
+@DependingOnFeatureType(featureType = {
+	FeatureType.CONTACT_TRACING,
+	FeatureType.CASE_FOLLOWUP })
 public class VisitDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -441664767075414789L;

@@ -21,5 +21,6 @@ public enum DatabaseTableType {
 
 	SORMAS,
 	INFRASTRUCTURE,
-	CONFIGURATION;
+	CONFIGURATION,
+	EXTERNAL
 }

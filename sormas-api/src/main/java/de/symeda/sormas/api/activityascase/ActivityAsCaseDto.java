@@ -31,16 +31,21 @@ import de.symeda.sormas.api.exposure.ExposureRole;
 import de.symeda.sormas.api.exposure.GatheringType;
 import de.symeda.sormas.api.exposure.HabitationType;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
+@DependingOnFeatureType(featureType = {
+	FeatureType.CASE_SURVEILANCE,
+	FeatureType.CONTACT_TRACING })
 public class ActivityAsCaseDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = 6551672739041643942L;
