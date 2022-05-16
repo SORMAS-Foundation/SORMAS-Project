@@ -514,10 +514,7 @@ public class StartupShutdownService {
 		}
 
 		createOrUpdateDefaultUser(
-			new HashSet<>(
-				Arrays.asList(
-					userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.REST_USER)),
-					userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.REST_EXTERNAL_VISITS_USER)))),
+			new HashSet<>(Arrays.asList(userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.REST_EXTERNAL_VISITS_USER)))),
 			userConfig.getUsername(),
 			userConfig.getPassword(),
 			"Symptom",
@@ -533,10 +530,7 @@ public class StartupShutdownService {
 		}
 
 		createOrUpdateDefaultUser(
-			new HashSet<>(
-				Arrays.asList(
-					userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.REST_USER)),
-					userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.REST_EXTERNAL_VISITS_USER)))),
+			new HashSet<>(Arrays.asList(userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.REST_EXTERNAL_VISITS_USER)))),
 			userConfig.getUsername(),
 			userConfig.getPassword(),
 			"Patient",
@@ -770,7 +764,7 @@ public class StartupShutdownService {
 
 	/**
 	 * UserRoles are created via SQL to support migration for existing users.
- 	 */
+	 */
 	private void fillDefaultUserRoles() {
 		Arrays.stream(DefaultUserRole.values()).forEach(role -> {
 			UserRole userRole = userRoleService.getByCaption(role.name());

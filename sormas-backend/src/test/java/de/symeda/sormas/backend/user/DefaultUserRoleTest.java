@@ -31,13 +31,17 @@ public class DefaultUserRoleTest {
 	public void testUserRolesJurisdiction() {
 
 		assertJurisdictionForRoles(JurisdictionLevel.NONE, DefaultUserRole.ADMIN);
-		assertJurisdictionForRoles(JurisdictionLevel.NATION, DefaultUserRole.ADMIN, DefaultUserRole.REST_USER, DefaultUserRole.NATIONAL_CLINICIAN);
+		assertJurisdictionForRoles(
+			JurisdictionLevel.NATION,
+			DefaultUserRole.ADMIN,
+			DefaultUserRole.REST_EXTERNAL_VISITS_USER,
+			DefaultUserRole.NATIONAL_CLINICIAN);
 		assertJurisdictionForRoles(JurisdictionLevel.DISTRICT, DefaultUserRole.ADMIN, DefaultUserRole.DISTRICT_OBSERVER);
 		assertJurisdictionForRoles(
 			JurisdictionLevel.NATION,
 			DefaultUserRole.NATIONAL_USER,
 			DefaultUserRole.LAB_USER,
-			DefaultUserRole.REST_USER,
+			DefaultUserRole.REST_EXTERNAL_VISITS_USER,
 			DefaultUserRole.ADMIN);
 		assertJurisdictionForRoles(JurisdictionLevel.REGION, DefaultUserRole.CASE_SUPERVISOR);
 		assertJurisdictionForRoles(JurisdictionLevel.LABORATORY, DefaultUserRole.LAB_USER);

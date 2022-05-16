@@ -11413,7 +11413,6 @@ INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (next
 INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'POE_NATIONAL_USER');
 INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'IMPORT_USER');
 INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'REST_EXTERNAL_VISITS_USER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'REST_USER');
 INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'SORMAS_TO_SORMAS_CLIENT');
 INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'BAG_USER');
 
@@ -11421,6 +11420,7 @@ ALTER TABLE users_userroles ADD COLUMN userrole_id bigint;
 ALTER TABLE ONLY users_userroles RENAME CONSTRAINT fk_userroles_user_id TO fk_users_userroles_user_id;
 ALTER TABLE ONLY users_userroles ADD CONSTRAINT fk_users_userroles_userrole_id FOREIGN KEY (userrole_id) REFERENCES userroles(id);
 
+DELETE FROM users_userroles WHERE userrole = 'REST_USER';
 UPDATE users_userroles SET userrole_id = (SELECT userroles.id FROM userroles WHERE userroles.caption = users_userroles.userrole);
 
 ALTER TABLE users_userroles DROP COLUMN userrole;

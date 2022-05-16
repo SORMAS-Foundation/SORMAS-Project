@@ -7,7 +7,7 @@ import static de.symeda.sormas.api.user.DefaultUserRole.CONTACT_SUPERVISOR;
 import static de.symeda.sormas.api.user.DefaultUserRole.DISTRICT_OBSERVER;
 import static de.symeda.sormas.api.user.DefaultUserRole.NATIONAL_USER;
 import static de.symeda.sormas.api.user.DefaultUserRole.POE_INFORMANT;
-import static de.symeda.sormas.api.user.DefaultUserRole.REST_USER;
+import static de.symeda.sormas.api.user.DefaultUserRole.REST_EXTERNAL_VISITS_USER;
 import static de.symeda.sormas.api.user.DefaultUserRole.SURVEILLANCE_OFFICER;
 import static de.symeda.sormas.api.user.DefaultUserRole.SURVEILLANCE_SUPERVISOR;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -90,7 +90,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 
 		UserDto natUser = creator.createUser(rdcf, creator.getUserRoleReference(NATIONAL_USER)); // Has LAB_MASSAGES and TRAVEL_ENTRY_MANAGEMENT_ACCESS rights
 		UserDto poeUser = creator.createUser(rdcf, "Some", "User", creator.getUserRoleReference(POE_INFORMANT)); // Does not have LAB_MASSAGES right, but has TRAVEL_ENTRY_MANAGEMENT_ACCESS.
-		creator.createUser(rdcf, creator.getUserRoleReference(REST_USER)); // Has neither LAB_MASSAGES nor TRAVEL_ENTRY_MANAGEMENT_ACCESS right
+		creator.createUser(rdcf, creator.getUserRoleReference(REST_EXTERNAL_VISITS_USER)); // Has neither LAB_MASSAGES nor TRAVEL_ENTRY_MANAGEMENT_ACCESS right
 		result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.LAB_MESSAGES);
 
 		assertThat(result, hasSize(1));
@@ -223,13 +223,12 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 			Mockito.when(userRoleFacadeEjb.hasUserRight(any(), any()))
 				.then(
 					invocation -> getUserRoleFacade().hasUserRight(
-							user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toDto(userRole)).collect(Collectors.toSet()),
+						user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toDto(userRole)).collect(Collectors.toSet()),
 						UserRight.USER_EDIT));
-			Mockito.when(userService.hasRight(any()))
-					.then(invocation -> {
-						UserRight userRight = invocation.getArgument(0);
-						return user.getUserRoles().stream().anyMatch(userRole -> userRole.getUserRights().contains(userRight));
-					});
+			Mockito.when(userService.hasRight(any())).then(invocation -> {
+				UserRight userRight = invocation.getArgument(0);
+				return user.getUserRoles().stream().anyMatch(userRole -> userRole.getUserRights().contains(userRight));
+			});
 			Mockito.when(userService.getCurrentUser()).thenReturn(user);
 			Mockito.when(userService.getAllDefaultUsers()).thenReturn(Collections.singletonList(user));
 			if (defaultUsers.contains(user)) {
@@ -265,7 +264,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 			Mockito.when(userRoleFacadeEjb.hasUserRight(any(), any()))
 				.then(
 					invocation -> getUserRoleFacade().hasUserRight(
-							user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toDto(userRole)).collect(Collectors.toSet()),
+						user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toDto(userRole)).collect(Collectors.toSet()),
 						UserRight.USER_EDIT));
 			user.setUserName(user.getUserName().toUpperCase());
 			Mockito.when(userService.getCurrentUser()).thenReturn(user);
@@ -409,7 +408,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 			creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", creator.getUserRoleReference(SURVEILLANCE_OFFICER)); // has TRAVEL_ENTRY_MANAGEMENT_ACCESS
 		UserDto limitedSurveillanceOfficer =
 			creator.createUser(rdcf, "Limited Dengue", "SURVEILLANCE_OFFICER", Disease.DENGUE, creator.getUserRoleReference(SURVEILLANCE_OFFICER)); // has TRAVEL_ENTRY_MANAGEMENT_ACCESS
-		UserDto generalRestUser = creator.createUser(rdcf, "REST", "USER", creator.getUserRoleReference(REST_USER)); // does not have TRAVEL_ENTRY_MANAGEMENT_ACCESS
+		UserDto generalRestUser = creator.createUser(rdcf, "REST", "USER", creator.getUserRoleReference(REST_EXTERNAL_VISITS_USER)); // does not have TRAVEL_ENTRY_MANAGEMENT_ACCESS
 
 		// given district and one right
 		List<UserReferenceDto> userReferenceDtos =
