@@ -235,8 +235,8 @@ public class UserController {
 		}
 	}
 
-	public void makeUpdatePassword(String userUuid, String userEmail, String password) {
-		String newPassword = FacadeProvider.getUserFacade().updatePassword(userUuid, password);
+	public void showUpdatePassword(String userUuid, String userEmail, String password, String currentPassword) {
+		String newPassword = FacadeProvider.getUserFacade().updateUserPassword(userUuid, password, currentPassword);
 
 		if (StringUtils.isBlank(userEmail) || AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isDefaultProvider()) {
 			showPasswordResetInternalSuccessPopup(newPassword);
@@ -414,15 +414,16 @@ public class UserController {
 							I18nProperties.getString(Strings.headingUpdatePasswordFailed),
 							I18nProperties.getString(Strings.messagePasswordFailed),
 							Notification.Type.WARNING_MESSAGE));
-				} else if (!FacadeProvider.getUserFacade().validatePasswordPattern(changedUser.getUpdatePassword())) {
+				} else if (passwordStrengthDesc.getValue().contains("Weak")) {
 					form.showNotification(
 						new Notification(
 							I18nProperties.getString(Strings.headingUpdatePasswordFailed),
 							I18nProperties.getString(Strings.messageNewPasswordFailed),
 							Notification.Type.WARNING_MESSAGE));
 				} else {
-					FacadeProvider.getUserFacade().updatePassword(user.getUuid(), changedUser.getUpdatePassword());
-					makeUpdatePassword(user.getUuid(), user.getUserEmail(), changedUser.getUpdatePassword());
+					FacadeProvider.getUserFacade()
+						.updateUserPassword(user.getUuid(), changedUser.getUpdatePassword(), changedUser.getCurrentPassword());
+					showUpdatePassword(user.getUuid(), user.getUserEmail(), changedUser.getUpdatePassword(), changedUser.getCurrentPassword());
 				}
 			}
 		});
