@@ -964,10 +964,11 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					samplesRoot.get(Sample.LAB).get(Facility.NAME),
 					samplesRoot.get(Sample.LAB_DETAILS),
 					samplesRoot.get(Sample.PATHOGEN_TEST_RESULT),
+					samplesRoot.get(Sample.DELETED),
 					caseIdsExpr);
 				samplesCq.where(caseIdsExpr.in(resultCaseIds));
 				samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-				samples = samplesList.stream().filter(s -> !s.isDeleted()).collect(Collectors.groupingBy(s -> s.getCaseId()));
+                samples = samplesList.stream().filter(s -> !s.isDeleted()).collect(Collectors.groupingBy(s -> s.getCaseId()));
 			}
 
 			List<VisitSummaryExportDetails> visitSummaries = null;

@@ -35,6 +35,7 @@ public class EmbeddedSampleExportDto implements Serializable {
 	@SensitiveData
 	private String lab;
 	private PathogenTestResultType result;
+	private boolean deleted;
 	private Long caseId;
 
 	public EmbeddedSampleExportDto() {
@@ -47,11 +48,20 @@ public class EmbeddedSampleExportDto implements Serializable {
 		this.result = result;
 	}
 
-	public EmbeddedSampleExportDto(String uuid, Date dateTime, String labUuid, String labName, String labDetails, PathogenTestResultType result, Long caseId) {
+	public EmbeddedSampleExportDto(
+		String uuid,
+		Date dateTime,
+		String labUuid,
+		String labName,
+		String labDetails,
+		PathogenTestResultType result,
+		boolean deleted,
+		Long caseId) {
 		this.uuid = uuid;
 		this.dateTime = dateTime;
 		this.lab = labUuid != null ? FacilityHelper.buildFacilityString(labUuid, labName, labDetails) : null;
 		this.result = result;
+		this.deleted = deleted;
 		this.caseId = caseId;
 	}
 
@@ -99,11 +109,19 @@ public class EmbeddedSampleExportDto implements Serializable {
 		this.uuid = uuid;
 	}
 
-	public Long getCaseId() {
-		return caseId;
+	public boolean isDeleted() {
+		return deleted;
 	}
 
-	public void setCaseId(Long caseId) {
-		this.caseId = caseId;
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
+
+    public Long getCaseId() {
+        return caseId;
+    }
+
+    public void setCaseId(Long caseId) {
+        this.caseId = caseId;
+    }
 }
