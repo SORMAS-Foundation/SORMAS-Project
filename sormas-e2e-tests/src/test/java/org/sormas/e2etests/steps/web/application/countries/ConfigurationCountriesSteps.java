@@ -19,10 +19,12 @@
 package org.sormas.e2etests.steps.web.application.countries;
 
 import static org.sormas.e2etests.pages.application.configuration.ConfigurationTabsPage.CONFIGURATION_COUNTRIES_TAB;
-import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.*;
+import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.SEARCH_COUNTRY;
+import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.SUBCONTINENT_TABLE_VALUE;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
