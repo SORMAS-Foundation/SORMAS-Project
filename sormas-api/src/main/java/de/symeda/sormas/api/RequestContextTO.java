@@ -26,7 +26,7 @@ public class RequestContextTO implements Serializable {
 		this.isMobileSync = isMobileSync;
 	}
 
-	public boolean getMobileSync() {
+	public boolean isMobileSync() {
 		return isMobileSync;
 	}
 
