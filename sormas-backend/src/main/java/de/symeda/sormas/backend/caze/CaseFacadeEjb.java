@@ -966,7 +966,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					samplesRoot.get(Sample.LAB).get(Facility.NAME),
 					samplesRoot.get(Sample.LAB_DETAILS),
 					samplesRoot.get(Sample.PATHOGEN_TEST_RESULT),
-					samplesRoot.get(Sample.DELETED),
 					caseIdsExpr);
 
 				Predicate eliminateDeletedSamplesFilter = cb.equal(samplesRoot.get(Sample.DELETED), false);
