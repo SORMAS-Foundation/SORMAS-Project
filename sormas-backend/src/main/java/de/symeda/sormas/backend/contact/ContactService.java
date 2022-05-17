@@ -1112,7 +1112,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					cb.equal(joins.getCaseResponsibleDistrict().get(District.UUID), districtUuid)));
 		}
 		if (contactCriteria.getCommunity() != null) {
-			String communityUuid = contactCriteria.getDistrict().getUuid();
+			String communityUuid = contactCriteria.getCommunity().getUuid();
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,

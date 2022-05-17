@@ -51,10 +51,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import de.symeda.sormas.api.common.DeletionDetails;
-import de.symeda.sormas.api.common.DeletionReason;
-import de.symeda.sormas.api.contact.ContactCriteria;
-import de.symeda.sormas.api.disease.DiseaseVariant;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
@@ -90,6 +86,9 @@ import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
@@ -134,7 +133,6 @@ import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -239,7 +237,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(2, getContactFacade().getIndexList(new ContactCriteria(), 0, 100, null).size());
 
 		final ContactCriteria contactCriteriaRdcf2 = new ContactCriteria().region(new RegionReferenceDto(rdcf2.region.getUuid(), null, null))
-				.district(new DistrictReferenceDto(rdcf2.district.getUuid(), null, null));
+			.district(new DistrictReferenceDto(rdcf2.district.getUuid(), null, null))
+			.community(new CommunityReferenceDto(rdcf2.community.getUuid(), null, null));
 		Assert.assertEquals(1, getContactFacade().getIndexList(contactCriteriaRdcf2, 0, 100, null).size());
 
 		final ContactCriteria contactCriteriaRdcf1 = new ContactCriteria().region(new RegionReferenceDto(rdcf.region.getUuid(), null, null))
