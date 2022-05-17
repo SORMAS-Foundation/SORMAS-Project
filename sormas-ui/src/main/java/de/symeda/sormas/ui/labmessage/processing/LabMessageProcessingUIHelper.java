@@ -82,9 +82,7 @@ public class LabMessageProcessingUIHelper {
 		Window window = VaadinUiUtil.createPopupWindow();
 		MutableObject<CommitDiscardWrapperComponent<SampleEditForm>> editComponentWrapper = new MutableObject<>();
 		// discard on close without commit or discard button clicked
-		Registration closeListener = window.addCloseListener((e) -> {
-			editComponentWrapper.getValue().discard();
-		});
+		Registration closeListener = window.addCloseListener(e -> editComponentWrapper.getValue().discard());
 
 		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent =
 			LabMessageProcessingUIHelper.getSampleEditComponent(sample, newPathogenTests, labMessage, commitHandler, cancelHandler, () -> {
@@ -163,7 +161,7 @@ public class LabMessageProcessingUIHelper {
 		}
 
 		// button configuration
-		Consumer<Disease> createReferral = (disease) -> {
+		Consumer<Disease> createReferral = disease -> {
 			// discard current changes and create sample referral
 			SampleDto existingSample =
 				FacadeProvider.getSampleFacade().getSampleByUuid(sampleEditComponent.getWrappedComponent().getValue().getUuid());
@@ -242,7 +240,7 @@ public class LabMessageProcessingUIHelper {
 		form.setValue(labMessage);
 
 		// discard on close without clicking discard/commit button
-		Registration closeListener = window.addCloseListener((e) -> {
+		Registration closeListener = window.addCloseListener(e -> {
 			if (discardOnClose) {
 				editComponent.discard();
 			}

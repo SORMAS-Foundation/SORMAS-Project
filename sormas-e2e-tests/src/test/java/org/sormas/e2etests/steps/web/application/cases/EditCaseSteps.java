@@ -1443,6 +1443,22 @@ public class EditCaseSteps implements En {
           TimeUnit.SECONDS.sleep(3); // wait for response after confirm
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+
+    When(
+        "I check the end of processing date in the archive popup and not select Archive contacts checkbox",
+        () -> {
+          String endOfProcessingDate;
+          endOfProcessingDate =
+              webDriverHelpers.getValueFromWebElement(END_OF_PROCESSING_DATE_POPUP_INPUT);
+          softly.assertEquals(
+              endOfProcessingDate,
+              LocalDate.now().format(DATE_FORMATTER),
+              "End of processing date is invalid");
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(EditContactPage.DELETE_POPUP_YES_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // wait for response after confirm
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
   }
 
   private Case collectCasePersonUuid() {
