@@ -54,7 +54,8 @@ public class DeletableUtils {
 					if (deleteReasonComboBox.isEmpty()) {
 						deleteReasonComboBox.setComponentError(new UserError(I18nProperties.getString(Strings.messageDeleteReasonNotFilled)));
 						return false;
-					} else if (deleteReasonComboBox.getValue() == DeletionReason.OTHER_REASON && StringUtils.isBlank(otherDeletionReason.getValue())) {
+					} else if (deleteReasonComboBox.getValue() == DeletionReason.OTHER_REASON
+						&& StringUtils.isBlank(otherDeletionReason.getValue())) {
 						otherDeletionReason.setComponentError(new UserError(I18nProperties.getString(Strings.messageOtherDeleteReasonNotFilled)));
 						return false;
 					}
