@@ -439,7 +439,6 @@ public class EpidemiologicalDataCaseSteps implements En {
                   .format(DateTimeFormatter.ofPattern("hh:mm a"));
           DateExposure =
               startOfExposure + " " + startDataTime + " - " + endOfExposure + " " + endDataTime;
-          System.out.println("Exposure Date: " + DateExposure);
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
         });
     Then(
