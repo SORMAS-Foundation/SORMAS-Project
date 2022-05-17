@@ -50,12 +50,11 @@ public class ConfigurationCountriesSteps implements En {
         "I fill search filter with {string} country name on Country Configuration Page",
         (String country) -> webDriverHelpers.fillInWebElement(SEARCH_COUNTRY, country));
     When(
-        "I check the subcontinent name for Germany on Country Configuration Page",
-        () -> {
+        "I check the {string} name for the country on Country Configuration Page",
+        (String expectedSubcontinentName) -> {
           TimeUnit.SECONDS.sleep(4); // waiting for page loaded
           String subcontinentName =
               webDriverHelpers.getTextFromWebElement(SUBCONTINENT_TABLE_VALUE);
-          String expectedSubcontinentName = "Central Europe";
           softly.assertEquals(
               subcontinentName,
               expectedSubcontinentName,
