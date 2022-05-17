@@ -117,6 +117,7 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumValueService;
 import de.symeda.sormas.backend.dashboard.DashboardFacadeEjb;
+import de.symeda.sormas.backend.dashboard.DashboardService;
 import de.symeda.sormas.backend.deletionconfiguration.CoreEntityDeletionService;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationService;
@@ -377,6 +378,10 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public DashboardFacade getDashboardFacade() {
 		return getBean(DashboardFacadeEjb.DashboardFacadeEjbLocal.class);
+	}
+
+	public DashboardService getDashboardService() {
+		return getBean(DashboardService.class);
 	}
 
 	public EventFacadeEjbLocal getEventFacade() {
