@@ -36,6 +36,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_C
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_TITLE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
+import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_DETAILED_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_DETAILED_FIRST_TABLE_ROW;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_DETAILED_TABLE_DATA;
@@ -46,6 +47,9 @@ import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.aCas
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -60,6 +64,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.services.CaseService;
@@ -77,6 +82,7 @@ public class CreateNewCaseSteps implements En {
   private final SoftAssert softly;
   private static BaseSteps baseSteps;
   protected static Case oneCase;
+  public static final String userDirPath = System.getProperty("user.dir");
 
   @Inject
   public CreateNewCaseSteps(
@@ -370,6 +376,8 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+
+          TimeUnit.SECONDS.sleep(2);
         });
 
     When(
@@ -642,6 +650,61 @@ public class CreateNewCaseSteps implements En {
           softly.assertEquals(disease, getDisease, "Diseases are not equal");
           softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_DISCARD_BUTTON);
+        });
+
+    When(
+        "I click on ([^\"]*) button from New document in case tab",
+        (String buttonName) -> {
+          webDriverHelpers.clickOnWebElementBySelector(NEW_DOCUMENT_BUTTON);
+          webDriverHelpers.clickWebElementByText(START_DATA_IMPORT_BUTTON, buttonName);
+        });
+
+    When(
+        "I upload ([^\"]*) file to the case",
+        (String fileType) -> {
+          webDriverHelpers.sendFile(
+              FILE_PICKER, userDirPath + "/uploads/testCase_" + fileType + "." + fileType);
+          TimeUnit.SECONDS.sleep(2); // wait for upload file
+        });
+
+    When(
+        "I check if ([^\"]*) file is available in case documents",
+        (String fileType) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              By.xpath(String.format(CASE_UPLOADED_TEST_FILE, fileType)), 5);
+        });
+
+    When(
+        "I download last updated document file from case tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DOWNLOAD_LAST_UPDATED_CASE_DOCUMENT);
+          TimeUnit.SECONDS.sleep(3); // wait for download
+        });
+
+    When(
+        "I delete last uploaded document file from case tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_LAST_UPDATED_CASE_DOCUMENT);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_POPUP_BUTTON);
+          TimeUnit.SECONDS.sleep(5); // wait for system reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I check if last uploaded file was deleted from document files in case tab",
+        () -> {
+          webDriverHelpers.checkWebElementContainsText(
+              CASE_DOCUMENT_EMPTY_TEXT, "There are no documents for this Case");
+        });
+
+    When(
+        "I check if ([^\"]*) file is downloaded correctly",
+        (String fileType) -> {
+          String file = "./downloads/testCase_" + fileType + "." + fileType;
+          Path path = Paths.get(file);
+          softly.assertTrue(Files.exists(path));
+          softly.assertAll();
+          Files.delete(path); // clean
         });
   }
 

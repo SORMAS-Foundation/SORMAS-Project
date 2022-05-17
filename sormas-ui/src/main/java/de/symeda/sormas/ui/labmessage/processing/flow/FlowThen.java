@@ -34,8 +34,10 @@ public class FlowThen<T> {
 		this.currentResult = currentResult;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <R> FlowThen<R> then(FlowAction<T, R> action) {
-		return new FlowThen<>(currentResult.thenCompose((r) -> {
+
+		return new FlowThen<>(currentResult.thenCompose(r -> {
 			ProcessingResultStatus status = r.getStatus();
 			if (status.isCanceled() || status.isDone()) {
 				//noinspection unchecked

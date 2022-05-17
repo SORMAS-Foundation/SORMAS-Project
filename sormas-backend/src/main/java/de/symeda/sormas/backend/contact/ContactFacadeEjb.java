@@ -63,6 +63,8 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -528,27 +530,27 @@ public class ContactFacadeEjb
 
 	@Override
 	@RolesAllowed(UserRight._CONTACT_DELETE)
-	public void delete(String contactUuid) {
+	public void delete(String contactUuid, DeletionDetails deletionDetails) {
 		Contact contact = service.getByUuid(contactUuid);
-		deleteContact(contact);
+		deleteContact(contact, deletionDetails);
 	}
 
-	private void deleteContact(Contact contact) {
+	private void deleteContact(Contact contact, DeletionDetails deletionDetails) {
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
-		service.delete(contact);
+		service.delete(contact, deletionDetails);
 		if (contact.getCaze() != null) {
 			caseFacade.onCaseChanged(caseFacade.toDto(contact.getCaze()), contact.getCaze());
 		}
 	}
 
 	@RolesAllowed(UserRight._CONTACT_DELETE)
-	public List<String> deleteContacts(List<String> contactUuids) {
+	public List<String> deleteContacts(List<String> contactUuids, DeletionDetails deletionDetails) {
 		List<String> deletedContactUuids = new ArrayList<>();
 		List<Contact> contactsToBeDeleted = service.getByUuids(contactUuids);
 		if (contactsToBeDeleted != null) {
 			contactsToBeDeleted.forEach(contactToBeDeleted -> {
 				if (!contactToBeDeleted.isDeleted()) {
-					deleteContact(contactToBeDeleted);
+					deleteContact(contactToBeDeleted, deletionDetails);
 					deletedContactUuids.add(contactToBeDeleted.getUuid());
 				}
 			});
@@ -1413,6 +1415,10 @@ public class ContactFacadeEjb
 		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
 		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
 
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -1707,6 +1713,10 @@ public class ContactFacadeEjb
 		}
 		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
 		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
 	}
@@ -2008,7 +2018,7 @@ public class ContactFacadeEjb
 		contact.setDuplicateOf(duplicateOfContact);
 		service.ensurePersisted(contact);
 
-		this.delete(uuid);
+		this.delete(uuid, new DeletionDetails(DeletionReason.DUPLICATE_ENTRIES, null));
 	}
 
 	@Override

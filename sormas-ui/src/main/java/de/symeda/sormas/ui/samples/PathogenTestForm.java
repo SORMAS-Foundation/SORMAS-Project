@@ -86,7 +86,9 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			fluidRowLocs(PathogenTestDto.FOUR_FOLD_INCREASE_ANTIBODY_TITER, "") +
 			fluidRowLocs(PathogenTestDto.SEROTYPE, "") + 
 			fluidRowLocs(PathogenTestDto.CQ_VALUE, "") + 
-			fluidRowLocs(PathogenTestDto.TEST_RESULT_TEXT);
+			fluidRowLocs(PathogenTestDto.TEST_RESULT_TEXT) +
+			fluidRowLocs(PathogenTestDto.DELETION_REASON) +
+			fluidRowLocs(PathogenTestDto.OTHER_DELETION_REASON);
 	//@formatter:on
 
 	private final SampleDto sample;
@@ -177,6 +179,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 		addField(PathogenTestDto.TEST_RESULT_TEXT, TextArea.class).setRows(6);
 		addField(PathogenTestDto.PRELIMINARY).addStyleName(CssStyles.VSPACE_4);
+
+		addField(PathogenTestDto.DELETION_REASON);
+		addField(PathogenTestDto.OTHER_DELETION_REASON, TextArea.class).setRows(3);
+		setVisible(false, PathogenTestDto.DELETION_REASON, PathogenTestDto.OTHER_DELETION_REASON);
 
 		initializeAccessAndAllowedAccesses();
 		initializeVisibilitiesAndAllowedVisibilities();

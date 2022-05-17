@@ -283,7 +283,8 @@ public final class VaadinUiUtil {
 		boolean cancelOnClose) {
 
 		return showConfirmationPopup(caption, content, popupWindow -> {
-			Registration closeListener = popupWindow.addCloseListener((e) -> {
+
+			Registration closeListener = popupWindow.addCloseListener(e -> {
 				if (cancelOnClose) {
 					resultConsumer.apply(false);
 				}
