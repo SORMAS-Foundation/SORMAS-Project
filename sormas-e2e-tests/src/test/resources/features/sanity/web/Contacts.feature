@@ -511,6 +511,21 @@ Feature: Contacts end to end tests
       Then I open the first contact from contacts list
       And I check if Archive button changed name to De-Archive
 
+  @issue=SORDEV-9786 @env_main
+  Scenario: Test The "urine p.m." enum value should be hidden when Covid19 is selected as disease
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    When I click on the Contacts button from navbar
+    Then I search after last created contact via API by UUID and open
+    And I check that the value selected from Disease combobox is "COVID-19" on Edit Contact page
+    Then I click on New Sample
+    And I check if value "Urine p.m" is unavailable in Type of Sample combobox on Create new Sample page
+
   @env_main @issue=SORDEV-9155
   Scenario: Test Vaccinations get lost when merging contacts with duplicate persons
     Then API: I create a new person
@@ -550,6 +565,62 @@ Feature: Contacts end to end tests
     And I apply filter by duplicated contact Person data on Contact Directory Page
     Then I open the first contact from contacts list
     And I check if Vaccination Status is set to "Vaccinated" on Edit Contact page
+
+  @env_main @issue=SORDEV-5613
+  Scenario: Option to attach document like pdf, word, jpeg to contacts
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    When I click on the Contacts button from navbar
+    Then I search after last created contact via API by name and uuid then open
+    Then I click on START DATA IMPORT button from New document in contact tab
+    And I upload pdf file to the contact
+    And I check if pdf file is available in contact documents
+    Then I download last updated document file from contact tab
+    And I check if pdf file for contact is downloaded correctly
+    Then I delete last uploaded document file from contact tab
+    And I check if last uploaded file was deleted from document files in contact tab
+    Then I click on START DATA IMPORT button from New document in contact tab
+    And I upload docx file to the contact
+    And I check if docx file is available in contact documents
+    Then I download last updated document file from contact tab
+    And I check if docx file for contact is downloaded correctly
+    Then I delete last uploaded document file from contact tab
+    And I check if last uploaded file was deleted from document files in contact tab
+    Then I click on START DATA IMPORT button from New document in contact tab
+    And I upload jpg file to the contact
+    And I check if jpg file is available in contact documents
+    Then I download last updated document file from contact tab
+    And I check if jpg file for contact is downloaded correctly
+    Then I delete last uploaded document file from contact tab
+    And I check if last uploaded file was deleted from document files in contact tab
+
+  @issue=SORDEV-10254 @env_main
+    Scenario: Manual archive Cases and Contacts
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    When I open the Case Contacts tab of the created case via api
+    Then I click on new contact button from Case Contacts tab
+    Then I create a new contact from Cases Contacts tab
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    Then I click on the Archive case button
+    Then I check the end of processing date in the archive popup and not select Archive contacts checkbox
+    And I check if Archive button changed name to De-Archive
+    Then I click on the Contacts button from navbar
+    When I choose Active contacts form combobox on Contact Directory Page
+    Then I filter by last created contact via api
+    Then I open the first contact from contacts list
+    And I check if Archive button changed name to Archive
 
   @env_de @issue=SORDEV-9946
   Scenario: Test Hide country specific fields in the 'Pick or create person' form of the duplicate detection pop-up, in German and French systems

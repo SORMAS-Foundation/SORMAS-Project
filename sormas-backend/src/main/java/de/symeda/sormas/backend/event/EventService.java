@@ -40,6 +40,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 
+import de.symeda.sormas.api.common.DeletionDetails;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -503,12 +504,12 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	@Override
-	public void delete(Event event) {
+	public void delete(Event event, DeletionDetails deletionDetails) {
 
 		// Delete all event participants associated with this event
 		List<EventParticipant> eventParticipants = eventParticipantService.getAllByEventAfter(null, event);
 		for (EventParticipant eventParticipant : eventParticipants) {
-			eventParticipantService.delete(eventParticipant);
+			eventParticipantService.delete(eventParticipant, deletionDetails);
 		}
 
 		// Delete all tasks associated with this event
@@ -524,7 +525,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		}
 
 		// Mark the event as deleted
-		super.delete(event);
+		super.delete(event, deletionDetails);
 	}
 
 	public Predicate buildCriteriaFilter(EventCriteria eventCriteria, EventQueryContext eventQueryContext) {

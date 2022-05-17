@@ -67,6 +67,7 @@ public class ContactJoins extends QueryJoins<Contact> {
 	private Join<Contact, User> followUpStatusChangeUser;
 
 	private CaseJoins caseJoins;
+	private CaseJoins resultingCaseJoins;
 	private PersonJoins personJoins;
 	private SampleJoins sampleJoins;
 	private VisitJoins visitJoins;
@@ -293,6 +294,14 @@ public class ContactJoins extends QueryJoins<Contact> {
 
 	private void setCaseJoins(CaseJoins caseJoins) {
 		this.caseJoins = caseJoins;
+	}
+
+	public CaseJoins getResultingCaseJoins() {
+		return getOrCreate(resultingCaseJoins, () -> new CaseJoins(getResultingCase()), this::setResultingCaseJoins);
+	}
+
+	public void setResultingCaseJoins(CaseJoins resultingCaseJoins) {
+		this.resultingCaseJoins = resultingCaseJoins;
 	}
 
 	public PersonJoins getPersonJoins() {

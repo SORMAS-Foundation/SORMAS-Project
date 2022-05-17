@@ -155,8 +155,9 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
 	@Override
 	public List<WeeklyReportRegionSummaryDto> getSummariesPerRegion(EpiWeek epiWeek) {
+		JurisdictionLevel jurisdictionLevel = userService.getCurrentUser().getJurisdictionLevel();
 
-		if (userService.getCurrentUser().getJurisdictionLevel() != JurisdictionLevel.NATION) {
+		if (jurisdictionLevel != JurisdictionLevel.NONE & jurisdictionLevel != JurisdictionLevel.NATION) {
 			return new ArrayList<>();
 		}
 

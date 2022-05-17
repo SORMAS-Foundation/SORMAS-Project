@@ -51,6 +51,10 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
@@ -86,6 +90,9 @@ import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
@@ -130,7 +137,6 @@ import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -191,7 +197,23 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcf);
-		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		SampleDto caseSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		ContactDto contact = creator.createContact(
+				user.toReference(),
+				null,
+				creator.createPerson("John", "Smith").toReference(),
+				caze,
+				new Date(),
+				new Date(),
+				Disease.CORONAVIRUS,
+				null);
+		SampleDto contactSample = creator.createSample(contact.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+
+		ContactDto otherContact = creator.createContact(user.toReference(), creator.createPerson("John", "Doe").toReference(), new Date());
+		SampleDto otherContactSample = creator.createSample(otherContact.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		otherContact.setResultingCase(caze.toReference());
+		getContactFacade().save(otherContact);
 
 		caze.setRegion(new RegionReferenceDto(rdcf2.region.getUuid(), null, null));
 		caze.setDistrict(new DistrictReferenceDto(rdcf2.district.getUuid(), null, null));
@@ -203,13 +225,29 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		final CaseCriteria caseCriteria = new CaseCriteria().region(new RegionReferenceDto(rdcf.region.getUuid(), null, null))
 			.district(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
 		Assert.assertEquals(1, getCaseFacade().getIndexList(caseCriteria, 0, 100, null).size());
+
+		Assert.assertEquals(3, getSampleFacade().getIndexList(new SampleCriteria(), 0, 100, null).size());
+
 		final SampleCriteria sampleCriteria = new SampleCriteria().region(new RegionReferenceDto(rdcf.region.getUuid(), null, null))
-			.sampleAssociationType(SampleAssociationType.CASE)
 			.district(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
-		Assert.assertEquals(1, getSampleFacade().getIndexList(sampleCriteria, 0, 100, null).size());
+		Assert.assertEquals(2, getSampleFacade().getIndexList(sampleCriteria, 0, 100, null).size());
+
+		Assert.assertEquals(1, getTaskFacade().getIndexList(new TaskCriteria(), 0, 100, null).size());
+
 		final TaskCriteria taskCriteria = new TaskCriteria().region(new RegionReferenceDto(rdcf.region.getUuid(), null, null))
 			.district(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
 		Assert.assertEquals(1, getTaskFacade().getIndexList(taskCriteria, 0, 100, null).size());
+
+		Assert.assertEquals(2, getContactFacade().getIndexList(new ContactCriteria(), 0, 100, null).size());
+
+		final ContactCriteria contactCriteriaRdcf2 = new ContactCriteria().region(new RegionReferenceDto(rdcf2.region.getUuid(), null, null))
+			.district(new DistrictReferenceDto(rdcf2.district.getUuid(), null, null))
+			.community(new CommunityReferenceDto(rdcf2.community.getUuid(), null, null));
+		Assert.assertEquals(1, getContactFacade().getIndexList(contactCriteriaRdcf2, 0, 100, null).size());
+
+		final ContactCriteria contactCriteriaRdcf1 = new ContactCriteria().region(new RegionReferenceDto(rdcf.region.getUuid(), null, null))
+			.district(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
+		Assert.assertEquals(1, getContactFacade().getIndexList(contactCriteriaRdcf1, 0, 100, null).size());
 	}
 
 	@Test
@@ -1086,6 +1124,33 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testGetExportListWithoutDeletedSamples() {
+		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCF rdcf = new RDCF(rdcfEntities);
+		UserDto user = getUser(rdcfEntities);
+
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = getCaze(user, cazePerson, rdcfEntities);
+		cazePerson.getAddress().setCity("City");
+		getPersonFacade().savePerson(cazePerson);
+
+		SampleDto sample1 = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		SampleDto sample2 = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		getSampleFacade().deleteSample(sample1.toReference(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
+
+		List<CaseExportDto> results =
+			getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
+
+		// List should have one entry
+		assertEquals(1, results.size());
+		CaseExportDto exportDto = results.get(0);
+
+		assertEquals(exportDto.getSample1().getUuid(), sample2.getUuid());
+		assertNull(exportDto.getSample2().getUuid());
+		assertNull(exportDto.getSample3().getUuid());
+	}
+
+	@Test
 	public void testCaseDeletion() throws ExternalSurveillanceToolException {
 		Date since = new Date();
 
@@ -1134,7 +1199,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
 		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
 
-		getCaseFacade().delete(caze.getUuid());
+		getCaseFacade().delete(caze.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
 
 		// Deleted flag should be set for case, sample and pathogen test; Additional test should be deleted; Contact should not have the deleted flag; Task should not be deleted
 		assertTrue(getCaseFacade().getDeletedUuidsSince(since).contains(caze.getUuid()));
@@ -1502,7 +1567,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("COU-REG-DIS-" + year + "-005", fourthCaze.getEpidNumber());
 
 		// Make sure that deleted cases are ignored when searching for the highest existing epid nummber
-		getCaseFacade().delete(fourthCaze.getUuid());
+		getCaseFacade().delete(fourthCaze.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
 
 		CaseDataDto fifthCaze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
 
@@ -2663,7 +2728,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getCaseFacade().getAllActiveUuids().size());
 		assertEquals(1, getContactFacade().getAllActiveUuids().size());
 
-		getCaseFacade().deleteWithContacts(caze.getUuid());
+		getCaseFacade().deleteWithContacts(caze.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
 
 		assertEquals(0, getCaseFacade().getAllActiveUuids().size());
 		assertEquals(0, getContactFacade().getAllActiveUuids().size());
