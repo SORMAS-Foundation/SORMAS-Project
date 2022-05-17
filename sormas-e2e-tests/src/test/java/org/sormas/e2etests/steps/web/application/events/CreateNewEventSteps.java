@@ -151,7 +151,6 @@ public class CreateNewEventSteps implements En {
         "I collect the UUID displayed on Create New Event Page",
         () -> {
           eventUUID = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
-          System.out.println("Event UUID:" + eventUUID);
         });
 
     When(
