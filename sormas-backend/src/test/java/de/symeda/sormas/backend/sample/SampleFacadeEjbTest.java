@@ -578,10 +578,10 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		List<SampleDto> similarSamples = getSampleFacade().getSimilarSamples(criteria);
 		MatcherAssert.assertThat(similarSamples, hasSize(1));
 
-		// should return all samples for unknown lab sample id and missing date and material
+		// should return no samples for unknown lab sample id and missing date and material
 		criteria.setLabSampleId("unknown_id");
 		similarSamples = getSampleFacade().getSimilarSamples(criteria);
-		MatcherAssert.assertThat(similarSamples, hasSize(2));
+		MatcherAssert.assertThat(similarSamples, hasSize(0));
 
 		criteria.setSampleMaterial(SampleMaterial.BLOOD);
 
