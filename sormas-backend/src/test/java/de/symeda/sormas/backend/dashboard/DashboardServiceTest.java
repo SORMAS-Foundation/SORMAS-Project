@@ -1,5 +1,13 @@
 package de.symeda.sormas.backend.dashboard;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.Arrays;
+import java.util.Map;
+
+import org.junit.Test;
+
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventStatus;
@@ -8,12 +16,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
-import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
 
 public class DashboardServiceTest extends AbstractBeanTest {
 
@@ -48,11 +50,13 @@ public class DashboardServiceTest extends AbstractBeanTest {
 		assertEquals(Long.valueOf(1), result.get(EventStatus.SCREENING));
 		assertEquals(Long.valueOf(1), result.get(EventStatus.CLUSTER));
 
+		DeletionDetails details = new DeletionDetails();
+
 		// delete events (should have an effect on result)
-		eventFacade.delete(signal.getUuid());
-		eventFacade.delete(event1.getUuid());
-		eventFacade.delete(screening.getUuid());
-		eventFacade.delete(cluster.getUuid());
+		eventFacade.delete(signal.getUuid(), details);
+		eventFacade.delete(event1.getUuid(), details);
+		eventFacade.delete(screening.getUuid(), details);
+		eventFacade.delete(cluster.getUuid(), details);
 
 		result = sut.getEventCountByStatus(new DashboardCriteria());
 		assertEquals(1, result.size());

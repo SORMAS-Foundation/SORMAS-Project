@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -113,7 +114,7 @@ public class EventServiceTest extends AbstractBeanTest {
 		assertEquals(event.getEventTitle(), result.get(0).getEventTitle());
 
 		// deletion should have an effect on the export list
-		getEventFacade().delete(event.getUuid());
+		getEventFacade().delete(event.getUuid(), new DeletionDetails());
 
 		result = sut.getEventSummaryDetailsByContacts(Arrays.asList(contact.getUuid()));
 		assertTrue(result.isEmpty());
@@ -150,7 +151,7 @@ public class EventServiceTest extends AbstractBeanTest {
 		assertEquals(event.getEventTitle(), result.get(0).getEventTitle());
 
 		// deletion should have an effect on the export list
-		getEventFacade().delete(event.getUuid());
+		getEventFacade().delete(event.getUuid(), new DeletionDetails());
 
 		result = sut.getEventSummaryDetailsByCases(Arrays.asList(cazeId));
 		assertTrue(result.isEmpty());
