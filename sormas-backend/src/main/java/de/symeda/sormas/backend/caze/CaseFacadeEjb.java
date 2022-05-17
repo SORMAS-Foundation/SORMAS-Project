@@ -968,9 +968,11 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					samplesRoot.get(Sample.PATHOGEN_TEST_RESULT),
 					samplesRoot.get(Sample.DELETED),
 					caseIdsExpr);
-				samplesCq.where(caseIdsExpr.in(resultCaseIds));
+
+				Predicate eliminateDeletedSamplesFilter = cb.equal(samplesRoot.get(Sample.DELETED), false);
+				samplesCq.where(caseIdsExpr.in(resultCaseIds), eliminateDeletedSamplesFilter);
 				samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-                samples = samplesList.stream().filter(s -> !s.isDeleted()).collect(Collectors.groupingBy(s -> s.getCaseId()));
+				samples = samplesList.stream().collect(Collectors.groupingBy(s -> s.getCaseId()));
 			}
 
 			List<VisitSummaryExportDetails> visitSummaries = null;
