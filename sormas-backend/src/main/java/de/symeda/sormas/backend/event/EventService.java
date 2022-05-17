@@ -840,7 +840,6 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			cb.and(
 				cazeJoin.get(AbstractDomainObject.ID).in(casesId),
 				cb.isFalse(eventJoin.get(Event.DELETED)),
-				cb.isFalse(eventJoin.get(Event.ARCHIVED)),
 				cb.isFalse(eventsCqRoot.get(EventParticipant.DELETED))));
 		eventsCq.multiselect(
 			cazeJoin.get(Case.ID),
@@ -866,7 +865,6 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				cb.and(
 					contactJoin.get(AbstractDomainObject.UUID).in(batchedContactUuids),
 					cb.isFalse(eventJoin.get(Event.DELETED)),
-					cb.isFalse(eventJoin.get(Event.ARCHIVED)),
 					cb.isFalse(eventsCqRoot.get(EventParticipant.DELETED))));
 			eventsCq.multiselect(
 				contactJoin.get(Contact.UUID),
