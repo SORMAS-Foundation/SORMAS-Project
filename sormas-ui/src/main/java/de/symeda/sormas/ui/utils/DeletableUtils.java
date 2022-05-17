@@ -43,6 +43,23 @@ public class DeletableUtils {
 		deleteReasonComboBox.addValueChangeListener(valueChangeEvent -> {
 			otherDeletionReason.setVisible(valueChangeEvent.getValue() == (DeletionReason.OTHER_REASON));
 		});
+
+		deleteReasonComboBox.addValueChangeListener(valueChangeEvent -> {
+			if (deleteReasonComboBox.isEmpty()) {
+				deleteReasonComboBox.setComponentError(new UserError(I18nProperties.getString(Strings.messageDeleteReasonNotFilled)));
+			} else {
+				deleteReasonComboBox.setComponentError(null);
+			}
+		});
+
+		otherDeletionReason.addValueChangeListener(valueChangeEvent -> {
+			if (deleteReasonComboBox.getValue() == DeletionReason.OTHER_REASON && StringUtils.isBlank(otherDeletionReason.getValue())) {
+				otherDeletionReason.setComponentError(new UserError(I18nProperties.getString(Strings.messageOtherDeleteReasonNotFilled)));
+			} else {
+				otherDeletionReason.setComponentError(null);
+			}
+		});
+
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingDeleteConfirmation),
 			verticalLayout,
