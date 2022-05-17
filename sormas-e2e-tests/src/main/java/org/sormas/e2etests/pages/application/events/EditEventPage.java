@@ -76,6 +76,7 @@ public class EditEventPage {
   public static final By EDIT_EVENT_GROUP_BUTTON = By.id("add-event-0");
   public static final By NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON = By.id("list-events-0");
   public static final By NAVIGATE_TO_EVENT_DIRECTORY_LIST_GROUP_BUTTON = By.id("tab-events");
+  public static final By NAVIGATE_TO_EVENT_GROUP_BUTTON = By.id("tab-events-data");
   public static final By NAVIGATE_TO_EVENT_PARTICIPANTS_BUTTON =
       By.id("tab-events-eventparticipants");
   public static final By SAVE_BUTTON_FOR_EDIT_EVENT_GROUP = By.id("commit");
