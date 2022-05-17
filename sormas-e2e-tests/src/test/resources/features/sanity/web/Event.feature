@@ -741,3 +741,37 @@ Feature: Create events
     And I click on Save Button in Edit Event directory
     Then I click on the Event participant tab
     And I add a participant to the event
+
+  @issue=SORDEV-10254 @env_main
+  Scenario: Manual archive Event participants/Events
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with status EVENT
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    And I collect the UUID displayed on Edit event page
+    Then I add a participant to the event
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    Then I click on the Archive event button
+    Then I check the end of processing date in the archive popup
+    And I click on the Events button from navbar
+    Then I set Relevance Status Filter to Archived events on Event Directory page
+    And I search for specific event by uuid in event directory
+    And I click on the searched event
+    Then I click on the Event participant tab
+    And I choose Archived event participants from combobox in the Event participant tab
+    Then I check if participant appears in the event participants list
+    Then I back to the Event tab
+    Then I click on the De-Archive event button
+    And I fill De-Archive event popup with test automation reason
+    And I click on the Events button from navbar
+    Then I set Relevance Status Filter to Active events on Event Directory page
+    And I search for specific event by uuid in event directory
+    And I click on the searched event
+    Then I click on the Event participant tab
+    And I choose Active event participants from combobox in the Event participant tab
+    Then I check if participant appears in the event participants list
