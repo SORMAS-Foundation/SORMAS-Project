@@ -62,7 +62,7 @@ public class ReportsView extends AbstractView {
 		super(VIEW_NAME);
 
 		JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(Objects.requireNonNull(UserProvider.getCurrent()).getUserRoles());
-		if (isNationOrNoneJurisdiction(jurisdictionLevel)) {
+		if (jurisdictionLevel == JurisdictionLevel.NONE || jurisdictionLevel == JurisdictionLevel.NATION) {
 			grid = new WeeklyReportRegionsGrid();
 		} else {
 			grid = new WeeklyReportOfficersGrid();
@@ -79,10 +79,6 @@ public class ReportsView extends AbstractView {
 		gridLayout.setExpandRatio(grid, 1);
 
 		addComponent(gridLayout);
-	}
-
-	public boolean isNationOrNoneJurisdiction(JurisdictionLevel jurisdictionLevel) {
-		return jurisdictionLevel == JurisdictionLevel.NONE || jurisdictionLevel == JurisdictionLevel.NATION;
 	}
 
 	public HorizontalLayout createFilterBar() {
