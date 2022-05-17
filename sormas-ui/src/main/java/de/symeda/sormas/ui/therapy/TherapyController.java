@@ -118,7 +118,7 @@ public class TherapyController {
 			@Override
 			public void accept(Boolean option) {
 				List<String> treatmentUuids = treatmentIndexDtos.stream().map(t->t.getUuid()).collect(Collectors.toList());
-				if (option) {
+				if (Boolean.TRUE.equals(option)) {
 					//delete just prescription and leave the treatments standalone
 					FacadeProvider.getTreatmentFacade().unlinkPrescriptionFromTreatments(treatmentUuids);
 
