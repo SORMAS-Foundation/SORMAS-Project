@@ -67,6 +67,8 @@ public class EventParticipantsPage {
   public static final By EVENT_PARTICIPANT_DISPLAY_FILTER_INPUT =
       By.cssSelector("[id='relevanceStatusFilter'] input");
   public static final By EVENT_TAB = By.id("tab-events-data");
+  public static final By DEARCHIVE_REASON_TEXT_AREA = By.cssSelector(".popupContent textarea");
+  public static final By CONFIRM_DEARCHIVE_BUTTON = By.id("actionConfirm");
 
   public static final By getEventsByCaseUuid(String uuid) {
     return By.cssSelector(String.format("[title = '%s']", uuid));

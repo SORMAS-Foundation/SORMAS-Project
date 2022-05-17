@@ -1,22 +1,22 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 package de.symeda.sormas.api.sample;
 
+import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 
 import javax.validation.constraints.Size;
@@ -39,6 +39,7 @@ import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
+@DependingOnFeatureType(featureType = FeatureType.SAMPLES_LAB)
 public class PathogenTestDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -5213210080802372054L;
@@ -71,6 +72,8 @@ public class PathogenTestDto extends PseudonymizableDto {
 	public static final String EXTERNAL_ID = "externalId";
 	public static final String EXTERNAL_ORDER_ID = "externalOrderId";
 	public static final String PRELIMINARY = "preliminary";
+	public static final String DELETION_REASON = "deletionReason";
+	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	@Required
 	private SampleReferenceDto sample;
@@ -124,6 +127,10 @@ public class PathogenTestDto extends PseudonymizableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalOrderId;
 	private Boolean preliminary;
+
+	private boolean deleted;
+	private DeletionReason deletionReason;
+	private String otherDeletionReason;
 
 	public static PathogenTestDto build(SampleDto sample, UserDto currentUser) {
 
@@ -350,6 +357,30 @@ public class PathogenTestDto extends PseudonymizableDto {
 
 	public void setPreliminary(Boolean preliminary) {
 		this.preliminary = preliminary;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public DeletionReason getDeletionReason() {
+		return deletionReason;
+	}
+
+	public void setDeletionReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
+	}
+
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
+	}
+
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
 	}
 
 	@Override

@@ -1,6 +1,8 @@
 package de.symeda.sormas.api.labmessage;
 
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 
 import javax.validation.constraints.Size;
@@ -14,6 +16,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Required;
 
+@DependingOnFeatureType(featureType = FeatureType.LAB_MESSAGES)
 public class TestReportDto extends EntityDto {
 
 	public static final String I18N_PREFIX = "TestReport";

@@ -112,6 +112,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	private CountryReferenceDto country;
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public void init() {
 		super.init();
 
@@ -283,29 +284,30 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_RunFlow() throws ExecutionException, InterruptedException {
-		ProcessingResult<SampleAndPathogenTests> result = runFlow(createLabMessage(null, "", LabMessageStatus.UNPROCESSED));
+	public void testCreateLabMessage() throws ExecutionException, InterruptedException {
 
+		ProcessingResult<SampleAndPathogenTests> result = runFlow(createLabMessage(null, "", LabMessageStatus.UNPROCESSED));
 		assertThat(result.getStatus(), is(DONE));
 	}
 
 	@Test
-	public void test_HandleMissingDisease() throws ExecutionException, InterruptedException {
-		ProcessingResult<SampleAndPathogenTests> result = runFlow(createLabMessage(null, "", LabMessageStatus.UNPROCESSED));
+	public void testHandleMissingDisease() throws ExecutionException, InterruptedException {
 
+		ProcessingResult<SampleAndPathogenTests> result = runFlow(createLabMessage(null, "", LabMessageStatus.UNPROCESSED));
 		assertThat(result.getStatus(), is(DONE));
 		Mockito.verify(missingDiseaseHandler, Mockito.times(1)).get();
 	}
 
 	@Test
-	public void test_HandleMissingDisease_NotNeeded() throws ExecutionException, InterruptedException {
-		runFlow(createLabMessage(Disease.CORONAVIRUS, "", LabMessageStatus.UNPROCESSED));
+	public void testHandleMissingDiseaseNotNeeded() throws ExecutionException, InterruptedException {
 
+		runFlow(createLabMessage(Disease.CORONAVIRUS, "", LabMessageStatus.UNPROCESSED));
 		Mockito.verify(missingDiseaseHandler, Mockito.times(0)).get();
 	}
 
 	@Test
-	public void test_HandleMissingDisease_Cancel() throws ExecutionException, InterruptedException {
+	public void testHandleMissingDiseaseCancel() throws ExecutionException, InterruptedException {
+
 		when(missingDiseaseHandler.get()).thenReturn(CompletableFuture.completedFuture(false));
 
 		ProcessingResult<SampleAndPathogenTests> result = runFlow(createLabMessage(null, "", LabMessageStatus.UNPROCESSED));
@@ -316,7 +318,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_HandleRelatedForwardedMessages() throws ExecutionException, InterruptedException {
+	public void testHandleRelatedForwardedMessages() throws ExecutionException, InterruptedException {
+
 		FacadeProvider.getLabMessageFacade().save(createLabMessage(Disease.CORONAVIRUS, "test-report-id", LabMessageStatus.FORWARDED));
 
 		when(relatedForwardedMessagesHandler.get()).thenReturn(CompletableFuture.completedFuture(true));
@@ -329,7 +332,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_HandleRelatedForwardedMessages_NotNeeded() throws ExecutionException, InterruptedException {
+	public void testHandleRelatedForwardedMessagesNotNeeded() throws ExecutionException, InterruptedException {
+
 		when(relatedForwardedMessagesHandler.get()).thenReturn(CompletableFuture.completedFuture(true));
 
 		ProcessingResult<SampleAndPathogenTests> result =
@@ -340,7 +344,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_HandleRelatedForwardedMessages_Cancel() throws ExecutionException, InterruptedException {
+	public void testHandleRelatedForwardedMessagesCancel() throws ExecutionException, InterruptedException {
+
 		FacadeProvider.getLabMessageFacade().save(createLabMessage(Disease.CORONAVIRUS, "test-report-id", LabMessageStatus.FORWARDED));
 
 		when(relatedForwardedMessagesHandler.get()).thenReturn(CompletableFuture.completedFuture(false));
@@ -353,7 +358,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_HandleRelatedLabmessages() throws ExecutionException, InterruptedException {
+	public void testHandleRelatedLabmessages() throws ExecutionException, InterruptedException {
+
 		SampleDto sample = creator.createSample(
 			creator
 				.createCase(
@@ -381,7 +387,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_HandleRelatedLabmessages_Cancel() throws ExecutionException, InterruptedException {
+	public void testHandleRelatedLabmessagesCancel() throws ExecutionException, InterruptedException {
+
 		when(relatedLabMessageHandler.handle(any()))
 			.thenReturn(CompletableFuture.completedFuture(new HandlerResult(HandlerResultStatus.CANCELED, null)));
 
@@ -393,7 +400,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_HandleRelatedLabmessages_CancelWithChanges() throws ExecutionException, InterruptedException {
+	public void testHandleRelatedLabmessagesCancelWithChanges() throws ExecutionException, InterruptedException {
+
 		when(relatedLabMessageHandler.handle(any()))
 			.thenReturn(CompletableFuture.completedFuture(new HandlerResult(HandlerResultStatus.CANCELED_WITH_UPDATES, null)));
 
@@ -405,7 +413,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_HandleRelatedLabmessages_Continue() throws ExecutionException, InterruptedException {
+	public void testHandleRelatedLabmessagesContinue() throws ExecutionException, InterruptedException {
+
 		when(relatedLabMessageHandler.handle(any()))
 			.thenReturn(CompletableFuture.completedFuture(new HandlerResult(HandlerResultStatus.CONTINUE, null)));
 
@@ -417,7 +426,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_CreatePerson() throws ExecutionException, InterruptedException {
+	public void testCreatePerson() throws ExecutionException, InterruptedException {
+
 		ArgumentCaptor<PersonDto> personCaptor = ArgumentCaptor.forClass(PersonDto.class);
 		doAnswer(answerPickOrCreatePerson(null)).when(handlePickOrCreatePerson).apply(personCaptor.capture(), any());
 
@@ -445,7 +455,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_PickPerson() throws ExecutionException, InterruptedException {
+	public void testPickPerson() throws ExecutionException, InterruptedException {
+
 		PersonDto person = PersonDto.build();
 		person.setFirstName("Ftest");
 
@@ -470,7 +481,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_PickOrCreatePerson_Cancel() throws ExecutionException, InterruptedException {
+	public void testPickOrCreatePersonCancel() throws ExecutionException, InterruptedException {
+
 		doAnswer(invocation -> {
 			((HandlerCallback<?>) invocation.getArgument(1)).cancel();
 			return null;
@@ -484,7 +496,9 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_PickOrCreateEntry_Cancel() throws ExecutionException, InterruptedException {
+	@SuppressWarnings("unchecked")
+	public void testPickOrCreateEntryCancel() throws ExecutionException, InterruptedException {
+
 		doAnswer(invocation -> {
 			//noinspection unchecked
 			((HandlerCallback<PickOrCreateEntryResult>) invocation.getArgument(3)).cancel();
@@ -501,7 +515,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_CreateCase() throws ExecutionException, InterruptedException {
+	public void testCreateCase() throws ExecutionException, InterruptedException {
+
 		ArgumentCaptor<PersonDto> personCaptor = ArgumentCaptor.forClass(PersonDto.class);
 		doAnswer(answerPickOrCreatePerson(null)).when(handlePickOrCreatePerson).apply(personCaptor.capture(), any());
 
@@ -531,7 +546,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_CreateCase_Cancel() throws ExecutionException, InterruptedException {
+	public void testCreateCaseCancel() throws ExecutionException, InterruptedException {
+
 		doAnswer((invocation) -> {
 			getCallbackParam(invocation).cancel();
 			return null;
@@ -546,7 +562,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_CreateCase_And_CreateSample() throws ExecutionException, InterruptedException {
+	public void testCreateCaseAndCreateSample() throws ExecutionException, InterruptedException {
+
 		PickOrCreateEntryResult pickOrCreateEntryResult = new PickOrCreateEntryResult();
 		pickOrCreateEntryResult.setNewCase(true);
 		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
@@ -612,7 +629,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_CreateSample_Cancel() throws ExecutionException, InterruptedException {
+	public void testCreateSampleCancel() throws ExecutionException, InterruptedException {
+
 		PickOrCreateEntryResult pickOrCreateEntryResult = new PickOrCreateEntryResult();
 		pickOrCreateEntryResult.setNewCase(true);
 		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
@@ -637,7 +655,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_CreateContact() throws ExecutionException, InterruptedException {
+	public void testCreateContact() throws ExecutionException, InterruptedException {
+
 		ArgumentCaptor<PersonDto> personCaptor = ArgumentCaptor.forClass(PersonDto.class);
 		doAnswer(answerPickOrCreatePerson(null)).when(handlePickOrCreatePerson).apply(personCaptor.capture(), any());
 
@@ -667,7 +686,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_CreateContact_Cancel() throws ExecutionException, InterruptedException {
+	public void testCreateContactCancel() throws ExecutionException, InterruptedException {
+
 		PickOrCreateEntryResult pickOrCreateEntryResult = new PickOrCreateEntryResult();
 		pickOrCreateEntryResult.setNewContact(true);
 		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
@@ -686,7 +706,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_CreateContact_And_CreateSample() throws ExecutionException, InterruptedException {
+	public void testCreateContactAndCreateSample() throws ExecutionException, InterruptedException {
+
 		PickOrCreateEntryResult pickOrCreateEntryResult = new PickOrCreateEntryResult();
 		pickOrCreateEntryResult.setNewContact(true);
 		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
@@ -746,7 +767,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_CreateEvent() throws ExecutionException, InterruptedException {
+	public void testCreateEvent() throws ExecutionException, InterruptedException {
+
 		PickOrCreateEntryResult pickOrCreateEntryResult = new PickOrCreateEntryResult();
 		pickOrCreateEntryResult.setNewEventParticipant(true);
 		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
@@ -785,7 +807,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_CreateEvent_Cancel() throws ExecutionException, InterruptedException {
+	public void testCreateEventCancel() throws ExecutionException, InterruptedException {
+
 		PickOrCreateEntryResult pickOrCreateEntryResult = new PickOrCreateEntryResult();
 		pickOrCreateEntryResult.setNewEventParticipant(true);
 		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
@@ -811,7 +834,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_PickOrCreateEvent_Cancel() throws ExecutionException, InterruptedException {
+	public void testPickOrCreateEventCancel() throws ExecutionException, InterruptedException {
+
 		PickOrCreateEntryResult pickOrCreateEntryResult = new PickOrCreateEntryResult();
 		pickOrCreateEntryResult.setNewEventParticipant(true);
 		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
@@ -830,7 +854,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_CreateEvent_And_CreateEventParticipant() throws ExecutionException, InterruptedException {
+	public void testCreateEventAndCreateEventParticipant() throws ExecutionException, InterruptedException {
 
 		ArgumentCaptor<PersonDto> personCaptor = ArgumentCaptor.forClass(PersonDto.class);
 		doAnswer(answerPickOrCreatePerson(null)).when(handlePickOrCreatePerson).apply(personCaptor.capture(), any());
@@ -868,7 +892,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_CreateEventParticipant_Cancel() throws ExecutionException, InterruptedException {
+	public void testCreateEventParticipantCancel() throws ExecutionException, InterruptedException {
+
 		PickOrCreateEntryResult pickOrCreateEntryResult = new PickOrCreateEntryResult();
 		pickOrCreateEntryResult.setNewEventParticipant(true);
 		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
@@ -886,7 +911,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_CreateEvent_And_CreateEventParticipant_And_CreateSample() throws ExecutionException, InterruptedException {
+	public void testCreateEventAndCreateEventParticipantAndCreateSample() throws ExecutionException, InterruptedException {
+
 		PickOrCreateEntryResult pickOrCreateEntryResult = new PickOrCreateEntryResult();
 		pickOrCreateEntryResult.setNewEventParticipant(true);
 		doAnswer(answerPickOrCreateEntry(pickOrCreateEntryResult)).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
@@ -953,7 +979,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_PickExistingEvent_And_CreateEventParticipant() throws ExecutionException, InterruptedException {
+	public void testPickExistingEventAndCreateEventParticipant() throws ExecutionException, InterruptedException {
 
 		doAnswer(answerPickOrCreatePerson(null)).when(handlePickOrCreatePerson).apply(any(), any());
 
@@ -996,7 +1022,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_PickExistingEventWithExistingEventParticipant_And_CreateSample() throws ExecutionException, InterruptedException {
+	public void testPickExistingEventWithExistingEventParticipantAndCreateSample() throws ExecutionException, InterruptedException {
 
 		PersonDto person = creator.createPerson();
 		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
@@ -1032,7 +1058,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_PickExistingEventWithExistingEventParticipant_And_Cancel() throws ExecutionException, InterruptedException {
+	public void testPickExistingEventWithExistingEventParticipantAndCancel() throws ExecutionException, InterruptedException {
 
 		PersonDto person = creator.createPerson();
 		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
@@ -1072,7 +1098,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_PickExistingEventWithExistingEventParticipant_And_Cancel_Then_CreateEvent() throws ExecutionException, InterruptedException {
+	public void testPickExistingEventWithExistingEventParticipantAndCancelThenCreateEvent() throws ExecutionException, InterruptedException {
 
 		PersonDto person = creator.createPerson();
 		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
@@ -1119,7 +1145,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_PickExistingEvent_And_PickExistingEventParticipant_and_PickExistingSample() throws ExecutionException, InterruptedException {
+	public void testPickExistingEventAndPickExistingEventParticipantAndPickExistingSample() throws ExecutionException, InterruptedException {
 
 		PersonDto person = creator.createPerson();
 		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
@@ -1162,6 +1188,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		}).when(handlePickOrCreateSample).accept(any(), any());
 
 		ArgumentCaptor<SampleDto> editedSampleCaptor = ArgumentCaptor.forClass(SampleDto.class);
+		@SuppressWarnings("unchecked")
 		ArgumentCaptor<List<PathogenTestDto>> editedTestsCaptor = ArgumentCaptor.forClass(List.class);
 		doAnswer((invocation) -> {
 			SampleDto editedSample = invocation.getArgument(0);
@@ -1211,7 +1238,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_PickExistingCase_And_CreateSample() throws ExecutionException, InterruptedException {
+	@SuppressWarnings("unchecked")
+	public void testPickExistingCaseAndCreateSample() throws ExecutionException, InterruptedException {
 
 		PersonDto person = creator.createPerson();
 		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
@@ -1257,7 +1285,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_PickExistingCase_And_PickExistingSample() throws ExecutionException, InterruptedException {
+	@SuppressWarnings("unchecked")
+	public void testPickExistingCaseAndPickExistingSample() throws ExecutionException, InterruptedException {
 
 		PersonDto person = creator.createPerson();
 		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
@@ -1348,7 +1377,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_PickExistingContact_And_CreateSample() throws ExecutionException, InterruptedException {
+	@SuppressWarnings("unchecked")
+	public void testPickExistingContactAndCreateSample() throws ExecutionException, InterruptedException {
 
 		PersonDto person = creator.createPerson();
 		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
@@ -1387,7 +1417,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_PickExistingContact_And_PickExistingSample() throws ExecutionException, InterruptedException {
+	@SuppressWarnings("unchecked")
+	public void testPickExistingContactAndPickExistingSample() throws ExecutionException, InterruptedException {
 
 		PersonDto person = creator.createPerson();
 		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
@@ -1431,7 +1462,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_PickExistingEventParticipant_And_CreateSample() throws ExecutionException, InterruptedException {
+	@SuppressWarnings("unchecked")
+	public void testPickExistingEventParticipantAndCreateSample() throws ExecutionException, InterruptedException {
 
 		PersonDto person = creator.createPerson();
 		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
@@ -1471,7 +1503,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_PickExistingEventParticipant_And_PickExistingSample() throws ExecutionException, InterruptedException {
+	@SuppressWarnings("unchecked")
+	public void testPickExistingEventParticipantAndPickExistingSample() throws ExecutionException, InterruptedException {
 
 		PersonDto person = creator.createPerson();
 		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
@@ -1522,7 +1555,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_PickOrCreateSample_Cancel() throws ExecutionException, InterruptedException {
+	@SuppressWarnings("unchecked")
+	public void testPickOrCreateSampleCancel() throws ExecutionException, InterruptedException {
 
 		PersonDto person = creator.createPerson();
 		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
@@ -1547,7 +1581,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 			return null;
 		}).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
 
-		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, null);
+		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, null);
 
 		doAnswer((invocation) -> {
 			getCallbackParam(invocation).cancel();
@@ -1561,7 +1595,9 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void test_EditSample_Cancel() throws ExecutionException, InterruptedException {
+	@SuppressWarnings("unchecked")
+	public void testEditSampleCancel() throws ExecutionException, InterruptedException {
+
 		PersonDto person = creator.createPerson();
 		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
 
@@ -1606,6 +1642,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	}
 
 	private ProcessingResult<SampleAndPathogenTests> runFlow(LabMessageDto labMessage) throws ExecutionException, InterruptedException {
+
 		return flow.run(labMessage, relatedLabMessageHandler).toCompletableFuture().get();
 	}
 
@@ -1624,6 +1661,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		};
 	}
 
+	@SuppressWarnings("unchecked")
 	@NotNull
 	private Answer<?> answerPickOrCreateEntry(PickOrCreateEntryResult pickOrCreateEntryResult) {
 		return invocation -> {
@@ -1633,6 +1671,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		};
 	}
 
+	@SuppressWarnings("unchecked")
 	private <T> HandlerCallback<T> getCallbackParam(InvocationOnMock invocation) {
 		Object[] arguments = invocation.getArguments();
 		return (HandlerCallback<T>) arguments[arguments.length - 1];

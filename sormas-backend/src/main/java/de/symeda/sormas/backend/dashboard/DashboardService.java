@@ -423,7 +423,6 @@ public class DashboardService {
 
 		final From<?, Case> from = caseQueryContext.getRoot();
 		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
-		final CriteriaQuery<?> cq = caseQueryContext.getQuery();
 		final CaseJoins joins = caseQueryContext.getJoins();
 
 		Join<Case, Region> responsibleRegion = joins.getResponsibleRegion();

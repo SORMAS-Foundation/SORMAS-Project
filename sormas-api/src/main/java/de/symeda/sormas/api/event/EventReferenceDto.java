@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
@@ -27,6 +29,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 
+@DependingOnFeatureType(featureType = FeatureType.EVENT_SURVEILLANCE)
 public class EventReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = 2430932452606853497L;
