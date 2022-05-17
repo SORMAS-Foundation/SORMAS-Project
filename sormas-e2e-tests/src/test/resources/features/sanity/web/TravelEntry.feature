@@ -182,3 +182,16 @@ Feature: Create travel entries
     Then I apply on the APPLY FILTERS button
     And I click on first person in person directory
     Then I check if there is no travel entry assigned to Person
+
+  @issue=SORDEV-9946 @env_de
+  Scenario: Test Hide country specific fields in the 'Pick or create person' form of the duplicate detection pop-up, in German and French systems
+    Given I log in as a National User
+    And I click on the Entries button from navbar
+    And I click on the New Travel Entry button from Travel Entries directory
+    When I fill the required fields in a new travel entry form with same person data
+    And I click on Save button from the new travel entry form
+    And I click on the Entries button from navbar
+    And I click on the New Travel Entry button from Travel Entries directory
+    When I fill the required fields in a new travel entry form with same person data
+    And I click on Save button from the new travel entry form
+    Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup

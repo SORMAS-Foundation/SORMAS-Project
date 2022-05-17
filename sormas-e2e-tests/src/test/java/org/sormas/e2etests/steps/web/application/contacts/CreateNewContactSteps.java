@@ -44,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.services.ContactService;
+import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
@@ -55,6 +56,7 @@ public class CreateNewContactSteps implements En {
   private final SoftAssert softly;
   public static Contact collectedContactUUID;
   protected static Contact duplicatedContact;
+  protected static Contact samePersonDataContact;
   private final Faker faker;
 
   @Inject
@@ -76,9 +78,13 @@ public class CreateNewContactSteps implements En {
             faker.number().numberBetween(1900, 2002),
             faker.number().numberBetween(1, 12),
             faker.number().numberBetween(1, 27));
+    String sex = GenderValues.getRandomGenderDE();
     duplicatedContact =
         contactService.buildGeneratedContactWithParametrizedPersonData(
             firstName, lastName, dateOfBirth);
+    samePersonDataContact =
+        contactService.buildGeneratedContactWithParametrizedPersonDataDE(
+            firstName, lastName, dateOfBirth, sex);
 
     When(
         "^I fill a new contact form for duplicated contact with same person data$",
@@ -135,7 +141,34 @@ public class CreateNewContactSteps implements En {
           fillRelationshipWithCase(contact.getRelationshipWithCase());
           fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
         });
-
+    When(
+        "^I fill a new contact form with same person data for DE version$",
+        () -> {
+          fillFirstName(samePersonDataContact.getFirstName());
+          fillLastName(samePersonDataContact.getLastName());
+          fillDateOfBirth(samePersonDataContact.getDateOfBirth(), Locale.GERMAN);
+          selectSex(samePersonDataContact.getSex());
+          fillPrimaryPhoneNumber(samePersonDataContact.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(samePersonDataContact.getPrimaryEmailAddress());
+          selectReturningTraveler(samePersonDataContact.getReturningTraveler());
+          fillDateOfReport(samePersonDataContact.getReportDate(), Locale.GERMAN);
+          // fillDiseaseOfSourceCase(samePersonDataContact.getDiseaseOfSourceCase());
+          // fillCaseIdInExternalSystem(samePersonDataContact.getCaseIdInExternalSystem());
+          selectMultiDayContact();
+          fillDateOfFirstContact(samePersonDataContact.getDateOfFirstContact(), Locale.GERMAN);
+          fillDateOfLastContact(samePersonDataContact.getDateOfLastContact(), Locale.GERMAN);
+          // fillCaseOrEventInformation(samePersonDataContact.getCaseOrEventInformation());
+          selectResponsibleRegion(samePersonDataContact.getResponsibleRegion());
+          selectResponsibleDistrict(samePersonDataContact.getResponsibleDistrict());
+          selectResponsibleCommunity(samePersonDataContact.getResponsibleCommunity());
+          selectTypeOfContact(samePersonDataContact.getTypeOfContact());
+          fillAdditionalInformationOnTheTypeOfContact(
+              samePersonDataContact.getAdditionalInformationOnContactType());
+          selectContactCategory(samePersonDataContact.getContactCategory().toUpperCase());
+          fillRelationshipWithCase(samePersonDataContact.getRelationshipWithCase());
+          fillDescriptionOfHowContactTookPlace(
+              samePersonDataContact.getDescriptionOfHowContactTookPlace());
+        });
     When(
         "^I fill a new contact form$",
         () -> {
@@ -263,6 +296,12 @@ public class CreateNewContactSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_CREATED_POPUP);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
+        });
+    When(
+        "^I click on SAVE new contact case button$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
 
     When(

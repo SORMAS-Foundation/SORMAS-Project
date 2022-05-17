@@ -506,16 +506,16 @@ public class EditContactSteps implements En {
           webDriverHelpers.scrollToElement(CREATE_CASE_FROM_CONTACT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_FROM_CONTACT_BUTTON);
         });
-      When(
-              "I check if Vaccination Status is set to {string} on Edit Contact page",
-              (String expected) -> {
-                  webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditContactPage.UUID_INPUT);
-                  String vaccinationStatus =
-                          webDriverHelpers.getValueFromWebElement(VACCINATION_STATUS_INPUT);
-                  softly.assertEquals(
-                          expected, vaccinationStatus, "Vaccination status is different than expected");
-                  softly.assertAll();
-              });
+    When(
+        "I check if Vaccination Status is set to {string} on Edit Contact page",
+        (String expected) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditContactPage.UUID_INPUT);
+          String vaccinationStatus =
+              webDriverHelpers.getValueFromWebElement(VACCINATION_STATUS_INPUT);
+          softly.assertEquals(
+              expected, vaccinationStatus, "Vaccination status is different than expected");
+          softly.assertAll();
+        });
     When(
         "I check the created data for complex contact is correctly displayed on Edit Contact page",
         () -> {

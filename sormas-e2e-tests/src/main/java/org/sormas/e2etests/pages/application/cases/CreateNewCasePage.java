@@ -88,4 +88,10 @@ public class CreateNewCasePage {
   public static final By PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION =
       By.xpath(
           "//div[@class='v-grid v-widget v-has-width']//div[@class='v-grid-tablewrapper']/table/tbody[@class='v-grid-body']/tr[@class='v-grid-row v-grid-row-has-data']");
+  public static final By NICKNAME_ATTRIBUTE =
+      By.xpath("//span[@class=\"v-captiontext\" and text()=\"Spitzname\"]");
+  public static final By PASSPORT_NUMBER_ATTRIBUTE =
+      By.xpath("//span[@class=\"v-captiontext\" and text()=\"Reisepassnummer\"]");
+  public static final By NATIONAL_HEALTH_ID_ATTRIBUTE =
+      By.xpath("//span[@class=\"v-captiontext\" and text()=\"Krankenversicherungsnummer\"]");
 }

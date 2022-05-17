@@ -85,6 +85,36 @@ public class ContactService {
         .build();
   }
 
+  public Contact buildGeneratedContactWithParametrizedPersonDataDE(
+      String firstName, String lastName, LocalDate dateOfBirth, String sex) {
+
+    return Contact.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .dateOfBirth(dateOfBirth)
+        .sex(sex)
+        .primaryEmailAddress(
+            ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
+        .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
+        .returningTraveler("NEIN")
+        .reportDate(LocalDate.now().minusDays(random.nextInt(5)))
+        .diseaseOfSourceCase("COVID-19")
+        .caseIdInExternalSystem(UUID.randomUUID().toString())
+        .dateOfFirstContact(LocalDate.now().minusDays(9))
+        .dateOfLastContact(LocalDate.now().minusDays(6))
+        .caseOrEventInformation("Automated test dummy description")
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .additionalInformationOnContactType("Automated test dummy description")
+        .typeOfContact(
+            "Personen mit direktem Kontakt zu Sekreten oder K\u00F6rperfl\u00FCssigkeiten")
+        .contactCategory("Kontaktperson der Kategorie III")
+        .relationshipWithCase("Arbeiten in der gleichen Umgebung")
+        .descriptionOfHowContactTookPlace("Automated test dummy description")
+        .build();
+  }
+
   public Contact buildGeneratedContactWithParametrizedPersonData(
       String firstName, String lastName, LocalDate dateOfBirth) {
     return Contact.builder()
