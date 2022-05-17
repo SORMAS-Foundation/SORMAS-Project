@@ -270,6 +270,7 @@ public class ContactDirectorySteps implements En {
         "I open the last created contact",
         () -> {
           searchAfterContactByMultipleOptions(apiState.getCreatedContact().getUuid());
+          TimeUnit.SECONDS.sleep(3); // waiting for page loaded
           openContactFromResultsByUUID(apiState.getCreatedContact().getUuid());
         });
 
