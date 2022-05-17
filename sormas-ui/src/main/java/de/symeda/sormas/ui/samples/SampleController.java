@@ -50,6 +50,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -338,8 +339,8 @@ public class SampleController {
 		});
 
 		if (showDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)) {
-			editView.addDeleteListener(() -> {
-				FacadeProvider.getSampleFacade().deleteSample(dto.toReference());
+			editView.addDeleteWithReasonListener((deleteDetails) -> {
+				FacadeProvider.getSampleFacade().deleteSample(dto.toReference(), deleteDetails);
 				updateAssociationsForSample(dto);
 				UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entitySample));
@@ -347,6 +348,13 @@ public class SampleController {
 
 		if (dto.getReferredTo() != null || dto.getSamplePurpose() == SamplePurpose.EXTERNAL) {
 			editView.getWrappedComponent().getField(SampleDto.SAMPLE_PURPOSE).setEnabled(false);
+		}
+
+		if (dto.isDeleted()) {
+			editView.getWrappedComponent().getField(SampleDto.DELETION_REASON).setVisible(true);
+			if (editView.getWrappedComponent().getField(SampleDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
+				editView.getWrappedComponent().getField(SampleDto.OTHER_DELETION_REASON).setVisible(true);
+			}
 		}
 
 		return editView;

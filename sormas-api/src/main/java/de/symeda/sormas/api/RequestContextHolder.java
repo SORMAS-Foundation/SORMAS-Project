@@ -17,21 +17,24 @@ package de.symeda.sormas.api;
 
 public final class RequestContextHolder {
 
-	private static final ThreadLocal<RequestContextTO> requestContextHolder = new ThreadLocal<>();
+	private static final ThreadLocal<RequestContextTO> threadLocalContext = new ThreadLocal<>();
 
-	public static void reset() {
-		requestContextHolder.remove();
+	private RequestContextHolder() {
 	}
 
-	public static Boolean isMobileSync() {
-		return requestContextHolder.get() != null ? requestContextHolder.get().getMobileSync() : false;
+	public static void reset() {
+		threadLocalContext.remove();
+	}
+
+	public static boolean isMobileSync() {
+		return threadLocalContext.get().isMobileSync();
 	}
 
 	public static void setRequestContext(RequestContextTO requestContext) {
 		if (requestContext == null) {
 			reset();
 		} else {
-			requestContextHolder.set(requestContext);
+			threadLocalContext.set(requestContext);
 		}
 	}
 }

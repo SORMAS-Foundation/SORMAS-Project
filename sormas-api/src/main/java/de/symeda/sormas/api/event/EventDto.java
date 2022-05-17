@@ -15,9 +15,8 @@
 
 package de.symeda.sormas.api.event;
 
-import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
@@ -117,6 +116,8 @@ public class EventDto extends SormasToSormasShareableDto {
 	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String EVENT_GROUP = "eventGroup";
 	public static final String EVENT_IDENTIFICATION_SOURCE = "eventIdentificationSource";
+	public static final String DELETION_REASON = "deletionReason";
+	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	private EventReferenceDto superordinateEvent;
 
@@ -224,6 +225,9 @@ public class EventDto extends SormasToSormasShareableDto {
 	private String internalToken;
 
 	private EventIdentificationSource eventIdentificationSource;
+	private boolean deleted;
+	private DeletionReason deletionReason;
+	private String otherDeletionReason;
 
 	public static EventDto build() {
 		EventDto event = new EventDto();
@@ -718,5 +722,29 @@ public class EventDto extends SormasToSormasShareableDto {
 
 	public EventReferenceDto toReference() {
 		return new EventReferenceDto(getUuid());
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public DeletionReason getDeletionReason() {
+		return deletionReason;
+	}
+
+	public void setDeletionReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
+	}
+
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
+	}
+
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
 	}
 }
