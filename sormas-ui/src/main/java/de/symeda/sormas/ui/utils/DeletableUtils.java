@@ -32,6 +32,7 @@ public class DeletableUtils {
 
 		verticalLayout.addComponent(deleteReasonComboBox);
 		TextArea otherDeletionReason = new TextArea();
+		otherDeletionReason.setCaption(I18nProperties.getCaption(Captions.otherDeletionReason));
 		verticalLayout.addComponent(otherDeletionReason);
 		otherDeletionReason.setVisible(false);
 		otherDeletionReason.setWidth(100, Sizeable.Unit.PERCENTAGE);
@@ -42,6 +43,23 @@ public class DeletableUtils {
 		deleteReasonComboBox.addValueChangeListener(valueChangeEvent -> {
 			otherDeletionReason.setVisible(valueChangeEvent.getValue() == (DeletionReason.OTHER_REASON));
 		});
+
+		deleteReasonComboBox.addValueChangeListener(valueChangeEvent -> {
+			if (deleteReasonComboBox.isEmpty()) {
+				deleteReasonComboBox.setComponentError(new UserError(I18nProperties.getString(Strings.messageDeleteReasonNotFilled)));
+			} else {
+				deleteReasonComboBox.setComponentError(null);
+			}
+		});
+
+		otherDeletionReason.addValueChangeListener(valueChangeEvent -> {
+			if (deleteReasonComboBox.getValue() == DeletionReason.OTHER_REASON && StringUtils.isBlank(otherDeletionReason.getValue())) {
+				otherDeletionReason.setComponentError(new UserError(I18nProperties.getString(Strings.messageOtherDeleteReasonNotFilled)));
+			} else {
+				otherDeletionReason.setComponentError(null);
+			}
+		});
+
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingDeleteConfirmation),
 			verticalLayout,
@@ -53,7 +71,8 @@ public class DeletableUtils {
 					if (deleteReasonComboBox.isEmpty()) {
 						deleteReasonComboBox.setComponentError(new UserError(I18nProperties.getString(Strings.messageDeleteReasonNotFilled)));
 						return false;
-					} else if (deleteReasonComboBox.getValue() == DeletionReason.OTHER_REASON && StringUtils.isBlank(otherDeletionReason.getValue())) {
+					} else if (deleteReasonComboBox.getValue() == DeletionReason.OTHER_REASON
+						&& StringUtils.isBlank(otherDeletionReason.getValue())) {
 						otherDeletionReason.setComponentError(new UserError(I18nProperties.getString(Strings.messageOtherDeleteReasonNotFilled)));
 						return false;
 					}
