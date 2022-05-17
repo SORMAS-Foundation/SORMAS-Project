@@ -55,4 +55,8 @@ public class CreateNewTravelEntryPage {
       By.xpath("//div[@location='dateOfArrival']//div/div/div[@class='v-captiontext']");
   public static final By FIRST_TRAVEL_ENTRY_ID_BUTTON =
       By.cssSelector(".v-grid-row-has-data a[title]");
+  public static final By OPEN_CASE_OF_THIS_TRAVEL_ENTRY_BUTTON_DE =
+      By.xpath(
+          "//div[@location='case']//span[contains(text(),'Fall zu dieser Einreise \u00F6ffnen')]");
+  public static final By FIRST_UUID_TABLE_TRAVEL_ENTRIES = By.xpath("//table//td[1]");
 }
