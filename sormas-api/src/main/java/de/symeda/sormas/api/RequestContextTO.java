@@ -20,17 +20,17 @@ import java.io.Serializable;
 
 public class RequestContextTO implements Serializable {
 
-	private Boolean isMobileSync;
+	private boolean isMobileSync;
 
-	public RequestContextTO(Boolean isMobileSync) {
+	public RequestContextTO(boolean isMobileSync) {
 		this.isMobileSync = isMobileSync;
 	}
 
-	public Boolean getMobileSync() {
+	public boolean getMobileSync() {
 		return isMobileSync;
 	}
 
-	public void setMobileSync(Boolean mobileSync) {
+	public void setMobileSync(boolean mobileSync) {
 		isMobileSync = mobileSync;
 	}
 }
