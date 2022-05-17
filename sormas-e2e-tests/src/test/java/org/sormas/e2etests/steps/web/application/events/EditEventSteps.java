@@ -60,6 +60,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.LABORAT
 import static org.sormas.e2etests.pages.application.events.EditEventPage.LINK_EVENT_GROUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_DIRECTORY_LIST_GROUP_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_GROUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_PARTICIPANTS_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_ACTION_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_EVENT_GROUP_RADIOBUTTON;
@@ -697,6 +698,13 @@ public class EditEventSteps implements En {
               NAVIGATE_TO_EVENT_DIRECTORY_LIST_GROUP_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(
               NAVIGATE_TO_EVENT_DIRECTORY_LIST_GROUP_BUTTON);
+        });
+
+    When(
+        "I navigate to EVENT from edit event page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NAVIGATE_TO_EVENT_GROUP_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NAVIGATE_TO_EVENT_GROUP_BUTTON);
         });
 
     When(
