@@ -32,6 +32,7 @@ public class DeletableUtils {
 
 		verticalLayout.addComponent(deleteReasonComboBox);
 		TextArea otherDeletionReason = new TextArea();
+		otherDeletionReason.setCaption(I18nProperties.getCaption(Captions.otherDeletionReason));
 		verticalLayout.addComponent(otherDeletionReason);
 		otherDeletionReason.setVisible(false);
 		otherDeletionReason.setWidth(100, Sizeable.Unit.PERCENTAGE);

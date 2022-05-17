@@ -906,6 +906,7 @@ public interface Captions {
 	String defaultPointOfEntry = "defaultPointOfEntry";
 	String defaultRegion = "defaultRegion";
 	String deletionReason = "deletionReason";
+	String otherDeletionReason = "otherDeletionReason";
 	String description = "description";
 	String devModeCaseCount = "devModeCaseCount";
 	String devModeCaseDisease = "devModeCaseDisease";
