@@ -239,7 +239,8 @@ public class CommunitiesSteps implements En {
   private void fillSpecificCaseFields(Case caze, Communities communities) {
     selectCaseOrigin(caze.getCaseOrigin());
     fillDisease(caze.getDisease());
-    fillExternalId(caze.getExternalId());
+    // field that is no longer available
+    // fillExternalId(caze.getExternalId());
     selectResponsibleRegion(communities.getRegion());
     selectResponsibleDistrict(communities.getDistrict());
     selectResponsibleCommunity(communities.getCommunityName());
@@ -260,7 +261,8 @@ public class CommunitiesSteps implements En {
         .firstName(userInfo.getFirstName())
         .lastName(userInfo.getLastName())
         .dateOfBirth(userInfo.getDateOfBirth())
-        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
+        // field that is no longer available
+        // .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
         .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
         .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))

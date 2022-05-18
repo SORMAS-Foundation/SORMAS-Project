@@ -133,7 +133,9 @@ public class CreateNewCaseSteps implements En {
           LocalDate date = LocalDate.now().minusMonths(1);
           caze = caseService.buildGeneratedCaseForOnePerson(firstName, lastName, dateOfBirth);
           selectCaseOrigin(caze.getCaseOrigin());
-          fillExternalId(randomUUID_first_user.toString());
+          // field that is no longer available
+          // fillExternalId(randomUUID_first_user.toString());
+          fillEpidNumber(randomUUID_first_user.toString());
           fillDisease(caze.getDisease());
           selectResponsibleRegion(caze.getResponsibleRegion());
           selectResponsibleDistrict(caze.getResponsibleDistrict());
@@ -157,7 +159,9 @@ public class CreateNewCaseSteps implements En {
           LocalDate date = LocalDate.now();
           caze = caseService.buildGeneratedCaseForOnePerson(firstName, lastName, dateOfBirth);
           selectCaseOrigin(caze.getCaseOrigin());
-          fillExternalId(randomUUID_second_user.toString());
+          // field that is no longer available
+          // fillExternalId(randomUUID_second_user.toString());
+          fillEpidNumber(randomUUID_second_user.toString());
           fillDisease(caze.getDisease());
           selectResponsibleRegion(caze.getResponsibleRegion());
           selectResponsibleDistrict(caze.getResponsibleDistrict());
@@ -405,7 +409,9 @@ public class CreateNewCaseSteps implements En {
         () -> {
           caze = caseService.buildGeneratedCase();
           selectCaseOrigin(caze.getCaseOrigin());
-          fillExternalId(caze.getExternalId());
+          // field that is no longer available
+          // fillExternalId(caze.getExternalId());
+          fillEpidNumber(caze.getEpidNumber());
           fillDisease(caze.getDisease());
           selectResponsibleRegion(caze.getResponsibleRegion());
           selectResponsibleDistrict(caze.getResponsibleDistrict());
@@ -437,7 +443,8 @@ public class CreateNewCaseSteps implements En {
         () -> {
           caze = caseService.buildGeneratedCase();
           selectCaseOrigin(caze.getCaseOrigin());
-          fillExternalId(caze.getExternalId());
+          // field that is no longer available
+          // fillExternalId(caze.getExternalId());
           fillDisease(caze.getDisease());
           selectResponsibleRegion(caze.getResponsibleRegion());
           selectResponsibleDistrict(caze.getResponsibleDistrict());
@@ -556,7 +563,7 @@ public class CreateNewCaseSteps implements En {
           caze = caseService.buildGeneratedCase();
           fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
           selectCaseOrigin(caze.getCaseOrigin());
-          fillExternalId(caze.getExternalId());
+          //          fillExternalId(caze.getExternalId());
           selectResponsibleRegion(caze.getResponsibleRegion());
           selectResponsibleDistrict(caze.getResponsibleDistrict());
           selectResponsibleCommunity(caze.getResponsibleCommunity());
@@ -723,6 +730,10 @@ public class CreateNewCaseSteps implements En {
     webDriverHelpers.fillInWebElement(EXTERNAL_ID_INPUT, externalId);
   }
 
+  private void fillEpidNumber(String epidNumber) {
+    webDriverHelpers.fillInWebElement(EPID_NUMBER_INPUT, epidNumber);
+  }
+
   private void fillDisease(String disease) {
     webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
   }
@@ -811,7 +822,10 @@ public class CreateNewCaseSteps implements En {
 
   private void fillAllCaseFields(Case caze) {
     selectCaseOrigin(caze.getCaseOrigin());
-    fillExternalId(caze.getExternalId());
+    // field that is no longer available
+    // fillExternalId(caze.getExternalId());
+    // new field
+    // fillEpidNumber(caze.getEpidNumber());
     fillDisease(caze.getDisease());
     selectResponsibleRegion(caze.getResponsibleRegion());
     selectResponsibleDistrict(caze.getResponsibleDistrict());
