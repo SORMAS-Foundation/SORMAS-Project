@@ -210,7 +210,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	protected void validate(CampaignDto campaignDto, String formPhase) {
 		final List<CampaignDashboardElement> nonfilteredList = campaignDto.getCampaignDashboardElements();
 		
-		System.out.println(formPhase +" ))))))))formPhaseformPhaseformPhaseformPhaseformPhase(((((((( "+campaignDto.getCampaignDashboardElements());
+		System.out.println(formPhase +" ))))))))formPhaseformPhaseformPhaseformPhaseformPhase(((((((( "+campaignDto.getCampaignDashboardElements().toArray());
 		
 		List<CampaignDashboardElement> campaignDashboardElements;
 		

@@ -197,7 +197,7 @@ public class CampaignDashboardDataProvider {
 		getCampaignDashboardDiagrams().forEach(campaignDashboardDiagramDto -> {
 			final CampaignDashboardElement campaignDashboardElement = campaignDashboardDiagramDto.getCampaignDashboardElement();
 			if (campaignDashboardElement.getTabId().equals(tabId) && (subTabId == null || campaignDashboardElement.getSubTabId().equals(subTabId))) {
-				System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~```    "+getFormType());
+		//		System.out.println(tabId+ "TAB_ID~~~~~~~~~~~~"+ subTabId +" = subTabId~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~```    "+getFormType());
 				
 				List<CampaignDiagramDataDto> diagramData = FacadeProvider.getCampaignFormDataFacade()
 					.getDiagramData(

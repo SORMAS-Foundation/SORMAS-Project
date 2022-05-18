@@ -364,6 +364,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 	@Override
 	public List<CampaignFormDataDto> getAllActiveAfter(Date date) {
+		System.out.println("++++++++++++++ "+userService.getCurrentUser());
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}

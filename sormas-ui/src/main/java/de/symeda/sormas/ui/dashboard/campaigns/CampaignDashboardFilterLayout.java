@@ -76,8 +76,10 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 			CampaignJurisdictionLevel.getByJurisdictionLevel(UserRole.getJurisdictionLevel(user.getUserRoles()));
 		dashboardDataProvider.setCampaignJurisdictionLevelGroupBy(getJurisdictionBelow(campaignJurisdictionLevel));
 
+		
+		
 		createCampaignFilter();
-		createCampaignPhaseFilter();
+		
 		createJurisdictionFilters(campaignJurisdictionLevel);
 /*
 		campaignPhaseSelector = new OptionGroup();
@@ -104,11 +106,14 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 			dashboardView.refreshDashboard();
 		});
 		addComponent(campaignFilter);
+		
+		createCampaignPhaseFilter();
 
 		final CampaignReferenceDto lastStartedCampaign = dashboardDataProvider.getLastStartedCampaign();
 		if (lastStartedCampaign != null) {
 			System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.  "+lastStartedCampaign);
 			campaignFilter.setValue(lastStartedCampaign);
+			campaignPhaseFilter.setValue("inter-campaign");
 		}
 		dashboardDataProvider.setCampaign((CampaignReferenceDto) campaignFilter.getValue());
 	}
@@ -121,7 +126,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 			dashboardView.refreshDashboard();
 		});
 		addComponent(campaignFormPhaseSelector);
-		
+		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.  "+campaignFormPhaseSelector.getValue().toLowerCase());
 		dashboardDataProvider.setCampaignFormPhase(campaignFormPhaseSelector.getValue().toLowerCase());
 	}
 
