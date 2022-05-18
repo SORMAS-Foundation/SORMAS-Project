@@ -350,6 +350,7 @@ public class ContactDto extends SormasToSormasShareableDto {
 	private String quarantineChangeComment;
 	private boolean deleted;
 	private DeletionReason deletionReason;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
 
 	public static ContactDto build() {
