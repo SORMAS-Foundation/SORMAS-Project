@@ -322,7 +322,10 @@ public class LabMessagesView extends AbstractView {
 		Window window = VaadinUiUtil.showPopupWindow(verticalLayout);
 
 		cancelButton.addClickListener(event -> window.close());
-		noButton.addClickListener(event -> dateConsumer.accept(null));
+		noButton.addClickListener(event -> {
+			dateConsumer.accept(null);
+			window.close();
+		});
 		yesButton.addClickListener(yesEvent -> {
 			horizontalLayout.removeComponent(yesButton);
 			horizontalLayout.removeComponent(noButton);
