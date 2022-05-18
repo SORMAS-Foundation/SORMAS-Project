@@ -944,7 +944,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 	 *            {@link Sample}s identified by {@code List<String> sampleUuids} to be deleted.
 	 */
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void deleteAll(List<String> sampleUuids) {
+	public void deleteAll(List<String> sampleUuids, DeletionDetails deletionDetails) {
 
 		List<Sample> samplesList = getByUuids(sampleUuids);
 		List<String> pathogenTestUUIDsList = new ArrayList<>();
@@ -1005,6 +1005,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 
 		cu.set(Sample.CHANGE_DATE, Timestamp.from(Instant.now()));
 		cu.set(root.get(Sample.DELETED), true);
+		cu.set(root.get(Sample.DELETION_REASON), deletionDetails.getDeletionReason());
+		cu.set(root.get(Sample.OTHER_DELETION_REASON), deletionDetails.getOtherDeletionReason());
 
 		cu.where(root.get(Sample.UUID).in(sampleUuids));
 

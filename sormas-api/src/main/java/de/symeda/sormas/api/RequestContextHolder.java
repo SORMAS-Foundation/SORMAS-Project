@@ -27,7 +27,7 @@ public final class RequestContextHolder {
 	}
 
 	public static boolean isMobileSync() {
-		return threadLocalContext.get().isMobileSync();
+		return threadLocalContext.get() != null ? threadLocalContext.get().isMobileSync() : false;
 	}
 
 	public static void setRequestContext(RequestContextTO requestContext) {
