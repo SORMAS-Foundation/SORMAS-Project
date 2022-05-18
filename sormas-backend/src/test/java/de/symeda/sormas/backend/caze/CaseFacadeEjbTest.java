@@ -1211,6 +1211,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(pathogenTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
 		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
+		assertEquals(DeletionReason.OTHER_REASON, getCaseFacade().getByUuid(caze.getUuid()).getDeletionReason());
+		assertEquals("test reason", getCaseFacade().getByUuid(caze.getUuid()).getOtherDeletionReason());
 	}
 
 	@Test
@@ -2734,6 +2736,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(0, getCaseFacade().getAllActiveUuids().size());
 		assertEquals(0, getContactFacade().getAllActiveUuids().size());
+		assertEquals(DeletionReason.OTHER_REASON, getCaseFacade().getByUuid(caze.getUuid()).getDeletionReason());
+		assertEquals("test reason", getCaseFacade().getByUuid(caze.getUuid()).getOtherDeletionReason());
 	}
 
 	private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";

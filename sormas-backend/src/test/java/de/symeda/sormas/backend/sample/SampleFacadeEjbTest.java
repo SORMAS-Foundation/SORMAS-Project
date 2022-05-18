@@ -357,6 +357,8 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		// Sample and pathogen test should be marked as deleted
 		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
 		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(sampleTest.getUuid()));
+		assertEquals(DeletionReason.OTHER_REASON, getSampleFacade().getSampleByUuid(sample.getUuid()).getDeletionReason());
+		assertEquals("test reason", getSampleFacade().getSampleByUuid(sample.getUuid()).getOtherDeletionReason());
 	}
 
 	@Test

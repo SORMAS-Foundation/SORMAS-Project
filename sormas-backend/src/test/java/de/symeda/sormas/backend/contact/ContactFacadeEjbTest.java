@@ -507,6 +507,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertNull(getTaskFacade().getByUuid(task.getUuid()));
 		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
 		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sample2.getUuid()));
+		assertEquals(DeletionReason.OTHER_REASON, getContactFacade().getByUuid(contact.getUuid()).getDeletionReason());
+		assertEquals("test reason", getContactFacade().getByUuid(contact.getUuid()).getOtherDeletionReason());
 	}
 
 	@Test
