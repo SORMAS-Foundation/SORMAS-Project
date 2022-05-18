@@ -110,7 +110,7 @@ public class SampleResource extends EntityDtoResource {
 	@POST
 	@Path("/delete")
 	public List<String> delete(List<String> uuids) {
-		return FacadeProvider.getSampleFacade().deleteSamples(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "not yet implemented"));
+		return FacadeProvider.getSampleFacade().deleteSamples(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
 	}
 
 }
