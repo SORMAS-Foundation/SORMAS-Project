@@ -45,4 +45,8 @@ public class CreateNewTaskPage {
       By.cssSelector(".v-window #taskStatus .v-radiobutton label");
   public static final By SAVE_BUTTON = By.cssSelector(".v-window #commit");
   public static final By SELECTED_TASK_CONTEXT = By.cssSelector(".v-window [id='taskContext']");
+  public static final By OBSERVER_USER_INPUT =
+      By.xpath("//*[@id='observerUsers']//div[@role='combobox']//input");
+  public static final By SELECTED_OBSERVER_USER =
+      By.xpath("//*[@id='observerUsers']//div[@class='v-label v-widget v-has-width']");
 }

@@ -423,17 +423,18 @@ public class TaskFacadeEjb implements TaskFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Task> task = cq.from(Task.class);
-		TaskJoins joins = new TaskJoins(task);
+		TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, task);
+		TaskJoins joins = taskQueryContext.getJoins();
 
 		Predicate filter = null;
 		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
-			filter = taskService.createUserFilterForJoin(new TaskQueryContext(cb, cq, task));
+			filter = taskService.createUserFilter(taskQueryContext);
 		} else {
 			filter = CriteriaBuilderHelper.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
 		}
 
 		if (taskCriteria != null) {
-			Predicate criteriaFilter = taskService.buildCriteriaFilter(taskCriteria, cb, task, joins);
+			Predicate criteriaFilter = taskService.buildCriteriaFilter(taskCriteria, taskQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -545,13 +546,13 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		Predicate filter = null;
 		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
-			filter = taskService.createUserFilterForJoin(taskQueryContext);
+			filter = taskService.createUserFilter(taskQueryContext);
 		} else {
 			filter = CriteriaBuilderHelper.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
 		}
 
 		if (taskCriteria != null) {
-			Predicate criteriaFilter = taskService.buildCriteriaFilter(taskCriteria, cb, task, joins);
+			Predicate criteriaFilter = taskService.buildCriteriaFilter(taskCriteria, taskQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -709,13 +710,13 @@ public class TaskFacadeEjb implements TaskFacade {
 		//@formatter:on
 		Predicate filter = null;
 		if (criteria == null || !criteria.hasContextCriteria()) {
-			filter = taskService.createUserFilterForJoin(new TaskQueryContext(cb, cq, task));
+			filter = taskService.createUserFilter(taskQueryContext);
 		} else {
 			filter = CriteriaBuilderHelper.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
 		}
 
 		if (criteria != null) {
-			Predicate criteriaFilter = taskService.buildCriteriaFilter(criteria, cb, task, joins);
+			Predicate criteriaFilter = taskService.buildCriteriaFilter(criteria, taskQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 

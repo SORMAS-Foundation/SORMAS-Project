@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -64,8 +65,11 @@ import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.feature.FeatureConfigurationDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
@@ -96,13 +100,16 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.FeatureTypeFieldVisibilityChecker;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.XssfHelper;
 
@@ -112,21 +119,61 @@ public class InfoFacadeEjb implements InfoFacade {
 	public static final String DATA_PROTECTION_FILE_NAME = "DataProtectionInfo.xlsx";
 	public static final int FIRST_DATA_PROTECTION_COLUMN_INDEX = 10;
 
+	public static final List<EntityInfo> DATA_DICTIONARY_ENTITIES = new ArrayList<>();
+	static {
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(PersonDto.class, PersonDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(PersonContactDetailDto.class, PersonContactDetailDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(LocationDto.class, LocationDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(CaseDataDto.class, CaseDataDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(ActivityAsCaseDto.class, ActivityAsCaseDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(HospitalizationDto.class, HospitalizationDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(PreviousHospitalizationDto.class, PreviousHospitalizationDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(SurveillanceReportDto.class, SurveillanceReportDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(SymptomsDto.class, SymptomsDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(EpiDataDto.class, EpiDataDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(ExposureDto.class, ExposureDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(HealthConditionsDto.class, HealthConditionsDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(PrescriptionDto.class, PrescriptionDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(TreatmentDto.class, TreatmentDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(ClinicalVisitDto.class, ClinicalVisitDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(ContactDto.class, ContactDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(VisitDto.class, VisitDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(SampleDto.class, SampleDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(PathogenTestDto.class, PathogenTestDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(AdditionalTestDto.class, AdditionalTestDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(TaskDto.class, TaskDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(EventDto.class, EventDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(EventParticipantDto.class, EventParticipantDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(ActionDto.class, ActionDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(ImmunizationDto.class, ImmunizationDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(VaccinationDto.class, VaccinationDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(TravelEntryDto.class, TravelEntryDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(ContinentDto.class, ContinentDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(SubcontinentDto.class, SubcontinentDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(CountryDto.class, CountryDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(RegionDto.class, RegionDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(DistrictDto.class, DistrictDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(CommunityDto.class, CommunityDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(FacilityDto.class, FacilityDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(PointOfEntryDto.class, PointOfEntryDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(UserDto.class, UserDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(LabMessageDto.class, LabMessageDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(TestReportDto.class, TestReportDto.I18N_PREFIX));
+	}
+
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private UserService userService;
 	@EJB
 	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
+	@EJB
+	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
-	@Override
-	public String generateDataDictionary() throws IOException {
-		return generateDataDictionary(
-			filterColumnsForDataDictionary(),
-			FieldVisibilityCheckers.getNoop(),
-			Collections.emptyList(),
-			Collections.emptyMap(),
-			false);
+	private static EnumSet<EntityColumn> getColumnsForDataDictionary() {
+		EnumSet<EntityColumn> enumSet = EnumSet.allOf(EntityColumn.class);
+		enumSet.remove(EntityColumn.ENTITY);
+		return enumSet;
 	}
 
 	@Override
@@ -134,21 +181,56 @@ public class InfoFacadeEjb implements InfoFacade {
 		return userService.hasRight(UserRight.EXPORT_DATA_PROTECTION_DATA) && getDataProtectionFile().exists();
 	}
 
+	private static EnumSet<EntityColumn> getColumnsForDataProtectionDictionary() {
+		EnumSet<EntityColumn> enumSet = EnumSet.allOf(EntityColumn.class);
+		return enumSet.stream()
+			.filter(EntityColumn::isDataProtectionColumn)
+			.collect(Collectors.toCollection(() -> EnumSet.noneOf(EntityColumn.class)));
+	}
+
+	private static EnumSet<EntityColumn> getColumnsForAllFieldsSheet(EnumSet<EntityColumn> enumSet) {
+		return enumSet.stream()
+			.filter(column -> !column.isColumnForAllFieldsSheet())
+			.collect(Collectors.toCollection(() -> EnumSet.noneOf(EntityColumn.class)));
+	}
+
+	@Override
+	public String generateDataDictionary() throws IOException {
+		return generateDataDictionary(
+			DATA_DICTIONARY_ENTITIES,
+			getColumnsForDataDictionary(),
+			new VisibilityChecks((c, f) -> true, FieldVisibilityCheckers.getNoop()),
+			Collections.emptyList(),
+			Collections.emptyMap(),
+			false);
+	}
+
 	@Override
 	public String generateDataProtectionDictionary() throws IOException {
+		List<FeatureConfigurationDto> featureConfigurations = featureConfigurationFacade.getActiveServerFeatureConfigurations();
+
 		FieldVisibilityCheckers fieldVisibilityCheckers = FieldVisibilityCheckers.withCheckers(
 			new CountryFieldVisibilityChecker(configFacade.getCountryLocale()),
-			new DiseaseFieldVisibilityChecker(diseaseConfigurationFacade.getAllActiveDiseases()));
+			new DiseaseFieldVisibilityChecker(diseaseConfigurationFacade.getAllActiveDiseases()),
+			new FeatureTypeFieldVisibilityChecker(featureConfigurations));
 
-		try {
-			XSSFWorkbook dataProtectionInputWorkbook = new XSSFWorkbook(getDataProtectionFile());
+		List<EntityInfo> entities = DATA_DICTIONARY_ENTITIES.stream()
+			.filter(e -> isVisibleByFeatureConfiguration(e.getEntityClass(), featureConfigurations))
+			.collect(Collectors.toList());
+
+		try (XSSFWorkbook dataProtectionInputWorkbook = new XSSFWorkbook(getDataProtectionFile())) {
+
 			XSSFSheet dataProtectionSheet = dataProtectionInputWorkbook.getSheetAt(0);
 
 			List<ColumnData> dataProtectionColumns = getDataProtectionColumns(dataProtectionSheet);
 			Map<String, List<XSSFCell>> dataProtectionData = getDataProtectionCellData(dataProtectionSheet);
 			return generateDataDictionary(
-				filterColumnsForDataProtectionDictionaryWithEntityColumn(),
-				fieldVisibilityCheckers,
+				entities,
+				getColumnsForDataProtectionDictionary(),
+				new VisibilityChecks(
+					(dtoClass, field) -> fieldVisibilityCheckers.isVisible(dtoClass, field)
+						&& isVisibleByFeatureConfiguration(field.getType(), featureConfigurations),
+					fieldVisibilityCheckers),
 				dataProtectionColumns,
 				dataProtectionData,
 				true);
@@ -159,8 +241,9 @@ public class InfoFacadeEjb implements InfoFacade {
 	}
 
 	private String generateDataDictionary(
+		List<EntityInfo> entities,
 		EnumSet<EntityColumn> entityColumns,
-		FieldVisibilityCheckers fieldVisibilityCheckers,
+		VisibilityChecks visibilityChecks,
 		List<ColumnData> extraColumns,
 		Map<String, List<XSSFCell>> extraCells,
 		boolean isDataProtectionDictionary)
@@ -169,22 +252,22 @@ public class InfoFacadeEjb implements InfoFacade {
 		CellStyle defaultCellStyle = getDefaultCellStyle(workbook);
 
 		if (isDataProtectionDictionary) {
-			createEntitySheetWithAllFields(
+			createAllFieldsSheet(
 				workbook,
 				defaultCellStyle,
-				getEntityInfoList(),
+				entities,
 				entityColumns,
-				fieldVisibilityCheckers,
+				visibilityChecks.fieldVisibilityPredicate,
 				extraColumns,
 				extraCells);
 		}
 
-		createEntitySheetsForDataDictionary(
+		createEntitySheets(
 			workbook,
 			defaultCellStyle,
-			getEntityInfoList(),
-			filterColumnsForDataProtectionDictionaryWithoutEntityColumn(entityColumns),
-			fieldVisibilityCheckers,
+			entities,
+			getColumnsForAllFieldsSheet(entityColumns),
+			visibilityChecks,
 			extraColumns,
 			extraCells,
 			isDataProtectionDictionary);
@@ -200,140 +283,6 @@ public class InfoFacadeEjb implements InfoFacade {
 		}
 
 		return documentPath.toString();
-	}
-
-	private void createEntitySheetsForDataDictionary(
-		XSSFWorkbook workbook,
-		CellStyle defaultCellStyle,
-		List<EntityInfo> entityInfoList,
-		EnumSet<EntityColumn> entityColumns,
-		FieldVisibilityCheckers fieldVisibilityCheckers,
-		List<ColumnData> extraColumns,
-		Map<String, List<XSSFCell>> extraCells,
-		boolean isDataProtectionDictionary) {
-
-		for (EntityInfo entityInfo : entityInfoList) {
-			createEntitySheet(
-				workbook,
-				defaultCellStyle,
-				entityInfo,
-				entityColumns,
-				fieldVisibilityCheckers,
-				extraColumns,
-				extraCells,
-				isDataProtectionDictionary);
-		}
-	}
-
-	private void createEntitySheetWithAllFields(
-		XSSFWorkbook workbook,
-		CellStyle defaultCellStyle,
-		List<EntityInfo> entityInfoList,
-		EnumSet<EntityColumn> entityColumns,
-		FieldVisibilityCheckers fieldVisibilityCheckers,
-		List<ColumnData> extraColumns,
-		Map<String, List<XSSFCell>> extraCells) {
-
-		String name = "All fields";
-		String safeName = WorkbookUtil.createSafeSheetName(name);
-		XSSFSheet sheet = workbook.createSheet(safeName);
-
-		buildHeader(sheet, entityColumns, extraColumns);
-		int rowNumber = 1;
-		int columnCount = entityColumns.size() + extraColumns.size();
-		for (EntityInfo entityInfo : entityInfoList) {
-			Class<? extends EntityDto> entityClass = entityInfo.getEntityClass();
-
-			for (Field field : entityClass.getDeclaredFields()) {
-				if (java.lang.reflect.Modifier.isStatic(field.getModifiers()) || !fieldVisibilityCheckers.isVisible(entityClass, field.getName())) {
-					continue;
-				}
-				FieldData fieldData = new FieldData(field, entityClass, entityInfo.getI18nPrefix());
-				XSSFRow row = sheet.createRow(rowNumber++);
-				for (EntityColumn c : entityColumns) {
-					createCellsForRow(c, row, fieldData, defaultCellStyle);
-				}
-				copyCellsFromExtraCells(row, fieldData, extraCells);
-			}
-		}
-
-		// Configure table
-		AreaReference reference =
-			workbook.getCreationHelper().createAreaReference(new CellReference(0, 0), new CellReference(rowNumber - 1, columnCount - 1));
-		XssfHelper.configureTable(reference, getSafeTableName(safeName), sheet, XssfHelper.TABLE_STYLE_PRIMARY);
-	}
-
-	private void createEntitySheet(
-		XSSFWorkbook workbook,
-		CellStyle defaultCellStyle,
-		EntityInfo entityInfo,
-		EnumSet<EntityColumn> entityColumns,
-		FieldVisibilityCheckers fieldVisibilityCheckers,
-		List<ColumnData> extraColumns,
-		Map<String, List<XSSFCell>> extraCells,
-		boolean isDataProtectionDictionary) {
-
-		String name;
-		Class<? extends EntityDto> entityClass = entityInfo.getEntityClass();
-		if (isDataProtectionDictionary) {
-			name = DataHelper.getHumanClassName(entityClass);
-		} else {
-			name = I18nProperties.getCaption(entityInfo.getI18nPrefix());
-		}
-
-		String safeName = WorkbookUtil.createSafeSheetName(name);
-		XSSFSheet sheet = workbook.createSheet(safeName);
-
-		buildHeader(sheet, entityColumns, extraColumns);
-		int rowNumber = 1;
-		int columnCount = entityColumns.size() + extraColumns.size();
-
-		List<Class<Enum<?>>> usedEnums = new ArrayList<>();
-		boolean usesFacilityReference = false;
-
-		for (Field field : entityClass.getDeclaredFields()) {
-			if (java.lang.reflect.Modifier.isStatic(field.getModifiers()) || !fieldVisibilityCheckers.isVisible(entityClass, field.getName())) {
-				continue;
-			}
-			FieldData fieldData = new FieldData(field, entityClass, entityInfo.getI18nPrefix());
-			XSSFRow row = sheet.createRow(rowNumber++);
-			for (EntityColumn c : entityColumns) {
-				createCellsForRow(c, row, fieldData, defaultCellStyle);
-
-				Class<?> fieldType = field.getType();
-				if (fieldType.isEnum()) {
-					if (!usedEnums.contains(fieldType)) {
-						@SuppressWarnings("unchecked")
-						Class<Enum<?>> enumType = (Class<Enum<?>>) fieldType;
-						usedEnums.add(enumType);
-					}
-				} else if (Map.class.isAssignableFrom(fieldType)) {
-					getEnumGenericsOf(field, Map.class).filter(e -> !usedEnums.contains(e)).collect(Collectors.toCollection(() -> usedEnums));
-				} else if (Collection.class.isAssignableFrom(fieldType)) {
-					getEnumGenericsOf(field, Collection.class).filter(e -> !usedEnums.contains(e)).collect(Collectors.toCollection(() -> usedEnums));
-				} else if (FacilityReferenceDto.class.isAssignableFrom(fieldType)) {
-					usesFacilityReference = true;
-				}
-			}
-
-			copyCellsFromExtraCells(row, fieldData, extraCells);
-		}
-
-		// Configure table
-		AreaReference reference =
-			workbook.getCreationHelper().createAreaReference(new CellReference(0, 0), new CellReference(rowNumber - 1, columnCount - 1));
-		XssfHelper.configureTable(reference, getSafeTableName(safeName), sheet, XssfHelper.TABLE_STYLE_PRIMARY);
-
-		// constant facilities
-		if (usesFacilityReference) {
-			rowNumber = createFacilityTable(sheet, rowNumber + 1, defaultCellStyle);
-		}
-
-		// enums
-		for (Class<Enum<?>> usedEnum : usedEnums) {
-			rowNumber = createEnumTable(sheet, rowNumber + 1, usedEnum, fieldVisibilityCheckers);
-		}
-
 	}
 
 	private Stream<Class<Enum<?>>> getEnumGenericsOf(Field field, Class<?> toClass) {
@@ -515,68 +464,138 @@ public class InfoFacadeEjb implements InfoFacade {
 		return name.replaceAll("\\s|\\p{Punct}", "_");
 	}
 
-	private List<EntityInfo> getEntityInfoList() {
-		List<EntityInfo> entityInfoList = new ArrayList<>();
+	private void createEntitySheets(
+		XSSFWorkbook workbook,
+		CellStyle defaultCellStyle,
+		List<EntityInfo> entityInfoList,
+		EnumSet<EntityColumn> entityColumns,
+		VisibilityChecks visibilityChecks,
+		List<ColumnData> extraColumns,
+		Map<String, List<XSSFCell>> extraCells,
+		boolean isDataProtectionDictionary) {
 
-		entityInfoList.add(new EntityInfo(PersonDto.class, PersonDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(PersonContactDetailDto.class, PersonContactDetailDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(LocationDto.class, LocationDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(CaseDataDto.class, CaseDataDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(ActivityAsCaseDto.class, ActivityAsCaseDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(HospitalizationDto.class, HospitalizationDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(PreviousHospitalizationDto.class, PreviousHospitalizationDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(SurveillanceReportDto.class, SurveillanceReportDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(SymptomsDto.class, SymptomsDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(EpiDataDto.class, EpiDataDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(ExposureDto.class, ExposureDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(HealthConditionsDto.class, HealthConditionsDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(PrescriptionDto.class, PrescriptionDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(TreatmentDto.class, TreatmentDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(ClinicalVisitDto.class, ClinicalVisitDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(ContactDto.class, ContactDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(VisitDto.class, VisitDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(SampleDto.class, SampleDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(PathogenTestDto.class, PathogenTestDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(AdditionalTestDto.class, AdditionalTestDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(TaskDto.class, TaskDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(EventDto.class, EventDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(EventParticipantDto.class, EventParticipantDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(ActionDto.class, ActionDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(ImmunizationDto.class, ImmunizationDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(VaccinationDto.class, VaccinationDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(TravelEntryDto.class, TravelEntryDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(ContinentDto.class, ContinentDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(SubcontinentDto.class, SubcontinentDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(CountryDto.class, CountryDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(RegionDto.class, RegionDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(DistrictDto.class, DistrictDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(CommunityDto.class, CommunityDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(FacilityDto.class, FacilityDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(PointOfEntryDto.class, PointOfEntryDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(UserDto.class, UserDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(LabMessageDto.class, LabMessageDto.I18N_PREFIX));
-		entityInfoList.add(new EntityInfo(TestReportDto.class, TestReportDto.I18N_PREFIX));
-
-		return entityInfoList;
+		for (EntityInfo entityInfo : entityInfoList) {
+			createEntitySheet(
+				workbook,
+				defaultCellStyle,
+				entityInfo,
+				entityColumns,
+				visibilityChecks,
+				extraColumns,
+				extraCells,
+				isDataProtectionDictionary);
+		}
 	}
 
-	private EnumSet<EntityColumn> filterColumnsForDataDictionary() {
-		EnumSet<EntityColumn> enumSet = EnumSet.allOf(EntityColumn.class);
-		enumSet.remove(EntityColumn.ENTITY);
-		return enumSet;
+	private void createAllFieldsSheet(
+		XSSFWorkbook workbook,
+		CellStyle defaultCellStyle,
+		List<EntityInfo> entityInfoList,
+		EnumSet<EntityColumn> entityColumns,
+		BiPredicate<Class<?>, Field> fieldVisibilityPredicate,
+		List<ColumnData> extraColumns,
+		Map<String, List<XSSFCell>> extraCells) {
+
+		String name = I18nProperties.getCaption(Captions.dataProtectionAllFieldsSheet);
+		String safeName = WorkbookUtil.createSafeSheetName(name);
+		XSSFSheet sheet = workbook.createSheet(safeName);
+
+		buildHeader(sheet, entityColumns, extraColumns);
+		int rowNumber = 1;
+		int columnCount = entityColumns.size() + extraColumns.size();
+		for (EntityInfo entityInfo : entityInfoList) {
+			Class<? extends EntityDto> entityClass = entityInfo.getEntityClass();
+
+			for (Field field : entityClass.getDeclaredFields()) {
+				if (java.lang.reflect.Modifier.isStatic(field.getModifiers()) || !fieldVisibilityPredicate.test(entityClass, field)) {
+					continue;
+				}
+				FieldData fieldData = new FieldData(field, entityClass, entityInfo.getI18nPrefix());
+				XSSFRow row = sheet.createRow(rowNumber++);
+				for (EntityColumn c : entityColumns) {
+					createCellsForRow(c, row, fieldData, defaultCellStyle);
+				}
+				copyCellsFromExtraCells(row, fieldData, extraCells);
+			}
+		}
+
+		// Configure table
+		AreaReference reference =
+			workbook.getCreationHelper().createAreaReference(new CellReference(0, 0), new CellReference(rowNumber - 1, columnCount - 1));
+		XssfHelper.configureTable(reference, getSafeTableName(safeName), sheet, XssfHelper.TABLE_STYLE_PRIMARY);
 	}
 
-	private EnumSet<EntityColumn> filterColumnsForDataProtectionDictionaryWithEntityColumn() {
-		EnumSet<EntityColumn> enumSet = EnumSet.allOf(EntityColumn.class);
-		return enumSet.stream()
-			.filter(EntityColumn::isDataProtectionColumn)
-			.collect(Collectors.toCollection(() -> EnumSet.noneOf(EntityColumn.class)));
-	}
+	private void createEntitySheet(
+		XSSFWorkbook workbook,
+		CellStyle defaultCellStyle,
+		EntityInfo entityInfo,
+		EnumSet<EntityColumn> entityColumns,
+		VisibilityChecks visibilityChecks,
+		List<ColumnData> extraColumns,
+		Map<String, List<XSSFCell>> extraCells,
+		boolean isDataProtectionDictionary) {
 
-	private EnumSet<EntityColumn> filterColumnsForDataProtectionDictionaryWithoutEntityColumn(EnumSet<EntityColumn> enumSet) {
-		return enumSet.stream()
-			.filter(column -> !column.isColumnForAllFieldsSheet())
-			.collect(Collectors.toCollection(() -> EnumSet.noneOf(EntityColumn.class)));
+		String name;
+		Class<? extends EntityDto> entityClass = entityInfo.getEntityClass();
+		if (isDataProtectionDictionary) {
+			name = DataHelper.getHumanClassName(entityClass);
+		} else {
+			name = I18nProperties.getCaption(entityInfo.getI18nPrefix());
+		}
+
+		String safeName = WorkbookUtil.createSafeSheetName(name);
+		XSSFSheet sheet = workbook.createSheet(safeName);
+
+		buildHeader(sheet, entityColumns, extraColumns);
+		int rowNumber = 1;
+		int columnCount = entityColumns.size() + extraColumns.size();
+
+		List<Class<Enum<?>>> usedEnums = new ArrayList<>();
+		boolean usesFacilityReference = false;
+
+		for (Field field : entityClass.getDeclaredFields()) {
+			if (java.lang.reflect.Modifier.isStatic(field.getModifiers()) || !visibilityChecks.fieldVisibilityPredicate.test(entityClass, field)) {
+				continue;
+			}
+			FieldData fieldData = new FieldData(field, entityClass, entityInfo.getI18nPrefix());
+			XSSFRow row = sheet.createRow(rowNumber++);
+			for (EntityColumn c : entityColumns) {
+				createCellsForRow(c, row, fieldData, defaultCellStyle);
+
+				Class<?> fieldType = field.getType();
+				if (fieldType.isEnum()) {
+					if (!usedEnums.contains(fieldType)) {
+						@SuppressWarnings("unchecked")
+						Class<Enum<?>> enumType = (Class<Enum<?>>) fieldType;
+						usedEnums.add(enumType);
+					}
+				} else if (Map.class.isAssignableFrom(fieldType)) {
+					getEnumGenericsOf(field, Map.class).filter(e -> !usedEnums.contains(e)).collect(Collectors.toCollection(() -> usedEnums));
+				} else if (Collection.class.isAssignableFrom(fieldType)) {
+					getEnumGenericsOf(field, Collection.class).filter(e -> !usedEnums.contains(e)).collect(Collectors.toCollection(() -> usedEnums));
+				} else if (FacilityReferenceDto.class.isAssignableFrom(fieldType)) {
+					usesFacilityReference = true;
+				}
+			}
+
+			copyCellsFromExtraCells(row, fieldData, extraCells);
+		}
+
+		// Configure table
+		AreaReference reference =
+			workbook.getCreationHelper().createAreaReference(new CellReference(0, 0), new CellReference(rowNumber - 1, columnCount - 1));
+		XssfHelper.configureTable(reference, getSafeTableName(safeName), sheet, XssfHelper.TABLE_STYLE_PRIMARY);
+
+		// constant facilities
+		if (usesFacilityReference) {
+			rowNumber = createFacilityTable(sheet, rowNumber + 1, defaultCellStyle);
+		}
+
+		// enums
+		for (Class<Enum<?>> usedEnum : usedEnums) {
+			rowNumber = createEnumTable(sheet, rowNumber + 1, usedEnum, visibilityChecks.enumVisibilityCheckers);
+		}
+
 	}
 
 	private CellStyle getDefaultCellStyle(XSSFWorkbook workbook) {
@@ -603,7 +622,7 @@ public class InfoFacadeEjb implements InfoFacade {
 	private void copyCellsFromExtraCells(XSSFRow row, FieldData fieldData, Map<String, List<XSSFCell>> extraCells) {
 		String fieldId = EntityColumn.FIELD_ID.getGetValueFromField(fieldData);
 		if (extraCells.containsKey(fieldId)) {
-			extraCells.get(fieldId).forEach((extraCell) -> {
+			extraCells.get(fieldId).forEach(extraCell -> {
 				XSSFCell newCell = row.createCell(row.getLastCellNum());
 				if (extraCell != null) {
 					newCell.copyCellFrom(extraCell, new CellCopyPolicy.Builder().cellValue(true).cellStyle(false).cellFormula(false).build());
@@ -627,6 +646,17 @@ public class InfoFacadeEjb implements InfoFacade {
 		});
 	}
 
+	private boolean isVisibleByFeatureConfiguration(Class<?> dtoClass, List<FeatureConfigurationDto> featureConfigurations) {
+		if (dtoClass.isAnnotationPresent(DependingOnFeatureType.class)) {
+			FeatureType[] featureTypes = dtoClass.getAnnotation(DependingOnFeatureType.class).featureType();
+
+			return Arrays.stream(featureTypes)
+				.anyMatch(f -> featureConfigurations.stream().anyMatch(fc -> fc.getFeatureType() == f && fc.isEnabled()));
+		}
+
+		return true;
+	}
+
 	@LocalBean
 	@Stateless
 	public static class InfoFacadeEjbLocal extends InfoFacadeEjb {
@@ -643,7 +673,7 @@ public class InfoFacadeEjb implements InfoFacade {
 		}
 	}
 
-	private static class EntityInfo {
+	public static class EntityInfo {
 
 		private Class<? extends EntityDto> entityClass;
 		private String i18nPrefix;
@@ -659,6 +689,17 @@ public class InfoFacadeEjb implements InfoFacade {
 
 		public String getI18nPrefix() {
 			return i18nPrefix;
+		}
+	}
+
+	private static class VisibilityChecks {
+
+		private final BiPredicate<Class<?>, Field> fieldVisibilityPredicate;
+		private final FieldVisibilityCheckers enumVisibilityCheckers;
+
+		public VisibilityChecks(BiPredicate<Class<?>, Field> fieldVisibilityPredicate, FieldVisibilityCheckers enumVisibilityCheckers) {
+			this.fieldVisibilityPredicate = fieldVisibilityPredicate;
+			this.enumVisibilityCheckers = enumVisibilityCheckers;
 		}
 	}
 }

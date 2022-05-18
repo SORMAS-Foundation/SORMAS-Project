@@ -53,6 +53,7 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.HOUSE
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.INVALID_DATA_ERROR;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.LAST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.NAMES_OF_GUARDIANS_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.NO_TRAVEL_ENTRY_LABEL_DE;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_CONTACT_DETAILS_CONTACT_INFORMATION_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_CONTACT_DETAILS_TYPE_OF_DETAILS_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PHONE_FIELD;
@@ -89,7 +90,7 @@ import org.openqa.selenium.ElementClickInterceptedException;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Person;
 import org.sormas.e2etests.entities.services.PersonService;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -112,7 +113,7 @@ public class EditPersonSteps implements En {
       BaseSteps baseSteps,
       AssertHelpers assertHelpers,
       ApiState apiState,
-      EnvironmentManager environmentManager) {
+      RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -250,6 +251,11 @@ public class EditPersonSteps implements En {
         });
 
     When(
+        "I check if there is no travel entry assigned to Person",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NO_TRAVEL_ENTRY_LABEL_DE);
+        });
+    When(
         "I check if event is available at person information",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEE_EVENTS_FOR_PERSON);
@@ -263,7 +269,7 @@ public class EditPersonSteps implements En {
         () -> {
           final String personUuid = EditEventSteps.person.getUuid();
           webDriverHelpers.accessWebSite(
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!persons/data/"
                   + personUuid);
         });

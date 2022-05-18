@@ -275,7 +275,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			fluidRowLocs(6, CaseDataDto.SURVEILLANCE_OFFICER) +
 					loc(PAPER_FORM_DATES_LOC) +
 					fluidRowLocs(CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE, CaseDataDto.NATIONAL_LEVEL_DATE) +
-					loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS);
+					loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS) +
+					fluidRowLocs(CaseDataDto.DELETION_REASON) +
+					fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
 	//@formatter:on
 
 	private final String caseUuid;
@@ -335,10 +337,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		if (cbFacility.getValue() != null) {
 			boolean otherHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
 			boolean noneHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
-			boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
+			boolean visible = otherHealthFacility || noneHealthFacility;
 
-			tfFacilityDetails.setVisible(visibleAndRequired);
-			tfFacilityDetails.setRequired(otherHealthFacility);
+			tfFacilityDetails.setVisible(visible);
 
 			if (otherHealthFacility) {
 				tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
@@ -346,12 +347,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			if (noneHealthFacility) {
 				tfFacilityDetails.setCaption(I18nProperties.getCaption(Captions.CaseData_noneHealthFacilityDetails));
 			}
-			if (!visibleAndRequired && !tfFacilityDetails.isReadOnly()) {
+			if (!visible && !tfFacilityDetails.isReadOnly()) {
 				tfFacilityDetails.clear();
 			}
 		} else {
 			tfFacilityDetails.setVisible(false);
-			tfFacilityDetails.setRequired(false);
 			if (!tfFacilityDetails.isReadOnly()) {
 				tfFacilityDetails.clear();
 			}
@@ -1247,6 +1247,10 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 			getContent().addComponent(classificationRulesButton, CLASSIFICATION_RULES_LOC);
 		}
+
+		addField(CaseDataDto.DELETION_REASON);
+		addField(CaseDataDto.OTHER_DELETION_REASON, TextArea.class).setRows(3);
+		setVisible(false, CaseDataDto.DELETION_REASON, CaseDataDto.OTHER_DELETION_REASON);
 
 		addValueChangeListener(e -> {
 			diseaseField.addValueChangeListener(new DiseaseChangeListener(diseaseField, getValue().getDisease()));

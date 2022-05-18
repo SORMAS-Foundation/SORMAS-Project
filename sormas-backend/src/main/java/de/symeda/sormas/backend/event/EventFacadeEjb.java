@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
-import static de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
-
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -57,6 +55,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.DeletionDetails;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -112,6 +111,7 @@ import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLoca
 import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
@@ -290,30 +290,30 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	@RolesAllowed(UserRight._EVENT_DELETE)
-	public void delete(String eventUuid) throws ExternalSurveillanceToolException {
+	public void delete(String eventUuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
 		Event event = service.getByUuid(eventUuid);
-		deleteEvent(event);
+		deleteEvent(event, deletionDetails);
 	}
 
-	private void deleteEvent(Event event) throws ExternalSurveillanceToolException {
+	private void deleteEvent(Event event, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
 		if (event.getEventStatus() == EventStatus.CLUSTER
 			&& externalSurveillanceToolFacade.isFeatureEnabled()
 			&& externalShareInfoService.isEventShared(event.getId())) {
 			externalSurveillanceToolFacade.deleteEvents(Collections.singletonList(toDto(event)));
 		}
 
-		service.delete(event);
+		service.delete(event, deletionDetails);
 	}
 
 	@RolesAllowed(UserRight._EVENT_DELETE)
-	public List<String> deleteEvents(List<String> eventUuids) {
+	public List<String> deleteEvents(List<String> eventUuids, DeletionDetails deletionDetails) {
 		List<String> deletedEventUuids = new ArrayList<>();
 		List<Event> eventsToBeDeleted = service.getByUuids(eventUuids);
 		if (eventsToBeDeleted != null) {
 			eventsToBeDeleted.forEach(eventToBeDeleted -> {
 				if (!eventToBeDeleted.isDeleted()) {
 					try {
-						deleteEvent(eventToBeDeleted);
+						deleteEvent(eventToBeDeleted, deletionDetails);
 						deletedEventUuids.add(eventToBeDeleted.getUuid());
 					} catch (ExternalSurveillanceToolException e) {
 						logger.error("The event with uuid:" + eventToBeDeleted.getUuid() + "could not be deleted");
@@ -330,15 +330,18 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Event> event = cq.from(Event.class);
+		EventQueryContext queryContext = new EventQueryContext(cb, cq, event);
 
 		Predicate filter = null;
 
 		if (eventCriteria != null) {
 			if (eventCriteria.getUserFilterIncluded()) {
-				filter = service.createUserFilter(cb, cq, event);
+				EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
+				eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
+				filter = service.createUserFilter(queryContext, eventUserFilterCriteria);
 			}
 
-			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
+			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, queryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -419,7 +422,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			if (eventCriteria.getUserFilterIncluded()) {
 				EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
 				eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
-				filter = service.createUserFilter(cb, cq, event, eventUserFilterCriteria);
+				filter = service.createUserFilter(eventQueryContext, eventUserFilterCriteria);
 			}
 
 			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, eventQueryContext);
@@ -725,7 +728,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		cq.distinct(true);
 
-		Predicate filter = service.createUserFilter(cb, cq, event);
+		Predicate filter = service.createUserFilter(eventQueryContext);
 
 		if (eventCriteria != null) {
 			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, eventQueryContext);
@@ -1096,6 +1099,10 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		target.setEventIdentificationSource(source.getEventIdentificationSource());
 
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -1200,6 +1207,10 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
 		}
 
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -1286,14 +1297,13 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<String> cq = cb.createQuery(String.class);
 			Root<Event> from = cq.from(Event.class);
-
-			EventJoins eventJoins = new EventJoins(from);
+			EventQueryContext queryContext = new EventQueryContext(cb, cq, from);
 
 			Predicate filters = CriteriaBuilderHelper.and(
 				cb,
-				service.createUserFilter(cb, cq, from),
+				service.createUserFilter(queryContext),
 				service.createActiveEventsFilter(cb, from),
-				eventJoins.getSuperordinateEvent().get(Event.UUID).in(batchedUuids));
+				queryContext.getJoins().getSuperordinateEvent().get(Event.UUID).in(batchedUuids));
 
 			cq.where(filters);
 			cq.select(from.get(Event.UUID));

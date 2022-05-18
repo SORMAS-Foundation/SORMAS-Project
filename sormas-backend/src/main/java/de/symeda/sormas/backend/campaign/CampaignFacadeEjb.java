@@ -25,10 +25,11 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.EditPermissionType;
+import de.symeda.sormas.api.common.DeletionDetails;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignFacade;
@@ -36,6 +37,7 @@ import de.symeda.sormas.api.campaign.CampaignIndexDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -49,7 +51,6 @@ import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinitionFacade
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
@@ -85,13 +86,14 @@ public class CampaignFacadeEjb
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CampaignIndexDto> cq = cb.createQuery(CampaignIndexDto.class);
 		Root<Campaign> campaign = cq.from(Campaign.class);
+		CampaignQueryContext queryContext = new CampaignQueryContext(cb, cq, campaign);
 
 		cq.multiselect(campaign.get(Campaign.UUID), campaign.get(Campaign.NAME), campaign.get(Campaign.START_DATE), campaign.get(Campaign.END_DATE));
 
-		Predicate filter = service.createUserFilter(cb, cq, campaign);
+		Predicate filter = service.createUserFilter(queryContext);
 
 		if (campaignCriteria != null) {
-			Predicate criteriaFilter = service.buildCriteriaFilter(campaignCriteria, cb, campaign);
+			Predicate criteriaFilter = service.buildCriteriaFilter(queryContext, campaignCriteria);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -152,11 +154,12 @@ public class CampaignFacadeEjb
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Campaign> campaign = cq.from(Campaign.class);
+		CampaignQueryContext queryContext = new CampaignQueryContext(cb, cq, campaign);
 
-		Predicate filter = service.createUserFilter(cb, cq, campaign);
+		Predicate filter = service.createUserFilter(queryContext);
 
 		if (campaignCriteria != null) {
-			Predicate criteriaFilter = service.buildCriteriaFilter(campaignCriteria, cb, campaign);
+			Predicate criteriaFilter = service.buildCriteriaFilter(queryContext, campaignCriteria);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -194,6 +197,11 @@ public class CampaignFacadeEjb
 					.collect(Collectors.toSet()));
 		}
 		target.setDashboardElements(source.getCampaignDashboardElements());
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -296,6 +304,10 @@ public class CampaignFacadeEjb
 
 		target.setCampaignDashboardElements(source.getDashboardElements());
 
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -348,7 +360,7 @@ public class CampaignFacadeEjb
 
 	@Override
 	@RolesAllowed(UserRight._CAMPAIGN_DELETE)
-	public void delete(String campaignUuid) {
+	public void delete(String campaignUuid, DeletionDetails deletionDetails) {
 
 		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
@@ -358,7 +370,7 @@ public class CampaignFacadeEjb
 					+ I18nProperties.getString(Strings.entityCampaigns).toLowerCase() + ".");
 		}
 
-		service.delete(service.getByUuid(campaignUuid));
+		service.delete(service.getByUuid(campaignUuid), deletionDetails);
 	}
 
 	@Override

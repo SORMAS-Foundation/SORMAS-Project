@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.bagexport;
 
-import de.symeda.sormas.api.user.UserRight;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,6 +46,7 @@ import de.symeda.sormas.api.bagexport.BAGExportContactDto;
 import de.symeda.sormas.api.bagexport.BAGExportFacade;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJoins;
@@ -80,7 +80,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 		CaseJoins caseJoins = new CaseJoins(caseRoot);
 
 		Join<Case, Person> person = caseJoins.getPerson();
-		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, caseJoins.getPersonJoins());
 
 		Join<Person, Location> homeAddress = caseJoins.getPersonAddress();
 
@@ -244,7 +244,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 		Join<Person, Location> homeAddress = contactJoins.getAddress();
 		Join<Contact, Case> caze = contactJoins.getCaze();
 
-		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, contactJoins.getPersonJoins());
 
 		Expression<String> mobileNumber = cb.literal(TODO_VALUE);
 		Expression<Date> caseLinkContactDate = cb.nullLiteral(Date.class);

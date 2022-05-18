@@ -28,8 +28,8 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.labmessage.ExternalMessageType;
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
+import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -75,8 +75,7 @@ public class LabMessageGridFilterForm extends AbstractFilterForm<LabMessageCrite
 		assignee.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), null, UserRight.LAB_MESSAGES));
 		assignee.setNullSelectionAllowed(true);
 
-		ComboBox type = addField(LabMessageCriteria.TYPE, ComboBox.class);
-		type.addItems((Object) ExternalMessageType.values());
+		addField(LabMessageDto.TYPE, ComboBox.class);
 
 		DateTimeField messageDateFrom = addField(LabMessageCriteria.MESSAGE_DATE_FROM, DateTimeField.class);
 		messageDateFrom.setCaption(I18nProperties.getPrefixCaption(LabMessageCriteria.I18N_PREFIX, LabMessageCriteria.MESSAGE_DATE_FROM));

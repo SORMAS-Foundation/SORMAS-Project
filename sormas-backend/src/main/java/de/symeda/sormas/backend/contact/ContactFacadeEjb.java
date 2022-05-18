@@ -63,7 +63,8 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.vaccination.VaccinationService;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -202,6 +203,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
@@ -528,27 +530,27 @@ public class ContactFacadeEjb
 
 	@Override
 	@RolesAllowed(UserRight._CONTACT_DELETE)
-	public void delete(String contactUuid) {
+	public void delete(String contactUuid, DeletionDetails deletionDetails) {
 		Contact contact = service.getByUuid(contactUuid);
-		deleteContact(contact);
+		deleteContact(contact, deletionDetails);
 	}
 
-	private void deleteContact(Contact contact) {
+	private void deleteContact(Contact contact, DeletionDetails deletionDetails) {
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
-		service.delete(contact);
+		service.delete(contact, deletionDetails);
 		if (contact.getCaze() != null) {
 			caseFacade.onCaseChanged(caseFacade.toDto(contact.getCaze()), contact.getCaze());
 		}
 	}
 
 	@RolesAllowed(UserRight._CONTACT_DELETE)
-	public List<String> deleteContacts(List<String> contactUuids) {
+	public List<String> deleteContacts(List<String> contactUuids, DeletionDetails deletionDetails) {
 		List<String> deletedContactUuids = new ArrayList<>();
 		List<Contact> contactsToBeDeleted = service.getByUuids(contactUuids);
 		if (contactsToBeDeleted != null) {
 			contactsToBeDeleted.forEach(contactToBeDeleted -> {
 				if (!contactToBeDeleted.isDeleted()) {
-					deleteContact(contactToBeDeleted);
+					deleteContact(contactToBeDeleted, deletionDetails);
 					deletedContactUuids.add(contactToBeDeleted.getUuid());
 				}
 			});
@@ -1413,6 +1415,10 @@ public class ContactFacadeEjb
 		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
 		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
 
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -1475,9 +1481,8 @@ public class ContactFacadeEjb
 
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
-		User user = userService.getCurrentUser();
 
-		return service.getContactsForDashboard(region, district, disease, from, to, user);
+		return service.getContactsForDashboard(region, district, disease, from, to);
 	}
 
 	@Override
@@ -1495,15 +1500,13 @@ public class ContactFacadeEjb
 	@Override
 	public Map<ContactClassification, Long> getNewContactCountPerClassification(ContactCriteria contactCriteria) {
 
-		User user = userService.getCurrentUser();
-		return service.getNewContactCountPerClassification(contactCriteria, user);
+		return service.getNewContactCountPerClassification(contactCriteria);
 	}
 
 	@Override
 	public Map<FollowUpStatus, Long> getNewContactCountPerFollowUpStatus(ContactCriteria contactCriteria) {
 
-		User user = userService.getCurrentUser();
-		return service.getNewContactCountPerFollowUpStatus(contactCriteria, user);
+		return service.getNewContactCountPerFollowUpStatus(contactCriteria);
 	}
 
 	@Override
@@ -1711,6 +1714,10 @@ public class ContactFacadeEjb
 		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
 		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
 
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -1852,7 +1859,7 @@ public class ContactFacadeEjb
 		cq.multiselect(selections);
 
 		final Predicate defaultFilter = service.createDefaultFilter(cb, contactRoot);
-		final Predicate userFilter = service.createUserFilter(cb, cq, contactRoot);
+		final Predicate userFilter = service.createUserFilter(contactQueryContext);
 
 		final PersonReferenceDto person = criteria.getPerson();
 		final Predicate samePersonFilter = person != null ? cb.equal(joins.getPerson().get(Person.UUID), person.getUuid()) : null;
@@ -2011,7 +2018,7 @@ public class ContactFacadeEjb
 		contact.setDuplicateOf(duplicateOfContact);
 		service.ensurePersisted(contact);
 
-		this.delete(uuid);
+		this.delete(uuid, new DeletionDetails(DeletionReason.DUPLICATE_ENTRIES, null));
 	}
 
 	@Override
@@ -2021,7 +2028,7 @@ public class ContactFacadeEjb
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Contact> root = cq.from(Contact.class);
 		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, root);
-		ContactJoins joins = (ContactJoins) contactQueryContext.getJoins();
+		ContactJoins joins = contactQueryContext.getJoins();
 		Root<Contact> root2 = cq.from(Contact.class);
 		Join<Contact, Person> person = joins.getPerson();
 		Join<Contact, Person> person2 = root2.join(Contact.PERSON, JoinType.LEFT);
@@ -2043,7 +2050,7 @@ public class ContactFacadeEjb
 		// * same birth date (when fully defined)
 
 		Predicate sourceCaseFilter = cb.equal(sourceCase, sourceCase2);
-		Predicate userFilter = service.createUserFilter(cb, cq, root);
+		Predicate userFilter = service.createUserFilter(contactQueryContext);
 		Predicate criteriaFilter = criteria != null ? service.buildCriteriaFilter(criteria, contactQueryContext) : null;
 		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));

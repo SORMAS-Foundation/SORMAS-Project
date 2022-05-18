@@ -130,6 +130,7 @@ public interface Strings {
 	String confirmationDeleteLabMessages = "confirmationDeleteLabMessages";
 	String confirmationDeletePathogenTests = "confirmationDeletePathogenTests";
 	String confirmationDeletePrescriptions = "confirmationDeletePrescriptions";
+	String confirmationDeletePrescriptionWithTreatment = "confirmationDeletePrescriptionWithTreatment";
 	String confirmationDeleteSamples = "confirmationDeleteSamples";
 	String confirmationDeleteTasks = "confirmationDeleteTasks";
 	String confirmationDeleteTravelEntries = "confirmationDeleteTravelEntries";
@@ -146,6 +147,7 @@ public interface Strings {
 	String confirmationLabMessageCorrection = "confirmationLabMessageCorrection";
 	String confirmationLocationFacilityAddressOverride = "confirmationLocationFacilityAddressOverride";
 	String confirmationLostToFollowUp = "confirmationLostToFollowUp";
+	String confirmationManualDeleteCoreEntity = "confirmationManualDeleteCoreEntity";
 	String confirmationManuallyForwardedLabMessage = "confirmationManuallyForwardedLabMessage";
 	String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
 	String confirmationMergeContactAndDeleteOther = "confirmationMergeContactAndDeleteOther";
@@ -194,6 +196,7 @@ public interface Strings {
 	String entityAdditionalTests = "entityAdditionalTests";
 	String entityAggregateReports = "entityAggregateReports";
 	String entityAreas = "entityAreas";
+	String entityAutomaticSoftDeletion = "entityAutomaticSoftDeletion";
 	String entityBagCases = "entityBagCases";
 	String entityBagContacts = "entityBagContacts";
 	String entityBurial = "entityBurial";
@@ -244,8 +247,8 @@ public interface Strings {
 	String entityStatistics = "entityStatistics";
 	String entityTask = "entityTask";
 	String entityTasks = "entityTasks";
-	String entityTravel = "entityTravel";
 	String entityTravelEntries = "entityTravelEntries";
+	String entityTravelEntry = "entityTravelEntry";
 	String entityTreatment = "entityTreatment";
 	String entityTreatments = "entityTreatments";
 	String entityUser = "entityUser";
@@ -459,6 +462,7 @@ public interface Strings {
 	String headingDearchiveTravelEntry = "headingDearchiveTravelEntry";
 	String headingDearchivingNotPossible = "headingDearchivingNotPossible";
 	String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";
+	String headingDeleteConfirmation = "headingDeleteConfirmation";
 	String headingDeleteContacts = "headingDeleteContacts";
 	String headingDeleteVaccinations = "headingDeleteVaccinations";
 	String headingDisableLineListing = "headingDisableLineListing";
@@ -987,6 +991,7 @@ public interface Strings {
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";
 	String messageDeleteImmunizationVaccinations = "messageDeleteImmunizationVaccinations";
+	String messageDeleteReasonNotFilled = "messageDeleteReasonNotFilled";
 	String messageDeletionUnsupportedByExternalJournalWarning = "messageDeletionUnsupportedByExternalJournalWarning";
 	String messageDiseaseNotSpecifiedInLabMessage = "messageDiseaseNotSpecifiedInLabMessage";
 	String messageDistrictArchived = "messageDistrictArchived";
@@ -1106,6 +1111,7 @@ public interface Strings {
 	String messageNoTreatmentsSelected = "messageNoTreatmentsSelected";
 	String messageNoUsersSelected = "messageNoUsersSelected";
 	String messageNoVisitsSelected = "messageNoVisitsSelected";
+	String messageOtherDeleteReasonNotFilled = "messageOtherDeleteReasonNotFilled";
 	String messageOutbreakSaved = "messageOutbreakSaved";
 	String messagePasswordReset = "messagePasswordReset";
 	String messagePasswordResetEmailLink = "messagePasswordResetEmailLink";
@@ -1255,6 +1261,7 @@ public interface Strings {
 	String of = "of";
 	String on = "on";
 	String or = "or";
+	String pathogenTestDeletedDuringLabMessageConversion = "pathogenTestDeletedDuringLabMessageConversion";
 	String pleaseSpecify = "pleaseSpecify";
 	String populationDataByArea = "populationDataByArea";
 	String populationDataByCommunity = "populationDataByCommunity";

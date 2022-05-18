@@ -1,6 +1,14 @@
 package org.sormas.e2etests.steps.web.application;
 
+import static org.sormas.e2etests.pages.application.AboutPage.CASE_CLASSIFICATION_RULES_HYPERLINK;
 import static org.sormas.e2etests.pages.application.AboutPage.DATA_DICTIONARY_BUTTON;
+import static org.sormas.e2etests.pages.application.AboutPage.FULL_CHANGELOG_HYPERLINK;
+import static org.sormas.e2etests.pages.application.AboutPage.OFFICIAL_SORMAS_WEBSITE_HYPERLINK;
+import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_GITHUB_HYPERLINK;
+import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_HYPERLINK;
+import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_HYPERLINK_TARGET;
+import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
+import static org.sormas.e2etests.pages.application.AboutPage.WHATS_NEW_HYPERLINK;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.LANGUAGE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.SAVE_BUTTON;
 
@@ -35,6 +43,12 @@ public class AboutDirectorySteps implements En {
 
   @Inject
   public AboutDirectorySteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
+
+    When(
+        "I check that current Sormas version is shown on About directory page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SORMAS_VERSION_HYPERLINK);
+        });
 
     When(
         "I select {string} language from Combobox in User settings",
@@ -123,6 +137,98 @@ public class AboutDirectorySteps implements En {
                       + LocalDate.now()
                       + "_.xlsx");
           toDelete.deleteOnExit();
+        });
+    When(
+        "^I click on Sormas version in About directory and i get redirected to github$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SORMAS_VERSION_LINK);
+          webDriverHelpers.clickOnWebElementBySelector(SORMAS_VERSION_LINK);
+          TimeUnit.SECONDS.sleep(1);
+          String link =
+              webDriverHelpers.getAttributeFromWebElement(SORMAS_VERSION_HYPERLINK_TARGET, "href");
+          webDriverHelpers.switchToOtherWindow();
+          softly.assertEquals(
+              link, webDriverHelpers.returnURL(), "Sormas version link is not the correct");
+          softly.assertAll();
+          webDriverHelpers.closeActiveWindow();
+        });
+
+    When(
+        "^I click on What's new in About directory and i get redirected to Sormas what's new page$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(WHATS_NEW_HYPERLINK);
+          webDriverHelpers.clickOnWebElementBySelector(WHATS_NEW_HYPERLINK);
+          TimeUnit.SECONDS.sleep(1);
+          webDriverHelpers.switchToOtherWindow();
+          softly.assertTrue(
+              webDriverHelpers
+                  .returnURL()
+                  .contains("https://github.com/hzi-braunschweig/SORMAS-Project/releases/tag"),
+              "What's new link is not the correct");
+          softly.assertAll();
+          webDriverHelpers.closeActiveWindow();
+        });
+    When(
+        "^I click on Official SORMAS Website in About directory and i get redirected to the offical Sormas website$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(OFFICIAL_SORMAS_WEBSITE_HYPERLINK);
+          webDriverHelpers.clickOnWebElementBySelector(OFFICIAL_SORMAS_WEBSITE_HYPERLINK);
+          TimeUnit.SECONDS.sleep(1);
+          webDriverHelpers.switchToOtherWindow();
+          softly.assertEquals(
+              "https://sormas.org/",
+              webDriverHelpers.returnURL(),
+              "Official sormas website link is not correct");
+          softly.assertAll();
+          webDriverHelpers.closeActiveWindow();
+        });
+    When(
+        "^I click on SORMAS Github in About directory and i get redirected to github page of sormas$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SORMAS_GITHUB_HYPERLINK);
+          webDriverHelpers.clickOnWebElementBySelector(SORMAS_GITHUB_HYPERLINK);
+          TimeUnit.SECONDS.sleep(1);
+          webDriverHelpers.switchToOtherWindow();
+          softly.assertEquals(
+              "https://github.com/hzi-braunschweig/SORMAS-Project",
+              webDriverHelpers.returnURL(),
+              "Sormas github link is not correct");
+          softly.assertAll();
+          webDriverHelpers.closeActiveWindow();
+        });
+    When(
+        "^I click on Full Changelog in About directory and i get redirected to github project release page of sormas$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FULL_CHANGELOG_HYPERLINK);
+          webDriverHelpers.clickOnWebElementBySelector(FULL_CHANGELOG_HYPERLINK);
+          TimeUnit.SECONDS.sleep(1);
+          webDriverHelpers.switchToOtherWindow();
+          softly.assertEquals(
+              "https://github.com/hzi-braunschweig/SORMAS-Project/releases",
+              webDriverHelpers.returnURL(),
+              "Sormas full changelog link is not correct");
+          softly.assertAll();
+          webDriverHelpers.closeActiveWindow();
+        });
+    When(
+        "^I click on Case Classification Rules hyperlink and download HTML file in About directory$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CASE_CLASSIFICATION_RULES_HYPERLINK);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              CASE_CLASSIFICATION_RULES_HYPERLINK, 50);
+        });
+    When(
+        "^I delete the downloaded Case Classification Rules html and Data Dictionary xlsx file from download directory$",
+        () -> {
+          File html = new File(userDirPath + "//downloads//classification_rules.html");
+          File xlsx =
+              new File(
+                  userDirPath
+                      + "//downloads//sormas_data_dictionary_"
+                      + LocalDate.now()
+                      + "_.xlsx");
+          html.deleteOnExit();
+          xlsx.deleteOnExit();
         });
   }
 

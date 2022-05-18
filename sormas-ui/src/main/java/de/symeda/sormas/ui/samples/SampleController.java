@@ -50,6 +50,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -82,6 +83,7 @@ import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
+import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
@@ -259,6 +261,11 @@ public class SampleController {
 	}
 
 	public void addPathogenTestButton(CommitDiscardWrapperComponent<? extends AbstractSampleForm> editView, boolean viaLims) {
+
+		if (!UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
+			return;
+		}
+
 		Button addPathogenTestButton = new Button(I18nProperties.getCaption(Captions.pathogenTestAdd));
 		addPathogenTestButton.addClickListener((e) -> {
 			PathogenTestForm pathogenTestForm = addPathogenTestComponent(editView);
@@ -333,8 +340,8 @@ public class SampleController {
 		});
 
 		if (showDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)) {
-			editView.addDeleteListener(() -> {
-				FacadeProvider.getSampleFacade().deleteSample(dto.toReference());
+			editView.addDeleteWithReasonListener((deleteDetails) -> {
+				FacadeProvider.getSampleFacade().deleteSample(dto.toReference(), deleteDetails);
 				updateAssociationsForSample(dto);
 				UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entitySample));
@@ -342,6 +349,13 @@ public class SampleController {
 
 		if (dto.getReferredTo() != null || dto.getSamplePurpose() == SamplePurpose.EXTERNAL) {
 			editView.getWrappedComponent().getField(SampleDto.SAMPLE_PURPOSE).setEnabled(false);
+		}
+
+		if (dto.isDeleted()) {
+			editView.getWrappedComponent().getField(SampleDto.DELETION_REASON).setVisible(true);
+			if (editView.getWrappedComponent().getField(SampleDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
+				editView.getWrappedComponent().getField(SampleDto.OTHER_DELETION_REASON).setVisible(true);
+			}
 		}
 
 		return editView;
@@ -556,10 +570,11 @@ public class SampleController {
 				Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil
-				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteSamples), selectedRows.size()), () -> {
+			DeletableUtils.showDeleteWithReasonPopup(
+				String.format(I18nProperties.getString(Strings.confirmationDeleteSamples), selectedRows.size()),
+				(deletionDetails) -> {
 					List<String> sampleIndexDtoList = selectedRows.stream().map(SampleIndexDto::getUuid).collect(Collectors.toList());
-					FacadeProvider.getSampleFacade().deleteAllSamples(sampleIndexDtoList);
+					FacadeProvider.getSampleFacade().deleteAllSamples(sampleIndexDtoList, deletionDetails);
 					callback.run();
 					new Notification(
 						I18nProperties.getString(Strings.headingSamplesDeleted),

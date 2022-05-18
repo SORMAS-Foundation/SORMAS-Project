@@ -115,6 +115,8 @@ public class EditPersonPage {
       By.cssSelector("[location='personInformationHeadingLoc']");
   public static final By EVENT_PARTICIPANTS_DATA_TAB =
       By.cssSelector("#tab-events-eventparticipants");
+  public static final By NO_TRAVEL_ENTRY_LABEL_DE =
+      By.xpath("//div[text()=\"Es gibt keine Einreisen f\u00FCr diese Person\"]");
 
   public static By getByPersonUuid(String personUuid) {
     return By.cssSelector("a[title='" + personUuid + "']");

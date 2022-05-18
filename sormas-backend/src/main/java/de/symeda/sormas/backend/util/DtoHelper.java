@@ -29,6 +29,7 @@ import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Maps;
 
 import de.symeda.sormas.api.EntityDto;
@@ -78,7 +79,7 @@ public final class DtoHelper {
 
 			for (PropertyDescriptor pd : pds) {
 				// Skip properties without a read or write method
-				if (pd.getReadMethod() == null || pd.getWriteMethod() == null) {
+				if (pd.getReadMethod() == null || pd.getWriteMethod() == null || pd.getWriteMethod().isAnnotationPresent(JsonIgnore.class)) {
 					continue;
 				}
 

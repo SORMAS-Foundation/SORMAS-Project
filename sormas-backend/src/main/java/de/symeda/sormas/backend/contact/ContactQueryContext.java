@@ -17,7 +17,7 @@ public class ContactQueryContext extends QueryContext<Contact, ContactJoins> {
 	public static final String PERSON_EMAIL_SUBQUERY = "personEmailSubquery";
 	public static final String PERSON_OTHER_CONTACT_DETAILS_SUBQUERY = "personOtherContactDetailsSubQuery";
 
-	public ContactQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Contact> root) {
+	protected ContactQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Contact> root) {
 		this(cb, query, new ContactJoins(root));
 	}
 

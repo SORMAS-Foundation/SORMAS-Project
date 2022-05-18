@@ -17,7 +17,7 @@ import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.pojo.web.Hospitalization;
 import org.sormas.e2etests.entities.services.HospitalizationService;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.state.ApiState;
@@ -34,7 +34,7 @@ public class HospitalizationTabSteps implements En {
       HospitalizationService hospitalizationService,
       ApiState apiState,
       SoftAssert softly,
-      EnvironmentManager environmentManager) {
+      RunningConfiguration runningConfiguration) {
 
     this.webDriverHelpers = webDriverHelpers;
 
@@ -46,7 +46,7 @@ public class HospitalizationTabSteps implements En {
           String caseHospitalizationPath = "/sormas-webdriver/#!cases/hospitalization/";
           String uuid = apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + caseHospitalizationPath
                   + uuid);
         });

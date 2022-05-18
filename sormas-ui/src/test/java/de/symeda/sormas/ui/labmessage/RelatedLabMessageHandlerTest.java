@@ -35,7 +35,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import de.symeda.sormas.api.sample.SampleReferenceDto;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -56,18 +55,19 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
-import de.symeda.sormas.ui.labmessage.RelatedLabMessageHandler.CorrectedEntityHandler;
-import de.symeda.sormas.ui.labmessage.RelatedLabMessageHandler.CratePathogenTestHandler;
-import de.symeda.sormas.ui.labmessage.RelatedLabMessageHandler.HandlerResult;
-import de.symeda.sormas.ui.labmessage.RelatedLabMessageHandler.RelatedEntities;
-import de.symeda.sormas.ui.labmessage.RelatedLabMessageHandler.RelatedLabMessageHandlerChain;
-import de.symeda.sormas.ui.labmessage.RelatedLabMessageHandler.ShortcutHandler;
+import de.symeda.sormas.ui.labmessage.processing.AbstractRelatedLabMessageHandler;
+import de.symeda.sormas.ui.labmessage.processing.AbstractRelatedLabMessageHandler.CorrectedEntityHandler;
+import de.symeda.sormas.ui.labmessage.processing.AbstractRelatedLabMessageHandler.HandlerResult;
+import de.symeda.sormas.ui.labmessage.processing.AbstractRelatedLabMessageHandler.HandlerResultStatus;
+import de.symeda.sormas.ui.labmessage.processing.AbstractRelatedLabMessageHandler.RelatedEntities;
+import de.symeda.sormas.ui.labmessage.processing.AbstractRelatedLabMessageHandler.RelatedLabMessageHandlerChain;
 
 public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
@@ -88,7 +88,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 	private BiFunction<LabMessageDto, SampleReferenceDto, CompletionStage<Boolean>> continueProcessingConfirmation;
 	private ShortcutHandler shortcutHandler;
 
-	private RelatedLabMessageHandler handler;
+	private AbstractRelatedLabMessageHandler handler;
 
 	@Override
 	public void init() {
@@ -145,15 +145,47 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 			return null;
 		}).when(shortcutHandler).handle(Mockito.any(), Mockito.any(), Mockito.any());
 
-		handler = new RelatedLabMessageHandler(
-			correctionFlowConfirmation,
-			shortcutConfirmation,
-			personChangesHandler,
-			sampleChangesHandler,
-			pathogenTestChangesHandler,
-			createPathogenTestHandler,
-			continueProcessingConfirmation,
-			shortcutHandler);
+		handler = new AbstractRelatedLabMessageHandler() {
+			@Override
+			protected CompletionStage<Boolean> confirmShortcut(boolean hasRelatedLabMessages) {
+				return shortcutConfirmation.apply(hasRelatedLabMessages);
+			}
+
+			@Override
+			protected CompletionStage<Boolean> confirmContinueProcessing(LabMessageDto labMessage, SampleReferenceDto sample) {
+				return continueProcessingConfirmation.apply(labMessage, sample);
+			}
+
+			@Override
+			protected void handleShortcut(LabMessageDto labMessage, SampleDto sample, RelatedLabMessageHandlerChain chain) {
+				shortcutHandler.handle(labMessage, sample, chain);
+			}
+
+			@Override
+			protected CompletionStage<Boolean> confirmCorrectionFlow() {
+				return correctionFlowConfirmation.get();
+			}
+
+			@Override
+			protected void handlePersonCorrection(LabMessageDto labMessage, PersonDto person, PersonDto updatedPerson, List<String[]> changedFields, RelatedLabMessageHandlerChain chain) {
+				personChangesHandler.handle(labMessage, person, updatedPerson, changedFields, chain);
+			}
+
+			@Override
+			protected void handleSampleCorrection(LabMessageDto labMessage, SampleDto sample, SampleDto updatedSample, List<String[]> changedFields, RelatedLabMessageHandlerChain chain) {
+				sampleChangesHandler.handle(labMessage, sample, updatedSample, changedFields, chain);
+			}
+
+			@Override
+			protected void handlePathogenTestCorrection(LabMessageDto labMessage, PathogenTestDto pathogenTest, PathogenTestDto updatedPathogenTest, List<String[]> changedFields, RelatedLabMessageHandlerChain chain) {
+				pathogenTestChangesHandler.handle(labMessage, pathogenTest, updatedPathogenTest, changedFields, chain);
+			}
+
+			@Override
+			protected void handlePathogenTestCreation(LabMessageDto labMessage, TestReportDto testReport, SampleDto sample, RelatedLabMessageHandlerChain chain) {
+				createPathogenTestHandler.handle(labMessage, testReport, sample, chain);
+			}
+		};
 	}
 
 	@Test
@@ -352,7 +384,8 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
-		assertThat(result, is(HandlerResult.NOT_HANDLED));
+		assertThat(result.getStatus(), is(HandlerResultStatus.NOT_HANDLED));
+		assertThat(result.getSample(), is(nullValue()));
 		Mockito.verify(personChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 		Mockito.verify(sampleChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 		Mockito.verify(pathogenTestChangesHandler, Mockito.times(0))
@@ -363,7 +396,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 	@Test
 	public void test_handle_notConfirmCorrectionHandling() throws ExecutionException, InterruptedException {
 
-		createProcessedLabMessage();
+		SampleDto sample = createProcessedLabMessage();
 
 		LabMessageDto labMessageToProcess = LabMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
@@ -373,7 +406,8 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
-		assertThat(result, is(HandlerResult.HANDLED));
+		assertThat(result.getStatus(), is(HandlerResultStatus.HANDLED));
+		assertThat(result.getSample(), is(sample));
 
 		Mockito.verify(personChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 		Mockito.verify(sampleChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
@@ -385,7 +419,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 	@Test
 	public void test_handle_notConfirmShortcut() throws ExecutionException, InterruptedException {
 
-		createProcessedLabMessage();
+		SampleDto sample = createProcessedLabMessage();
 
 		LabMessageDto labMessageToProcess = LabMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
@@ -396,7 +430,8 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
-		assertThat(result, is(HandlerResult.CONTINUE));
+		assertThat(result.getStatus(), is(HandlerResultStatus.CONTINUE));
+		assertThat(result.getSample(), is(sample));
 
 		Mockito.verify(personChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 		Mockito.verify(sampleChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
@@ -408,7 +443,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 	@Test
 	public void test_handle_handlePersonChanges() throws ExecutionException, InterruptedException {
 
-		createProcessedLabMessage();
+		SampleDto sample = createProcessedLabMessage();
 
 		LabMessageDto labMessageToProcess = LabMessageDto.build();
 		labMessageToProcess.setReportId(reportId);
@@ -438,7 +473,8 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
-		assertThat(result, is(HandlerResult.HANDLED));
+		assertThat(result.getStatus(), is(HandlerResultStatus.HANDLED));
+		assertThat(result.getSample(), is(sample));
 		Mockito.verify(personChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 	}
 
@@ -476,7 +512,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
-		assertThat(result, is(HandlerResult.HANDLED));
+		assertThat(result.getStatus(), is(HandlerResultStatus.HANDLED));
 		Mockito.verify(sampleChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 	}
 
@@ -531,7 +567,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
-		assertThat(result, is(HandlerResult.HANDLED));
+		assertThat(result.getStatus(), is(HandlerResultStatus.HANDLED));
 
 		Mockito.verify(personChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 		Mockito.verify(sampleChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
@@ -617,7 +653,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
-		assertThat(result, is(HandlerResult.HANDLED));
+		assertThat(result.getStatus(), is(HandlerResultStatus.HANDLED));
 		Mockito.verify(personChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 		Mockito.verify(sampleChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 		Mockito.verify(pathogenTestChangesHandler, Mockito.times(2))
@@ -675,7 +711,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
-		assertThat(result, is(HandlerResult.HANDLED));
+		assertThat(result.getStatus(), is(HandlerResultStatus.HANDLED));
 		Mockito.verify(personChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 		Mockito.verify(sampleChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 		Mockito.verify(pathogenTestChangesHandler, Mockito.times(0))
@@ -720,7 +756,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
-		assertThat(result, is(HandlerResult.HANDLED));
+		assertThat(result.getStatus(), is(HandlerResultStatus.HANDLED));
 
 		Mockito.verify(correctionFlowConfirmation, Mockito.times(1)).get();
 
@@ -751,7 +787,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
-		assertThat(result, is(HandlerResult.HANDLED));
+		assertThat(result.getStatus(), is(HandlerResultStatus.HANDLED));
 
 		Mockito.verify(correctionFlowConfirmation, Mockito.times(1)).get();
 		Mockito.verify(shortcutConfirmation, Mockito.times(1)).apply(Mockito.any());
@@ -783,7 +819,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
-		assertThat(result, is(HandlerResult.HANDLED));
+		assertThat(result.getStatus(), is(HandlerResultStatus.HANDLED));
 		Mockito.verify(personChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 		Mockito.verify(sampleChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 		Mockito.verify(pathogenTestChangesHandler, Mockito.times(0))
@@ -809,7 +845,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
-		assertThat(result, is(HandlerResult.HANDLED));
+		assertThat(result.getStatus(), is(HandlerResultStatus.HANDLED));
 
 		Mockito.verify(correctionFlowConfirmation, Mockito.times(0)).get();
 		Mockito.verify(shortcutConfirmation, Mockito.times(1)).apply(Mockito.any());
@@ -838,7 +874,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
-		assertThat(result, is(HandlerResult.CANCELED));
+		assertThat(result.getStatus(), is(HandlerResultStatus.CANCELED));
 		Mockito.verify(personChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 		Mockito.verify(sampleChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 	}
@@ -861,7 +897,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
-		assertThat(result, is(HandlerResult.CANCELED_WITH_UPDATES));
+		assertThat(result.getStatus(), is(HandlerResultStatus.CANCELED_WITH_UPDATES));
 		Mockito.verify(sampleChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 		Mockito.verify(pathogenTestChangesHandler, Mockito.times(0))
 			.handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
@@ -891,7 +927,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
-		assertThat(result, is(HandlerResult.CANCELED));
+		assertThat(result.getStatus(), is(HandlerResultStatus.CANCELED));
 		Mockito.verify(sampleChangesHandler, Mockito.times(1)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 		Mockito.verify(pathogenTestChangesHandler, Mockito.times(0))
 			.handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
@@ -970,7 +1006,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
-		assertThat(result, is(HandlerResult.HANDLED));
+		assertThat(result.getStatus(), is(HandlerResultStatus.HANDLED));
 		Mockito.verify(shortcutHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any());
 	}
 
@@ -991,7 +1027,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 
 		HandlerResult result = handler.handle(labMessageToProcess).toCompletableFuture().get();
 
-		assertThat(result, is(HandlerResult.HANDLED));
+		assertThat(result.getStatus(), is(HandlerResultStatus.HANDLED));
 		Mockito.verify(personChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 		Mockito.verify(sampleChangesHandler, Mockito.times(0)).handle(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
 		Mockito.verify(pathogenTestChangesHandler, Mockito.times(0))
@@ -1019,5 +1055,15 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 			lm.setSample(sample.toReference());
 		});
 		return sample;
+	}
+
+	public interface CratePathogenTestHandler {
+
+		void handle(LabMessageDto labMessage, TestReportDto testReportDto, SampleDto sample, RelatedLabMessageHandlerChain chain);
+	}
+
+	public interface ShortcutHandler {
+
+		void handle(LabMessageDto labMessage, SampleDto sample, RelatedLabMessageHandlerChain chain);
 	}
 }

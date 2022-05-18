@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.71.0</version>
+	<version>1.72.0</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -794,7 +794,7 @@
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>1.16.3</version>
+				<version>1.17.1</version>
 				<scope>test</scope>
 			</dependency>
 

@@ -216,6 +216,12 @@ public class EditCasePersonSteps implements En {
           selectFacilityCategory(facilityCategory);
           selectFacilityType(facilityType);
         });
+
+    When(
+        "^I set case person's sex as ([^\"]*)$",
+        (String sex) -> {
+          webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);
+        });
   }
 
   private void selectCountry(String country) {

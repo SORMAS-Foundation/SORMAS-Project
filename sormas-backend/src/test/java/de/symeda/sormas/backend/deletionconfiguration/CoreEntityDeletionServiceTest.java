@@ -9,6 +9,8 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
@@ -90,7 +92,7 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 			person.toReference(),
 			caze.getDisease(),
 			contactDto -> contactDto.setResultingCase(caze.toReference()));
-		getContactFacade().delete(deletedSourceContact.getUuid());
+		getContactFacade().delete(deletedSourceContact.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 		EventDto event = creator.createEvent(user.toReference(), caze.getDisease());
 		EventParticipantDto eventParticipant = creator.createEventParticipant(
 			event.toReference(),
@@ -263,7 +265,13 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, UserRole.ADMIN, UserRole.NATIONAL_USER);
 		PersonDto person = creator.createPerson();
-		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf, c -> c.setDisease(Disease.EVD));
+		creator.createVisit(Disease.EVD, person.toReference());
+		// Change the case disease in order to remove the association with the visit to ensure that the visit is properly deleted
+		// alongside the person
+		caze = getCaseFacade().getByUuid(caze.getUuid());
+		caze.setDisease(Disease.CHOLERA);
+		getCaseFacade().save(caze);
 		ImmunizationDto immunization = creator.createImmunization(Disease.EVD, person.toReference(), user.toReference(), rdcf);
 
 		final Date tenYearsPlusAgoCases = DateUtils.addDays(new Date(), (-1) * caseCoreEntityTypeConfig.deletionPeriod - 1);
@@ -283,13 +291,13 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 
 		assertEquals(1, getPersonService().count());
 
-		final Date tenYearsPlusAgoContacts = DateUtils.addDays(new Date(), (-1) * immunizationCoreEntityTypeConfig.deletionPeriod - 1);
+		final Date tenYearsPlusAgoImmunizations = DateUtils.addDays(new Date(), (-1) * immunizationCoreEntityTypeConfig.deletionPeriod - 1);
 		em = (SessionImpl) getEntityManager();
 		query = em.createQuery("select i from immunization i where i.uuid=:uuid");
 		query.setParameter("uuid", immunization.getUuid());
 		Immunization singleResultImmunization = (Immunization) query.getSingleResult();
-		singleResultImmunization.setCreationDate(new Timestamp(tenYearsPlusAgoContacts.getTime()));
-		singleResultImmunization.setChangeDate(new Timestamp(tenYearsPlusAgoContacts.getTime()));
+		singleResultImmunization.setCreationDate(new Timestamp(tenYearsPlusAgoImmunizations.getTime()));
+		singleResultImmunization.setChangeDate(new Timestamp(tenYearsPlusAgoImmunizations.getTime()));
 		em.save(singleResultImmunization);
 
 		useSystemUser();
@@ -316,7 +324,7 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 
 		assertEquals(1, getImmunizationService().count());
 
-		getImmunizationFacade().delete(immunization.getUuid());
+		getImmunizationFacade().delete(immunization.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		assertEquals(1, getImmunizationService().count());
 

@@ -1,4 +1,22 @@
-package de.symeda.sormas.api.labmessage;
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package de.symeda.sormas.ui.labmessage.processing;
 
 import java.io.Serializable;
 
@@ -6,16 +24,16 @@ import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 
-public class SimilarEntriesDto implements Serializable {
+public class PickOrCreateEntryResult implements Serializable {
 
 	private static final long serialVersionUID = 5902907041512754766L;
 
-	CaseSelectionDto caze;
-	SimilarContactDto contact;
-	SimilarEventParticipantDto eventParticipant;
-	boolean newCase;
-	boolean newContact;
-	boolean newEventParticipant;
+	private CaseSelectionDto caze;
+	private SimilarContactDto contact;
+	private SimilarEventParticipantDto eventParticipant;
+	private boolean newCase;
+	private boolean newContact;
+	private boolean newEventParticipant;
 
 	public CaseSelectionDto getCaze() {
 		return caze;

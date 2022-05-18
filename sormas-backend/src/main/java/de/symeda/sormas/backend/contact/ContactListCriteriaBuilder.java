@@ -293,7 +293,7 @@ public class ContactListCriteriaBuilder {
 
 		// Only use user filter if no restricting case is specified
 		if (contactCriteria == null || contactCriteria.getCaze() == null) {
-			filter = contactService.createUserFilterForJoin(contactQueryContext, contactCriteria);
+			filter = contactService.createUserFilter(contactQueryContext, contactCriteria);
 		}
 
 		if (contactCriteria != null) {

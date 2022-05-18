@@ -2,8 +2,9 @@ package de.symeda.sormas.api.utils.fieldvisibility.checkers;
 
 import java.lang.reflect.AccessibleObject;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -22,12 +23,9 @@ public class FeatureTypeFieldVisibilityChecker implements FieldVisibilityChecker
 	public boolean isVisible(AccessibleObject field) {
 		if (field.isAnnotationPresent(DependingOnFeatureType.class)) {
 			DependingOnFeatureType annotation = field.getAnnotation(DependingOnFeatureType.class);
-			FeatureType featureType = annotation.featureType();
+			FeatureType[] featureTypes = annotation.featureType();
 
-			Optional<FeatureConfigurationDto> featureConfiguration =
-				featureConfigurations.stream().filter(c -> c.getFeatureType() == featureType).findFirst();
-
-			return featureConfiguration.map(c -> {
+			return featureConfigurations.stream().filter(c -> ArrayUtils.contains(featureTypes, c.getFeatureType())).anyMatch(c -> {
 				boolean show = !annotation.hide();
 				boolean isFeatureConfigured = true;
 
@@ -45,7 +43,7 @@ public class FeatureTypeFieldVisibilityChecker implements FieldVisibilityChecker
 				}
 
 				return !isFeatureConfigured || show;
-			}).orElse(false);
+			});
 		}
 
 		return true;

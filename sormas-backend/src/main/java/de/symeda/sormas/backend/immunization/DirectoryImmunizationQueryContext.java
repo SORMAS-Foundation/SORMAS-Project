@@ -10,7 +10,7 @@ import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 
 public class DirectoryImmunizationQueryContext extends QueryContext<DirectoryImmunization, DirectoryImmunizationJoins> {
 
-	public DirectoryImmunizationQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, DirectoryImmunization> root) {
+	protected DirectoryImmunizationQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, DirectoryImmunization> root) {
 		super(cb, query, root, new DirectoryImmunizationJoins(root));
 	}
 

@@ -97,10 +97,13 @@ public class CaseDirectoryPage {
       By.cssSelector("[id='reinfectionStatus'] [class='v-filterselect-button']");
   public static final By CASE_DATA_TYPE_FILTER_COMBOBOX =
       By.cssSelector("[id='dateType'] [class='v-filterselect-button']");
+  public static final By DATE_TYPE_FILTER_COMBOBOX =
+      By.cssSelector("[id='newCaseDateType'] [class='v-filterselect-button']");
   public static final By CASE_DISPLAY_FILTER_COMBOBOX =
       By.cssSelector("[id='relevanceStatus'] [class='v-filterselect-button']");
   public static final By BULK_ACTIONS = By.id("bulkActions-2");
   public static final By BULK_ACTIONS_VALUES = By.id("bulkActions-10");
+  public static final By BULK_ACTIONS_ARCHIVE = By.id("bulkActions-5");
   public static final By BULK_CREATE_QUARANTINE_ORDER = By.id("bulkActions-9");
   public static final By CASE_REPORTING_USER_FILTER = By.cssSelector("[id='reportingUserLike']");
   public static final By CASE_YEAR_FILTER =
@@ -133,8 +136,11 @@ public class CaseDirectoryPage {
   public static final By INVESTIGATION_DONE_BUTTON = By.id("Investigation done");
   public static final By INVESTIGATION_DISCARDED_BUTTON = By.id("Investigation discarded");
   public static final By DATE_FROM_COMBOBOX = By.cssSelector("#dateFrom input");
+  public static final By NEW_CASE_DATE_FROM_COMBOBOX = By.cssSelector("#newCaseDateFrom input");
   public static final By DATE_TO_COMBOBOX = By.cssSelector("#dateTo input");
   public static final By MORE_BUTTON = By.id("more");
+  public static final By ACTION_OKAY = By.id("actionOkay");
+  public static final By MERGE_DUPLICATES_BUTTON = By.id("caseMergeDuplicates");
   public static final By ENTER_BULK_EDIT_MODE = By.id("actionEnterBulkEditMode");
   public static final By LEAVE_BULK_EDIT_MODE = By.id("actionLeaveBulkEditMode");
   public static final By ALL_RESULTS_CHECKBOX =
@@ -179,4 +185,12 @@ public class CaseDirectoryPage {
       By.xpath("//div[contains(@class,'v-window-closebox')]");
   public static final By CASE_INFO_BUTTON = By.cssSelector("[id='info']");
   // TODO refactor the other headers based on the last one added
+  public static By getMergeDuplicatesButtonById(String uuid) {
+    return By.xpath(
+        String.format(
+            "//td//a//span[text()='%s']/../../../../../../preceding-sibling::tr//div[@id=\"actionMerge\"]",
+            uuid.substring(0, 6).toUpperCase()));
+  }
+
+  public static By CONFIRM_POPUP = By.cssSelector(".popupContent #actionConfirm");
 }

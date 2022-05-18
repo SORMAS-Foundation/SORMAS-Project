@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.common.DeletionReason;
 import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Test;
@@ -43,6 +44,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -350,11 +352,13 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
 		assertNotNull(getSampleTestFacade().getByUuid(sampleTest.getUuid()));
 
-		getSampleFacade().deleteSample(sample.toReference());
+		getSampleFacade().deleteSample(sample.toReference(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		// Sample and pathogen test should be marked as deleted
 		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
 		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(sampleTest.getUuid()));
+		assertEquals(DeletionReason.OTHER_REASON, getSampleFacade().getSampleByUuid(sample.getUuid()).getDeletionReason());
+		assertEquals("test reason", getSampleFacade().getSampleByUuid(sample.getUuid()).getOtherDeletionReason());
 	}
 
 	@Test
@@ -396,7 +400,9 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getSampleTestFacade().getByUuid(firstSamplePathogenTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(firstSampleAdditionalTest.getUuid()));
 
-		getSampleFacade().deleteAllSamples(Arrays.asList(firstSample.getUuid(), secondSample.getUuid()));
+		getSampleFacade().deleteAllSamples(
+			Arrays.asList(firstSample.getUuid(), secondSample.getUuid()),
+			new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		// Sample and pathogen test should be marked as deleted, additional test should be deleted
 		List<String> sampleUuids = getSampleFacade().getDeletedUuidsSince(since);
@@ -457,7 +463,9 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getAdditionalTestFacade().getByUuid(secondSampleAdditionalTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(thirdSampleAdditionalTest.getUuid()));
 
-		getSampleFacade().deleteAllSamples(Arrays.asList(thirdSample.getUuid(), forthSample.getUuid()));
+		getSampleFacade().deleteAllSamples(
+			Arrays.asList(thirdSample.getUuid(), forthSample.getUuid()),
+			new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		// Sample and pathogen test should be marked as deleted, additional tests should be deleted
 		List<String> sampleUuids = getSampleFacade().getDeletedUuidsSince(since);
@@ -650,7 +658,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		MatcherAssert.assertThat(result, hasSize(2));
 		MatcherAssert.assertThat(result, containsInAnyOrder(equalTo(sample), equalTo(sample2)));
 
-		getSampleFacade().deleteSample(sample2.toReference());
+		getSampleFacade().deleteSample(sample2.toReference(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		result = getSampleFacade().getByLabSampleId(labSampleId);
 		MatcherAssert.assertThat(result, hasSize(1));

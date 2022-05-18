@@ -14,6 +14,9 @@
  */
 package de.symeda.sormas.api.event;
 
+import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
@@ -34,6 +37,7 @@ import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 
+@DependingOnFeatureType(featureType = FeatureType.EVENT_SURVEILLANCE)
 public class EventParticipantDto extends SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = -8725734604520880084L;
@@ -50,6 +54,8 @@ public class EventParticipantDto extends SormasToSormasShareableDto {
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
+	public static final String DELETION_REASON = "deletionReason";
+	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	@Required
 	private UserReferenceDto reportingUser;
@@ -80,6 +86,11 @@ public class EventParticipantDto extends SormasToSormasShareableDto {
 		Disease.OTHER })
 	@Outbreaks
 	private VaccinationStatus vaccinationStatus;
+
+	private boolean deleted;
+	private DeletionReason deletionReason;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String otherDeletionReason;
 
 	public static EventParticipantDto build(EventReferenceDto event, UserReferenceDto reportingUser) {
 		EventParticipantDto eventParticipant = new EventParticipantDto();
@@ -181,5 +192,29 @@ public class EventParticipantDto extends SormasToSormasShareableDto {
 
 	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
 		this.vaccinationStatus = vaccinationStatus;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public DeletionReason getDeletionReason() {
+		return deletionReason;
+	}
+
+	public void setDeletionReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
+	}
+
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
+	}
+
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
 	}
 }
