@@ -734,6 +734,18 @@ public class EventDirectorySteps implements En {
         });
 
     When(
+        "I search for specific event by uuid in event directory",
+        () -> {
+          final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SEARCH_EVENT_BY_FREE_TEXT_INPUT, 20);
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUuid);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+          TimeUnit.SECONDS.sleep(2); // wait for filter
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+        });
+
+    When(
         "I click on the searched event",
         () -> {
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();

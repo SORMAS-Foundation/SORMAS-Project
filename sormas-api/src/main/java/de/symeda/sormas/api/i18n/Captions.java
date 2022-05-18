@@ -1578,6 +1578,7 @@ public interface Captions {
 	String openInSymptomJournalButton = "openInSymptomJournalButton";
 	String openLinkedCaseToImmunizationButton = "openLinkedCaseToImmunizationButton";
 	String options = "options";
+	String otherDeletionReason = "otherDeletionReason";
 	String outbreakAffectedDistricts = "outbreakAffectedDistricts";
 	String outbreakNoOutbreak = "outbreakNoOutbreak";
 	String outbreakNormal = "outbreakNormal";

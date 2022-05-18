@@ -3,6 +3,8 @@ package de.symeda.sormas.ui.utils;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.ComboBox;
@@ -15,7 +17,7 @@ import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import org.apache.commons.lang3.StringUtils;
+import de.symeda.sormas.api.utils.FieldConstraints;
 
 public class DeletableUtils {
 
@@ -32,16 +34,35 @@ public class DeletableUtils {
 
 		verticalLayout.addComponent(deleteReasonComboBox);
 		TextArea otherDeletionReason = new TextArea();
+		otherDeletionReason.setCaption(I18nProperties.getCaption(Captions.otherDeletionReason));
 		verticalLayout.addComponent(otherDeletionReason);
 		otherDeletionReason.setVisible(false);
 		otherDeletionReason.setWidth(100, Sizeable.Unit.PERCENTAGE);
 		otherDeletionReason.setRows(3);
+		otherDeletionReason.setMaxLength(FieldConstraints.CHARACTER_LIMIT_TEXT);
 
 		otherDeletionReason.setRequiredIndicatorVisible(true);
 
 		deleteReasonComboBox.addValueChangeListener(valueChangeEvent -> {
 			otherDeletionReason.setVisible(valueChangeEvent.getValue() == (DeletionReason.OTHER_REASON));
 		});
+
+		deleteReasonComboBox.addValueChangeListener(valueChangeEvent -> {
+			if (deleteReasonComboBox.isEmpty()) {
+				deleteReasonComboBox.setComponentError(new UserError(I18nProperties.getString(Strings.messageDeleteReasonNotFilled)));
+			} else {
+				deleteReasonComboBox.setComponentError(null);
+			}
+		});
+
+		otherDeletionReason.addValueChangeListener(valueChangeEvent -> {
+			if (deleteReasonComboBox.getValue() == DeletionReason.OTHER_REASON && StringUtils.isBlank(otherDeletionReason.getValue())) {
+				otherDeletionReason.setComponentError(new UserError(I18nProperties.getString(Strings.messageOtherDeleteReasonNotFilled)));
+			} else {
+				otherDeletionReason.setComponentError(null);
+			}
+		});
+
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(Strings.headingDeleteConfirmation),
 			verticalLayout,
@@ -53,7 +74,8 @@ public class DeletableUtils {
 					if (deleteReasonComboBox.isEmpty()) {
 						deleteReasonComboBox.setComponentError(new UserError(I18nProperties.getString(Strings.messageDeleteReasonNotFilled)));
 						return false;
-					} else if (deleteReasonComboBox.getValue() == DeletionReason.OTHER_REASON && StringUtils.isBlank(otherDeletionReason.getValue())) {
+					} else if (deleteReasonComboBox.getValue() == DeletionReason.OTHER_REASON
+						&& StringUtils.isBlank(otherDeletionReason.getValue())) {
 						otherDeletionReason.setComponentError(new UserError(I18nProperties.getString(Strings.messageOtherDeleteReasonNotFilled)));
 						return false;
 					}
