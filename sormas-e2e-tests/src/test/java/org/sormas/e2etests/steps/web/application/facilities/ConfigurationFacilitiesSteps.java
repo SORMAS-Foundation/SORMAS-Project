@@ -143,7 +143,7 @@ public class ConfigurationFacilitiesSteps implements En {
         "I read exported csv from facilities tab",
         () -> {
           facilityFile =
-              "./downloads/sormas_einrichtungen_" + LocalDate.now().format(formatter) + "_.csv";
+              "./downloads/sormas_facilities_" + LocalDate.now().format(formatter) + "_.csv";
           FacilityCSV reader = parseCSVintoPOJOFacilityTab(facilityFile);
           writeCSVFromPOJOFacilityTab(reader);
           TimeUnit.SECONDS.sleep(5); // wait for reader

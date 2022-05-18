@@ -149,7 +149,7 @@ public class EditContactsSteps implements En {
         () -> {
           TimeUnit.SECONDS.sleep(3);
           webDriverHelpers.sendFile(
-              FILE_PICKER, userDirPath + "/downloads/sormas_kontakte_" + LocalDate.now() + "_.csv");
+              FILE_PICKER, userDirPath + "/downloads/sormas_contacts_" + LocalDate.now() + "_.csv");
         });
     When(
         "I click on the Import button from Case Contacts directory",
@@ -197,7 +197,7 @@ public class EditContactsSteps implements En {
         "I delete exported file from Case Contact Directory",
         () -> {
           File toDelete =
-              new File(userDirPath + "/downloads/sormas_kontakte_" + LocalDate.now() + "_.csv");
+              new File(userDirPath + "/downloads/sormas_contacts_" + LocalDate.now() + "_.csv");
           toDelete.deleteOnExit();
         });
 
