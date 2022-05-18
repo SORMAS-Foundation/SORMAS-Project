@@ -39,7 +39,6 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -388,10 +387,6 @@ public class CaseContactsView extends AbstractCaseView {
 			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 
 			setSubComponent(gridLayout);
-
-			if (FacadeProvider.getCaseFacade().isArchived(this.getCaseRef().getUuid())){
-				gridLayout.setEnabled(false);
-			}
 		}
 
 		if (params.startsWith("?")) {
@@ -401,6 +396,8 @@ public class CaseContactsView extends AbstractCaseView {
 		updateFilterComponents();
 
 		grid.reload();
+
+		setCaseEditPermission(gridLayout);
 	}
 
 	public void updateFilterComponents() {

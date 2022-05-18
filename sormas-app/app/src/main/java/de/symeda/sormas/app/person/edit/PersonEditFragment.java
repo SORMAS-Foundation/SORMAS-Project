@@ -279,7 +279,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			Integer birthMonth = (Integer) contentBinding.personBirthdateMM.getValue();
 
 			Calendar birthDate = new GregorianCalendar();
-			birthDate.set(birthYear, birthMonth != null ? birthMonth-1 : 0, birthDay != null ? birthDay : 1);
+			birthDate.set(birthYear, birthMonth != null ? birthMonth - 1 : 0, birthDay != null ? birthDay : 1);
 			return birthDate.getTime();
 		}
 		return null;
@@ -622,11 +622,12 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		contentBinding.setPersonContactDetailList(getPersonContactDetails());
 		contentBinding.setPersonContactDetailItemClickCallback(onPersonContactDetailItemClickListener);
 		getContentBinding().setPersonContactDetailBindCallback(this::setLocationFieldVisibilitiesAndAccesses);
+
+		setUpLayoutBinding(this, record, contentBinding);
 	}
 
 	@Override
 	public void onAfterLayoutBinding(final FragmentPersonEditLayoutBinding contentBinding) {
-		setUpLayoutBinding(this, record, contentBinding);
 		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.personArmedForcesRelationType.setVisibility(GONE);
 		}

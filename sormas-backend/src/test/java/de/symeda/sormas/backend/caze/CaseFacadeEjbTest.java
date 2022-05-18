@@ -1124,6 +1124,33 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testGetExportListWithoutDeletedSamples() {
+		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCF rdcf = new RDCF(rdcfEntities);
+		UserDto user = getUser(rdcfEntities);
+
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = getCaze(user, cazePerson, rdcfEntities);
+		cazePerson.getAddress().setCity("City");
+		getPersonFacade().savePerson(cazePerson);
+
+		SampleDto sample1 = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		SampleDto sample2 = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		getSampleFacade().deleteSample(sample1.toReference(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
+
+		List<CaseExportDto> results =
+			getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
+
+		// List should have one entry
+		assertEquals(1, results.size());
+		CaseExportDto exportDto = results.get(0);
+
+		assertEquals(exportDto.getSample1().getUuid(), sample2.getUuid());
+		assertNull(exportDto.getSample2().getUuid());
+		assertNull(exportDto.getSample3().getUuid());
+	}
+
+	@Test
 	public void testCaseDeletion() throws ExternalSurveillanceToolException {
 		Date since = new Date();
 
