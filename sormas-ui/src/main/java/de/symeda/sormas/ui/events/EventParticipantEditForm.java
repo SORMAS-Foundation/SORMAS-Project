@@ -23,9 +23,11 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import com.vaadin.ui.Button;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -52,7 +54,9 @@ public class EventParticipantEditForm extends PersonDependentEditForm<EventParti
 		+ fluidRowLocs(PERSON_SEARCH_LOC)
 		+ fluidRowLocs(EventParticipantDto.PERSON)
 		+ loc(MEDICAL_INFORMATION_LOC)
-		+ fluidRowLocs(EventParticipantDto.VACCINATION_STATUS);
+		+ fluidRowLocs(EventParticipantDto.VACCINATION_STATUS)
+		+ fluidRowLocs(CaseDataDto.DELETION_REASON)
+		+ fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
 
 	private final EventDto event;
 	private final Boolean searchPerson;
@@ -126,6 +130,10 @@ public class EventParticipantEditForm extends PersonDependentEditForm<EventParti
 		initializeAccessAndAllowedAccesses();
 
 		addField(EventParticipantDto.VACCINATION_STATUS);
+
+		addField(EventParticipantDto.DELETION_REASON);
+		addField(EventParticipantDto.OTHER_DELETION_REASON, TextArea.class).setRows(3);
+		setVisible(false, EventParticipantDto.DELETION_REASON, EventParticipantDto.OTHER_DELETION_REASON);
 	}
 
 	public String getPersonFirstName() {
@@ -145,6 +153,7 @@ public class EventParticipantEditForm extends PersonDependentEditForm<EventParti
 	public void setValue(EventParticipantDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
 		this.originalPerson = newFieldValue.getPerson();
+		this.pef.setValue(newFieldValue.getPerson());
 	}
 
 	@Override

@@ -26,4 +26,5 @@ public interface SubcontinentFacade extends GeoLocationFacade<SubcontinentDto, S
 	Page<SubcontinentIndexDto> getIndexPage(SubcontinentCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 
 	List<SubcontinentReferenceDto> getAllActiveAsReference();
+
 }

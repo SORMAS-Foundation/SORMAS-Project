@@ -57,6 +57,7 @@ public class Case {
   District responsibleDistrict;
   Region responsibleRegion;
   HealthFacility healthFacility;
+  HealthConditions healthConditions;
   MaternalHistory maternalHistory;
   String facilityType;
   String pointOfEntryDetails;

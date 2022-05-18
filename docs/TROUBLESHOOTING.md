@@ -7,6 +7,15 @@ Please consult this collection of solutions to common problems if you have any i
 **Q:** I don't see a logout option anywhere in the mobile app. How can I change my user?  
 **A:** The logout option is hidden by default because users in the field often don't know their own passwords, but their devices are instead set up by a supervisor. If you want to change your user, go to the Settings screen and tap the version number five times to bring up additional options, including the logout option.
 
+**Q:** The app crashes. How can I get a log file?  
+**A:** If you are using a release version of the app and need to get error logs, you can do the following:  
+
+1. [Enable developer options in the Android device's settings](https://developer.android.com/studio/debug/dev-options)
+2. Use the "Take Bug Report" option. The full report is not needed.
+3. The zip file that is created will have a dumpstate-<current date>.txt file that contains the log and some more information
+4. Open it and search for de.symeda.sormas to identify the process id. E.g. `de.symeda.sormas.app/de.symeda.sormas.app.login.LoginActivity$_11109#0` -> 11109 is the id
+5. Search for all occurences of the process id to filter the file down to lines that contain the actual log of sormas
+
 ## Debugging Performance Problems
 
 Performance logging can be used to find out which part of the code or system might be responsible for long-running functions in the application. This helps the developers to identify the source of the problems quicker and find out whether there are several problems at once or performance problems that manifest in Java execution time instead of slow SQL queries.
@@ -15,9 +24,19 @@ Performance logging can be used to find out which part of the code or system mig
 
 ### Switch on Performance Logging in SORMAS
 
-1. Open the logback file located in your domain (default path: `/opt/domains/sormas/config/logback.xml`) and change the log level of `PerformanceLoggingInterceptor` to `DEBUG`. The config change will be recognized during runtime within 30s. After that you will see detailed log entries in the SORMAS log.
+1. Open the logback file located in your domain (default path: `/opt/domains/sormas/config/logback.xml`) and change the log level of `PerformanceLoggingInterceptor` to `DEBUG` or `TRACE`. The config change will be recognized during runtime within 30s. After that you will see detailed log entries in the SORMAS log.
 
 2. Set the log level back to its default once the logging has been done since it can reduce the overall performance of SORMAS.
+
+### Analyze Performance Logs
+
+Performance logs can be analyzed in detail using the `PerformanceLogAnalysisGenerator`. To use this tool, set the `PerformanceLoggingInterceptor`'s log level
+to `TRACE` as described above and reproduce the scenario you want to investigate on the server instance.
+
+After this, process the debug log file (default path: `/opt/domains/sormas/logs/application.debug`) using the `PerformanceLogAnalysisGenerator`. This will
+generate three files (`<logfileName>.csv`, `<logfileName>.txt`, `<logfileName>.html`) to further investigate method runtimes.
+
+`<logfileName>.html` provides a navigable overview of methods along with runtime statistics (total, min, max and average time) and calls to sub methods.
 
 ### Log Slow SQL Queries in PostgreSQL
 

@@ -19,13 +19,14 @@ package org.sormas.e2etests.steps.api.commonSteps;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
+import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.Assert;
 
 public class ResponseChecksSteps implements En {
 
   @Inject
-  public ResponseChecksSteps(ApiState apiState) {
+  public ResponseChecksSteps(ApiState apiState, RestAssuredClient restAssuredClient) {
 
     Then(
         "API: I check that POST call body is {string}",
@@ -33,6 +34,9 @@ public class ResponseChecksSteps implements En {
           String responseBody = apiState.getResponse().getBody().asString();
           if (responseBody.isEmpty()) {
             Assert.fail("Response body call is empty!");
+          }
+          if (responseBody.equalsIgnoreCase("TRANSACTIONROLLEDBACKEXCEPTION")) {
+            Assert.fail("API call failed due to wrong data used in sent json!");
           }
           String regexUpdatedResponseBody = responseBody.replaceAll("[^a-zA-Z0-9]", "");
           Assert.assertEquals(

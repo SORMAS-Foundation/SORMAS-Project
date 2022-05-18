@@ -18,15 +18,20 @@
 
 package org.sormas.e2etests.steps.web.application.users;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DETAILED_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DETAILED_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DETAILED_TABLE_ROWS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ENTER_BULK_EDIT_MODE;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.LOGOUT_BUTTON;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.*;
+import static org.sormas.e2etests.pages.application.users.UserManagementPage.NEW_USER_BUTTON;
 
 import cucumber.api.java8.En;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import org.openqa.selenium.WebElement;
@@ -46,6 +51,7 @@ public class CreateNewUserSteps implements En {
   public static String userName;
   public static String userPass;
   private final BaseSteps baseSteps;
+  private static int amountOfRecords;
 
   @Inject
   public CreateNewUserSteps(
@@ -55,6 +61,70 @@ public class CreateNewUserSteps implements En {
       SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
+
+    When(
+        "^I pick and count amount a users that was created on the same period of time$",
+        () -> {
+          String userNameFromEditUser = user.getUserName().substring(0, 19);
+          webDriverHelpers.fillInWebElement(USER_INPUT_SEARCH, userNameFromEditUser);
+          TimeUnit.SECONDS.sleep(5); // wait for page loaded
+          String amountOfUsers = webDriverHelpers.getTextFromWebElement(AMOUNT_OF_CHOSEN_USERS);
+          amountOfRecords = Integer.parseInt(amountOfUsers);
+        });
+
+    When(
+        "I click Enter Bulk Edit Mode on Users directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE);
+        });
+
+    When(
+        "I click checkbox to choose all User results",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ALL_RESULTS_CHECKBOX);
+        });
+
+    When(
+        "I pick {string} value for Active filter in User Directory",
+        (String activeValue) -> {
+          webDriverHelpers.selectFromCombobox(ACTIVE_USER_COMBOBOX, activeValue);
+          TimeUnit.SECONDS.sleep(3); // waiting for all users to pick
+        });
+
+    When(
+        "I click on Bulk Actions combobox on User Directory Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS);
+          TimeUnit.SECONDS.sleep(3); // waiting for all users to pick
+        });
+
+    When(
+        "I click on {string} from Bulk Actions combobox on User Directory Page",
+        (String action) -> {
+          switch (action) {
+            case "Enable":
+              webDriverHelpers.clickOnWebElementBySelector(ENABLE_BULK_ACTIONS_VALUES);
+              webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POP_UP);
+              break;
+            case "Disable":
+              webDriverHelpers.clickOnWebElementBySelector(DISABLE_BULK_ACTIONS_VALUES);
+              webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POP_UP);
+              break;
+          }
+        });
+
+    And(
+        "I check that all Users are changed Active field value to opposite",
+        () -> {
+          String amountOfCheckboxes =
+              webDriverHelpers.getTextFromWebElement(AMOUNT_ACTIVE_INACTIVE_USERS);
+          Integer optionsRecords = Integer.parseInt(amountOfCheckboxes);
+          softly.assertEquals(
+              Integer.valueOf(amountOfRecords),
+              optionsRecords,
+              "Not all Active fields value are changed");
+          softly.assertAll();
+        });
 
     When(
         "I create new ([^\"]*) with limited disease to ([^\"]*)",
@@ -154,6 +224,47 @@ public class CreateNewUserSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           closeNewPasswordPopUp();
+        });
+
+    When(
+        "I create {int} new users with National User via UI",
+        (Integer users) -> {
+          List<User> userList = new ArrayList<>();
+          for (int i = 0; i < users; i++) {
+            webDriverHelpers.clickWhileOtherButtonIsDisplayed(
+                NEW_USER_BUTTON, FIRST_NAME_OF_USER_INPUT);
+            user = userService.buildGeneratedUserWithRole("National User");
+            fillFirstName(user.getFirstName());
+            fillLastName(user.getLastName());
+            fillEmailAddress(user.getEmailAddress());
+            fillPhoneNumber(user.getPhoneNumber());
+            selectLanguage(user.getLanguage());
+            selectCountry(user.getCountry());
+            selectRegion(user.getRegion());
+            selectDistrict(user.getDistrict());
+            selectCommunity(user.getCommunity());
+            selectFacilityCategory(user.getFacilityCategory());
+            selectFacilityType(user.getFacilityType());
+            selectFacility(user.getFacility());
+            fillFacilityNameAndDescription(user.getFacilityNameAndDescription());
+            fillStreet(user.getStreet());
+            fillHouseNr(user.getHouseNumber());
+            fillAdditionalInformation(user.getAdditionalInformation());
+            fillPostalCode(user.getPostalCode());
+            fillCity(user.getCity());
+            selectAreaType(user.getAreaType());
+            fillGpsLatitude(user.getGpsLatitude());
+            fillGpsLongitude(user.getGpsLongitude());
+            fillGpsAccuracy(user.getGpsAccuracy());
+            selectActive(user.getActive());
+            fillUserName(user.getUserName());
+            selectUserRole("National User");
+            selectLimitedDisease(user.getLimitedDisease());
+            webDriverHelpers.scrollToElement(SAVE_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+            webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+            closeNewPasswordPopUp();
+          }
         });
 
     And(
@@ -270,7 +381,6 @@ public class CreateNewUserSteps implements En {
   }
 
   private void selectAreaType(String areaType) {
-    webDriverHelpers.waitForPageLoaded();
     webDriverHelpers.selectFromCombobox(AREA_TYPE_COMBOBOX, areaType);
   }
 

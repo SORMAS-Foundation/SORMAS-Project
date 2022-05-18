@@ -3,6 +3,7 @@ package de.symeda.sormas.api.dashboard;
 import java.io.Serializable;
 import java.util.Date;
 
+import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -21,6 +22,7 @@ public class DashboardCriteria extends BaseCriteria implements Serializable {
 	private Date previousDateTo;
 	private EpiCurveGrouping epiCurveGrouping;
 	private boolean showMinimumEntries;
+	private CaseMeasure caseMeasure;
 
 	private boolean includeNotACaseClassification;
 
@@ -101,5 +103,9 @@ public class DashboardCriteria extends BaseCriteria implements Serializable {
 
 	public boolean isShowMinimumEntries() {
 		return showMinimumEntries;
+	}
+
+	public CaseMeasure getCaseMeasure() {
+		return caseMeasure;
 	}
 }

@@ -116,3 +116,100 @@ Feature: Contact filter functionality
     And I check that number of displayed contact results is 1
     And I click on Dropped button on Contact Directory Page
     And I check that number of displayed contact results is 0
+
+  @issue=SORQA-5911 @env_de
+  Scenario: Check Contact basic filters on Contact directory page for DE version
+    Given I log in with National User
+    When I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form for DE version
+    And I click SAVE button on Edit Contact Page
+    Then I check the created data is correctly displayed on Edit Contact page for DE version
+    And I click on CONFIRMED CONTACT radio button Contact Data tab for DE version
+    Then I click SAVE button on Edit Contact Page
+    And I click Create Case from Contact button
+    When I create a new case for contact with specific data for DE
+    Then I check case created from created contact is correctly displayed on Edit Case page for DE
+    And I click on the Contacts button from navbar
+    And I open the last created contact in Contact directory page
+    And I click on the CHOOSE SOURCE CASE button from CONTACT page
+    And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
+    And I search for the last case uuid created by UI in the CHOOSE SOURCE Contact window
+    And I open the first found result in the CHOOSE SOURCE window for DE version
+    Then I click SAVE button on Edit Contact Page
+    Then I click on the Contacts button from navbar
+    And I apply Contact classification filter to "Bestätigter Kontakt" on Contact Directory Page
+    And I apply Disease of source filter "COVID-19" on Contact Directory Page
+    And I apply Disease variant filter to "B.1.617.1" on Contact Directory Page
+    And I apply Classification of source case filter to "0. Nicht klassifiziert" on Contact Directory Page
+    And I apply Follow-up status filter to "Nachverfolgung abgebrochen" on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I check that number of displayed contact results is 1
+    And I apply Contact classification filter to "Kein Kontakt" on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I check that number of displayed contact results is 0
+    And I apply Contact classification filter to "Bestätigter Kontakt" on Contact Directory Page
+    And I apply Disease of source filter "COVID-19" on Contact Directory Page
+    And I apply Disease variant filter to "B.1.617.3" on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I check that number of displayed contact results is 0
+    And I apply Disease variant filter to "B.1.617.1" on Contact Directory Page
+    And I apply Classification of source case filter to "D. Labordiagnostisch bei nicht erfüllter Klinik" on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I check that number of displayed contact results is 0
+    And I apply Classification of source case filter to "0. Nicht klassifiziert" on Contact Directory Page
+    And I apply Follow-up status filter to "Keine Nachverfolgung" on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I check that number of displayed contact results is 0
+    And I apply Follow-up status filter to "Nachverfolgung abgebrochen" on Contact Directory Page
+
+  @issue=SORQA-5911 @env_de
+  Scenario: Check checkbox filters on Contact directory page for DE version
+    Given I log in with National User
+    When I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form for DE version
+    And I click SAVE button on Edit Contact Page
+    Then I check the created data is correctly displayed on Edit Contact page for DE version
+    And I click on CONFIRMED CONTACT radio button Contact Data tab for DE version
+    Then I click SAVE button on Edit Contact Page
+    And I click Create Case from Contact button
+    When I create a new case for contact with specific data for DE
+    Then I check case created from created contact is correctly displayed on Edit Case page for DE
+    Then I click on the Contacts button from navbar
+    And I apply Id of last created Contact on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I click SHOW MORE FILTERS button on Contact directory page
+    And I check that number of displayed contact results is 1
+    And I click "Quarantäne mündlich verordnet?" checkbox on Contact directory page for DE version
+    And I click APPLY BUTTON in Contact Directory Page
+    And I check that number of displayed contact results is 0
+    And I click "Quarantäne mündlich verordnet?" checkbox on Contact directory page for DE version
+    And I click "Quarantäne schriftlich verordnet?" checkbox on Contact directory page for DE version
+    And I click APPLY BUTTON in Contact Directory Page
+    And I check that number of displayed contact results is 0
+    And I click "Quarantäne schriftlich verordnet?" checkbox on Contact directory page for DE version
+    And I click "Keine Quarantäne verordnet" checkbox on Contact directory page for DE version
+    And I click APPLY BUTTON in Contact Directory Page
+    And I check that number of displayed contact results is 1
+    And I click "Keine Quarantäne verordnet" checkbox on Contact directory page for DE version
+    And I click "Maßnahmen zur Gewährleistung der Versorgung" checkbox on Contact directory page for DE version
+    And I click APPLY BUTTON in Contact Directory Page
+    And I check that number of displayed contact results is 0
+    And I click "Maßnahmen zur Gewährleistung der Versorgung" checkbox on Contact directory page for DE version
+    And I click "Nur Kontakte mit hoher Priorität" checkbox on Contact directory page for DE version
+    And I click APPLY BUTTON in Contact Directory Page
+    And I check that number of displayed contact results is 0
+    And I click "Nur Kontakte mit hoher Priorität" checkbox on Contact directory page for DE version
+    And I click "Nur Kontakte mit verlängerter Quarantäne" checkbox on Contact directory page for DE version
+    And I click APPLY BUTTON in Contact Directory Page
+    And I check that number of displayed contact results is 0
+    And I click "Nur Kontakte mit verlängerter Quarantäne" checkbox on Contact directory page for DE version
+    And I click "Nur Kontakte mit verkürzter Quarantäne" checkbox on Contact directory page for DE version
+    And I click APPLY BUTTON in Contact Directory Page
+    And I check that number of displayed contact results is 0
+    And I click "Nur Kontakte mit verkürzter Quarantäne" checkbox on Contact directory page for DE version
+    And I click "Nur Kontakte von anderen Instanzen" checkbox on Contact directory page for DE version
+    And I click APPLY BUTTON in Contact Directory Page
+    And I check that number of displayed contact results is 0
+    And I click "Nur Kontakte von anderen Instanzen" checkbox on Contact directory page for DE version

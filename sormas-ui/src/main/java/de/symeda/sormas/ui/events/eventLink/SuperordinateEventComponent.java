@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.ui.events.eventLink;
 
+import java.util.function.Consumer;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -38,16 +40,15 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class SuperordinateEventComponent extends VerticalLayout {
 
 	private final EventDto subordinateEvent;
-	private final Runnable discardChangesCallback;
+	private final Consumer<Runnable> actionCallback;
 
-	public SuperordinateEventComponent(EventDto subordinateEvent, Runnable discardChangesCallback) {
+	public SuperordinateEventComponent(EventDto subordinateEvent, Consumer<Runnable> actionCallback) {
 		this.subordinateEvent = subordinateEvent;
-		this.discardChangesCallback = discardChangesCallback;
+		this.actionCallback = actionCallback;
 		initialize();
 	}
 
@@ -76,7 +77,7 @@ public class SuperordinateEventComponent extends VerticalLayout {
 					"unlinkSuperordinateEvent",
 					I18nProperties.getCaption(Captions.eventUnlinkEvent),
 					VaadinIcons.UNLINK,
-					e -> createEventWithConfirmationWindow(
+					e -> actionCallback.accept(
 						() -> ControllerProvider.getEventController()
 							.removeSuperordinateEvent(
 								subordinateEvent,
@@ -106,11 +107,11 @@ public class SuperordinateEventComponent extends VerticalLayout {
 					thisEvent -> {
 						long events = FacadeProvider.getEventFacade().count(new EventCriteria());
 						if (events > 0) {
-							createEventWithConfirmationWindow(
+							actionCallback.accept(
 								() -> ControllerProvider.getEventController().selectOrCreateSuperordinateEvent(subordinateEvent.toReference()));
 						} else {
-							createEventWithConfirmationWindow(
-								() -> ControllerProvider.getEventController().createSuperordinateEvent(subordinateEvent.toReference()));
+							actionCallback
+								.accept(() -> ControllerProvider.getEventController().createSuperordinateEvent(subordinateEvent.toReference()));
 						}
 					},
 					ValoTheme.BUTTON_PRIMARY);
@@ -119,21 +120,6 @@ public class SuperordinateEventComponent extends VerticalLayout {
 		}
 
 		addComponent(buttonLayout);
-	}
-
-	private void createEventWithConfirmationWindow(Runnable callback) {
-		VaadinUiUtil.showConfirmationPopup(
-			I18nProperties.getString(Strings.unsavedChanges_discard),
-			new Label(I18nProperties.getString(Strings.confirmationSuperordinateEventDiscardUnsavedChanges)),
-			I18nProperties.getString(Strings.yes),
-			I18nProperties.getString(Strings.no),
-			480,
-			confirmed -> {
-				if (confirmed) {
-					discardChangesCallback.run();
-					callback.run();
-				}
-			});
 	}
 
 	private class SuperordinateEventInfoLayout extends AbstractInfoLayout<EventDto> {

@@ -60,7 +60,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 	@Override
 	public boolean isFeatureEnabled() {
-		return StringUtils.isNoneBlank(configFacade.getExternalSurveillanceToolGatewayUrl());
+		return configFacade.isExternalSurveillanceToolGatewayConfigured();
 	}
 
 	@Override

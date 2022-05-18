@@ -42,7 +42,6 @@ public class AssertHelpers {
           .timeout(Duration.ofSeconds(seconds))
           .untilAsserted(throwingRunnable);
     } catch (ConditionTimeoutException e) {
-      log.error("Test has failed due to: {}", e.getCause());
       fail(e.getCause().getLocalizedMessage());
     }
   }
@@ -57,7 +56,6 @@ public class AssertHelpers {
           .timeout(Duration.ofSeconds(seconds))
           .untilAsserted(throwingRunnable);
     } catch (ConditionTimeoutException e) {
-      log.error("Skipped failing assert: {}", e.getCause());
     }
   }
 

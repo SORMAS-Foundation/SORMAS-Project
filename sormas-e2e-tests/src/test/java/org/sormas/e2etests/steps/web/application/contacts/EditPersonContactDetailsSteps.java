@@ -40,6 +40,7 @@ public class EditPersonContactDetailsSteps implements En {
         "I edit all Person primary contact details and save",
         () -> {
           newCreatederson = EditPersonSteps.newGeneratedPerson;
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.clickOnWebElementBySelector(PRIMARY_CONTACT_DETAILS_EDIT_EMAIL_FIELD);
           fillContactInformationInput(newCreatederson.getEmailAddress());
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);

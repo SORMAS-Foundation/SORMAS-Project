@@ -49,4 +49,10 @@ public class HospitalizationTabPage {
   public static final By BLUE_ERROR_EXCLAMATION_MARK =
       By.xpath("//span[@class='v-errorindicator v-errorindicator-info']");
   public static final By BLUE_ERROR_EXCLAMATION_MARK_TEXT = By.xpath("//div[@class='gwt-HTML']");
+  public static final By PLACE_OF_STAY_IN_HOSPITAL_POPUP =
+      By.xpath("//*[contains(text(),'Place of stay in hospital')]");
+  public static final By FACILITY_POPUP_CHECKBOX =
+      By.cssSelector(".v-window-contents #healthFacility div");
+  public static final By PLACE_OF_STAY_IN_HOSPITAL_POPUP_SAVE_BUTTON =
+      By.cssSelector(".v-window-contents #commit");
 }

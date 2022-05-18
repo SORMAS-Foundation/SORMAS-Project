@@ -15,6 +15,7 @@
 package de.symeda.sormas.backend.user;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -44,8 +45,8 @@ import javax.validation.ValidationException;
 
 import org.apache.commons.beanutils.BeanUtils;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -79,6 +80,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -102,6 +104,7 @@ import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
+import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
@@ -196,18 +199,17 @@ public class UserFacadeEjb implements UserFacade {
 		return new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles());
 	}
 
-	private List<String> toUuidList(HasUuid hasUuid) {
-		/*
-		 * Supports conversion of a null object into a list with one "null" value in it.
-		 * Uncertain if that use case exists, but wasn't suppose to be broken when replacing the Dto to Entity lookup.
-		 */
-		return Collections.singletonList(hasUuid == null ? null : hasUuid.getUuid());
-	}
-
 	@Override
-	public List<UserReferenceDto> getUsersByRegionAndRights(RegionReferenceDto regionRef, UserRight... userRights) {
-
-		return userService.getUserReferences(toUuidList(regionRef), null, true, true, userRights)
+	public List<UserReferenceDto> getUsersByRegionAndRights(RegionReferenceDto regionRef, Disease limitedDisease, UserRight... userRights) {
+		return userService
+			.getUserReferences(
+				regionRef != null ? Collections.singletonList(regionRef.getUuid()) : null,
+				null,
+				null,
+				true,
+				true,
+				limitedDisease,
+				userRights)
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
@@ -253,14 +255,8 @@ public class UserFacadeEjb implements UserFacade {
 			}
 
 			if (community == null) {
-				superiorUsersList =
-					userService
-						.getUserReferencesByJurisdictions(
-							null,
-							Collections.singletonList(district.getUuid()),
-							null,
-							superordinateJurisdictions,
-							null);
+				superiorUsersList = userService
+					.getUserReferencesByJurisdictions(null, Collections.singletonList(district.getUuid()), null, superordinateJurisdictions, null);
 			} else if (district != null) {
 				superiorUsersList = userService.getUserReferencesByJurisdictions(
 					null,
@@ -277,19 +273,54 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto districtRef, UserRight... userRights) {
+	public List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto districtRef, Disease limitedDisease, UserRight... userRights) {
 
-		return userService.getUserReferences(null, toUuidList(districtRef), true, true, userRights)
+		return userService
+			.getUserReferences(
+				null,
+				districtRef != null ? Collections.singletonList(districtRef.getUuid()) : null,
+				null,
+				true,
+				true,
+				limitedDisease,
+				userRights)
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districtRefs, UserRight... userRights) {
+	public List<UserReferenceDto> getUserRefsByDistrict(
+		DistrictReferenceDto districtRef,
+		boolean excludeLimitedDiseaseUsers,
+		UserRight... userRights) {
+		return userService
+			.getUserReferences(
+				null,
+				districtRef != null ? Collections.singletonList(districtRef.getUuid()) : null,
+				null,
+				true,
+				true,
+				null,
+				excludeLimitedDiseaseUsers,
+				Arrays.asList(userRights))
+			.stream()
+			.map(UserFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districtRefs, Disease limitedDisease, UserRight... userRights) {
 
 		return userService
-			.getUserReferences(null, districtRefs.stream().map(DistrictReferenceDto::getUuid).collect(Collectors.toList()), true, true, userRights)
+			.getUserReferences(
+				null,
+				districtRefs.stream().map(DistrictReferenceDto::getUuid).collect(Collectors.toList()),
+				null,
+				true,
+				true,
+				limitedDisease,
+				userRights)
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
@@ -361,8 +392,11 @@ public class UserFacadeEjb implements UserFacade {
 			caseJurisdictionSubquery.select(caseRoot)
 				.where(
 					cb.and(
-						cb.equal(caseRoot.get(AbstractDomainObject.UUID), caseReferenceDto.getUuid()),
-						cb.isTrue(caseJurisdictionPredicateValidator.inJurisdictionOrOwned())));
+						cb.equal(caseRoot.get(Case.UUID), caseReferenceDto.getUuid()),
+						cb.isTrue(caseJurisdictionPredicateValidator.inJurisdictionOrOwned()),
+						cb.or(
+							cb.isNull(userRoot.get(User.LIMITED_DISEASE)),
+							cb.equal(userRoot.get(User.LIMITED_DISEASE), caseRoot.get(Case.DISEASE)))));
 			return caseJurisdictionSubquery;
 		});
 	}
@@ -374,13 +408,16 @@ public class UserFacadeEjb implements UserFacade {
 			final Subquery<Contact> contactJurisdictionSubquery = cq.subquery(Contact.class);
 			final Root<Contact> contactRoot = contactJurisdictionSubquery.from(Contact.class);
 			final ContactJurisdictionPredicateValidator contactJurisdictionPredicateValidator =
-				ContactJurisdictionPredicateValidator.of(new ContactQueryContext<>(cb, cq, contactRoot), userRoot);
+				ContactJurisdictionPredicateValidator.of(new ContactQueryContext(cb, cq, new ContactJoins(contactRoot)), userRoot);
 
 			contactJurisdictionSubquery.select(contactRoot)
 				.where(
 					cb.and(
 						cb.equal(contactRoot.get(AbstractDomainObject.UUID), contactReferenceDto.getUuid()),
-						cb.isTrue(contactJurisdictionPredicateValidator.inJurisdictionOrOwned())));
+						cb.isTrue(contactJurisdictionPredicateValidator.inJurisdictionOrOwned()),
+						cb.or(
+							cb.isNull(userRoot.get(User.LIMITED_DISEASE)),
+							cb.equal(userRoot.get(User.LIMITED_DISEASE), contactRoot.get(Contact.DISEASE)))));
 			return contactJurisdictionSubquery;
 		});
 	}
@@ -393,13 +430,16 @@ public class UserFacadeEjb implements UserFacade {
 			final Subquery<de.symeda.sormas.backend.event.Event> eventJurisdictionSubquery = cq.subquery(de.symeda.sormas.backend.event.Event.class);
 			final Root<de.symeda.sormas.backend.event.Event> eventRoot = eventJurisdictionSubquery.from(de.symeda.sormas.backend.event.Event.class);
 			final EventJurisdictionPredicateValidator eventJurisdictionPredicateValidator =
-				EventJurisdictionPredicateValidator.of(new EventQueryContext<>(cb, cq, eventRoot), userRoot);
+				EventJurisdictionPredicateValidator.of(new EventQueryContext(cb, cq, eventRoot), userRoot);
 
 			eventJurisdictionSubquery.select(eventRoot)
 				.where(
 					cb.and(
 						cb.equal(eventRoot.get(AbstractDomainObject.UUID), eventReferenceDto.getUuid()),
-						cb.isTrue(eventJurisdictionPredicateValidator.inJurisdictionOrOwned())));
+						cb.isTrue(eventJurisdictionPredicateValidator.inJurisdictionOrOwned()),
+						cb.or(
+							cb.isNull(userRoot.get(User.LIMITED_DISEASE)),
+							cb.equal(userRoot.get(User.LIMITED_DISEASE), eventRoot.get(de.symeda.sormas.backend.event.Event.DISEASE)))));
 			return eventJurisdictionSubquery;
 		});
 	}
@@ -412,13 +452,16 @@ public class UserFacadeEjb implements UserFacade {
 			final Subquery<TravelEntry> travelEntrySubquery = cq.subquery(TravelEntry.class);
 			final Root<TravelEntry> travelEntryRoot = travelEntrySubquery.from(TravelEntry.class);
 			final TravelEntryJurisdictionPredicateValidator travelEntryJurisdictionPredicateValidator =
-				TravelEntryJurisdictionPredicateValidator.of(new TravelEntryQueryContext<>(cb, cq, travelEntryRoot), userRoot);
+				TravelEntryJurisdictionPredicateValidator.of(new TravelEntryQueryContext(cb, cq, new TravelEntryJoins(travelEntryRoot)), userRoot);
 
 			travelEntrySubquery.select(travelEntryRoot)
 				.where(
 					cb.and(
 						cb.equal(travelEntryRoot.get(AbstractDomainObject.UUID), travelEntryReferenceDto.getUuid()),
-						cb.isTrue(travelEntryJurisdictionPredicateValidator.inJurisdictionOrOwned())));
+						cb.isTrue(travelEntryJurisdictionPredicateValidator.inJurisdictionOrOwned()),
+						cb.or(
+							cb.isNull(userRoot.get(User.LIMITED_DISEASE)),
+							cb.equal(userRoot.get(User.LIMITED_DISEASE), travelEntryRoot.get(TravelEntry.DISEASE)))));
 			return travelEntrySubquery;
 		});
 	}
@@ -437,11 +480,6 @@ public class UserFacadeEjb implements UserFacade {
 		cq.orderBy(cb.asc(root.get(AbstractDomainObject.ID)));
 		List<User> resultList = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 		return resultList.stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toList());
-	}
-
-	public interface JurisdictionOverEntitySubqueryBuilder<ADO extends AbstractDomainObject> {
-
-		Subquery<ADO> buildSubquery(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<User> userRoot);
 	}
 
 	@Override
@@ -764,6 +802,11 @@ public class UserFacadeEjb implements UserFacade {
 
 			userUpdateEvent.fire(new UserUpdateEvent(oldUser, user));
 		}
+	}
+
+	public interface JurisdictionOverEntitySubqueryBuilder<ADO extends AbstractDomainObject> {
+
+		Subquery<ADO> buildSubquery(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<User> userRoot);
 	}
 
 	@LocalBean

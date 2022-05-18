@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.DenyAll;
 import javax.ejb.EJB;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -31,6 +32,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.EditPermissionType;
@@ -49,6 +51,26 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 	protected AbstractCoreAdoService(Class<ADO> elementClass) {
 		super(elementClass);
 	}
+
+	/**
+	 * @deprecated Invocation without a {@link QueryContext} is only allowed interally in the same class. For invocation from other EJBs,
+	 *             use {@code createUserFilter(QueryContext)} instead (to be implemented by each subclass).
+	 */
+	@Deprecated
+	@DenyAll
+	@Override
+	@SuppressWarnings("rawtypes")
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ADO> from) {
+		return createUserFilterInternal(cb, cq, from);
+	}
+
+	/**
+	 * Delegate this to {@code createUserFilter(QueryContext)}.
+	 */
+	@Deprecated
+	@DenyAll
+	@SuppressWarnings("rawtypes")
+	protected abstract Predicate createUserFilterInternal(CriteriaBuilder cb, CriteriaQuery cq, From<?, ADO> from);
 
 	public boolean isArchived(String uuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();

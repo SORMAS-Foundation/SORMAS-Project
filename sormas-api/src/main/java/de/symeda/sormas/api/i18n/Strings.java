@@ -55,6 +55,7 @@ public interface Strings {
 	String confirmationArchiveCampaign = "confirmationArchiveCampaign";
 	String confirmationArchiveCase = "confirmationArchiveCase";
 	String confirmationArchiveCases = "confirmationArchiveCases";
+	String confirmationArchiveCaseWithContacts = "confirmationArchiveCaseWithContacts";
 	String confirmationArchiveCommunities = "confirmationArchiveCommunities";
 	String confirmationArchiveCommunity = "confirmationArchiveCommunity";
 	String confirmationArchiveContact = "confirmationArchiveContact";
@@ -91,6 +92,7 @@ public interface Strings {
 	String confirmationDearchiveCampaign = "confirmationDearchiveCampaign";
 	String confirmationDearchiveCase = "confirmationDearchiveCase";
 	String confirmationDearchiveCases = "confirmationDearchiveCases";
+	String confirmationDearchiveCaseWithContacts = "confirmationDearchiveCaseWithContacts";
 	String confirmationDearchiveCommunities = "confirmationDearchiveCommunities";
 	String confirmationDearchiveCommunity = "confirmationDearchiveCommunity";
 	String confirmationDearchiveContact = "confirmationDearchiveContact";
@@ -118,6 +120,7 @@ public interface Strings {
 	String confirmationDearchiveTask = "confirmationDearchiveTask";
 	String confirmationDearchiveTasks = "confirmationDearchiveTasks";
 	String confirmationDearchiveTravelEntry = "confirmationDearchiveTravelEntry";
+	String confirmationDeleteCaseContacts = "confirmationDeleteCaseContacts";
 	String confirmationDeleteCases = "confirmationDeleteCases";
 	String confirmationDeleteContacts = "confirmationDeleteContacts";
 	String confirmationDeleteEntity = "confirmationDeleteEntity";
@@ -127,6 +130,7 @@ public interface Strings {
 	String confirmationDeleteLabMessages = "confirmationDeleteLabMessages";
 	String confirmationDeletePathogenTests = "confirmationDeletePathogenTests";
 	String confirmationDeletePrescriptions = "confirmationDeletePrescriptions";
+	String confirmationDeletePrescriptionWithTreatment = "confirmationDeletePrescriptionWithTreatment";
 	String confirmationDeleteSamples = "confirmationDeleteSamples";
 	String confirmationDeleteTasks = "confirmationDeleteTasks";
 	String confirmationDeleteTravelEntries = "confirmationDeleteTravelEntries";
@@ -143,6 +147,7 @@ public interface Strings {
 	String confirmationLabMessageCorrection = "confirmationLabMessageCorrection";
 	String confirmationLocationFacilityAddressOverride = "confirmationLocationFacilityAddressOverride";
 	String confirmationLostToFollowUp = "confirmationLostToFollowUp";
+	String confirmationManualDeleteCoreEntity = "confirmationManualDeleteCoreEntity";
 	String confirmationManuallyForwardedLabMessage = "confirmationManuallyForwardedLabMessage";
 	String confirmationMergeCaseAndDeleteOther = "confirmationMergeCaseAndDeleteOther";
 	String confirmationMergeContactAndDeleteOther = "confirmationMergeContactAndDeleteOther";
@@ -159,7 +164,6 @@ public interface Strings {
 	String confirmationSeeAllPersons = "confirmationSeeAllPersons";
 	String confirmationSetMissingGeoCoordinates = "confirmationSetMissingGeoCoordinates";
 	String confirmationSinceLabMessages = "confirmationSinceLabMessages";
-	String confirmationSuperordinateEventDiscardUnsavedChanges = "confirmationSuperordinateEventDiscardUnsavedChanges";
 	String confirmationUnclearLabMessage = "confirmationUnclearLabMessage";
 	String confirmationUnlinkCaseFromEvent = "confirmationUnlinkCaseFromEvent";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
@@ -192,6 +196,7 @@ public interface Strings {
 	String entityAdditionalTests = "entityAdditionalTests";
 	String entityAggregateReports = "entityAggregateReports";
 	String entityAreas = "entityAreas";
+	String entityAutomaticSoftDeletion = "entityAutomaticSoftDeletion";
 	String entityBagCases = "entityBagCases";
 	String entityBagContacts = "entityBagContacts";
 	String entityBurial = "entityBurial";
@@ -400,6 +405,7 @@ public interface Strings {
 	String headingConfirmUnclearLabMessage = "headingConfirmUnclearLabMessage";
 	String headingConfirmUpdateCompleteness = "headingConfirmUpdateCompleteness";
 	String headingContactConfirmationRequired = "headingContactConfirmationRequired";
+	String headingContactConversionFollowUpCommentLarge = "headingContactConversionFollowUpCommentLarge";
 	String headingContactData = "headingContactData";
 	String headingContactDataNotComplete = "headingContactDataNotComplete";
 	String headingContactInformation = "headingContactInformation";
@@ -456,6 +462,8 @@ public interface Strings {
 	String headingDearchiveTravelEntry = "headingDearchiveTravelEntry";
 	String headingDearchivingNotPossible = "headingDearchivingNotPossible";
 	String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";
+	String headingDeleteConfirmation = "headingDeleteConfirmation";
+	String headingDeleteContacts = "headingDeleteContacts";
 	String headingDeleteVaccinations = "headingDeleteVaccinations";
 	String headingDisableLineListing = "headingDisableLineListing";
 	String headingDiscardUnsavedChanges = "headingDiscardUnsavedChanges";
@@ -944,6 +952,9 @@ public interface Strings {
 	String messageContactArchived = "messageContactArchived";
 	String messageContactCaseChanged = "messageContactCaseChanged";
 	String messageContactCaseRemoved = "messageContactCaseRemoved";
+	String messageContactConversionFollowUpCommentLarge = "messageContactConversionFollowUpCommentLarge";
+	String messageContactConversionFollowUpCommentLargeAdjustComment = "messageContactConversionFollowUpCommentLargeAdjustComment";
+	String messageContactConversionFollowUpCommentLargeOmitMessage = "messageContactConversionFollowUpCommentLargeOmitMessage";
 	String messageContactCreated = "messageContactCreated";
 	String messageContactDearchived = "messageContactDearchived";
 	String messageContactDuplicateDeleted = "messageContactDuplicateDeleted";
@@ -980,6 +991,7 @@ public interface Strings {
 	String messageCreateCollectionTask = "messageCreateCollectionTask";
 	String messageDatabaseExportFailed = "messageDatabaseExportFailed";
 	String messageDeleteImmunizationVaccinations = "messageDeleteImmunizationVaccinations";
+	String messageDeleteReasonNotFilled = "messageDeleteReasonNotFilled";
 	String messageDeletionUnsupportedByExternalJournalWarning = "messageDeletionUnsupportedByExternalJournalWarning";
 	String messageDiseaseNotSpecifiedInLabMessage = "messageDiseaseNotSpecifiedInLabMessage";
 	String messageDistrictArchived = "messageDistrictArchived";
@@ -1044,7 +1056,6 @@ public interface Strings {
 	String messageFacilityMulitChanged = "messageFacilityMulitChanged";
 	String messageFollowUpCanceled = "messageFollowUpCanceled";
 	String messageFollowUpStatusChanged = "messageFollowUpStatusChanged";
-	String messageFormHasErrorsPathogenTest = "messageFormHasErrorsPathogenTest";
 	String messageForwardedLabMessageFound = "messageForwardedLabMessageFound";
 	String messageGdpr = "messageGdpr";
 	String messageGdprCheck = "messageGdprCheck";
@@ -1100,6 +1111,7 @@ public interface Strings {
 	String messageNoTreatmentsSelected = "messageNoTreatmentsSelected";
 	String messageNoUsersSelected = "messageNoUsersSelected";
 	String messageNoVisitsSelected = "messageNoVisitsSelected";
+	String messageOtherDeleteReasonNotFilled = "messageOtherDeleteReasonNotFilled";
 	String messageOutbreakSaved = "messageOutbreakSaved";
 	String messagePasswordReset = "messagePasswordReset";
 	String messagePasswordResetEmailLink = "messagePasswordResetEmailLink";
@@ -1249,6 +1261,7 @@ public interface Strings {
 	String of = "of";
 	String on = "on";
 	String or = "or";
+	String pathogenTestDeletedDuringLabMessageConversion = "pathogenTestDeletedDuringLabMessageConversion";
 	String pleaseSpecify = "pleaseSpecify";
 	String populationDataByArea = "populationDataByArea";
 	String populationDataByCommunity = "populationDataByCommunity";

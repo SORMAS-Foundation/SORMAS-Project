@@ -186,8 +186,8 @@ public class PersonsView extends AbstractView {
 				activeAssociationButton = b;
 			}
 		});
-		CssStyles.removeStyles(activeAssociationButton, CssStyles.BUTTON_FILTER_LIGHT);
 		if (activeAssociationButton != null) {
+			CssStyles.removeStyles(activeAssociationButton, CssStyles.BUTTON_FILTER_LIGHT);
 			activeAssociationButton.setCaption(
 				associationButtons.get(activeAssociationButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}

@@ -21,7 +21,6 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import javax.ejb.Remote;
@@ -35,6 +34,7 @@ import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -94,6 +94,8 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	CaseDataDto save(@Valid @NotNull CaseDataDto dto, boolean systemSave) throws ValidationRuntimeException;
 
+	CoreAndPersonDto<CaseDataDto> save(@Valid @NotNull CoreAndPersonDto<CaseDataDto> dto) throws ValidationRuntimeException;
+
 	void setSampleAssociations(ContactReferenceDto sourceContact, CaseReferenceDto cazeRef);
 
 	void setSampleAssociations(EventParticipantReferenceDto sourceEventParticipant, CaseReferenceDto cazeRef);
@@ -130,6 +132,8 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<String> deleteCases(List<String> caseUuids);
 
+	void deleteWithContacts(String caseUuid, DeletionDetails deletionDetails);
+
 	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid) throws ExternalSurveillanceToolException;
 
 	Date getOldestCaseOnsetDate();
@@ -140,6 +144,8 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	boolean isDeleted(String caseUuid);
 
+	boolean isArchived(String caseUuid);
+
 	List<String> getArchivedUuidsSince(Date since);
 
 	List<String> getDeletedUuidsSince(Date since);
@@ -148,7 +154,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	boolean doesExternalTokenExist(String externalToken, String caseUuid);
 
-	String generateEpidNumber(CaseDataDto caze);
+	String getGenerateEpidNumber(CaseDataDto caze);
 
 	void mergeCase(String leadUuid, String otherUuid);
 
@@ -222,4 +228,12 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 	int updateCompleteness();
 
 	PreviousCaseDto getMostRecentPreviousCase(PersonReferenceDto person, Disease disease, Date startDate);
+
+	void archive(String entityUuid, Date endOfProcessingDate, boolean includeContacts);
+
+	void archive(List<String> entityUuids, boolean includeContacts);
+
+	void dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts);
+
+	void setResultingCase(EventParticipantReferenceDto eventParticipantReferenceDto, CaseReferenceDto caseReferenceDto);
 }

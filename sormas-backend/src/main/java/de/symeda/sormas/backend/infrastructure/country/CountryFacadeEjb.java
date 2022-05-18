@@ -253,7 +253,7 @@ public class CountryFacadeEjb
 	}
 
 	@Override
-	public List<CountryReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
+	public List<CountryReferenceDto> getReferencesByExternalId(String externalId, boolean includeArchived) {
 		return service.getByExternalId(externalId, includeArchived).stream().map(CountryFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 

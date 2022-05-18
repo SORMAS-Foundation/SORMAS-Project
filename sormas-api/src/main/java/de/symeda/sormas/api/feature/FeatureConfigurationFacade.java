@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.feature;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -79,5 +80,5 @@ public interface FeatureConfigurationFacade {
 
 	boolean isTaskGenerationFeatureEnabled(TaskType taskType);
 
-	List<FeatureType> getActiveServerFeatureTypes();
+	List<FeatureConfigurationDto> getActiveServerFeatureConfigurations();
 }

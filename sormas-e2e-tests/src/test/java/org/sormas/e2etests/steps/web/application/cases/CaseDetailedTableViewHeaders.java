@@ -3,6 +3,7 @@ package org.sormas.e2etests.steps.web.application.cases;
 public enum CaseDetailedTableViewHeaders {
   CASE_ID("CASE ID"),
   EXTERNAL_ID("EXTERNAL ID"),
+  EXTERNAL_ID_DE("EXTERNE ID"),
   EXTERNAL_TOKEN("EXTERNAL TOKEN"),
   INTERNAL_TOKEN("EXTERNAL TOKEN"),
   DISEASE("DISEASE"),

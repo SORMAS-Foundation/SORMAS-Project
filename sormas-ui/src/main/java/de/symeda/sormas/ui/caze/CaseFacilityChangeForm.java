@@ -26,6 +26,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -122,9 +123,9 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 					FacadeProvider.getFacilityFacade()
 						.getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) type.getValue(), true, false));
 			}
-
+			Disease caseDisease = getValue().getDisease();
 			List<UserReferenceDto> assignableCaseResponsibles =
-				FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, UserRight.CASE_RESPONSIBLE);
+				FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, caseDisease, UserRight.CASE_RESPONSIBLE);
 			FieldHelper.updateItems(officer, assignableCaseResponsibles);
 			if (assignableCaseResponsibles.size() == 1) {
 				officer.setValue(assignableCaseResponsibles.get(0));
@@ -218,10 +219,9 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 		if (cbFacility.getValue() != null) {
 			boolean otherHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
 			boolean noneHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
-			boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
+			boolean visible = otherHealthFacility || noneHealthFacility;
 
-			tfFacilityDetails.setVisible(visibleAndRequired);
-			tfFacilityDetails.setRequired(visibleAndRequired);
+			tfFacilityDetails.setVisible(visible);
 
 			if (otherHealthFacility) {
 				tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
@@ -229,12 +229,11 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 			if (noneHealthFacility) {
 				tfFacilityDetails.setCaption(I18nProperties.getCaption(Captions.CaseData_noneHealthFacilityDetails));
 			}
-			if (!visibleAndRequired) {
+			if (!visible) {
 				tfFacilityDetails.clear();
 			}
-		} else {
+		} else if (!TypeOfPlace.HOME.equals(facilityOrHome.getValue())) {
 			tfFacilityDetails.setVisible(false);
-			tfFacilityDetails.setRequired(false);
 			tfFacilityDetails.clear();
 		}
 	}

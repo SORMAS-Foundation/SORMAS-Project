@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -19,9 +20,8 @@ import de.symeda.sormas.api.labmessage.LabMessageCriteria;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -30,18 +30,21 @@ import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class LabMessageService extends AbstractDeletableAdoService<LabMessage> {
+public class LabMessageService extends AdoServiceWithUserFilter<LabMessage> {
+
+	@EJB
+	private TestReportService testReportService;
 
 	public LabMessageService() {
 		super(LabMessage.class);
 	}
 
-	/**
-	 * Creates a default filter that should be used as the basis of queries that do not use {@link LabMessageCriteria}.
-	 * This essentially removes {@link DeletableAdo#isDeleted()} lab messages from the queries.
-	 */
-	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<LabMessage> root) {
-		return cb.isFalse(root.get(LabMessage.DELETED));
+	@Override
+	public void deletePermanent(LabMessage labMessage) {
+
+		labMessage.getTestReports().forEach(t -> testReportService.deletePermanent(t));
+
+		super.deletePermanent(labMessage);
 	}
 
 	@Override
@@ -53,6 +56,9 @@ public class LabMessageService extends AbstractDeletableAdoService<LabMessage> {
 		Predicate filter = null;
 		if (criteria.getUuid() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(LabMessage.UUID), criteria.getUuid()));
+		}
+		if (criteria.getType() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(LabMessage.TYPE), criteria.getType()));
 		}
 		if (criteria.getLabMessageStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(LabMessage.STATUS), criteria.getLabMessageStatus()));
@@ -129,13 +135,9 @@ public class LabMessageService extends AbstractDeletableAdoService<LabMessage> {
 			filter = CriteriaBuilderHelper.and(cb, filter, birthDateToFilter);
 		}
 
-		if (criteria.getDeleted() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(LabMessage.DELETED), criteria.getDeleted()));
-		}
-
 		if (criteria.getAssignee() != null) {
 			if (ReferenceDto.NO_REFERENCE_UUID.equals(criteria.getAssignee().getUuid())) {
-				filter = cb.and(filter, labMessage.get(LabMessage.ASSIGNEE).isNull());
+				filter = CriteriaBuilderHelper.and(cb, filter, labMessage.get(LabMessage.ASSIGNEE).isNull());
 			} else {
 				filter = CriteriaBuilderHelper
 					.and(cb, filter, cb.equal(labMessage.join(LabMessage.ASSIGNEE, JoinType.LEFT).get(User.UUID), criteria.getAssignee().getUuid()));
@@ -169,10 +171,7 @@ public class LabMessageService extends AbstractDeletableAdoService<LabMessage> {
 		Join<LabMessage, Sample> sampleJoin = labMessageRoot.join(LabMessage.SAMPLE, JoinType.LEFT);
 		Join<Sample, Case> caseJoin = sampleJoin.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 
-		Predicate filter =
-			cb.and(createDefaultFilter(cb, labMessageRoot), caseJoin.get(AbstractDomainObject.UUID).in(Collections.singleton(caseUuid)));
-
-		cq.where(filter);
+		cq.where(caseJoin.get(AbstractDomainObject.UUID).in(Collections.singleton(caseUuid)));
 		cq.select(cb.countDistinct(labMessageRoot));
 
 		return em.createQuery(cq).getSingleResult();
@@ -185,10 +184,7 @@ public class LabMessageService extends AbstractDeletableAdoService<LabMessage> {
 		Join<LabMessage, Sample> sampleJoin = labMessageRoot.join(LabMessage.SAMPLE, JoinType.LEFT);
 		Join<Sample, Contact> contactJoin = sampleJoin.join(Sample.ASSOCIATED_CONTACT, JoinType.LEFT);
 
-		Predicate filter =
-			cb.and(createDefaultFilter(cb, labMessageRoot), contactJoin.get(AbstractDomainObject.UUID).in(Collections.singleton(contactUuid)));
-
-		cq.where(filter);
+		cq.where(contactJoin.get(AbstractDomainObject.UUID).in(Collections.singleton(contactUuid)));
 		cq.select(cb.countDistinct(labMessageRoot));
 
 		return em.createQuery(cq).getSingleResult();
@@ -201,11 +197,7 @@ public class LabMessageService extends AbstractDeletableAdoService<LabMessage> {
 		Join<LabMessage, Sample> sampleJoin = labMessageRoot.join(LabMessage.SAMPLE, JoinType.LEFT);
 		Join<Sample, EventParticipant> eventParticipantJoin = sampleJoin.join(Sample.ASSOCIATED_EVENT_PARTICIPANT, JoinType.LEFT);
 
-		Predicate filter = cb.and(
-			createDefaultFilter(cb, labMessageRoot),
-			eventParticipantJoin.get(AbstractDomainObject.UUID).in(Collections.singleton(eventParticipantUuid)));
-
-		cq.where(filter);
+		cq.where(eventParticipantJoin.get(AbstractDomainObject.UUID).in(Collections.singleton(eventParticipantUuid)));
 		cq.select(cb.countDistinct(labMessageRoot));
 
 		return em.createQuery(cq).getSingleResult();

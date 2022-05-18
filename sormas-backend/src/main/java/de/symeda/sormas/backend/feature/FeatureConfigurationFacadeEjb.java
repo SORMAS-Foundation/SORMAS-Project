@@ -384,7 +384,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 
 		return em.createQuery(cq).getSingleResult() > 0;
 	}
-	
+
 	@Override
 	public boolean isFeatureEnabled(FeatureType featureType, CoreEntityType entityType) {
 
@@ -510,10 +510,10 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	}
 
 	@Override
-	public List<FeatureType> getActiveServerFeatureTypes() {
+	public List<FeatureConfigurationDto> getActiveServerFeatureConfigurations() {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<FeatureType> cq = cb.createQuery(FeatureType.class);
+		CriteriaQuery<FeatureConfiguration> cq = cb.createQuery(FeatureConfiguration.class);
 		Root<FeatureConfiguration> root = cq.from(FeatureConfiguration.class);
 
 		List<FeatureType> serverFeatures = FeatureType.getAllServerFeatures();
@@ -522,9 +522,8 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		}
 
 		cq.where(cb.and(root.get(FeatureConfiguration.FEATURE_TYPE).in(serverFeatures), cb.isTrue(root.get(FeatureConfiguration.ENABLED))));
-		cq.select(root.get(FeatureConfiguration.FEATURE_TYPE));
 
-		return em.createQuery(cq).getResultList();
+		return em.createQuery(cq).getResultList().stream().map(FeatureConfigurationFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	public static FeatureConfigurationDto toDto(FeatureConfiguration source) {

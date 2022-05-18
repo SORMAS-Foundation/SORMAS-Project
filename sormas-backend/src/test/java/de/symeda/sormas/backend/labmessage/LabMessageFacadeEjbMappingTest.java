@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 
+import de.symeda.sormas.api.labmessage.ExternalMessageType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -92,6 +93,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setSampleOverallTestResult(PathogenTestResultType.POSITIVE);
 		source.setSample(sampleRef);
 		source.setAssignee(assignee.toReference());
+		source.setType(ExternalMessageType.LAB_MESSAGE);
 
 		LabMessage result = sut.fromDto(source, null, true);
 
@@ -125,6 +127,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getSampleOverallTestResult(), result.getSampleOverallTestResult());
 		assertEquals(sample, result.getSample());
 		assertEquals(assignee.getUuid(), result.getAssignee().getUuid());
+		assertEquals(source.getType(), result.getType());
 	}
 
 	@Test
@@ -178,6 +181,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setSampleOverallTestResult(PathogenTestResultType.NEGATIVE);
 		source.setSample(sample);
 		source.setAssignee(assignee);
+		source.setType(ExternalMessageType.PHYSICIANS_REPORT);
 
 		LabMessageDto result = sut.toDto(source);
 
@@ -211,5 +215,6 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getSampleOverallTestResult(), result.getSampleOverallTestResult());
 		assertEquals(source.getSample().toReference(), result.getSample());
 		assertEquals(assignee.getUuid(), result.getAssignee().getUuid());
+		assertEquals(source.getType(), result.getType());
 	}
 }

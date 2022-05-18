@@ -218,8 +218,7 @@ Feature: Case filter functionality
     And I apply "Archived cases" to combobox on Case Directory Page
     And I check that number of displayed cases results is 0
 
-    #todo requires more checks,the failure from jenkins cannot be reproduced
-  @issue=SORQA-30 @env_main @ignore
+  @issue=SORQA-30 @env_main
   Scenario: Check Case report date filters on Case directory page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -241,7 +240,7 @@ Feature: Case filter functionality
     And I check that number of displayed cases results is 0
     And I fill Cases from input to 1 days before mocked Case created on Case directory page
 
-  @issue=SORQA-30 @env_main @check
+  @issue=SORQA-30 @env_main
   Scenario: Check complex filters regarding responsibilities, vaccination, reinfection adn quarantine
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -332,10 +331,6 @@ Feature: Case filter functionality
     And I apply Case origin "Einreiseort" on Case directory page
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
-    And I apply Case origin "Im Land" on Case directory page
-    And I apply Disease filter "Cholera" on Case directory page
-    And I click APPLY BUTTON in Case Directory Page
-    And I check that number of displayed cases results is 0
     And I apply Disease filter "COVID-19" on Case directory page
     And I apply Disease Variant filter "B.1.526.1" on Case directory page
     And I click APPLY BUTTON in Case Directory Page
@@ -394,7 +389,7 @@ Feature: Case filter functionality
     And I check that number of displayed cases results is 0
     And I click "Nur Einreisefälle ohne zugewiesene Einrichtung" checkbox on Case directory page
 
-  @issue=SORQA-83 @env_de @ignore
+  @issue=SORQA-83 @env_de
   Scenario: Check Case report date filters on Case directory page for De specific
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -412,5 +407,36 @@ Feature: Case filter functionality
     And I fill Cases from input to 3 days after before UI Case created on Case directory page
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
+
+  @issue=SORDEV-8629 @env_main
+  Scenario Outline: Check option <option> in Outcome of case filter
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill new case with for one person with specified date for month ago
+    Then I click on save case button
+    And I select <option> as Outcome of Case in Edit case page
+    And I confirm changes in selected Case
+    And I back to the cases list from edit case
+    And I filter with first Case ID
+    And I apply Outcome of case filter "No Outcome Yet" on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is <result1>
+    And I apply Outcome of case filter "Deceased" on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is <result2>
+    And I apply Outcome of case filter "Recovered" on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is <result3>
+    And I apply Outcome of case filter "Unknown" on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is <result4>
+
+    Examples:
+      | option           | result1 | result2 | result3 | result4 |
+      | "No Outcome Yet" | 1       | 0       | 0       | 0       |
+      | "Deceased"       | 0       | 1       | 0       | 0       |
+      | "Recovered"      | 0       | 0       | 1       | 0       |
+      | "Unknown"        | 0       | 0       | 0       | 1       |
 
     

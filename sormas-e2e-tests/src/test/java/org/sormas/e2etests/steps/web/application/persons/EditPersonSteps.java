@@ -30,7 +30,6 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.BIRTH
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.CITY_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.COMMUNITY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.COMMUNITY_INPUT;
-import static org.sormas.e2etests.pages.application.persons.EditPersonPage.CONFIRM_NAVIGATION_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_DAY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_MONTH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_YEAR_COMBOBOX;
@@ -54,6 +53,7 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.HOUSE
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.INVALID_DATA_ERROR;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.LAST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.NAMES_OF_GUARDIANS_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.NO_TRAVEL_ENTRY_LABEL_DE;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_CONTACT_DETAILS_CONTACT_INFORMATION_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_CONTACT_DETAILS_TYPE_OF_DETAILS_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PHONE_FIELD;
@@ -90,7 +90,7 @@ import org.openqa.selenium.ElementClickInterceptedException;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Person;
 import org.sormas.e2etests.entities.services.PersonService;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -113,12 +113,13 @@ public class EditPersonSteps implements En {
       BaseSteps baseSteps,
       AssertHelpers assertHelpers,
       ApiState apiState,
-      EnvironmentManager environmentManager) {
+      RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
         "I check that previous created person is correctly displayed in Edit Person page",
         () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           previousCreatedPerson = EditContactPersonSteps.fullyDetailedPerson;
           collectedPerson = collectPersonData();
           ComparisonHelper.compareEqualEntities(previousCreatedPerson, collectedPerson);
@@ -127,6 +128,7 @@ public class EditPersonSteps implements En {
     When(
         "I check that previous edited person is correctly displayed in Edit Person page",
         () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           collectedPerson = collectPersonData();
           ComparisonHelper.compareDifferentFieldsOfEntities(
               previousCreatedPerson,
@@ -150,6 +152,7 @@ public class EditPersonSteps implements En {
         "While on Person edit page, I will edit all fields with new values",
         () -> {
           newGeneratedPerson = personService.buildGeneratedPerson();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           fillFirstName(newGeneratedPerson.getFirstName());
           fillLastName(newGeneratedPerson.getLastName());
           fillSalutation(newGeneratedPerson.getSalutation());
@@ -179,6 +182,7 @@ public class EditPersonSteps implements En {
           selectAreaType(newGeneratedPerson.getAreaType());
           fillContactPersonFirstName(newGeneratedPerson.getContactPersonFirstName());
           fillContactPersonLastName(newGeneratedPerson.getContactPersonLastName());
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           fillBirthName(newGeneratedPerson.getBirthName());
           fillNamesOfGuardians(newGeneratedPerson.getNameOfGuardians());
         });
@@ -187,38 +191,53 @@ public class EditPersonSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
           webDriverHelpers.clickOnWebElementBySelector(SEE_CASES_FOR_PERSON_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+          //          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
+          //          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
         });
+
+    Then(
+        "I check that SEE CASES FOR THIS PERSON button appears on Edit Person page",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEE_CASES_FOR_PERSON_BUTTON);
+        });
+
+    Then(
+        "I check that SEE CONTACTS FOR THIS PERSON button appears on Edit Person page",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEE_CONTACTS_FOR_PERSON_BUTTON);
+        });
+
     Then(
         "I click on See CONTACTS for this Person button from Edit Person page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SEE_CONTACTS_FOR_PERSON_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+          //    webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
+          //    webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
         });
 
     Then(
         "I click on Edit Case button from Cases card on Edit Person page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EDIT_CASES_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+          //  webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
+          //  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
         });
     Then(
         "I click on Edit Contact button from Contacts card on Edit Person page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EDIT_CONTACTS_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+          //  webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
+          //  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
         });
     Then(
         "I click on Edit Immunization button for Immunization created through API from Immunization card on Edit Person page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
               getByImmunizationUuid(apiState.getCreatedImmunization().getUuid()));
-          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+          //   webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
+          //   webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
         });
 
     Then(
@@ -231,6 +250,11 @@ public class EditPersonSteps implements En {
           previousCreatedPerson = collectedPerson;
         });
 
+    When(
+        "I check if there is no travel entry assigned to Person",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NO_TRAVEL_ENTRY_LABEL_DE);
+        });
     When(
         "I check if event is available at person information",
         () -> {
@@ -245,7 +269,7 @@ public class EditPersonSteps implements En {
         () -> {
           final String personUuid = EditEventSteps.person.getUuid();
           webDriverHelpers.accessWebSite(
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!persons/data/"
                   + personUuid);
         });
@@ -469,7 +493,8 @@ public class EditPersonSteps implements En {
   }
 
   private Person getPersonInformation() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    DateTimeFormatter formatter =
+        DateTimeFormatter.ofPattern("M/d/yyyy").localizedBy(Locale.ENGLISH);
     webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(USER_INFORMATION, 60);
     String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
     webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);

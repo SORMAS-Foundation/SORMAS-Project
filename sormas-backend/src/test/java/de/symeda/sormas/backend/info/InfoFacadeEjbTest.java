@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.info;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import de.symeda.sormas.backend.feature.FeatureConfigurationService;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -76,22 +77,30 @@ public class InfoFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testDataDictionaryAllowed() {
+	public void testDataProtectionDictionaryAllowed() {
 		assertThat(getInfoFacade().isGenerateDataProtectionDictionaryAllowed(), is(true));
 	}
 
 	@Test
-	public void testFieldsAddedBasedOnServerCountry() throws IOException, InvalidFormatException {
+	public void testFieldsAddedBasedOnServerCountryForDataProtectionDictionary() throws IOException, InvalidFormatException {
+		FeatureConfigurationService featureConfigurationService = getBean(FeatureConfigurationService.class);
+		featureConfigurationService.createMissingFeatureConfigurations();
+
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "en");
 		XSSFWorkbook workbook = new XSSFWorkbook(new File(getInfoFacade().generateDataProtectionDictionary()));
 
 		assertThat(isFieldAdded(workbook, "Person", "Person.nickname"), is(true));
 		assertThat(isFieldAdded(workbook, "CaseData", "CaseData.epidNumber"), is(true));
+		assertThat(isFieldAdded(workbook, "CaseData", "Entity"), is(false));
+		assertThat(isFieldAdded(workbook, "All fields", "Entity"), is(true));
+		assertThat(isFieldAdded(workbook, "All fields", "Person"), is(true));
 
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "de");
 		workbook = new XSSFWorkbook(new File(getInfoFacade().generateDataProtectionDictionary()));
 		assertThat(isFieldAdded(workbook, "Person", "Person.nickname"), is(false));
 		assertThat(isFieldAdded(workbook, "CaseData", "CaseData.epidNumber"), is(false));
+		assertThat(isFieldAdded(workbook, "All fields", "Entity"), is(true));
+		assertThat(isFieldAdded(workbook, "All fields", "Person"), is(true));
 	}
 
 	private boolean isFieldAdded(XSSFWorkbook dataDictionaryWb, String sheetName, String fieldId) throws IOException, InvalidFormatException {

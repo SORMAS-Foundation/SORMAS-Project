@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.location;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
@@ -46,6 +48,10 @@ import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudeP
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
 
+@DependingOnFeatureType(featureType = {
+	FeatureType.CASE_SURVEILANCE,
+	FeatureType.CONTACT_TRACING,
+	FeatureType.EVENT_SURVEILLANCE })
 public class LocationDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -1399197327930368752L;

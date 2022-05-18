@@ -19,10 +19,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -67,7 +68,6 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -110,7 +110,6 @@ import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFa
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -119,6 +118,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "SampleFacade")
+@RolesAllowed(UserRight._SAMPLE_VIEW)
 public class SampleFacadeEjb implements SampleFacade {
 
 	private static final int DELETED_BATCH_SIZE = 1000;
@@ -164,15 +164,12 @@ public class SampleFacadeEjb implements SampleFacade {
 	@EJB
 	private NotificationService notificationService;
 	@EJB
-	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
-	@EJB
 	private PathogenTestFacadeEjbLocal pathogenTestFacade;
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
-
 		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
@@ -188,7 +185,6 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public List<SampleDto> getAllActiveSamplesAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-
 		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
@@ -226,13 +222,13 @@ public class SampleFacadeEjb implements SampleFacade {
 		final Root<Sample> root = cq.from(Sample.class);
 		cq.distinct(true);
 
-		SampleJoins<Sample> joins = new SampleJoins<>(root);
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, root);
 
 		SampleCriteria sampleCriteria = new SampleCriteria();
 		sampleCriteria.caze(criteria.getCaze()).contact(criteria.getContact()).eventParticipant(criteria.getEventParticipant());
 
-		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
-		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(sampleCriteria, cb, joins));
+		Predicate filter = sampleService.createUserFilter(sampleQueryContext, sampleCriteria);
+		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(sampleCriteria, sampleQueryContext));
 
 		Predicate similarityFilter = null;
 		if (criteria.getLabSampleId() != null) {
@@ -274,10 +270,10 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
 		final Root<Sample> root = cq.from(Sample.class);
 
-		SampleJoins<Sample> joins = new SampleJoins<>(root);
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, root);
 
-		Predicate filter = sampleService.createUserFilter(cq, cb, joins, criteria);
-		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(criteria, cb, joins));
+		Predicate filter = sampleService.createUserFilter(sampleQueryContext, criteria);
+		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(criteria, sampleQueryContext));
 
 		if (filter != null) {
 			cq.where(filter);
@@ -312,10 +308,11 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
 		final Root<Sample> sampleRoot = cq.from(Sample.class);
+		final SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sampleRoot);
 
 		Predicate filter = CriteriaBuilderHelper.and(
 			cb,
-			sampleService.createUserFilter(cb, cq, sampleRoot),
+			sampleService.createUserFilter(sampleQueryContext, null),
 			sampleService.createDefaultFilter(cb, sampleRoot),
 			cb.equal(sampleRoot.get(Sample.LAB_SAMPLE_ID), labSampleId));
 		cq.where(filter);
@@ -325,7 +322,6 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
-
 		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
@@ -340,10 +336,16 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._SAMPLE_CREATE,
+		UserRight._SAMPLE_EDIT })
 	public SampleDto saveSample(@Valid SampleDto dto) {
 		return saveSample(dto, true, true, true);
 	}
 
+	@RolesAllowed({
+		UserRight._SAMPLE_CREATE,
+		UserRight._SAMPLE_EDIT })
 	public SampleDto saveSample(@Valid SampleDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal) {
 
 		Sample existingSample = sampleService.getByUuid(dto.getUuid());
@@ -466,9 +468,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		CriteriaQuery<SampleExportDto> cq = cb.createQuery(SampleExportDto.class);
 		Root<Sample> sampleRoot = cq.from(Sample.class);
 
-		SampleQueryContext<Sample> sampleQueryContext = new SampleQueryContext<>(cb, cq, sampleRoot);
-
-		SampleJoins<Sample> joins = (SampleJoins<Sample>) sampleQueryContext.getJoins();
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sampleRoot);
+		SampleJoins joins = sampleQueryContext.getJoins();
 
 		cq.distinct(true);
 
@@ -573,14 +574,14 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		cq.multiselect(selections);
 
-		Predicate filter = sampleService.createUserFilter(cb, cq, sampleRoot);
+		Predicate filter = sampleService.createUserFilter(sampleQueryContext, sampleCriteria);
 
 		if (sampleCriteria != null) {
-			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
+			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, sampleQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 			filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, sampleRoot.get(AbstractDomainObject.UUID));
 		} else if (caseCriteria != null) {
-			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, new CaseQueryContext<>(cb, cq, joins.getCaze()));
+			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, new CaseQueryContext(cb, cq, joins.getCaseJoins()));
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(sampleRoot.get(CoreAdo.DELETED)));
 			filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, joins.getCaze().get(AbstractDomainObject.UUID));
@@ -659,11 +660,13 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._SAMPLE_EXPORT)
 	public List<SampleExportDto> getExportList(SampleCriteria criteria, Collection<String> selectedRows, int first, int max) {
 		return getExportList(criteria, null, selectedRows, first, max);
 	}
 
 	@Override
+	@RolesAllowed(UserRight._SAMPLE_EXPORT)
 	public List<SampleExportDto> getExportList(CaseCriteria criteria, Collection<String> selectedRows, int first, int max) {
 		return getExportList(null, criteria, selectedRows, first, max);
 	}
@@ -675,11 +678,10 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		final Root<Sample> root = cq.from(Sample.class);
 
-		SampleJoins<Sample> joins = new SampleJoins<>(root);
-
-		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, root);
+		Predicate filter = sampleService.createUserFilter(sampleQueryContext, sampleCriteria);
 		if (sampleCriteria != null) {
-			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
+			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, sampleQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -697,55 +699,36 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public void deleteSample(SampleReferenceDto sampleRef) {
-
-		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
-			.contains(UserRight.SAMPLE_DELETE)) {
-			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete samples.");
-		}
-
+	@RolesAllowed(UserRight._SAMPLE_DELETE)
+	public void deleteSample(SampleReferenceDto sampleRef, DeletionDetails deletionDetails) {
 		Sample sample = sampleService.getByReferenceDto(sampleRef);
-		sampleService.delete(sample);
+		sampleService.delete(sample, deletionDetails);
 
 		handleAssotiatedObjectChanges(sample, true);
 	}
 
 	@Override
+	@RolesAllowed(UserRight._SAMPLE_DELETE)
 	public void deleteAllSamples(List<String> sampleUuids) {
-		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
-			.contains(UserRight.SAMPLE_DELETE)) {
-			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete samples.");
-		}
 		long startTime = DateHelper.startTime();
 
 		IterableHelper.executeBatched(sampleUuids, DELETED_BATCH_SIZE, batchedSampleUuids -> sampleService.deleteAll(batchedSampleUuids));
 		logger.debug("deleteAllSamples(sampleUuids) finished. samplesCount = {}, {}ms", sampleUuids.size(), DateHelper.durationMillies(startTime));
 	}
 
-	public List<String> deleteSamples(List<String> sampleUuids) {
-		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
-			.contains(UserRight.SAMPLE_DELETE)) {
-			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete samples.");
-		}
+	@RolesAllowed(UserRight._SAMPLE_DELETE)
+	public List<String> deleteSamples(List<String> sampleUuids, DeletionDetails deletionDetails) {
 		List<String> deletedSampleUuids = new ArrayList<>();
 		List<Sample> samplesToBeDeleted = sampleService.getByUuids(sampleUuids);
 		if (samplesToBeDeleted != null) {
 			samplesToBeDeleted.forEach(sampleToBeDeleted -> {
 				if (!sampleToBeDeleted.isDeleted()) {
-					sampleService.delete(sampleToBeDeleted);
+					sampleService.delete(sampleToBeDeleted, deletionDetails);
 					deletedSampleUuids.add(sampleToBeDeleted.getUuid());
 				}
 			});
 		}
 		return deletedSampleUuids;
-	}
-
-	@Override
-	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds) {
-		return sampleService.getNewTestResultCountByResultType(caseIds);
 	}
 
 	public Sample fromDto(@NotNull SampleDto source, boolean checkChangeDate) {
@@ -792,6 +775,10 @@ public class SampleFacadeEjb implements SampleFacade {
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(originInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
 		}
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
 	}
@@ -918,6 +905,10 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -931,7 +922,6 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	private void onSampleChanged(SampleDto existingSample, Sample newSample, boolean syncShares) {
-
 		// Change pathogenTestResultChangeDate if the pathogen test result has changed
 		if (existingSample != null
 			&& existingSample.getPathogenTestResult() != null
@@ -1022,6 +1012,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		return sampleService.isSampleEditAllowed(sample);
 	}
 
+	@RolesAllowed(UserRight._SAMPLE_CREATE)
 	public void cloneSampleForCase(Sample sample, Case caze) {
 		SampleDto newSample = SampleDto.build(sample.getReportingUser().toReference(), caze.toReference());
 		DtoHelper.copyDtoValues(newSample, SampleFacadeEjb.toDto(sample), true);

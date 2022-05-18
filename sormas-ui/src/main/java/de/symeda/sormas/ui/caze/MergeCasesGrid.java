@@ -58,6 +58,8 @@ public class MergeCasesGrid extends AbstractMergeGrid<CaseIndexDto, CaseCriteria
 			COLUMN_COMPLETENESS,
 			COLUMN_ACTIONS);
 
+		getColumn(COLUMN_ACTIONS).setMinimumWidth(280);
+
 		Language userLanguage = I18nProperties.getUserLanguage();
 		((Column<CaseIndexDto, Date>) getColumn(CaseIndexDto.REPORT_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));

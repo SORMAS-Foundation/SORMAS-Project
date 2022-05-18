@@ -24,40 +24,26 @@ import com.google.inject.Inject;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.UUID;
-import org.sormas.e2etests.entities.pojo.api.Case;
-import org.sormas.e2etests.entities.pojo.api.ClinicalCourse;
-import org.sormas.e2etests.entities.pojo.api.Community;
-import org.sormas.e2etests.entities.pojo.api.District;
-import org.sormas.e2etests.entities.pojo.api.EpiData;
-import org.sormas.e2etests.entities.pojo.api.HealthConditions;
-import org.sormas.e2etests.entities.pojo.api.HealthFacility;
-import org.sormas.e2etests.entities.pojo.api.Hospitalization;
-import org.sormas.e2etests.entities.pojo.api.MaternalHistory;
-import org.sormas.e2etests.entities.pojo.api.Person;
-import org.sormas.e2etests.entities.pojo.api.PortHealthInfo;
-import org.sormas.e2etests.entities.pojo.api.Region;
-import org.sormas.e2etests.entities.pojo.api.ReportingUser;
-import org.sormas.e2etests.entities.pojo.api.SurveillanceOfficer;
-import org.sormas.e2etests.entities.pojo.api.Symptoms;
-import org.sormas.e2etests.entities.pojo.api.Therapy;
-import org.sormas.e2etests.enums.CaseClassification;
-import org.sormas.e2etests.enums.CommunityValues;
-import org.sormas.e2etests.enums.DiseasesValues;
-import org.sormas.e2etests.enums.DistrictsValues;
-import org.sormas.e2etests.enums.RegionsValues;
-import org.sormas.e2etests.enums.UserRoles;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.entities.pojo.api.*;
+import org.sormas.e2etests.enums.*;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
+import org.sormas.e2etests.helpers.RestAssuredClient;
+import org.sormas.e2etests.helpers.environmentdata.manager.EnvironmentManager;
 
 public class CaseApiService {
 
-  private static EnvironmentManager environmentManager;
+  private static RunningConfiguration runningConfiguration;
+  private RestAssuredClient restAssuredClient;
 
   @Inject
-  public CaseApiService(EnvironmentManager environmentManager) {
-    this.environmentManager = environmentManager;
+  public CaseApiService(
+      RunningConfiguration runningConfiguration, RestAssuredClient restAssuredClient) {
+    this.restAssuredClient = restAssuredClient;
+    this.runningConfiguration = runningConfiguration;
   }
 
   public Case buildGeneratedCase(Person person) {
+    EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
     return Case.builder()
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
         .diseaseDetails("Test Disease")
@@ -67,19 +53,40 @@ public class CaseApiService {
         .reportingUser(
             ReportingUser.builder()
                 .uuid(
-                    environmentManager
+                    runningConfiguration
                         .getUserByRole(locale, UserRoles.RestUser.getRole())
                         .getUuid())
                 .build())
         .district(
-            District.builder().uuid(DistrictsValues.VoreingestellterLandkreis.getUuid()).build())
-        .region(Region.builder().uuid(RegionsValues.VoreingestellteBundeslander.getUuid()).build())
+            District.builder()
+                .uuid(
+                    environmentManager.getDistrictUUID(
+                        DistrictsValues.VoreingestellterLandkreis.getName()))
+                .build())
+        .region(
+            Region.builder()
+                .uuid(
+                    environmentManager.getRegionUUID(
+                        RegionsValues.VoreingestellteBundeslander.getName()))
+                .build())
         .responsibleDistrict(
-            District.builder().uuid(DistrictsValues.VoreingestellterLandkreis.getUuid()).build())
+            District.builder()
+                .uuid(
+                    environmentManager.getDistrictUUID(
+                        DistrictsValues.VoreingestellterLandkreis.getName()))
+                .build())
         .responsibleRegion(
-            Region.builder().uuid(RegionsValues.VoreingestellteBundeslander.getUuid()).build())
+            Region.builder()
+                .uuid(
+                    environmentManager.getRegionUUID(
+                        RegionsValues.VoreingestellteBundeslander.getName()))
+                .build())
         .community(
-            Community.builder().uuid(CommunityValues.VoreingestellteGemeinde.getUuid()).build())
+            Community.builder()
+                .uuid(
+                    environmentManager.getCommunityUUID(
+                        CommunityValues.VoreingestellteGemeinde.getName()))
+                .build())
         .followUpStatus("FOLLOW_UP")
         .person(
             Person.builder()
@@ -99,23 +106,25 @@ public class CaseApiService {
                 .symptomatic(false)
                 .build())
         .therapy(Therapy.builder().uuid(UUID.randomUUID().toString()).build())
-        .healthFacility(HealthFacility.builder().uuid("WYPOCQ-IWVWGQ-XU7YCF-OSQJSAD4").build())
+        .healthFacility(
+            HealthFacility.builder()
+                .uuid(
+                    environmentManager.getHealthFacilityUUID(
+                        RegionsValues.VoreingestellteBundeslander.getName(),
+                        HealthFacilityValues.StandardEinrichtung.getName()))
+                .build())
         .maternalHistory(
             MaternalHistory.builder()
                 .uuid(UUID.randomUUID().toString())
                 .pseudonymized(true)
                 .build())
         .portHealthInfo(PortHealthInfo.builder().uuid(UUID.randomUUID().toString()).build())
-        .clinicalCourse(
-            ClinicalCourse.builder()
-                .uuid(UUID.randomUUID().toString())
-                .healthConditions(
-                    HealthConditions.builder().uuid(UUID.randomUUID().toString()).build())
-                .build())
+        .clinicalCourse(ClinicalCourse.builder().uuid(UUID.randomUUID().toString()).build())
+        .healthConditions(HealthConditions.builder().uuid(UUID.randomUUID().toString()).build())
         .surveillanceOfficer(
             SurveillanceOfficer.builder()
                 .uuid(
-                    environmentManager
+                    runningConfiguration
                         .getUserByRole(locale, UserRoles.SurveillanceOfficer.getRole())
                         .getUuid())
                 .build())

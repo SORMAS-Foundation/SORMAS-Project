@@ -65,6 +65,7 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.backend.action.Action;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.location.Location;
@@ -131,6 +132,7 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	public static final String RESPONSIBLE_USER = "responsibleUser";
 	public static final String TYPE_OF_PLACE_TEXT = "typeOfPlaceText";
 	public static final String TASKS = "tasks";
+	public static final String ACTIONS = "actions";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
 	public static final String DISEASE_TRANSMISSION_MODE = "diseaseTransmissionMode";
@@ -211,6 +213,7 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	private Map<LaboratoryDiagnosticEvidenceDetail, Boolean> laboratoryDiagnosticEvidenceDetails;
 
 	private List<Task> tasks;
+	private List<Action> actions;
 	private List<EventGroup> eventGroups;
 
 	private String internalToken;
@@ -639,6 +642,15 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 		this.tasks = tasks;
 	}
 
+	@OneToMany(mappedBy = Action.EVENT, fetch = FetchType.LAZY)
+	public List<Action> getActions() {
+		return actions;
+	}
+
+	public void setActions(List<Action> actions) {
+		this.actions = actions;
+	}
+
 	public Double getReportLat() {
 		return reportLat;
 	}
@@ -750,10 +762,10 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	}
 
 	@ManyToOne(cascade = {
-			CascadeType.PERSIST,
-			CascadeType.MERGE,
-			CascadeType.DETACH,
-			CascadeType.REFRESH })
+		CascadeType.PERSIST,
+		CascadeType.MERGE,
+		CascadeType.DETACH,
+		CascadeType.REFRESH })
 	@AuditedIgnore
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;

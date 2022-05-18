@@ -22,22 +22,44 @@ import lombok.SneakyThrows;
 
 @Getter
 public enum CommunityValues {
-  VoreingestellteGemeinde("Voreingestellte Gemeinde", "QWK33J-XYN3DE-5CSXFJ-MMFOKNKM");
+  VoreingestellteGemeinde(
+      "Voreingestellte Gemeinde", "QWK33J-XYN3DE-5CSXFJ-MMFOKNKM", "UPKYUC-HD6D2W-EZVF5S-Q3PQSE5A");
 
   private final String name;
-  private final String uuid;
+  private final String uuidMain;
+  private final String uuidDE;
 
-  CommunityValues(String name, String uuid) {
+  CommunityValues(String name, String uuidMain, String uuidDE) {
     this.name = name;
-    this.uuid = uuid;
+    this.uuidMain = uuidMain;
+    this.uuidDE = uuidDE;
   }
 
   @SneakyThrows
-  public static String getValueFor(String option) {
+  public static String getNameValueForUuid(String option) {
     CommunityValues[] communityValuesOptions = CommunityValues.values();
     for (CommunityValues value : communityValuesOptions) {
-      if (value.uuid.equalsIgnoreCase(option)) return value.name;
+      if (value.uuidMain.equalsIgnoreCase(option) || value.uuidDE.equalsIgnoreCase(option))
+        return value.name;
     }
     throw new Exception("Unable to find " + option + " value in Community Enum");
+  }
+
+  @SneakyThrows
+  public static String getUuidValueForLocale(String communityName, String locale) {
+    CommunityValues[] communityValues = CommunityValues.values();
+    for (CommunityValues value : communityValues) {
+      if (value.name().equalsIgnoreCase(communityName)) {
+        if (locale.equalsIgnoreCase("main") || locale.equalsIgnoreCase("performance")) {
+          return value.getUuidMain();
+        }
+        if (locale.equalsIgnoreCase("DE")) {
+          return value.getUuidDE();
+        }
+      }
+    }
+    throw new Exception(
+        String.format(
+            "Unable to find uuid for community: %s and locale: %s", communityName, locale));
   }
 }

@@ -34,9 +34,9 @@ import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.ContactListComponent;
@@ -119,8 +119,14 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		container.setMargin(true);
 		setSubComponent(container);
 
-		LayoutWithSidePanel layout =
-			new LayoutWithSidePanel(editComponent, SAMPLES_LOC, CONTACTS_LOC, IMMUNIZATION_LOC, VACCINATIONS_LOC, QUARANTINE_LOC, SORMAS_TO_SORMAS_LOC);
+		LayoutWithSidePanel layout = new LayoutWithSidePanel(
+			editComponent,
+			SAMPLES_LOC,
+			CONTACTS_LOC,
+			IMMUNIZATION_LOC,
+			VACCINATIONS_LOC,
+			QUARANTINE_LOC,
+			SORMAS_TO_SORMAS_LOC);
 
 		container.addComponent(layout);
 
@@ -128,11 +134,11 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 
 		SampleCriteria sampleCriteria = new SampleCriteria().eventParticipant(eventParticipantRef);
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
-			SampleListComponent sampleList = new SampleListComponent(sampleCriteria.sampleAssociationType(SampleAssociationType.EVENT_PARTICIPANT));
-			sampleList.addSideComponentCreateEventListener(
-				e -> showNavigationConfirmPopupIfDirty(
-					() -> ControllerProvider.getSampleController().create(eventParticipantRef, event.getDisease(), SormasUI::refreshView)));
-
+			SampleListComponent sampleList = new SampleListComponent(
+				sampleCriteria.eventParticipant(eventParticipantRef)
+					.disease(event.getDisease())
+					.sampleAssociationType(SampleAssociationType.EVENT_PARTICIPANT),
+				this::showUnsavedChangesPopup);
 			SampleListComponentLayout sampleListComponentLayout =
 				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesEventParticipant));
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
@@ -143,7 +149,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			contactsLayout.setMargin(false);
 			contactsLayout.setSpacing(false);
 
-			ContactListComponent contactList = new ContactListComponent(eventParticipantRef);
+			ContactListComponent contactList = new ContactListComponent(eventParticipantRef, this::showUnsavedChangesPopup);
 			contactList.addStyleName(CssStyles.SIDE_COMPONENT);
 			contactsLayout.addComponent(contactList);
 
@@ -179,17 +185,16 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 				final ImmunizationListCriteria immunizationListCriteria =
 					new ImmunizationListCriteria.Builder(eventParticipant.getPerson().toReference()).wihDisease(event.getDisease()).build();
-				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
-			} else {
-				VaccinationListCriteria criteria = vaccinationCriteria;
 				layout.addSidePanelComponent(
-					new SideComponentLayout(
-						new VaccinationListComponent(
-							getReference(),
-							criteria,
-							eventParticipant.getRegion() != null ? eventParticipant.getRegion() : event.getEventLocation().getRegion(),
-							eventParticipant.getDistrict() != null ? eventParticipant.getDistrict() : event.getEventLocation().getDistrict(),
-							this)),
+					new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria, this::showUnsavedChangesPopup)),
+					IMMUNIZATION_LOC);
+			} else {
+				VaccinationListCriteria criteria = vaccinationCriteria.vaccinationAssociationType(VaccinationAssociationType.EVENT_PARTICIPANT)
+					.eventParticipantReference(getReference())
+					.region(eventParticipant.getRegion() != null ? eventParticipant.getRegion() : event.getEventLocation().getRegion())
+					.district(eventParticipant.getDistrict() != null ? eventParticipant.getDistrict() : event.getEventLocation().getDistrict());
+				layout.addSidePanelComponent(
+					new SideComponentLayout(new VaccinationListComponent(criteria, this::showUnsavedChangesPopup)),
 					VACCINATIONS_LOC);
 			}
 		}

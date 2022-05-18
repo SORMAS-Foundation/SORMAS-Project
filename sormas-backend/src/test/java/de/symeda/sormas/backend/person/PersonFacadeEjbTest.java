@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -58,7 +60,6 @@ import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
-import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -93,44 +94,6 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			"Nat",
 			"User",
 			UserRole.NATIONAL_USER);
-	}
-
-	// todo - update this test case as CoreEntityDeletionService permanently deletes other core entities
-	@Test
-	public void testPermanentDelete() {
-		final UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
-		user.setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
-		getUserFacade().saveUser(user);
-		loginWith(user);
-
-		final PersonDto person = creator.createPerson("James", "Smith", Sex.MALE, 1920, 1, 1);
-
-		ImmunizationDto immunization = creator.createImmunization(
-			Disease.CORONAVIRUS,
-			person.toReference(),
-			user.toReference(),
-			ImmunizationStatus.ACQUIRED,
-			MeansOfImmunization.VACCINATION,
-			ImmunizationManagementStatus.COMPLETED,
-			rdcf);
-
-		TravelEntryDto travelEntry =
-			creator.createTravelEntry(person.toReference(), user.toReference(), Disease.CORONAVIRUS, rdcf.region, rdcf.district, rdcf.pointOfEntry);
-
-		Assert.assertEquals(1, getPersonFacade().count(new PersonCriteria()));
-
-		getImmunizationFacade().delete(immunization.getUuid());
-		getCoreEntityDeletionService().executePermanentDeletion();
-
-		Assert.assertEquals(1, getPersonFacade().count(new PersonCriteria()));
-		Assert.assertTrue(getPersonFacade().exists(person.getUuid()));
-
-		getTravelEntryFacade().delete(travelEntry.getUuid());
-
-		getCoreEntityDeletionService().executePermanentDeletion();
-
-		Assert.assertEquals(0, getPersonFacade().count(new PersonCriteria()));
-		Assert.assertFalse(getPersonFacade().exists(person.getUuid()));
 	}
 
 	/**
@@ -332,11 +295,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			rdcfEntities);
 		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
-		getCaseFacade().delete(caze.getUuid());
+		getCaseFacade().delete(caze.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
 
 		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
-		getCaseFacade().delete(caze2.getUuid());
+		getCaseFacade().delete(caze2.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
 
 		assertEquals(0, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
@@ -344,7 +307,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
-		getContactFacade().delete(contact.getUuid());
+		getContactFacade().delete(contact.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
 
 		assertEquals(0, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 	}
@@ -694,9 +657,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person3 = creator.createPerson();
 		person3 = getPersonFacade().savePerson(person3);
 
-		TravelEntryDto travelEntry = creator
+		creator
 			.createTravelEntry(person3.toReference(), nationalUser.toReference(), Disease.CORONAVIRUS, rdcf.region, rdcf.district, rdcf.pointOfEntry);
-		getTravelEntryFacade().save(travelEntry);
 
 		personsAfterT1 = getPersonFacade().getPersonsAfter(t1);
 		assertEquals(3, personsAfterT1.size());

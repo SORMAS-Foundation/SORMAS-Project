@@ -21,26 +21,39 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
+import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventJoins;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
-public class ActionJoins<T> extends AbstractDomainObjectJoins<T, Action> {
+public class ActionJoins extends QueryJoins<Action> {
 
 	private Join<Action, Event> event;
 	private Join<Action, User> creator;
 	private Join<Action, User> lastModifiedBy;
 
-	public ActionJoins(From<T, Action> root) {
+	private EventJoins eventJoins;
+
+	public ActionJoins(From<?, Action> root) {
 		super(root);
 	}
 
-	public Join<Action, Event> getEvent(JoinType joinType) {
-		return getOrCreate(event, Action.EVENT, joinType, this::setEvent);
+	public Join<Action, Event> getEvent() {
+
+		// Despite the usual pattern this is intended to be an INNER join (currently Actions only belong to Events)
+		return getOrCreate(event, Action.EVENT, JoinType.INNER, this::setEvent);
 	}
 
 	private void setEvent(Join<Action, Event> event) {
 		this.event = event;
+	}
+
+	public EventJoins getEventJoins() {
+		return getOrCreate(eventJoins, () -> new EventJoins(getEvent()), this::setEventJoins);
+	}
+
+	private void setEventJoins(EventJoins eventJoins) {
+		this.eventJoins = eventJoins;
 	}
 
 	public Join<Action, User> getCreator() {
@@ -52,7 +65,7 @@ public class ActionJoins<T> extends AbstractDomainObjectJoins<T, Action> {
 	}
 
 	public Join<Action, User> getLastModifiedBy() {
-		return getOrCreate(creator, Action.LAST_MODIFIED_BY, JoinType.LEFT, this::setLastModifiedBy);
+		return getOrCreate(lastModifiedBy, Action.LAST_MODIFIED_BY, JoinType.LEFT, this::setLastModifiedBy);
 	}
 
 	private void setLastModifiedBy(Join<Action, User> lastModifiedBy) {

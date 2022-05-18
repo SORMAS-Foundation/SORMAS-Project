@@ -33,7 +33,10 @@ import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.caze.CoreAndPersonDto;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -88,15 +91,27 @@ public class ContactResource extends EntityDtoResource {
 	@POST
 	@Path("/push")
 	public List<PushResult> postContacts(@Valid List<ContactDto> dtos) {
-
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getContactFacade()::save);
 		return result;
+	}
+
+	@POST
+	@Path("/pushWithPerson")
+	public CoreAndPersonDto<ContactDto> postContact(@Valid CoreAndPersonDto<ContactDto> dto) {
+		return FacadeProvider.getContactFacade().save(dto);
+
 	}
 
 	@GET
 	@Path("/uuids")
 	public List<String> getAllActiveUuids() {
 		return FacadeProvider.getContactFacade().getAllActiveUuids();
+	}
+
+	@GET
+	@Path("/archived/{since}")
+	public List<String> getArchivedUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getContactFacade().getArchivedUuidsSince(new Date(since));
 	}
 
 	@GET
@@ -139,7 +154,7 @@ public class ContactResource extends EntityDtoResource {
 	@POST
 	@Path("/delete")
 	public List<String> delete(List<String> uuids) {
-		return FacadeProvider.getContactFacade().deleteContacts(uuids);
+		return FacadeProvider.getContactFacade().deleteContacts(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, null));
 	}
 
 	@GET

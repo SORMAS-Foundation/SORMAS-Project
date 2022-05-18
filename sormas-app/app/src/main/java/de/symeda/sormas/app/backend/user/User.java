@@ -16,6 +16,7 @@
 package de.symeda.sormas.app.backend.user;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,7 +24,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
 import com.google.gson.Gson;
@@ -33,6 +33,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -66,6 +67,7 @@ public class User extends AbstractDomainObject {
 	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
 	public static final String USER_ROLES_JSON = "userRole";
 	public static final String LANGUAGE = "language";
+	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
 
 	@Column(nullable = false)
 	private String userName;
@@ -107,6 +109,9 @@ public class User extends AbstractDomainObject {
 
 	// initialized from userRolesJson
 	private Set<UserRole> userRoles = null;
+
+	@Enumerated(EnumType.STRING)
+	private JurisdictionLevel jurisdictionLevel;
 
 	public String getUserName() {
 		return userName;
@@ -271,6 +276,19 @@ public class User extends AbstractDomainObject {
 			result.append(userRole.toString());
 		}
 		return result.toString();
+	}
+
+	public JurisdictionLevel getJurisdictionLevel() {
+		return jurisdictionLevel;
+	}
+
+	public void setJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
+		this.jurisdictionLevel = jurisdictionLevel;
+	}
+
+	public boolean hasJurisdictionLevel(JurisdictionLevel... jurisdictionLevels) {
+		JurisdictionLevel userJurisdictionLevel = getJurisdictionLevel();
+		return Arrays.asList(jurisdictionLevels).contains(userJurisdictionLevel);
 	}
 
 	@Override

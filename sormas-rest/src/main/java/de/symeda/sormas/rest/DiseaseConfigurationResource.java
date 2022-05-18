@@ -31,6 +31,8 @@ import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.customizableenum.CustomizableEnum;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 
 @Path("/diseaseconfigurations")
@@ -63,6 +65,12 @@ public class DiseaseConfigurationResource extends EntityDtoResource {
 		@QueryParam("primary") boolean primary,
 		@QueryParam("caseBased") boolean caseBased) {
 		return FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(active, primary, caseBased);
+	}
+
+	@GET
+	@Path("/diseaseVariants")
+	public List<CustomizableEnum> getDiseaseVariants(@QueryParam("disease") String disease) {
+		return FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, Disease.valueOf(disease));
 	}
 
 }

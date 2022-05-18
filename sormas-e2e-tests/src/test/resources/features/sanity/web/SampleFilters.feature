@@ -15,7 +15,7 @@ Feature: Sample filter functionality
     When I search for samples created with the API
     Then I check the displayed Laboratory filter dropdown
 
-  @issue=SORDEV-5981 @env_main @check
+  @issue=SORDEV-5981 @env_main
   Scenario: Check all filters are work properly in Samples directory
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

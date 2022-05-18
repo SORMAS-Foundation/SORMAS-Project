@@ -14,7 +14,7 @@ import org.sormas.e2etests.entities.pojo.web.ExposureDetails;
 import org.sormas.e2etests.entities.pojo.web.ExposureInvestigation;
 import org.sormas.e2etests.entities.services.ExposureDetailsService;
 import org.sormas.e2etests.entities.services.ExposureInvestigationService;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 
@@ -32,14 +32,14 @@ public class ExposureInContactEpiDataSteps implements En {
       ExposureInvestigationService exposureInvestigationService,
       ExposureDetailsService exposureDetailsService,
       ApiState apiState,
-      EnvironmentManager environmentManager) {
+      RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
         "I am accessing the Epidemiological tab using of created contact via api",
         () -> {
           EPIDATA_FOR_LAST_CREATED_CONTACT_URL =
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!contacts/epidata/"
                   + apiState.getCreatedContact().getUuid();
           webDriverHelpers.accessWebSite(EPIDATA_FOR_LAST_CREATED_CONTACT_URL);

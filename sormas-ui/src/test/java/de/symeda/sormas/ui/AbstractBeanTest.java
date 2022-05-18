@@ -40,9 +40,7 @@ import com.opencsv.CSVReader;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
-import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -105,8 +103,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		EntityManager em = getEntityManager();
 		em.getTransaction().begin();
 		Query nativeQuery = em.createNativeQuery("CREATE ALIAS similarity FOR \"de.symeda.sormas.ui.H2Function.similarity\"");
-		nativeQuery.executeUpdate();
-		nativeQuery = em.createNativeQuery("CREATE ALIAS array_to_string FOR \"de.symeda.sormas.ui.H2Function.array_to_string\"");
 		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS similarity_operator FOR \"de.symeda.sormas.ui.H2Function.similarity_operator\"");
 		nativeQuery.executeUpdate();

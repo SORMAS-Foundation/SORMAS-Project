@@ -35,8 +35,11 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.event.EventGroupCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseJoins;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
@@ -71,9 +74,12 @@ public class EventGroupService extends AdoServiceWithUserFilter<EventGroup> {
 		From<?, EventGroup> eventGroupPath,
 		EventUserFilterCriteria eventUserFilterCriteria) {
 
-		final User currentUser = getCurrentUser();
+		User currentUser = getCurrentUser();
+		if (currentUser == null) {
+			return null;
+		}
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if (jurisdictionLevel == JurisdictionLevel.NATION) {
+		if (jurisdictionLevel == JurisdictionLevel.NATION || currentUser.hasUserRole(UserRole.REST_USER)) {
 			return null;
 		}
 
@@ -129,7 +135,7 @@ public class EventGroupService extends AdoServiceWithUserFilter<EventGroup> {
 
 		Subquery<Long> caseSubquery = cq.subquery(Long.class);
 		Root<Case> caseRoot = caseSubquery.from(Case.class);
-		caseSubquery.where(caseService.createUserFilter(cb, cq, caseRoot));
+		caseSubquery.where(caseService.createUserFilter(new CaseQueryContext(cb, cq, new CaseJoins(caseRoot))));
 		caseSubquery.select(caseRoot.get(Case.ID));
 
 		Predicate filter = cb.in(caseJoin.get(Case.ID)).value(caseSubquery);

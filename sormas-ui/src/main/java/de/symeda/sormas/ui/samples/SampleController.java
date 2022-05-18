@@ -50,6 +50,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -249,7 +250,9 @@ public class SampleController {
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
 				FacadeProvider.getSampleFacade().saveSample(sampleDto);
-				callback.run();
+				if (callback != null) {
+					callback.run();
+				}
 			}
 		});
 
@@ -257,6 +260,11 @@ public class SampleController {
 	}
 
 	public void addPathogenTestButton(CommitDiscardWrapperComponent<? extends AbstractSampleForm> editView, boolean viaLims) {
+
+		if (!UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
+			return;
+		}
+
 		Button addPathogenTestButton = new Button(I18nProperties.getCaption(Captions.pathogenTestAdd));
 		addPathogenTestButton.addClickListener((e) -> {
 			PathogenTestForm pathogenTestForm = addPathogenTestComponent(editView);
@@ -283,8 +291,7 @@ public class SampleController {
 	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleReferralCreateComponent(SampleDto existingSample, Disease disease) {
 		final SampleDto referralSample = SampleDto.buildReferralDto(UserProvider.getCurrent().getUserReference(), existingSample);
 
-		final CommitDiscardWrapperComponent<SampleCreateForm> createView = getSampleCreateComponent(referralSample, disease, () -> {
-		});
+		final CommitDiscardWrapperComponent<SampleCreateForm> createView = getSampleCreateComponent(referralSample, disease, null);
 
 		createView.addCommitListener(() -> {
 			if (!createView.getWrappedComponent().getFieldGroup().isModified()) {
@@ -319,9 +326,7 @@ public class SampleController {
 				FacadeProvider.getSampleFacade().saveSample(changedDto);
 				SormasUI.refreshView();
 
-				final CaseReferenceDto associatedCase = changedDto.getAssociatedCase();
-				final CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
-				FacadeProvider.getCaseFacade().save(caseDataByUuid);
+				updateAssociationsForSample(changedDto);
 
 				if (changedDto.getSpecimenCondition() != originalDto.getSpecimenCondition()
 					&& changedDto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE
@@ -334,8 +339,9 @@ public class SampleController {
 		});
 
 		if (showDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)) {
-			editView.addDeleteListener(() -> {
-				FacadeProvider.getSampleFacade().deleteSample(dto.toReference());
+			editView.addDeleteWithReasonListener((deleteDetails) -> {
+				FacadeProvider.getSampleFacade().deleteSample(dto.toReference(), deleteDetails);
+				updateAssociationsForSample(dto);
 				UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entitySample));
 		}
@@ -344,7 +350,28 @@ public class SampleController {
 			editView.getWrappedComponent().getField(SampleDto.SAMPLE_PURPOSE).setEnabled(false);
 		}
 
+		if (dto.isDeleted()) {
+			editView.getWrappedComponent().getField(SampleDto.DELETION_REASON).setVisible(true);
+			if (editView.getWrappedComponent().getField(SampleDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
+				editView.getWrappedComponent().getField(SampleDto.OTHER_DELETION_REASON).setVisible(true);
+			}
+		}
+
 		return editView;
+	}
+
+	private void updateAssociationsForSample(SampleDto sampleDto) {
+		final CaseReferenceDto associatedCase = sampleDto.getAssociatedCase();
+		if (associatedCase != null) {
+			final CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
+			FacadeProvider.getCaseFacade().save(caseDataByUuid);
+		}
+
+		final ContactReferenceDto associatedContact = sampleDto.getAssociatedContact();
+		if (associatedContact != null) {
+			final ContactDto contactDataByUuid = FacadeProvider.getContactFacade().getByUuid(associatedContact.getUuid());
+			FacadeProvider.getContactFacade().save(contactDataByUuid);
+		}
 	}
 
 	/**

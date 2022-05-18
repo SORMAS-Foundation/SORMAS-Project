@@ -14,6 +14,7 @@ public class LabMessageIndexDto implements Serializable {
 
 	public static final String UUID = "uuid";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
+	public static final String TYPE = "type";
 	public static final String LAB_NAME = "labName";
 	public static final String LAB_POSTAL_CODE = "labPostalCode";
 	public static final String TESTED_DISEASE = "testedDisease";
@@ -26,7 +27,7 @@ public class LabMessageIndexDto implements Serializable {
 	public static final String ASSIGNEE = "assignee";
 
 	private String uuid;
-
+	private ExternalMessageType type;
 	private Date messageDateTime;
 	private String labName;
 	private String labPostalCode;
@@ -41,6 +42,7 @@ public class LabMessageIndexDto implements Serializable {
 
 	public LabMessageIndexDto(
 		String uuid,
+		ExternalMessageType type,
 		Date messageDateTime,
 		String labName,
 		String labPostalCode,
@@ -58,6 +60,7 @@ public class LabMessageIndexDto implements Serializable {
 		String assigneeLastName) {
 
 		this.uuid = uuid;
+		this.type = type;
 		this.messageDateTime = messageDateTime;
 		this.labName = labName;
 		this.labPostalCode = labPostalCode;
@@ -89,6 +92,14 @@ public class LabMessageIndexDto implements Serializable {
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+
+	public ExternalMessageType getType() {
+		return type;
+	}
+
+	public void setType(ExternalMessageType type) {
+		this.type = type;
 	}
 
 	public Date getMessageDateTime() {
@@ -178,4 +189,5 @@ public class LabMessageIndexDto implements Serializable {
 	public void setAssignee(UserReferenceDto assignee) {
 		this.assignee = assignee;
 	}
+
 }

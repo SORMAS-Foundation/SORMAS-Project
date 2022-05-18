@@ -29,15 +29,18 @@ import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Task;
 import org.sormas.e2etests.entities.services.TaskService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.testng.asserts.SoftAssert;
 
 public class CreateNewTaskSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
   public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
   public static Task task;
+  public static String user;
   private final WebDriverHelpers webDriverHelpers;
 
   @Inject
-  public CreateNewTaskSteps(WebDriverHelpers webDriverHelpers, TaskService taskService) {
+  public CreateNewTaskSteps(
+      WebDriverHelpers webDriverHelpers, TaskService taskService, SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -46,7 +49,7 @@ public class CreateNewTaskSteps implements En {
           task = taskService.buildGeneratedTask();
           fillAllFields(task);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
@@ -63,6 +66,12 @@ public class CreateNewTaskSteps implements En {
           final Task actualTask = collectTaskData();
           ComparisonHelper.compareEqualEntities(task, actualTask);
         });
+    When(
+        "^I click on Save button in New Task form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
 
     When(
         "^I change all Task's fields and save$",
@@ -71,6 +80,23 @@ public class CreateNewTaskSteps implements En {
           fillAllFields(task);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+        });
+
+    When(
+        "I select {string} user from Observed by combobox on Edit Task page",
+        (String chosenUser) -> {
+          user = chosenUser;
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(OBSERVER_USER_INPUT);
+          webDriverHelpers.fillAndSubmitInWebElement(OBSERVER_USER_INPUT, user);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    When(
+        "I check that respected user is selected on Edit Task page",
+        () -> {
+          String currentUser = webDriverHelpers.getTextFromWebElement(SELECTED_OBSERVER_USER);
+          softly.assertEquals(currentUser, user, "The respected user is not selected");
+          softly.assertAll();
         });
   }
 

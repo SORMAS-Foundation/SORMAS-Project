@@ -139,13 +139,14 @@ public class FormBindingAdapters {
 
 	@BindingAdapter("goneIfEmpty")
 	public static void setGoneIfEmpty(View view, Object o) {
-		if (o == null) {
-			view.setVisibility(GONE);
-		} else if (o instanceof String && DataHelper.isNullOrEmpty((String) o)) {
-			view.setVisibility(GONE);
-		} else if (o instanceof YesNoUnknown && YesNoUnknown.NO.equals(o)) {
-			view.setVisibility(GONE);
-		} else if (o instanceof SymptomState && SymptomState.NO.equals(o)) {
+		view.setVisibility(isEmptyObject(o) ? GONE : View.VISIBLE);
+	}
+
+	@BindingAdapter(value = {
+		"userViewRight",
+		"goneIfEmpty" })
+	public static void setGoneIfEmptyAndNoUserRight(View view, UserRight viewRight, Object o) {
+		if (!ConfigProvider.hasUserRight(viewRight) || isEmptyObject(o)) {
 			view.setVisibility(GONE);
 		} else {
 			view.setVisibility(View.VISIBLE);
@@ -218,5 +219,19 @@ public class FormBindingAdapters {
 				textField.setValue(val);
 			}
 		}
+	}
+
+	private static boolean isEmptyObject(Object o) {
+		if (o == null) {
+			return true;
+		} else if (o instanceof String && DataHelper.isNullOrEmpty((String) o)) {
+			return true;
+		} else if (o instanceof YesNoUnknown && YesNoUnknown.NO.equals(o)) {
+			return true;
+		} else if (o instanceof SymptomState && SymptomState.NO.equals(o)) {
+			return true;
+		}
+
+		return false;
 	}
 }

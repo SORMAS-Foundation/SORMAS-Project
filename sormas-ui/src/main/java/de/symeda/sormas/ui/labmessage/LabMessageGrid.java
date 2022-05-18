@@ -42,6 +42,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.labmessage.ExternalMessageType;
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
@@ -100,6 +101,7 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 		setColumns(
 			SHOW_MESSAGE,
 			LabMessageIndexDto.UUID,
+			LabMessageIndexDto.TYPE,
 			LabMessageIndexDto.MESSAGE_DATE_TIME,
 			LabMessageIndexDto.LAB_NAME,
 			LabMessageIndexDto.LAB_POSTAL_CODE,
@@ -207,7 +209,7 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 	}
 
 	private Component buildProcessComponent(LabMessageIndexDto indexDto) {
-		if (indexDto.getStatus().isProcessable()) {
+		if (indexDto.getStatus().isProcessable() && ExternalMessageType.LAB_MESSAGE.equals(indexDto.getType())) {
 			// build process button
 			return ButtonHelper.createButton(
 				Captions.labMessageProcess,

@@ -24,17 +24,21 @@ import lombok.SneakyThrows;
 
 @Getter
 public enum FacilityType {
-  CAMPSITE("Campsite"),
-  CRUISE_SHIP("Cruise ship"),
-  HOTEL_LODGE("Hotel, B&B, inn, lodge"),
-  MASS_ACCOMMODATION("Mass accommodation (e.g. guest and harvest workers)"),
-  OTHER_ACCOMMODATION("Other Accommodation)");
+  CAMPSITE("Campsite", "Campingplatz/Zeltplatz"),
+  CRUISE_SHIP("Cruise ship", "Kreuzfahrtschiff"),
+  HOTEL_LODGE("Hotel, B&B, inn, lodge", "Hotel, B&B, Gasthof"),
+  MASS_ACCOMMODATION(
+      "Mass accommodation (e.g. guest and harvest workers)",
+      "Massenunterkunft (z.B. Gast- und Erntearbeiter)"),
+  OTHER_ACCOMMODATION("Other Accommodation", "Andere Beherbergungsst\u00E4tte");
 
   private final String type;
+  private final String typeDE;
 
-  FacilityType(String aType) {
+  FacilityType(String aType, String aTypeDE) {
 
     type = aType;
+    typeDE = aTypeDE;
   }
 
   public static String getRandomFacilityType() {

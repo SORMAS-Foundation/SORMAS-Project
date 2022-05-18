@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
@@ -55,7 +56,7 @@ public class ReceivedEventProcessor
 	}
 
 	@Override
-	public void handleReceivedData(SormasToSormasEventDto sharedData, Event existingData) {
+	public void handleReceivedData(SormasToSormasEventDto sharedData, Event existingData, SormasToSormasOriginInfoDto originInfo) {
 		handleIgnoredProperties(sharedData.getEntity(), eventFacade.toDto(existingData));
 
 		EventDto event = sharedData.getEntity();

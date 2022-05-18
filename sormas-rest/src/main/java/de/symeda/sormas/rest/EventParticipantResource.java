@@ -99,7 +99,7 @@ public class EventParticipantResource extends EntityDtoResource {
 	@Path("/push")
 	public List<PushResult> postEventParticipants(@Valid List<EventParticipantDto> dtos) {
 
-		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getEventParticipantFacade()::saveEventParticipant);
+		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getEventParticipantFacade()::save);
 		return result;
 	}
 
@@ -117,6 +117,12 @@ public class EventParticipantResource extends EntityDtoResource {
 		@QueryParam("size") int size) {
 		return FacadeProvider.getEventParticipantFacade()
 			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
+	}
+
+	@GET
+	@Path("/archived/{since}")
+	public List<String> getArchivedUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getEventParticipantFacade().getArchivedUuidsSince(new Date(since));
 	}
 
 	@GET

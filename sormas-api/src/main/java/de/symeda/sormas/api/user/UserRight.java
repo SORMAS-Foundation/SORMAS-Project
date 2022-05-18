@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.user;
+
+import de.symeda.sormas.api.i18n.I18nProperties;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
 
 import static de.symeda.sormas.api.user.UserRole.ADMIN;
 import static de.symeda.sormas.api.user.UserRole.ADMIN_SUPERVISOR;
@@ -43,13 +49,6 @@ import static de.symeda.sormas.api.user.UserRole.REST_USER;
 import static de.symeda.sormas.api.user.UserRole.STATE_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_SUPERVISOR;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Set;
-
-import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum UserRight {
 
@@ -95,7 +94,8 @@ public enum UserRight {
 			COMMUNITY_INFORMANT,
 			LAB_USER,
 			EVENT_OFFICER,
-			COMMUNITY_OFFICER
+			COMMUNITY_OFFICER,
+			UserRole.SORMAS_TO_SORMAS_CLIENT
 	),
 	CASE_EDIT(
 			ADMIN,
@@ -1019,6 +1019,11 @@ public enum UserRight {
 		SURVEILLANCE_SUPERVISOR,
 		CONTACT_SUPERVISOR
 	),
+	PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT(
+		ADMIN,
+		SURVEILLANCE_SUPERVISOR,
+		CONTACT_SUPERVISOR
+	),
 	MANAGE_PUBLIC_EXPORT_CONFIGURATION(
 			ADMIN,
 			ADMIN_SUPERVISOR,
@@ -1300,7 +1305,8 @@ public enum UserRight {
 			REST_EXTERNAL_VISITS_USER,
             UserRole.SORMAS_TO_SORMAS_CLIENT,
 			COMMUNITY_OFFICER,
-			LAB_USER
+			LAB_USER,
+			NATIONAL_CLINICIAN
 	),
 	SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION(
 			REST_EXTERNAL_VISITS_USER,
@@ -1324,7 +1330,8 @@ public enum UserRight {
 			LAB_USER,
 			REST_EXTERNAL_VISITS_USER,
 			UserRole.SORMAS_TO_SORMAS_CLIENT,
-			COMMUNITY_OFFICER
+			COMMUNITY_OFFICER,
+			NATIONAL_CLINICIAN
 	),
 	SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION(
 			REST_EXTERNAL_VISITS_USER,
@@ -1772,5 +1779,9 @@ public enum UserRight {
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
+	}
+
+	public String getDescription() {
+		return I18nProperties.getEnumDescription(this);
 	}
 }

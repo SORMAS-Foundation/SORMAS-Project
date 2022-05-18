@@ -82,7 +82,7 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
 
 			@Override
 			public void onClick(View v) {
-				CaseNewActivity.startActivityFromEventPerson(getContext(), record.getUuid());
+				CaseNewActivity.startActivityFromEventPerson(getContext(), record);
 			}
 		});
 	}

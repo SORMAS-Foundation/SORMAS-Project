@@ -16,7 +16,13 @@
 package de.symeda.sormas.app.backend.user;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Random;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -25,6 +31,7 @@ import com.j256.ormlite.stmt.Where;
 import android.util.Log;
 
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -146,18 +153,87 @@ public class UserDao extends AbstractAdoDao<User> {
 		}
 	}
 
-	public List<User> getInformantsByAssociatedOfficer(User officer) {
+	public List<User> getUsersByAssociatedOfficer(User officer, UserRight userRight) {
 		try {
-			QueryBuilder builder = queryBuilder();
-			Where where = builder.where();
-			where.and(
-				where.eq(User.ASSOCIATED_OFFICER + "_id", officer),
-				where.or(createRoleFilter(UserRole.HOSPITAL_INFORMANT, where), createRoleFilter(UserRole.COMMUNITY_INFORMANT, where)));
+			QueryBuilder<User, Long> builder = queryBuilder();
+			Where<User, Long> where = builder.where();
+			where.eq(User.ASSOCIATED_OFFICER + "_id", officer);
+			addUserRightFilters(where, userRight);
+			return builder.query();
+		} catch (SQLException e) {
+			Log.e(getTableName(), "Could not perform getUsersByAssociatedOfficer");
+			throw new RuntimeException(e);
+		}
+	}
 
-			return (List<User>) builder.query();
+	// TODO: Potentially replace this with an API method in #4461
+	public JurisdictionLevel getJurisdictionLevel(Collection<UserRole> roles) {
+
+		boolean laboratoryJurisdictionPresent = false;
+		for (UserRole role : roles) {
+			final JurisdictionLevel jurisdictionLevel = role.getJurisdictionLevel();
+			if (roles.size() == 1 || (jurisdictionLevel != JurisdictionLevel.NONE && jurisdictionLevel != JurisdictionLevel.LABORATORY)) {
+				return jurisdictionLevel;
+			} else if (jurisdictionLevel == JurisdictionLevel.LABORATORY) {
+				laboratoryJurisdictionPresent = true;
+			}
+		}
+
+		return laboratoryJurisdictionPresent ? JurisdictionLevel.LABORATORY : JurisdictionLevel.NONE;
+	}
+
+	public User getRandomRegionUser(Region region, UserRight... userRights) {
+
+		return getRandomUser(getUsersWithJurisdictionLevel(JurisdictionLevel.REGION, Arrays.asList(userRights)));
+	}
+
+	public User getRandomDistrictUser(District district, UserRight... userRights) {
+
+		return getRandomUser(getUsersWithJurisdictionLevel(JurisdictionLevel.DISTRICT, Arrays.asList(userRights)));
+	}
+
+	private List<User> getUsersWithJurisdictionLevel(JurisdictionLevel jurisdictionLevel, Collection<UserRight> userRights) {
+
+		try {
+			QueryBuilder<User, Long> builder = queryBuilder();
+			Where<User, Long> where = builder.where();
+			where.eq(User.JURISDICTION_LEVEL, jurisdictionLevel);
+			addUserRightFilters(where, (UserRight[]) userRights.toArray());
+			return builder.query();
 		} catch (SQLException e) {
 			Log.e(getTableName(), "Could not perform getInformantsByAssociatedOfficer");
 			throw new RuntimeException(e);
+		}
+	}
+
+	private User getRandomUser(List<User> candidates) {
+
+		if (CollectionUtils.isEmpty(candidates)) {
+			return null;
+		}
+
+		return candidates.get(new Random().nextInt(candidates.size()));
+	}
+
+	private void addUserRightFilters(Where where, UserRight... userRights) throws SQLException {
+		List<UserRole> userRoles = new ArrayList<>();
+		if (userRights != null) {
+			Arrays.asList(userRights).forEach(right -> userRoles.addAll(right.getDefaultUserRoles()));
+		}
+
+		if (userRoles.size() == 1) {
+			where.and();
+			createRoleFilter(userRoles.get(0), where);
+		} else if (userRoles.size() > 1) {
+			where.and();
+			userRoles.forEach(role -> {
+				try {
+					createRoleFilter(role, where);
+				} catch (SQLException e) {
+					throw new RuntimeException(e);
+				}
+			});
+			where.or(userRoles.size());
 		}
 	}
 

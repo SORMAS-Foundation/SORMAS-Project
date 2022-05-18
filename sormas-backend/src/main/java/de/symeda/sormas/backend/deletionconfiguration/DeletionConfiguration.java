@@ -33,8 +33,21 @@ public class DeletionConfiguration extends AbstractDomainObject {
 	Integer deletionPeriod;
 
 	public static DeletionConfiguration build(CoreEntityType coreEntityType) {
+
+		return build(coreEntityType, null, null);
+	}
+
+	public static DeletionConfiguration build(CoreEntityType coreEntityType, DeletionReference deletionReference) {
+
+		return build(coreEntityType, deletionReference, null);
+	}
+
+	public static DeletionConfiguration build(CoreEntityType coreEntityType, DeletionReference deletionReference, Integer deletionPeriod) {
+
 		DeletionConfiguration deletionConfiguration = new DeletionConfiguration();
 		deletionConfiguration.setEntityType(coreEntityType);
+		deletionConfiguration.setDeletionReference(deletionReference);
+		deletionConfiguration.setDeletionPeriod(deletionPeriod);
 		return deletionConfiguration;
 	}
 

@@ -39,4 +39,20 @@ public class CreateNewTravelEntryPage {
   public static final By POINT_OF_ENTRY_DETAILS_INPUT =
       By.cssSelector(".v-window #pointOfEntryDetails");
   public static final By SAVE_BUTTON = By.cssSelector(".v-window #commit");
+  public static final By PICK_OR_CREATE_PERSON_TITLE_DE =
+      By.xpath("//div[@class='v-window-header']");
+  public static final By SAVE_POPUP_CONTENT = By.cssSelector(".popupContent #commit");
+  public static final By PICK_A_EXISTING_PERSON_LABEL_DE =
+      By.xpath("//*[text()='W\u00E4hlen Sie eine passende Person']");
+  public static final By PICK_A_EXISTING_CASE_LABEL_DE =
+      By.xpath("//*[text()='Einen vorhandenen Fall w\u00E4hlen']");
+  public static final By ARRIVAL_DATE = By.cssSelector("#dateOfArrival input");
+  public static final By REPORT_DATE = By.cssSelector("#reportDate input");
+  public static final By DATE_OF_ARRIVAL_POPUP_CLOSE =
+      By.xpath(
+          "//div[@class='v-Notification error v-Notification-error']//div[@class='popupContent']");
+  public static final By DATE_OF_ARRIVAL_LABEL_DE =
+      By.xpath("//div[@location='dateOfArrival']//div/div/div[@class='v-captiontext']");
+  public static final By FIRST_TRAVEL_ENTRY_ID_BUTTON =
+      By.cssSelector(".v-grid-row-has-data a[title]");
 }

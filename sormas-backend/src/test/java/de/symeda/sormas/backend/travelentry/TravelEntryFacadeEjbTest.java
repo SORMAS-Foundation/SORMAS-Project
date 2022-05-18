@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.junit.Assert;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -34,6 +35,7 @@ import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -197,6 +199,31 @@ public class TravelEntryFacadeEjbTest extends AbstractBeanTest {
 		TravelEntryIndexDto indexDto = indexList.get(0);
 		assertEquals(travelEntry1.getUuid(), indexDto.getUuid());
 		assertEquals("Point of entry 1", indexDto.getPointOfEntryName());
+	}
+
+	@Test
+	public void testGetTravelEntryUsersWithoutUsesLimitedToOthersDiseses() {
+		loginWith(nationalUser);
+		PersonDto personDto = creator.createPerson();
+		TravelEntryDto travelEntry = creator.createTravelEntry(
+			personDto.toReference(),
+			nationalUser.toReference(),
+			Disease.CORONAVIRUS,
+			rdcf1.region,
+			rdcf1.district,
+			rdcf1.pointOfEntry);
+
+		UserDto limitedCovidNationalUser =
+			creator.createUser(rdcf1, "Limited Disease Covid", "National User", Disease.CORONAVIRUS, UserRole.NATIONAL_USER);
+		UserDto limitedDengueNationalUser =
+			creator.createUser(rdcf1, "Limited Disease Dengue", "National User", Disease.DENGUE, UserRole.NATIONAL_USER);
+
+		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUsersHavingTravelEntryInJurisdiction(travelEntry.toReference());
+		Assert.assertNotNull(userReferenceDtos);
+		Assert.assertTrue(userReferenceDtos.contains(nationalUser));
+		Assert.assertTrue(userReferenceDtos.contains(districtUser1));
+		Assert.assertTrue(userReferenceDtos.contains(limitedCovidNationalUser));
+		Assert.assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
 	}
 
 }

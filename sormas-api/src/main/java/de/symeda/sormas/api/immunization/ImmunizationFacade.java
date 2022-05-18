@@ -22,6 +22,7 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.EditPermissionType;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.utils.SortProperty;
 
@@ -32,9 +33,11 @@ public interface ImmunizationFacade extends CoreFacade<ImmunizationDto, Immuniza
 
 	List<String> getArchivedUuidsSince(Date since);
 
+	void archiveAllArchivableImmunizations(int daysAfterImmunizationsGetsArchived);
+
 	List<String> getDeletedUuidsSince(Date since);
 
-	List<String> deleteImmunizations(List<String> immunizationUuids);
+	List<String> deleteImmunizations(List<String> immunizationUuids, DeletionDetails deletionDetails);
 
 	EditPermissionType isImmunizationEditAllowed(String uuid);
 

@@ -16,9 +16,6 @@
 package de.symeda.sormas.backend.immunization;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -77,8 +74,13 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		districtUser2 = creator
 			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
 
-		covidLimitedDistrictUser = creator
-			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "OffCovid", UserRole.SURVEILLANCE_OFFICER);
+		covidLimitedDistrictUser = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			rdcf1.facility.getUuid(),
+			"Surv",
+			"OffCovid",
+			UserRole.SURVEILLANCE_OFFICER);
 		covidLimitedDistrictUser.setLimitedDisease(Disease.CORONAVIRUS);
 		getUserFacade().saveUser(covidLimitedDistrictUser);
 	}
@@ -99,35 +101,6 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		ImmunizationDto actual = getImmunizationFacade().getByUuid(immunizationDto.getUuid());
 		assertEquals(immunizationDto.getUuid(), actual.getUuid());
 		assertEquals(immunizationDto.getPerson(), actual.getPerson());
-	}
-
-	@Test
-	public void testPermanentDelete() {
-		loginWith(nationalUser);
-
-		final PersonDto person = creator.createPerson("John", "Doe");
-		final ImmunizationDto immunizationDto = creator.createImmunization(
-			Disease.CORONAVIRUS,
-			person.toReference(),
-			nationalUser.toReference(),
-			ImmunizationStatus.ACQUIRED,
-			MeansOfImmunization.VACCINATION,
-			ImmunizationManagementStatus.COMPLETED,
-			rdcf1);
-		final String immunizationUuid = immunizationDto.getUuid();
-
-		assertEquals(immunizationUuid, getImmunizationFacade().getByUuid(immunizationUuid).getUuid());
-		assertEquals(1, getImmunizationFacade().count(new ImmunizationCriteria()));
-
-		getImmunizationFacade().delete(immunizationUuid);
-
-		assertEquals(0, getImmunizationFacade().count(new ImmunizationCriteria()));
-		assertTrue(getImmunizationFacade().exists(immunizationUuid));
-
-		getImmunizationFacade().executePermanentDeletion(10);
-
-		assertEquals(0, getImmunizationFacade().count(new ImmunizationCriteria()));
-		assertFalse(getImmunizationFacade().exists(immunizationUuid));
 	}
 
 	@Test
@@ -576,7 +549,8 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 
 		final PersonDto person = creator.createPerson("John", "Doe");
 
-		ImmunizationDto immunization = getImmunizationFacade().save(creator.createImmunizationDto(
+		ImmunizationDto immunization = getImmunizationFacade().save(
+			creator.createImmunizationDto(
 				Disease.DENGUE,
 				person.toReference(),
 				nationalUser.toReference(),
@@ -664,22 +638,22 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		final PersonDto person = creator.createPerson("John", "Doe");
 
 		creator.createImmunization(
-				Disease.ANTHRAX,
-				person.toReference(),
-				nationalUser.toReference(),
-				ImmunizationStatus.ACQUIRED,
-				MeansOfImmunization.VACCINATION,
-				ImmunizationManagementStatus.COMPLETED,
-				rdcf1);
+			Disease.ANTHRAX,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
 
 		creator.createImmunization(
-				Disease.CORONAVIRUS,
-				person.toReference(),
-				nationalUser.toReference(),
-				ImmunizationStatus.ACQUIRED,
-				MeansOfImmunization.VACCINATION,
-				ImmunizationManagementStatus.COMPLETED,
-				rdcf1);
+			Disease.CORONAVIRUS,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
 
 		loginWith(districtUser1);
 		Assert.assertEquals(2, getImmunizationFacade().getIndexList(new ImmunizationCriteria(), 0, 100, null).size());

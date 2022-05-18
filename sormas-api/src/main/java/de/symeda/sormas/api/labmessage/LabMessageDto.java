@@ -1,5 +1,7 @@
 package de.symeda.sormas.api.labmessage;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,10 +22,12 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
+@DependingOnFeatureType(featureType = FeatureType.LAB_MESSAGES)
 public class LabMessageDto extends SormasToSormasShareableDto {
 
 	public static final String I18N_PREFIX = "LabMessage";
 
+	public static final String TYPE = "type";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
 	public static final String SAMPLE_RECEIVED_DATE = "sampleReceivedDate";
@@ -50,8 +54,11 @@ public class LabMessageDto extends SormasToSormasShareableDto {
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
 	public static final String PROCESSED = "processed";
 	public static final String REPORT_ID = "reportId";
+	public static final String STATUS = "status";
 	public static final String ASSIGNEE = "assignee";
+	public static final String TEST_REPORTS = "testReports";
 
+	private ExternalMessageType type;
 	private Disease testedDisease;
 	private Date messageDateTime;
 	private Date sampleDateTime;
@@ -111,6 +118,14 @@ public class LabMessageDto extends SormasToSormasShareableDto {
 	 * Used in S2S context
 	 */
 	private UserReferenceDto reportingUser;
+
+	public ExternalMessageType getType() {
+		return type;
+	}
+
+	public void setType(ExternalMessageType type) {
+		this.type = type;
+	}
 
 	public Disease getTestedDisease() {
 		return testedDisease;
@@ -391,4 +406,5 @@ public class LabMessageDto extends SormasToSormasShareableDto {
 	public void setReportingUser(UserReferenceDto reportingUser) {
 		this.reportingUser = reportingUser;
 	}
+
 }

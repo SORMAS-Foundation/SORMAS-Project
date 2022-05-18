@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.services.CaseService;
@@ -29,7 +30,6 @@ public class CaseLineListingSteps implements En {
         "^I create a new case in line listing feature popup for DE version$",
         () -> {
           caze = caseService.buildCaseForLineListingFeatureDE();
-          selectDisease(caze.getDisease());
           selectRegion(caze.getRegion());
           selectDistrict(caze.getDistrict());
           selectFacilityCategory(caze.getFacilityCategory());
@@ -85,7 +85,7 @@ public class CaseLineListingSteps implements En {
           webDriverHelpers.fillInWebElement(
               PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT, caseName);
           webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
-          webDriverHelpers.waitUntilNumberOfElementsIsReduceToGiven(CASE_DETAILED_TABLE_ROWS, 2);
+          TimeUnit.SECONDS.sleep(2); // wait for filter
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(FIRST_CASE_ID_BUTTON);
 
           softly.assertEquals(
@@ -114,8 +114,6 @@ public class CaseLineListingSteps implements En {
     When(
         "I check that case created from Line Listing for DE version is saved and displayed in results grid",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
-
           softly.assertEquals(
               getCaseDiseaseFromGridResults(), caze.getDisease(), "Disease value doesn't match");
           softly.assertEquals(
@@ -159,7 +157,7 @@ public class CaseLineListingSteps implements En {
   private void fillDateOfReport(LocalDate date, Locale locale) {
     DateTimeFormatter formatter;
     if (locale.equals(Locale.GERMAN))
-      formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy").localizedBy(Locale.GERMANY);
+      formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy").localizedBy(Locale.GERMANY);
     else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_REPORT, formatter.format(date));
   }
@@ -200,7 +198,7 @@ public class CaseLineListingSteps implements En {
   private void fillDateOfSymptom(LocalDate date, Locale locale) {
     DateTimeFormatter formatter;
     if (locale.equals(Locale.GERMAN))
-      formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy").localizedBy(Locale.GERMANY);
+      formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy").localizedBy(Locale.GERMANY);
     else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_INPUT, formatter.format(date));
   }

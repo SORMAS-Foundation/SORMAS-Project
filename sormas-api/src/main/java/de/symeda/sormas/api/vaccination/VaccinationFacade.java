@@ -15,20 +15,23 @@
 
 package de.symeda.sormas.api.vaccination;
 
-import de.symeda.sormas.api.utils.SortProperty;
 import java.util.List;
 import java.util.Map;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface VaccinationFacade {
@@ -85,7 +88,9 @@ public interface VaccinationFacade {
 	 * Deletes the vaccination with the specified UUID, and also deletes the associated immunization if it
 	 * is not associated with any other vaccination in the database.
 	 */
-	void deleteWithImmunization(String uuid);
+	void deleteWithImmunization(String uuid, DeletionDetails deletionDetails);
 
 	VaccinationDto getByUuid(String uuid);
+
+	VaccinationDto postUpdate(String uuid, JsonNode vaccinationDtoJson);
 }

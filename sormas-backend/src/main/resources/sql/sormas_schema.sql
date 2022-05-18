@@ -10533,4 +10533,888 @@ CREATE INDEX externalshareinfo_caze_id_creationdate_idx ON externalshareinfo (ca
 
 INSERT INTO schema_version (version_number, comment) VALUES (448, 'Index on externalshareinfo (caze_id, creationDate) #7656');
 
+-- 2022-03-08 Add dateOfArrival to travel entries #7845
+ALTER TABLE travelentry ADD COLUMN dateofarrival timestamp without time zone;
+ALTER TABLE travelentry_history ADD COLUMN dateofarrival timestamp without time zone;
+
+UPDATE travelentry SET dateofarrival = TO_TIMESTAMP(dea_entry->>'value', 'DD.MM.YYYY')
+    FROM travelentry t
+    CROSS JOIN LATERAL json_array_elements(t.deacontent) dea_entry
+    WHERE dea_entry->>'caption' ilike 'eingangsdatum' and t.id = travelentry.id;
+
+UPDATE travelentry SET dateofarrival = creationdate where dateofarrival is null;
+
+ALTER TABLE travelentry ALTER COLUMN dateofarrival SET NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (449, 'Add dateOfArrival to travel entries #7845');
+
+-- 2022-03-14 - #7774 Automatic & manual archiving for all core entities
+UPDATE contact ct
+SET archived = TRUE
+FROM cases cs
+WHERE ct.caze_id = cs.id AND cs.archived IS TRUE AND ct.archived IS FALSE;
+
+UPDATE eventparticipant ep
+SET archived = TRUE
+FROM events ev
+WHERE ep.event_id = ev.id AND ev.archived IS TRUE AND ep.archived IS FALSE;
+
+INSERT INTO schema_version (version_number, comment) VALUES (450, 'Automatic & manual archiving for all core entities #7774 ');
+
+-- 2022-03-16 Delete history data on permanent deletion of entities #7713
+
+CREATE OR REPLACE FUNCTION delete_history_trigger()
+    RETURNS trigger AS
+$$
+BEGIN
+    EXECUTE format('DELETE FROM %s WHERE %s = %s', TG_ARGV[0], TG_ARGV[1], OLD.ID);
+    RETURN NEW;
+END;
+$$
+    language 'plpgsql';
+
+DROP TRIGGER IF EXISTS versioning_trigger ON deletionconfiguration;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON deletionconfiguration
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'deletionconfiguration_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON deletionconfiguration;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON deletionconfiguration
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('deletionconfiguration_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON contact;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON contact
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'contact_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON contact;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON contact
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('contact_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_contacts_visits ON contact;
+CREATE TRIGGER delete_history_trigger_contacts_visits
+    AFTER DELETE ON contact
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('contacts_visits_history', 'contact_id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON events;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON events
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'events_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON events;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON events
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('events_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_events_eventgroups ON events;
+CREATE TRIGGER delete_history_trigger_events_eventgroups
+    AFTER DELETE ON events
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('events_eventgroups_history', 'event_id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON populationdata;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON populationdata
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'populationdata_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON populationdata;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON populationdata
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('populationdata_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON users;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON users
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'users_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON users;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON users
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('users_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_task_observer ON users;
+CREATE TRIGGER delete_history_trigger_task_observer
+    AFTER DELETE ON users
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('task_observer_history', 'user_id');
+DROP TRIGGER IF EXISTS delete_history_trigger_users_userroles ON users;
+CREATE TRIGGER delete_history_trigger_users_userroles
+    AFTER DELETE ON users
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('users_userroles_history', 'user_id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON customizableenumvalue;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON customizableenumvalue
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'customizableenumvalue_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON customizableenumvalue;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON customizableenumvalue
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('customizableenumvalue_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON eventparticipant;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON eventparticipant
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'eventparticipant_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON eventparticipant;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON eventparticipant
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('eventparticipant_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON clinicalvisit;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON clinicalvisit
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'clinicalvisit_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON clinicalvisit;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON clinicalvisit
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('clinicalvisit_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON clinicalcourse;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON clinicalcourse
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'clinicalcourse_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON clinicalcourse;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON clinicalcourse
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('clinicalcourse_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON immunization;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON immunization
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'immunization_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON immunization;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON immunization
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('immunization_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON labmessage;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON labmessage
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'labmessage_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON labmessage;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON labmessage
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('labmessage_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON outbreak;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON outbreak
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'outbreak_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON outbreak;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON outbreak
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('outbreak_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON porthealthinfo;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON porthealthinfo
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'porthealthinfo_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON porthealthinfo;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON porthealthinfo
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('porthealthinfo_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON prescription;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON prescription
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'prescription_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON prescription;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON prescription
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('prescription_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON additionaltest;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON additionaltest
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'additionaltest_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON additionaltest;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON additionaltest
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('additionaltest_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON sharerequestinfo;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON sharerequestinfo
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sharerequestinfo_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON sharerequestinfo;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON sharerequestinfo
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('sharerequestinfo_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_sharerequestinfo_shareinfo ON sharerequestinfo;
+CREATE TRIGGER delete_history_trigger_sharerequestinfo_shareinfo
+    AFTER DELETE ON sharerequestinfo
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('sharerequestinfo_shareinfo_history', 'sharerequestinfo_id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON sormastosormassharerequest;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON sormastosormassharerequest
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sormastosormassharerequest_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON sormastosormassharerequest;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON sormastosormassharerequest
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('sormastosormassharerequest_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON aggregatereport;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON aggregatereport
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'aggregatereport_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON aggregatereport;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON aggregatereport
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('aggregatereport_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON featureconfiguration;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON featureconfiguration
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'featureconfiguration_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON featureconfiguration;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON featureconfiguration
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('featureconfiguration_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON pointofentry;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON pointofentry
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'pointofentry_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON pointofentry;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON pointofentry
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('pointofentry_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON task;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON task
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'task_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON task;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON task
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('task_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_task_observer ON task;
+CREATE TRIGGER delete_history_trigger_task_observer
+    AFTER DELETE ON task
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('task_observer_history', 'task_id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON testreport;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON testreport
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'testreport_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON testreport;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON testreport
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('testreport_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON therapy;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON therapy
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'therapy_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON therapy;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON therapy
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('therapy_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON travelentry;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON travelentry
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'travelentry_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON travelentry;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON travelentry
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('travelentry_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON treatment;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON treatment
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'treatment_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON treatment;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON treatment
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('treatment_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON areas;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON areas
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'areas_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON areas;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON areas
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('areas_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON userrolesconfig;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON userrolesconfig
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userrolesconfig_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON userrolesconfig;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON userrolesconfig
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('userrolesconfig_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON vaccination;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON vaccination
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'vaccination_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON vaccination;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON vaccination
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('vaccination_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON weeklyreport;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON weeklyreport
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'weeklyreport_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON weeklyreport;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON weeklyreport
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('weeklyreport_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON healthconditions;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON healthconditions
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'healthconditions_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON healthconditions;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON healthconditions
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('healthconditions_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON weeklyreportentry;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON weeklyreportentry
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'weeklyreportentry_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON weeklyreportentry;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON weeklyreportentry
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('weeklyreportentry_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON campaignformdata;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON campaignformdata
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaignformdata_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON campaignformdata;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON campaignformdata
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('campaignformdata_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON symptoms;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON symptoms
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'symptoms_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON symptoms;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON symptoms
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('symptoms_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON campaignformmeta;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON campaignformmeta
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaignformmeta_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON campaignformmeta;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON campaignformmeta
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('campaignformmeta_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_campaign_campaignformmeta ON campaignformmeta;
+CREATE TRIGGER delete_history_trigger_campaign_campaignformmeta
+    AFTER DELETE ON campaignformmeta
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('campaign_campaignformmeta_history', 'campaignformmeta_id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON campaigns;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON campaigns
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaigns_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON campaigns;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON campaigns
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('campaigns_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_campaign_campaignformmeta ON campaigns;
+CREATE TRIGGER delete_history_trigger_campaign_campaignformmeta
+    AFTER DELETE ON campaigns
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('campaign_campaignformmeta_history', 'campaign_id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON visit;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON visit
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'visit_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON visit;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON visit
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('visit_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_contacts_visits ON visit;
+CREATE TRIGGER delete_history_trigger_contacts_visits
+    AFTER DELETE ON visit
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('contacts_visits_history', 'visit_id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON documents;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON documents
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'documents_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON documents;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON documents
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('documents_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON manualmessagelog;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON manualmessagelog
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'manualmessagelog_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON manualmessagelog;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON manualmessagelog
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('manualmessagelog_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON action;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON action
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'action_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON action;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON action
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('action_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON exportconfiguration;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON exportconfiguration
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'exportconfiguration_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON exportconfiguration;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON exportconfiguration
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('exportconfiguration_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON district;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON district
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'district_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON district;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON district
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('district_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON hospitalization;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON hospitalization
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'hospitalization_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON hospitalization;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON hospitalization
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('hospitalization_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON surveillancereports;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON surveillancereports
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'surveillancereports_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON surveillancereports;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON surveillancereports
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('surveillancereports_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON activityascase;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON activityascase
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'activityascase_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON activityascase;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON activityascase
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('activityascase_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON epidata;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON epidata
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epidata_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON epidata;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON epidata
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('epidata_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON sormastosormasorigininfo;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON sormastosormasorigininfo
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sormastosormasorigininfo_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON sormastosormasorigininfo;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON sormastosormasorigininfo
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('sormastosormasorigininfo_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON campaigndiagramdefinition;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON campaigndiagramdefinition
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaigndiagramdefinition_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON campaigndiagramdefinition;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON campaigndiagramdefinition
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('campaigndiagramdefinition_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON samples;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON samples
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'samples_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON samples;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON samples
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('samples_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON sormastosormasshareinfo;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON sormastosormasshareinfo
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sormastosormasshareinfo_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON sormastosormasshareinfo;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON sormastosormasshareinfo
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('sormastosormasshareinfo_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_sharerequestinfo_shareinfo ON sormastosormasshareinfo;
+CREATE TRIGGER delete_history_trigger_sharerequestinfo_shareinfo
+    AFTER DELETE ON sormastosormasshareinfo
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('sharerequestinfo_shareinfo_history', 'shareinfo_id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON diseaseconfiguration;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON diseaseconfiguration
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'diseaseconfiguration_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON diseaseconfiguration;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON diseaseconfiguration
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('diseaseconfiguration_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON externalshareinfo;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON externalshareinfo
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'externalshareinfo_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON externalshareinfo;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON externalshareinfo
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('externalshareinfo_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON personcontactdetail;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON personcontactdetail
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'personcontactdetail_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON personcontactdetail;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON personcontactdetail
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('personcontactdetail_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON previoushospitalization;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON previoushospitalization
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'previoushospitalization_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON previoushospitalization;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON previoushospitalization
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('previoushospitalization_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON continent;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON continent
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'continent_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON continent;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON continent
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('continent_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON country;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON country
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'country_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON country;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON country
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('country_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON exposures;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON exposures
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'exposures_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON exposures;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON exposures
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('exposures_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON region;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON region
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'region_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON region;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON region
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('region_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON subcontinent;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON subcontinent
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'subcontinent_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON subcontinent;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON subcontinent
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('subcontinent_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON cases;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON cases
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'cases_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON cases;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON cases
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('cases_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON community;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON community
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'community_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON community;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON community
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('community_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON eventgroups;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON eventgroups
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'eventgroups_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON eventgroups;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON eventgroups
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('eventgroups_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_events_eventgroups ON eventgroups;
+CREATE TRIGGER delete_history_trigger_events_eventgroups
+    AFTER DELETE ON eventgroups
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('events_eventgroups_history', 'eventgroup_id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON facility;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON facility
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'facility_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON facility;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON facility
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('facility_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON location;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON location
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'location_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON location;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON location
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('location_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_person_locations ON location;
+CREATE TRIGGER delete_history_trigger_person_locations
+    AFTER DELETE ON location
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('person_locations_history', 'location_id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON pathogentest;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON pathogentest
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'pathogentest_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON pathogentest;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON pathogentest
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('pathogentest_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON person;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON person
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'person_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON person;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON person
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('person_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_person_locations ON person;
+CREATE TRIGGER delete_history_trigger_person_locations
+    AFTER DELETE ON person
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('person_locations_history', 'person_id');
+
+INSERT INTO schema_version (version_number, comment) VALUES (451, 'Delete history data on permanent deletion of entities #7713');
+
+-- 2022-03-29 Persisting systemevent on latest develop fails with SQL error #8585
+
+DROP TRIGGER IF EXISTS versioning_trigger ON systemevent;
+DROP TRIGGER IF EXISTS delete_history_trigger ON systemevent;
+
+INSERT INTO schema_version (version_number, comment) VALUES (452, 'Persisting systemevent on latest develop fails with SQL error #8585');
+
+-- 2022-04-08 Initial UI support for physician's reports #8276
+
+ALTER TABLE labmessage ADD COLUMN type varchar(255);
+ALTER TABLE labmessage_history ADD COLUMN type varchar(255);
+
+UPDATE labmessage SET type = CASE
+    WHEN labmessagedetails LIKE '%profile value="https://demis.rki.de/fhir/StructureDefinition/NotificationDiseaseCVDD"%' THEN 'PHYSICIANS_REPORT'
+    ELSE 'LAB_MESSAGE'
+    END;
+
+INSERT INTO schema_version (version_number, comment) VALUES (453, 'Initial UI support for physicians reports #8276');
+
+-- 2022-04-07 Refactor unique constraint on deletionconfiguration table #8295
+
+ALTER TABLE deletionconfiguration DROP CONSTRAINT IF EXISTS deletionconfiguration_entity_key;
+ALTER TABLE deletionconfiguration ADD CONSTRAINT unq_deletionconfiguration_entity_reference UNIQUE (entitytype, deletionreference);
+
+INSERT INTO schema_version (version_number, comment) VALUES (454, 'Refactor unique constraint on deletionconfiguration table #8295');
+
+-- 2022-04-08 Drop deleted column from lab messages and remove deleted lab messages #8295
+
+DELETE FROM testreport USING labmessage WHERE testreport.labmessage_id = labmessage.id AND labmessage.deleted IS TRUE;
+DELETE FROM labmessage WHERE deleted IS TRUE;
+ALTER TABLE labmessage DROP COLUMN deleted;
+ALTER TABLE labmessage_history DROP COLUMN deleted;
+
+INSERT INTO schema_version (version_number, comment) VALUES (455, 'Drop deleted column from lab messages and remove deleted lab messages #8295');
+
+-- 2022-04-11 Remove DELETE_PERMANENT feature type #8295
+
+DELETE FROM featureconfiguration WHERE featuretype = 'DELETE_PERMANENT';
+
+INSERT INTO schema_version (version_number, comment) VALUES (456, 'Remove DELETE_PERMANENT feature type #8295');
+
+-- 2022-04-11 Investigate and add indexes #8778
+
+CREATE INDEX IF NOT EXISTS idx_cases_responsibleregion_id ON cases (responsibleregion_id);
+CREATE INDEX IF NOT EXISTS idx_cases_responsibledistrict_id ON cases (responsibledistrict_id);
+
+CREATE INDEX IF NOT EXISTS idx_cases_archived ON cases (archived);
+CREATE INDEX IF NOT EXISTS idx_contact_archived ON contact (archived);
+CREATE INDEX IF NOT EXISTS idx_events_archived ON events (archived);
+CREATE INDEX IF NOT EXISTS idx_eventpartivipant_archived ON eventparticipant (archived);
+CREATE INDEX IF NOT EXISTS idx_immunization_archived ON immunization (archived);
+CREATE INDEX IF NOT EXISTS idx_travelentry_archived ON travelentry (archived);
+CREATE INDEX IF NOT EXISTS idx_campaigns_archived ON campaigns (archived);
+CREATE INDEX IF NOT EXISTS idx_task_archived ON task (archived);
+
+INSERT INTO schema_version (version_number, comment) VALUES (457, 'Investigate and add indexes #8778');
+
+-- 2022-05-03 Permanent Deletion | Immunization | healthconditions_id violates not-null constraint error #8983
+DROP TABLE IF EXISTS tmp_healthconditions;
+DROP TABLE IF EXISTS added_healthconditions;
+CREATE TEMP TABLE tmp_healthconditions
+(
+    LIKE healthconditions
+);
+insert into tmp_healthconditions
+select *
+from healthconditions hc
+where hc.id in (select distinct v.healthconditions_id
+                from vaccination v
+                         join (select vc.healthconditions_id
+                               from vaccination vc
+                               group by healthconditions_id
+                               HAVING count(*) > 1) b
+                              on v.healthconditions_id = b.healthconditions_id);
+
+CREATE TEMP TABLE added_healthconditions(LIKE healthconditions);
+
+CREATE OR REPLACE FUNCTION clone_healthconditions(healthconditions_id bigint)
+    RETURNS bigint
+    LANGUAGE plpgsql
+    SECURITY DEFINER AS
+$BODY$
+DECLARE
+    new_id bigint;
+BEGIN
+    INSERT INTO added_healthconditions SELECT * FROM healthconditions WHERE id = healthconditions_id;
+    UPDATE added_healthconditions
+    SET id           = nextval('entity_seq'),
+        uuid         = generate_base32_uuid(),
+        sys_period   = tstzrange(now(), null)
+    WHERE id = healthconditions_id
+    RETURNING id INTO new_id;
+    INSERT INTO healthconditions SELECT * FROM added_healthconditions WHERE id = new_id;
+    RETURN new_id;
+END;
+$BODY$;
+ALTER FUNCTION clone_healthconditions(bigint) OWNER TO sormas_user;
+
+CREATE OR REPLACE FUNCTION create_additional_healthconditions()
+    RETURNS bigint
+    LANGUAGE plpgsql
+    SECURITY DEFINER AS
+
+$BODY$
+DECLARE
+    new_id bigint;
+BEGIN
+    INSERT INTO healthconditions (id, uuid, changedate, creationdate)
+    VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now())
+    RETURNING id INTO new_id;
+    RETURN new_id;
+END;
+$BODY$;
+
+ALTER FUNCTION create_additional_healthconditions() OWNER TO sormas_user;
+DO
+$$
+    DECLARE
+        rec_health         RECORD;
+        rec_vaccination    RECORD;
+        count_vaccinations integer;
+        new_healthcondition_id bigint;
+    BEGIN
+        FOR rec_health IN SELECT * FROM tmp_healthconditions
+            LOOP
+                BEGIN
+                    count_vaccinations = (SELECT count(*) FROM vaccination WHERE healthconditions_id = rec_health.id);
+                    FOR rec_vaccination IN (SELECT * FROM vaccination WHERE healthconditions_id = rec_health.id)
+                        LOOP
+                            if count_vaccinations > 1 then
+                                new_healthcondition_id = clone_healthconditions(rec_health.id);
+                                update vaccination set healthconditions_id = new_healthcondition_id where id = rec_vaccination.id;
+                            end if;
+                            count_vaccinations = count_vaccinations - 1;
+                        end loop;
+                end;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+DROP TABLE IF EXISTS tmp_healthconditions;
+DROP TABLE IF EXISTS added_healthconditions;
+
+DROP FUNCTION IF EXISTS clone_healthconditions(bigint);
+DROP FUNCTION IF EXISTS create_additional_healthconditions();
+
+INSERT INTO schema_version (version_number, comment) VALUES (458, 'Permanent Deletion | Immunization | healthconditions_id violates not-null constraint error #8983');
+
+-- 2022-05-10 Add reason for deletion to confirmation dialogue - #8162
+ALTER TABLE cases ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE cases ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE cases_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE cases_history ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE contact ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE contact ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE contact_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE contact_history ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE events ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE events ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE events_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE events_history ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE eventparticipant ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE eventparticipant ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE eventparticipant_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE eventparticipant_history ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE immunization ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE immunization ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE immunization_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE immunization_history ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE travelentry ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE travelentry ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE travelentry_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE travelentry_history ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE campaigns ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE campaigns ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE campaigns_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE campaigns_history ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE samples ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE samples ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE samples_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE samples_history ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE pathogentest ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE pathogentest ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE pathogentest_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN  otherdeletionreason text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (459, 'Add reason for deletion to confirmation dialogue - #8162');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

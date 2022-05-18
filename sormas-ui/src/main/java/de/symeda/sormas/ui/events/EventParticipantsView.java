@@ -201,7 +201,7 @@ public class EventParticipantsView extends AbstractEventView {
 		topLayout.addComponent(filterForm);
 
 		// Bulk operation dropdown
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
 			List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>();
@@ -212,11 +212,13 @@ public class EventParticipantsView extends AbstractEventView {
 						ControllerProvider.getContactController().openLineListingWindow(eventDto, items);
 					}, true);
 				}));
-			bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
-				grid.bulkActionHandler(items -> {
-					ControllerProvider.getEventParticipantController().deleteAllSelectedItems(items, () -> navigateTo(criteria));
-				}, true);
-			}));
+			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+				bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
+					grid.bulkActionHandler(items -> {
+						ControllerProvider.getEventParticipantController().deleteAllSelectedItems(items, () -> navigateTo(criteria));
+					}, true);
+				}));
+			}
 
 			if (isDocGenerationAllowed()) {
 				bulkActions

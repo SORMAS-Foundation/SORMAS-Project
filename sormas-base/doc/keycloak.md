@@ -52,6 +52,11 @@ Email configurations are optional and are not part of the default configuration.
 
 In case the system relies on users activating their own accounts it's required to configure these settings.
 
+#### Audit Logging
+Audit logging of all login activity can be done by setting `org.keycloak.events` to `DEBUG`. To enable this, please copy
+the files from `sormas-base/setup/keycloak/audit-logging/` to `/opt/jboss/startup-scripts/` inside your Keycloak server
+and restart the server.
+
 #### Custom Configuration
 
 The configuration provided by default is the minimum required configuration for Keycloak to work together with SORMAS.

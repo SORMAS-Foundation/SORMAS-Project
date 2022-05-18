@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.eq;
 
+import de.symeda.sormas.backend.sormastosormas.share.ShareRequestAcceptData;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -137,7 +138,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 				assertThat(postBody.getOriginInfo().getSenderName(), is("Surv Off"));
 				assertThat(postBody.getOriginInfo().getComment(), is("Test comment"));
 
-				return Response.noContent().build();
+				return encryptShareData(new ShareRequestAcceptData(null, null));
 			});
 
 		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
@@ -182,7 +183,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 				assertThat(postBody.getCases().size(), is(1));
 				assertThat(postBody.getContacts().size(), is(1));
 
-				return Response.noContent().build();
+				return encryptShareData(new ShareRequestAcceptData(null, null));
 			});
 
 		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
@@ -257,7 +258,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 				assertThat(sharedContactSample.getPathogenTests(), hasSize(1));
 				assertThat(sharedContactSample.getAdditionalTests(), hasSize(1));
 
-				return Response.noContent().build();
+				return encryptShareData(new ShareRequestAcceptData(null, null));
 			});
 
 		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
@@ -517,7 +518,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 				assertThat(sharedCase.getPerson().getLastName(), is("Confidential"));
 				assertThat(sharedCase.getEntity().getAdditionalDetails(), is("Test additional details"));
 
-				return Response.noContent().build();
+				return encryptShareData(new ShareRequestAcceptData(null, null));
 			});
 
 		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
@@ -559,7 +560,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 				assertThat(sharedCase.getPerson().getLastName(), is("Confidential"));
 				assertThat(sharedCase.getEntity().getAdditionalDetails(), isEmptyString());
 
-				return Response.noContent().build();
+				return encryptShareData(new ShareRequestAcceptData(null, null));
 			});
 
 		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
@@ -613,8 +614,8 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		Mockito
 			.when(
 				MockProducer.getSormasToSormasClient()
-					.put(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-			.thenAnswer(invocation -> Response.noContent().build());
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+			.thenAnswer(invocation -> encryptShareData(new ShareRequestAcceptData(null, null)));
 
 		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
 

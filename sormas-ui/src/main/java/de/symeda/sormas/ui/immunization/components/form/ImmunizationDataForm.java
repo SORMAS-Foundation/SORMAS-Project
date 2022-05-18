@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.ui.Button;
@@ -112,7 +113,9 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		+ fluidRowLocs(ImmunizationDto.VACCINATIONS)
 		+ fluidRowLocs(RECOVERY_HEADING_LOC)
 		+ fluidRowLocs(ImmunizationDto.POSITIVE_TEST_RESULT_DATE, ImmunizationDto.RECOVERY_DATE, LINK_IMMUNIZATION_TO_CASE_BTN_LOC)
-		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.COUNTRY));
+		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.COUNTRY))
+		+ fluidRowLocs(CaseDataDto.DELETION_REASON)
+		+ fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
 	//@formatter:on
 
 	private final CaseReferenceDto relatedCase;
@@ -246,6 +249,10 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		DateField positiveTestResultDate = addField(ImmunizationDto.POSITIVE_TEST_RESULT_DATE, DateField.class);
 
 		DateField recoveryDate = addField(ImmunizationDto.RECOVERY_DATE, DateField.class);
+
+		addField(ImmunizationDto.DELETION_REASON);
+		addField(ImmunizationDto.OTHER_DELETION_REASON, TextArea.class).setRows(3);
+		setVisible(false, ImmunizationDto.DELETION_REASON, ImmunizationDto.OTHER_DELETION_REASON);
 
 		Button linkImmunizationToCaseButton;
 		if (relatedCase != null) {
@@ -551,6 +558,10 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		super.setValue(newFieldValue);
 		ignoreMeansOfImmunizationChange = false;
 		previousMeansOfImmunization = newFieldValue.getMeansOfImmunization();
+
+		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
+		// this hopefully resets everything to its correct value
+		discard();
 	}
 
 	@Override

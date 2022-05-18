@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.person;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.criteria.From;
@@ -24,18 +25,24 @@ import javax.persistence.criteria.JoinType;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseJoins;
+import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventParticipantJoins;
+import de.symeda.sormas.backend.immunization.ImmunizationJoins;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationJoins;
-import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
-import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
+import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 
-public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
+public class PersonJoins extends QueryJoins<Person> {
 
 	private PersonAssociation personAssociation;
+
 	private Join<Person, Case> caze;
 	private Join<Person, Contact> contact;
 	private Join<Person, EventParticipant> eventParticipant;
@@ -44,13 +51,17 @@ public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
 	private Join<Person, Location> address;
 	private Join<Person, Country> birthCountry;
 	private Join<Person, Country> citizenship;
+	private Join<Person, List<Location>> addresses;
 
-	private final LocationJoins<Person> addressJoins;
+	private LocationJoins addressJoins;
+	private CaseJoins caseJoins;
+	private ContactJoins contactJoins;
+	private EventParticipantJoins eventParticipantJoins;
+	private ImmunizationJoins immunizationJoins;
+	private TravelEntryJoins travelEntryJoins;
 
-	public PersonJoins(From<T, Person> root) {
+	public PersonJoins(From<?, Person> root) {
 		super(root);
-
-		addressJoins = new LocationJoins<>(getAddress());
 	}
 
 	public void configure(PersonCriteria criteria) {
@@ -77,6 +88,14 @@ public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
 		this.caze = caze;
 	}
 
+	public CaseJoins getCaseJoins() {
+		return getOrCreate(caseJoins, () -> new CaseJoins(getCaze()), this::setCaseJoins);
+	}
+
+	private void setCaseJoins(CaseJoins caseJoins) {
+		this.caseJoins = caseJoins;
+	}
+
 	public Join<Person, Contact> getContact() {
 		return getOrCreate(contact, Person.CONTACTS, getJoinType(PersonAssociation.CONTACT), this::setContact);
 	}
@@ -85,12 +104,28 @@ public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
 		this.contact = contact;
 	}
 
+	public ContactJoins getContactJoins() {
+		return getOrCreate(contactJoins, () -> new ContactJoins(getContact()), this::setContactJoins);
+	}
+
+	private void setContactJoins(ContactJoins contactJoins) {
+		this.contactJoins = contactJoins;
+	}
+
 	public Join<Person, EventParticipant> getEventParticipant() {
 		return getOrCreate(eventParticipant, Person.EVENT_PARTICIPANTS, getJoinType(PersonAssociation.EVENT_PARTICIPANT), this::setEventParticipant);
 	}
 
 	private void setEventParticipant(Join<Person, EventParticipant> eventParticipant) {
 		this.eventParticipant = eventParticipant;
+	}
+
+	public EventParticipantJoins getEventParticipantJoins() {
+		return getOrCreate(eventParticipantJoins, () -> new EventParticipantJoins(getEventParticipant()), this::setEventParticipantJoins);
+	}
+
+	private void setEventParticipantJoins(EventParticipantJoins eventParticipantJoins) {
+		this.eventParticipantJoins = eventParticipantJoins;
 	}
 
 	public Join<Person, Immunization> getImmunization() {
@@ -107,10 +142,6 @@ public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
 
 	public void setTravelEntry(Join<Person, TravelEntry> travelEntry) {
 		this.travelEntry = travelEntry;
-	}
-
-	public LocationJoins<Person> getAddressJoins() {
-		return addressJoins;
 	}
 
 	public Join<Person, Location> getAddress() {
@@ -135,5 +166,37 @@ public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
 
 	private void setCitizenship(Join<Person, Country> citizenship) {
 		this.citizenship = citizenship;
+	}
+
+	public Join<Person, List<Location>> getAddresses() {
+		return getOrCreate(addresses, Person.ADDRESSES, JoinType.LEFT, this::setAddresses);
+	}
+
+	private void setAddresses(Join<Person, List<Location>> personAddresses) {
+		this.addresses = personAddresses;
+	}
+
+	public LocationJoins getAddressJoins() {
+		return getOrCreate(addressJoins, () -> new LocationJoins(getAddress()), this::setAddressJoins);
+	}
+
+	private void setAddressJoins(LocationJoins addressJoins) {
+		this.addressJoins = addressJoins;
+	}
+
+	public ImmunizationJoins getImmunizationJoins() {
+		return getOrCreate(immunizationJoins, () -> new ImmunizationJoins(getImmunization()), this::setImmunizationJoins);
+	}
+
+	private void setImmunizationJoins(ImmunizationJoins immunizationJoins) {
+		this.immunizationJoins = immunizationJoins;
+	}
+
+	public TravelEntryJoins getTravelEntryJoins() {
+		return getOrCreate(travelEntryJoins, () -> new TravelEntryJoins(getTravelEntry()), this::setTravelEntryJoins);
+	}
+
+	private void setTravelEntryJoins(TravelEntryJoins travelEntryJoins) {
+		this.travelEntryJoins = travelEntryJoins;
 	}
 }

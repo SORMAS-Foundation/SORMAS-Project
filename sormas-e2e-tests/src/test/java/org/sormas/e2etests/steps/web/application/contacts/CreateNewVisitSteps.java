@@ -55,7 +55,6 @@ public class CreateNewVisitSteps implements En {
         "^I create a new Follow-up visit",
         () -> {
           followUpVisit = followUpVisitService.buildGeneratedFollowUpVisit();
-          webDriverHelpers.waitForPageLoaded();
           selectPersonAvailableAndCooperative(followUpVisit.getPersonAvailableAndCooperative());
           fillDateAndTimeVisit(followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit());
           fillVisitRemark(followUpVisit.getVisitRemarks());
@@ -105,7 +104,6 @@ public class CreateNewVisitSteps implements En {
         "^I change Follow-up visit fields and save$",
         () -> {
           followUpEditVisit = followUpVisitService.buildEditFollowUpVisit();
-          webDriverHelpers.waitForPageLoaded();
           selectPersonAvailableAndCooperative(followUpEditVisit.getPersonAvailableAndCooperative());
           fillDateAndTimeVisit(followUpVisitService.buildEditFollowUpVisit().getDateOfVisit());
           fillVisitRemark(followUpEditVisit.getVisitRemarks());
@@ -128,7 +126,6 @@ public class CreateNewVisitSteps implements En {
     And(
         "^I open Follow up Visits tab from contact directory$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(FOLLOW_UP_VISITS_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(FROM_INPUT);
         });
@@ -136,7 +133,6 @@ public class CreateNewVisitSteps implements En {
     Then(
         "^I am validating the From and To dates displayed$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           String uuid = apiState.getCreatedContact().getUuid();
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(MULTIPLE_OPTIONS_SEARCH_INPUT);
           webDriverHelpers.clearAndFillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, uuid);

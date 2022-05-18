@@ -99,10 +99,6 @@ public class ClientInfraSyncFacadeEjb implements ClientInfraSyncFacade {
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
 			sync.setAreas(areaFacade.getAllAfter(changeDates.getAreaChangeDate()));
 		}
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.CAMPAIGNS)) {
-			sync.setCampaigns(campaignFacade.getAllAfter(changeDates.getCampaignChangeDate()));
-			sync.setCampaignFormMetas(campaignFormMetaFacade.getAllAfter(changeDates.getCampaignFormMetaChangeDate()));
-		}
 
 		return sync;
 	}

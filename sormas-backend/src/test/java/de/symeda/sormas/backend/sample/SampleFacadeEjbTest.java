@@ -34,9 +34,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.common.DeletionReason;
 import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Test;
@@ -45,6 +44,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -56,7 +56,6 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.AdditionalTestingStatus;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -65,19 +64,16 @@ import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
 
 public class SampleFacadeEjbTest extends AbstractBeanTest {
 
@@ -230,12 +226,12 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		final SampleIndexDto sample12 = sampleList1.get(1);
 		Assert.assertEquals(sample.getUuid(), sample12.getUuid());
 		Assert.assertEquals(contact.getUuid(), sample12.getAssociatedContact().getUuid());
-		Assert.assertEquals("Contact PERSON2", sample12.getAssociatedContact().getCaption());
+		Assert.assertTrue(sample12.getAssociatedContact().getCaption().startsWith("Contact PERSON2"));
 
 		final SampleIndexDto sample13 = sampleList1.get(2);
 		Assert.assertEquals(referredSample.getUuid(), sample13.getUuid());
 		Assert.assertEquals(contact.getUuid(), sample13.getAssociatedContact().getUuid());
-		Assert.assertEquals("Contact PERSON2", sample12.getAssociatedContact().getCaption());
+		Assert.assertTrue(sample13.getAssociatedContact().getCaption().startsWith("Contact PERSON2"));
 
 		final SampleIndexDto sample14 = sampleList1.get(3);
 		Assert.assertEquals(sampleOfEventParticipant.getUuid(), sample14.getUuid());
@@ -356,7 +352,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
 		assertNotNull(getSampleTestFacade().getByUuid(sampleTest.getUuid()));
 
-		getSampleFacade().deleteSample(sample.toReference());
+		getSampleFacade().deleteSample(sample.toReference(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
 
 		// Sample and pathogen test should be marked as deleted
 		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
@@ -526,62 +522,6 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetNewTestResultCountByResultType() {
-
-		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserReferenceDto user = creator.createUser(rdcf).toReference();
-		PersonReferenceDto person1 = creator.createPerson("Heinz", "First").toReference();
-		PersonReferenceDto person2 = creator.createPerson("Heinz", "Second").toReference();
-		CaseDataDto case1 = creator.createCase(user, person1, rdcf);
-		CaseDataDto case2 = creator.createCase(user, person2, rdcf);
-
-		List<Long> caseIds = getCaseService().getAllIds(null);
-
-		// no existing samples
-		SampleFacade sampleFacade = getSampleFacade();
-		Map<PathogenTestResultType, Long> resultMap = sampleFacade.getNewTestResultCountByResultType(caseIds);
-		assertEquals(new Long(0), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.PENDING, null));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.POSITIVE, null));
-
-		// one pending sample with in one case
-		Facility lab = creator.createFacility("facility", rdcf.region, rdcf.district, rdcf.community);
-		creator.createSample(case1.toReference(), user, lab);
-
-		resultMap = sampleFacade.getNewTestResultCountByResultType(caseIds);
-		assertEquals(new Long(1), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
-		assertEquals(new Long(1), resultMap.getOrDefault(PathogenTestResultType.PENDING, null));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.POSITIVE, null));
-
-		// one pending sample in each of two cases
-		creator.createSample(case2.toReference(), user, lab);
-
-		resultMap = sampleFacade.getNewTestResultCountByResultType(caseIds);
-		assertEquals(new Long(2), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
-		assertEquals(new Long(2), resultMap.getOrDefault(PathogenTestResultType.PENDING, null));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.POSITIVE, null));
-
-		// one pending sample in each of two cases
-		// and one positive sample in one of the two cases
-		SampleDto sample = creator.createSample(case1.toReference(), user, lab);
-		sample.setPathogenTestResult(PathogenTestResultType.POSITIVE);
-		sampleFacade.saveSample(sample);
-
-		resultMap = sampleFacade.getNewTestResultCountByResultType(caseIds);
-		assertEquals(new Long(2), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
-		assertEquals(new Long(1), resultMap.getOrDefault(PathogenTestResultType.PENDING, null));
-		assertEquals(new Long(1), resultMap.getOrDefault(PathogenTestResultType.POSITIVE, null));
-	}
-
-	@Test
 	public void testGetByCaseUuids() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
@@ -712,7 +652,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		MatcherAssert.assertThat(result, hasSize(2));
 		MatcherAssert.assertThat(result, containsInAnyOrder(equalTo(sample), equalTo(sample2)));
 
-		getSampleFacade().deleteSample(sample2.toReference());
+		getSampleFacade().deleteSample(sample2.toReference(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
 
 		result = getSampleFacade().getByLabSampleId(labSampleId);
 		MatcherAssert.assertThat(result, hasSize(1));

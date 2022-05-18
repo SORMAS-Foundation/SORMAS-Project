@@ -35,6 +35,7 @@ public class Event {
   String eventInvestigationStatus;
   Date reportDateTime;
   String riskLevel;
+  String eventDesc;
   String srcType;
   String typeOfPlace;
   Boolean ownershipHandedOver;

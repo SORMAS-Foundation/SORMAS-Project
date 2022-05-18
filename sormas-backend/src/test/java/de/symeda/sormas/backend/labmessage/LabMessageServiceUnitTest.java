@@ -1,9 +1,6 @@
 package de.symeda.sormas.backend.labmessage;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -11,9 +8,6 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.api.labmessage.TestReportDto;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -48,17 +42,6 @@ public class LabMessageServiceUnitTest {
 		when(cb.equal(objectPath, status)).thenReturn(predicate);
 
 		Predicate result = sut.buildCriteriaFilter(cb, labMessage, criteria);
-
-		assertEquals(predicate, result);
-	}
-
-	@Test
-	public void testCreateDefaultFilter() {
-
-		LabMessageService sut = new LabMessageService();
-		when(cb.isFalse(any())).thenReturn(predicate);
-
-		Predicate result = sut.createDefaultFilter(cb, labMessage);
 
 		assertEquals(predicate, result);
 	}

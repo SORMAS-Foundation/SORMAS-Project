@@ -23,7 +23,6 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.backend.immunization.entity.Immunization;
-import de.symeda.sormas.backend.immunization.joins.ImmunizationJoins;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -32,25 +31,21 @@ import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 
 public class ImmunizationJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
-	private final ImmunizationJoins<?> joins;
+	private final ImmunizationJoins joins;
 
 	private ImmunizationJurisdictionPredicateValidator(
 		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
-		ImmunizationJoins<?> joins,
+		ImmunizationJoins joins,
 		User user,
 		List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
+
 		super(cb, user, null, associatedJurisdictionValidators);
 		this.joins = joins;
 	}
 
 	public static ImmunizationJurisdictionPredicateValidator of(ImmunizationQueryContext qc, User user) {
-		return new ImmunizationJurisdictionPredicateValidator(
-			qc.getQuery(),
-			qc.getCriteriaBuilder(),
-			(ImmunizationJoins<?>) qc.getJoins(),
-			user,
-			null);
+		return new ImmunizationJurisdictionPredicateValidator(qc.getQuery(), qc.getCriteriaBuilder(), qc.getJoins(), user, null);
 	}
 
 	@Override

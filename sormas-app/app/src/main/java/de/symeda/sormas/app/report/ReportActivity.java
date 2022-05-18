@@ -19,7 +19,8 @@ import java.util.List;
 
 import android.content.Context;
 
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.BaseActivity;
@@ -42,7 +43,8 @@ public class ReportActivity extends BaseReportActivity {
 	@Override
 	public List<PageMenuItem> getPageMenuData() {
 		List<PageMenuItem> menuItems = PageMenuItem.fromEnum(ReportSection.values(), getContext());
-		if (!(ConfigProvider.getUser().hasUserRole(UserRole.SURVEILLANCE_OFFICER))) {
+		if (!(ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_CREATE)
+			&& ConfigProvider.getUser().hasJurisdictionLevel(JurisdictionLevel.DISTRICT))) {
 			menuItems.set(ReportSection.INFORMANT_REPORTS.ordinal(), null);
 			setPageMenuVisibility(false);
 		}

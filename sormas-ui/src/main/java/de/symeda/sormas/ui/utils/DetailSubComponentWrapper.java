@@ -34,8 +34,8 @@ public class DetailSubComponentWrapper extends VerticalLayout implements DirtySt
 	}
 
 	@Override
-	public void commitAndHandle() {
-		getWrappedComponent().ifPresent(DirtyStateComponent::commitAndHandle);
+	public boolean commitAndHandle() {
+		return getWrappedComponent().map(DirtyStateComponent::commitAndHandle).orElse(false);
 	}
 
 	@Override

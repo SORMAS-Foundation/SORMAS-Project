@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.entries;
 
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISTRICT_INPUT;
@@ -26,17 +27,30 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.REGION_IN
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REPORT_DATE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.ARRIVAL_DATE;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DATE_OF_ARRIVAL_LABEL_DE;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DATE_OF_ARRIVAL_POPUP_CLOSE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_TRAVEL_ENTRY_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.LAST_NAME_OF_CONTACT_PERSON_INPUT;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_CASE_LABEL_DE;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_PERSON_LABEL_DE;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_OR_CREATE_PERSON_TITLE_DE;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.REPORT_DATE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CASE_PERSON_NAME;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CREATE_CASE_FROM_TRAVEL_ENTRY;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISEASE_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.FIRST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.INFO_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.LAST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.PERSON_ID_LABEL;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.POINT_OF_ENTRY_CASE;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.SAVE_EDIT_TRAVEL_PAGE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.SAVE_NEW_CASE_FOR_TRAVEL_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TRAVEL_ENTRY_PERSON_TAB;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TRAVEL_ENTRY_TAB;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -45,6 +59,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.pojo.web.TravelEntry;
@@ -57,12 +72,20 @@ import org.testng.asserts.SoftAssert;
 
 public class CreateNewTravelEntrySteps implements En {
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-  public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
+  private final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   private final WebDriverHelpers webDriverHelpers;
   public static TravelEntry travelEntry;
   public static TravelEntry aTravelEntry;
+  public static TravelEntry TravelEntryUuid;
   public static TravelEntry newCaseFromTravelEntryData;
   public static Case aCase;
+  public static String collectTravelEntryPersonUuid;
+  public static LocalDate previousWeekDate;
+  String firstName;
+  String lastName;
+  String sex;
+  String disease;
+  String entryPoint = "Test entry point";
 
   @Inject
   public CreateNewTravelEntrySteps(
@@ -77,12 +100,68 @@ public class CreateNewTravelEntrySteps implements En {
         () -> {
           travelEntry = travelEntryService.buildGeneratedEntryDE();
           fillFirstName(travelEntry.getFirstName());
+          firstName = travelEntry.getFirstName();
           fillLastName(travelEntry.getLastName());
+          lastName = travelEntry.getLastName();
           selectSex(travelEntry.getSex());
+          sex = travelEntry.getSex();
+          fillDateOfArrival(travelEntry.getDateOfArrival(), Locale.GERMAN);
           selectResponsibleRegion(travelEntry.getResponsibleRegion());
           selectResponsibleDistrict(travelEntry.getResponsibleDistrict());
           selectResponsibleCommunity(travelEntry.getResponsibleCommunity());
           fillDisease(travelEntry.getDisease());
+          disease = travelEntry.getDisease();
+          if (travelEntry.getDisease().equals("Andere epidemische Krankheit"))
+            fillOtherDisease("Test");
+
+          fillPointOfEntry(travelEntry.getPointOfEntry());
+          fillPointOfEntryDetails(travelEntry.getPointOfEntryDetails());
+        });
+
+    When(
+        "^I change a Report Date for previous week date$",
+        () -> {
+          previousWeekDate = travelEntry.getReportDate().minusDays(7);
+          fillReportDate(previousWeekDate, Locale.GERMAN);
+        });
+
+    When(
+        "^I open last created Travel Entry",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_TRAVEL_ENTRY_ID_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_TRAVEL_ENTRY_ID_BUTTON);
+        });
+
+    When(
+        "^I fill the required fields in a new travel entry form without personal data$",
+        () -> {
+          travelEntry = travelEntryService.buildGeneratedEntryDE();
+          fillDateOfArrival(travelEntry.getDateOfArrival(), Locale.GERMAN);
+          selectResponsibleRegion(travelEntry.getResponsibleRegion());
+          selectResponsibleDistrict(travelEntry.getResponsibleDistrict());
+          selectResponsibleCommunity(travelEntry.getResponsibleCommunity());
+          fillDisease(travelEntry.getDisease());
+          disease = travelEntry.getDisease();
+          if (travelEntry.getDisease().equals("Andere epidemische Krankheit"))
+            fillOtherDisease("Test");
+
+          fillPointOfEntry(travelEntry.getPointOfEntry());
+          fillPointOfEntryDetails(travelEntry.getPointOfEntryDetails());
+        });
+
+    When(
+        "^I fill the required fields in a new travel entry form for previous created person$",
+        () -> {
+          travelEntry = travelEntryService.buildGeneratedEntryWithPointOfEntryDetailsDE(entryPoint);
+          fillFirstName(firstName);
+          fillLastName(lastName);
+          selectSex(sex);
+          selectResponsibleRegion(travelEntry.getResponsibleRegion());
+          fillDateOfArrival(travelEntry.getDateOfArrival(), Locale.GERMAN);
+          selectResponsibleDistrict(travelEntry.getResponsibleDistrict());
+          selectResponsibleCommunity(travelEntry.getResponsibleCommunity());
+          fillDisease(disease);
           if (travelEntry.getDisease().equals("Andere epidemische Krankheit"))
             fillOtherDisease("Test");
 
@@ -102,16 +181,80 @@ public class CreateNewTravelEntrySteps implements En {
         });
 
     When(
+        "^I click on the person search button in create new travel entry form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_SEARCH_LOCATOR_BUTTON);
+        });
+    When(
+        "^I change a Date of Arrival for wrong date from next day",
+        () -> {
+          fillDateOfArrival(travelEntry.getDateOfArrival().plusDays(1), Locale.GERMAN);
+        });
+
+    When(
+        "^I change a Date of Arrival for correct date",
+        () -> {
+          fillDateOfArrival(travelEntry.getDateOfArrival(), Locale.GERMAN);
+        });
+
+    When(
+        "I check that word Date of arrival is appropriate translated to German language",
+        () -> {
+          String expectedWordToTranslateInGerman = "EINREISEDATUM";
+          String wordGettingFromLabel =
+              webDriverHelpers.getTextFromWebElement(DATE_OF_ARRIVAL_LABEL_DE);
+          softly.assertEquals(
+              wordGettingFromLabel,
+              expectedWordToTranslateInGerman,
+              "The translation is not proper");
+          softly.assertAll();
+        });
+
+    When(
+        "I check the information about Dates for imported travel entry on Edit Travel entry page",
+        () -> {
+          String reportDate = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
+          String arrivalDate = webDriverHelpers.getValueFromWebElement(ARRIVAL_DATE);
+
+          softly.assertEquals(reportDate, "03.10.2021");
+          softly.assertEquals(arrivalDate, "02.10.2021");
+          softly.assertAll();
+        });
+
+    When(
+        "^I check that Date of Arrival validation popup is appear",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(DATE_OF_ARRIVAL_POPUP_CLOSE);
+          webDriverHelpers.clickOnWebElementBySelector(DATE_OF_ARRIVAL_POPUP_CLOSE);
+        });
+
+    When(
         "^I click on Save button from the new travel entry form$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
 
     When(
+        "I click on Save button from the edit travel entry form",
+        () -> {
+          webDriverHelpers.scrollToElement(SAVE_EDIT_TRAVEL_PAGE);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_EDIT_TRAVEL_PAGE);
+        });
+
+    When(
         "^I navigate to person tab in Edit travel entry page$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(TRAVEL_ENTRY_PERSON_TAB);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(PERSON_ID_LABEL);
         });
+    When(
+        "^I navigate to Edit travel entry page$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(TRAVEL_ENTRY_TAB);
+        });
+    When(
+        "I collect the Travel Entry person UUID displayed on Travel Entry Person page",
+        () -> collectTravelEntryPersonUuid = collectTravelEntryPersonUuid());
 
     When(
         "I check the created data is correctly displayed on Edit travel entry page for DE version",
@@ -128,6 +271,12 @@ public class CreateNewTravelEntrySteps implements En {
                   "responsibleCommunity",
                   "pointOfEntry",
                   "pointOfEntryDetails"));
+        });
+
+    When(
+        "I collect travel UUID from travel entry",
+        () -> {
+          TravelEntryUuid = collectTravelEntryUuid();
         });
 
     When(
@@ -187,6 +336,7 @@ public class CreateNewTravelEntrySteps implements En {
     When(
         "I check if data in case based on travel entry is correct",
         () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(INFO_BUTTON);
           aCase = collectCasePersonDataBasedOnTravelEntryDE();
           softly.assertEquals(
               aCase.getResponsibleRegion(),
@@ -202,7 +352,7 @@ public class CreateNewTravelEntrySteps implements En {
               "Communities are not equal");
           softly.assertEquals(
               aCase.getPointOfEntry(),
-              travelEntry.getPointOfEntry() + " (Inaktiv)",
+              travelEntry.getPointOfEntry(),
               "Point of entries are not equal");
           softly.assertEquals(
               aCase.getFirstName().toLowerCase(Locale.GERMAN),
@@ -216,7 +366,7 @@ public class CreateNewTravelEntrySteps implements En {
         });
 
     When(
-        "I check if first and last for case in travel entry is correct",
+        "I check if first and last person name for case in travel entry is correct",
         () -> {
           softly.assertEquals(
               webDriverHelpers.getTextFromWebElement(CASE_PERSON_NAME).toLowerCase(Locale.GERMAN),
@@ -226,6 +376,41 @@ public class CreateNewTravelEntrySteps implements En {
               "User name is invalid");
           softly.assertAll();
         });
+
+    When(
+        "^I check Pick an existing case in Pick or create person popup in travel entry$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(PICK_A_EXISTING_PERSON_LABEL_DE));
+
+    When(
+        "^I click confirm button in popup from travel entry$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT));
+
+    When(
+        "I choose an existing case while creating case from travel entry",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              PICK_A_EXISTING_CASE_LABEL_DE); // wait for popup
+          String expectedTitle = "Fall ausw\u00E4hlen oder erstellen";
+          String checkPopupTitle =
+              webDriverHelpers
+                  .getTextFromWebElement(PICK_OR_CREATE_PERSON_TITLE_DE)
+                  .toLowerCase(Locale.GERMAN);
+          softly.assertEquals(
+              checkPopupTitle,
+              expectedTitle.toLowerCase(Locale.GERMAN),
+              "Wrong popup title for Pick or create a case");
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(PICK_A_EXISTING_CASE_LABEL_DE);
+        });
+
+    When(
+        "^I check if created travel entries are listed in the epidemiological data tab$",
+        () -> {
+          webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+              By.xpath("//div[text()='" + travelEntry.getPointOfEntryDetails() + "']"));
+          webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+              By.xpath("//div[text()='Automated test dummy description']"));
+        });
   }
 
   private void fillFirstName(String firstName) {
@@ -234,6 +419,19 @@ public class CreateNewTravelEntrySteps implements En {
 
   private void fillLastName(String lastName) {
     webDriverHelpers.fillInWebElement(LAST_NAME_OF_CONTACT_PERSON_INPUT, lastName);
+  }
+
+  private void fillDateOfArrival(LocalDate dateOfArrival, Locale locale) {
+    if (locale.equals(Locale.GERMAN))
+      webDriverHelpers.clearAndFillInWebElement(
+          ARRIVAL_DATE, DATE_FORMATTER_DE.format(dateOfArrival));
+    else webDriverHelpers.clearAndFillInWebElement(ARRIVAL_DATE, formatter.format(dateOfArrival));
+  }
+
+  private void fillReportDate(LocalDate reportDate, Locale locale) {
+    if (locale.equals(Locale.GERMAN))
+      webDriverHelpers.clearAndFillInWebElement(REPORT_DATE, DATE_FORMATTER_DE.format(reportDate));
+    else webDriverHelpers.clearAndFillInWebElement(REPORT_DATE, formatter.format(reportDate));
   }
 
   private void selectSex(String sex) {
@@ -292,11 +490,20 @@ public class CreateNewTravelEntrySteps implements En {
         .build();
   }
 
+  private TravelEntry collectTravelEntryUuid() {
+    return TravelEntry.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
+  }
+
+  private String collectTravelEntryPersonUuid() {
+    return webDriverHelpers.getValueFromWebElement(UUID_INPUT);
+  }
+
   private TravelEntry collectTravelEntryPersonData() {
     return TravelEntry.builder()
         .firstName(webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT))
         .lastName(webDriverHelpers.getValueFromWebElement(LAST_NAME_INPUT))
         .sex(webDriverHelpers.getValueFromCombobox(EditTravelEntryPage.SEX_COMBOBOX))
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .build();
   }
 

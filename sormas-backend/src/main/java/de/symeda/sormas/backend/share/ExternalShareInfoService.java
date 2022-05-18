@@ -36,6 +36,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.share.ExternalShareCriteria;
 import de.symeda.sormas.api.share.ExternalShareInfoCriteria;
 import de.symeda.sormas.api.share.ExternalShareStatus;
@@ -96,6 +97,16 @@ public class ExternalShareInfoService extends AdoServiceWithUserFilter<ExternalS
 		return exists((cb, root, cq) -> cb.equal(root.get(ExternalShareInfo.EVENT).get(Event.ID), eventId));
 	}
 
+	public List<ExternalShareInfo> getShareInfoByCase(String caseUuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ExternalShareInfo> cq = cb.createQuery(ExternalShareInfo.class);
+		Root<ExternalShareInfo> root = cq.from(ExternalShareInfo.class);
+
+		cq.where(buildCriteriaFilter(new ExternalShareInfoCriteria().caze(new CaseReferenceDto(caseUuid)), cb, root));
+		return em.createQuery(cq).getResultList();
+	}
+
 	private <T> void createAndPersistShareInfo(ExternalShareStatus status, T associatedEntity, BiConsumer<ExternalShareInfo, T> setAssociatedEntity) {
 		ExternalShareInfo shareInfo = new ExternalShareInfo();
 
@@ -150,6 +161,7 @@ public class ExternalShareInfoService extends AdoServiceWithUserFilter<ExternalS
 		countSubQuery.groupBy(countAssociatedObject);
 
 		cq.multiselect(associatedObjectUuid, countSubQuery, creationDate, root.get(ExternalShareInfo.STATUS));
+		cq.distinct(true);
 		cq.where(
 			cb.function(ExtendedPostgreSQL94Dialect.CONCAT_FUNCTION, String.class, associatedObjectId, creationDate).in(latestShareInfoSubQuery),
 			associatedObjectId.in(ids));

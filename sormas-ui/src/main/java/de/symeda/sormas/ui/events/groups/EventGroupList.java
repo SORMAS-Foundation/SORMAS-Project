@@ -106,7 +106,7 @@ public class EventGroupList extends PaginationList<EventGroupIndexDto> {
 			listEntry.addListEventsListener(i, (ClickListener) clickEvent -> {
 				EventCriteria eventCriteria = new EventCriteria();
 				eventCriteria.setEventGroup(listEntry.getEventGroup().toReference());
-				ControllerProvider.getEventController().navigateTo(eventCriteria);
+				ControllerProvider.getEventController().navigateTo(eventCriteria, true);
 			});
 			listLayout.addComponent(listEntry);
 		}

@@ -7,13 +7,18 @@ import javax.persistence.criteria.From;
 
 import de.symeda.sormas.backend.common.QueryContext;
 
-public class ActionQueryContext<T> extends QueryContext<T, Action> {
-    public ActionQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Action> root) {
-        super(cb, query, root, new ActionJoins(root));
-    }
+public class ActionQueryContext extends QueryContext<Action, ActionJoins> {
 
-    @Override
-    protected Expression<?> createExpression(String name) {
-        return null;
-    }
+	protected ActionQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Action> root) {
+		this(cb, query, new ActionJoins(root));
+	}
+
+	public ActionQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, ActionJoins joins) {
+		super(cb, query, joins.getRoot(), joins);
+	}
+
+	@Override
+	protected Expression<?> createExpression(String name) {
+		return null;
+	}
 }

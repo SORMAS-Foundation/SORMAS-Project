@@ -30,6 +30,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -206,8 +208,18 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 				Arrays.asList(CaseBulkEditData.SURVEILLANCE_OFFICER),
 				Arrays.asList(true),
 				null);
-			List<UserReferenceDto> assignableCaseResponsibles =
-				FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, UserRight.CASE_RESPONSIBLE);
+			Set<Disease> selectedDiseases = this.selectedCases.stream().map(c -> c.getDisease()).collect(Collectors.toSet());
+			List<UserReferenceDto> assignableCaseResponsibles = null;
+
+			if (selectedDiseases.size() == 1) {
+				Disease selectedDisease = selectedDiseases.iterator().next();
+				assignableCaseResponsibles =
+					FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, selectedDisease, UserRight.CASE_RESPONSIBLE);
+
+			} else {
+				assignableCaseResponsibles =
+					FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, true, UserRight.CASE_RESPONSIBLE);
+			}
 			FieldHelper.updateItems(surveillanceOfficer, assignableCaseResponsibles);
 
 			surveillanceOfficerCheckBox.addValueChangeListener(e -> {

@@ -35,7 +35,6 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.report.WeeklyReportCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
@@ -122,24 +121,24 @@ public class WeeklyReportService extends AdoServiceWithUserFilter<WeeklyReport> 
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, WeeklyReport> from) {
 
 		User currentUser = getCurrentUser();
-		// National users can access all reports in the system
-		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if (currentUser == null || (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))) {
+		if (currentUser == null) {
 			return null;
 		}
 
-		// Whoever created the weekly report is allowed to access it
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
+			|| currentUser.hasUserRole(UserRole.REST_USER)) {
+			return null;
+		}
+
 		Join<WeeklyReport, User> informant = from.join(WeeklyReport.REPORTING_USER, JoinType.LEFT);
 		Predicate filter = cb.equal(informant, currentUser);
 
-		// Allow access based on user role
 
-		// Supervisors see all reports from users in their region
 		if (currentUser.getRegion() != null && jurisdictionLevel == JurisdictionLevel.REGION) {
 			filter = cb.or(filter, cb.equal(from.join(WeeklyReport.REPORTING_USER, JoinType.LEFT).get(User.REGION), currentUser.getRegion()));
 		}
 
-		// Officers see all reports from their assigned informants
 		if (JurisdictionLevel.DISTRICT.equals(currentUser.getJurisdictionLevel())) {
 			filter = cb.or(filter, cb.equal(informant.get(User.ASSOCIATED_OFFICER), currentUser));
 		}

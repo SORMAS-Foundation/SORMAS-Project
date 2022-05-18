@@ -39,7 +39,7 @@ public class ContactLineField extends CustomField<ContactLineFieldDto> {
 
 	public ContactLineField() {
 		dateOfReport = new DateField();
-		multiDay = new MultiDayContactField();
+		multiDay = new MultiDayContactField(dateOfReport);
 		typeOfContact = new ComboBox<>();
 		relationToCase = new ComboBox<>();
 		person = new PersonField();

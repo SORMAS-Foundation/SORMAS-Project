@@ -484,7 +484,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 				setVisible(true, CaseDataDto.POINT_OF_ENTRY);
 			}
 		});
-		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> updateDiseaseVariant((Disease) valueChangeEvent.getProperty().getValue()));
+		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
+			updateDiseaseVariant((Disease) valueChangeEvent.getProperty().getValue());
+			personCreateForm.updatePresentConditionEnum((Disease) valueChangeEvent.getProperty().getValue());
+		});
 
 		diseaseVariantField.addValueChangeListener(e -> {
 			DiseaseVariant diseaseVariant = (DiseaseVariant) e.getProperty().getValue();
@@ -492,15 +495,18 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		});
 
 		if (diseaseField.getValue() != null) {
-			updateDiseaseVariant((Disease) diseaseField.getValue());
+			Disease disease = (Disease) diseaseField.getValue();
+			updateDiseaseVariant(disease);
+			personCreateForm.updatePresentConditionEnum(disease);
 		}
 	}
 
 	private void updateDiseaseVariant(Disease disease) {
 		List<DiseaseVariant> diseaseVariants =
-				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
+			FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
 		FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
-		diseaseVariantField.setVisible(disease != null && isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
+		diseaseVariantField
+			.setVisible(disease != null && isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
 	}
 
 	private void setNoneFacility() {

@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
@@ -27,6 +28,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -103,7 +105,9 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
                     fluidRowLocs(SampleDto.SPECIMEN_CONDITION, SampleDto.NO_TEST_POSSIBLE_REASON) +
                     fluidRowLocs(SampleDto.COMMENT) +
-                    fluidRowLocs(SampleDto.PATHOGEN_TEST_RESULT);
+                    fluidRowLocs(SampleDto.PATHOGEN_TEST_RESULT) +
+					fluidRowLocs(CaseDataDto.DELETION_REASON) +
+					fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
     //@formatter:on
 
 	protected AbstractSampleForm(Class<SampleDto> type, String propertyI18nPrefix, Disease disease, UiFieldAccessCheckers fieldAccessCheckers) {
@@ -158,6 +162,10 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			Collections.singletonList(SamplingReason.OTHER_REASON),
 			true);
 
+		addField(SampleDto.DELETION_REASON);
+		addField(SampleDto.OTHER_DELETION_REASON, TextArea.class).setRows(3);
+		setVisible(false, SampleDto.DELETION_REASON, SampleDto.OTHER_DELETION_REASON);
+
 	}
 
 	protected void defaultValueChangeListener() {
@@ -170,11 +178,11 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 		Disease disease = null;
 		final CaseReferenceDto associatedCase = getValue().getAssociatedCase();
-		if (associatedCase != null) {
+		if (associatedCase != null && UserProvider.getCurrent().hasAllUserRights(UserRight.CASE_VIEW)) {
 			disease = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid()).getDisease();
 		} else {
 			final ContactReferenceDto associatedContact = getValue().getAssociatedContact();
-			if (associatedContact != null) {
+			if (associatedContact != null && UserProvider.getCurrent().hasAllUserRights(UserRight.CONTACT_VIEW)) {
 				disease = FacadeProvider.getContactFacade().getByUuid(associatedContact.getUuid()).getDisease();
 			}
 		}
@@ -191,7 +199,6 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			Arrays.asList(true),
 			Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID, SampleDto.SPECIMEN_CONDITION),
 			true);
-		FieldHelper.setRequiredWhen(getFieldGroup(), receivedField, Arrays.asList(SampleDto.SPECIMEN_CONDITION), Arrays.asList(true));
 
 		if (disease != Disease.NEW_INFLUENZA) {
 			getField(SampleDto.SAMPLE_SOURCE).setVisible(false);
@@ -359,7 +366,10 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		OptionGroup requestedPathogenTestsField = addField(SampleDto.REQUESTED_PATHOGEN_TESTS, OptionGroup.class);
 		CssStyles.style(requestedPathogenTestsField, CssStyles.OPTIONGROUP_CHECKBOXES_HORIZONTAL);
 		requestedPathogenTestsField.setMultiSelect(true);
-		requestedPathogenTestsField.addItems((Object[]) PathogenTestType.values());
+		requestedPathogenTestsField.addItems(
+				Arrays.stream(PathogenTestType.values())
+						.filter( c -> fieldVisibilityCheckers.isVisible(PathogenTestType.class, c.name()))
+						.collect(Collectors.toList()));
 		requestedPathogenTestsField.removeItem(PathogenTestType.OTHER);
 		requestedPathogenTestsField.setCaption(null);
 

@@ -8,10 +8,10 @@ import javax.naming.NamingException;
 import javax.validation.Valid;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 @Remote
 public interface LabMessageFacade {
@@ -43,6 +43,8 @@ public interface LabMessageFacade {
 	long count(LabMessageCriteria criteria);
 
 	List<LabMessageIndexDto> getIndexList(LabMessageCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	Page<LabMessageIndexDto> getIndexPage(LabMessageCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	/**
 	 * Fetches external lab messages from the connected external system and saves them in the database.

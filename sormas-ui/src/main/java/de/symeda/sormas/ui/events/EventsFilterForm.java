@@ -591,9 +591,10 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 	private void updateResponsibleUserFieldItems(DistrictReferenceDto district, RegionReferenceDto region) {
 		final List<UserReferenceDto> items = new ArrayList<>();
-		items.addAll(FacadeProvider.getUserFacade().getUsersByRegionAndRights(region, UserRight.EVENT_RESPONSIBLE));
+		Disease selectedDisease = (Disease) getField(EventIndexDto.DISEASE).getValue();
+		items.addAll(FacadeProvider.getUserFacade().getUsersByRegionAndRights(region, selectedDisease, UserRight.EVENT_RESPONSIBLE));
 		if (district != null) {
-			items.addAll(FacadeProvider.getUserFacade().getUserRefsByDistrict(district, UserRight.EVENT_RESPONSIBLE));
+			items.addAll(FacadeProvider.getUserFacade().getUserRefsByDistrict(district, selectedDisease, UserRight.EVENT_RESPONSIBLE));
 		}
 		FieldHelper.updateItems((ComboBox) getField(EventCriteria.RESPONSIBLE_USER), items);
 	}

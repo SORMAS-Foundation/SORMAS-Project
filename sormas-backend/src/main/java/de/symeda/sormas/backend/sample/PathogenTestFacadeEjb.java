@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.backend.sample;
 
 import java.util.ArrayList;
@@ -23,7 +21,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -39,6 +36,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.DeletionDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +57,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
@@ -191,7 +190,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		Root<PathogenTest> pathogenTestRoot = cq.from(PathogenTest.class);
 		Join<PathogenTest, Sample> sampleJoin = pathogenTestRoot.join(PathogenTest.SAMPLE);
 
-		Predicate filter = cb.equal(sampleJoin.get(Sample.UUID), sampleUuid);
+		Predicate filter = cb.and(cb.equal(sampleJoin.get(Sample.UUID), sampleUuid), cb.isFalse(pathogenTestRoot.get(CoreAdo.DELETED)));
 		cq.where(filter);
 		cq.orderBy(cb.desc(pathogenTestRoot.get(PathogenTest.CREATION_DATE)));
 
@@ -276,7 +275,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	}
 
 	@Override
-	public void deletePathogenTest(String pathogenTestUuid) {
+	public void deletePathogenTest(String pathogenTestUuid, DeletionDetails deletionDetails) {
 		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
 			.contains(UserRight.PATHOGEN_TEST_DELETE)) {
@@ -284,7 +283,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		}
 
 		PathogenTest pathogenTest = pathogenTestService.getByUuid(pathogenTestUuid);
-		pathogenTestService.delete(pathogenTest);
+		pathogenTestService.delete(pathogenTest, deletionDetails);
 
 		handleAssotiatedObjectChanges(pathogenTest, true);
 	}
@@ -353,7 +352,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 			.collect(
 				Collectors.toMap(
 					s -> s.getSample().getUuid(),
-					(s) -> s,
+					s -> s,
 					(s1, s2) -> {
 
 						// keep the positive one
@@ -404,6 +403,10 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setExternalId(source.getExternalId());
 		target.setExternalOrderId(source.getExternalOrderId());
 		target.setPreliminary(source.getPreliminary());
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
 	}
@@ -461,6 +464,10 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setExternalOrderId(source.getExternalOrderId());
 		target.setPreliminary(source.getPreliminary());
 
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -492,7 +499,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		if (eventParticipant != null) {
 			disease = eventParticipant.getEvent().getDisease();
 			notificationTypes.add(NotificationType.EVENT_PARTICIPANT_LAB_RESULT_ARRIVED);
-			regions.add(eventParticipant.getEvent().getEventLocation().getRegion());
+			regions.add(eventParticipant.getRegion());
 
 			if (disease == null) {
 				sendMessageOnPathogenTestChanged(

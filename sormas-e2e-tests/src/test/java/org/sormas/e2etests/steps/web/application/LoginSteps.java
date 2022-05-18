@@ -26,7 +26,7 @@ import cucumber.api.java8.En;
 import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.enums.UserRoles;
 import org.sormas.e2etests.envconfig.dto.EnvUser;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.LoginPage;
 import org.sormas.e2etests.pages.application.NavBarPage;
@@ -36,7 +36,7 @@ import org.sormas.e2etests.pages.application.dashboard.Surveillance.Surveillance
 public class LoginSteps implements En {
 
   @Inject
-  public LoginSteps(WebDriverHelpers webDriverHelpers, EnvironmentManager environmentManager) {
+  public LoginSteps(WebDriverHelpers webDriverHelpers, RunningConfiguration runningConfiguration) {
 
     Given(
         "^I am logged in with name ([^\"]*)$",
@@ -48,7 +48,7 @@ public class LoginSteps implements En {
     Given(
         "^I navigate to SORMAS login page$",
         () -> {
-          webDriverHelpers.accessWebSite(environmentManager.getEnvironmentUrlForMarket(locale));
+          webDriverHelpers.accessWebSite(runningConfiguration.getEnvironmentUrlForMarket(locale));
         });
 
     Given(
@@ -58,10 +58,12 @@ public class LoginSteps implements En {
     And(
         "I log in with National User",
         () -> {
-          EnvUser user = environmentManager.getUserByRole(locale, UserRoles.NationalUser.getRole());
-          webDriverHelpers.accessWebSite(environmentManager.getEnvironmentUrlForMarket(locale));
+          EnvUser user =
+              runningConfiguration.getUserByRole(locale, UserRoles.NationalUser.getRole());
+          webDriverHelpers.accessWebSite(runningConfiguration.getEnvironmentUrlForMarket(locale));
           webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              LoginPage.USER_NAME_INPUT, 100);
           log.info("Filling username");
           webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, user.getUsername());
           log.info("Filling password");
@@ -70,15 +72,15 @@ public class LoginSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              SurveillanceDashboardPage.LOGOUT_BUTTON);
+              SurveillanceDashboardPage.LOGOUT_BUTTON, 100);
         });
 
     Given(
         "^I log in as a ([^\"]*)$",
         (String userRole) -> {
-          webDriverHelpers.accessWebSite(environmentManager.getEnvironmentUrlForMarket(locale));
+          webDriverHelpers.accessWebSite(runningConfiguration.getEnvironmentUrlForMarket(locale));
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
-          EnvUser user = environmentManager.getUserByRole(locale, userRole);
+          EnvUser user = runningConfiguration.getUserByRole(locale, userRole);
           log.info("Filling username");
           webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, user.getUsername());
           log.info("Filling password");

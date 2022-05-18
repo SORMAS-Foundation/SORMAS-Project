@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.immunization;
 
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -57,7 +58,7 @@ public class ReceivedImmunizationProcessor
 	}
 
 	@Override
-	public void handleReceivedData(SormasToSormasImmunizationDto sharedData, Immunization existingData) {
+	public void handleReceivedData(SormasToSormasImmunizationDto sharedData, Immunization existingData, SormasToSormasOriginInfoDto originInfo) {
 		updateReportingUser(sharedData.getEntity(), existingData);
 		handleIgnoredProperties(sharedData.getEntity(), immunizationFacadeEjb.toDto(existingData));
 

@@ -102,4 +102,6 @@ public interface PersonFacade {
 	void mergePerson(PersonDto leadPerson, PersonDto otherPerson);
 
 	PersonDto getByContext(PersonContext context, String contextUuid);
+
+    boolean isEnrolledInExternalJournal(String uuid);
 }

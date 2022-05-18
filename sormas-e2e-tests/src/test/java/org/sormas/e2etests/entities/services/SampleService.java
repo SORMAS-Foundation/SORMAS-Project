@@ -80,6 +80,21 @@ public class SampleService {
         .build();
   }
 
+  public Sample buildGeneratedSampleTestResultForCovid() {
+    long currentTimeMillis = System.currentTimeMillis();
+    return Sample.builder()
+        .sampleTestResults("Positive")
+        .reportDate(LocalDate.now().minusDays(10))
+        .typeOfTest("PCR / RT-PCR")
+        .testedDisease(DiseasesValues.CORONAVIRUS.getDiseaseCaption())
+        .dateOfResult(LocalDate.now().minusDays(10))
+        .timeOfResult(LocalTime.of(11, 30))
+        .laboratory(LaboratoryValues.OTHER_FACILITY.getCaptionEnglish())
+        .resultVerifiedByLabSupervisor("YES")
+        .testResultsComment(currentTimeMillis + "Comment on new Pathogen requests or received")
+        .build();
+  }
+
   public Sample buildEditSample() {
     long currentTimeMillis = System.currentTimeMillis();
     return Sample.builder()
@@ -164,6 +179,18 @@ public class SampleService {
         .sampleTestResults("Positiv")
         .resultVerifiedByLabSupervisor("NEIN")
         .testResultsComment("Comment on Edit Pathogen requests or received " + currentTimeMillis)
+        .build();
+  }
+
+  public Sample buildGeneratedPositiveSampleDE() {
+    return Sample.builder()
+        .purposeOfTheSample("INTERNER /IN-HOUSE TEST")
+        .dateOfCollection(LocalDate.now().minusDays(10))
+        .laboratory("Labor")
+        .testedDisease("COVID-19")
+        .sampleTestResults("Positiv")
+        .resultVerifiedByLabSupervisor("JA")
+        .sampleType("Nasen-Abstrich")
         .build();
   }
 }

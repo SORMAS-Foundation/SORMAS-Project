@@ -15,9 +15,9 @@ public class ImmunizationDirectorySteps implements En {
     When(
         "^I click on the NEW IMMUNIZATION button$",
         () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(70);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              ADD_NEW_IMMUNIZATION_BUTTON);
+              ADD_NEW_IMMUNIZATION_BUTTON, 30);
           webDriverHelpers.clickOnWebElementBySelector(ADD_NEW_IMMUNIZATION_BUTTON);
         });
 

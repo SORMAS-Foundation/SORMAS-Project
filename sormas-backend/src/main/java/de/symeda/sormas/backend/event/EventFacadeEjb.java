@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,6 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
-
-import static de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -36,6 +34,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -55,6 +55,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.DeletionDetails;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -110,6 +111,7 @@ import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLoca
 import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
@@ -123,9 +125,9 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
-import de.symeda.sormas.utils.EventJoins;
 
 @Stateless(name = "EventFacade")
+@RolesAllowed(UserRight._EVENT_VIEW)
 public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, EventIndexDto, EventReferenceDto, EventService, EventCriteria>
 	implements EventFacade {
 
@@ -155,6 +157,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
 	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
+	@EJB
+	private EventParticipantService eventParticipantService;
 	@Resource
 	private ManagedScheduledExecutorService executorService;
 
@@ -211,6 +215,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		return service.getDeletedUuidsSince(since);
 	}
 
+	@PermitAll
 	public Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria) {
 
 		return service.getEventCountByDisease(eventCriteria);
@@ -234,10 +239,16 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._EVENT_CREATE,
+		UserRight._EVENT_EDIT })
 	public EventDto save(@Valid @NotNull EventDto dto) {
 		return save(dto, true, true);
 	}
 
+	@RolesAllowed({
+		UserRight._EVENT_CREATE,
+		UserRight._EVENT_EDIT })
 	public EventDto save(@NotNull EventDto dto, boolean checkChangeDate, boolean internal) {
 
 		Event existingEvent = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
@@ -263,12 +274,14 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		return convertToDto(event, pseudonymizer);
 	}
 
+	@PermitAll
 	public void onEventChange(EventDto event, boolean syncShares) {
 		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
 			syncSharesAsync(new ShareTreeCriteria(event.getUuid()));
 		}
 	}
 
+	@RolesAllowed(UserRight._EVENT_EDIT)
 	public void syncSharesAsync(ShareTreeCriteria criteria) {
 		executorService.schedule(() -> {
 			sormasToSormasEventFacade.syncShares(criteria);
@@ -276,36 +289,31 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
-	public void delete(String eventUuid) throws ExternalSurveillanceToolException {
-		if (!userService.hasRight(UserRight.EVENT_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete events.");
-		}
-
+	@RolesAllowed(UserRight._EVENT_DELETE)
+	public void delete(String eventUuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
 		Event event = service.getByUuid(eventUuid);
-		deleteEvent(event);
+		deleteEvent(event, deletionDetails);
 	}
 
-	private void deleteEvent(Event event) throws ExternalSurveillanceToolException {
+	private void deleteEvent(Event event, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
 		if (event.getEventStatus() == EventStatus.CLUSTER
 			&& externalSurveillanceToolFacade.isFeatureEnabled()
 			&& externalShareInfoService.isEventShared(event.getId())) {
 			externalSurveillanceToolFacade.deleteEvents(Collections.singletonList(toDto(event)));
 		}
 
-		service.delete(event);
+		service.delete(event, deletionDetails);
 	}
 
-	public List<String> deleteEvents(List<String> eventUuids) {
-		if (!userService.hasRight(UserRight.EVENT_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete events.");
-		}
+	@RolesAllowed(UserRight._EVENT_DELETE)
+	public List<String> deleteEvents(List<String> eventUuids, DeletionDetails deletionDetails) {
 		List<String> deletedEventUuids = new ArrayList<>();
 		List<Event> eventsToBeDeleted = service.getByUuids(eventUuids);
 		if (eventsToBeDeleted != null) {
 			eventsToBeDeleted.forEach(eventToBeDeleted -> {
 				if (!eventToBeDeleted.isDeleted()) {
 					try {
-						deleteEvent(eventToBeDeleted);
+						deleteEvent(eventToBeDeleted, deletionDetails);
 						deletedEventUuids.add(eventToBeDeleted.getUuid());
 					} catch (ExternalSurveillanceToolException e) {
 						logger.error("The event with uuid:" + eventToBeDeleted.getUuid() + "could not be deleted");
@@ -322,15 +330,18 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Event> event = cq.from(Event.class);
+		EventQueryContext queryContext = new EventQueryContext(cb, cq, event);
 
 		Predicate filter = null;
 
 		if (eventCriteria != null) {
 			if (eventCriteria.getUserFilterIncluded()) {
-				filter = service.createUserFilter(cb, cq, event);
+				EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
+				eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
+				filter = service.createUserFilter(queryContext, eventUserFilterCriteria);
 			}
 
-			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
+			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, queryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -351,7 +362,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		EventQueryContext eventQueryContext = new EventQueryContext(cb, cq, event);
 
-		EventJoins<Event> eventJoins = (EventJoins<Event>) eventQueryContext.getJoins();
+		EventJoins eventJoins = eventQueryContext.getJoins();
 
 		Join<Event, Location> location = eventJoins.getLocation();
 		Join<Location, Region> region = eventJoins.getRegion();
@@ -411,7 +422,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			if (eventCriteria.getUserFilterIncluded()) {
 				EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
 				eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
-				filter = service.createUserFilter(cb, cq, event, eventUserFilterCriteria);
+				filter = service.createUserFilter(eventQueryContext, eventUserFilterCriteria);
 			}
 
 			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, eventQueryContext);
@@ -644,12 +655,13 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
+	@RolesAllowed(UserRight._EVENT_EXPORT)
 	public List<EventExportDto> getExportList(EventCriteria eventCriteria, Collection<String> selectedRows, Integer first, Integer max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventExportDto> cq = cb.createQuery(EventExportDto.class);
 		Root<Event> event = cq.from(Event.class);
 		EventQueryContext eventQueryContext = new EventQueryContext(cb, cq, event);
-		EventJoins<Event> eventJoins = (EventJoins<Event>) eventQueryContext.getJoins();
+		EventJoins eventJoins = eventQueryContext.getJoins();
 		Join<Event, Location> location = eventJoins.getLocation();
 		Join<Location, Region> region = eventJoins.getRegion();
 		Join<Location, District> district = eventJoins.getDistrict();
@@ -716,7 +728,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		cq.distinct(true);
 
-		Predicate filter = service.createUserFilter(cb, cq, event);
+		Predicate filter = service.createUserFilter(eventQueryContext);
 
 		if (eventCriteria != null) {
 			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, eventQueryContext);
@@ -874,6 +886,30 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
+	@RolesAllowed(UserRight._EVENT_ARCHIVE)
+	public void archive(String eventUuid, Date endOfProcessingDate) {
+		super.archive(eventUuid, endOfProcessingDate);
+		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(Collections.singletonList(eventUuid));
+		eventParticipantService.archive(eventParticipantList);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._EVENT_ARCHIVE)
+	public void archive(List<String> eventUuids) {
+		super.archive(eventUuids);
+		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(eventUuids);
+		eventParticipantService.archive(eventParticipantList);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._EVENT_ARCHIVE)
+	public void dearchive(List<String> eventUuids, String dearchiveReason) {
+		super.dearchive(eventUuids, dearchiveReason);
+		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(eventUuids);
+		eventParticipantService.dearchive(eventParticipantList, dearchiveReason);
+	}
+
+	@Override
 	public Set<String> getAllSubordinateEventUuids(String eventUuid) {
 
 		Set<String> uuids = new HashSet<>();
@@ -986,6 +1022,10 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	public EventDto toDto(Event source) {
+		return toEventDto(source);
+	}
+
+	public static EventDto toEventDto(Event source) {
 
 		if (source == null) {
 			return null;
@@ -1058,6 +1098,10 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
 		target.setEventIdentificationSource(source.getEventIdentificationSource());
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
 	}
@@ -1163,6 +1207,10 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
 		}
 
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -1174,11 +1222,13 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	 */
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@RolesAllowed(UserRight._SYSTEM)
 	public void archiveAllArchivableEvents(int daysAfterEventGetsArchived) {
 
 		archiveAllArchivableEvents(daysAfterEventGetsArchived, LocalDate.now());
 	}
 
+	@RolesAllowed(UserRight._SYSTEM)
 	void archiveAllArchivableEvents(int daysAfterEventGetsArchived, @NotNull LocalDate referenceDate) {
 
 		LocalDate notChangedSince = referenceDate.minusDays(daysAfterEventGetsArchived);
@@ -1188,7 +1238,10 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		Root<Event> from = cq.from(Event.class);
 
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
-		cq.where(cb.equal(from.get(Event.ARCHIVED), false), cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.where(
+			cb.equal(from.get(Event.ARCHIVED), false),
+			cb.equal(from.get(Event.DELETED), false),
+			cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
 		cq.select(from.get(Event.UUID)).distinct(true);
 		List<String> eventUuids = em.createQuery(cq).getResultList();
 
@@ -1231,29 +1284,26 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
+	@RolesAllowed(UserRight._EVENT_EDIT)
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		service.updateExternalData(externalData);
 	}
 
 	@Override
 	public List<String> getSubordinateEventUuids(List<String> uuids) {
-		if (uuids.isEmpty()) {
-			return Collections.emptyList();
-		}
 
 		List<String> subordinateEventUuids = new ArrayList<>();
 		IterableHelper.executeBatched(uuids, ModelConstants.PARAMETER_LIMIT, (batchedUuids) -> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<String> cq = cb.createQuery(String.class);
 			Root<Event> from = cq.from(Event.class);
-
-			EventJoins<Event> eventJoins = new EventJoins<>(from);
+			EventQueryContext queryContext = new EventQueryContext(cb, cq, from);
 
 			Predicate filters = CriteriaBuilderHelper.and(
 				cb,
-				service.createUserFilter(cb, cq, from),
+				service.createUserFilter(queryContext),
 				service.createActiveEventsFilter(cb, from),
-				eventJoins.getSuperordinateEvent().get(Event.UUID).in(batchedUuids));
+				queryContext.getJoins().getSuperordinateEvent().get(Event.UUID).in(batchedUuids));
 
 			cq.where(filters);
 			cq.select(from.get(Event.UUID));
@@ -1262,16 +1312,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		});
 
 		return subordinateEventUuids;
-	}
-
-	private User getRandomDistrictEventResponsible(District district) {
-
-		return userService.getRandomDistrictUser(district, UserRight.EVENT_RESPONSIBLE);
-	}
-
-	private User getRandomRegionEventResponsible(Region region) {
-
-		return userService.getRandomRegionUser(region, UserRight.EVENT_RESPONSIBLE);
 	}
 
 	@Override
@@ -1285,6 +1325,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
+	@RolesAllowed(UserRight._EVENT_EDIT)
 	public int saveBulkEvents(
 		List<String> eventUuidList,
 		EventDto updatedTempEvent,

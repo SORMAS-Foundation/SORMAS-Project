@@ -119,6 +119,9 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	private Long surveillanceToolShareCount;
 	private ExternalShareStatus surveillanceToolStatus;
 
+	public EventIndexDto() {
+	}
+
 	public EventIndexDto(
 		Long id,
 		String uuid,

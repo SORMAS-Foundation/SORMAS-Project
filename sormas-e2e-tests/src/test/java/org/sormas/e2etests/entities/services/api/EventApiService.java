@@ -20,6 +20,7 @@ package org.sormas.e2etests.entities.services.api;
 
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
+import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.util.Date;
 import java.util.UUID;
@@ -36,24 +37,36 @@ import org.sormas.e2etests.enums.EventManagementStatusValues;
 import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.SourceTypeValues;
 import org.sormas.e2etests.enums.UserRoles;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
+import org.sormas.e2etests.helpers.RestAssuredClient;
+import org.sormas.e2etests.helpers.environmentdata.manager.EnvironmentManager;
 
 public class EventApiService {
-  EnvironmentManager environmentManager;
+  RunningConfiguration runningConfiguration;
+  private final Faker faker;
+  private RestAssuredClient restAssuredClient;
 
   @Inject
-  public EventApiService(EnvironmentManager environmentManager) {
-    this.environmentManager = environmentManager;
+  public EventApiService(
+      RunningConfiguration runningConfiguration, Faker faker, RestAssuredClient restAssuredClient) {
+    this.restAssuredClient = restAssuredClient;
+    this.runningConfiguration = runningConfiguration;
+    this.faker = faker;
   }
 
+  //  public EventApiService(Faker faker) {
+  //    this.faker = faker;
+  //  }
+
   public Event buildGeneratedEvent() {
+    EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
     return Event.builder()
         .uuid(UUID.randomUUID().toString())
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
         .reportingUser(
             ReportingUser.builder()
                 .uuid(
-                    environmentManager
+                    runningConfiguration
                         .getUserByRole(locale, UserRoles.RestUser.getRole())
                         .getUuid())
                 .build())
@@ -61,6 +74,7 @@ public class EventApiService {
         .srcType(SourceTypeValues.getRandomSourceTypeName())
         .eventInvestigationStatus("PENDING")
         .eventTitle(String.valueOf(System.currentTimeMillis()))
+        .eventDesc(faker.chuckNorris().fact())
         .startDate(new Date())
         .reportDateTime(new Date())
         .riskLevel("LOW")
@@ -71,15 +85,21 @@ public class EventApiService {
                 .uuid(UUID.randomUUID().toString())
                 .community(
                     Community.builder()
-                        .uuid(CommunityValues.VoreingestellteGemeinde.getUuid())
+                        .uuid(
+                            environmentManager.getCommunityUUID(
+                                CommunityValues.VoreingestellteGemeinde.getName()))
                         .build())
                 .region(
                     Region.builder()
-                        .uuid(RegionsValues.VoreingestellteBundeslander.getUuid())
+                        .uuid(
+                            environmentManager.getRegionUUID(
+                                RegionsValues.VoreingestellteBundeslander.getName()))
                         .build())
                 .district(
                     District.builder()
-                        .uuid(DistrictsValues.VoreingestellterLandkreis.getUuid())
+                        .uuid(
+                            environmentManager.getDistrictUUID(
+                                DistrictsValues.VoreingestellterLandkreis.getName()))
                         .build())
                 .build())
         .build();
