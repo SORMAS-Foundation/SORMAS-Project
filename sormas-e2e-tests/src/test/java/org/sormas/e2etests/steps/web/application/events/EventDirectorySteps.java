@@ -899,7 +899,6 @@ public class EventDirectorySteps implements En {
     Then(
         "I check that Date of EVENT displays event start date and event end date in table on event directory",
         () -> {
-          TimeUnit.SECONDS.sleep(3); // waiting for table loading
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_GRID_UUID_RESULT);
           String dateOfEventfromTableGrid =
               webDriverHelpers.getTextFromWebElement(FIRST_GRID_DATE_OF_EVENT);
