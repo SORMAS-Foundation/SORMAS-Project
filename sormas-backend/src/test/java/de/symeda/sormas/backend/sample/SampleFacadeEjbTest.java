@@ -352,7 +352,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
 		assertNotNull(getSampleTestFacade().getByUuid(sampleTest.getUuid()));
 
-		getSampleFacade().deleteSample(sample.toReference(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
+		getSampleFacade().deleteSample(sample.toReference(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		// Sample and pathogen test should be marked as deleted
 		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
@@ -398,7 +398,9 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getSampleTestFacade().getByUuid(firstSamplePathogenTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(firstSampleAdditionalTest.getUuid()));
 
-		getSampleFacade().deleteAllSamples(Arrays.asList(firstSample.getUuid(), secondSample.getUuid()));
+		getSampleFacade().deleteAllSamples(
+			Arrays.asList(firstSample.getUuid(), secondSample.getUuid()),
+			new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		// Sample and pathogen test should be marked as deleted, additional test should be deleted
 		List<String> sampleUuids = getSampleFacade().getDeletedUuidsSince(since);
@@ -459,7 +461,9 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getAdditionalTestFacade().getByUuid(secondSampleAdditionalTest.getUuid()));
 		assertNotNull(getAdditionalTestFacade().getByUuid(thirdSampleAdditionalTest.getUuid()));
 
-		getSampleFacade().deleteAllSamples(Arrays.asList(thirdSample.getUuid(), forthSample.getUuid()));
+		getSampleFacade().deleteAllSamples(
+			Arrays.asList(thirdSample.getUuid(), forthSample.getUuid()),
+			new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		// Sample and pathogen test should be marked as deleted, additional tests should be deleted
 		List<String> sampleUuids = getSampleFacade().getDeletedUuidsSince(since);
@@ -652,7 +656,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		MatcherAssert.assertThat(result, hasSize(2));
 		MatcherAssert.assertThat(result, containsInAnyOrder(equalTo(sample), equalTo(sample2)));
 
-		getSampleFacade().deleteSample(sample2.toReference(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
+		getSampleFacade().deleteSample(sample2.toReference(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		result = getSampleFacade().getByLabSampleId(labSampleId);
 		MatcherAssert.assertThat(result, hasSize(1));

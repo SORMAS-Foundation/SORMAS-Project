@@ -137,7 +137,7 @@ public class EventResource extends EntityDtoResource {
 	@POST
 	@Path("/delete")
 	public List<String> delete(List<String> uuids) {
-		return FacadeProvider.getEventFacade().deleteEvents(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, null));
+		return FacadeProvider.getEventFacade().deleteEvents(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "not yet implemented"));
 	}
 
 	@POST

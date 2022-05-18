@@ -44,7 +44,7 @@ public enum CoreEntityArchiveMessages {
 		Strings.confirmationDearchiveImmunization,
 		Strings.messageImmunizationDearchived),
 
-	TRAVEL_ENTRY(Strings.entityTravel,
+	TRAVEL_ENTRY(Strings.entityTravelEntry,
 		Strings.headingArchiveTravelEntry,
 		Strings.confirmationArchiveTravelEntry,
 		Strings.messageTravelEntryArchived,

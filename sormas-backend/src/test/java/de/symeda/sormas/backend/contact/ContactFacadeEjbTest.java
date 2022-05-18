@@ -338,7 +338,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(ContactStatus.CONVERTED, contact.getContactStatus());
 		assertEquals(FollowUpStatus.CANCELED, contact.getFollowUpStatus());
 
-		getCaseFacade().delete(caze.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
+		getCaseFacade().delete(caze.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 		List<ContactDto> contactDtos = getContactFacade().getByPersonUuids(Arrays.asList(contactPerson.getUuid()));
 		assertEquals(1, contactDtos.size());
 		contact = contactDtos.get(0);
@@ -498,7 +498,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getVisitFacade().getVisitByUuid(visit.getUuid()));
 		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
 
-		getContactFacade().delete(contact.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
+		getContactFacade().delete(contact.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		// Deleted flag should be set for contact; Task should be deleted
 		assertTrue(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));

@@ -56,7 +56,7 @@ public class TravelEntryResource extends EntityDtoResource {
 	@DELETE
 	@Path("/{uuid}")
 	public Response delete(@PathParam("uuid") String uuid) {
-		FacadeProvider.getTravelEntryFacade().delete(uuid, new DeletionDetails(DeletionReason.OTHER_REASON, null));
+		FacadeProvider.getTravelEntryFacade().delete(uuid, new DeletionDetails(DeletionReason.OTHER_REASON, "not yet implemented"));
 		return Response.ok("OK").build();
 	}
 

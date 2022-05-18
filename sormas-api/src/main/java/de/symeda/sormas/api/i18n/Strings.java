@@ -247,7 +247,7 @@ public interface Strings {
 	String entityStatistics = "entityStatistics";
 	String entityTask = "entityTask";
 	String entityTasks = "entityTasks";
-	String entityTravel = "entityTravel";
+	String entityTravelEntry = "entityTravelEntry";
 	String entityTravelEntries = "entityTravelEntries";
 	String entityTreatment = "entityTreatment";
 	String entityTreatments = "entityTreatments";

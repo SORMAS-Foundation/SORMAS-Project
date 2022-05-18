@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.common.DeletionReason;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -27,6 +26,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
@@ -265,12 +265,12 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 		creator.createContact(user.toReference(), person.toReference());
 		creator.createContact(user.toReference(), person5.toReference());
 		ContactDto deletedContact = creator.createContact(user.toReference(), person2.toReference());
-		getContactFacade().delete(deletedContact.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
+		getContactFacade().delete(deletedContact.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 		// cases
 		creator.createCase(user.toReference(), person.toReference(), rdcf);
 		creator.createCase(user.toReference(), person3.toReference(), rdcf);
 		CaseDataDto deletedCase = creator.createCase(user.toReference(), person4.toReference(), rdcf);
-		getCaseFacade().delete(deletedCase.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
+		getCaseFacade().delete(deletedCase.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		// Attached to case and contact
 		creator.createVisit(person.toReference());
@@ -301,11 +301,11 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 		creator.createContact(user.toReference(), person.toReference());
 		creator.createContact(user.toReference(), person3.toReference());
 		ContactDto deletedContact = creator.createContact(user.toReference(), person2.toReference());
-		getContactFacade().delete(deletedContact.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
+		getContactFacade().delete(deletedContact.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 		creator.createCase(user.toReference(), person3.toReference(), rdcf);
 		creator.createCase(user.toReference(), person4.toReference(), rdcf);
 		CaseDataDto deletedCaseDto = creator.createCase(user.toReference(), person5.toReference(), rdcf);
-		getCaseFacade().delete(deletedCaseDto.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
+		getCaseFacade().delete(deletedCaseDto.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		creator.createVisit(person.toReference());
 		creator.createVisit(person3.toReference());

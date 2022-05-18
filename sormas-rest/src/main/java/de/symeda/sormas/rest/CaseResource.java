@@ -45,6 +45,8 @@ import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CasePersonDto;
 import de.symeda.sormas.api.caze.CoreAndPersonDto;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
@@ -206,7 +208,7 @@ public class CaseResource extends EntityDtoResource {
 	@POST
 	@Path("/delete")
 	public List<String> delete(List<String> uuids) {
-		return FacadeProvider.getCaseFacade().deleteCases(uuids);
+		return FacadeProvider.getCaseFacade().deleteCases(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "not yet implemented"));
 	}
 
 }
