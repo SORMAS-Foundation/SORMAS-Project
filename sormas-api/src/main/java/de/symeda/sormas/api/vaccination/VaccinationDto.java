@@ -39,6 +39,7 @@ import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
+@DependingOnFeatureType(featureType = FeatureType.IMMUNIZATION_MANAGEMENT)
 public class VaccinationDto extends PseudonymizableDto {
 
 	public static final String I18N_PREFIX = "Vaccination";

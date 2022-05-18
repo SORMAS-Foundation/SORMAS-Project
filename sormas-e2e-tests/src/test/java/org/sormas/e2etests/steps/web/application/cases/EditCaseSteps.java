@@ -149,6 +149,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.TRIMESTER
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UPLOAD_DOCUMENT_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTACT_TO_BODY_FLUIDS_OPTONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTACT_TO_CASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTINENT_COMBOBOX;
@@ -267,6 +268,14 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.fillInWebElement(
               DATE_OF_OUTCOME_INPUT, DATE_FORMATTER.format(LocalDate.now().minusDays(1)));
+        });
+
+    When(
+        "I check that the value selected from Disease combobox is {string} on Edit Case page",
+        (String disease) -> {
+          String chosenDisease = webDriverHelpers.getValueFromCombobox(DISEASE_COMBOBOX);
+          softly.assertEquals(chosenDisease, disease, "The disease is other then expected");
+          softly.assertAll();
         });
 
     And(
@@ -436,6 +445,26 @@ public class EditCaseSteps implements En {
                   "responsibleCommunity",
                   "placeOfStay",
                   "placeDescription",
+                  "firstName",
+                  "lastName",
+                  "dateOfBirth"));
+        });
+    When(
+        "I check the created data for duplicated case is correctly displayed on Edit case page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
+          aCase = collectCasePersonData();
+          createdCase = CreateNewCaseSteps.oneCase;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              aCase,
+              createdCase,
+              List.of(
+                  "dateOfReport",
+                  "disease",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "placeOfStay",
                   "firstName",
                   "lastName",
                   "dateOfBirth"));
@@ -718,6 +747,22 @@ public class EditCaseSteps implements En {
           editedCase = editedCase.toBuilder().facility(facility).build();
         });
 
+    When(
+        "I set Vaccination status to {string} on Edit Case page",
+        (String vaccination) -> {
+          webDriverHelpers.selectFromCombobox(
+              VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX, vaccination);
+        });
+    When(
+        "I check if Vaccination Status is set to {string} on Edit Case page",
+        (String expected) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
+          String vaccinationStatus =
+              webDriverHelpers.getValueFromWebElement(VACCINATION_STATUS_INPUT);
+          softly.assertEquals(
+              expected, vaccinationStatus, "Vaccination status is different than expected");
+          softly.assertAll();
+        });
     When(
         "I set Facility to {string} from New Entry popup",
         (String facility) -> {
@@ -1254,6 +1299,7 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_DATA_TAB);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          TimeUnit.SECONDS.sleep(6);
         });
     When(
         "I navigate to Contacts tab in Edit case page",
@@ -1355,6 +1401,14 @@ public class EditCaseSteps implements En {
           softly.assertAll();
         });
 
+    And(
+        "^I select \"([^\"]*)\" as Outcome of Case in Edit case page$",
+        (String outcomeStatus) -> {
+          webDriverHelpers.clickWebElementByText(
+              OUTCOME_OF_CASE_OPTIONS, CaseOutcome.getValueFor(outcomeStatus).toUpperCase());
+          TimeUnit.SECONDS.sleep(1);
+        });
+
     When(
         "I set pregnancy to ([^\"]*)",
         (String option) -> {
@@ -1385,6 +1439,22 @@ public class EditCaseSteps implements En {
               "End of processing date is invalid");
           softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_RELATED_CONTACTS_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(EditContactPage.DELETE_POPUP_YES_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // wait for response after confirm
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I check the end of processing date in the archive popup and not select Archive contacts checkbox",
+        () -> {
+          String endOfProcessingDate;
+          endOfProcessingDate =
+              webDriverHelpers.getValueFromWebElement(END_OF_PROCESSING_DATE_POPUP_INPUT);
+          softly.assertEquals(
+              endOfProcessingDate,
+              LocalDate.now().format(DATE_FORMATTER),
+              "End of processing date is invalid");
+          softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(EditContactPage.DELETE_POPUP_YES_BUTTON);
           TimeUnit.SECONDS.sleep(3); // wait for response after confirm
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);

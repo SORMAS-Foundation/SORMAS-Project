@@ -118,7 +118,7 @@ public class TherapyController {
 			@Override
 			public void accept(Boolean option) {
 				List<String> treatmentUuids = treatmentIndexDtos.stream().map(t->t.getUuid()).collect(Collectors.toList());
-				if (option) {
+				if (Boolean.TRUE.equals(option)) {
 					//delete just prescription and leave the treatments standalone
 					FacadeProvider.getTreatmentFacade().unlinkPrescriptionFromTreatments(treatmentUuids);
 
@@ -138,8 +138,9 @@ public class TherapyController {
 				new Label(I18nProperties.getString(Strings.confirmationDeletePrescriptionWithTreatment)),
 				I18nProperties.getCaption(Captions.prescriptionAlone),
 				I18nProperties.getCaption(Captions.prescriptionWithTreatment),
-				500,
-				resultConsumer);
+				null,
+				resultConsumer,
+				true);
 	}
 
 	public void openPrescriptionEditForm(PrescriptionIndexDto prescriptionIndex, Runnable callback, boolean readOnly) {

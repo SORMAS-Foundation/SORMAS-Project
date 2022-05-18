@@ -32,6 +32,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_M
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_PARTICIPANTS_TAB;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_ARCHIVED_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_RESULT_IN_EVENT_PARTICIPANT_TABLE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
@@ -95,6 +96,8 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LI
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.MORE_BUTTON_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.NEW_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESET_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESPONSIBLE_USER_INFO_ICON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESPONSIBLE_USER_INFO_POPUP_TEXT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SAVE_BUTTON_IN_LINK_FORM;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SEARCH_EVENT_BY_FREE_TEXT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SEARCH_EVENT_BY_FREE_TEXT_INPUT;
@@ -196,7 +199,24 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.fillInWebElement(
               EVENT_GROUP_INPUT, dataOperations.getPartialUuidFromAssociatedLink(eventGroupId));
         });
-
+    When(
+        "I check that Responsible User Info icon is visible on Event Directory Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(RESPONSIBLE_USER_INFO_ICON);
+        });
+    When(
+        "I check the displayed message is correct after hover to Responsible User Info icon",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(RESPONSIBLE_USER_INFO_ICON);
+          webDriverHelpers.hoverToElement(RESPONSIBLE_USER_INFO_ICON);
+          String displayedText =
+              webDriverHelpers.getTextFromWebElement(RESPONSIBLE_USER_INFO_POPUP_TEXT);
+          softly.assertEquals(
+              "The responsible user filter requires a region to be selected in the region filter.",
+              displayedText,
+              "Message is incorrect");
+          softly.assertAll();
+        });
     When(
         "I click checkbox to choose all Event results on Event Directory Page",
         () -> {
@@ -714,6 +734,18 @@ public class EventDirectorySteps implements En {
         });
 
     When(
+        "I search for specific event by uuid in event directory",
+        () -> {
+          final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SEARCH_EVENT_BY_FREE_TEXT_INPUT, 20);
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUuid);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+          TimeUnit.SECONDS.sleep(2); // wait for filter
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+        });
+
+    When(
         "I click on the searched event",
         () -> {
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
@@ -742,6 +774,13 @@ public class EventDirectorySteps implements En {
         "I click on the first row from event participant",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_PARTICIPANT);
+        });
+    When(
+        "I click on the first result in table from event participant",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              FIRST_RESULT_IN_EVENT_PARTICIPANT_TABLE);
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_RESULT_IN_EVENT_PARTICIPANT_TABLE);
         });
 
     When(

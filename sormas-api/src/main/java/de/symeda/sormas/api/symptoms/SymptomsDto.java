@@ -46,10 +46,12 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.Complication;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependantOn;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountries;
@@ -62,6 +64,9 @@ import de.symeda.sormas.api.utils.SymptomGrouping;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
+@DependingOnFeatureType(featureType = {
+	FeatureType.CASE_SURVEILANCE,
+	FeatureType.CONTACT_TRACING })
 public class SymptomsDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = 4146526547904182448L;
@@ -827,13 +832,13 @@ public class SymptomsDto extends PseudonymizableDto {
 	private SymptomState kopliksSpots;
 
 	@Diseases({
-			AFP,
-			GUINEA_WORM,
-			MONKEYPOX,
-			ANTHRAX,
-			POLIO,
-			UNDEFINED,
-			OTHER })
+		AFP,
+		GUINEA_WORM,
+		MONKEYPOX,
+		ANTHRAX,
+		POLIO,
+		UNDEFINED,
+		OTHER })
 	@HideForCountries
 	@SymptomGrouping(SymptomGroup.SKIN)
 	/** Vesiculopustular rash */

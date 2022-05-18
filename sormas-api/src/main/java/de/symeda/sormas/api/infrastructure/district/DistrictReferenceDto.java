@@ -19,7 +19,9 @@ package de.symeda.sormas.api.infrastructure.district;
 
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
+import de.symeda.sormas.api.utils.FeatureIndependent;
 
+@FeatureIndependent
 public class DistrictReferenceDto extends InfrastructureDataReferenceDto implements StatisticsGroupingKey {
 
 	private static final long serialVersionUID = 8990957700033431836L;

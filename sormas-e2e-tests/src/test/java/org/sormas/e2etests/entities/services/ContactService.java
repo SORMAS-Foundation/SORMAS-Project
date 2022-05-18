@@ -85,6 +85,36 @@ public class ContactService {
         .build();
   }
 
+  public Contact buildGeneratedContactWithParametrizedPersonData(
+      String firstName, String lastName, LocalDate dateOfBirth) {
+    return Contact.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .dateOfBirth(dateOfBirth)
+        .sex(GenderValues.getRandomGender())
+        .primaryEmailAddress(
+            ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
+        .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
+        .returningTraveler("NO")
+        .reportDate(LocalDate.now())
+        .diseaseOfSourceCase("COVID-19")
+        .caseIdInExternalSystem(UUID.randomUUID().toString())
+        .dateOfFirstContact(LocalDate.now().minusDays(15))
+        .dateOfLastContact(LocalDate.now().minusDays(13))
+        .caseOrEventInformation("Automated test dummy description")
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .additionalInformationOnContactType(
+            "Automated test dummy description " + System.currentTimeMillis())
+        .typeOfContact("Touched fluid of source case")
+        .contactCategory("Low risk contact")
+        .relationshipWithCase("Work in the same environment")
+        .descriptionOfHowContactTookPlace(
+            "Automated test dummy description " + System.currentTimeMillis())
+        .build();
+  }
+
   public Contact buildGeneratedContact() {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();

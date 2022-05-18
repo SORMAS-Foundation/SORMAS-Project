@@ -28,6 +28,7 @@ import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -60,8 +61,8 @@ public class CampaignController {
 			});
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
-				campaignComponent.addDeleteListener(() -> {
-					FacadeProvider.getCampaignFacade().delete(campaign.getUuid());
+				campaignComponent.addDeleteWithReasonListener((deleteDetails) -> {
+					FacadeProvider.getCampaignFacade().delete(campaign.getUuid(),deleteDetails);
 					campaignComponent.discard();
 					SormasUI.refreshView();
 				}, I18nProperties.getString(Strings.entityCampaign));
@@ -133,8 +134,8 @@ public class CampaignController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE) && !isCreate) {
 			CampaignDto finalCampaignDto = campaignDto;
-			campaignComponent.addDeleteListener(() -> {
-				FacadeProvider.getCampaignFacade().delete(finalCampaignDto.getUuid());
+			campaignComponent.addDeleteWithReasonListener((deleteDetails) -> {
+				FacadeProvider.getCampaignFacade().delete(finalCampaignDto.getUuid(), deleteDetails);
 				UI.getCurrent().getNavigator().navigateTo(CampaignsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityCampaign));
 		}
@@ -153,6 +154,13 @@ public class CampaignController {
 				callback.run();
 			}
 		});
+
+		if (campaignDto.isDeleted()) {
+			campaignComponent.getWrappedComponent().getField(CampaignDto.DELETION_REASON).setVisible(true);
+			if (campaignComponent.getWrappedComponent().getField(CampaignDto.DELETION_REASON).getValue()== DeletionReason.OTHER_REASON){
+				campaignComponent.getWrappedComponent().getField(CampaignDto.OTHER_DELETION_REASON).setVisible(true);
+			}
+		}
 
 		return campaignComponent;
 	}
