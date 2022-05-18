@@ -6,13 +6,16 @@ import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
+@DependingOnFeatureType(featureType = FeatureType.CLINICAL_MANAGEMENT)
 public class ClinicalVisitDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -8220449896773019721L;

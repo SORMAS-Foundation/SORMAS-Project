@@ -101,7 +101,7 @@ public abstract class AbstractRelatedLabMessageHandler {
 			correctionFlow = correctionFlow.thenCompose(
 				result -> doPersonCorrection(labMessage, relatedEntities.person, mapper, correctionFlowConfirmationSupplier, result, chainHandler))
 				.thenCompose(
-					(personCorrectionResult) -> doSampleCorrection(
+					personCorrectionResult -> doSampleCorrection(
 						labMessage,
 						relatedEntities.sample,
 						mapper,
@@ -113,7 +113,7 @@ public abstract class AbstractRelatedLabMessageHandler {
 				Optional<TestReportDto> testReport = labMessage.getTestReports().stream().filter(t -> matchPathogenTest(t, p)).findFirst();
 				if (testReport.isPresent()) {
 					correctionFlow = correctionFlow.thenCompose(
-						(testCorrectionResult) -> doPathogenTestCorrection(
+						testCorrectionResult -> doPathogenTestCorrection(
 							labMessage,
 							testReport.get(),
 							p,
@@ -125,7 +125,7 @@ public abstract class AbstractRelatedLabMessageHandler {
 			}
 
 			for (TestReportDto r : relatedEntities.unmatchedTestReports) {
-				correctionFlow = correctionFlow.thenCompose((result) -> {
+				correctionFlow = correctionFlow.thenCompose(result -> {
 					if (result == HandlerResultStatus.HANDLED) {
 						// do not handle pathogen test creation if there were no corrections in the lab message
 						return createPathogenTest(labMessage, r, relatedEntities.sample, correctionFlowConfirmationSupplier, chainHandler);
@@ -136,22 +136,22 @@ public abstract class AbstractRelatedLabMessageHandler {
 			}
 		}
 
-		return correctionFlow.thenCompose((result) -> {
+		return correctionFlow.thenCompose(result -> {
 			if (result == HandlerResultStatus.HANDLED) {
 				// ask to continue post processing
 				return confirmContinueProcessing(labMessage, relatedEntities.sample.toReference())
-					.thenCompose((doPostProcess) -> CompletableFuture.completedFuture(CorrectionResult.of(result, doPostProcess)));
+					.thenCompose(doPostProcess -> CompletableFuture.completedFuture(CorrectionResult.of(result, doPostProcess)));
 			}
 
 			// if no corrections found, then continue
 			return CompletableFuture.completedFuture(CorrectionResult.of(result, true));
 		})
 			// check for shortcut
-			.thenCompose((correctionResult) -> {
+			.thenCompose(correctionResult -> {
 				if (correctionResult.shouldContinue) {
 					return confirmShortcut(relatedEntities.relatedLabMessagesFound).thenCompose(confirmed -> {
-						if (confirmed) {
-							return chainHandler.run((chain) -> handleShortcut(labMessage, relatedEntities.sample, chain))
+						if (Boolean.TRUE.equals(confirmed)) {
+							return chainHandler.run(chain -> handleShortcut(labMessage, relatedEntities.sample, chain))
 								.thenCompose(handled -> CompletableFuture.completedFuture(new HandlerResult(HandlerResultStatus.HANDLED, relatedEntities.sample)));
 						}
 
@@ -175,6 +175,7 @@ public abstract class AbstractRelatedLabMessageHandler {
 	protected abstract CompletionStage<Boolean> confirmContinueProcessing(LabMessageDto labMessage, SampleReferenceDto sample);
 
 	protected abstract void handleShortcut(LabMessageDto labMessage, SampleDto sample, RelatedLabMessageHandlerChain chain);
+
 	/**
 	 * Used for confirming the correction flow on the first changed entity and reuse the confirmation status on the other entities
 	 * 
@@ -206,7 +207,7 @@ public abstract class AbstractRelatedLabMessageHandler {
 		return handleCorrection(
 			labMessage,
 			person,
-			(p) -> Stream.of(mapper.mapToPerson(p).stream(), mapper.mapToLocation(p.getAddress()).stream())
+			p -> Stream.of(mapper.mapToPerson(p).stream(), mapper.mapToLocation(p.getAddress()).stream())
 				.flatMap(s -> s)
 				.collect(Collectors.toList()),
 			confirmationSupplier,
@@ -259,7 +260,7 @@ public abstract class AbstractRelatedLabMessageHandler {
 		return handleCorrection(
 			labMessage,
 			pathogenTest,
-			(t) -> mapper.mapToPathogenTest(testReport, t),
+			t -> mapper.mapToPathogenTest(testReport, t),
 			confirmationSupplier,
 			this::handlePathogenTestCorrection,
 			defaultResult,
@@ -294,8 +295,8 @@ public abstract class AbstractRelatedLabMessageHandler {
 			return CompletableFuture.completedFuture(defaultResult);
 		}
 
-		return confirmationSupplier.get().thenCompose((confirmed) -> {
-			if (confirmed) {
+		return confirmationSupplier.get().thenCompose(confirmed -> {
+			if (Boolean.TRUE.equals(confirmed)) {
 				return chainHandler.run(chain -> correctionHandler.handle(labMessage, entity, updatedEntity, changedFields, chain));
 			}
 
@@ -310,9 +311,9 @@ public abstract class AbstractRelatedLabMessageHandler {
 		Supplier<CompletionStage<Boolean>> confirmationSupplier,
 		ChainHandler chainHandler) {
 
-		return confirmationSupplier.get().thenCompose((confirmed) -> {
-			if (confirmed) {
-				return chainHandler.run((chain) -> handlePathogenTestCreation(labMessage, testReport, sample, chain));
+		return confirmationSupplier.get().thenCompose(confirmed -> {
+			if (Boolean.TRUE.equals(confirmed)) {
+				return chainHandler.run(chain -> handlePathogenTestCreation(labMessage, testReport, sample, chain));
 			}
 
 			return CompletableFuture.completedFuture(HandlerResultStatus.NOT_HANDLED);

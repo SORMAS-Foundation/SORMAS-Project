@@ -18,8 +18,14 @@
 package de.symeda.sormas.api.person;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.PersonalData;
 
+@DependingOnFeatureType(featureType = {
+	FeatureType.CASE_SURVEILANCE,
+	FeatureType.CONTACT_TRACING,
+	FeatureType.EVENT_SURVEILLANCE })
 public class PersonReferenceDto extends ReferenceDto {
 
 	private static final long serialVersionUID = -8558187171374254398L;
