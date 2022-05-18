@@ -161,6 +161,8 @@ public class EditSampleSteps implements En {
         "I delete the Pathogen test",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(DELETE_PATHOGEN_TEST_RESULT);
+          webDriverHelpers.selectFromCombobox(
+              DELETE_SAMPLE_REASON_POPUP, "Entity created without legal reason");
           webDriverHelpers.clickOnWebElementBySelector(SAMPLE_DELETION_POPUP_YES_BUTTON);
         });
   }
