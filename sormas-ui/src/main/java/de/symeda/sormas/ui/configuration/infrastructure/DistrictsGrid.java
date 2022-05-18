@@ -59,8 +59,8 @@ public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriter
 		}
 
 		setColumns(
-			DistrictIndexDto.NAME,
 			DistrictIndexDto.REGION,
+			DistrictIndexDto.NAME,
 			//DistrictIndexDto.EPID_CODE,
 			DistrictIndexDto.EXTERNAL_ID,
 			DistrictIndexDto.POPULATION,
@@ -81,6 +81,9 @@ public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriter
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(DistrictIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
+			if(column.getCaption().equalsIgnoreCase("Name")) {
+				column.setCaption("District");
+			}
 		}
 	}
 

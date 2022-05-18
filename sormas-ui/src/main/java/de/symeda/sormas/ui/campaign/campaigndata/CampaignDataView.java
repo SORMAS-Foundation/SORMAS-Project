@@ -77,7 +77,7 @@ public class CampaignDataView extends AbstractCampaignView {
 	private final CampaignDataGrid grid;
 	private CampaignFormDataFilterForm filterForm;
 	private ImportanceFilterSwitcher importanceFilterSwitcher;
-	private CampaignFormPhaseSelector campaignFormPhaseSelector;
+	private CampaignFormPhaseSelector campaignFormPhaseSelector; 
 	private PopupButton newFormButton;
 	private PopupButton importCampaignButton;
 	
@@ -99,7 +99,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		addHeaderComponent(campaignFormPhaseSelector);
 		
 		grid = new CampaignDataGrid(criteria);
-		grid.setDescriptionGenerator(CampaignFormMetaReferenceDto -> grid.getCaption() );
+		grid.setDescriptionGenerator(CampaignFormMetaReferenceDto -> grid.getCaption() ); 
 		
 		//grid.setStyleName(ValoTheme.LAYOUT_HORIZONTAL_WRAPPING);
 		
@@ -184,7 +184,9 @@ public class CampaignDataView extends AbstractCampaignView {
 			importFormLayout.setMargin(true);
 			importFormLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
 			importFormLayout.setWidth(350, Unit.PIXELS);
-
+			
+			
+			
 			importFormPanel.setContent(importFormLayout);
 			fillImportDropdown(importFormPanel);
 
@@ -249,6 +251,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		if (campaignReferenceDto != null) {
 			List<CampaignFormMetaReferenceDto> campagaignFormReferences =
 				FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetasAsReferencesByCampaign(campaignReferenceDto.getUuid());
+				Collections.sort(campagaignFormReferences);
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
 				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), e -> {
 					importCampaignButton.setPopupVisible(false);
@@ -261,6 +264,8 @@ public class CampaignDataView extends AbstractCampaignView {
 					}
 				});
 				campaignFormButton.setWidth(100, Unit.PERCENTAGE);
+				campaignFormButton.setStyleName("nocapitalletter");
+				campaignFormButton.removeStyleName("v-button"); 
 				((VerticalLayout) containerPanel.getContent()).addComponent(campaignFormButton);
 			}
 			if (campagaignFormReferences.size() >= 10) {

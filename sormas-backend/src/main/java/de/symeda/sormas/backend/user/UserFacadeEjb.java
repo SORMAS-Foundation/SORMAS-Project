@@ -491,12 +491,19 @@ public class UserFacadeEjb implements UserFacade {
 					System.out.println("DEBUGGER: 4567uhgfrt678456789ppppailed to load the bootstrap javascrippppppppppppppp876543hgtyuikjhu");
 					expression = region.get(Region.NAME);
 					break;
-				case UserDto.ADDRESS:
+				case UserDto.USER_ORGANISATION:
+					expression = user.get(User.USER_ORGANISATION);
 					System.out.println("DEBUGGER: 4567uhgfrt6oooooooooooooooooooooo78uijhgft67ujhgtyuikjhu");
-					expression = address.get(Location.AREA);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					//expression = user.get(User.USER_ORGANISATION);
 					break;
-				case UserDto.HEALTH_FACILITY:
-					expression = facility.get(Facility.NAME);
+				case UserDto.USER_POSITION:
+					expression = user.get(User.USER_POSITION);
+					order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+					//expression = user.get(User.USER_POSITION);
+					
+					
+					//expression = facility.get(User.USER_POSITION);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);

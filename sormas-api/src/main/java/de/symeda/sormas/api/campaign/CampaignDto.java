@@ -62,7 +62,9 @@ public class CampaignDto extends EntityDto {
 		this.name = name;
 	}
 	
-	
+	public String getUuid(String uuid) {	
+		return this.getUuid();
+	}
 
 	public String getRound() {
 		return round;
@@ -132,7 +134,7 @@ public class CampaignDto extends EntityDto {
 		//System.out.println(campaignFormMetas.stream().filter(e -> e.getFormType().equals(formType)).collect(Collectors.toSet()));
 		//System.out.println(campaignFormMetas);
 		
-		return campaignFormMetas.stream().filter(e -> e.getFormType().equals(formType)).collect(Collectors.toSet());
+		return campaignFormMetas.stream().filter(e -> e.getFormtype().equals(formType)).collect(Collectors.toSet());
 	}
 
 	public void setCampaignFormMetas(Set<CampaignFormMetaReferenceDto> campaignFormMetas) {

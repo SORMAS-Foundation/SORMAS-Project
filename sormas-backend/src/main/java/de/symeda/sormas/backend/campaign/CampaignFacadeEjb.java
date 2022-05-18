@@ -405,6 +405,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 	@Override
 	public CampaignDto getByUuid(String uuid) {
+		System.out.println("dddddddddddddddddddddddddddd111111111111111111111112222222222222222222222222");
 		return toDto(campaignService.getByUuid(uuid));
 	}
 
@@ -570,6 +571,14 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	public boolean exists(String uuid) {
 		return campaignService.exists(uuid);
 	}
+	
+	@Override
+	public List<CampaignDto> getAllActive() {
+		return campaignService.getAllActive()
+				.stream() 
+				.map(campaignFormMeta -> toDto(campaignFormMeta))
+				.collect(Collectors.toList());
+	}
 
 	@Override
 	public List<CampaignDto> getAllAfter(Date date) {
@@ -605,6 +614,8 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	@Stateless
 	public static class CampaignFacadeEjbLocal extends CampaignFacadeEjb {
 	}
+
+	
 
 	
 }

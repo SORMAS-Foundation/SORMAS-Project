@@ -72,11 +72,11 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 		addItemClickListener(new ShowDetailsListener<>(UserDto.USER_NAME, e -> ControllerProvider.getUserController().edit(e)));
 		addItemClickListener(new ShowDetailsListener<>(UserDto.NAME, e -> ControllerProvider.getUserController().edit(e)));
 		addItemClickListener(new ShowDetailsListener<>(UserDto.USER_EMAIL, e -> ControllerProvider.getUserController().edit(e)));
-		addItemClickListener(new ShowDetailsListener<>(UserDto.ADDRESS, e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(new ShowDetailsListener<>(UserDto.USER_ORGANISATION, e -> ControllerProvider.getUserController().edit(e)));
 		addItemClickListener(new ShowDetailsListener<>(UserDto.AREA, e -> ControllerProvider.getUserController().edit(e)));
 		addItemClickListener(new ShowDetailsListener<>(UserDto.REGION, e -> ControllerProvider.getUserController().edit(e)));
 		addItemClickListener(new ShowDetailsListener<>(UserDto.DISTRICT, e -> ControllerProvider.getUserController().edit(e)));
-		addItemClickListener(new ShowDetailsListener<>(UserDto.HEALTH_FACILITY, e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(new ShowDetailsListener<>(UserDto.USER_POSITION, e -> ControllerProvider.getUserController().edit(e)));
 		
 		
 		//addItemClickListener(new ShowDetailsListener<>(EDIT_BTN_ID, e -> handler.accept(e)));   //addEditColumn
@@ -90,11 +90,11 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 			UserDto.USER_NAME,
 			UserDto.NAME,
 			UserDto.USER_EMAIL,
-			UserDto.ADDRESS,
+			UserDto.USER_ORGANISATION,
 			UserDto.AREA,
 			UserDto.REGION,
 			UserDto.DISTRICT,
-			UserDto.HEALTH_FACILITY);
+			UserDto.USER_POSITION);
 
 		((Column<UserDto, String>) getColumn(UserDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.USER_ROLES))

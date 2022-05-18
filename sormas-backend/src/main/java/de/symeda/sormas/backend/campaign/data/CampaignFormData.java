@@ -185,4 +185,5 @@ public class CampaignFormData extends AbstractDomainObject {
 	public CampaignFormDataReferenceDto toReference() {
 		return new CampaignFormDataReferenceDto(getUuid());
 	}
+	
 }
