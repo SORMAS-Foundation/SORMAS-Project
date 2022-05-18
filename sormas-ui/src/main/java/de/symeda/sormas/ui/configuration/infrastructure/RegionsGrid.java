@@ -61,13 +61,13 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 		}
 
 		String[] columns = new String[] {
-			RegionIndexDto.NAME };
+			RegionIndexDto.AREA };
 		if (FacadeProvider.getFeatureConfigurationFacade().isCountryEnabled()) {
 			columns = ArrayUtils.add(columns, RegionIndexDto.COUNTRY);
 		}
 		columns = ArrayUtils.addAll(
 			columns,
-			RegionIndexDto.AREA,
+			RegionIndexDto.NAME, 
 			//RegionIndexDto.EPID_CODE,
 			RegionIndexDto.EXTERNAL_ID,
 			RegionIndexDto.POPULATION,
@@ -93,6 +93,9 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(RegionIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
+			if(column.getCaption().equalsIgnoreCase("Name")) {
+				column.setCaption("Province");
+			}
 		}
 	}
 

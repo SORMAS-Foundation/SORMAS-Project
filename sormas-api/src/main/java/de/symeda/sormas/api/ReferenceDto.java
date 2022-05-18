@@ -106,9 +106,7 @@ public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<
 		this.externalID = externalID;
 	}
 
-	public String getFormType() {
-		return formtype;
-	}
+	
 
 	public void setFormType(String formtype) {
 		this.formtype = formtype;

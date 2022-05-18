@@ -221,7 +221,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 			RegionReferenceDto region = (RegionReferenceDto) event.getProperty().getValue();
 			if (region != null) {
 				districtFilter.removeAllItems();
-				districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+				districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid())); 
 			} else {
 				districtFilter.removeAllItems();
 				districtFilter.clear();
@@ -233,6 +233,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 			if (district != null) {
 				communityFilter.removeAllItems();
 				communityFilter.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()));
+				System.out.println(">>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< + " + communityFilter);
 			} else {
 				communityFilter.removeAllItems();
 				communityFilter.clear();

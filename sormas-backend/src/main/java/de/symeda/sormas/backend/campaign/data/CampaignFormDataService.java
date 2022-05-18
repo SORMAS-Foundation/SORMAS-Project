@@ -34,6 +34,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.campaign.Campaign;
@@ -192,4 +193,49 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 
 		return em.createQuery(cq).getResultList();
 	}
+	
+	public List<CampaignFormData> getAllActive() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CampaignFormData> cq = cb.createQuery(CampaignFormData.class);
+		Root<CampaignFormData> from = cq.from(getElementClass());
+
+		Predicate filter = cb.and();
+
+		if (getCurrentUser() != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from);
+			filter = CriteriaBuilderHelper.and(cb, cb.isFalse(from.get(CampaignFormData.ARCHIVED)), userFilter);
+		}
+
+		cq.where(filter);
+		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CREATION_DATE)));
+
+		return em.createQuery(cq).getResultList();
+	}
+	
+	public List<CampaignFormData> getByCampaignFormMeta_id(Long meta_id) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<CampaignFormData> cq = cb.createQuery(CampaignFormData.class);
+		Root<CampaignFormData> from = cq.from(getElementClass());
+
+		Predicate filter = cb.and();
+
+		//if (getCurrentUser() != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from);
+			filter = CriteriaBuilderHelper.and(cb, cb.isFalse(from.get(CampaignFormData.ARCHIVED)), userFilter );
+	//	}
+		
+		Predicate predicateForMetaId
+		  = cb.equal(from.get(CampaignFormMeta.ID), meta_id);
+		
+		Predicate finalPredicate
+		  = cb.and(filter, predicateForMetaId);
+		
+		
+		cq.where(finalPredicate);
+		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
+
+		return em.createQuery(cq).getResultList();
+	}
+	
+	
 }

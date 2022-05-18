@@ -39,6 +39,8 @@ public interface CampaignFacade {
 	boolean exists(String uuid);
 
 	List<CampaignDto> getAllAfter(Date campaignChangeDate);
+	
+	List<CampaignDto> getAllActive();
 
 	List<CampaignDto> getByUuids(List<String> uuids);
 

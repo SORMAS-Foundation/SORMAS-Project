@@ -58,7 +58,7 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 			setCriteria(criteria);
 		}
 
-		setColumns(CommunityDto.NAME, CommunityDto.REGION, CommunityDto.DISTRICT, CommunityDto.EXTERNAL_ID);
+		setColumns(CommunityDto.REGION, CommunityDto.DISTRICT, CommunityDto.NAME, CommunityDto.EXTERNAL_ID);
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
@@ -75,6 +75,9 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(CommunityDto.I18N_PREFIX, column.getId(), column.getCaption()));
+			if(column.getCaption().equalsIgnoreCase("Name")) {
+				column.setCaption("Cluster");
+			}
 		}
 	}
 

@@ -31,6 +31,8 @@ import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
 import de.symeda.sormas.api.utils.SortProperty;
 
+
+
 @Remote
 public interface CampaignFormDataFacade {
 
@@ -66,6 +68,11 @@ public interface CampaignFormDataFacade {
 	List<String> getAllActiveUuids();
 
 	List<CampaignFormDataDto> getAllActiveAfter(Date date);
+	
+	List<CampaignFormDataDto> getAllActive();
 
 	void overwriteCampaignFormData(CampaignFormDataDto existingData, CampaignFormDataDto newData);
+	
+	List<CampaignFormDataDto> getCampaignFormData(String campaignformuuid, String formuuid);
+	
 }

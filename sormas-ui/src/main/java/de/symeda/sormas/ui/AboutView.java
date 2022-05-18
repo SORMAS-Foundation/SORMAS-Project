@@ -43,6 +43,7 @@ import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.GridLayout;
@@ -79,21 +80,31 @@ public class AboutView extends VerticalLayout implements View {
 	public static final String VIEW_NAME = "about";
 
 	public AboutView() {
+		
+		
+		HorizontalLayout bannerSection = new HorizontalLayout(); //Reference line 45
+		bannerSection.setHeight(100, Unit.PERCENTAGE);
+		bannerSection.setStyleName("margin-set-style");
+		//bannerSection.setWidth("30");
+		//bannerSection.addStyleName(CssStyles.BACKGROUND_DARKER);
+		addComponent(bannerSection);
 
 		// Info section
 		HorizontalLayout aboutLayout = new HorizontalLayout();
 		{
-
+			//aboutLayout.setMargin(CssStyles.); trying to set the margin-top of the about section. Hack: Decided to go for adding another component of defined height before the about layout
 			VerticalLayout infoLayout = new VerticalLayout();
 			infoLayout.setMargin(new MarginInfo(true, false, false, false));
 			infoLayout.addComponent(createInfoSection());
 			infoLayout.addStyleName(CssStyles.H1);
-
+			
+			
+			
 			// Documents section
 			if (shouldShowDocumentsSection()) {
 				// infoLayout.addComponent(createDocumentsSection());
 			}
-
+			
 			aboutLayout.addComponent(infoLayout);
 		}
 
@@ -110,11 +121,13 @@ public class AboutView extends VerticalLayout implements View {
 		if (copyrightSection != null) {
 		//	aboutLayout.addComponent(copyrightSection);
 		}
+		
+		
 
 		setSizeFull();
 		setStyleName("about-view");
 		addComponent(aboutLayout);
-		setComponentAlignment(aboutLayout, Alignment.MIDDLE_LEFT);
+		//setComponentAlignment(aboutLayout, Alignment.TOP_LEFT);
 	}
 
 	@Override
@@ -164,17 +177,32 @@ public class AboutView extends VerticalLayout implements View {
 		infoLayout.addComponent(aboutText); 
 
 		infoLayout.addComponent(guideLabel);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 
 		VerticalLayout apmisguideLayout = new VerticalLayout();
 
 		ThemeResource resource = new ThemeResource("img/APMIS_User_Guide.pdf");
 		Link link = new Link("User Guide", resource);
+		link.setTargetName("blank_");
 		apmisguideLayout.addComponent(link);
 
 		VerticalLayout techguideLayout = new VerticalLayout();
+		
 		ThemeResource techguideresource = new ThemeResource("img/APMIS_Technical_Manual.pdf");
 		Link apmisTechGuidelink = new Link("Technical Guide", techguideresource);
-		apmisTechGuidelink.setTargetName("_blank");
+		apmisTechGuidelink.setTargetName("blank_");
 		techguideLayout.addComponent(apmisTechGuidelink);
 
 		/*
@@ -453,18 +481,19 @@ public class AboutView extends VerticalLayout implements View {
 		
 		
 		
-		abou_vid_tLayout.addComponent(videoguideLayout);
-		abou_vid_tLayout.addComponent(videoguideLayout_);
-		abou_vid_tLayout.addComponent(videoguideLayout_a);
+		//abou_vid_tLayout.addComponent(videoguideLayout);
+		//abou_vid_tLayout.addComponent(videoguideLayout_);
+		//abou_vid_tLayout.addComponent(videoguideLayout_a);
 		
 		
 
 		TabSheet tabs = new TabSheet();
+		tabs.addStyleName("");
 		tabs.addTab(apmisguideLayout, I18nProperties.getCaption(Captions.apmisaboutguides));
 		// tabs.addTab(hziguideLayout,
 		// I18nProperties.getCaption(Captions.apmishziguides));
 		tabs.addTab(techguideLayout, I18nProperties.getCaption(Captions.abouttechguides));
-		tabs.addTab(abou_vid_tLayout, I18nProperties.getCaption(Captions.aboutvideos));
+		//tabs.addTab(abou_vid_tLayout, I18nProperties.getCaption(Captions.aboutvideos));
 
 		infoLayout.addComponent(tabs);
 
