@@ -49,6 +49,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_C
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BLOOD_ORGAN_TISSUE_DONATION_IN_THE_LAST_6_MONTHS_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_CLASSIFICATION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_CLASSIFICATION_SPAN;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_IDENTIFICATION_SOURCE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_PERSON_TAB;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
@@ -328,9 +329,9 @@ public class EditCaseSteps implements En {
         "I check that Case Classification has {string} value",
         (String caseClassificationValue) -> {
           String caseClassificationComboboxValue =
-              (webDriverHelpers.getValueFromCombobox(CASE_CLASSIFICATION_COMBOBOX));
+              (webDriverHelpers.getTextFromWebElement(CASE_CLASSIFICATION_SPAN));
           softly.assertEquals(
-              caseClassificationValue,
+              caseClassificationValue.toUpperCase(),
               caseClassificationComboboxValue,
               "The case classification field has unexpected value ");
           softly.assertAll();

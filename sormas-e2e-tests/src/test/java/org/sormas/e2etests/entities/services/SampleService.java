@@ -84,7 +84,7 @@ public class SampleService {
     long currentTimeMillis = System.currentTimeMillis();
     return Sample.builder()
         .sampleTestResults("Positive")
-        .reportDate(LocalDate.now().minusDays(10))
+        //   .reportDate(LocalDate.now().minusDays(10))
         .typeOfTest("PCR / RT-PCR")
         .testedDisease(DiseasesValues.CORONAVIRUS.getDiseaseCaption())
         .dateOfResult(LocalDate.now().minusDays(10))
