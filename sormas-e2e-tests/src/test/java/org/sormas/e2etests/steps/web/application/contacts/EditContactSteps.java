@@ -617,8 +617,8 @@ public class EditContactSteps implements En {
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
-                  "additionalInformationOnContactType",
-                  "contactCategory",
+                  //                  "additionalInformationOnContactType",
+                  //                  "contactCategory",
                   "relationshipWithCase",
                   "descriptionOfHowContactTookPlace"));
         });
@@ -1205,11 +1205,13 @@ public class EditContactSteps implements En {
         .responsibleRegion(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_REGION_COMBOBOX))
         .responsibleDistrict(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX))
         .responsibleCommunity(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX))
-        .additionalInformationOnContactType(
-            webDriverHelpers.getValueFromWebElement(
-                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
-        .contactCategory(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
+        // field no longer available
+        //        .additionalInformationOnContactType(
+        //            webDriverHelpers.getValueFromWebElement(
+        //                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
+        //        .contactCategory(
+        //
+        // webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
         .relationshipWithCase(
             webDriverHelpers.getValueFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX))
         .descriptionOfHowContactTookPlace(
