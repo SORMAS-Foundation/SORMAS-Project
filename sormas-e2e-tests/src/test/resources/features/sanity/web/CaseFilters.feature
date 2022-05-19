@@ -181,10 +181,6 @@ Feature: Case filter functionality
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
     And I click "Only cases from other instances" checkbox on Case directory page
-    And I click "Only cases with reinfection" checkbox on Case directory page
-    And I click APPLY BUTTON in Case Directory Page
-    And I check that number of displayed cases results is 1
-    And I click "Only cases with reinfection" checkbox on Case directory page
     And I click "Only cases with fulfilled reference definition" checkbox on Case directory page
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
@@ -241,7 +237,7 @@ Feature: Case filter functionality
     And I fill Cases from input to 1 days before mocked Case created on Case directory page
 
   @issue=SORQA-30 @env_main
-  Scenario: Check complex filters regarding responsibilities, vaccination, reinfection adn quarantine
+  Scenario: Check complex filters regarding responsibilities, vaccination and quarantine
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
@@ -272,10 +268,6 @@ Feature: Case filter functionality
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
     And I apply Vaccination Status filter to "Vaccinated" on Case directory page
-    And I apply Reinfection filter to "Probable reinfection" on Case directory page
-    And I click APPLY BUTTON in Case Directory Page
-    And I check that number of displayed cases results is 0
-    And I apply Reinfection filter to "Confirmed reinfection" on Case directory page
 
   @issue=SORQA-83 @env_de
   Scenario: German Case Directory filters
@@ -413,12 +405,13 @@ Feature: Case filter functionality
     Given I log in with National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
-    When I fill new case with for one person with specified date for month ago
+    When I fill new case form with specific data
     Then I click on save case button
+    And I check the created data is correctly displayed on Edit case page
     And I select <option> as Outcome of Case in Edit case page
     And I confirm changes in selected Case
     And I back to the cases list from edit case
-    And I filter with first Case ID
+    And I filter by CaseID of last created UI Case on Case directory page
     And I apply Outcome of case filter "No Outcome Yet" on Case directory page
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is <result1>
@@ -438,5 +431,3 @@ Feature: Case filter functionality
       | "Deceased"       | 0       | 1       | 0       | 0       |
       | "Recovered"      | 0       | 0       | 1       | 0       |
       | "Unknown"        | 0       | 0       | 0       | 1       |
-
-    
