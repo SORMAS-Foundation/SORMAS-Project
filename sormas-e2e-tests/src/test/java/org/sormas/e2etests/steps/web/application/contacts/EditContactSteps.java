@@ -399,6 +399,8 @@ public class EditContactSteps implements En {
         () -> {
           webDriverHelpers.scrollToElement(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+          webDriverHelpers.selectFromCombobox(
+              DELETE_CONTACT_REASON_POPUP, "Deletion request by another authority");
           webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
         });
 
