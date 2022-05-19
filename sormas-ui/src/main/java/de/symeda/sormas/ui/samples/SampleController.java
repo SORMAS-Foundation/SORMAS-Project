@@ -18,6 +18,8 @@
 package de.symeda.sormas.ui.samples;
 
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 import java.util.Collection;
 import java.util.List;
@@ -205,19 +207,23 @@ public class SampleController {
 		};
 		sampleComponent.addCommitListener(savePathogenTest);
 		// Discard button configuration
-		Button discardButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.pathogenTestRemove));
-		VerticalLayout buttonLayout = new VerticalLayout(discardButton);
-		buttonLayout.setComponentAlignment(discardButton, Alignment.TOP_LEFT);
-		// add the discard button above the overall discard and commit buttons
-		sampleComponent.addComponent(buttonLayout, sampleComponent.getComponentCount() - 1);
-		discardButton.addClickListener(o -> {
-			sampleComponent.removeComponent(horizontalRule);
-			sampleComponent.removeComponent(buttonLayout);
-			sampleComponent.removeComponent(pathogenTestForm);
-			sampleComponent.removeFieldGroups(pathogenTestForm.getFieldGroup());
-			sampleComponent.removeCommitListener(savePathogenTest);
-			pathogenTestForm.discard();
-		});
+		if ((UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_DELETE) && (nonNull(pathogenTest)))
+				|| isNull(pathogenTest)) {
+			//pathogenTest is null
+			Button discardButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.pathogenTestRemove));
+			VerticalLayout buttonLayout = new VerticalLayout(discardButton);
+			buttonLayout.setComponentAlignment(discardButton, Alignment.TOP_LEFT);
+			// add the discard button above the overall discard and commit buttons
+			sampleComponent.addComponent(buttonLayout, sampleComponent.getComponentCount() - 1);
+			discardButton.addClickListener(o -> {
+				sampleComponent.removeComponent(horizontalRule);
+				sampleComponent.removeComponent(buttonLayout);
+				sampleComponent.removeComponent(pathogenTestForm);
+				sampleComponent.removeFieldGroups(pathogenTestForm.getFieldGroup());
+				sampleComponent.removeCommitListener(savePathogenTest);
+				pathogenTestForm.discard();
+			});
+		}
 		// Country specific configuration
 		boolean germanInstance = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY);
 		pathogenTestForm.getField(PathogenTestDto.REPORT_DATE).setVisible(germanInstance);
