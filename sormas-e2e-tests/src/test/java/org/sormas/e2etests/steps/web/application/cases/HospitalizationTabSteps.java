@@ -84,6 +84,8 @@ public class HospitalizationTabSteps implements En {
     When(
         "I set Patient Admitted at the facility as an inpatient as ([^\"]*)",
         (String option) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              PATIENT_ADMITTED_AT_FACILITY_OPTIONS);
           webDriverHelpers.clickWebElementByText(PATIENT_ADMITTED_AT_FACILITY_OPTIONS, option);
         });
 
@@ -138,6 +140,13 @@ public class HospitalizationTabSteps implements En {
               "facility types are not equal");
           softly.assertEquals(collectedData.getFacility(), facility, "facilities are not equal");
           softly.assertAll();
+        });
+
+    And(
+        "I set Reason for hospitalization as {string}",
+        (String reasonForHospitalization) -> {
+          webDriverHelpers.selectFromCombobox(
+              REASON_FOR_HOSPITALIZATION_COMBOBOX, reasonForHospitalization);
         });
   }
 
