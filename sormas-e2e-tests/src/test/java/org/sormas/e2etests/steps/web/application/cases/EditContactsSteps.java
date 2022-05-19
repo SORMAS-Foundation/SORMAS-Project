@@ -286,20 +286,20 @@ public class EditContactsSteps implements En {
               webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[2]/a"));
           String contactDisease =
               (webDriverHelpers
-                      .getTextFromWebElement(By.xpath("//tbody/tr[1]//td[6]"))
+                      .getTextFromWebElement(By.xpath("//tbody/tr[1]//td[4]"))
                       .equals("COVID-19"))
                   ? "CORONAVIRUS"
                   : "Not expected string!";
           String contactClassification =
               (webDriverHelpers
-                      .getTextFromWebElement(By.xpath("//tbody/tr[1]//td[7]"))
+                      .getTextFromWebElement(By.xpath("//tbody/tr[1]//td[5]"))
                       .equals("Unconfirmed contact"))
                   ? "UNCONFIRMED"
                   : "Not expected string!";
           String firstName =
-              webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[10]"));
+              webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[8]"));
           String lastName =
-              webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[11]"));
+              webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[9]"));
 
           softly.assertTrue(
               apiState.getCreatedContact().getUuid().substring(0, 6).equalsIgnoreCase(contactId),
