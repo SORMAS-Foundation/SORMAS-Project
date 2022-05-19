@@ -15,14 +15,16 @@
 
 package de.symeda.sormas.api.importexport;
 
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+
+import org.apache.commons.lang3.ArrayUtils;
+
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import java.util.List;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import org.apache.commons.lang3.ArrayUtils;
 
 public enum DatabaseTable {
 
@@ -42,12 +44,16 @@ public enum DatabaseTable {
 	EXPOSURES(DatabaseTableType.SORMAS, EPIDATA, "exposures"),
 	ACTIVITIES_AS_CASE(DatabaseTableType.SORMAS, EPIDATA, "activities_as_case"),
 
-	HEALTH_CONDITIONS(DatabaseTableType.SORMAS, "health_conditions", dependingOnFeature(FeatureType.CASE_SURVEILANCE, FeatureType.CONTACT_TRACING, FeatureType.IMMUNIZATION_MANAGEMENT)),
+	HEALTH_CONDITIONS(DatabaseTableType.SORMAS,
+		"health_conditions",
+		dependingOnFeature(FeatureType.CASE_SURVEILANCE, FeatureType.CONTACT_TRACING, FeatureType.IMMUNIZATION_MANAGEMENT)),
 
 	CONTACTS(DatabaseTableType.SORMAS, "contacts", dependingOnFeature(FeatureType.CONTACT_TRACING)),
 	VISITS(DatabaseTableType.SORMAS, "visits", dependingOnFeature(FeatureType.CONTACT_TRACING, FeatureType.CASE_FOLLOWUP)),
 
-	SYMPTOMS(DatabaseTableType.SORMAS, "symptoms", dependingOnFeature(FeatureType.CASE_SURVEILANCE, FeatureType.CONTACT_TRACING, FeatureType.CLINICAL_MANAGEMENT)),
+	SYMPTOMS(DatabaseTableType.SORMAS,
+		"symptoms",
+		dependingOnFeature(FeatureType.CASE_SURVEILANCE, FeatureType.CONTACT_TRACING, FeatureType.CLINICAL_MANAGEMENT)),
 
 	EVENTS(DatabaseTableType.SORMAS, "events", dependingOnFeature(FeatureType.EVENT_SURVEILLANCE)),
 	EVENTGROUPS(DatabaseTableType.SORMAS, EVENTS, "eventgroups", dependingOnFeature(FeatureType.EVENT_GROUPS)),
@@ -63,9 +69,11 @@ public enum DatabaseTable {
 	PATHOGEN_TESTS(DatabaseTableType.SORMAS, SAMPLES, "pathogen_tests"),
 	ADDITIONAL_TESTS(DatabaseTableType.SORMAS, SAMPLES, "additional_tests", dependingOnFeature(FeatureType.ADDITIONAL_TESTS)),
 
-	TASKS(DatabaseTableType.SORMAS,"tasks", dependingOnFeature(FeatureType.TASK_MANAGEMENT)),
+	TASKS(DatabaseTableType.SORMAS, "tasks", dependingOnFeature(FeatureType.TASK_MANAGEMENT)),
 
-	PERSONS(DatabaseTableType.SORMAS, "persons", dependingOnFeature(FeatureType.CASE_SURVEILANCE, FeatureType.CONTACT_TRACING, FeatureType.EVENT_SURVEILLANCE)),
+	PERSONS(DatabaseTableType.SORMAS,
+		"persons",
+		dependingOnFeature(FeatureType.CASE_SURVEILANCE, FeatureType.CONTACT_TRACING, FeatureType.EVENT_SURVEILLANCE)),
 	PERSON_CONTACT_DETAILS(DatabaseTableType.SORMAS, PERSONS, "person_contact_details"),
 
 	LOCATIONS(DatabaseTableType.SORMAS, "locations", null),
@@ -87,7 +95,7 @@ public enum DatabaseTable {
 	CAMPAIGN_FORM_DATA(DatabaseTableType.SORMAS, CAMPAIGNS, "campaign_from_data"),
 	CAMPAIGN_DIAGRAM_DEFINITIONS(DatabaseTableType.SORMAS, CAMPAIGNS, "campaign_diagram_definitions"),
 
-	LAB_MESSAGES(DatabaseTableType.EXTERNAL, "lab_messages", dependingOnFeature(FeatureType.LAB_MESSAGES)),
+	LAB_MESSAGES(DatabaseTableType.EXTERNAL, "lab_messages", dependingOnFeature(FeatureType.EXTERNAL_MESSAGES)),
 	TEST_REPORTS(DatabaseTableType.EXTERNAL, LAB_MESSAGES, "test_reports"),
 
 	SORMAS_TO_SORMAS_ORIGIN_INFO(DatabaseTableType.EXTERNAL, null, "sormas_to_sormas_origin_info", dependingOnS2S()),
@@ -95,7 +103,10 @@ public enum DatabaseTable {
 	SORMAS_TO_SORMAS_SHARE_REQUESTS(DatabaseTableType.EXTERNAL, null, "sormas_to_sormas_share_requests", dependingOnS2S()),
 	SHARE_REQUEST_INFO(DatabaseTableType.EXTERNAL, null, "share_request_info", dependingOnS2S()),
 
-	EXTERNAL_SHARE_INFO(DatabaseTableType.EXTERNAL, null, "external_share_info", dependingOnConfiguration(ConfigFacade::isExternalSurveillanceToolGatewayConfigured)),
+	EXTERNAL_SHARE_INFO(DatabaseTableType.EXTERNAL,
+		null,
+		"external_share_info",
+		dependingOnConfiguration(ConfigFacade::isExternalSurveillanceToolGatewayConfigured)),
 
 	USERS(DatabaseTableType.SORMAS, "users", null),
 	USER_ROLES(DatabaseTableType.SORMAS, USERS, "user_roles"),
@@ -107,20 +118,30 @@ public enum DatabaseTable {
 
 	DOCUMENTS(DatabaseTableType.SORMAS, "documents", dependingOnFeature(FeatureType.DOCUMENTS)),
 
-	EXPORT_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, "export_configurations", dependingOnFeature(FeatureType.CASE_SURVEILANCE, FeatureType.CONTACT_TRACING, FeatureType.EVENT_SURVEILLANCE, FeatureType.SAMPLES_LAB, FeatureType.TASK_MANAGEMENT, FeatureType.CASE_FOLLOWUP)),
+	EXPORT_CONFIGURATIONS(DatabaseTableType.CONFIGURATION,
+		"export_configurations",
+		dependingOnFeature(
+			FeatureType.CASE_SURVEILANCE,
+			FeatureType.CONTACT_TRACING,
+			FeatureType.EVENT_SURVEILLANCE,
+			FeatureType.SAMPLES_LAB,
+			FeatureType.TASK_MANAGEMENT,
+			FeatureType.CASE_FOLLOWUP)),
 	FEATURE_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, "feature_configurations", null),
 	DISEASE_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, "disease_configurations", null),
 	DELETION_CONFIGURATIONS(DatabaseTableType.CONFIGURATION, "deletion_configurations", null);
 
-	private static BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> dependingOnFeature(FeatureType ...featureTypes) {
-		return (featureConfigurations, configFacade) -> featureConfigurations.stream().anyMatch(cc -> ArrayUtils.contains(featureTypes, cc.getFeatureType()) && cc.isEnabled());
+	private static BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> dependingOnFeature(FeatureType... featureTypes) {
+		return (featureConfigurations, configFacade) -> featureConfigurations.stream()
+			.anyMatch(cc -> ArrayUtils.contains(featureTypes, cc.getFeatureType()) && cc.isEnabled());
 	}
 
 	private static BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> dependingOnS2S() {
 		return (featureConfigurations, configFacade) -> configFacade.isS2SConfigured();
 	}
 
-	private static BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> dependingOnConfiguration(Function<ConfigFacade, Boolean> isConfigured) {
+	private static BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> dependingOnConfiguration(
+		Function<ConfigFacade, Boolean> isConfigured) {
 		return (featureConfigurations, configFacade) -> isConfigured.apply(configFacade);
 	}
 
@@ -129,7 +150,10 @@ public enum DatabaseTable {
 	private final String fileName;
 	private final BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> enabledSupplier;
 
-	DatabaseTable(DatabaseTableType databaseTableType, String fileName, BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> enabledSupplier) {
+	DatabaseTable(
+		DatabaseTableType databaseTableType,
+		String fileName,
+		BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> enabledSupplier) {
 		this(databaseTableType, null, fileName, enabledSupplier);
 	}
 
@@ -137,7 +161,11 @@ public enum DatabaseTable {
 		this(databaseTableType, parentTable, fileName, null);
 	}
 
-	DatabaseTable(DatabaseTableType databaseTableType, DatabaseTable parentTable, String fileName, BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> enabledSupplier) {
+	DatabaseTable(
+		DatabaseTableType databaseTableType,
+		DatabaseTable parentTable,
+		String fileName,
+		BiFunction<List<FeatureConfigurationDto>, ConfigFacade, Boolean> enabledSupplier) {
 		this.databaseTableType = databaseTableType;
 		this.parentTable = parentTable;
 		this.fileName = fileName;
@@ -160,13 +188,13 @@ public enum DatabaseTable {
 		return fileName;
 	}
 
-	public boolean isEnabled(List<FeatureConfigurationDto> featureConfigurations, ConfigFacade configFacade){
-		if(enabledSupplier != null) {
+	public boolean isEnabled(List<FeatureConfigurationDto> featureConfigurations, ConfigFacade configFacade) {
+		if (enabledSupplier != null) {
 			return enabledSupplier.apply(featureConfigurations, configFacade);
-		} else if(parentTable != null) {
+		} else if (parentTable != null) {
 			return parentTable.isEnabled(featureConfigurations, configFacade);
 		}
 
-		return  true;
+		return true;
 	}
 }

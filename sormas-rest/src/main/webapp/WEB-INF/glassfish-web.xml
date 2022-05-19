@@ -491,8 +491,8 @@
     </security-role-mapping>
 
     <security-role-mapping>
-        <role-name>PERFORM_BULK_OPERATIONS_LAB_MESSAGES</role-name>
-        <group-name>PERFORM_BULK_OPERATIONS_LAB_MESSAGES</group-name>
+        <role-name>PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES</role-name>
+        <group-name>PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
@@ -736,8 +736,18 @@
     </security-role-mapping>
 
     <security-role-mapping>
-        <role-name>LAB_MESSAGES</role-name>
-        <group-name>LAB_MESSAGES</group-name>
+        <role-name>EXTERNAL_MESSAGE_VIEW</role-name>
+        <group-name>EXTERNAL_MESSAGE_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EXTERNAL_MESSAGE_PROCESS</role-name>
+        <group-name>EXTERNAL_MESSAGE_PROCESS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EXTERNAL_MESSAGE_DELETE</role-name>
+        <group-name>EXTERNAL_MESSAGE_DELETE</group-name>
     </security-role-mapping>
 
     <security-role-mapping>

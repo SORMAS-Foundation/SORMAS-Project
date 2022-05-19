@@ -6,7 +6,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
-import de.symeda.sormas.api.labmessage.LabMessageDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.sormastosormas.labmessage.SormasToSormasLabMessageDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
@@ -17,7 +17,7 @@ import de.symeda.sormas.backend.sormastosormas.data.validation.ValidationDirecti
 @Stateless
 @LocalBean
 public class SormasToSormasLabMessageDtoValidator
-	extends SormasToSormasDtoValidator<LabMessageDto, SormasToSormasLabMessageDto, PreviewNotImplementedDto> {
+	extends SormasToSormasDtoValidator<ExternalMessageDto, SormasToSormasLabMessageDto, PreviewNotImplementedDto> {
 
 	public SormasToSormasLabMessageDtoValidator() {
 	}
@@ -29,12 +29,12 @@ public class SormasToSormasLabMessageDtoValidator
 
 	@Override
 	public ValidationErrors validate(SormasToSormasLabMessageDto sharedData, ValidationDirection direction) {
-		LabMessageDto labMessage = sharedData.getEntity();
+		ExternalMessageDto labMessage = sharedData.getEntity();
 		return new ValidationErrors(buildLabMessageValidationGroupName(labMessage));
 	}
 
 	@Override
 	public ValidationErrors validatePreview(PreviewNotImplementedDto previewNotImplementedDto, ValidationDirection direction) {
-		throw new RuntimeException("LabMessage preview not yet implemented");
+		throw new RuntimeException("ExternalMessage preview not yet implemented");
 	}
 }

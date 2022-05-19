@@ -65,6 +65,8 @@ import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.exposure.ExposureDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.TestReportDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
@@ -83,8 +85,6 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentDto;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -157,7 +157,7 @@ public class InfoFacadeEjb implements InfoFacade {
 		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(FacilityDto.class, FacilityDto.I18N_PREFIX));
 		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(PointOfEntryDto.class, PointOfEntryDto.I18N_PREFIX));
 		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(UserDto.class, UserDto.I18N_PREFIX));
-		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(LabMessageDto.class, LabMessageDto.I18N_PREFIX));
+		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(ExternalMessageDto.class, ExternalMessageDto.I18N_PREFIX));
 		DATA_DICTIONARY_ENTITIES.add(new EntityInfo(TestReportDto.class, TestReportDto.I18N_PREFIX));
 	}
 

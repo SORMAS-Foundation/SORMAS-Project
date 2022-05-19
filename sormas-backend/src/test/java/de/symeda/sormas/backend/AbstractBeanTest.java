@@ -50,6 +50,8 @@ import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
+import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
+import de.symeda.sormas.api.externalmessage.TestReportFacade;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.geo.GeoShapeProvider;
@@ -68,8 +70,6 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
-import de.symeda.sormas.api.labmessage.LabMessageFacade;
-import de.symeda.sormas.api.labmessage.TestReportFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
@@ -136,6 +136,10 @@ import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipant
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
+import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
+import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
+import de.symeda.sormas.backend.externalmessage.TestReportFacadeEjb;
+import de.symeda.sormas.backend.externalmessage.TestReportService;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.geo.GeoShapeProviderEjb.GeoShapeProviderEjbLocal;
@@ -165,10 +169,6 @@ import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb.RegionFaca
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
-import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb.LabMessageFacadeEjbLocal;
-import de.symeda.sormas.backend.labmessage.LabMessageService;
-import de.symeda.sormas.backend.labmessage.TestReportFacadeEjb;
-import de.symeda.sormas.backend.labmessage.TestReportService;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
@@ -655,12 +655,12 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(SormasToSormasEventFacadeEjbLocal.class);
 	}
 
-	public LabMessageFacade getLabMessageFacade() {
-		return getBean(LabMessageFacadeEjbLocal.class);
+	public ExternalMessageFacade getLabMessageFacade() {
+		return getBean(ExternalMessageFacadeEjbLocal.class);
 	}
 
-	public LabMessageService getLabMessageService() {
-		return getBean(LabMessageService.class);
+	public ExternalMessageService getLabMessageService() {
+		return getBean(ExternalMessageService.class);
 	}
 
 	public NotificationService getNotificationService() {

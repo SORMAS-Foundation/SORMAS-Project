@@ -48,6 +48,9 @@ import de.symeda.sormas.api.event.EventGroupFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.eventimport.EventImportFacade;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
+import de.symeda.sormas.api.externalmessage.ExternalLabResultsFacade;
+import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
+import de.symeda.sormas.api.externalmessage.TestReportFacade;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.geo.GeoShapeProvider;
@@ -69,9 +72,6 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
-import de.symeda.sormas.api.labmessage.ExternalLabResultsFacade;
-import de.symeda.sormas.api.labmessage.LabMessageFacade;
-import de.symeda.sormas.api.labmessage.TestReportFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.report.AggregateReportFacade;
@@ -425,8 +425,8 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(SystemEventFacade.class);
 	}
 
-	public static LabMessageFacade getLabMessageFacade() {
-		return get().lookupEjbRemote(LabMessageFacade.class);
+	public static ExternalMessageFacade getExternalMessageFacade() {
+		return get().lookupEjbRemote(ExternalMessageFacade.class);
 	}
 
 	public static ExternalLabResultsFacade getExternalLabResultsFacade() throws NamingException {

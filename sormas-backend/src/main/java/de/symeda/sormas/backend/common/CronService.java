@@ -42,10 +42,10 @@ import de.symeda.sormas.backend.deletionconfiguration.CoreEntityDeletionService;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
+import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.central.CentralInfraSyncFacade;
-import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb.LabMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb.SystemEventFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
@@ -80,7 +80,7 @@ public class CronService {
 	@EJB
 	private SystemEventFacadeEjbLocal systemEventFacade;
 	@EJB
-	private LabMessageFacadeEjbLocal labMessageFacade;
+	private ExternalMessageFacadeEjbLocal labMessageFacade;
 	@EJB
 	private ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacade;
 	@EJB
@@ -200,8 +200,8 @@ public class CronService {
 
 	@Schedule(hour = "1", minute = "35", second = "0", persistent = false)
 	public void fetchLabMessages() {
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LAB_MESSAGES)) {
-			labMessageFacade.fetchAndSaveExternalLabMessages(null);
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.EXTERNAL_MESSAGES)) {
+			labMessageFacade.fetchAndSaveExternalMessages(null);
 		}
 	}
 

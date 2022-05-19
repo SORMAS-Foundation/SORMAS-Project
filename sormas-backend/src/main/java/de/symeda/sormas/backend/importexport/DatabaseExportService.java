@@ -15,11 +15,6 @@
 
 package de.symeda.sormas.backend.importexport;
 
-import de.symeda.sormas.api.feature.FeatureConfigurationCriteria;
-import de.symeda.sormas.api.feature.FeatureConfigurationDto;
-import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
@@ -45,6 +40,7 @@ import org.postgresql.copy.CopyManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.importexport.DatabaseTable;
 import de.symeda.sormas.backend.action.Action;
 import de.symeda.sormas.backend.activityascase.ActivityAsCase;
@@ -70,7 +66,10 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventGroup;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.exposure.Exposure;
+import de.symeda.sormas.backend.externalmessage.ExternalMessage;
+import de.symeda.sormas.backend.externalmessage.TestReport;
 import de.symeda.sormas.backend.feature.FeatureConfiguration;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -84,8 +83,6 @@ import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
-import de.symeda.sormas.backend.labmessage.LabMessage;
-import de.symeda.sormas.backend.labmessage.TestReport;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.outbreak.Outbreak;
 import de.symeda.sormas.backend.person.Person;
@@ -173,7 +170,7 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.CAMPAIGN_FORM_META, CampaignFormMeta.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.CAMPAIGN_FORM_DATA, CampaignFormData.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.CAMPAIGN_DIAGRAM_DEFINITIONS, CampaignDiagramDefinition.TABLE_NAME);
-		EXPORT_CONFIGS.put(DatabaseTable.LAB_MESSAGES, LabMessage.TABLE_NAME);
+		EXPORT_CONFIGS.put(DatabaseTable.LAB_MESSAGES, ExternalMessage.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.TEST_REPORTS, TestReport.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.SORMAS_TO_SORMAS_ORIGIN_INFO, SormasToSormasOriginInfo.TABLE_NAME);
 		EXPORT_CONFIGS.put(DatabaseTable.SORMAS_TO_SORMAS_SHARE_INFO, SormasToSormasShareInfo.TABLE_NAME);
@@ -213,7 +210,7 @@ public class DatabaseExportService {
 
 		// Export all selected tables to .csv files
 		for (DatabaseTable databaseTable : databaseTables) {
-			if(!databaseTable.isEnabled(featureConfigurations, configFacade)) {
+			if (!databaseTable.isEnabled(featureConfigurations, configFacade)) {
 				continue;
 			}
 

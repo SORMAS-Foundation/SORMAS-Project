@@ -44,10 +44,10 @@ import de.symeda.sormas.backend.event.EventGroupFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.event.eventimport.EventImportFacadeEjb;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalFacadeEjb;
+import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb;
+import de.symeda.sormas.backend.externalmessage.TestReportFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.info.InfoFacadeEjb;
-import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb;
-import de.symeda.sormas.backend.labmessage.TestReportFacadeEjb;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb;
 import de.symeda.sormas.backend.report.AggregateReportFacadeEjb;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb;
@@ -227,9 +227,9 @@ public class ArchitectureTest {
 	@ArchTest
 	public void testLabMessageFacadeEjbAuthorization(JavaClasses classes) {
 		assertFacadeEjbAnnotated(
-			LabMessageFacadeEjb.class,
+			ExternalMessageFacadeEjb.class,
 			AuthMode.CLASS_ONLY,
-			Collections.singletonList("fetchAndSaveExternalLabMessages"),
+			Collections.singletonList("fetchAndSaveExternalMessages"),
 			classes);
 	}
 

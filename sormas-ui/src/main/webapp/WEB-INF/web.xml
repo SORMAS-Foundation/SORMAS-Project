@@ -401,7 +401,7 @@
 	</security-role>
 
 	<security-role>
-		<role-name>PERFORM_BULK_OPERATIONS_LAB_MESSAGES</role-name>
+		<role-name>PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES</role-name>
 	</security-role>
 
 	<security-role>
@@ -597,7 +597,15 @@
 	</security-role>
 
 	<security-role>
-		<role-name>LAB_MESSAGES</role-name>
+		<role-name>EXTERNAL_MESSAGE_VIEW</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_PROCESS</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EXTERNAL_MESSAGE_DELETE</role-name>
 	</security-role>
 
 	<security-role>

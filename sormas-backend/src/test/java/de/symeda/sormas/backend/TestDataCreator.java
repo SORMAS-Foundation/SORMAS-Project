@@ -70,6 +70,9 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageReferenceDto;
+import de.symeda.sormas.api.externalmessage.TestReportDto;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
@@ -88,9 +91,6 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
-import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
@@ -1860,8 +1860,8 @@ public class TestDataCreator {
 		return systemEvent;
 	}
 
-	public LabMessageDto createLabMessage(Consumer<LabMessageDto> customSettings) {
-		LabMessageDto labMessage = LabMessageDto.build();
+	public ExternalMessageDto createLabMessage(Consumer<ExternalMessageDto> customSettings) {
+		ExternalMessageDto labMessage = ExternalMessageDto.build();
 
 		if (customSettings != null) {
 			customSettings.accept(labMessage);
@@ -1872,7 +1872,7 @@ public class TestDataCreator {
 		return labMessage;
 	}
 
-	public TestReportDto createTestReport(LabMessageReferenceDto labMessage) {
+	public TestReportDto createTestReport(ExternalMessageReferenceDto labMessage) {
 		TestReportDto testReport = TestReportDto.build();
 		testReport.setLabMessage(labMessage);
 
