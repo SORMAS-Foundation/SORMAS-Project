@@ -149,7 +149,7 @@ public class EditContactsSteps implements En {
         () -> {
           TimeUnit.SECONDS.sleep(3);
           webDriverHelpers.sendFile(
-              FILE_PICKER, userDirPath + "/downloads/sormas_kontakte_" + LocalDate.now() + "_.csv");
+              FILE_PICKER, userDirPath + "/downloads/sormas_contacts_" + LocalDate.now() + "_.csv");
         });
     When(
         "I click on the Import button from Case Contacts directory",
@@ -197,7 +197,7 @@ public class EditContactsSteps implements En {
         "I delete exported file from Case Contact Directory",
         () -> {
           File toDelete =
-              new File(userDirPath + "/downloads/sormas_kontakte_" + LocalDate.now() + "_.csv");
+              new File(userDirPath + "/downloads/sormas_contacts_" + LocalDate.now() + "_.csv");
           toDelete.deleteOnExit();
         });
 
@@ -218,9 +218,11 @@ public class EditContactsSteps implements En {
           selectResponsibleDistrict(contact.getResponsibleDistrict());
           selectResponsibleCommunity(contact.getResponsibleCommunity());
           selectTypeOfContact(contact.getTypeOfContact());
-          fillAdditionalInformationOnTheTypeOfContact(
-              contact.getAdditionalInformationOnContactType());
-          selectContactCategory(contact.getContactCategory().toUpperCase());
+          // field no longer available
+          //          fillAdditionalInformationOnTheTypeOfContact(
+          //              contact.getAdditionalInformationOnContactType());
+          // field no longer available
+          //          selectContactCategory(contact.getContactCategory().toUpperCase());
           fillRelationshipWithCase(contact.getRelationshipWithCase());
           fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
@@ -264,9 +266,11 @@ public class EditContactsSteps implements En {
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
-                  "additionalInformationOnContactType",
+                  // field no longer available
+                  //                  "additionalInformationOnContactType",
                   "typeOfContact",
-                  "contactCategory",
+                  // field no longer available
+                  //                  "contactCategory",
                   "relationshipWithCase",
                   "descriptionOfHowContactTookPlace"));
         });
@@ -430,13 +434,16 @@ public class EditContactsSteps implements En {
         .responsibleRegion(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_REGION_INPUT))
         .responsibleDistrict(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_DISTRICT_INPUT))
         .responsibleCommunity(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_COMMUNITY_INPUT))
-        .additionalInformationOnContactType(
-            webDriverHelpers.getValueFromWebElement(
-                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
+        // field no longer available
+        //        .additionalInformationOnContactType(
+        //            webDriverHelpers.getValueFromWebElement(
+        //                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
         .typeOfContact(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(TYPE_OF_CONTACT_OPTIONS))
-        .contactCategory(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
+        // field no longer available
+        //        .contactCategory(
+        //
+        // webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
         .relationshipWithCase(webDriverHelpers.getValueFromWebElement(RELATIONSHIP_WITH_CASE_INPUT))
         .descriptionOfHowContactTookPlace(
             webDriverHelpers.getValueFromWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT))

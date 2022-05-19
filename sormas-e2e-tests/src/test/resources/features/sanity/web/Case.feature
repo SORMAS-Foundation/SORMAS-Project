@@ -1113,3 +1113,18 @@ Feature: Case end to end tests
       And I check if jpg file is downloaded correctly
       Then I delete last uploaded document file from case tab
       And I check if last uploaded file was deleted from document files in case tab
+
+  @issue=SORDEV-9151 @env_de
+  Scenario: Check if specific Case fields are hidden (DE specific)
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    When I open last created case
+    And I navigate to case person tab
+    Then I check that Passport Number is not visible
+    And I check that National Health ID is not visible
+    And I check that Education is not visible
+    And I check that Community Contact Person is not visible
+    And I check that Nickname is not visible
+    And I check that Mother's Maiden Name is not visible
+    And I check that Mother's Name is not visible
+    And I check that Father's Name is not visible

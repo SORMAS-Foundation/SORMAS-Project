@@ -439,7 +439,8 @@ public class EditCaseSteps implements En {
               List.of(
                   "dateOfReport",
                   "disease",
-                  "externalId",
+                  //   "externalId",
+                  // "epidNumber",
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
@@ -492,7 +493,7 @@ public class EditCaseSteps implements En {
               List.of(
                   "dateOfReport",
                   "disease",
-                  "externalId",
+                  // "externalId",
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
@@ -1049,7 +1050,6 @@ public class EditCaseSteps implements En {
               List.of(
                   "dateOfReport",
                   "disease",
-                  "externalId",
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
@@ -1474,7 +1474,8 @@ public class EditCaseSteps implements En {
         .firstName(userInfo.getFirstName())
         .lastName(userInfo.getLastName())
         .dateOfBirth(userInfo.getDateOfBirth())
-        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
+        // field that is no longer available
+        // .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
         .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
         .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
@@ -1626,7 +1627,7 @@ public class EditCaseSteps implements En {
         .firstName(userInfo.getFirstName())
         .lastName(userInfo.getLastName())
         .dateOfBirth(userInfo.getDateOfBirth())
-        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
+        // .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
         .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
         .placeDescription(webDriverHelpers.getValueFromWebElement(PLACE_DESCRIPTION_INPUT))

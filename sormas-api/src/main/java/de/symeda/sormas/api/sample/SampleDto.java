@@ -150,6 +150,7 @@ public class SampleDto extends SormasToSormasShareableDto {
 
 	private boolean deleted;
 	private DeletionReason deletionReason;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
 
 	@ImportIgnore

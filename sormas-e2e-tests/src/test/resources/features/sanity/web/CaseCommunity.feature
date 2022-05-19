@@ -1,7 +1,7 @@
 @UI @Sanity @Case @CaseCommunities
 Feature: Case communities end to end tests
 
-@issue=SORDEV-8050 @env_main
+@issue=SORDEV-8050 @env_main #fails after configuration change
 Scenario: Test A user viewing a case containing e.g. an archived region has no indication about the fact the region was archived
   Given I log in as a Admin User
   Then I click on the Configuration button from navbar
