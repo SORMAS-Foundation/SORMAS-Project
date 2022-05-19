@@ -283,7 +283,7 @@ public class CampaignFormDataImporter extends DataImporter {
 		final Class<?> propertyType = pd.getPropertyType();
 		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
 			final UserDto currentUserDto = userFacade.getByUuid(currentUser.getUuid());
-			final JurisdictionLevel jurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
+			final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 			if (jurisdictionLevel == JurisdictionLevel.REGION && !currentUserDto.getRegion().getCaption().equals(entry)) {
 				throw new ImportErrorException(
 					I18nProperties
