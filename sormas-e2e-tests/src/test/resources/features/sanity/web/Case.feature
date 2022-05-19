@@ -947,7 +947,7 @@ Feature: Case end to end tests
     Given I log in with National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
-    And I create a new case with specific data
+    And I create a new case with specific data and new person
     And I navigate to case person tab
     And I set case person's sex as Male
     And I click on save button to Save Person data in Case Person Tab
