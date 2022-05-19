@@ -56,6 +56,7 @@ public class EditCasePage {
       By.cssSelector("#clinicalConfirmation div");
   public static final By EPIDEMIOLOGICAL_CONFIRMATION_COMBOBOX =
       By.cssSelector("#epidemiologicalConfirmation div");
+  public static final By EPID_NUMBER_INPUT = By.cssSelector("#epidNumber input");
   public static final By LABORATORY_DIAGNOSTIC_CONFIRMATION_COMBOBOX =
       By.cssSelector("#laboratoryDiagnosticConfirmation div");
   public static final By INVESTIGATION_STATUS_OPTIONS =

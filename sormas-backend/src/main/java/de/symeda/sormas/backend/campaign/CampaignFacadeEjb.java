@@ -25,6 +25,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.DeletionDetails;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -194,6 +195,11 @@ public class CampaignFacadeEjb
 					.collect(Collectors.toSet()));
 		}
 		target.setDashboardElements(source.getCampaignDashboardElements());
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -296,6 +302,10 @@ public class CampaignFacadeEjb
 
 		target.setCampaignDashboardElements(source.getDashboardElements());
 
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -348,9 +358,9 @@ public class CampaignFacadeEjb
 
 	@Override
 	@RolesAllowed(UserRight._CAMPAIGN_DELETE)
-	public void delete(String campaignUuid) {
+	public void delete(String campaignUuid, DeletionDetails deletionDetails) {
 
-		service.delete(service.getByUuid(campaignUuid));
+		service.delete(service.getByUuid(campaignUuid), deletionDetails);
 	}
 
 	@Override

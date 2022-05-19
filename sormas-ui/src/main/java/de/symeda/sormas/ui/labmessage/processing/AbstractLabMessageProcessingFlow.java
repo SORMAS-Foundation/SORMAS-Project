@@ -71,7 +71,7 @@ public abstract class AbstractLabMessageProcessingFlow {
 		LabMessageDto labMessage,
 		AbstractRelatedLabMessageHandler relatedLabMessageHandler) {
 
-		return new FlowThen<Void>().then((ignored) -> checkDisease(labMessage))
+		return new FlowThen<Void>().then(ignored -> checkDisease(labMessage))
 			.then(ignored -> checkRelatedForwardedMessages(labMessage))
 			.then(ignored -> handleRelatedLabMessages(relatedLabMessageHandler, labMessage))
 			.then(ignored -> pickOrCreatePerson(labMessage))

@@ -23,6 +23,7 @@ import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.CountryHelper;
@@ -93,7 +94,9 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 			fluidRowLocs(TravelEntryDto.QUARANTINE_ORDERED_VERBALLY, TravelEntryDto.QUARANTINE_ORDERED_VERBALLY_DATE) +
 			fluidRowLocs(TravelEntryDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, TravelEntryDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
 			fluidRowLocs(TravelEntryDto.QUARANTINE_OFFICIAL_ORDER_SENT, TravelEntryDto.QUARANTINE_OFFICIAL_ORDER_SENT_DATE) +
-			fluidRowLocs(TravelEntryDto.QUARANTINE_HELP_NEEDED);
+			fluidRowLocs(TravelEntryDto.QUARANTINE_HELP_NEEDED) +
+			fluidRowLocs(TravelEntryDto.DELETION_REASON) +
+			fluidRowLocs(TravelEntryDto.OTHER_DELETION_REASON);
 	//@formatter:on
 
 	private final String travelEntryUuid;
@@ -265,6 +268,10 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		addField(TravelEntryDto.QUARANTINE_HOME_POSSIBLE_COMMENT, TextField.class);
 		addField(TravelEntryDto.QUARANTINE_HOME_SUPPLY_ENSURED, NullableOptionGroup.class);
 		addField(TravelEntryDto.QUARANTINE_HOME_SUPPLY_ENSURED_COMMENT, TextField.class);
+
+		addField(TravelEntryDto.DELETION_REASON);
+		addField(TravelEntryDto.OTHER_DELETION_REASON, TextArea.class).setRows(3);
+		setVisible(false, TravelEntryDto.DELETION_REASON, TravelEntryDto.OTHER_DELETION_REASON);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),

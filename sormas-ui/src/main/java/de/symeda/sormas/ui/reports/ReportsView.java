@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.reports;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -59,7 +60,8 @@ public class ReportsView extends AbstractView {
 	public ReportsView() {
 		super(VIEW_NAME);
 
-		if (UserProvider.getCurrent().getJurisdictionLevel() == JurisdictionLevel.NATION) {
+		JurisdictionLevel jurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
+		if (jurisdictionLevel == JurisdictionLevel.NONE || jurisdictionLevel == JurisdictionLevel.NATION) {
 			grid = new WeeklyReportRegionsGrid();
 		} else {
 			grid = new WeeklyReportOfficersGrid();

@@ -11,6 +11,7 @@ import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -154,6 +155,13 @@ public class ImmunizationController {
 			editComponent.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel(automaticDeletionInfoDto));
 		}
 
+		if (immunizationDto.isDeleted()) {
+			editComponent.getWrappedComponent().getField(ImmunizationDto.DELETION_REASON).setVisible(true);
+			if (editComponent.getWrappedComponent().getField(ImmunizationDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
+				editComponent.getWrappedComponent().getField(ImmunizationDto.OTHER_DELETION_REASON).setVisible(true);
+			}
+		}
+
 		editComponent.addCommitListener(() -> {
 			if (!immunizationDataForm.getFieldGroup().isModified()) {
 				ImmunizationDto immunizationDtoValue = immunizationDataForm.getValue();
@@ -177,8 +185,8 @@ public class ImmunizationController {
 
 		// Initialize 'Delete' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
-			editComponent.addDeleteListener(() -> {
-				FacadeProvider.getImmunizationFacade().delete(immunizationDto.getUuid());
+			editComponent.addDeleteWithReasonListener((deleteDetails) -> {
+				FacadeProvider.getImmunizationFacade().delete(immunizationDto.getUuid(), deleteDetails);
 				UI.getCurrent().getNavigator().navigateTo(ImmunizationsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityImmunization));
 		}

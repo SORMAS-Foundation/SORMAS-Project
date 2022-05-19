@@ -9,6 +9,8 @@ import java.util.List;
 import org.junit.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -39,7 +41,7 @@ public class SampleServiceTest extends AbstractBeanTest {
 		creator.createAdditionalTest(sample.toReference());
 		LabMessageDto labMessage = creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
 
-		getSampleFacade().deleteSample(sample.toReference());
+		getSampleFacade().deleteSample(sample.toReference(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		Sample sampleEntity = getSampleService().getByUuid(sample.getUuid());
 		List<PathogenTest> pathogenTests = getPathogenTestService().getAll();

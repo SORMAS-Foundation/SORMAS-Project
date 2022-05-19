@@ -1,13 +1,12 @@
 package de.symeda.sormas.api.travelentry;
 
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
@@ -79,6 +78,8 @@ public class TravelEntryDto extends PseudonymizableDto {
 	public static final String QUARANTINE_OFFICIAL_ORDER_SENT_DATE = "quarantineOfficialOrderSentDate";
 	public static final String QUARANTINE_HELP_NEEDED = "quarantineHelpNeeded";
 	public static final String DATE_OF_ARRIVAL = "dateOfArrival";
+	public static final String DELETION_REASON = "deletionReason";
+	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	@Required
 	@EmbeddedPersonalData
@@ -140,6 +141,10 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private boolean quarantineOfficialOrderSent;
 	private Date quarantineOfficialOrderSentDate;
 	private Date dateOfArrival;
+
+	private DeletionReason deletionReason;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String otherDeletionReason;
 
 	public static TravelEntryDto build(PersonReferenceDto person) {
 
@@ -472,5 +477,21 @@ public class TravelEntryDto extends PseudonymizableDto {
 
 	public void setDateOfArrival(Date dateOfArrival) {
 		this.dateOfArrival = dateOfArrival;
+	}
+
+	public DeletionReason getDeletionReason() {
+		return deletionReason;
+	}
+
+	public void setDeletionReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
+	}
+
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
+	}
+
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
 	}
 }

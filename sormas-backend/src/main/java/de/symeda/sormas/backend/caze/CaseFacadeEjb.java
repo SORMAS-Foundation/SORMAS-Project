@@ -127,6 +127,8 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -699,7 +701,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@RolesAllowed({
-		UserRight._CASE_EDIT})
+		UserRight._CASE_EDIT })
 	public CaseDataDto postUpdate(String uuid, JsonNode caseDataDtoJson) {
 		CaseDataDto existingCaseDto = getCaseDataWithoutPseudonyimization(uuid);
 		PatchHelper.postUpdate(caseDataDtoJson, existingCaseDto);
@@ -968,7 +970,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					samplesRoot.get(Sample.LAB_DETAILS),
 					samplesRoot.get(Sample.PATHOGEN_TEST_RESULT),
 					caseIdsExpr);
-				samplesCq.where(caseIdsExpr.in(resultCaseIds));
+
+				Predicate eliminateDeletedSamplesFilter = cb.equal(samplesRoot.get(Sample.DELETED), false);
+				samplesCq.where(caseIdsExpr.in(resultCaseIds), eliminateDeletedSamplesFilter);
 				samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 				samples = samplesList.stream().collect(Collectors.groupingBy(s -> s.getCaseId()));
 			}
@@ -1255,7 +1259,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Root<ClinicalVisit> clinicalVisitRoot = clinicalVisitCountSq.from(ClinicalVisit.class);
 		Join<ClinicalVisit, ClinicalCourse> clinicalVisitClinicalCourseJoin = clinicalVisitRoot.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
 		clinicalVisitCountSq.where(
-				cb.and(cb.equal(clinicalVisitClinicalCourseJoin.get(ClinicalCourse.ID), caseRoot.get(Case.CLINICAL_COURSE).get(ClinicalCourse.ID))));
+			cb.and(cb.equal(clinicalVisitClinicalCourseJoin.get(ClinicalCourse.ID), caseRoot.get(Case.CLINICAL_COURSE).get(ClinicalCourse.ID))));
 		clinicalVisitCountSq.select(cb.countDistinct(clinicalVisitRoot.get(ClinicalVisit.ID)));
 		return clinicalVisitCountSq;
 	}
@@ -1664,10 +1668,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			final Contact contact = contactService.getByUuid(sourceContact.getUuid());
 			final Case caze = service.getByUuid(cazeRef.getUuid());
 			contact.getSamples().forEach(sample -> {
-				if (sample.getAssociatedCase() == null) {
-					sample.setAssociatedCase(caze);
-				} else {
-					sampleFacade.cloneSampleForCase(sample, caze);
+				if(!sample.isDeleted()) {
+					if (sample.getAssociatedCase() == null) {
+						sample.setAssociatedCase(caze);
+					} else {
+						sampleFacade.cloneSampleForCase(sample, caze);
+					}
 				}
 			});
 
@@ -2452,30 +2458,30 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RolesAllowed(UserRight._CASE_DELETE)
-	public void delete(String caseUuid) throws ExternalSurveillanceToolException {
+	public void delete(String caseUuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
 		Case caze = service.getByUuid(caseUuid);
-		deleteCase(caze);
+		deleteCase(caze, deletionDetails);
 	}
 
 	@Override
 	@RolesAllowed(UserRight._CASE_DELETE)
-	public void deleteWithContacts(String caseUuid) {
+	public void deleteWithContacts(String caseUuid, DeletionDetails deletionDetails) {
 
 		Case caze = service.getByUuid(caseUuid);
-		deleteCase(caze);
+		deleteCase(caze, deletionDetails);
 
-		Optional.of(caze.getContacts()).ifPresent(cl -> cl.forEach(c -> contactService.delete(c)));
+		Optional.of(caze.getContacts()).ifPresent(cl -> cl.forEach(c -> contactService.delete(c, deletionDetails)));
 	}
 
-	private void deleteCase(Case caze) throws ExternalSurveillanceToolException {
+	private void deleteCase(Case caze, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
 
 		externalJournalService.handleExternalJournalPersonUpdateAsync(caze.getPerson().toReference());
-		service.delete(caze);
+		service.delete(caze, deletionDetails);
 	}
 
 	@RolesAllowed(UserRight._CASE_DELETE)
 	@Override
-	public List<String> deleteCases(List<String> caseUuids) {
+	public List<String> deleteCases(List<String> caseUuids, DeletionDetails deletionDetails) {
 
 		List<String> deletedCasesUuids = new ArrayList<>();
 		List<Case> casesToBeDeleted = service.getByUuids(caseUuids);
@@ -2483,7 +2489,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			casesToBeDeleted.forEach(caseToBeDeleted -> {
 				if (!caseToBeDeleted.isDeleted()) {
 					try {
-						deleteCase(caseToBeDeleted);
+						deleteCase(caseToBeDeleted, deletionDetails);
 						deletedCasesUuids.add(caseToBeDeleted.getUuid());
 					} catch (ExternalSurveillanceToolException e) {
 						logger.error("The case with uuid:" + caseToBeDeleted.getUuid() + "could not be deleted");
@@ -2503,7 +2509,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		caze.setDuplicateOf(duplicateOfCase);
 		service.ensurePersisted(caze);
 
-		delete(caseUuid);
+		delete(caseUuid, new DeletionDetails(DeletionReason.DUPLICATE_ENTRIES, null));
 	}
 
 	@RolesAllowed({
@@ -2865,6 +2871,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			target.setExternalData(new HashMap<>(source.getExternalData()));
 		}
 
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -3046,6 +3056,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (source.getExternalData() != null) {
 			target.setExternalData(source.getExternalData());
 		}
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
 	}

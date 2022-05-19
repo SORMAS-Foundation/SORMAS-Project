@@ -192,7 +192,7 @@ public class CaseDirectorySteps implements En {
         "I check if downloaded zip file for Quarantine Order is correct",
         () -> {
           Path path =
-              Paths.get(userDirPath + "/downloads/sormas_dokumente_" + LocalDate.now() + "_.zip");
+              Paths.get(userDirPath + "/downloads/sormas_documents_" + LocalDate.now() + "_.zip");
           assertHelpers.assertWithPoll(
               () ->
                   Assert.assertTrue(
@@ -205,7 +205,7 @@ public class CaseDirectorySteps implements En {
         "I delete downloaded file created from Quarantine order",
         () -> {
           File toDelete =
-              new File(userDirPath + "/downloads/sormas_dokumente_" + LocalDate.now() + "_.zip");
+              new File(userDirPath + "/downloads/sormas_documents_" + LocalDate.now() + "_.zip");
           toDelete.deleteOnExit();
         });
     When(
@@ -366,6 +366,7 @@ public class CaseDirectorySteps implements En {
         () -> {
           String caseUUID = apiState.getCreatedCase().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(NAME_UUID_EPID_NUMBER_LIKE_INPUT, caseUUID);
+          TimeUnit.SECONDS.sleep(2); // wait for system reaction
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               getCaseResultsUuidLocator(caseUUID));
           TimeUnit.SECONDS.sleep(1); // wait for system reaction
@@ -984,7 +985,7 @@ public class CaseDirectorySteps implements En {
         "I check if Data Dictionary for cases was downloaded correctly",
         () -> {
           String fileName =
-              "sormas_datenbeschreibungsverzeichnis_"
+              "sormas_data_dictionary_"
                   + LocalDate.now().format(formatterDataDictionary)
                   + "_.xlsx";
           Path path = Paths.get(userDirPath + "/downloads/" + fileName);

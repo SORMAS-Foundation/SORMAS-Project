@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -300,11 +302,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			rdcfEntities);
 		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
-		getCaseFacade().delete(caze.getUuid());
+		getCaseFacade().delete(caze.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
-		getCaseFacade().delete(caze2.getUuid());
+		getCaseFacade().delete(caze2.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		assertEquals(0, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
@@ -312,7 +314,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
-		getContactFacade().delete(contact.getUuid());
+		getContactFacade().delete(contact.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		assertEquals(0, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 	}

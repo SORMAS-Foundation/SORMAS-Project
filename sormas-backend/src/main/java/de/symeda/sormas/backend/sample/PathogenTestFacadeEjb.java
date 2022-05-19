@@ -37,6 +37,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.DeletionDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -272,9 +273,10 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 	@Override
 	@RolesAllowed(UserRight._PATHOGEN_TEST_DELETE)
-	public void deletePathogenTest(String pathogenTestUuid) {
+	public void deletePathogenTest(String pathogenTestUuid, DeletionDetails deletionDetails) {
+
 		PathogenTest pathogenTest = pathogenTestService.getByUuid(pathogenTestUuid);
-		pathogenTestService.delete(pathogenTest);
+		pathogenTestService.delete(pathogenTest, deletionDetails);
 
 		handleAssotiatedObjectChanges(pathogenTest, true);
 	}
@@ -391,6 +393,10 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setExternalOrderId(source.getExternalOrderId());
 		target.setPreliminary(source.getPreliminary());
 
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -446,6 +452,10 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setExternalId(source.getExternalId());
 		target.setExternalOrderId(source.getExternalOrderId());
 		target.setPreliminary(source.getPreliminary());
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
 	}

@@ -111,6 +111,15 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
+        "I check if value {string} is unavailable in Type of Sample combobox on Create new Sample page",
+        (String sampleMaterial) -> {
+          softly.assertFalse(
+              webDriverHelpers.checkIfElementExistsInCombobox(
+                  SAMPLE_TYPE_COMBOBOX, sampleMaterial));
+          softly.assertAll();
+        });
+
+    When(
         "I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup",
         () -> {
           selectTypeOfTest("Antigen-Nachweistest");
@@ -159,7 +168,7 @@ public class CreateNewSampleSteps implements En {
         "I fill all fields from Pathogen test for COVID-19 disease result popup and save",
         () -> {
           sampleTestResult = sampleService.buildGeneratedSampleTestResultForCovid();
-          fillReportDate(sampleTestResult.getReportDate(), Locale.ENGLISH);
+          //    fillReportDate(sampleTestResult.getReportDate(), Locale.ENGLISH);
           selectTypeOfTest(sampleTestResult.getTypeOfTest());
           selectTestedDisease(sampleTestResult.getTestedDisease());
           selectPathogenLaboratory(sampleTestResult.getLaboratory());
@@ -197,7 +206,7 @@ public class CreateNewSampleSteps implements En {
         "^I complete all fields from Pathogen test result popup and save$",
         () -> {
           sampleTestResult = sampleService.buildPathogenTestResult();
-          fillReportDate(sampleTestResult.getReportDate(), Locale.ENGLISH);
+          //    fillReportDate(sampleTestResult.getReportDate(), Locale.ENGLISH);
           selectTypeOfTest(sampleTestResult.getTypeOfTest());
           selectTestedDisease(sampleTestResult.getTestedDisease());
           selectPathogenLaboratory(sampleTestResult.getLaboratory());
@@ -257,7 +266,7 @@ public class CreateNewSampleSteps implements En {
               List.of(
                   "laboratory",
                   "sampleTestResults",
-                  "reportDate",
+                  //     "reportDate",
                   "typeOfTest",
                   "testedDisease",
                   "dateOfResult",
@@ -461,13 +470,13 @@ public class CreateNewSampleSteps implements En {
   }
 
   private void fillReportDate(LocalDate dateOfCollection, Locale locale) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.M.yyyy");
-    if (locale.equals(Locale.GERMAN))
-      webDriverHelpers.clearAndFillInWebElement(
-          DATE_TEST_REPORT, formatter.format(dateOfCollection));
-    else
-      webDriverHelpers.clearAndFillInWebElement(
-          DATE_TEST_REPORT, DATE_FORMATTER.format(dateOfCollection));
+    //    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.M.yyyy");
+    //    if (locale.equals(Locale.GERMAN))
+    //      webDriverHelpers.clearAndFillInWebElement(
+    //          DATE_TEST_REPORT, formatter.format(dateOfCollection));
+    //    else
+    //      webDriverHelpers.clearAndFillInWebElement(
+    //          DATE_TEST_REPORT, DATE_FORMATTER.format(dateOfCollection));
   }
 
   private void selectTypeOfTest(String typeOfTest) {
@@ -804,7 +813,6 @@ public class CreateNewSampleSteps implements En {
   private Sample collectPathogenTestResultsData() {
     return Sample.builder()
         .sampleTestResults(getPathogenPopupTestResult())
-        .reportDate(getReportDate(Locale.ENGLISH))
         .typeOfTest(getTypeOfTest())
         .testedDisease(getTestedDisease())
         .dateOfResult(getDateOfResult(Locale.ENGLISH))
@@ -860,7 +868,7 @@ public class CreateNewSampleSteps implements En {
   private Sample simplePathogenBuilderResult(String testType) {
     SampleService sampleService = new SampleService(faker);
     sampleTestResult = sampleService.buildPathogenTestResultType(testType);
-    fillReportDate(sampleTestResult.getReportDate(), Locale.ENGLISH);
+    // fillReportDate(sampleTestResult.getReportDate(), Locale.ENGLISH);
     selectTypeOfTest(sampleTestResult.getTypeOfTest());
     selectTestedDisease(sampleTestResult.getTestedDisease());
     selectPathogenLaboratory(sampleTestResult.getLaboratory());
@@ -877,7 +885,7 @@ public class CreateNewSampleSteps implements En {
   private Sample simplePathogenBuilderVerifiedResult(String testType) {
     SampleService sampleService = new SampleService(faker);
     sampleTestResult = sampleService.buildPathogenTestResultTypeVerified(testType);
-    fillReportDate(sampleTestResult.getReportDate(), Locale.ENGLISH);
+    // fillReportDate(sampleTestResult.getReportDate(), Locale.ENGLISH);
     selectTypeOfTest(sampleTestResult.getTypeOfTest());
     selectTestedDisease(sampleTestResult.getTestedDisease());
     selectPathogenLaboratory(sampleTestResult.getLaboratory());

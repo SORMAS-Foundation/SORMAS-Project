@@ -46,6 +46,7 @@ public class CreateNewCasePage {
   public static final By CASE_ORIGIN_OPTIONS =
       By.cssSelector(".popupContent #caseOrigin .v-select-option");
   public static final By EXTERNAL_ID_INPUT = By.cssSelector(".popupContent #externalID");
+  public static final By EPID_NUMBER_INPUT = By.cssSelector(".popupContent #epidNumber");
   public static final By PLACE_OF_STAY =
       By.cssSelector(".popupContent div[location='facilityOrHomeLoc'] span.v-select-option label");
   public static final By PLACE_DESCRIPTION_INPUT =
@@ -88,4 +89,15 @@ public class CreateNewCasePage {
   public static final By PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION =
       By.xpath(
           "//div[@class='v-grid v-widget v-has-width']//div[@class='v-grid-tablewrapper']/table/tbody[@class='v-grid-body']/tr[@class='v-grid-row v-grid-row-has-data']");
+  public static final By NEW_DOCUMENT_BUTTON = By.id("documentUploadDocument");
+  public static final By START_DATA_IMPORT_BUTTON = By.cssSelector("[class='v-button']");
+  public static final String CASE_UPLOADED_TEST_FILE = "//div[contains(text(), test_%1$s.%1$s)]";
+  public static final By CASE_DOCUMENT_EMPTY_TEXT =
+      By.xpath("//div[@location='documents']//div[@class='v-label v-widget v-label-undef-w']");
+  public static final By DOWNLOAD_LAST_UPDATED_CASE_DOCUMENT =
+      By.xpath("//div[@location='documents']//div[@class='v-button v-widget']");
+  public static final By DELETE_LAST_UPDATED_CASE_DOCUMENT =
+      By.xpath("(//div[@location='documents']//div[@class='v-button v-widget'])[2]");
+  public static final By ACTION_CONFIRM_POPUP_BUTTON =
+      By.cssSelector(".popupContent #actionConfirm");
 }

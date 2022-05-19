@@ -138,7 +138,7 @@ public class SampleService {
       testedDiseaseType = PathogenTestedDisease.getRandomPathogenTestedDisease();
     }
     return Sample.builder()
-        .reportDate(LocalDate.now().minusDays(10))
+        //   .reportDate(LocalDate.now().minusDays(10))
         .typeOfTest(testType)
         .testedDisease(testedDiseaseType)
         .dateOfResult(LocalDate.now())
@@ -153,7 +153,7 @@ public class SampleService {
   public Sample buildPathogenTestResultTypeVerified(String testType) {
     long currentTimeMillis = System.currentTimeMillis();
     return Sample.builder()
-        .reportDate(LocalDate.now().minusDays(2))
+        //   .reportDate(LocalDate.now().minusDays(2))
         .typeOfTest(testType)
         .testedDisease("COVID-19")
         .dateOfResult(LocalDate.now().minusDays(1))

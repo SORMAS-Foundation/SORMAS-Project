@@ -11360,6 +11360,65 @@ DROP FUNCTION IF EXISTS create_additional_healthconditions();
 
 INSERT INTO schema_version (version_number, comment) VALUES (458, 'Permanent Deletion | Immunization | healthconditions_id violates not-null constraint error #8983');
 
+
+-- 2022-05-10 Add reason for deletion to confirmation dialogue - #8162
+ALTER TABLE cases ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE cases ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE cases_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE cases_history ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE contact ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE contact ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE contact_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE contact_history ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE events ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE events ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE events_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE events_history ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE eventparticipant ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE eventparticipant ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE eventparticipant_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE eventparticipant_history ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE immunization ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE immunization ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE immunization_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE immunization_history ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE travelentry ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE travelentry ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE travelentry_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE travelentry_history ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE campaigns ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE campaigns ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE campaigns_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE campaigns_history ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE samples ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE samples ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE samples_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE samples_history ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE pathogentest ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE pathogentest ADD COLUMN  otherdeletionreason text;
+
+ALTER TABLE pathogentest_history ADD COLUMN  deletionreason varchar(255);
+ALTER TABLE pathogentest_history ADD COLUMN  otherdeletionreason text;
+
+INSERT INTO schema_version (version_number, comment) VALUES (459, 'Add reason for deletion to confirmation dialogue - #8162');
+
+
 -- 2022-03-18 Replace hard-coded user roles with fully configurable user roles #4461
 ALTER TABLE userrolesconfig DROP COLUMN userrole;
 ALTER TABLE userrolesconfig_history DROP COLUMN userrole;
@@ -11464,6 +11523,6 @@ CREATE TRIGGER delete_history_trigger_userroles_smsnotifications
     AFTER DELETE ON userroles
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('userroles_smsnotifications_history', 'userrole_id');
 
-INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (459, 'Replace hard-coded user roles with fully configurable user roles #4461', true);
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (460, 'Replace hard-coded user roles with fully configurable user roles #4461', true);
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
