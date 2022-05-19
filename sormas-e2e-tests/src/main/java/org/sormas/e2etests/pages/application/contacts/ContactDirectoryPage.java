@@ -85,7 +85,7 @@ public class ContactDirectoryPage {
   public static final By BULK_ACTIONS_CONTACT_VALUES = By.id("bulkActions-9");
   public static final By CONTACT_DATA_TAB = By.cssSelector("#tab-contacts-data");
   public static final By NEW_ENTRY_EPIDEMIOLOGICAL_DATA = By.id("actionNewEntry");
-  public static final By FIRST_PERSON_ID = By.xpath("//td[8]//a");
+  public static final By FIRST_PERSON_ID = By.xpath("//td[6]//a");
   public static final By FIRST_CONTACT_ID = By.xpath("//td[1]//a");
   public static final By BULK_CREATE_QUARANTINE_ORDER = By.id("bulkActions-8");
   public static final By CONTACT_MERGE_DUPLICATES = By.id("contactMergeDuplicates");
