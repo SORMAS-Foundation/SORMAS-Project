@@ -25,8 +25,13 @@ public class CreateNewVaccinationPage {
       By.cssSelector("[class='popupContent'] [id='commit']");
   public static final By VACCINATION_DATE =
       By.cssSelector("[class='popupContent'] [id='vaccinationDate'] input");
+  public static final By VACCINATION_DATE_REPORT =
+      By.cssSelector("[class='popupContent'] [id='reportDate'] input");
   public static final By DELETE_VACCINATION_BUTTON =
       By.cssSelector("[class='popupContent'] [id='delete']");
   public static final By REMOVE_REASON_COMBOBOX =
       By.xpath("/html/body/div[2]/div[5]/div/div/div[3]/div/div/div[1]/div/div[3]/div/div[2]/div");
+  public static final By VACCINE_NAME_COMBOBOX = By.cssSelector(".v-window #vaccineName div");
+  public static final By VACCINE_INFO_SOURCE_COMBOBOX =
+      By.cssSelector(".v-window #vaccinationInfoSource div");
 }

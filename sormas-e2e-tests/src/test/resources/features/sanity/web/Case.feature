@@ -1105,17 +1105,28 @@ Feature: Case end to end tests
     And  I click on save case button in Symptoms tab
     Then I click on Case tab from Symptoms tab directory
     And I click on New Vaccination for DE version
+    And I set Report Date to the some like data raport from Edit Case field as the symptom onset date
+    And I set Vaccine Name to "Comirnaty (COVID-19-mRNA Impfstoff)" on Vaccination page
+    And I set Vaccine Info Source to "Impfpass" on Vaccination page
     Then I click on save case button in Create Vaccination page
     And I check if Vaccination Status is set to "" on Edit Case page
     And I remove Vaccination from Edit Case page
     #    step 2
-#    Then I click on New Vaccination for DE version
-#    And I set Vaccination date the same date as the symptom onset date
-#    And I click on save case button in Create Vaccination page
-#    And I check if Vaccination Status is set to "" on Edit Case page
+    Then I click on New Vaccination for DE version
+    And I set Report Date to the some like data raport from Edit Case field as the symptom onset date
+    And I set Vaccination date the same date as the symptom onset date
+    And I set Vaccine Name to "Comirnaty (COVID-19-mRNA Impfstoff)" on Vaccination page
+    And I set Vaccine Info Source to "Impfpass" on Vaccination page
+    And I click on save case button in Create Vaccination page
+    And I check if Vaccination Status is set to "" on Edit Case page
 #    step 3
-#  I click on edit Exposure vision button
+    And  I click on save case button in Symptoms tab
+    Then I navigate to symptoms tab
+    And I remove symptom onset report date on Symptoms tab
+    And  I click on save case button in Symptoms tab
+    Then I click on Case tab from Symptoms tab directory
+    And I check if Vaccination Status is set to "Geimpft" on Edit Case page
 
 
-    And I select from Combobox all options in Type of activity field in Exposure for Epidemiological data tab for Cases
+#    And I select from Combobox all options in Type of activity field in Exposure for Epidemiological data tab for Cases
 

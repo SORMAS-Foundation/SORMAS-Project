@@ -105,6 +105,12 @@ public class SymptomsTabSteps implements En {
         });
 
     When(
+        "I remove symptom onset report date on Symptoms tab",
+        () -> {
+          webDriverHelpers.clearAndFillInWebElement(DATE_OF_SYMPTOM_INPUT, "");
+        });
+
+    When(
         "I change all symptoms fields and save",
         () -> {
           symptoms = symptomService.buildEditGeneratedSymptoms();
