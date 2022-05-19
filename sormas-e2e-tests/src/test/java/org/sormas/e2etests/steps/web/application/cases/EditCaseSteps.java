@@ -185,6 +185,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOU
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EVENT_PARTICIPANTS_DATA_TAB;
 import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.DELETE_VACCINATION_BUTTON;
+import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.REMOVE_REASON_COMBOBOX;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.contacts.ContactDirectorySteps.exposureData;
 
@@ -763,12 +764,10 @@ public class EditCaseSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EDIT_VACCINATION_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(EDIT_VACCINATION_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_VACCINATION_BUTTON);
-          //
-          // webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(REMOVE_REASON_COMBOBOX);
-          //          webDriverHelpers.selectFromCombobox(
-          //              REMOVE_REASON_COMBOBOX, "Deletion request by affected person according to
-          // GDPR");
-          //          webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(REMOVE_REASON_COMBOBOX);
+          webDriverHelpers.selectFromCombobox(
+              REMOVE_REASON_COMBOBOX, "Deletion request by affected person according to GDPR");
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
         });
     When(
         "I check if Vaccination Status is set to {string} on Edit Case page",
