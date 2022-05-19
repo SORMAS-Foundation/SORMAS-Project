@@ -19,3 +19,22 @@ Feature: Immunization end to end tests
     Then I check Overwrite immunization management status option
     Then I click on discard button from immunization tab
     And I check if Overwrite immunization management status is unchecked by Management Status
+
+  @env_main @#8565
+  Scenario: Check an archived immunization if its read only
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create 1 new immunizations for last created person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I navigate to last created immunization by API via URL
+    Then I click on archive button from immunization tab
+    Then I click on logout button from navbar
+    Then I log in with National User
+    Then I navigate to last created immunization by API via URL
+    Then I check if editable fields are read only for an archived immunization

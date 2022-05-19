@@ -18,4 +18,9 @@ public class EditImmunizationPage {
   public static final By FACILITY_CATEGORY_INPUT = By.cssSelector("#typeGroup input");
   public static final By FACILITY_TYPE_INPUT = By.cssSelector("#facilityType input");
   public static final By IMMUNIZATION_PERSON_TAB = By.cssSelector("div#tab-immunizations-person");
+  public static final By ARCHIVE_DEARCHIVE_BUTTON = By.id("archiveDearchive");
+  public static final By ACTION_CONFIRM_BUTTON = By.id("actionConfirm");
+  public static final By DISCARD_BUTTON = By.id("discard");
+  public static final By COMMIT_BUTTON = By.id("commit");
+  public static final By DELETE_BUTTON = By.id("delete");
 }

@@ -775,3 +775,17 @@ Feature: Create events
     Then I click on the Event participant tab
     And I choose Active event participants from combobox in the Event participant tab
     Then I check if participant appears in the event participants list
+
+  @env_main @#8565
+  Scenario: Check an archived event if its read only
+    Given API: I create a new event
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I am accessing the event tab using the created event via api
+    Then I click on the Archive event button
+    Then I confirm Archive event popup
+    Then I click on logout button from navbar
+    Then I log in with National User
+    Then I am accessing the event tab using the created event via api
+    Then I check if editable fields are read only for an archived event
