@@ -80,6 +80,7 @@ public class CurrentUserService {
 		// do eager loading in this case
 		final Root<User> user = cq.from(User.class);
 		user.fetch(User.ADDRESS);
+		user.fetch(User.USER_ROLES);
 
 		final Predicate equal = cb.equal(cb.lower(user.get(User.USER_NAME)), userNameParam);
 		cq.select(user).distinct(true);

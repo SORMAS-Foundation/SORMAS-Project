@@ -51,10 +51,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import de.symeda.sormas.api.common.DeletionDetails;
-import de.symeda.sormas.api.common.DeletionReason;
-import de.symeda.sormas.api.contact.ContactCriteria;
-import de.symeda.sormas.api.disease.DiseaseVariant;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
@@ -794,10 +790,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testCaseExportWithPrescriptionsTreatmentsVisits() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = getUser(rdcfEntities);
+		UserDto user = createUser(rdcfEntities);
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = getCaze(user, cazePerson, rdcfEntities);
+		CaseDataDto caze = createCase(user, cazePerson, rdcfEntities);
 		cazePerson.getAddress().setCity("City");
 		getPersonFacade().savePerson(cazePerson);
 
@@ -829,10 +825,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	public void testCaseExportWithSamples() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		RDCF rdcf = new RDCF(rdcfEntities);
-		UserDto user = getUser(rdcfEntities);
+		UserDto user = createUser(rdcfEntities);
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = getCaze(user, cazePerson, rdcfEntities);
+		CaseDataDto caze = createCase(user, cazePerson, rdcfEntities);
 		cazePerson.getAddress().setCity("City");
 		getPersonFacade().savePerson(cazePerson);
 
@@ -867,10 +863,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	public void testGetExportListWithRelevantVaccinations() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		RDCF rdcf = new RDCF(rdcfEntities);
-		UserDto user = getUser(rdcfEntities);
+		UserDto user = createUser(rdcfEntities);
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = getCaze(user, cazePerson, rdcfEntities);
+		CaseDataDto caze = createCase(user, cazePerson, rdcfEntities);
 		cazePerson.getAddress().setCity("City");
 		getPersonFacade().savePerson(cazePerson);
 
@@ -1026,7 +1022,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	public void testGetExportListWithoutRelevantVaccinations() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		RDCF rdcf = new RDCF(rdcfEntities);
-		UserDto user = getUser(rdcfEntities);
+		UserDto user = createUser(rdcfEntities);
 
 		getOutbreakFacade().startOutbreak(rdcf.district, Disease.CORONAVIRUS);
 
@@ -1189,10 +1185,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	public void testGetExportListWithoutDeletedSamples() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		RDCF rdcf = new RDCF(rdcfEntities);
-		UserDto user = getUser(rdcfEntities);
+		UserDto user = createUser(rdcfEntities);
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = getCaze(user, cazePerson, rdcfEntities);
+		CaseDataDto caze = createCase(user, cazePerson, rdcfEntities);
 		cazePerson.getAddress().setCity("City");
 		getPersonFacade().savePerson(cazePerson);
 
@@ -2858,7 +2854,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		return sb.toString();
 	}
 
-	private UserDto getUser(RDCFEntities rdcfEntities) {
+	private UserDto createUser(RDCFEntities rdcfEntities) {
 		return creator.createUser(
 			rdcfEntities.region.getUuid(),
 			rdcfEntities.district.getUuid(),
@@ -2868,7 +2864,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 	}
 
-	private CaseDataDto getCaze(UserDto user, PersonDto cazePerson, RDCFEntities rdcfEntities) {
+	private CaseDataDto createCase(UserDto user, PersonDto cazePerson, RDCFEntities rdcfEntities) {
 		return creator.createCase(
 			user.toReference(),
 			cazePerson.toReference(),
