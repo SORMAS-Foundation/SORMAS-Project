@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.common;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -53,6 +54,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
@@ -186,6 +188,19 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		return createQuery(cq, 0, batchSize).getResultList();
 	}
 
+	public List<AdoAttributes> getBatchedAttributesQueryResults(
+		CriteriaBuilder cb,
+		CriteriaQuery<AdoAttributes> cq,
+		From<?, ADO> from,
+		Integer batchSize) {
+
+		// Ordering by UUID is relevant if a batch includes some, but not all objects with the same timestamp.
+		// the next batch can then resume with the same timestamp and the next UUID in lexicographical order.y
+		cq.orderBy(cb.asc(from.get(AdoAttributes.CHANGE_DATE)), cb.asc(from.get(AdoAttributes.UUID)));
+
+		return createQuery(cq, 0, batchSize).getResultList();
+	}
+
 	public long countAfter(Date since) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -199,6 +214,21 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		cq.select(cb.count(root));
 
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	public List<ADO> getByIds(List<Long> ids) {
+
+		List<ADO> result = new ArrayList<>();
+		IterableHelper.executeBatched(ids, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
+			Root<ADO> from = cq.from(getElementClass());
+			cq.where(from.get(AbstractDomainObject.ID).in(batchedIds));
+			result.addAll(em.createQuery(cq).getResultList());
+		});
+
+		return result;
 	}
 
 	public List<ADO> getByUuids(List<String> uuids) {
