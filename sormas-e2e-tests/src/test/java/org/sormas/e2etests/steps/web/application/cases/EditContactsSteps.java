@@ -278,6 +278,7 @@ public class EditContactsSteps implements En {
     Then(
         "I check the linked contact information is correctly displayed",
         () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               By.cssSelector(
                   String.format(
