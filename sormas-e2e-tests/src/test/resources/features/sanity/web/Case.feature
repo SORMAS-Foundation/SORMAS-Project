@@ -1093,3 +1093,29 @@ Feature: Case end to end tests
       And I check if jpg file is downloaded correctly
       Then I delete last uploaded document file from case tab
       And I check if last uploaded file was deleted from document files in case tab
+
+  @issue=SORDEV-8863 @env_de
+  Scenario: Test Adjusted vaccination status calculation
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    Then I navigate to symptoms tab
+    And I change symptom onset report date to one day prior than report date on Symptoms tab
+    And  I click on save case button in Symptoms tab
+    Then I click on Case tab from Symptoms tab directory
+    And I click on New Vaccination for DE version
+    Then I click on save case button in Create Vaccination page
+    And I check if Vaccination Status is set to "" on Edit Case page
+    And I remove Vaccination from Edit Case page
+    #    step 2
+#    Then I click on New Vaccination for DE version
+#    And I set Vaccination date the same date as the symptom onset date
+#    And I click on save case button in Create Vaccination page
+#    And I check if Vaccination Status is set to "" on Edit Case page
+#    step 3
+#  I click on edit Exposure vision button
+
+
+    And I select from Combobox all options in Type of activity field in Exposure for Epidemiological data tab for Cases
+

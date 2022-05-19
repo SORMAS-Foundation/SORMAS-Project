@@ -227,4 +227,8 @@ public class EditCasePage {
   public static final By ARCHIVE_CASE_BUTTON = By.id("archiveDearchive");
   public static final By ARCHIVE_RELATED_CONTACTS_CHECKBOX =
       By.cssSelector(".popupContent span[class='v-checkbox v-widget']");
+  public static final By NEW_VACCINATION_BUTTON_DE = By.cssSelector("[id='Neue Impfung']");
+  public static final By EDIT_VACCINATION_BUTTON =
+      By.cssSelector(
+          "[location='vaccinations'] [class='v-button v-widget link v-button-link compact v-button-compact']");
 }

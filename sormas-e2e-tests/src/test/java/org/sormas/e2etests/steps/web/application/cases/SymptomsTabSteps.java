@@ -26,6 +26,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPU
 import static org.sormas.e2etests.pages.application.cases.SymptomsTabPage.*;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
+import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -43,13 +44,17 @@ public class SymptomsTabSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   public static Symptoms symptoms;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+  public static final DateTimeFormatter DATE_FORMATTER_DE =
+      DateTimeFormatter.ofPattern("dd.MM.yyyy");
+  public static LocalDate symptomOnsetDate;
 
   @Inject
   public SymptomsTabSteps(
       WebDriverHelpers webDriverHelpers,
       SymptomService symptomService,
       ApiState apiState,
-      RunningConfiguration runningConfiguration) {
+      RunningConfiguration runningConfiguration,
+      Faker faker) {
     this.webDriverHelpers = webDriverHelpers;
     String firstSymptom = "Sore throat/pharyngitis";
 
@@ -88,6 +93,15 @@ public class SymptomsTabSteps implements En {
         "^I click on save case button in Symptoms tab$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    When(
+        "I change symptom onset report date to one day prior than report date on Symptoms tab",
+        () -> {
+          selectOtherNonHemorrhagicSymptoms("JA");
+          fillOtherNonHemorrhagicSymptoms(faker.chuckNorris().fact());
+          symptomOnsetDate = LocalDate.now().minusDays(2);
+          fillDateOfSymptomDE(symptomOnsetDate);
         });
 
     When(
@@ -463,5 +477,10 @@ public class SymptomsTabSteps implements En {
 
   private void fillDateOfSymptom(LocalDate dateOfSymptom) {
     webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_INPUT, DATE_FORMATTER.format(dateOfSymptom));
+  }
+
+  private void fillDateOfSymptomDE(LocalDate dateOfSymptom) {
+    webDriverHelpers.fillInWebElement(
+        DATE_OF_SYMPTOM_INPUT, DATE_FORMATTER_DE.format(dateOfSymptom));
   }
 }

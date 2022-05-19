@@ -15,11 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.pages.application.configuration;
+
+package org.sormas.e2etests.pages.application.vaccinations;
 
 import org.openqa.selenium.By;
 
-public class CountriesTabPage {
-  public static final By SEARCH_COUNTRY = By.id("search");
-  public static final By SUBCONTINENT_TABLE_VALUE = By.xpath("//table//tbody//tr[1]/td[4]");
+public class CreateNewVaccinationPage {
+  public static final By SAVE_VACCINATION_BUTTON =
+      By.cssSelector("[class='popupContent'] [id='commit']");
+  public static final By VACCINATION_DATE =
+      By.cssSelector("[class='popupContent'] [id='vaccinationDate'] input");
+  public static final By DELETE_VACCINATION_BUTTON = By.id("delete");
+  public static final By REMOVE_REASON_COMBOBOX =
+      By.xpath("/html/body/div[2]/div[5]/div/div/div[3]/div/div/div[1]/div/div[3]/div/div[2]/div");
 }

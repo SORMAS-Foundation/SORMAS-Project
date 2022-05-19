@@ -80,6 +80,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISTRICT_
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_TRAVEL_ENTRY_FROM_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_VACCINATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EPIDEMIOLOGICAL_CONFIRMATION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTERNAL_ID_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTERNAL_TOKEN_INPUT;
@@ -100,6 +101,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_SAMPL
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_SAMPLE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_TRAVEL_ENTRY_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_VACCINATION_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.OFFICIAL_QUARANTINE_ORDER_SENT_CHECKBOX_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.OFFICIAL_QUARANTINE_ORDER_SENT_CHECKBOX_LABEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.OUTCOME_OF_CASE_OPTIONS;
@@ -182,6 +184,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOU
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EVENT_PARTICIPANTS_DATA_TAB;
+import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.DELETE_VACCINATION_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.contacts.ContactDirectorySteps.exposureData;
 
@@ -753,6 +756,20 @@ public class EditCaseSteps implements En {
           webDriverHelpers.selectFromCombobox(
               VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX, vaccination);
         });
+
+    When(
+        "I remove Vaccination from Edit Case page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EDIT_VACCINATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_VACCINATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_VACCINATION_BUTTON);
+          //
+          // webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(REMOVE_REASON_COMBOBOX);
+          //          webDriverHelpers.selectFromCombobox(
+          //              REMOVE_REASON_COMBOBOX, "Deletion request by affected person according to
+          // GDPR");
+          //          webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
+        });
     When(
         "I check if Vaccination Status is set to {string} on Edit Case page",
         (String expected) -> {
@@ -1114,6 +1131,14 @@ public class EditCaseSteps implements En {
     When(
         "I click on New Sample",
         () -> webDriverHelpers.clickOnWebElementBySelector(NEW_SAMPLE_BUTTON));
+
+    When(
+        "I click on New Vaccination for DE version",
+        () -> {
+          TimeUnit.SECONDS.sleep(5);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_VACCINATION_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_VACCINATION_BUTTON_DE);
+        });
 
     When(
         "I click on New Sample in German",
