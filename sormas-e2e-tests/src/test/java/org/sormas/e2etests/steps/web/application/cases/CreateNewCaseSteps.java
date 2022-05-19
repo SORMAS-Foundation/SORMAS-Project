@@ -393,6 +393,24 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
+        "^I create a new case with specific data and new person$",
+        () -> {
+          caze = caseService.buildGeneratedCase();
+          fillAllCaseFields(caze);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(
+              CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON, 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          }
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+
+          TimeUnit.SECONDS.sleep(2);
+        });
+
+    When(
         "I create a new case with disease {string}",
         (String caseDisease) -> {
           caze = caseService.buildCaseWithDisease(caseDisease);
