@@ -852,7 +852,7 @@ public class EditCaseSteps implements En {
           String quarantineText;
           String expectedTextReduce = "Are you sure you want to reduce the quarantine?";
           String expectedTextExtend = "Are you sure you want to extend the quarantine?";
-          webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_ORDERED_VERBALLY_CHECKBOX_LABEL);
+          webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_COMBOBOX);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(QUARANTINE_POPUP_MESSAGE);
           quarantineText = webDriverHelpers.getTextFromWebElement(QUARANTINE_POPUP_MESSAGE);
           if (option.equals("Reduce")) softly.assertEquals(quarantineText, expectedTextReduce);
