@@ -63,4 +63,6 @@ public class TravelEntryPage {
       By.cssSelector("[id='weekFrom'] [class='v-filterselect-button']");
   public static final By WEEK_TO_OPTION_COMBOBOX =
       By.cssSelector("[id='weekTo'] [class='v-filterselect-button']");
+  public static final By DELETE_TRAVEL_ENTRY_POPUP =
+      By.xpath("//div[@class='popupContent']//div[@class='v-filterselect-button']");
 }
