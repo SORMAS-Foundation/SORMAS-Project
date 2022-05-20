@@ -61,7 +61,7 @@ public class UserRole extends AbstractDomainObject {
 	@Column
 	private boolean hasOptionalHealthFacility;
 	@Column
-	private boolean hasAssociatedOfficer;
+	private boolean hasAssociatedDistrictUser;
 	@Column
 	private boolean portHealthUser;
 	@Enumerated(EnumType.STRING)
@@ -129,11 +129,11 @@ public class UserRole extends AbstractDomainObject {
 	}
 
 	public boolean hasAssociatedOfficer() {
-		return hasAssociatedOfficer;
+		return hasAssociatedDistrictUser;
 	}
 
-	public void setHasAssociatedOfficer(boolean hasAssociatedOfficer) {
-		this.hasAssociatedOfficer = hasAssociatedOfficer;
+	public void setHasAssociatedDistrictUser(boolean hasAssociatedDistrictUser) {
+		this.hasAssociatedDistrictUser = hasAssociatedDistrictUser;
 	}
 
 	public boolean isPortHealthUser() {

@@ -155,10 +155,10 @@ public class TestDataCreator {
 			userRoleDto.setCaption(defaultUserRole.toString());
 			userRoleDto.setEnabled(true);
 			userRoleDto.setPortHealthUser(defaultUserRole.isPortHealthUser());
-			userRoleDto.setHasAssociatedOfficer(defaultUserRole.hasAssociatedOfficer());
+			userRoleDto.setHasAssociatedDistrictUser(defaultUserRole.hasAssociatedOfficer());
 			userRoleDto.setHasOptionalHealthFacility(defaultUserRole.hasOptionalHealthFacility());
-			userRoleDto.setEmailNotifications(defaultUserRole.getEmailNotifications());
-			userRoleDto.setSmsNotifications(defaultUserRole.getSmsNotifications());
+			userRoleDto.setEmailNotificationTypes(defaultUserRole.getEmailNotificationTypes());
+			userRoleDto.setSmsNotificationTypes(defaultUserRole.getSmsNotificationTypes());
 			userRoleDto.setJurisdictionLevel(defaultUserRole.getJurisdictionLevel());
 			userRoleDto = beanTest.getUserRoleFacade().saveUserRole(userRoleDto);
 			userRoleDtoMap.put(defaultUserRole, userRoleDto.toReference());

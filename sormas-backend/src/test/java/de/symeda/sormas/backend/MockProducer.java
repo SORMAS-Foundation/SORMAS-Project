@@ -173,11 +173,6 @@ public class MockProducer implements InitialContextFactory {
 		return principal;
 	}
 
-//	public static boolean hasRight(UserRight userRight) {
-//		User user = currentUserService.getCurrentUser();
-//		return user.getUserRoles().stream().anyMatch(userRole -> userRole.getUserRights().contains(userRight));
-//	}
-
 	public static SormasToSormasRestClient getSormasToSormasClient() {
 		return s2sRestClient;
 	}

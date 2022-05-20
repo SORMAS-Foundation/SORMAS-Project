@@ -32,7 +32,6 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -110,9 +109,8 @@ public class TestHelper {
 		secondUser.setActive(true);
 		secondUser.setFirstName("Sabo");
 		secondUser.setLastName("Anas");
-		secondUser.setUserRoles(
-			new HashSet(
-				Arrays.asList(getUserRole(DefaultUserRole.SURVEILLANCE_OFFICER), getUserRole(DefaultUserRole.CASE_OFFICER))));
+		secondUser
+			.setUserRoles(new HashSet(Arrays.asList(getUserRole(DefaultUserRole.SURVEILLANCE_OFFICER), getUserRole(DefaultUserRole.CASE_OFFICER))));
 		secondUser.setCreationDate(new Date());
 		secondUser.setChangeDate(new Date());
 		secondUser.setUuid(SECOND_USER_UUID);
@@ -266,7 +264,7 @@ public class TestHelper {
 			userRole.setUserRights(defaultUserRole.getDefaultUserRights());
 			userRole.setCaption(defaultUserRole.toString());
 			userRole.setPortHealthUser(defaultUserRole.isPortHealthUser());
-			userRole.setHasAssociatedOfficer(defaultUserRole.hasAssociatedOfficer());
+			userRole.setHasAssociatedDistrictUser(defaultUserRole.hasAssociatedOfficer());
 			userRole.setHasOptionalHealthFacility(defaultUserRole.hasOptionalHealthFacility());
 			userRole.setJurisdictionLevel(defaultUserRole.getJurisdictionLevel());
 			try {

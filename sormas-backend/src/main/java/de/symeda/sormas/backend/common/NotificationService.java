@@ -159,8 +159,8 @@ public class NotificationService {
 					.stream()
 					.flatMap(
 						userRole -> NotificationProtocol.EMAIL.equals(notificationProtocol)
-							? userRole.getEmailNotifications().stream()
-							: userRole.getSmsNotifications().stream())
+							? userRole.getEmailNotificationTypes().stream()
+							: userRole.getSmsNotificationTypes().stream())
 					.anyMatch(type -> notificationTypes.contains(type))) {
 					recipients.add(user);
 				}

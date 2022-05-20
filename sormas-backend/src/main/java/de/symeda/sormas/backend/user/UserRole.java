@@ -48,25 +48,25 @@ public class UserRole extends AbstractDomainObject {
 	private static final long serialVersionUID = 9053095630718041842L;
 
 	public static final String TABLE_NAME = "userroles";
-	public static final String TABLE_NAME_EMAIL_NOTIFICATIONS = "userroles_emailnotifications";
-	public static final String TABLE_NAME_SMS_NOTIFICATIONS = "userroles_smsnotifications";
+	public static final String TABLE_NAME_EMAIL_NOTIFICATIONS = "userroles_emailnotificationtypes";
+	public static final String TABLE_NAME_SMS_NOTIFICATIONS = "userroles_smsnotificationtypes";
 
 	public static final String USER_RIGHTS = "userRights";
 	public static final String CAPTION = "caption";
 	public static final String ENABLED = "enabled";
-	public static final String EMAIL_NOTIFICATIONS = "emailNotifications";
-	public static final String SMS_NOTIFICATIONS = "smsNotifications";
+	public static final String EMAIL_NOTIFICATIONS = "emailNotificationTypes";
+	public static final String SMS_NOTIFICATIONS = "smsNotificationTypes";
 
 	private Set<UserRight> userRights;
 	private boolean enabled = true;
 	private String caption;
 	private String description;
 	private boolean hasOptionalHealthFacility;
-	private boolean hasAssociatedOfficer;
+	private boolean hasAssociatedDistrictUser;
 	private boolean portHealthUser;
 	private JurisdictionLevel jurisdictionLevel;
-	private List<NotificationType> emailNotifications;
-	private List<NotificationType> smsNotifications;
+	private List<NotificationType> emailNotificationTypes;
+	private List<NotificationType> smsNotificationTypes;
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Enumerated(EnumType.STRING)
@@ -122,11 +122,11 @@ public class UserRole extends AbstractDomainObject {
 
 	@Column
 	public boolean hasAssociatedOfficer() {
-		return hasAssociatedOfficer;
+		return hasAssociatedDistrictUser;
 	}
 
-	public void setHasAssociatedOfficer(boolean hasAssociatedOfficer) {
-		this.hasAssociatedOfficer = hasAssociatedOfficer;
+	public void setHasAssociatedDistrictUser(boolean hasAssociatedOfficer) {
+		this.hasAssociatedDistrictUser = hasAssociatedOfficer;
 	}
 
 	@Column
@@ -155,12 +155,12 @@ public class UserRole extends AbstractDomainObject {
 			"userrole_id",
 			"notificationtype" }))
 	@Column(name = "notificationtype", nullable = false)
-	public List<NotificationType> getEmailNotifications() {
-		return emailNotifications;
+	public List<NotificationType> getEmailNotificationTypes() {
+		return emailNotificationTypes;
 	}
 
-	public void setEmailNotifications(List<NotificationType> emailNotifications) {
-		this.emailNotifications = emailNotifications;
+	public void setEmailNotificationTypes(List<NotificationType> emailNotifications) {
+		this.emailNotificationTypes = emailNotifications;
 	}
 
 	@ElementCollection(fetch = FetchType.LAZY)
@@ -171,12 +171,12 @@ public class UserRole extends AbstractDomainObject {
 			"userrole_id",
 			"notificationtype" }))
 	@Column(name = "notificationtype", nullable = false)
-	public List<NotificationType> getSmsNotifications() {
-		return smsNotifications;
+	public List<NotificationType> getSmsNotificationTypes() {
+		return smsNotificationTypes;
 	}
 
-	public void setSmsNotifications(List<NotificationType> smsNotifications) {
-		this.smsNotifications = smsNotifications;
+	public void setSmsNotificationTypes(List<NotificationType> smsNotifications) {
+		this.smsNotificationTypes = smsNotifications;
 	}
 
 	public static JurisdictionLevel getJurisdictionLevel(Collection<UserRole> roles) {

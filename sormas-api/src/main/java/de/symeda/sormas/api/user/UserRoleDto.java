@@ -40,7 +40,7 @@ public class UserRoleDto extends EntityDto {
 	public static final String CAPTION = "caption";
 	public static final String DESCRIPTION = "description";
 	public static final String HAS_OPTIONAL_HEALTH_FACILITY = "hasOptionalHealthFacility";
-	public static final String HAS_ASSOCIATED_OFFICER = "hasAssociatedOfficer";
+	public static final String HAS_ASSOCIATED_DISTRICT_USER = "hasAssociatedDistrictUser";
 	public static final String PORT_HEALTH_USER = "portHealthUser";
 
 	private Set<UserRight> userRights;
@@ -48,11 +48,11 @@ public class UserRoleDto extends EntityDto {
 	private String caption;
 	private String description;
 	private boolean hasOptionalHealthFacility = true;
-	private boolean hasAssociatedOfficer = true;
+	private boolean hasAssociatedDistrictUser = true;
 	private boolean portHealthUser = true;
 	private JurisdictionLevel jurisdictionLevel;
-	private List<NotificationType> emailNotifications;
-	private List<NotificationType> smsNotifications;
+	private List<NotificationType> emailNotificationTypes;
+	private List<NotificationType> smsNotificationTypes;
 
 	public static UserRoleDto build(UserRight... userRights) {
 
@@ -104,12 +104,12 @@ public class UserRoleDto extends EntityDto {
 		this.hasOptionalHealthFacility = hasOptionalHealthFacility;
 	}
 
-	public boolean hasAssociatedOfficer() {
-		return hasAssociatedOfficer;
+	public boolean hasAssociatedDistrictUser() {
+		return hasAssociatedDistrictUser;
 	}
 
-	public void setHasAssociatedOfficer(boolean hasAssociatedOfficer) {
-		this.hasAssociatedOfficer = hasAssociatedOfficer;
+	public void setHasAssociatedDistrictUser(boolean hasAssociatedDistrictUser) {
+		this.hasAssociatedDistrictUser = hasAssociatedDistrictUser;
 	}
 
 	public boolean isPortHealthUser() {
@@ -128,20 +128,20 @@ public class UserRoleDto extends EntityDto {
 		this.jurisdictionLevel = jurisdictionLevel;
 	}
 
-	public List<NotificationType> getEmailNotifications() {
-		return emailNotifications;
+	public List<NotificationType> getEmailNotificationTypes() {
+		return emailNotificationTypes;
 	}
 
-	public void setEmailNotifications(List<NotificationType> emailNotifications) {
-		this.emailNotifications = emailNotifications;
+	public void setEmailNotificationTypes(List<NotificationType> emailNotificationTypes) {
+		this.emailNotificationTypes = emailNotificationTypes;
 	}
 
-	public List<NotificationType> getSmsNotifications() {
-		return smsNotifications;
+	public List<NotificationType> getSmsNotificationTypes() {
+		return smsNotificationTypes;
 	}
 
-	public void setSmsNotifications(List<NotificationType> smsNotifications) {
-		this.smsNotifications = smsNotifications;
+	public void setSmsNotificationTypes(List<NotificationType> smsNotificationTypes) {
+		this.smsNotificationTypes = smsNotificationTypes;
 	}
 
 	public UserRoleReferenceDto toReference() {

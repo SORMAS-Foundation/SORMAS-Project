@@ -30,7 +30,6 @@ import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -128,7 +127,8 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			filter = CriteriaBuilderHelper.and(cb, filter, notificationsFilter);
 		}
 		if (fetchNotificationTypes) {
-			from.fetch(User.USER_ROLES, JoinType.LEFT).fetch(
+			from.fetch(User.USER_ROLES, JoinType.LEFT)
+				.fetch(
 					NotificationProtocol.EMAIL.equals(notificationProtocol) ? UserRole.EMAIL_NOTIFICATIONS : UserRole.SMS_NOTIFICATIONS,
 					JoinType.LEFT);
 		}
@@ -684,8 +684,8 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			user = em.merge(user);
 		}
 		for (UserRole userRole : user.getUserRoles()) {
-			userRole.getEmailNotifications().size();
-			userRole.getSmsNotifications().size();
+			userRole.getEmailNotificationTypes().size();
+			userRole.getSmsNotificationTypes().size();
 		}
 		return user;
 	}

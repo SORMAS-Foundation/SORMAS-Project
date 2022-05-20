@@ -130,10 +130,10 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		target.setCaption(source.getCaption());
 		target.setDescription(source.getDescription());
 		target.setHasOptionalHealthFacility(source.hasOptionalHealthFacility());
-		target.setHasAssociatedOfficer(source.hasAssociatedOfficer());
+		target.setHasAssociatedDistrictUser(source.hasAssociatedDistrictUser());
 		target.setPortHealthUser(source.isPortHealthUser());
-		target.setEmailNotifications(source.getEmailNotifications());
-		target.setSmsNotifications(source.getSmsNotifications());
+		target.setEmailNotificationTypes(source.getEmailNotificationTypes());
+		target.setSmsNotificationTypes(source.getSmsNotificationTypes());
 		target.setJurisdictionLevel(source.getJurisdictionLevel());
 
 		return target;
@@ -153,10 +153,10 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		target.setCaption(source.getCaption());
 		target.setDescription(source.getDescription());
 		target.setHasOptionalHealthFacility(source.hasOptionalHealthFacility());
-		target.setHasAssociatedOfficer(source.hasAssociatedOfficer());
+		target.setHasAssociatedDistrictUser(source.hasAssociatedOfficer());
 		target.setPortHealthUser(source.isPortHealthUser());
-		target.setEmailNotifications(new ArrayList<>(source.getEmailNotifications()));
-		target.setSmsNotifications(new ArrayList<>(source.getSmsNotifications()));
+		target.setEmailNotificationTypes(new ArrayList<>(source.getEmailNotificationTypes()));
+		target.setSmsNotificationTypes(new ArrayList<>(source.getSmsNotificationTypes()));
 		target.setJurisdictionLevel(source.getJurisdictionLevel());
 
 		return target;
@@ -193,7 +193,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 
 	@Override
 	public boolean hasAssociatedOfficer(Set<UserRoleDto> userRoles) {
-		return userRoles.stream().filter(userRoleDto -> userRoleDto.hasAssociatedOfficer()).findFirst().orElse(null) != null;
+		return userRoles.stream().filter(userRoleDto -> userRoleDto.hasAssociatedDistrictUser()).findFirst().orElse(null) != null;
 	}
 
 	@Override

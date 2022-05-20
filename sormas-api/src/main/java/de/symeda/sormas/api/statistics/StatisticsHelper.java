@@ -68,7 +68,7 @@ public final class StatisticsHelper {
 		Function<Integer, DistrictReferenceDto> districtProvider,
 		Function<Integer, CommunityReferenceDto> communityProvider,
 		Function<Integer, FacilityReferenceDto> facilityProvider,
-		Function<Integer, UserRoleReferenceDto> userRoleprovider) {
+		Function<Integer, UserRoleReferenceDto> userRoleProvider) {
 
 		if (isNullOrUnknown(attributeValue)) {
 			return null;
@@ -146,7 +146,7 @@ public final class StatisticsHelper {
 					return new IntegerRange(Integer.valueOf(entryAsString), Integer.valueOf(entryAsString));
 				}
 			case REPORTING_USER_ROLE:
-				return userRoleprovider.apply(((Number) attributeValue).intValue());
+				return userRoleProvider.apply(((Number) attributeValue).intValue());
 			default:
 				throw new IllegalArgumentException(attribute.toString());
 			}

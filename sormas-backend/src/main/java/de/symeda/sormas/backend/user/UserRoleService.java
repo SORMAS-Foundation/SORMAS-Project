@@ -22,9 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.Resource;
 import javax.ejb.LocalBean;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -71,8 +69,8 @@ public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
 	public UserRole getByUuidEager(String uuid) {
 		UserRole userRole = getByUuid(uuid);
 		if (userRole != null) {
-			userRole.getEmailNotifications().size();
-			userRole.getSmsNotifications().size();
+			userRole.getEmailNotificationTypes().size();
+			userRole.getSmsNotificationTypes().size();
 		}
 		return userRole;
 	}
@@ -98,16 +96,14 @@ public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
 		return em.createQuery(cq).getResultList();
 	}
 
-
 	public List<UserRole> getActiveByNotificationTypes(NotificationProtocol protocol, Set<NotificationType> notificationTypes) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<UserRole> cq = cb.createQuery(UserRole.class);
 		Root<UserRole> from = cq.from(UserRole.class);
 
-		Join<UserRole, NotificationType> notificationsJoin = from.join(
-				NotificationProtocol.EMAIL.equals(protocol) ? UserRole.EMAIL_NOTIFICATIONS : UserRole.SMS_NOTIFICATIONS,
-				JoinType.LEFT);
+		Join<UserRole, NotificationType> notificationsJoin =
+			from.join(NotificationProtocol.EMAIL.equals(protocol) ? UserRole.EMAIL_NOTIFICATIONS : UserRole.SMS_NOTIFICATIONS, JoinType.LEFT);
 		Predicate notificationsFilter = notificationsJoin.in(notificationTypes);
 
 		cq.where(cb.and(cb.isTrue(from.get(UserRole.ENABLED)), notificationsFilter));

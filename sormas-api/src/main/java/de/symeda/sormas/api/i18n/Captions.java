@@ -2400,13 +2400,13 @@ public interface Captions {
 	String userRights = "userRights";
 	String UserRole_caption = "UserRole.caption";
 	String UserRole_description = "UserRole.description";
-	String UserRole_emailNotifications = "UserRole.emailNotifications";
+	String UserRole_emailNotificationTypes = "UserRole.emailNotificationTypes";
 	String UserRole_enabled = "UserRole.enabled";
 	String UserRole_hasAssociatedOfficer = "UserRole.hasAssociatedOfficer";
 	String UserRole_hasOptionalHealthFacility = "UserRole.hasOptionalHealthFacility";
 	String UserRole_jurisdictionLevel = "UserRole.jurisdictionLevel";
 	String UserRole_portHealthUser = "UserRole.portHealthUser";
-	String UserRole_smsNotifications = "UserRole.smsNotifications";
+	String UserRole_smsNotificationTypes = "UserRole.smsNotificationTypes";
 	String UserRole_userRights = "UserRole.userRights";
 	String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";
 	String Vaccination = "Vaccination";

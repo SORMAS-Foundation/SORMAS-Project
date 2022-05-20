@@ -208,30 +208,30 @@ public enum DefaultUserRole {
 
 	private final boolean supervisor;
 	private final boolean hasOptionalHealthFacility;
-	private final boolean hasAssociatedOfficer;
+	private final boolean hasAssociatedDistrictUser;
 	private final boolean portHealthUser;
 
 	private final JurisdictionLevel jurisdictionLevel;
 
-	private final List<NotificationType> emailNotifications;
-	private final List<NotificationType> smsNotifications;
+	private final List<NotificationType> emailNotificationTypes;
+	private final List<NotificationType> smsNotificationTypes;
 
 	DefaultUserRole(
 		boolean supervisor,
 		boolean hasOptionalHealthFacility,
-		boolean hasAssociatedOfficer,
+		boolean hasAssociatedDistrictUser,
 		boolean portHealthUser,
 		JurisdictionLevel jurisdictionLevel,
-		List<NotificationType> emailNotifications,
-		List<NotificationType> smsNotifications) {
+		List<NotificationType> emailNotificationTypes,
+		List<NotificationType> smsNotificationTypes) {
 
 		this.supervisor = supervisor;
 		this.hasOptionalHealthFacility = hasOptionalHealthFacility;
-		this.hasAssociatedOfficer = hasAssociatedOfficer;
+		this.hasAssociatedDistrictUser = hasAssociatedDistrictUser;
 		this.portHealthUser = portHealthUser;
 		this.jurisdictionLevel = jurisdictionLevel;
-		this.emailNotifications = emailNotifications;
-		this.smsNotifications = smsNotifications;
+		this.emailNotificationTypes = emailNotificationTypes;
+		this.smsNotificationTypes = smsNotificationTypes;
 	}
 
 	public static boolean hasOptionalHealthFacility(Collection<DefaultUserRole> roles) {
@@ -249,19 +249,19 @@ public enum DefaultUserRole {
 	}
 
 	public boolean hasAssociatedOfficer() {
-		return hasAssociatedOfficer;
+		return hasAssociatedDistrictUser;
 	}
 
 	public boolean isPortHealthUser() {
 		return portHealthUser;
 	}
 
-	public List<NotificationType> getEmailNotifications() {
-		return emailNotifications;
+	public List<NotificationType> getEmailNotificationTypes() {
+		return emailNotificationTypes;
 	}
 
-	public List<NotificationType> getSmsNotifications() {
-		return smsNotifications;
+	public List<NotificationType> getSmsNotificationTypes() {
+		return smsNotificationTypes;
 	}
 
 	public Set<UserRight> getDefaultUserRights() {

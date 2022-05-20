@@ -11441,8 +11441,8 @@ ALTER TABLE userroles ADD COLUMN description varchar(4096);
 ALTER TABLE userroles_history ADD COLUMN description varchar(4096);
 ALTER TABLE userroles ADD COLUMN hasoptionalhealthfacility boolean default false;
 ALTER TABLE userroles_history ADD COLUMN hasoptionalhealthfacility boolean default false;
-ALTER TABLE userroles ADD COLUMN hasassociatedofficer boolean default false;
-ALTER TABLE userroles_history ADD COLUMN hasassociatedofficer boolean default false;
+ALTER TABLE userroles ADD COLUMN hasassociateddistrcituser boolean default false;
+ALTER TABLE userroles_history ADD COLUMN hasassociateddistrcituser boolean default false;
 ALTER TABLE userroles ADD COLUMN porthealthuser boolean default false;
 ALTER TABLE userroles_history ADD COLUMN porthealthuser boolean default false;
 ALTER TABLE userroles ADD COLUMN jurisdictionlevel varchar(255);
@@ -11491,37 +11491,37 @@ CREATE TRIGGER delete_history_trigger_users_userroles
     AFTER DELETE ON userroles
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('users_userroles_history', 'userrole_id');
 
-CREATE TABLE userroles_emailnotifications (
+CREATE TABLE userroles_emailnotificationtypes (
     userrole_id bigint NOT NULL,
     notificationtype character varying(255) NOT NULL,
     sys_period tstzrange not null
 );
-ALTER TABLE userroles_emailnotifications ADD CONSTRAINT fk_userrole_id FOREIGN KEY (userrole_id) REFERENCES userroles (id);
-ALTER TABLE userroles_emailnotifications OWNER TO sormas_user;
+ALTER TABLE userroles_emailnotificationtypes ADD CONSTRAINT fk_userrole_id FOREIGN KEY (userrole_id) REFERENCES userroles (id);
+ALTER TABLE userroles_emailnotificationtypes OWNER TO sormas_user;
 
-CREATE TABLE userroles_emailnotifications_history (LIKE userroles_emailnotifications);
-ALTER TABLE userroles_emailnotifications_history OWNER TO sormas_user;
-CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON userroles_emailnotifications
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userroles_emailnotifications_history', true);
-CREATE TRIGGER delete_history_trigger_userroles_emailnotifications
+CREATE TABLE userroles_emailnotificationtypes_history (LIKE userroles_emailnotificationtypes);
+ALTER TABLE userroles_emailnotificationtypes_history OWNER TO sormas_user;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON userroles_emailnotificationtypes
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userroles_emailnotificationtypes_history', true);
+CREATE TRIGGER delete_history_trigger_userroles_emailnotificationtypes
     AFTER DELETE ON userroles
-    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('userroles_emailnotifications_history', 'userrole_id');
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('userroles_emailnotificationtypes_history', 'userrole_id');
 
-CREATE TABLE userroles_smsnotifications (
+CREATE TABLE userroles_smsnotificationtypes (
     userrole_id bigint NOT NULL,
     notificationtype character varying(255) NOT NULL,
     sys_period tstzrange not null
 );
-ALTER TABLE userroles_smsnotifications ADD CONSTRAINT fk_userrole_id FOREIGN KEY (userrole_id) REFERENCES userroles (id);
-ALTER TABLE userroles_smsnotifications OWNER TO sormas_user;
+ALTER TABLE userroles_smsnotificationtypes ADD CONSTRAINT fk_userrole_id FOREIGN KEY (userrole_id) REFERENCES userroles (id);
+ALTER TABLE userroles_smsnotificationtypes OWNER TO sormas_user;
 
-CREATE TABLE userroles_smsnotifications_history (LIKE userroles_smsnotifications);
-ALTER TABLE userroles_smsnotifications_history OWNER TO sormas_user;
-CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON userroles_smsnotifications
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userroles_smsnotifications_history', true);
-CREATE TRIGGER delete_history_trigger_userroles_smsnotifications
+CREATE TABLE userroles_smsnotificationtypes_history (LIKE userroles_smsnotificationtypes);
+ALTER TABLE userroles_smsnotificationtypes_history OWNER TO sormas_user;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON userroles_smsnotificationtypes
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userroles_smsnotificationtypes_history', true);
+CREATE TRIGGER delete_history_trigger_userroles_smsnotificationtypes
     AFTER DELETE ON userroles
-    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('userroles_smsnotifications_history', 'userrole_id');
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('userroles_smsnotificationtypes_history', 'userrole_id');
 
 INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (460, 'Replace hard-coded user roles with fully configurable user roles #4461', true);
 

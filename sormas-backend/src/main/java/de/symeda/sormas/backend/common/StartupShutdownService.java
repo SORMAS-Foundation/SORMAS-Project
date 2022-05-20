@@ -770,12 +770,12 @@ public class StartupShutdownService {
 			UserRole userRole = userRoleService.getByCaption(role.name());
 			userRole.setCaption(I18nProperties.getEnumCaption(role));
 			userRole.setPortHealthUser(role.isPortHealthUser());
-			userRole.setHasAssociatedOfficer(role.hasAssociatedOfficer());
+			userRole.setHasAssociatedDistrictUser(role.hasAssociatedOfficer());
 			userRole.setHasOptionalHealthFacility(DefaultUserRole.hasOptionalHealthFacility(Collections.singleton(role)));
 			userRole.setEnabled(true);
 			userRole.setJurisdictionLevel(role.getJurisdictionLevel());
-			userRole.setSmsNotifications(role.getSmsNotifications());
-			userRole.setEmailNotifications(role.getEmailNotifications());
+			userRole.setSmsNotificationTypes(role.getSmsNotificationTypes());
+			userRole.setEmailNotificationTypes(role.getEmailNotificationTypes());
 			userRole.setUserRights(role.getDefaultUserRights());
 			userRoleService.persist(userRole);
 		});

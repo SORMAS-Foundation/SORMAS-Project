@@ -2982,11 +2982,9 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(UserRole.class).executeRaw("DROP TABLE userrolesconfig;");
 				getDao(UserRole.class).executeRaw(
 					"CREATE TABLE userRoles(id integer primary key autoincrement, uuid varchar(36), changeDate timestamp, creationDate timestamp, lastOpenedDate timestamp, "
-						+ "localChangeDate timestamp, modified integer, snapshot integer, userRights varchar(1024), enabled boolean, caption varchar(512), description varchar(4096), "
-						+ "hasOptionalHealthFacility boolean, hasAssociatedOfficer boolean, portHealthUser boolean, jurisdictionLevel varchar(255));");
-				getDao(UserRole.class).executeRaw(
-					"CREATE TABLE users_userRoles(user_id integer, userRole_id integer);");
-
+						+ "localChangeDate timestamp, modified integer, snapshot integer, userRights text, enabled boolean, caption varchar(512), description varchar(4096), "
+						+ "hasOptionalHealthFacility boolean, hasAssociatedDistrictUser boolean, portHealthUser boolean, jurisdictionLevel varchar(255));");
+				getDao(UserRole.class).executeRaw("CREATE TABLE users_userRoles(user_id integer, userRole_id integer);");
 
 				// ATTENTION: break should only be done after last version
 				break;

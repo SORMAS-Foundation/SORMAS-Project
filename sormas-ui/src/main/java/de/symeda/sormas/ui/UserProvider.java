@@ -47,7 +47,7 @@ public class UserProvider {
 	private Set<UserRight> userRights;
 	private JurisdictionLevel jurisdictionLevel;
 	private Boolean portHealthUser;
-	private Boolean hasAssociatedOfficer;
+	private Boolean hasAssociatedDistrictUser;
 	private Boolean hasOptionalHealthFacility;
 
 	public UserDto getUser() {
@@ -165,10 +165,10 @@ public class UserProvider {
 	}
 
 	public boolean hasAssociatedOfficer() {
-		if (hasAssociatedOfficer == null) {
-			hasAssociatedOfficer = FacadeProvider.getUserRoleFacade().hasAssociatedOfficer(getUserRoles());
+		if (hasAssociatedDistrictUser == null) {
+			hasAssociatedDistrictUser = FacadeProvider.getUserRoleFacade().hasAssociatedOfficer(getUserRoles());
 		}
-		return hasAssociatedOfficer;
+		return hasAssociatedDistrictUser;
 	}
 
 	public boolean hasOptionalHealthFacility() {
