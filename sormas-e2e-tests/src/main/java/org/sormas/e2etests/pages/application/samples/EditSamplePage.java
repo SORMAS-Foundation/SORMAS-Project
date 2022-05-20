@@ -67,5 +67,6 @@ public class EditSamplePage {
   public static final By SAMPLE_DELETION_POPUP_YES_BUTTON = By.id("actionConfirm");
   public static final By SAVE_SAMPLE_BUTTON = By.id("commit");
   public static final By DELETE_SAMPLE_REASON_POPUP =
-      By.xpath("(//div[@class='popupContent'])[3]//div[@class='v-filterselect-button']");
+      By.xpath(
+          "//div[@class='popupContent']//*[text()='Reason for deletion']/../following-sibling::div//div");
 }
