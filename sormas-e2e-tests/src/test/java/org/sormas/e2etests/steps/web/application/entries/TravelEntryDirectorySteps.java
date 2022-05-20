@@ -28,6 +28,7 @@ import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.COMM
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CONVERTE_TO_CASE_ENTRIES;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.DELETE_BULK;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.DELETE_TRAVEL_ENTRY_POPUP;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.EPI_DATA_CASE_NEW_TRAVEL_ENTRY_DE_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.FIRST_NAME_IMPORTED_PERSON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.FIRST_RESULT_ID;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPORT_BUTTON;
@@ -161,6 +162,11 @@ public class TravelEntryDirectorySteps implements En {
         "I click on the New Travel Entry button from Travel Entries directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(NEW_TRAVEL_ENTRY_BUTTON);
+        });
+    When(
+        "I click on the New Travel Entry button from Epidemiological data tab in Case directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EPI_DATA_CASE_NEW_TRAVEL_ENTRY_DE_BUTTON);
         });
     When(
         "^I select last created UI result in grid in Travel Entry Directory for Bulk Action$",
