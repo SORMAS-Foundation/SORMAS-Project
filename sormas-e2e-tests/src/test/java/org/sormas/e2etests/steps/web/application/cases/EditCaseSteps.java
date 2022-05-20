@@ -685,6 +685,13 @@ public class EditCaseSteps implements En {
         });
 
     When(
+        "I click on {string} as place of stay in Case Edit tab for DE version",
+        (String placeOfStay) -> {
+          webDriverHelpers.clickWebElementByText(
+              PLACE_OF_STAY_OPTIONS, CaseOutcome.getValueForDE(placeOfStay).toUpperCase());
+        });
+
+    When(
         "I click on ([^\"]*) as German place of stay",
         (String option) -> {
           String placeOfStay = new String();
