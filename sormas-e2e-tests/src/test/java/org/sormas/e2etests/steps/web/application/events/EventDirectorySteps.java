@@ -951,7 +951,7 @@ public class EventDirectorySteps implements En {
           TimeUnit.SECONDS.sleep(3);
           webDriverHelpers.sendFile(
               FILE_PICKER,
-              userDirPath + "/downloads/sormas_ereignisteilnehmer_" + LocalDate.now() + "_.csv");
+              userDirPath + "/downloads/sormas_event_participants_" + LocalDate.now() + "_.csv");
         });
     When(
         "I click on the {string} button from the Import Event Participant popup",
@@ -964,7 +964,7 @@ public class EventDirectorySteps implements En {
           File toDelete =
               new File(
                   userDirPath
-                      + "/downloads/sormas_ereignisteilnehmer_"
+                      + "/downloads/sormas_event_participants_"
                       + LocalDate.now()
                       + "_.csv");
           toDelete.deleteOnExit();

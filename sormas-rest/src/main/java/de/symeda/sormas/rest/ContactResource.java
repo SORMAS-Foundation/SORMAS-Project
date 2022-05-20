@@ -154,7 +154,7 @@ public class ContactResource extends EntityDtoResource {
 	@POST
 	@Path("/delete")
 	public List<String> delete(List<String> uuids) {
-		return FacadeProvider.getContactFacade().deleteContacts(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, null));
+		return FacadeProvider.getContactFacade().deleteContacts(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
 	}
 
 	@GET

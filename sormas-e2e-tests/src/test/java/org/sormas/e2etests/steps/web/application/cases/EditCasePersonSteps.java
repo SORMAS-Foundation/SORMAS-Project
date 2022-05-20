@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.services.CaseService;
@@ -221,6 +222,47 @@ public class EditCasePersonSteps implements En {
         "^I set case person's sex as ([^\"]*)$",
         (String sex) -> {
           webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);
+        });
+
+    When(
+        "I check that ([^\"]*) is not visible",
+        (String option) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          By selector = null;
+          Boolean elementVisible = true;
+          switch (option) {
+            case "Passport Number":
+              selector = PASSPORT_NUMBER_INPUT;
+              break;
+            case "National Health ID":
+              selector = NATIONAL_HEALTH_ID_INPUT;
+              break;
+            case "Education":
+              selector = EDUCATION_COMBOBOX;
+              break;
+            case "Community Contact Person":
+              selector = COMMUNITY_CONTACT_PERSON_INPUT;
+              break;
+            case "Nickname":
+              selector = NICKNAME_INPUT;
+              break;
+            case "Mother's Maiden Name":
+              selector = MOTHERS_MAIDEN_NAME_INPUT;
+              break;
+            case "Mother's Name":
+              selector = MOTHERS_NAME_INPUT;
+              break;
+            case "Father's Name":
+              selector = FATHERS_NAME_INPUT;
+              break;
+          }
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(selector);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertFalse(elementVisible, option + " is visible!");
+          softly.assertAll();
         });
   }
 

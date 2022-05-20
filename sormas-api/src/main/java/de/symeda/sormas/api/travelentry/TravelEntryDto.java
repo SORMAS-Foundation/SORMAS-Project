@@ -143,6 +143,7 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private Date dateOfArrival;
 
 	private DeletionReason deletionReason;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
 
 	public static TravelEntryDto build(PersonReferenceDto person) {

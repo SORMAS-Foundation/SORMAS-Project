@@ -220,7 +220,7 @@ Feature: Epidemiological data coverage
     Then I check if data is correctly displayed in Exposures table in Epidemiological data tab
 
 
-  @issue=SORDEV-5524 @env_main
+  @issue=SORDEV-5524 @env_main @ignore
   Scenario: Enter an activity as case in Epidemiological data tab in Cases
     When API: I create a new person
     Then API: I check that POST call body is "OK"

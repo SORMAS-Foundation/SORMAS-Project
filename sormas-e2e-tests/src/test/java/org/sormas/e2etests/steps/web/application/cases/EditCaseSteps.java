@@ -49,6 +49,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_C
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BLOOD_ORGAN_TISSUE_DONATION_IN_THE_LAST_6_MONTHS_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_CLASSIFICATION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_CLASSIFICATION_SPAN;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_IDENTIFICATION_SOURCE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_PERSON_TAB;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
@@ -328,9 +329,9 @@ public class EditCaseSteps implements En {
         "I check that Case Classification has {string} value",
         (String caseClassificationValue) -> {
           String caseClassificationComboboxValue =
-              (webDriverHelpers.getValueFromCombobox(CASE_CLASSIFICATION_COMBOBOX));
+              (webDriverHelpers.getTextFromWebElement(CASE_CLASSIFICATION_SPAN));
           softly.assertEquals(
-              caseClassificationValue,
+              caseClassificationValue.toUpperCase(),
               caseClassificationComboboxValue,
               "The case classification field has unexpected value ");
           softly.assertAll();
@@ -439,7 +440,8 @@ public class EditCaseSteps implements En {
               List.of(
                   "dateOfReport",
                   "disease",
-                  "externalId",
+                  //   "externalId",
+                  // "epidNumber",
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
@@ -492,7 +494,7 @@ public class EditCaseSteps implements En {
               List.of(
                   "dateOfReport",
                   "disease",
-                  "externalId",
+                  // "externalId",
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
@@ -851,7 +853,7 @@ public class EditCaseSteps implements En {
           String quarantineText;
           String expectedTextReduce = "Are you sure you want to reduce the quarantine?";
           String expectedTextExtend = "Are you sure you want to extend the quarantine?";
-          webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_ORDERED_VERBALLY_CHECKBOX_LABEL);
+          webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_COMBOBOX);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(QUARANTINE_POPUP_MESSAGE);
           quarantineText = webDriverHelpers.getTextFromWebElement(QUARANTINE_POPUP_MESSAGE);
           if (option.equals("Reduce")) softly.assertEquals(quarantineText, expectedTextReduce);
@@ -1049,7 +1051,6 @@ public class EditCaseSteps implements En {
               List.of(
                   "dateOfReport",
                   "disease",
-                  "externalId",
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
@@ -1474,7 +1475,8 @@ public class EditCaseSteps implements En {
         .firstName(userInfo.getFirstName())
         .lastName(userInfo.getLastName())
         .dateOfBirth(userInfo.getDateOfBirth())
-        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
+        // field that is no longer available
+        // .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
         .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
         .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
@@ -1626,7 +1628,7 @@ public class EditCaseSteps implements En {
         .firstName(userInfo.getFirstName())
         .lastName(userInfo.getLastName())
         .dateOfBirth(userInfo.getDateOfBirth())
-        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
+        // .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
         .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
         .placeDescription(webDriverHelpers.getValueFromWebElement(PLACE_DESCRIPTION_INPUT))

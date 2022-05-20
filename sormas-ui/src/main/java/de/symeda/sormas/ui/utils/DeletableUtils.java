@@ -3,6 +3,8 @@ package de.symeda.sormas.ui.utils;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.ComboBox;
@@ -15,7 +17,7 @@ import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import org.apache.commons.lang3.StringUtils;
+import de.symeda.sormas.api.utils.FieldConstraints;
 
 public class DeletableUtils {
 
@@ -37,6 +39,7 @@ public class DeletableUtils {
 		otherDeletionReason.setVisible(false);
 		otherDeletionReason.setWidth(100, Sizeable.Unit.PERCENTAGE);
 		otherDeletionReason.setRows(3);
+		otherDeletionReason.setMaxLength(FieldConstraints.CHARACTER_LIMIT_TEXT);
 
 		otherDeletionReason.setRequiredIndicatorVisible(true);
 

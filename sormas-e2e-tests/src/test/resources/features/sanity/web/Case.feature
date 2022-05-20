@@ -71,18 +71,9 @@ Feature: Case end to end tests
     Then I set Quarantine Home
     And I check if Quarantine start field is available
     And I check if Quarantine end field is available
-    Then I select Quarantine ordered verbally checkbox
-    And I check if Date of verbal order field is available
-    Then I select Quarantine ordered by official document checkbox
-    And I check if Date of the official document ordered field is available
-    Then I select Official quarantine order sent
-    And I check if Date official quarantine order was sent field is available
     Then I set Quarantine Institutional
     And I check if Quarantine start field is available
     And I check if Quarantine end field is available
-    And I check if Date of verbal order field is available
-    And I check if Date of the official document ordered field is available
-    And I check if Date official quarantine order was sent field is available
     Then I set Quarantine None
     Then I set Quarantine Unknown
     Then I set Quarantine Other
@@ -433,11 +424,13 @@ Feature: Case end to end tests
     And I click on the NEW CASE button
     When I fill new case with for one person with specified date for month ago
     Then I click on save case button
+    Then I collect uuid of the case
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     Then I fill second new case with for one person with specified date for present day
     And I confirm changes in selected Case
     And I confirm Pick person in Case
+    Then I collect uuid of the case
     Then I click on the Cases button from navbar
     And I filter Cases by created person name
     Then I select first created case for person from Cases list
@@ -1093,3 +1086,18 @@ Feature: Case end to end tests
       And I check if jpg file is downloaded correctly
       Then I delete last uploaded document file from case tab
       And I check if last uploaded file was deleted from document files in case tab
+
+  @issue=SORDEV-9151 @env_de
+  Scenario: Check if specific Case fields are hidden (DE specific)
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    When I open last created case
+    And I navigate to case person tab
+    Then I check that Passport Number is not visible
+    And I check that National Health ID is not visible
+    And I check that Education is not visible
+    And I check that Community Contact Person is not visible
+    And I check that Nickname is not visible
+    And I check that Mother's Maiden Name is not visible
+    And I check that Mother's Name is not visible
+    And I check that Father's Name is not visible

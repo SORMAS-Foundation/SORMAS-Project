@@ -51,11 +51,14 @@ public class EditCasePage {
           "[location='samples'] [class='v-button v-widget link v-button-link compact v-button-compact']");
   public static final By REPORT_DATE_INPUT = By.cssSelector("#reportDate input");
   public static final By CASE_CLASSIFICATION_COMBOBOX = By.cssSelector("#caseClassification div");
+  public static final By CASE_CLASSIFICATION_SPAN =
+      By.cssSelector("#caseClassification span input:checked+label");
   public static final By CASE_CLASSIFICATION_INPUT = By.cssSelector("#caseClassification input");
   public static final By CLINICAL_CONFIRMATION_COMBOBOX =
       By.cssSelector("#clinicalConfirmation div");
   public static final By EPIDEMIOLOGICAL_CONFIRMATION_COMBOBOX =
       By.cssSelector("#epidemiologicalConfirmation div");
+  public static final By EPID_NUMBER_INPUT = By.cssSelector("#epidNumber input");
   public static final By LABORATORY_DIAGNOSTIC_CONFIRMATION_COMBOBOX =
       By.cssSelector("#laboratoryDiagnosticConfirmation div");
   public static final By INVESTIGATION_STATUS_OPTIONS =
