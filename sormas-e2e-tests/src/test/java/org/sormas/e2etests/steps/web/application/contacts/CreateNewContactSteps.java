@@ -152,7 +152,6 @@ public class CreateNewContactSteps implements En {
           fillPrimaryEmailAddress(samePersonDataContact.getPrimaryEmailAddress());
           selectReturningTraveler(samePersonDataContact.getReturningTraveler());
           fillDateOfReport(samePersonDataContact.getReportDate(), Locale.GERMAN);
-          // fillDiseaseOfSourceCase(samePersonDataContact.getDiseaseOfSourceCase());
           // fillCaseIdInExternalSystem(samePersonDataContact.getCaseIdInExternalSystem());
           selectMultiDayContact();
           fillDateOfFirstContact(samePersonDataContact.getDateOfFirstContact(), Locale.GERMAN);
