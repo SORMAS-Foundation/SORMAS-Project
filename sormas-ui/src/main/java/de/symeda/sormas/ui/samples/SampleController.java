@@ -140,14 +140,15 @@ public class SampleController {
 	public PathogenTestForm addPathogenTestComponent(CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent) {
 
 		int caseSampleCount = caseSampleCountOf(sampleComponent.getWrappedComponent().getValue());
-		return addPathogenTestComponent(sampleComponent, null, caseSampleCount, SormasUI::refreshView);
+		return addPathogenTestComponent(sampleComponent, null, caseSampleCount, SormasUI::refreshView, false);
 	}
 
 	public PathogenTestForm addPathogenTestComponent(
 		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
 		PathogenTestDto pathogenTest,
-		int caseSampleCount) {
-		return addPathogenTestComponent(sampleComponent, pathogenTest, caseSampleCount, null);
+		int caseSampleCount,
+		boolean isDeleteAllowed) {
+		return addPathogenTestComponent(sampleComponent, pathogenTest, caseSampleCount, null, isDeleteAllowed);
 	}
 
 	/**
@@ -167,7 +168,8 @@ public class SampleController {
 		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
 		PathogenTestDto pathogenTest,
 		int caseSampleCount,
-		Runnable callback) {
+		Runnable callback,
+		boolean isDeleteAllowed) {
 		// add horizontal rule to clearly distinguish the component
 		Label horizontalRule = new Label("<br><hr /><br>", ContentMode.HTML);
 		horizontalRule.setWidth(100f, Unit.PERCENTAGE);
@@ -208,7 +210,7 @@ public class SampleController {
 		sampleComponent.addCommitListener(savePathogenTest);
 		// Discard button configuration
 		if ((UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_DELETE) && (nonNull(pathogenTest)))
-				|| isNull(pathogenTest)) {
+				|| isNull(pathogenTest) || isDeleteAllowed) {
 			//pathogenTest is null
 			Button discardButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.pathogenTestRemove));
 			VerticalLayout buttonLayout = new VerticalLayout(discardButton);
