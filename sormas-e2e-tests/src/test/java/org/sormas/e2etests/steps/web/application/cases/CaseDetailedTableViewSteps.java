@@ -56,7 +56,7 @@ public class CaseDetailedTableViewSteps implements En {
           List<Map<String, String>> tableRowsData = getTableRowsData();
           Map<String, String> detailedCaseDTableRow = tableRowsData.get(0);
           softly.assertEquals(
-              detailedCaseDTableRow.size(), 41, "Case table rows count is not correct");
+              detailedCaseDTableRow.size(), 39, "Case table rows count is not correct");
 
           softly.assertTrue(
               detailedCaseDTableRow

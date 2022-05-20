@@ -98,20 +98,21 @@ public class SymptomsTabSteps implements En {
           selectSourceOfBodyTemperature(symptoms.getSourceOfBodyTemperature());
           selectChillsOrSweats(symptoms.getChillsOrSweats());
           selectHeadache(symptoms.getHeadache());
-          selectFeelingIll(symptoms.getFeelingIll());
+          //          selectFeelingIll(symptoms.getFeelingIll());
           selectMusclePain(symptoms.getMusclePain());
           selectFever(symptoms.getFever());
-          selectShivering(symptoms.getShivering());
+          //          selectShivering(symptoms.getShivering());
           selectAcuteRespiratoryDistressSyndrome(symptoms.getAcuteRespiratoryDistressSyndrome());
-          selectOxygenSaturationLower94(symptoms.getOxygenSaturationLower94());
+          //          selectOxygenSaturationLower94(symptoms.getOxygenSaturationLower94());
           selectCough(symptoms.getCough());
           selectPneumoniaClinicalOrRadiologic(symptoms.getPneumoniaClinicalOrRadiologic());
           selectDifficultyBreathing(symptoms.getDifficultyBreathing());
           selectRapidBreathing(symptoms.getRapidBreathing());
-          selectRespiratoryDiseaseVentilation(symptoms.getRespiratoryDiseaseVentilation());
+          //
+          // selectRespiratoryDiseaseVentilation(symptoms.getRespiratoryDiseaseVentilation());
           selectRunnyNose(symptoms.getRunnyNose());
           selectSoreThroat(symptoms.getSoreThroat());
-          selectFastHeartRate(symptoms.getFastHeartRate());
+          //          selectFastHeartRate(symptoms.getFastHeartRate());
           selectDiarrhea(symptoms.getDiarrhea());
           selectNausea(symptoms.getNausea());
           selectLossOfSmell(symptoms.getLossOfSmell());
@@ -196,20 +197,20 @@ public class SymptomsTabSteps implements En {
     selectSourceOfBodyTemperature(symptoms.getSourceOfBodyTemperature());
     selectChillsOrSweats(symptoms.getChillsOrSweats());
     selectHeadache(symptoms.getHeadache());
-    selectFeelingIll(symptoms.getFeelingIll());
+    //   selectFeelingIll(symptoms.getFeelingIll());
     selectMusclePain(symptoms.getMusclePain());
     selectFever(symptoms.getFever());
-    selectShivering(symptoms.getShivering());
+    //    selectShivering(symptoms.getShivering());
     selectAcuteRespiratoryDistressSyndrome(symptoms.getAcuteRespiratoryDistressSyndrome());
-    selectOxygenSaturationLower94(symptoms.getOxygenSaturationLower94());
+    //    selectOxygenSaturationLower94(symptoms.getOxygenSaturationLower94());
     selectCough(symptoms.getCough());
     selectPneumoniaClinicalOrRadiologic(symptoms.getPneumoniaClinicalOrRadiologic());
     selectDifficultyBreathing(symptoms.getDifficultyBreathing());
     selectRapidBreathing(symptoms.getRapidBreathing());
-    selectRespiratoryDiseaseVentilation(symptoms.getRespiratoryDiseaseVentilation());
+    //  selectRespiratoryDiseaseVentilation(symptoms.getRespiratoryDiseaseVentilation());
     selectRunnyNose(symptoms.getRunnyNose());
     selectSoreThroat(symptoms.getSoreThroat());
-    selectFastHeartRate(symptoms.getFastHeartRate());
+    //   selectFastHeartRate(symptoms.getFastHeartRate());
     selectDiarrhea(symptoms.getDiarrhea());
     selectNausea(symptoms.getNausea());
     selectLossOfSmell(symptoms.getLossOfSmell());
@@ -222,20 +223,20 @@ public class SymptomsTabSteps implements En {
     selectSourceOfBodyTemperature(symptoms.getSourceOfBodyTemperature());
     selectChillsOrSweats(symptoms.getChillsOrSweats());
     selectHeadache(symptoms.getHeadache());
-    selectFeelingIll(symptoms.getFeelingIll());
+    //   selectFeelingIll(symptoms.getFeelingIll());
     selectMusclePain(symptoms.getMusclePain());
     selectFever(symptoms.getFever());
-    selectShivering(symptoms.getShivering());
+    //   selectShivering(symptoms.getShivering());
     selectAcuteRespiratoryDistressSyndrome(symptoms.getAcuteRespiratoryDistressSyndrome());
-    selectOxygenSaturationLower94(symptoms.getOxygenSaturationLower94());
+    //    selectOxygenSaturationLower94(symptoms.getOxygenSaturationLower94());
     selectCough(symptoms.getCough());
     selectPneumoniaClinicalOrRadiologic(symptoms.getPneumoniaClinicalOrRadiologic());
     selectDifficultyBreathing(symptoms.getDifficultyBreathing());
     selectRapidBreathing(symptoms.getRapidBreathing());
-    selectRespiratoryDiseaseVentilation(symptoms.getRespiratoryDiseaseVentilation());
+    //   selectRespiratoryDiseaseVentilation(symptoms.getRespiratoryDiseaseVentilation());
     selectRunnyNose(symptoms.getRunnyNose());
     selectSoreThroat(symptoms.getSoreThroat());
-    selectFastHeartRate(symptoms.getFastHeartRate());
+    //   selectFastHeartRate(symptoms.getFastHeartRate());
     selectDiarrhea(symptoms.getDiarrhea());
     selectNausea(symptoms.getNausea());
     selectLossOfSmell(symptoms.getLossOfSmell());
@@ -254,16 +255,18 @@ public class SymptomsTabSteps implements En {
         .chillsOrSweats(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CHILLS_OR_SWEATS_OPTIONS))
         .headache(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(HEADACHE_OPTIONS))
-        .feelingIll(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEELING_ILL_OPTIONS))
+        //
+        // .feelingIll(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEELING_ILL_OPTIONS))
         .musclePain(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(MUSCLE_PAIN_OPTIONS))
         .fever(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEVER_OPTIONS))
-        .shivering(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SHIVERING_OPTIONS))
+        //
+        // .shivering(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SHIVERING_OPTIONS))
         .acuteRespiratoryDistressSyndrome(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
                 ACUTE_RESPIRATORY_DISTRESS_SYNDROME_OPTIONS))
-        .oxygenSaturationLower94(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                OXYGEN_SATURATION_LOWER_94_OPTIONS))
+        //        .oxygenSaturationLower94(
+        //            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+        //                OXYGEN_SATURATION_LOWER_94_OPTIONS))
         .cough(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(COUGH_OPTIONS))
         .pneumoniaClinicalOrRadiologic(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
@@ -273,13 +276,14 @@ public class SymptomsTabSteps implements En {
                 DIFFICULTY_BREATHING_OPTIONS))
         .rapidBreathing(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RAPID_BREATHING_OPTIONS))
-        .respiratoryDiseaseVentilation(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                RESPIRATORY_DISEASE_VENTILATION_OPTIONS))
+        //        .respiratoryDiseaseVentilation(
+        //            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+        //                RESPIRATORY_DISEASE_VENTILATION_OPTIONS))
         .runnyNose(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RUNNY_NOSE_OPTIONS))
         .soreThroat(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SORE_THROAT_OPTIONS))
-        .fastHeartRate(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FAST_HEART_RATE_OPTIONS))
+        //        .fastHeartRate(
+        //
+        // webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FAST_HEART_RATE_OPTIONS))
         .diarrhea(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(DIARRHEA_OPTIONS))
         .nausea(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(NAUSEA_OPTIONS))
         .lossOfSmell(
@@ -308,16 +312,18 @@ public class SymptomsTabSteps implements En {
         .chillsOrSweats(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CHILLS_OR_SWEATS_OPTIONS))
         .headache(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(HEADACHE_OPTIONS))
-        .feelingIll(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEELING_ILL_OPTIONS))
+        //
+        // .feelingIll(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEELING_ILL_OPTIONS))
         .musclePain(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(MUSCLE_PAIN_OPTIONS))
         .fever(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEVER_OPTIONS))
-        .shivering(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SHIVERING_OPTIONS))
+        //
+        // .shivering(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SHIVERING_OPTIONS))
         .acuteRespiratoryDistressSyndrome(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
                 ACUTE_RESPIRATORY_DISTRESS_SYNDROME_OPTIONS))
-        .oxygenSaturationLower94(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                OXYGEN_SATURATION_LOWER_94_OPTIONS))
+        //        .oxygenSaturationLower94(
+        //            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+        //                OXYGEN_SATURATION_LOWER_94_OPTIONS))
         .cough(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(COUGH_OPTIONS))
         .pneumoniaClinicalOrRadiologic(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
@@ -327,13 +333,14 @@ public class SymptomsTabSteps implements En {
                 DIFFICULTY_BREATHING_OPTIONS))
         .rapidBreathing(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RAPID_BREATHING_OPTIONS))
-        .respiratoryDiseaseVentilation(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                RESPIRATORY_DISEASE_VENTILATION_OPTIONS))
+        //        .respiratoryDiseaseVentilation(
+        //            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+        //                RESPIRATORY_DISEASE_VENTILATION_OPTIONS))
         .runnyNose(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RUNNY_NOSE_OPTIONS))
         .soreThroat(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SORE_THROAT_OPTIONS))
-        .fastHeartRate(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FAST_HEART_RATE_OPTIONS))
+        //        .fastHeartRate(
+        //
+        // webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FAST_HEART_RATE_OPTIONS))
         .diarrhea(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(DIARRHEA_OPTIONS))
         .nausea(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(NAUSEA_OPTIONS))
         .lossOfSmell(
