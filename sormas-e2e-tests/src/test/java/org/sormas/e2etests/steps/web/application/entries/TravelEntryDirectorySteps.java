@@ -27,6 +27,7 @@ import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOS
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CONVERTE_TO_CASE_ENTRIES;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.DELETE_BULK;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.DELETE_TRAVEL_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.FIRST_NAME_IMPORTED_PERSON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.FIRST_RESULT_ID;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPORT_BUTTON;
@@ -49,6 +50,7 @@ import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.WEEK
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.WEEK_TO_OPTION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.getCheckboxByIndex;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SAMPLE_DELETION_POPUP_YES_BUTTON;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.BULK_EDIT_BUTTON;
 
 import cucumber.api.java8.En;
@@ -174,7 +176,7 @@ public class TravelEntryDirectorySteps implements En {
         "^I select (\\d+) results in grid in Travel Entry Directory$",
         (Integer number) -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-          for (int i = 10; i < number + 10; i++) {
+          for (int i = 4; i < number + 4; i++) {
             webDriverHelpers.scrollToElement(getCheckboxByIndex(String.valueOf(i)));
             webDriverHelpers.clickOnWebElementBySelector(getCheckboxByIndex(String.valueOf(i)));
           }
@@ -209,6 +211,14 @@ public class TravelEntryDirectorySteps implements En {
               "Bulk action went wrong");
           softly.assertAll();
         });
+    When(
+        "I choose the reason of deletion in popup for Travel Entry",
+        () -> {
+          webDriverHelpers.selectFromCombobox(
+              DELETE_TRAVEL_ENTRY_POPUP, "Entit\u00E4t ohne Rechtsgrund angelegt");
+          webDriverHelpers.clickOnWebElementBySelector(SAMPLE_DELETION_POPUP_YES_BUTTON);
+        });
+
     When(
         "I filter by Person full name on Travel Entry directory page",
         () -> {
