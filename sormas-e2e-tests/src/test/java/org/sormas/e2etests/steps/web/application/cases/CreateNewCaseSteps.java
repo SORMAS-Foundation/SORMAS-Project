@@ -42,6 +42,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_DETAILED_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.SEARCH_PERSON_BY_FREE_TEXT;
 import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.aCase;
 
@@ -107,6 +108,7 @@ public class CreateNewCaseSteps implements En {
             faker.number().numberBetween(1, 27));
     UUID randomUUID_first_user = UUID.randomUUID();
     UUID randomUUID_second_user = UUID.randomUUID();
+    List<String> casesUUID = new ArrayList<>();
     oneCase = caseService.buildGeneratedCaseForOnePerson(firstName, lastName, dateOfBirth);
     oneCase = oneCase.toBuilder().disease("COVID-19").build();
 
@@ -201,17 +203,23 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
+        "I collect uuid of the case",
+        () -> {
+          casesUUID.add(webDriverHelpers.getValueFromWebElement(UUID_INPUT));
+        });
+
+    When(
         "I select ([^\"]*) created case for person from Cases list",
         (String option) -> {
           if (option.equals("first")) {
             webDriverHelpers.fillInWebElement(
-                CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, randomUUID_first_user.toString());
+                CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, casesUUID.get(0));
             webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           }
           if (option.equals("second")) {
             webDriverHelpers.fillInWebElement(
-                CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, randomUUID_second_user.toString());
+                CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, casesUUID.get(1));
             webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           }
@@ -261,13 +269,13 @@ public class CreateNewCaseSteps implements En {
         (String option) -> {
           if (option.equals("first")) {
             webDriverHelpers.fillInWebElement(
-                CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, randomUUID_first_user.toString());
+                CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, casesUUID.get(0));
             webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           }
           if (option.equals("second")) {
             webDriverHelpers.fillInWebElement(
-                CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, randomUUID_second_user.toString());
+                CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, casesUUID.get(1));
             webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           }

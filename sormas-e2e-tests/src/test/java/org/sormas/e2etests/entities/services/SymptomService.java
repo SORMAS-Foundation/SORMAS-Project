@@ -38,20 +38,25 @@ public class SymptomService {
         .sourceOfBodyTemperature("rectal")
         .chillsOrSweats(YES.toString())
         .headache(YES.toString())
-        .feelingIll(YES.toString())
+        //    no longer available
+        //        .feelingIll(YES.toString())
         .musclePain(YES.toString())
         .fever(YES.toString())
-        .shivering(YES.toString())
+        //    no longer available
+        //        .shivering(YES.toString())
         .acuteRespiratoryDistressSyndrome(YES.toString())
-        .oxygenSaturationLower94(YES.toString())
+        //    no longer available
+        //        .oxygenSaturationLower94(YES.toString())
         .cough(YES.toString())
         .pneumoniaClinicalOrRadiologic(YES.toString())
         .difficultyBreathing(YES.toString())
         .rapidBreathing(YES.toString())
-        .respiratoryDiseaseVentilation(YES.toString())
+        //    no longer available
+        //        .respiratoryDiseaseVentilation(YES.toString())
         .runnyNose(YES.toString())
         .soreThroat(YES.toString())
-        .fastHeartRate(YES.toString())
+        //    no longer available
+        //        .fastHeartRate(YES.toString())
         .diarrhea(YES.toString())
         .nausea(YES.toString())
         .lossOfSmell(YES.toString())
@@ -69,20 +74,25 @@ public class SymptomService {
         .sourceOfBodyTemperature("rectal")
         .chillsOrSweats(NO.toString())
         .headache(NO.toString())
-        .feelingIll(NO.toString())
+        //            no longer available
+        //        .feelingIll(NO.toString())
         .musclePain(NO.toString())
         .fever(NO.toString())
-        .shivering(NO.toString())
+        //           no longer available
+        //        .shivering(NO.toString())
         .acuteRespiratoryDistressSyndrome(NO.toString())
-        .oxygenSaturationLower94(NO.toString())
+        //    no longer available
+        //        .oxygenSaturationLower94(NO.toString())
         .cough(NO.toString())
         .pneumoniaClinicalOrRadiologic(NO.toString())
         .difficultyBreathing(NO.toString())
         .rapidBreathing(NO.toString())
-        .respiratoryDiseaseVentilation(NO.toString())
+        //       no longer available
+        //        .respiratoryDiseaseVentilation(NO.toString())
         .runnyNose(NO.toString())
         .soreThroat(NO.toString())
-        .fastHeartRate(NO.toString())
+        //    no longer available
+        //        .fastHeartRate(NO.toString())
         .diarrhea(NO.toString())
         .nausea(NO.toString())
         .lossOfSmell(NO.toString())
@@ -97,20 +107,25 @@ public class SymptomService {
         .sourceOfBodyTemperature("rectal")
         .chillsOrSweats(UNKNOWN.toString())
         .headache(UNKNOWN.toString())
-        .feelingIll(UNKNOWN.toString())
+        //    no longer available
+        //        .feelingIll(UNKNOWN.toString())
         .musclePain(UNKNOWN.toString())
         .fever(UNKNOWN.toString())
-        .shivering(UNKNOWN.toString())
+        //    no longer available
+        //        .shivering(UNKNOWN.toString())
         .acuteRespiratoryDistressSyndrome(UNKNOWN.toString())
-        .oxygenSaturationLower94(UNKNOWN.toString())
+        //    no longer available
+        //        .oxygenSaturationLower94(UNKNOWN.toString())
         .cough(UNKNOWN.toString())
         .pneumoniaClinicalOrRadiologic(UNKNOWN.toString())
         .difficultyBreathing(UNKNOWN.toString())
         .rapidBreathing(UNKNOWN.toString())
-        .respiratoryDiseaseVentilation(UNKNOWN.toString())
+        //    no longer available
+        //        .respiratoryDiseaseVentilation(UNKNOWN.toString())
         .runnyNose(UNKNOWN.toString())
         .soreThroat(UNKNOWN.toString())
-        .fastHeartRate(UNKNOWN.toString())
+        //    no longer available
+        //        .fastHeartRate(UNKNOWN.toString())
         .diarrhea(UNKNOWN.toString())
         .nausea(UNKNOWN.toString())
         .lossOfSmell(UNKNOWN.toString())
