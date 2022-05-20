@@ -622,7 +622,8 @@ public class CreateNewCaseSteps implements En {
         () -> {
           caze = caseService.buildGeneratedCase();
           selectCaseOrigin(caze.getCaseOrigin());
-          fillExternalId(caze.getExternalId());
+          // field no longer available
+          //          fillExternalId(caze.getExternalId());
           selectResponsibleRegion(caze.getResponsibleRegion());
           selectResponsibleDistrict(caze.getResponsibleDistrict());
           selectResponsibleCommunity(caze.getResponsibleCommunity());
