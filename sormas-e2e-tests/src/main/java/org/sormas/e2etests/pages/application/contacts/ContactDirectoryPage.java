@@ -34,6 +34,8 @@ public class ContactDirectoryPage {
       By.cssSelector("input#contactOrCaseLike");
   public static final By CONTACTS_DETAILED_COLUMN_HEADERS =
       By.cssSelector("thead .v-grid-column-default-header-content");
+  public static final By CONTACTS_COLUMN_HEADERS =
+      By.cssSelector("thead .v-grid-column-default-header-content");
   public static final By CONTACTS_DETAILED_FIRST_TABLE_ROW =
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By CONTACTS_DETAILED_TABLE_DATA = By.cssSelector("[role=gridcell]");
