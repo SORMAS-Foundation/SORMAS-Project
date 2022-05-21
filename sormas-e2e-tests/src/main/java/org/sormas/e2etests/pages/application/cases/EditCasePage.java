@@ -53,7 +53,8 @@ public class EditCasePage {
   public static final By CASE_CLASSIFICATION_COMBOBOX = By.cssSelector("#caseClassification div");
   public static final By CASE_CLASSIFICATION_SPAN =
       By.cssSelector("#caseClassification span input:checked+label");
-  public static final By CASE_CLASSIFICATION_INPUT = By.cssSelector("#caseClassification input");
+  public static final By CASE_CLASSIFICATION_INPUT =
+      By.cssSelector("#caseClassification input:checked+label");
   public static final By CLINICAL_CONFIRMATION_COMBOBOX =
       By.cssSelector("#clinicalConfirmation div");
   public static final By EPIDEMIOLOGICAL_CONFIRMATION_COMBOBOX =

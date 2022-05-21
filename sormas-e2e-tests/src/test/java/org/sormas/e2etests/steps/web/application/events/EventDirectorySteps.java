@@ -755,7 +755,7 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               getByEventUuid(eventUuid));
           webDriverHelpers.clickOnWebElementBySelector(getByEventUuid(eventUuid));
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
         });
 
     When(
