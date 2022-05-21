@@ -705,6 +705,7 @@ public class EditEventSteps implements En {
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(NAVIGATE_TO_EVENT_GROUP_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(NAVIGATE_TO_EVENT_GROUP_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
         });
 
     When(

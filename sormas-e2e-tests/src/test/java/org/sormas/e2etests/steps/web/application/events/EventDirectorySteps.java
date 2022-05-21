@@ -894,6 +894,7 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.fillInWebElement(
               SEARCH_EVENT_BY_FREE_TEXT, CreateNewEventSteps.eventUUID);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(EVENTS_COLUMN_HEADERS);
         });
 
     Then(
