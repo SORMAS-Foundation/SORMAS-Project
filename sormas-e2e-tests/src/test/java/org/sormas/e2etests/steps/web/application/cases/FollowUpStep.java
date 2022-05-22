@@ -106,6 +106,67 @@ public class FollowUpStep implements En {
                   "comments",
                   "firstSymptom",
                   "dateOfSymptom"));
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(HEADACHE_OPTIONS), "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                  ABNORMAL_LUNG_XRAY_FINDINGS_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FATIGUE_WEAKNESS_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(COUGH_WITH_SPUTUM_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                  COUGH_WITH_HEAMOPTYSIS_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                  FLUID_IN_LUNG_CAVITY_AUSCULTATION_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                  FLUID_IN_LUNG_CAVITY_XRAY_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                  INDRAWING_OF_CHEST_WALL_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(ABDOMINAL_PAIN_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(VOMITING_OPTIONS), "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SKIN_ULCERS_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                  UNEXPLAINED_BLEEDING_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(COMA_OPTIONS), "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LYMPHADENOPATHY_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(INABILITY_TO_WALK_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SKIN_RASH_OPTIONS), "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                  CONFUSED_DISORIENTED_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SEIZURES_OPTIONS), "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                  OTHER_COMPLICATIONS_OPTIONS),
+              "NO");
+          softly.assertAll();
         });
 
     When(
