@@ -167,16 +167,19 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetMatchingEventParticipants() {
-
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, UserRole.LAB_USER);
 		user.setLaboratory(rdcf.facility);
 		getUserFacade().saveUser(user);
 		loginWith(user);
 
+		EventDto event = createEvent(user, rdcf);
+		PersonDto eventPerson = creator.createPerson("Event", "Organizer");
+		creator.createEventParticipant(event.toReference(), eventPerson, "event Director", user.toReference());
+
 		EventParticipantCriteria criteria = new EventParticipantCriteria();
 		List<SimilarEventParticipantDto> result = getEventParticipantFacade().getMatchingEventParticipants(criteria);
-		assertThat(result, hasSize(0));
+		assertThat(result, hasSize(1));
 	}
 
 	@Test
