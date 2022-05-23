@@ -211,8 +211,8 @@ public class SampleController {
 		};
 		sampleComponent.addCommitListener(savePathogenTest);
 		// Discard button configuration
-		if ((UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_DELETE) && (nonNull(pathogenTest)))
-				|| isNull(pathogenTest) || isNew) {
+		if (isNew || isNull(pathogenTest) ||
+				UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_DELETE)) {
 			Button discardButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.pathogenTestRemove));
 			VerticalLayout buttonLayout = new VerticalLayout(discardButton);
 			buttonLayout.setComponentAlignment(discardButton, Alignment.TOP_LEFT);
