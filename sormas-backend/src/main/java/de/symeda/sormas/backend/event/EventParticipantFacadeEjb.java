@@ -1061,6 +1061,7 @@ public class EventParticipantFacadeEjb
 		cq.distinct(true);
 
 		Join<Object, Object> personJoin = eventParticipantRoot.join(EventParticipant.PERSON, JoinType.LEFT);
+		Join<Object, Object> userJoin = eventParticipantRoot.join(EventParticipant.REPORTING_USER, JoinType.LEFT);
 		Join<Object, Object> eventJoin = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT);
 		EventParticipantQueryContext eventParticipantQueryContext = new EventParticipantQueryContext(cb, cq, eventParticipantRoot);
 
@@ -1085,6 +1086,8 @@ public class EventParticipantFacadeEjb
 			eventJoin.get(Event.EVENT_STATUS),
 			eventJoin.get(Event.EVENT_TITLE),
 			eventJoin.get(Event.START_DATE),
+			userJoin.get(User.ID),
+			eventParticipantRoot.get(EventParticipant.ID),
 			jurisdictionSelector);
 
 		final Predicate defaultFilter = service.createDefaultFilter(cb, eventParticipantRoot);
