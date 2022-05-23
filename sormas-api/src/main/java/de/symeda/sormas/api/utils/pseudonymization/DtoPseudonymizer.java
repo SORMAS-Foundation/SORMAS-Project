@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.PerformanceLoggingStopWatch;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.DefaultValuePseudonymizer;
@@ -67,6 +68,8 @@ public class DtoPseudonymizer {
 		final CustomCollectionItemPseudonymization<DTO> customPseudonymization,
 		boolean skipEmbeddedFields) {
 
+		PerformanceLoggingStopWatch stopWatch = new PerformanceLoggingStopWatch("DtoPseudonymizer.pseudonymizeDtoCollection");
+
 		List<Field> pseudonymizableFieldsInJurisdiction = getPseudonymizableFields(type, true);
 		List<Field> pseudonymizableFieldsOutsideJurisdiction = getPseudonymizableFields(type, false);
 		List<Field> embeddedFieldsInJurisdiction = getEmbeddedFields(type, true);
@@ -89,6 +92,8 @@ public class DtoPseudonymizer {
 				},
 				skipEmbeddedFields);
 		}
+
+		stopWatch.stop();
 	}
 
 	public <DTO> void pseudonymizeDto(Class<DTO> type, DTO dto, boolean isInJurisdiction, CustomPseudonymization<DTO> customPseudonymization) {
