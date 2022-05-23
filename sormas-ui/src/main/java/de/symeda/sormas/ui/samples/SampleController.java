@@ -140,15 +140,15 @@ public class SampleController {
 	public PathogenTestForm addPathogenTestComponent(CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent) {
 
 		int caseSampleCount = caseSampleCountOf(sampleComponent.getWrappedComponent().getValue());
-		return addPathogenTestComponent(sampleComponent, null, caseSampleCount, SormasUI::refreshView, false);
+		return addPathogenTestComponent(sampleComponent, null, caseSampleCount, SormasUI::refreshView, true);
 	}
 
 	public PathogenTestForm addPathogenTestComponent(
 		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
 		PathogenTestDto pathogenTest,
 		int caseSampleCount,
-		boolean isDeleteAllowed) {
-		return addPathogenTestComponent(sampleComponent, pathogenTest, caseSampleCount, null, isDeleteAllowed);
+		boolean isNew) {
+		return addPathogenTestComponent(sampleComponent, pathogenTest, caseSampleCount, null, isNew);
 	}
 
 	/**
@@ -162,6 +162,8 @@ public class SampleController {
 	 *            is valid).
 	 * @param callback
 	 *            use it to define additional actions that need to be taken after the pathogen test is saved (e.g. refresh the UI)
+	 * @param isNew
+	 *            for existing pathogen tests, the 'delete pathogen test' button is hidden for users without UserRight.PATHOGEN_TEST_DELETE permission.
 	 * @return the pathogen test create component added.
 	 */
 	public PathogenTestForm addPathogenTestComponent(
@@ -169,7 +171,7 @@ public class SampleController {
 		PathogenTestDto pathogenTest,
 		int caseSampleCount,
 		Runnable callback,
-		boolean isDeleteAllowed) {
+		boolean isNew) {
 		// add horizontal rule to clearly distinguish the component
 		Label horizontalRule = new Label("<br><hr /><br>", ContentMode.HTML);
 		horizontalRule.setWidth(100f, Unit.PERCENTAGE);
@@ -210,7 +212,7 @@ public class SampleController {
 		sampleComponent.addCommitListener(savePathogenTest);
 		// Discard button configuration
 		if ((UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_DELETE) && (nonNull(pathogenTest)))
-				|| isNull(pathogenTest) || isDeleteAllowed) {
+				|| isNull(pathogenTest) || isNew) {
 			//pathogenTest is null
 			Button discardButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.pathogenTestRemove));
 			VerticalLayout buttonLayout = new VerticalLayout(discardButton);
