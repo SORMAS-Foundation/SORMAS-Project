@@ -35,6 +35,7 @@ import java.util.List;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -162,6 +163,20 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(secondVaccination.getVaccineBatchNumber(), exportDto.getVaccineBatchNumber());
 		assertEquals(secondVaccination.getVaccineAtcCode(), exportDto.getVaccineAtcCode());
 		assertEquals(secondVaccination.getVaccineDose(), exportDto.getVaccinationDoses());
+	}
+
+	@Test
+	public void testGetMatchingEventParticipants() {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.LAB_USER);
+		user.setLaboratory(rdcf.facility);
+		getUserFacade().saveUser(user);
+		loginWith(user);
+
+		EventParticipantCriteria criteria = new EventParticipantCriteria();
+		List<SimilarEventParticipantDto> result = getEventParticipantFacade().getMatchingEventParticipants(criteria);
+		assertThat(result, hasSize(0));
 	}
 
 	@Test
