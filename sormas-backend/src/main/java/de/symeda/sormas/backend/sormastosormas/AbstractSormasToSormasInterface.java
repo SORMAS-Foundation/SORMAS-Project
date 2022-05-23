@@ -268,7 +268,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(requestUuid);
 
 		if (shareRequest.getStatus() != ShareRequestStatus.PENDING) {
-			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasAcceptNotPending);
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRequestProcessed);
 		}
 
 		String organizationId = shareRequest.getOriginInfo().getOrganizationId();

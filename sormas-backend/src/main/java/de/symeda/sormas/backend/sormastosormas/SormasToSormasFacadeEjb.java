@@ -124,7 +124,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		SormasToSormasShareRequestDto shareRequest = shareRequestFacade.getShareRequestByUuid(uuid);
 
 		if (shareRequest.getStatus() != ShareRequestStatus.PENDING) {
-			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRejectNotPending);
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRequestProcessed);
 		}
 
 		String organizationId = shareRequest.getOriginInfo().getOrganizationId();
@@ -144,7 +144,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		ShareRequestInfo requestInfo = shareRequestInfoService.getByUuid(rejectData.getRequestUuid());
 
 		if (requestInfo == null || requestInfo.getRequestStatus() != ShareRequestStatus.PENDING) {
-			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRejectNotPending);
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRequestProcessed);
 		}
 
 		requestInfo.setRequestStatus(ShareRequestStatus.REJECTED);
@@ -168,7 +168,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			shareInfo.getRequests().stream().filter(r -> r.getRequestStatus() == ShareRequestStatus.PENDING).collect(Collectors.toList());
 
 		if (pendingRequests.isEmpty()) {
-			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRevokeNotPending);
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRequestProcessed);
 		}
 
 		for (ShareRequestInfo request : pendingRequests) {
@@ -193,7 +193,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		List<SormasToSormasShareRequestDto> shareRequests = shareRequestFacade.getShareRequestsByUuids(Arrays.asList(requestUuids));
 
 		if (shareRequests.stream().anyMatch(r -> r.getStatus() != ShareRequestStatus.PENDING)) {
-			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRevokeNotPending);
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRequestProcessed);
 		}
 
 		shareRequests.forEach(shareRequest -> {
@@ -220,7 +220,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		ShareRequestInfo requestInfo = shareRequestInfoService.getByUuid(acceptData.getRequestUuid());
 
 		if (requestInfo.getRequestStatus() != ShareRequestStatus.PENDING) {
-			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasAcceptNotPending);
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRequestProcessed);
 		}
 
 		requestInfo.setRequestStatus(ShareRequestStatus.ACCEPTED);
