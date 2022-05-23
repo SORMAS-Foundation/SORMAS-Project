@@ -229,9 +229,10 @@ public class CaseDirectorySteps implements En {
         "I click on the DETAILED button from Case directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CASE_DIRECTORY_DETAILED_RADIOBUTTON);
+          TimeUnit.SECONDS.sleep(4);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               By.xpath(String.format(RESULTS_GRID_HEADER, "Sex")), 20);
-          webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(GRID_HEADERS, 41);
+          webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(GRID_HEADERS, 39);
         });
     When(
         "I click on the More button on Case directory page",
