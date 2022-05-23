@@ -212,9 +212,8 @@ public class CaseResource extends EntityDtoResource {
 	}
 
 	@POST
-	@Path("/specificCase")
-	public String getSpecificCase(@RequestBody CaseCriteria caseCriteria, @QueryParam("searchTerm") String searchTerm) {
-
+	@Path("/specificCase/{searchTerm}")
+	public String getSpecificCase(@RequestBody CaseCriteria caseCriteria, @PathParam("searchTerm") String searchTerm) {
 		return FacadeProvider.getCaseFacade().getUuidByUuidEpidNumberOrExternalId(searchTerm, caseCriteria);
 	}
 

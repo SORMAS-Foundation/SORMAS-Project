@@ -150,8 +150,8 @@ public class EventResource extends EntityDtoResource {
 	}
 
 	@GET
-	@Path("/specificEvent")
-	public String getSpecificCase(@QueryParam("searchTerm") String searchTerm) {
+	@Path("/specificEvent/{searchTerm}")
+	public String getSpecificCase(@PathParam("searchTerm") String searchTerm) {
 		return FacadeProvider.getEventFacade().getUuidByCaseUuidOrPersonUuid(searchTerm);
 	}
 }
