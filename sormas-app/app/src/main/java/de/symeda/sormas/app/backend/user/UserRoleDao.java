@@ -16,57 +16,40 @@
 package de.symeda.sormas.app.backend.user;
 
 import java.sql.SQLException;
+import java.util.Collection;
 
 import com.j256.ormlite.dao.Dao;
 
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.DaoException;
-import de.symeda.sormas.app.backend.config.ConfigProvider;
 
-public class UserRoleConfigDao extends AbstractAdoDao<UserRoleConfig> {
+public class UserRoleDao extends AbstractAdoDao<UserRole> {
 
-	public UserRoleConfigDao(Dao<UserRoleConfig, Long> innerDao) throws SQLException {
+	public UserRoleDao(Dao<UserRole, Long> innerDao) throws SQLException {
 		super(innerDao);
 	}
 
 	@Override
-	protected Class<UserRoleConfig> getAdoClass() {
-		return UserRoleConfig.class;
+	protected Class<UserRole> getAdoClass() {
+		return UserRole.class;
 	}
 
 	@Override
 	public String getTableName() {
-		return UserRoleConfig.TABLE_NAME;
+		return UserRole.TABLE_NAME;
 	}
 
 	@Override
-	public UserRoleConfig saveAndSnapshot(UserRoleConfig source) throws DaoException {
+	public UserRole saveAndSnapshot(UserRole source) throws DaoException {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
-	public void create(UserRoleConfig data) throws SQLException {
-		super.create(data);
-		if (ConfigProvider.getUser().hasUserRole(data.getUserRole())) {
-			ConfigProvider.onUserRolesConfigChanged();
+	public boolean hasUserRight(Collection<UserRole> userRoles, UserRight userRight) {
+		for (UserRole userRole : userRoles) {
+			if (userRole.getUserRights().contains(userRight))
+				return true;
 		}
-	}
-
-	@Override
-	protected void update(UserRoleConfig data) throws SQLException {
-		super.update(data);
-		if (ConfigProvider.getUser().hasUserRole(data.getUserRole())) {
-			ConfigProvider.onUserRolesConfigChanged();
-		}
-	}
-
-	@Override
-	public void delete(UserRoleConfig data) throws SQLException {
-		UserRole userRole = data.getUserRole();
-		super.delete(data);
-		if (ConfigProvider.getUser().hasUserRole(userRole)) {
-			ConfigProvider.onUserRolesConfigChanged();
-		}
+		return false;
 	}
 }

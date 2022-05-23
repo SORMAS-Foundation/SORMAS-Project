@@ -20,23 +20,22 @@ package de.symeda.sormas.backend.user;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.StringUtils;
@@ -47,7 +46,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -216,14 +214,8 @@ public class User extends AbstractDomainObject {
 		this.region = region;
 	}
 
-	@ElementCollection(fetch = FetchType.EAGER)
-	@Enumerated(EnumType.STRING)
-	@CollectionTable(name = TABLE_NAME_USERROLES,
-		joinColumns = @JoinColumn(name = "user_id", referencedColumnName = User.ID, nullable = false),
-		uniqueConstraints = @UniqueConstraint(columnNames = {
-			"user_id",
-			"userrole" }))
-	@Column(name = "userrole", nullable = false)
+	@ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+	@JoinTable(name = TABLE_NAME_USERROLES, joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "userrole_id"))
 	public Set<UserRole> getUserRoles() {
 		return userRoles;
 	}
@@ -263,21 +255,11 @@ public class User extends AbstractDomainObject {
 
 	@Override
 	public String toString() {
-		return UserReferenceDto.buildCaption(getFirstName(), getLastName(), getUserRoles());
+		return UserReferenceDto.buildCaption(getFirstName(), getLastName());
 	}
 
 	public UserReferenceDto toReference() {
-		return new UserReferenceDto(getUuid(), getFirstName(), getLastName(), getUserRoles());
-	}
-
-	@Transient
-	public boolean isSupervisor() {
-		for (UserRole userRole : getUserRoles()) {
-			if (userRole.isSupervisor()) {
-				return true;
-			}
-		}
-		return false;
+		return new UserReferenceDto(getUuid(), getFirstName(), getLastName());
 	}
 
 	@ManyToOne(cascade = {})
@@ -358,22 +340,8 @@ public class User extends AbstractDomainObject {
 		return Arrays.stream(userRoles).anyMatch(getUserRoles()::contains);
 	}
 
-	/**
-	 * Checks if the User possesses the specified userRole
-	 */
-	public boolean hasUserRole(UserRole userRole) {
-		return getUserRoles().contains(userRole);
-	}
-
-	/**
-	 * Deprecated: Use getJurisdictionLevel instead
-	 * 
-	 * @return
-	 */
-	@Transient
-	@Deprecated
-	public JurisdictionLevel getCalculatedJurisdictionLevel() {
-		return UserRole.getJurisdictionLevel(this.getUserRoles());
+	public boolean hasAnyUserRole(Collection<UserRole> userRoles) {
+		return userRoles.stream().anyMatch(getUserRoles()::contains);
 	}
 
 	public static String buildCaptionForNotification(User user) {

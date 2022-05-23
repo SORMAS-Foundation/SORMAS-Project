@@ -23,19 +23,19 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import androidx.test.rule.ActivityTestRule;
-import androidx.test.runner.AndroidJUnit4;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import androidx.test.rule.ActivityTestRule;
+import androidx.test.runner.AndroidJUnit4;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -49,7 +49,7 @@ import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskStatus;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -74,6 +74,7 @@ import de.symeda.sormas.app.backend.synclog.SyncLogDao;
 import de.symeda.sormas.app.backend.task.Task;
 import de.symeda.sormas.app.backend.task.TaskDao;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.backend.user.UserRole;
 
 @RunWith(AndroidJUnit4.class)
 public class CaseBackendTest {
@@ -429,7 +430,7 @@ public class CaseBackendTest {
 		Case caze = TestEntityCreator.createCase();
 		caze.setHealthFacility(null);
 
-		UserRole userRole = UserRole.HOSPITAL_INFORMANT;
+		UserRole userRole = TestHelper.getUserRole(DefaultUserRole.HOSPITAL_INFORMANT);
 		Set<UserRole> userRoles = new HashSet<>();
 		userRoles.add(userRole);
 
@@ -446,7 +447,7 @@ public class CaseBackendTest {
 		District secondDistrict = DatabaseHelper.getDistrictDao().queryUuid(TestHelper.SECOND_DISTRICT_UUID);
 		caze.setResponsibleDistrict(secondDistrict);
 
-		UserRole userRole = UserRole.SURVEILLANCE_OFFICER;
+		UserRole userRole = TestHelper.getUserRole(DefaultUserRole.SURVEILLANCE_OFFICER);
 		Set<UserRole> userRoles = new HashSet<>();
 		userRoles.add(userRole);
 
@@ -471,7 +472,7 @@ public class CaseBackendTest {
 		User user = ConfigProvider.getUser();
 		user.setCommunity(caze.getCommunity());
 
-		UserRole userRole = UserRole.COMMUNITY_OFFICER;
+		UserRole userRole = TestHelper.getUserRole(DefaultUserRole.COMMUNITY_OFFICER);
 		Set<UserRole> userRoles = new HashSet<>();
 		userRoles.add(userRole);
 		user.setUserRoles(userRoles);
@@ -530,7 +531,7 @@ public class CaseBackendTest {
 
 		User user = ConfigProvider.getUser();
 
-		UserRole userRole = UserRole.SURVEILLANCE_OFFICER;
+		UserRole userRole = TestHelper.getUserRole(DefaultUserRole.SURVEILLANCE_OFFICER);
 		Set<UserRole> userRoles = new HashSet<>();
 		userRoles.add(userRole);
 		user.setUserRoles(userRoles);
@@ -578,7 +579,7 @@ public class CaseBackendTest {
 		User user = ConfigProvider.getUser();
 		user.setHealthFacility(caze.getHealthFacility());
 
-		UserRole userRole = UserRole.HOSPITAL_INFORMANT;
+		UserRole userRole = TestHelper.getUserRole(DefaultUserRole.HOSPITAL_INFORMANT);
 		Set<UserRole> userRoles = new HashSet<>();
 		userRoles.add(userRole);
 		user.setUserRoles(userRoles);
