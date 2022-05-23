@@ -48,7 +48,6 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.common.DeletionDetails;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -72,6 +71,7 @@ import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
@@ -539,9 +539,31 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	@Override
+	protected List<Predicate> getAdditionalObsoleteUuidsPredicates(Date since, CriteriaBuilder cb, Root<Case> from) {
+
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
+			&& featureConfigurationFacade
+				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)) {
+			return Collections.singletonList(
+				cb.and(
+					cb.equal(from.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE),
+					cb.greaterThanOrEqualTo(from.get(Case.CLASSIFICATION_DATE), since)));
+		} else {
+			return Collections.emptyList();
+		}
+	}
+
+	@Override
+	protected Predicate getUserFilterForObsoleteUuids(CriteriaBuilder cb, CriteriaQuery<String> cq, Root<Case> from) {
+
+		return createUserFilter(new CaseQueryContext(cb, cq, from), new CaseUserFilterCriteria().excludeLimitedSyncRestrictions(true));
+	}
+
 	/**
 	 * Creates a filter that checks whether the case is considered "relevant" in the time frame specified by {@code fromDate} and
-	 * {@code toDate}, i.e. either the {@link Symptoms#onsetDate} or {@link Case#reportDate} OR the {@link Case#outcomeDate} are
+	 * {@code toDate}, i.e. either the {@link Symptoms#getOnsetDate()} or {@link Case#getReportDate()} OR the {@link Case#getOutcomeDate()}
+	 * are
 	 * within the time frame. Also excludes cases with classification=not a case
 	 */
 	public Predicate createCaseRelevanceFilter(CaseQueryContext caseQueryContext, Date fromDate, Date toDate) {
@@ -854,7 +876,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	/**
-	 * Creates a filter that excludes all cases that are either {@link Case#archived} or {@link DeletableAdo#deleted}.
+	 * Creates a filter that excludes all cases that are either {@link Case#isArchived()} or {@link DeletableAdo#isDeleted()}.
 	 */
 	public Predicate createActiveCasesFilter(CriteriaBuilder cb, From<?, Case> root) {
 		return cb.and(cb.isFalse(root.get(Case.ARCHIVED)), cb.isFalse(root.get(Case.DELETED)));
@@ -866,7 +888,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	/**
 	 * Creates a default filter that should be used as the basis of queries that do not use {@link CaseCriteria}.
-	 * This essentially removes {@link DeletableAdo#deleted} cases from the queries.
+	 * This essentially removes {@link DeletableAdo#isDeleted()} cases from the queries.
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, Case> root) {
 		return cb.isFalse(root.get(Case.DELETED));
@@ -1204,8 +1226,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		filter = CriteriaBuilderHelper.or(cb, filter, filterResponsible);
 
-		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
-			&& RequestContextHolder.isMobileSync()) {
+		if ((userFilterCriteria != null && !userFilterCriteria.isExcludeLimitedSyncRestrictions())
+			|| featureConfigurationFacade
+				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
+				&& RequestContextHolder.isMobileSync()) {
 			final Predicate limitedCaseSyncPredicate = cb.not(
 				cb.and(
 					cb.equal(casePath.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE),
@@ -1220,8 +1244,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	/**
 	 * Creates a filter that checks whether the case has "started" within the time frame specified by {@code fromDate} and {@code toDate}.
-	 * By default (if {@code dateType} is null), this logic looks at the {@link Symptoms#onsetDate} first or, if this is null,
-	 * the {@link Case#reportDate}.
+	 * By default (if {@code dateType} is null), this logic looks at the {@link Symptoms#getOnsetDate()} first or, if this is null,
+	 * the {@link Case#getReportDate()}.
 	 */
 	public Predicate createNewCaseFilter(CaseQueryContext caseQueryContext, Date fromDate, Date toDate, CriteriaDateType dateType) {
 

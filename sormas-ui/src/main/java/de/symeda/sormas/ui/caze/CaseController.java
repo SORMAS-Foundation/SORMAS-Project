@@ -508,8 +508,6 @@ public class CaseController {
 
 		// Compare old and new case
 		CaseDataDto existingDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(cazeDto.getUuid());
-		onCaseChanged(existingDto, cazeDto);
-
 		CaseDataDto resultDto = FacadeProvider.getCaseFacade().save(cazeDto);
 
 		if (resultDto.getPlagueType() != cazeDto.getPlagueType()) {
@@ -558,19 +556,6 @@ public class CaseController {
 			SormasUI.refreshView();
 		}
 		return resultDto;
-	}
-
-	private void onCaseChanged(CaseDataDto existingCase, CaseDataDto changedCase) {
-
-		if (existingCase == null) {
-			return;
-		}
-
-		// classification
-		if (changedCase.getCaseClassification() != existingCase.getCaseClassification()) {
-			changedCase.setClassificationDate(new Date());
-			changedCase.setClassificationUser(UserProvider.getCurrent().getUserReference());
-		}
 	}
 
 	public CommitDiscardWrapperComponent<CaseCreateForm> getCaseCreateComponent(

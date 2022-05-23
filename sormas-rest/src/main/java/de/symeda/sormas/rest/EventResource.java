@@ -57,7 +57,10 @@ public class EventResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
-	public List<EventDto> getAllEvents(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+	public List<EventDto> getAllEvents(
+		@PathParam("since") long since,
+		@PathParam("size") int size,
+		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
 		return FacadeProvider.getEventFacade().getAllAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
@@ -104,6 +107,12 @@ public class EventResource extends EntityDtoResource {
 	@Path("/deleted/{since}")
 	public List<String> getDeletedUuidsSince(@PathParam("since") long since) {
 		return FacadeProvider.getEventFacade().getDeletedUuidsSince(new Date(since));
+	}
+
+	@GET
+	@Path("/obsolete/{since}")
+	public List<String> getObsoleteUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getEventFacade().getObsoleteUuidsSince(new Date(since));
 	}
 
 	/**

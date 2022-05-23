@@ -120,6 +120,12 @@ public class ContactResource extends EntityDtoResource {
 		return FacadeProvider.getContactFacade().getDeletedUuidsSince(new Date(since));
 	}
 
+	@GET
+	@Path("/obsolete/{since}")
+	public List<String> getObsoleteUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getContactFacade().getObsoleteUuidsSince(new Date(since));
+	}
+
 	@POST
 	@Path("/indexList")
 	public Page<ContactIndexDto> getIndexList(
