@@ -81,6 +81,8 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FI
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FIRST_CHECKBOX_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FIRST_EVENT_GROUP;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FIRST_EVENT_ID_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FIRST_GRID_DATE_OF_EVENT;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FIRST_GRID_UUID_RESULT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.GROUP_EVENTS_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.GROUP_ID_COLUMN;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ID_FIELD_FILTER;
@@ -110,6 +112,7 @@ import static org.sormas.e2etests.pages.application.events.EventParticipantsPage
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+import static org.sormas.e2etests.steps.web.application.events.CreateNewEventSteps.DateOfEvent;
 
 import cucumber.api.java8.En;
 import java.io.File;
@@ -883,6 +886,29 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.scrollToElement(getByEventUuid(CreateNewEventSteps.newEvent.getUuid()));
           webDriverHelpers.clickOnWebElementBySelector(
               getByEventUuid(CreateNewEventSteps.newEvent.getUuid()));
+        });
+
+    When(
+        "I search for the last event uuid created by UI",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              SEARCH_EVENT_BY_FREE_TEXT, CreateNewEventSteps.eventUUID);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(EVENTS_COLUMN_HEADERS);
+        });
+
+    Then(
+        "I check that Date of EVENT displays event start date and event end date in table on event directory",
+        () -> {
+          TimeUnit.SECONDS.sleep(3); // waiting for table loaded
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_GRID_UUID_RESULT);
+          String dateOfEventfromTableGrid =
+              webDriverHelpers.getTextFromWebElement(FIRST_GRID_DATE_OF_EVENT);
+          softly.assertEquals(
+              dateOfEventfromTableGrid,
+              DateOfEvent,
+              "The value from table grid in Date of Event field not include start date, time, end date, time values");
+          softly.assertAll();
         });
 
     When(

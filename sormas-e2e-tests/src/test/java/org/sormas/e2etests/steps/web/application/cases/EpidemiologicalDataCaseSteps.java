@@ -19,6 +19,7 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTACT_WITH_SOURCE_CASE_KNOWN;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTINENT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.COUNTRY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DATE_EXPOSURE_TABLE;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DONE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.END_OF_EXPOSURE_INPUT;
@@ -62,12 +63,15 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOU
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_ACTIVITY_DETAILS;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_DETAILS;
+import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.END_DATA_TIME;
+import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.START_DATA_TIME;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.cases.FollowUpStep.faker;
 import static org.sormas.e2etests.steps.web.application.contacts.ContactsLineListingSteps.DATE_FORMATTER_DE;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -97,6 +101,7 @@ public class EpidemiologicalDataCaseSteps implements En {
   private static EpidemiologicalData epidemiologicalData;
   private static EpidemiologicalData specificCaseData;
   private static EpidemiologicalData epidemiologialDataSavedFromFields;
+  public static String DateExposure;
 
   @Inject
   public EpidemiologicalDataCaseSteps(
@@ -109,6 +114,15 @@ public class EpidemiologicalDataCaseSteps implements En {
 
     When(
         "I set Start and End of activity by current date in Activity as Case form",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              START_OF_EXPOSURE_INPUT, formatter.format(LocalDate.now()));
+          webDriverHelpers.fillInWebElement(
+              END_OF_EXPOSURE_INPUT, formatter.format(LocalDate.now()));
+        });
+
+    When(
+        "I set Start and End of activity by current date in Exposure form",
         () -> {
           webDriverHelpers.fillInWebElement(
               START_OF_EXPOSURE_INPUT, formatter.format(LocalDate.now()));
@@ -268,6 +282,9 @@ public class EpidemiologicalDataCaseSteps implements En {
     When(
         "I click on SAVE button in create contact form",
         () -> webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_DONE_BUTTON));
+    When(
+        "I click on SAVE button in Exposure form",
+        () -> webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_DONE_BUTTON));
 
     When(
         "I search and chose the last case uuid created via API in the CHOOSE CASE Contact window",
@@ -404,6 +421,26 @@ public class EpidemiologicalDataCaseSteps implements En {
           webDriverHelpers.fillInWebElement(TYPE_OF_ACTIVITY_DETAILS, faker.book().title());
         });
 
+    When(
+        "I collect the Date of Start and End Exposure from Exposure page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_EXPOSURE_BUTTON);
+          String startOfExposure = webDriverHelpers.getValueFromWebElement(START_OF_EXPOSURE_INPUT);
+          String endOfExposure = webDriverHelpers.getValueFromWebElement(END_OF_EXPOSURE_INPUT);
+          String startDataTime =
+              LocalTime.parse(
+                      webDriverHelpers.getValueFromCombobox(START_DATA_TIME),
+                      DateTimeFormatter.ofPattern("HH:mm"))
+                  .format(DateTimeFormatter.ofPattern("hh:mm a"));
+          String endDataTime =
+              LocalTime.parse(
+                      webDriverHelpers.getValueFromCombobox(END_DATA_TIME),
+                      DateTimeFormatter.ofPattern("HH:mm"))
+                  .format(DateTimeFormatter.ofPattern("hh:mm a"));
+          DateExposure =
+              startOfExposure + " " + startDataTime + " - " + endOfExposure + " " + endDataTime;
+          webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
+        });
     Then(
         "I create a new Exposure for Epidemiological data tab and fill all the data",
         () -> {
@@ -476,6 +513,19 @@ public class EpidemiologicalDataCaseSteps implements En {
     Then(
         "I open saved activity from Epidemiological Data",
         () -> webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_ACTIVITY_BUTTON));
+
+    Then(
+        "I check that Date field displays start date and end date in table Exposure on Epidemiological data tab",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(OPEN_SAVED_EXPOSURE_BUTTON);
+          String dateOfEventfromTableGrid =
+              webDriverHelpers.getTextFromWebElement(DATE_EXPOSURE_TABLE);
+          softly.assertEquals(
+              dateOfEventfromTableGrid,
+              DateExposure,
+              "The value from table grid in Date of Event field not include start date, time, end date, time values");
+          softly.assertAll();
+        });
 
     When(
         "I am checking all Activity data is saved and displayed",
