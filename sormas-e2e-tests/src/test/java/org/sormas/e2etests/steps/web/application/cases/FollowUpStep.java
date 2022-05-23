@@ -79,7 +79,8 @@ public class FollowUpStep implements En {
           selectSourceOfTemperature(visit.getSourceOfBodyTemperature());
           selectClearedToNo(visit.getSetClearToNo(), SET_CLEARED_TO_NO_BUTTON);
           selectChillsAndSweats(visit.getChillsAndSweats(), CHILLS_SWEATS_YES_BUTTON);
-          selectFeelingIll(visit.getFeelingIll(), FEELING_ILL_YES_BUTTON);
+          // field no longer available
+          // selectFeelingIll(visit.getFeelingIll(), FEELING_ILL_YES_BUTTON);
           selectFever(visit.getFever(), FEVER_YES_BUTTON);
           fillComments(visit.getComments(), SYMPTOMS_COMMENTS_INPUT);
           selectFirstSymptom(visit.getFirstSymptom(), FIRST_SYMPTOM_COMBOBOX);
@@ -91,7 +92,24 @@ public class FollowUpStep implements En {
         "^I validate all fields from Visit",
         () -> {
           final Visit actualVisit = collectTestResultsData();
-          ComparisonHelper.compareEqualEntities(visit, actualVisit);
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              visit,
+              actualVisit,
+              List.of(
+                  "personAvailableAndCooperative",
+                  "dateOfVisit",
+                  "timeOfVisit",
+                  "visitRemarks",
+                  "currentBodyTemperature",
+                  "sourceOfBodyTemperature",
+                  "setClearToNo",
+                  "chillsAndSweats",
+                  // field no longer available
+                  //             "feelingIll",
+                  "fever",
+                  "comments",
+                  "firstSymptom",
+                  "dateOfSymptom"));
         });
 
     When(
@@ -234,21 +252,23 @@ public class FollowUpStep implements En {
               expectedVisitResults,
               List.of(
                   "chillsOrSweats",
-                  "feelingIll",
+                  // field no longer available
+                  //                  "feelingIll",
                   "fever",
                   "headache",
                   "musclePain",
-                  "shivering",
+                  // field no longer available
+                  //                  "shivering",
                   "acuteRespiratoryDistressSyndrome",
                   "cough",
                   "difficultyBreathing",
-                  "oxygenSaturation94",
+                  //                  "oxygenSaturation94",
                   "pneumoniaClinicalRadiologic",
                   "rapidBreathing",
-                  "respiratoryDiseaseRequiringVentilation",
+                  //                  "respiratoryDiseaseRequiringVentilation",
                   "runnyNose",
                   "soreThroatPharyngitis",
-                  "fastHeartRate",
+                  //                  "fastHeartRate",
                   "diarrhea",
                   "nausea",
                   "newLossOfSmell",
@@ -347,7 +367,8 @@ public class FollowUpStep implements En {
         .sourceOfBodyTemperature(getSourceOfBodyTemperature())
         .setClearToNo(visit.getSetClearToNo())
         .chillsAndSweats(getChillsAndSweats())
-        .feelingIll(getFeelingIll())
+        // field no longer available
+        //        .feelingIll(getFeelingIll())
         .fever(getFever())
         .comments(getComments())
         .firstSymptom(getFirstSymptom())
@@ -367,30 +388,38 @@ public class FollowUpStep implements En {
     return FollowUpVisit.builder()
         .chillsOrSweats(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CHILLS_SWEATS_OPTIONS))
-        .feelingIll(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEELING_ILL_OPTIONS))
+        // field no longer available
+        //
+        // .feelingIll(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEELING_ILL_OPTIONS))
         .fever(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEVER_OPTIONS))
         .headache(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(HEADACHE_OPTIONS))
         .musclePain(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(MUSCLE_PAIN_OPTIONS))
-        .shivering(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SHIVERING_OPTIONS))
+
+        // field no longer available
+        //
+        // .shivering(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SHIVERING_OPTIONS))
         .acuteRespiratoryDistressSyndrome(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(ACUTE_RESPIRATORY_OPTIONS))
         .cough(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(COUGH_OPTIONS))
         .difficultyBreathing(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
                 DIFFICULTY_BREATHING_OPTIONS))
-        .oxygenSaturation94(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(OXYGEN_SATURATION_OPTIONS))
+        //        .oxygenSaturation94(
+        //
+        // webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(OXYGEN_SATURATION_OPTIONS))
         .pneumoniaClinicalRadiologic(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(PNEUMONIA_OPTIONS))
         .rapidBreathing(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RAPID_BREATHING_OPTIONS))
-        .respiratoryDiseaseRequiringVentilation(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RESPIRATORY_DISEASE_OPTIONS))
+        //        .respiratoryDiseaseRequiringVentilation(
+        //
+        // webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RESPIRATORY_DISEASE_OPTIONS))
         .runnyNose(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RUNNY_NOSE_OPTIONS))
         .soreThroatPharyngitis(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SORE_THROAT_OPTIONS))
-        .fastHeartRate(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FAST_HEART_OPTIONS))
+        //        .fastHeartRate(
+        //
+        // webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FAST_HEART_OPTIONS))
         .diarrhea(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(DIARRHEA_OPTIONS))
         .nausea(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(NAUSEA_OPTIONS))
         .newLossOfSmell(
@@ -405,11 +434,13 @@ public class FollowUpStep implements En {
   private FollowUpVisit fillFollowUpVisitDataWithParameter(String parameter) {
     return FollowUpVisit.builder()
         .chillsOrSweats(parameter)
-        .feelingIll(parameter)
+        // field no longer available
+        //        .feelingIll(parameter)
         .fever(parameter)
         .headache(parameter)
         .musclePain(parameter)
-        .shivering(parameter)
+        // field no longer available
+        //        .shivering(parameter)
         .acuteRespiratoryDistressSyndrome(parameter)
         .cough(parameter)
         .difficultyBreathing(parameter)

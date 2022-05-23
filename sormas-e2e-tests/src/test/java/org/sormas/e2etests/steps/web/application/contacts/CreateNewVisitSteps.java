@@ -61,23 +61,23 @@ public class CreateNewVisitSteps implements En {
           selectBodyTemperature(followUpVisit.getCurrentBodyTemperature());
           selectSourceOfBodyTemperature(followUpVisit.getSourceOfBodyTemperature());
           selectChillsOrSweats(followUpVisit.getChillsOrSweats());
-          selectFeelingIll(followUpVisit.getFeelingIll());
+          // selectFeelingIll(followUpVisit.getFeelingIll());
           selectFever(followUpVisit.getFever());
           selectHeadache(followUpVisit.getHeadache());
           selectMusclePain(followUpVisit.getMusclePain());
-          selectShivering(followUpVisit.getShivering());
+          //  selectShivering(followUpVisit.getShivering());
           selectAcuteRespiratoryDistressSyndrome(
               followUpVisit.getAcuteRespiratoryDistressSyndrome());
           selectCough(followUpVisit.getCough());
           selectDifficultyBreathing(followUpVisit.getDifficultyBreathing());
-          selectOxygenSaturationLower94(followUpVisit.getOxygenSaturation94());
+          //  selectOxygenSaturationLower94(followUpVisit.getOxygenSaturation94());
           selectPneumoniaClinicalOrRadiologic(followUpVisit.getPneumoniaClinicalRadiologic());
           selectRapidBreathing(followUpVisit.getRapidBreathing());
-          selectRespiratoryDiseaseVentilation(
-              followUpVisit.getRespiratoryDiseaseRequiringVentilation());
+          //          selectRespiratoryDiseaseVentilation(
+          //              followUpVisit.getRespiratoryDiseaseRequiringVentilation());
           selectRunnyNose(followUpVisit.getRunnyNose());
           selectSoreThroat(followUpVisit.getSoreThroatPharyngitis());
-          selectFastHeartRate(followUpVisit.getFastHeartRate());
+          //    selectFastHeartRate(followUpVisit.getFastHeartRate());
           selectDiarrhea(followUpVisit.getDiarrhea());
           selectNausea(followUpVisit.getNausea());
           selectLossOfSmell(followUpVisit.getNewLossOfSmell());
@@ -139,6 +139,7 @@ public class CreateNewVisitSteps implements En {
           fillDateFrom(followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit());
           fillDateTo(followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit());
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // wait for filter reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(CONTACT_GRID_RESULTS_ROWS);
           Assert.assertEquals(
@@ -171,29 +172,31 @@ public class CreateNewVisitSteps implements En {
         .sourceOfBodyTemperature(
             webDriverHelpers.getValueFromCombobox(SOURCE_BODY_TEMPERATURE_COMBOBOX))
         .chillsOrSweats(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CHILLS_OR_SWATS))
-        .feelingIll(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEELING_ILL))
+        //   .feelingIll(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEELING_ILL))
         .fever(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEVER))
         .headache(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(HEADACHE))
         .musclePain(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(MUSCLE_PAIN))
-        .shivering(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SHIVERING))
+        //        .shivering(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SHIVERING))
         .acuteRespiratoryDistressSyndrome(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
                 ACUTE_RESPIRATORY_DISTRESS_SYNDROME))
         .cough(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(COUGH))
         .difficultyBreathing(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(DIFFICULTY_BREATHING))
-        .oxygenSaturation94(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(OXIGEN_SATURANTION))
+        //        .oxygenSaturation94(
+        //
+        // webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(OXIGEN_SATURANTION))
         .pneumoniaClinicalRadiologic(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(PNEUMONIA))
         .rapidBreathing(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RAPID_BREATHING))
-        .respiratoryDiseaseRequiringVentilation(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                RESPIRATORY_DISEASE_REQUIRING_VENTILATION))
+        //        .respiratoryDiseaseRequiringVentilation(
+        //            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+        //                RESPIRATORY_DISEASE_REQUIRING_VENTILATION))
         .runnyNose(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RUNNY_NOSE))
         .soreThroatPharyngitis(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SORE_THROAT_PHARYNGITIS))
-        .fastHeartRate(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FAST_HEART_RATE))
+        //
+        // .fastHeartRate(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FAST_HEART_RATE))
         .diarrhea(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(DIARRHEA))
         .nausea(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(NAUSEA))
         .newLossOfSmell(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LOSS_OF_SMELL))

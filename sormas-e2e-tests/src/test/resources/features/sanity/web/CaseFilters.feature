@@ -181,10 +181,6 @@ Feature: Case filter functionality
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
     And I click "Only cases from other instances" checkbox on Case directory page
-    And I click "Only cases with fulfilled reference definition" checkbox on Case directory page
-    And I click APPLY BUTTON in Case Directory Page
-    And I check that number of displayed cases results is 0
-    And I click "Only cases with fulfilled reference definition" checkbox on Case directory page
     And I click "Only port health cases without a facility" checkbox on Case directory page
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
@@ -253,7 +249,6 @@ Feature: Case filter functionality
     And I apply Reporting User filter "Rest AUTOMATION" on Case directory page
     And I apply Vaccination Status filter to "Vaccinated" on Case directory page
     And I apply Quarantine filter to "Home" on Case directory page
-    And I apply Reinfection filter to "Confirmed reinfection" on Case directory page
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 1
     And I apply Reporting User filter "Surveillance OFFICER" on Case directory page

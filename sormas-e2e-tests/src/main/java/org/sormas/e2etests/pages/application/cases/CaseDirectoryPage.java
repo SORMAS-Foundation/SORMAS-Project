@@ -58,15 +58,15 @@ public class CaseDirectoryPage {
   public static final By LINE_LISTING_BUTTON = By.id("lineListing");
   public static final By GRID_HEADERS = By.xpath("//thead//tr//th");
   public static final By GRID_RESULTS_DISEASE =
-      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(5)");
+      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(4)");
   public static final By GRID_RESULTS_FIRST_NAME =
-      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(11)");
+      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(10)");
   public static final By GRID_RESULTS_LAST_NAME =
-      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(12)");
+      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(11)");
   public static final By GRID_RESULTS_DISTRICT =
-      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(13)");
+      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(12)");
   public static final By GRID_RESULTS_HEALTH_FACILITY =
-      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(14)");
+      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(13)");
   public static final By CASE_CLASSIFICATION_COLUMNS =
       By.cssSelector("[role=rowgroup] tr>td:nth-child(7)");
   public static final String RESULTS_GRID_HEADER = "//div[contains(text(), '%s')]";
@@ -152,7 +152,7 @@ public class CaseDirectoryPage {
   public static final By CASE_EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-cases-epidata");
   public static final By EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-cases-epidata");
   public static final By CONTACTS_DATA_TAB = By.cssSelector("#tab-cases-contacts");
-  public static final By FIRST_PERSON_ID = By.xpath("//td[10]//a");
+  public static final By FIRST_PERSON_ID = By.xpath("//td[9]//a");
   public static final By FIRST_CASE_ID = By.xpath("//td[1]//a");
   public static final By IMPORT_BUTTON = By.id("actionImport");
   public static final By DETAILED_IMPORT_BUTTON = By.id("importDetailed");

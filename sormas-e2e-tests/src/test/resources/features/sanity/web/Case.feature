@@ -71,18 +71,9 @@ Feature: Case end to end tests
     Then I set Quarantine Home
     And I check if Quarantine start field is available
     And I check if Quarantine end field is available
-    Then I select Quarantine ordered verbally checkbox
-    And I check if Date of verbal order field is available
-    Then I select Quarantine ordered by official document checkbox
-    And I check if Date of the official document ordered field is available
-    Then I select Official quarantine order sent
-    And I check if Date official quarantine order was sent field is available
     Then I set Quarantine Institutional
     And I check if Quarantine start field is available
     And I check if Quarantine end field is available
-    And I check if Date of verbal order field is available
-    And I check if Date of the official document ordered field is available
-    And I check if Date official quarantine order was sent field is available
     Then I set Quarantine None
     Then I set Quarantine Unknown
     Then I set Quarantine Other
@@ -433,11 +424,13 @@ Feature: Case end to end tests
     And I click on the NEW CASE button
     When I fill new case with for one person with specified date for month ago
     Then I click on save case button
+    Then I collect uuid of the case
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     Then I fill second new case with for one person with specified date for present day
     And I confirm changes in selected Case
     And I confirm Pick person in Case
+    Then I collect uuid of the case
     Then I click on the Cases button from navbar
     And I filter Cases by created person name
     Then I select first created case for person from Cases list
@@ -954,7 +947,7 @@ Feature: Case end to end tests
     Given I log in with National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
-    And I create a new case with specific data
+    And I create a new case with specific data and new person
     And I navigate to case person tab
     And I set case person's sex as Male
     And I click on save button to Save Person data in Case Person Tab
@@ -1065,6 +1058,26 @@ Feature: Case end to end tests
     And I filter Cases by created person name
     And I open last created case
     And I check if Vaccination Status is set to "Vaccinated" on Edit Case page
+
+  @env_main @issue=SORDEV-7460
+  Scenario: Test Extend the exposure and event startDate and endDate to include a startTime and endTime
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    Then I navigate to Epidemiological Data tab on Edit Case Page
+    And I click on Exposure details known with YES option
+    Then I click on New Entry in Exposure Details Known in Cases directory
+    And I set Start and End of activity by current date in Exposure form
+    And I select a Type of activity Work option in Exposure for Epidemiological data tab in Cases
+    And I click on SAVE button in Exposure form
+    And I collect the Date of Start and End Exposure from Exposure page
+    Then I check that Date field displays start date and end date in table Exposure on Epidemiological data tab
 
     @env_main @issue=SORDEV-5613
       Scenario: Option to attach document like pdf, word, jpeg to cases

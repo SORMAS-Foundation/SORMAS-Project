@@ -117,7 +117,7 @@ public class CaseService {
         .lastName(lastName)
         .caseOrigin("IN-COUNTRY")
         .dateOfReport(LocalDate.now().minusDays(1))
-        .externalId(UUID.randomUUID().toString())
+        //  .externalId(UUID.randomUUID().toString())
         .disease(DiseasesValues.getCaptionFor(diseaseValue))
         .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
         .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())

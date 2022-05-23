@@ -15,7 +15,7 @@
 
 package org.sormas.e2etests.steps.web.application.configuration;
 
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NAME_UUID_EPID_NUMBER_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_ORIGIN_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DISEASE_COMBOBOX;
@@ -180,10 +180,11 @@ public class CommunitiesSteps implements En {
         });
 
     When(
-        "I filter last created Case by external ID",
+        "I filter last created Case by first and last name",
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(
-              NAME_UUID_EPID_NUMBER_LIKE_INPUT, caze.getExternalId());
+              PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
+              caze.getFirstName() + " " + caze.getLastName());
           TimeUnit.SECONDS.sleep(2); // wait for filter
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
