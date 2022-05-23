@@ -203,21 +203,21 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         Set<UserRoleReferenceDto> userRolesFieldValue = (Set<UserRoleReferenceDto>) userRolesField.getValue();
         final JurisdictionLevel jurisdictionLevel = UserRoleDto.getJurisdictionLevel(userRolesFieldValue.stream().map(userRole -> userRoleMap.get(userRole)).collect(Collectors.toSet()));
 
-		final boolean hasAssociatedOfficer = UserProvider.getCurrent().hasAssociatedOfficer();
+		final boolean hasAssociatedDistrictUser = UserProvider.getCurrent().hasAssociatedDistrictUser();
 		final boolean hasOptionalHealthFacility = UserProvider.getCurrent().hasOptionalHealthFacility();
 		final boolean isPortHealthUser = UserProvider.getCurrent().isPortHealthUser();
 
-		final boolean usePointOfEntry = (isPortHealthUser && hasAssociatedOfficer) || jurisdictionLevel == JurisdictionLevel.POINT_OF_ENTRY;
+		final boolean usePointOfEntry = (isPortHealthUser && hasAssociatedDistrictUser) || jurisdictionLevel == JurisdictionLevel.POINT_OF_ENTRY;
 		final boolean useHealthFacility = jurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY;
         final boolean useLaboratory = jurisdictionLevel == JurisdictionLevel.LABORATORY;
 		final boolean useCommunity = jurisdictionLevel == JurisdictionLevel.COMMUNITY;
-		final boolean useDistrict = hasAssociatedOfficer || jurisdictionLevel == JurisdictionLevel.DISTRICT	|| useCommunity || useHealthFacility || usePointOfEntry;;
+		final boolean useDistrict = hasAssociatedDistrictUser || jurisdictionLevel == JurisdictionLevel.DISTRICT	|| useCommunity || useHealthFacility || usePointOfEntry;;
 		final boolean useRegion = jurisdictionLevel == JurisdictionLevel.REGION || useDistrict;
 
 		final ComboBox associatedOfficer = (ComboBox) getFieldGroup().getField(UserDto.ASSOCIATED_OFFICER);
-		associatedOfficer.setVisible(hasAssociatedOfficer);
-		setRequired(hasAssociatedOfficer && !isPortHealthUser, UserDto.ASSOCIATED_OFFICER);
-		if (!hasAssociatedOfficer) {
+		associatedOfficer.setVisible(hasAssociatedDistrictUser);
+		setRequired(hasAssociatedDistrictUser && !isPortHealthUser, UserDto.ASSOCIATED_OFFICER);
+		if (!hasAssociatedDistrictUser) {
 			associatedOfficer.clear();
 		}
 

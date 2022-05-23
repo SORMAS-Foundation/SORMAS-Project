@@ -121,12 +121,12 @@ public class UserRole extends AbstractDomainObject {
 	}
 
 	@Column
-	public boolean hasAssociatedOfficer() {
+	public boolean hasAssociatedDistrictUser() {
 		return hasAssociatedDistrictUser;
 	}
 
-	public void setHasAssociatedDistrictUser(boolean hasAssociatedOfficer) {
-		this.hasAssociatedDistrictUser = hasAssociatedOfficer;
+	public void setHasAssociatedDistrictUser(boolean hasAssociatedDistrictUser) {
+		this.hasAssociatedDistrictUser = hasAssociatedDistrictUser;
 	}
 
 	@Column

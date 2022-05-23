@@ -264,7 +264,7 @@ public class TestHelper {
 			userRole.setUserRights(defaultUserRole.getDefaultUserRights());
 			userRole.setCaption(defaultUserRole.toString());
 			userRole.setPortHealthUser(defaultUserRole.isPortHealthUser());
-			userRole.setHasAssociatedDistrictUser(defaultUserRole.hasAssociatedOfficer());
+			userRole.setHasAssociatedDistrictUser(defaultUserRole.hasAssociatedDistrictUser());
 			userRole.setHasOptionalHealthFacility(defaultUserRole.hasOptionalHealthFacility());
 			userRole.setJurisdictionLevel(defaultUserRole.getJurisdictionLevel());
 			try {

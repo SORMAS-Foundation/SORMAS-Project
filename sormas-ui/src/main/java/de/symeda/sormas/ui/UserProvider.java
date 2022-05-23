@@ -164,9 +164,9 @@ public class UserProvider {
 		return portHealthUser;
 	}
 
-	public boolean hasAssociatedOfficer() {
+	public boolean hasAssociatedDistrictUser() {
 		if (hasAssociatedDistrictUser == null) {
-			hasAssociatedDistrictUser = FacadeProvider.getUserRoleFacade().hasAssociatedOfficer(getUserRoles());
+			hasAssociatedDistrictUser = FacadeProvider.getUserRoleFacade().hasAssociatedDistrictUser(getUserRoles());
 		}
 		return hasAssociatedDistrictUser;
 	}

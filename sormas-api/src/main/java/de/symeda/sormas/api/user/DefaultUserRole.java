@@ -248,7 +248,7 @@ public enum DefaultUserRole {
 		return supervisor;
 	}
 
-	public boolean hasAssociatedOfficer() {
+	public boolean hasAssociatedDistrictUser() {
 		return hasAssociatedDistrictUser;
 	}
 

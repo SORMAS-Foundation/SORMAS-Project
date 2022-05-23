@@ -153,7 +153,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		target.setCaption(source.getCaption());
 		target.setDescription(source.getDescription());
 		target.setHasOptionalHealthFacility(source.hasOptionalHealthFacility());
-		target.setHasAssociatedDistrictUser(source.hasAssociatedOfficer());
+		target.setHasAssociatedDistrictUser(source.hasAssociatedDistrictUser());
 		target.setPortHealthUser(source.isPortHealthUser());
 		target.setEmailNotificationTypes(new ArrayList<>(source.getEmailNotificationTypes()));
 		target.setSmsNotificationTypes(new ArrayList<>(source.getSmsNotificationTypes()));
@@ -192,7 +192,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	}
 
 	@Override
-	public boolean hasAssociatedOfficer(Set<UserRoleDto> userRoles) {
+	public boolean hasAssociatedDistrictUser(Set<UserRoleDto> userRoles) {
 		return userRoles.stream().filter(userRoleDto -> userRoleDto.hasAssociatedDistrictUser()).findFirst().orElse(null) != null;
 	}
 

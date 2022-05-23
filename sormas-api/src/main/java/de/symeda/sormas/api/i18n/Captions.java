@@ -2402,7 +2402,7 @@ public interface Captions {
 	String UserRole_description = "UserRole.description";
 	String UserRole_emailNotificationTypes = "UserRole.emailNotificationTypes";
 	String UserRole_enabled = "UserRole.enabled";
-	String UserRole_hasAssociatedOfficer = "UserRole.hasAssociatedOfficer";
+	String UserRole_hasAssociatedDistrictUser = "UserRole.hasAssociatedDistrictUser";
 	String UserRole_hasOptionalHealthFacility = "UserRole.hasOptionalHealthFacility";
 	String UserRole_jurisdictionLevel = "UserRole.jurisdictionLevel";
 	String UserRole_portHealthUser = "UserRole.portHealthUser";

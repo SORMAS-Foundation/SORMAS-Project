@@ -58,7 +58,7 @@ public class UserRoleDtoHelper extends AdoDtoHelper<UserRole, UserRoleDto> {
 		target.setDescription(source.getDescription());
 		target.setEnabled(source.isEnabled());
 		target.setPortHealthUser(source.isPortHealthUser());
-		target.setHasAssociatedDistrictUser(source.hasAssociatedOfficer());
+		target.setHasAssociatedDistrictUser(source.hasAssociatedDistrictUser());
 		target.setHasOptionalHealthFacility(source.hasOptionalHealthFacility());
 		target.setJurisdictionLevel(source.getJurisdictionLevel());
 	}
@@ -70,7 +70,7 @@ public class UserRoleDtoHelper extends AdoDtoHelper<UserRole, UserRoleDto> {
 		target.setDescription(source.getDescription());
 		target.setEnabled(source.isEnabled());
 		target.setPortHealthUser(source.isPortHealthUser());
-		target.setHasAssociatedOfficer(source.hasAssociatedOfficer());
+		target.setHasAssociatedDistrictUser(source.hasAssociatedDistrictUser());
 		target.setHasOptionalHealthFacility(source.hasOptionalHealthFacility());
 		target.setJurisdictionLevel(source.getJurisdictionLevel());
 	}

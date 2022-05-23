@@ -128,7 +128,7 @@ public class UserRole extends AbstractDomainObject {
 		this.hasOptionalHealthFacility = hasOptionalHealthFacility;
 	}
 
-	public boolean hasAssociatedOfficer() {
+	public boolean hasAssociatedDistrictUser() {
 		return hasAssociatedDistrictUser;
 	}
 

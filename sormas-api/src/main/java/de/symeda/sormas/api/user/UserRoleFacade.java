@@ -57,7 +57,7 @@ public interface UserRoleFacade {
 
 	boolean isPortHealthUser(Set<UserRoleDto> userRoles);
 
-	boolean hasAssociatedOfficer(Set<UserRoleDto> userRoles);
+	boolean hasAssociatedDistrictUser(Set<UserRoleDto> userRoles);
 
 	boolean hasOptionalHealthFacility(Set<UserRoleDto> userRoles);
 

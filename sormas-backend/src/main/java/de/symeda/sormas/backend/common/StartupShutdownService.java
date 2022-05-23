@@ -770,7 +770,7 @@ public class StartupShutdownService {
 			UserRole userRole = userRoleService.getByCaption(role.name());
 			userRole.setCaption(I18nProperties.getEnumCaption(role));
 			userRole.setPortHealthUser(role.isPortHealthUser());
-			userRole.setHasAssociatedDistrictUser(role.hasAssociatedOfficer());
+			userRole.setHasAssociatedDistrictUser(role.hasAssociatedDistrictUser());
 			userRole.setHasOptionalHealthFacility(DefaultUserRole.hasOptionalHealthFacility(Collections.singleton(role)));
 			userRole.setEnabled(true);
 			userRole.setJurisdictionLevel(role.getJurisdictionLevel());
