@@ -295,11 +295,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			rdcfEntities);
 		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
-		getCaseFacade().delete(caze.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
+		getCaseFacade().delete(caze.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
-		getCaseFacade().delete(caze2.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
+		getCaseFacade().delete(caze2.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		assertEquals(0, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
@@ -307,7 +307,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
-		getContactFacade().delete(contact.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, null));
+		getContactFacade().delete(contact.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		assertEquals(0, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 	}

@@ -83,6 +83,11 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 		throw new UnsupportedOperationException();
 	}
 
+	public void setColumns(String... columnIds) {
+		super.setColumns(columnIds);
+		getColumns().forEach(tColumn -> tColumn.setMaximumWidth(300));
+	}
+
 	/**
 	 * Use this method before calling any bulkaction, to prevent illegal access to pseudonymized entries
 	 */

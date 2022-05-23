@@ -189,6 +189,7 @@ public class CaseController {
 
 	public void createFromEventParticipant(EventParticipantDto eventParticipant) {
 		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
+
 		if (event.getDisease() == null) {
 			new Notification(
 				I18nProperties.getString(Strings.headingCreateNewCaseIssue),
@@ -198,16 +199,37 @@ public class CaseController {
 			return;
 		}
 
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, null, null, false);
-		caseCreateComponent.addCommitListener(() -> {
-			EventParticipantDto updatedEventparticipant = FacadeProvider.getEventParticipantFacade().getByUuid(eventParticipant.getUuid());
-			if (updatedEventparticipant.getResultingCase() != null) {
-				String caseUuid = updatedEventparticipant.getResultingCase().getUuid();
-				CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-				convertSamePersonContactsAndEventparticipants(caze);
+		CaseDataDto dto = CaseDataDto.build(PersonDto.build().toReference(), event.getDisease());
+		dto.setRegion(eventParticipant.getRegion() != null ? eventParticipant.getRegion() : event.getEventLocation().getRegion());
+		dto.setDistrict(eventParticipant.getDistrict() != null ? eventParticipant.getDistrict() : event.getEventLocation().getDistrict());
+		dto.setCommunity(event.getEventLocation().getCommunity());
+		dto.setReportingUser(UserProvider.getCurrent().getUserReference());
+
+		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(eventParticipant.getPerson().getUuid()), uuid -> {
+			if (uuid == null) {
+				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(null, eventParticipant, null, null, false);
+				caseCreateComponent.addCommitListener(() -> {
+					EventParticipantDto updatedEventparticipant = FacadeProvider.getEventParticipantFacade().getByUuid(eventParticipant.getUuid());
+					if (updatedEventparticipant.getResultingCase() != null) {
+						String caseUuid = updatedEventparticipant.getResultingCase().getUuid();
+						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
+						convertSamePersonContactsAndEventparticipants(caze);
+					}
+				});
+				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
+			} else {
+				CaseDataDto selectedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(uuid);
+				EventParticipantDto updatedEventParticipant = FacadeProvider.getEventParticipantFacade().getByUuid(eventParticipant.getUuid());
+				updatedEventParticipant.setResultingCase(selectedCase.toReference());
+				FacadeProvider.getEventParticipantFacade().save(updatedEventParticipant);
+
+				FacadeProvider.getCaseFacade().setSampleAssociations(updatedEventParticipant.toReference(), selectedCase.toReference());
+
+				convertSamePersonContactsAndEventparticipants(selectedCase);
+
+				navigateToView(CaseDataView.VIEW_NAME, selectedCase.getUuid(), null);
 			}
 		});
-		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 	}
 
 	public void createFromEventParticipantDifferentDisease(EventParticipantDto eventParticipant, Disease disease) {
@@ -678,8 +700,6 @@ public class CaseController {
 					transferDataToPerson(createForm, person);
 					FacadeProvider.getPersonFacade().savePerson(person);
 
-					saveCase(dto);
-
 					if (convertedContact.getDisease().equals(dto.getDisease())) {
 						// retrieve the contact just in case it has been changed during case saving
 						ContactDto updatedContact = FacadeProvider.getContactFacade().getByUuid(convertedContact.getUuid());
@@ -691,8 +711,12 @@ public class CaseController {
 						if (updatedContact.getResultingCase() == null && updatedContact.getDisease() == dto.getDisease()) {
 							updatedContact.setResultingCase(dto.toReference());
 						}
-						FacadeProvider.getContactFacade().save(updatedContact);
+						updatedContact = FacadeProvider.getContactFacade().save(updatedContact);
+						dto.setFollowUpComment(updatedContact.getFollowUpComment());
 					}
+
+					saveCase(dto);
+
 					FacadeProvider.getCaseFacade().setSampleAssociations(convertedContact.toReference(), dto.toReference());
 					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
 					if (!createdFromLabMessage) {

@@ -49,6 +49,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_C
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BLOOD_ORGAN_TISSUE_DONATION_IN_THE_LAST_6_MONTHS_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_CLASSIFICATION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_CLASSIFICATION_SPAN;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_IDENTIFICATION_SOURCE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_PERSON_TAB;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
@@ -182,6 +183,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOU
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EVENT_PARTICIPANTS_DATA_TAB;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.contacts.ContactDirectorySteps.exposureData;
 
@@ -328,9 +330,9 @@ public class EditCaseSteps implements En {
         "I check that Case Classification has {string} value",
         (String caseClassificationValue) -> {
           String caseClassificationComboboxValue =
-              (webDriverHelpers.getValueFromCombobox(CASE_CLASSIFICATION_COMBOBOX));
+              (webDriverHelpers.getTextFromWebElement(CASE_CLASSIFICATION_SPAN));
           softly.assertEquals(
-              caseClassificationValue,
+              caseClassificationValue.toUpperCase(),
               caseClassificationComboboxValue,
               "The case classification field has unexpected value ");
           softly.assertAll();
@@ -439,7 +441,8 @@ public class EditCaseSteps implements En {
               List.of(
                   "dateOfReport",
                   "disease",
-                  "externalId",
+                  //   "externalId",
+                  // "epidNumber",
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
@@ -492,7 +495,7 @@ public class EditCaseSteps implements En {
               List.of(
                   "dateOfReport",
                   "disease",
-                  "externalId",
+                  // "externalId",
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
@@ -683,6 +686,13 @@ public class EditCaseSteps implements En {
         });
 
     When(
+        "I click on {string} as place of stay in Case Edit tab for DE version",
+        (String placeOfStay) -> {
+          webDriverHelpers.clickWebElementByText(
+              PLACE_OF_STAY_OPTIONS, CaseOutcome.getValueForDE(placeOfStay).toUpperCase());
+        });
+
+    When(
         "I click on ([^\"]*) as German place of stay",
         (String option) -> {
           String placeOfStay = new String();
@@ -851,7 +861,7 @@ public class EditCaseSteps implements En {
           String quarantineText;
           String expectedTextReduce = "Are you sure you want to reduce the quarantine?";
           String expectedTextExtend = "Are you sure you want to extend the quarantine?";
-          webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_ORDERED_VERBALLY_CHECKBOX_LABEL);
+          webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_COMBOBOX);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(QUARANTINE_POPUP_MESSAGE);
           quarantineText = webDriverHelpers.getTextFromWebElement(QUARANTINE_POPUP_MESSAGE);
           if (option.equals("Reduce")) softly.assertEquals(quarantineText, expectedTextReduce);
@@ -1049,7 +1059,6 @@ public class EditCaseSteps implements En {
               List.of(
                   "dateOfReport",
                   "disease",
-                  "externalId",
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
@@ -1283,6 +1292,8 @@ public class EditCaseSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
           webDriverHelpers.scrollToElement(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+          webDriverHelpers.selectFromCombobox(
+              DELETE_SAMPLE_REASON_POPUP, "Entity created without legal reason");
           webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(CASE_APPLY_FILTERS_BUTTON);
         });
@@ -1443,6 +1454,22 @@ public class EditCaseSteps implements En {
           TimeUnit.SECONDS.sleep(3); // wait for response after confirm
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+
+    When(
+        "I check the end of processing date in the archive popup and not select Archive contacts checkbox",
+        () -> {
+          String endOfProcessingDate;
+          endOfProcessingDate =
+              webDriverHelpers.getValueFromWebElement(END_OF_PROCESSING_DATE_POPUP_INPUT);
+          softly.assertEquals(
+              endOfProcessingDate,
+              LocalDate.now().format(DATE_FORMATTER),
+              "End of processing date is invalid");
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(EditContactPage.DELETE_POPUP_YES_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // wait for response after confirm
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
   }
 
   private Case collectCasePersonUuid() {
@@ -1458,7 +1485,8 @@ public class EditCaseSteps implements En {
         .firstName(userInfo.getFirstName())
         .lastName(userInfo.getLastName())
         .dateOfBirth(userInfo.getDateOfBirth())
-        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
+        // field that is no longer available
+        // .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
         .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
         .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
@@ -1610,7 +1638,7 @@ public class EditCaseSteps implements En {
         .firstName(userInfo.getFirstName())
         .lastName(userInfo.getLastName())
         .dateOfBirth(userInfo.getDateOfBirth())
-        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
+        // .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
         .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
         .placeDescription(webDriverHelpers.getValueFromWebElement(PLACE_DESCRIPTION_INPUT))

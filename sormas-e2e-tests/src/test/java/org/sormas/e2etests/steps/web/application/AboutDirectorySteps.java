@@ -238,7 +238,7 @@ public class AboutDirectorySteps implements En {
           new FileInputStream(
               new File(
                   userDirPath
-                      + "//downloads//sormas_datenbeschreibungsverzeichnis_"
+                      + "//downloads//sormas_data_dictionary_"
                       + LocalDate.now()
                       + "_.xlsx"));
       Workbook workbook = new XSSFWorkbook(excelFile);

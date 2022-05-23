@@ -98,7 +98,7 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(lastTaskEditButton, 40);
           webDriverHelpers.clickElementSeveralTimesUntilNextElementIsDisplayed(
-              lastTaskEditButton, TASK_STATUS_OPTIONS, 5);
+              lastTaskEditButton, TASK_STATUS_OPTIONS, 6);
         });
 
     When(

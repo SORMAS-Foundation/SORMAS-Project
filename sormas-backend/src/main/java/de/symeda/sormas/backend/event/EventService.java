@@ -800,7 +800,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	 * Creates a default filter that should be used as the basis of queries that do not use {@link EventCriteria}.
 	 * This essentially removes {@link DeletableAdo#isDeleted()} events from the queries.
 	 */
-	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<Event> root) {
+	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, Event> root) {
 		return cb.isFalse(root.get(Event.DELETED));
 	}
 

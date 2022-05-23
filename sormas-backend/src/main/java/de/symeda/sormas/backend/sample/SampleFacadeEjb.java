@@ -702,10 +702,11 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	@RolesAllowed(UserRight._SAMPLE_DELETE)
-	public void deleteAllSamples(List<String> sampleUuids) {
+	public void deleteAllSamples(List<String> sampleUuids, DeletionDetails deletionDetails) {
 		long startTime = DateHelper.startTime();
 
-		IterableHelper.executeBatched(sampleUuids, DELETED_BATCH_SIZE, batchedSampleUuids -> sampleService.deleteAll(batchedSampleUuids));
+		IterableHelper
+			.executeBatched(sampleUuids, DELETED_BATCH_SIZE, batchedSampleUuids -> sampleService.deleteAll(batchedSampleUuids, deletionDetails));
 		logger.debug("deleteAllSamples(sampleUuids) finished. samplesCount = {}, {}ms", sampleUuids.size(), DateHelper.durationMillies(startTime));
 	}
 
