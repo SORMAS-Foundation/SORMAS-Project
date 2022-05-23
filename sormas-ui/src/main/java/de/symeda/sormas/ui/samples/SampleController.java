@@ -163,7 +163,7 @@ public class SampleController {
 	 * @param callback
 	 *            use it to define additional actions that need to be taken after the pathogen test is saved (e.g. refresh the UI)
 	 * @param isNew
-	 *            for existing pathogen tests, the 'delete pathogen test' button is hidden for users without UserRight.PATHOGEN_TEST_DELETE permission.
+	 *            for existing pathogen tests, the 'remove this pathogen test' button is hidden for users without UserRight.PATHOGEN_TEST_DELETE permission.
 	 * @return the pathogen test create component added.
 	 */
 	public PathogenTestForm addPathogenTestComponent(
