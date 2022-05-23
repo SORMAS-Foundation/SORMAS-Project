@@ -151,6 +151,8 @@ public class CreateNewEventSteps implements En {
           webDriverHelpers.scrollToElement(TITLE_INPUT);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(TITLE_INPUT);
           webDriverHelpers.fillInWebElement(TITLE_INPUT, faker.book().title());
+          selectResponsibleRegion(RegionsValues.VoreingestellteBundeslander.getName());
+          selectResponsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName());
         });
 
     When(
