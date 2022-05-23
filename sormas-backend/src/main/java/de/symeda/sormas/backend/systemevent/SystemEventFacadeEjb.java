@@ -15,6 +15,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -48,6 +49,7 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 	/**
 	 * 
 	 * @param type
+	 *            the type of the SystemEvent to be fetched
 	 * @return the latest SystemEvent of the specified type with SystemEventStatus == SUCCESS.
 	 */
 	@Override
@@ -56,21 +58,20 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 		CriteriaQuery<SystemEvent> cq = cb.createQuery(SystemEvent.class);
 		Root<SystemEvent> systemEventRoot = cq.from(SystemEvent.class);
 
-		cq.where(cb.equal(systemEventRoot.get(SystemEvent.STATUS), SystemEventStatus.SUCCESS));
+		final Predicate equalSystemEventStatus = cb.equal(systemEventRoot.get(SystemEvent.STATUS), SystemEventStatus.SUCCESS);
+		final Predicate equalSystemEventType = cb.equal(systemEventRoot.get(SystemEvent.TYPE), type);
+		cq.where(equalSystemEventStatus, equalSystemEventType);
 		cq.orderBy(cb.desc(systemEventRoot.get(SystemEvent.START_DATE)));
 
 		return QueryHelper.getFirstResult(em, cq, this::toDto);
 	}
 
-
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void saveSystemEvent(@Valid SystemEventDto dto) {
 		SystemEvent systemEvent = systemEventService.getByUuid(dto.getUuid());
-
 		systemEvent = fromDto(dto, systemEvent, true);
 		systemEventService.ensurePersisted(systemEvent);
-
 	}
 
 	@Override
@@ -121,7 +122,6 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 	}
 
 	public SystemEventDto toDto(SystemEvent source) {
-
 		if (source == null) {
 			return null;
 		}
@@ -150,7 +150,6 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 	}
 
 	public void deleteAllDeletableSystemEvents(LocalDateTime notChangedUntil) {
-
 		long startTime = DateHelper.startTime();
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
