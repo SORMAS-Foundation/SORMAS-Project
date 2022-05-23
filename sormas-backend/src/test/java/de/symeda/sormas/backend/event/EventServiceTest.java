@@ -15,13 +15,22 @@
 
 package de.symeda.sormas.backend.event;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -75,5 +84,76 @@ public class EventServiceTest extends AbstractBeanTest {
 		PersonDto person2 = creator.createPerson();
 		creator.createEventParticipant(event.toReference(), person2, nationalUser.toReference());
 		assertTrue(getEventService().hasAnyEventParticipantWithoutJurisdiction(event.getUuid()));
+	}
+
+	@Test
+	public void testGetEventSummaryDetailsByContactsEventArchivingAndDeletion() {
+		TestDataCreator.RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		TestDataCreator.RDCF rdcf = new TestDataCreator.RDCF(rdcfEntities);
+		UserDto user = useSurveillanceOfficerLogin(rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+
+		ContactDto contact = creator.createContact(rdcf, user.toReference(), contactPerson.toReference());
+
+		EventDto event = creator.createEvent(user.toReference(), contact.getDisease());
+		creator.createEventParticipant(event.toReference(), contactPerson, user.toReference());
+
+		EventService sut = getEventService();
+
+		List<ContactEventSummaryDetails> result = sut.getEventSummaryDetailsByContacts(Arrays.asList(contact.getUuid()));
+		assertEquals(1, result.size());
+		assertEquals(event.getUuid(), result.get(0).getEventUuid());
+		assertEquals(event.getEventTitle(), result.get(0).getEventTitle());
+
+		// archiving should not have any effect on the export list
+		getEventFacade().archive(Collections.singletonList(event.getUuid()));
+
+		result = sut.getEventSummaryDetailsByContacts(Arrays.asList(contact.getUuid()));
+		assertEquals(1, result.size());
+		assertEquals(event.getUuid(), result.get(0).getEventUuid());
+		assertEquals(event.getEventTitle(), result.get(0).getEventTitle());
+
+		// deletion should have an effect on the export list
+		getEventFacade().delete(event.getUuid(), new DeletionDetails());
+
+		result = sut.getEventSummaryDetailsByContacts(Arrays.asList(contact.getUuid()));
+		assertTrue(result.isEmpty());
+	}
+
+	@Test
+	public void testGetEventSummaryDetailsByCasesEventArchivingAndDeletion() {
+		TestDataCreator.RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		TestDataCreator.RDCF rdcf = new TestDataCreator.RDCF(rdcfEntities);
+		UserDto user = useSurveillanceOfficerLogin(rdcf);
+		PersonDto contactPerson = creator.createPerson("Case", "Person");
+
+		CaseDataDto caze = creator.createCase(user.toReference(), contactPerson.toReference(), rdcf);
+
+		EventDto event = creator.createEvent(user.toReference(), caze.getDisease());
+		EventParticipantDto participant = creator.createEventParticipant(event.toReference(), contactPerson, user.toReference());
+		participant.setResultingCase(caze.toReference());
+		getEventParticipantFacade().save(participant);
+
+		EventService sut = getEventService();
+
+		Long cazeId = getCaseService().getIdByUuid(caze.getUuid());
+		List<EventSummaryDetails> result = sut.getEventSummaryDetailsByCases(Arrays.asList(cazeId));
+		assertEquals(1, result.size());
+		assertEquals(event.getUuid(), result.get(0).getEventUuid());
+		assertEquals(event.getEventTitle(), result.get(0).getEventTitle());
+
+		// archiving should not have any effect on the export list
+		getEventFacade().archive(Collections.singletonList(event.getUuid()));
+
+		result = sut.getEventSummaryDetailsByCases(Arrays.asList(cazeId));
+		assertEquals(1, result.size());
+		assertEquals(event.getUuid(), result.get(0).getEventUuid());
+		assertEquals(event.getEventTitle(), result.get(0).getEventTitle());
+
+		// deletion should have an effect on the export list
+		getEventFacade().delete(event.getUuid(), new DeletionDetails());
+
+		result = sut.getEventSummaryDetailsByCases(Arrays.asList(cazeId));
+		assertTrue(result.isEmpty());
 	}
 }

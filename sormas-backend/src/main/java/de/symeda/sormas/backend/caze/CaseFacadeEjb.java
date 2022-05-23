@@ -739,7 +739,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			cb.and(
 				cb.equal(resultingCase.get(Case.ID), caseRoot.get(Case.ID)),
 				cb.isFalse(event.get(Event.DELETED)),
-				cb.isFalse(event.get(Event.ARCHIVED)),
 				cb.isFalse(eventCountRoot.get(EventParticipant.DELETED))));
 		eventCountSq.select(cb.countDistinct(event.get(Event.ID)));
 

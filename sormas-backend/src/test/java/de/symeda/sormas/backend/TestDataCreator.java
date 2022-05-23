@@ -920,6 +920,11 @@ public class TestDataCreator {
 		return createEvent(reportingUser, new Date());
 	}
 
+	public EventDto createEvent(UserReferenceDto reportingUser, EventStatus status) {
+
+		return createEvent(status, EventInvestigationStatus.PENDING, "eventTitle", "description", reportingUser, null);
+	}
+
 	public EventDto createEvent(UserReferenceDto reportingUser, Disease disease) {
 		return createEvent(
 			EventStatus.SIGNAL,
