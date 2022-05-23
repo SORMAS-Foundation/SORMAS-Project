@@ -151,7 +151,7 @@ Feature: Create travel entries
     And I click on Bulk Actions combobox in Travel Entry Directory
     And I click on Delete button from Bulk Actions Combobox in Travel Entry Directory
     And I click yes on the CONFIRM REMOVAL popup from Task Directory page
-    And I check if popup deletion message appeared
+    And I choose the reason of deletion in popup for Travel Entry
 
   @issue=SORDEV-9818 @env_de
   Scenario: Deleting entry assigned to a person in Travel Entry Directory
@@ -176,7 +176,7 @@ Feature: Create travel entries
     And I click on Bulk Actions combobox in Travel Entry Directory
     And I click on Delete button from Bulk Actions Combobox in Travel Entry Directory
     And I click yes on the CONFIRM REMOVAL popup from Task Directory page
-    And I check if popup deletion message appeared
+    And I choose the reason of deletion in popup for Travel Entry
     When I click on the Persons button from navbar
     And I fill UUID of the collected person from last created Travel Entry
     Then I apply on the APPLY FILTERS button

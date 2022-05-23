@@ -566,6 +566,26 @@ Feature: Contacts end to end tests
     Then I open the first contact from contacts list
     And I check if Vaccination Status is set to "Vaccinated" on Edit Contact page
 
+  @env_main @issue=SORDEV-7460
+  Scenario: Test Extend the exposure and event startDate and endDate to include a startTime and endTime
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    When I click on the Contacts button from navbar
+    Then I open the last created contact
+    Then I click on the Epidemiological Data button tab in Contact form
+    And I click on Exposure details known with YES option
+    Then I click on New Entry in Exposure Details Known
+    And I set Start and End of activity by current date in Exposure form
+    And I select a Type of activity Work option in Exposure for Epidemiological data tab in Cases
+    And I click on SAVE button in Exposure form
+    And I collect the Date of Start and End Exposure from Exposure page
+    Then I check that Date field displays start date and end date in table Exposure on Epidemiological data tab
+
   @env_main @issue=SORDEV-5613
   Scenario: Option to attach document like pdf, word, jpeg to contacts
     When API: I create a new person
