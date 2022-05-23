@@ -35,9 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.EntityRelevanceStatus;
-import de.symeda.sormas.api.common.DeletionDetails;
-import de.symeda.sormas.api.task.TaskCriteria;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,9 +42,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
@@ -55,6 +54,7 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -72,8 +72,13 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testTaskDirectoryForDeletedLinkedCase() {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.userRoleDtoMap.get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -376,13 +381,8 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
 
 		// 1. Region level user without a task
-		UserDto survSup = creator.createUser(
-			rdcf1.region.getUuid(),
-			null,
-			null,
-			"Surv",
-			"Sup",
-			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto survSup = creator
+			.createUser(rdcf1.region.getUuid(), null, null, "Surv", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		loginWith(survSup);
 		assertThat(getTaskFacade().getIndexList(null, 0, 100, null), is(empty()));
 
@@ -438,10 +438,8 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetAllTasksForUsersWithoutRights() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(
-			rdcf,
-			creator.getUserRoleReference(DefaultUserRole.ADMIN),
-			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		UserDto userCaseOfficer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.CASE_OFFICER));
 		loginWith(user);
 
