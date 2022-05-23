@@ -17,19 +17,24 @@ package de.symeda.sormas.app.rest;
 
 import java.util.List;
 
-import de.symeda.sormas.api.user.UserRoleConfigDto;
+import de.symeda.sormas.api.user.UserRoleDto;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 
-public interface UserRoleConfigFacadeRetro {
+public interface UserRoleFacadeRetro {
 
 	@GET("userroles/all/{since}")
-	Call<List<UserRoleConfigDto>> pullAllSince(@Path("since") long since);
+	Call<List<UserRoleDto>> pullAllSince(@Path("since") long since);
 
 	@GET("userroles/uuids")
 	Call<List<String>> pullUuids();
 
 	@GET("userroles/deleted/{since}")
 	Call<List<String>> pullDeletedUuidsSince(@Path("since") long since);
+
+	@POST("userroles/query")
+	Call<List<UserRoleDto>> pullByUuids(@Body List<String> uuids);
 }

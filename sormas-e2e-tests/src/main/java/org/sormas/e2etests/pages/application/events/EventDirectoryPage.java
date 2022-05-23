@@ -130,6 +130,8 @@ public class EventDirectoryPage {
       By.xpath("//span[@class='v-icon v-icon-info_circle']");
   public static final By RESPONSIBLE_USER_INFO_POPUP_TEXT =
       By.xpath("//div[@class='v-tooltip-text']");
+  public static final By FIRST_GRID_UUID_RESULT = By.xpath("//table/tbody/tr[1]/td[1]");
+  public static final By FIRST_GRID_DATE_OF_EVENT = By.xpath("//table/tbody/tr[1]/td[10]");
 
   public static By getCheckboxByIndex(String idx) {
     return By.xpath(String.format("(//input[@type=\"checkbox\"])[%s]", idx));

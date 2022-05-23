@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
+
 import de.symeda.sormas.api.utils.FeatureIndependent;
 import java.util.Set;
 
@@ -46,37 +47,27 @@ public class UserReferenceDto extends ReferenceDto {
 		setUuid(uuid);
 	}
 
-	public UserReferenceDto(String uuid, String firstName, String lastName, Set<UserRole> userRoles) {
+	public UserReferenceDto(String uuid, String firstName, String lastName) {
 		setUuid(uuid);
-		setCaption(buildCaption(firstName, lastName, userRoles));
+		setCaption(buildCaption(firstName, lastName));
 		this.firstName = firstName;
 		this.lastName = lastName;
 	}
 
-	protected UserReferenceDto(String uuid, String firstName, String lastName, String caption) {
+	public UserReferenceDto(String uuid, String firstName, String lastName, String caption) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		setUuid(uuid);
 		setCaption(caption);
 	}
 
-	public static String buildCaption(String firstName, String lastName, Set<UserRole> userRoles) {
+	public static String buildCaption(String firstName, String lastName) {
 
 		StringBuilder result = new StringBuilder();
-		result.append(DataHelper.toStringNullable(firstName)).append(" ").append(DataHelper.toStringNullable(lastName).toUpperCase());
-		boolean first = true;
-		if (userRoles != null) {
-			for (UserRole userRole : userRoles) {
-				if (first) {
-					result.append(" - ");
-					first = false;
-				} else {
-					result.append(", ");
-				}
-				result.append(userRole.toString());
-			}
-		}
-		return result.toString();
+		return result.append(DataHelper.toStringNullable(firstName))
+			.append(" ")
+			.append(DataHelper.toStringNullable(lastName).toUpperCase())
+			.toString();
 	}
 
 	public String getFirstName() {
@@ -89,6 +80,6 @@ public class UserReferenceDto extends ReferenceDto {
 
 	@JsonIgnore
 	public String getShortCaption() {
-		return buildCaption(firstName, lastName, null);
+		return buildCaption(firstName, lastName);
 	}
 }

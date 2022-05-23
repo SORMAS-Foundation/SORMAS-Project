@@ -118,6 +118,8 @@ public class EpidemiologicalDataCasePage {
       By.cssSelector("[location='sourceContacts']");
   public static final By TYPE_OF_ACTIVITY_EXPOSURES =
       By.xpath("//table[@class='v-table-table']//td[2]/div/div");
+  public static final By DATE_EXPOSURE_TABLE =
+      By.xpath("//table/tbody/tr[@class='v-table-row']/td[5]");
 
   public static By getExposureTableData(Integer tdNr) {
     return By.xpath(String.format("//table[@class='v-table-table']//td[%s]", tdNr));

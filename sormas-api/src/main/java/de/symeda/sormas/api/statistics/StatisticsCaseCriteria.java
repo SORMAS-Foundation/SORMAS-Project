@@ -32,12 +32,12 @@ import de.symeda.sormas.api.QuarterOfYear;
 import de.symeda.sormas.api.Year;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOutcome;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.EpiWeek;
 
 public class StatisticsCaseCriteria implements Serializable {
@@ -87,7 +87,7 @@ public class StatisticsCaseCriteria implements Serializable {
 	private List<CommunityReferenceDto> personCommunities;
 	private String personCity;
 	private String personPostcode;
-	private List<UserRole> reportingUserRoles;
+	private List<UserRoleReferenceDto> reportingUserRoles;
 
 	public List<Year> getOnsetYears() {
 		return onsetYears;
@@ -261,7 +261,7 @@ public class StatisticsCaseCriteria implements Serializable {
 		return personPostcode;
 	}
 
-	public List<UserRole> getReportingUserRoles() {
+	public List<UserRoleReferenceDto> getReportingUserRoles() {
 		return reportingUserRoles;
 	}
 
@@ -500,7 +500,7 @@ public class StatisticsCaseCriteria implements Serializable {
 		return this;
 	}
 
-	public StatisticsCaseCriteria reportingUserRoles(List<UserRole> reportingUserRoles) {
+	public StatisticsCaseCriteria reportingUserRoles(List<UserRoleReferenceDto> reportingUserRoles) {
 		this.reportingUserRoles = reportingUserRoles;
 		return this;
 	}
