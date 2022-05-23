@@ -36,7 +36,7 @@ public class UserRightsGenerator extends AbstractBeanTest {
 	public void generateUserRights() throws IOException {
 		File output = new File("../sormas-api/src/main/resources/doc/SORMAS_User_Rights.xlsx");
 
-		String documentPath = getUserRightsFacade().generateUserRightsDocument(false);
+		String documentPath = getUserRightsFacade().generateUserRightsDocument();
 
 		Files.copy(Paths.get(documentPath), output.toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}

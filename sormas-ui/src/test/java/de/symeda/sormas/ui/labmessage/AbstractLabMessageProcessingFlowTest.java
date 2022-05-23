@@ -40,6 +40,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import de.symeda.sormas.api.user.DefaultUserRole;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
@@ -74,7 +75,6 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
@@ -190,7 +190,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		}).when(handleEditSample).handle(any(), any(), any());
 
 		rdcf = creator.createRDCF();
-		user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+		user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		country = new CountryReferenceDto(DataHelper.createUuid(), "de-DE");
 		flow = new AbstractLabMessageProcessingFlow(user, country) {
 

@@ -32,8 +32,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.After;
 import org.junit.Test;
 
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -66,7 +66,7 @@ public class InfoFacadeEjbTest extends AbstractBeanTest {
 			throw new RuntimeException("Could not set custom files path", e);
 		}
 
-		UserDto admin = creator.createUser(creator.createRDCF(), UserRole.ADMIN);
+		UserDto admin = creator.createUser(creator.createRDCF(), creator.getUserRoleReference(DefaultUserRole.ADMIN));
 		loginWith(admin);
 	}
 

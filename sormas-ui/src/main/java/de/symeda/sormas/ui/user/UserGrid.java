@@ -17,7 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
+import java.util.Collection;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
@@ -25,18 +27,19 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.HtmlRenderer;
+import com.vaadin.ui.renderers.TextRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRoleDto;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.utils.CollectionValueProvider;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
@@ -75,9 +78,9 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 			UserDto.HEALTH_FACILITY);
 
 		((Column<UserDto, String>) getColumn(UserDto.UUID)).setRenderer(new UuidRenderer());
-		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.USER_ROLES))
-			.setRenderer(new CollectionValueProvider<Set<UserRole>>(), new HtmlRenderer());
-		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.USER_ROLES)).setSortable(false);
+		Column<UserDto, Set<UserRoleDto>> userRolesColumn = ((Column<UserDto, Set<UserRoleDto>>) getColumn(UserDto.USER_ROLES));
+		userRolesColumn.setRenderer(new UserRolesRenderer());
+		userRolesColumn.setSortable(false);
 		((Column<UserDto, Boolean>) getColumn(UserDto.ACTIVE)).setRenderer(value -> String.valueOf(value), new ActiveRenderer());
 
 		for (Column<?, ?> column : getColumns()) {
@@ -117,7 +120,6 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 			deselectAll();
 		}
 
-
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class);
 		if (viewConfiguration.isInEagerMode()) {
 			setEagerDataProvider();
@@ -135,6 +137,26 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 				iconValue = VaadinIcons.THIN_SQUARE.getHtml();
 			}
 			return super.encode(iconValue);
+		}
+	}
+
+	public static class UserRolesRenderer extends TextRenderer {
+
+		@Override
+		public JsonValue encode(Object value) {
+			if (value != null) {
+				StringBuilder sb = new StringBuilder();
+				AtomicBoolean first = new AtomicBoolean(true);
+				((Collection<UserRoleReferenceDto>) value).stream().forEach(u -> {
+					if (!first.get()) {
+						sb.append(", ");
+					}
+					sb.append(u.getCaption());
+					first.set(false);
+				});
+				return super.encode(sb.toString());
+			}
+			return super.encode(value);
 		}
 	}
 }
