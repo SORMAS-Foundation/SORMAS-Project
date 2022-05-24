@@ -30,15 +30,20 @@ public class SystemEventFacadeEjbTest extends AbstractBeanTest {
 		Date earliestDate = new Date(100000L);
 		Date intermediateDate = new Date(200000L);
 		Date latestDate = new Date(300000L);
+		Date centralSyncDate = new Date(400000L);
 
 		SystemEventDto earlierSuccess = creator.createSystemEvent(SystemEventType.FETCH_LAB_MESSAGES, earliestDate, SystemEventStatus.SUCCESS);
 		SystemEventDto latestSuccess = creator.createSystemEvent(SystemEventType.FETCH_LAB_MESSAGES, intermediateDate, SystemEventStatus.SUCCESS);
 		SystemEventDto error = creator.createSystemEvent(SystemEventType.FETCH_LAB_MESSAGES, latestDate, SystemEventStatus.ERROR);
+		SystemEventDto centralSync = creator.createSystemEvent(SystemEventType.CENTRAL_SYNC_INFRA, centralSyncDate, SystemEventStatus.SUCCESS);
 
 		getSystemEventFacade().saveSystemEvent(earlierSuccess);
 		getSystemEventFacade().saveSystemEvent(latestSuccess);
 		getSystemEventFacade().saveSystemEvent(error);
+		getSystemEventFacade().saveSystemEvent(centralSync);
+
 		assertEquals(latestSuccess, getSystemEventFacade().getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES));
+		assertEquals(centralSync, getSystemEventFacade().getLatestSuccessByType(SystemEventType.CENTRAL_SYNC_INFRA));
 	}
 
 	@Test
