@@ -176,7 +176,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			travelEntryService.createDefaultFilter(cb, joins.getTravelEntry()));
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if ((jurisdictionLevel == JurisdictionLevel.NATION && !currentUser.getUserRoles().stream().anyMatch(UserRole::isPortHealthUser))) {
+		if ((jurisdictionLevel == JurisdictionLevel.NATION && !currentUser.getUserRoles().stream().anyMatch(UserRole::isPortHealthUser)) || currentUser.hasUserRole(UserRole.REST_USER)) {
 			return cb.and(assigneeFilter, relatedEntityNotDeletedFilter);
 		}
 
