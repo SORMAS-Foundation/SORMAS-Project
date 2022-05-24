@@ -11531,6 +11531,6 @@ ALTER TABLE diseaseconfiguration_history ADD COLUMN agegroups varchar(512);
 ALTER TABLE aggregatereport ADD COLUMN agegroup varchar(255);
 ALTER TABLE aggregatereport_history ADD COLUMN agegroup varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (460, 'Addition of age categories to aggregate module (mSERS) [5] #8967');
+INSERT INTO schema_version (version_number, comment) VALUES (461, 'Addition of age categories to aggregate module (mSERS) [5] #8967');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
