@@ -31,10 +31,7 @@ import retrofit2.http.Path;
 public interface ContactFacadeRetro {
 
 	@GET("contacts/all/{since}/{size}/{lastSynchronizedUuid}")
-	Call<List<ContactDto>> pullAllSince(
-			@Path("since") long since,
-			@Path("size") int size,
-			@Path("lastSynchronizedUuid") String lastSynchronizedUuid);
+	Call<List<ContactDto>> pullAllSince(@Path("since") long since, @Path("size") int size, @Path("lastSynchronizedUuid") String lastSynchronizedUuid);
 
 	@POST("contacts/query")
 	Call<List<ContactDto>> pullByUuids(@Body List<String> uuids);
@@ -45,10 +42,7 @@ public interface ContactFacadeRetro {
 	@GET("contacts/uuids")
 	Call<List<String>> pullUuids();
 
-	@GET("contacts/archived/{since}")
-	Call<List<String>> pullArchivedUuidsSince(@Path("since") long since);
-
-	@GET("contacts/deleted/{since}")
-	Call<List<String>> pullDeletedUuidsSince(@Path("since") long since);
+	@GET("contacts/obsolete/{since}")
+	Call<List<String>> pullObsoleteUuidsSince(@Path("since") long since);
 
 }
