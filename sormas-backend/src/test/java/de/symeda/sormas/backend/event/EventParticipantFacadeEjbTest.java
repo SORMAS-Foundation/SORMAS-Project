@@ -167,6 +167,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetMatchingEventParticipants() {
+
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.LAB_USER));
 		user.setLaboratory(rdcf.facility);
