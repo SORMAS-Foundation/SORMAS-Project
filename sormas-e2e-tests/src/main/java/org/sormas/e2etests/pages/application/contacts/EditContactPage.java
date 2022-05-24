@@ -142,4 +142,5 @@ public class EditContactPage {
   public static final By ARCHIVE_CONTACT_BUTTON_LABEL =
       By.xpath("//div[@id='archiveDearchive']//span[@class='v-button-caption']");
   public static final By END_OF_PROCESSING_DATE_POPUP_INPUT = By.cssSelector(".popupContent input");
+  public static final By CONTACTS_LIST = By.id("tab-contacts");
 }

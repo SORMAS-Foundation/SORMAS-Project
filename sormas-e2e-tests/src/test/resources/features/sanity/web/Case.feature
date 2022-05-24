@@ -1093,3 +1093,19 @@ Feature: Case end to end tests
       And I check if jpg file is downloaded correctly
       Then I delete last uploaded document file from case tab
       And I check if last uploaded file was deleted from document files in case tab
+
+  @env_main @#8565
+  Scenario: Check an archived case if its read only
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I open last edited case by API via URL navigation
+    Then I click on the Archive case button and confirm popup
+    Then I click on logout button from navbar
+    Then I log in with National User
+    Then I open last edited case by API via URL navigation
+    Then I check if editable fields are read only for an archived case

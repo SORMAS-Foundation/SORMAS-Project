@@ -225,6 +225,7 @@ public class EditCasePage {
       By.xpath(
           "//div[text()='Documents']/../parent::div/../../following-sibling::div//div[@class='v-label v-widget caption-truncated v-label-caption-truncated v-label-undef-w']");
   public static final By ARCHIVE_CASE_BUTTON = By.id("archiveDearchive");
+  public static final By CONFIRM_ACTION = By.id("actionConfirm");
   public static final By ARCHIVE_RELATED_CONTACTS_CHECKBOX =
       By.cssSelector(".popupContent span[class='v-checkbox v-widget']");
 }
