@@ -108,8 +108,8 @@ public class EventActionExportDto implements Serializable {
 		this.eventStatus = eventStatus;
 		this.eventRiskLevel = eventRiskLevel;
 		this.eventInvestigationStatus = eventInvestigationStatus;
-		this.eventReportingUser = new UserReferenceDto(eventReportingUserUuid, eventReportingUserFirstName, eventReportingUserLastName, null);
-		this.eventResponsibleUser = new UserReferenceDto(eventResponsibleUserUuid, eventResponsibleUserFirstName, eventResponsibleUserLastName, null);
+		this.eventReportingUser = new UserReferenceDto(eventReportingUserUuid, eventReportingUserFirstName, eventReportingUserLastName);
+		this.eventResponsibleUser = new UserReferenceDto(eventResponsibleUserUuid, eventResponsibleUserFirstName, eventResponsibleUserLastName);
 		this.actionMeasure = actionMeasure;
 		this.actionTitle = actionTitle;
 		this.actionCreationDate = actionCreationDate;
@@ -118,8 +118,8 @@ public class EventActionExportDto implements Serializable {
 		this.actionStatus = actionStatus;
 		this.actionPriority = actionPriority;
 		this.actionLastModifiedBy = actionLastModifiedByUuid != null
-			? new UserReferenceDto(actionLastModifiedByUuid, actionLastModifiedByFirstName, actionLastModifiedByLastName, null)
-			: new UserReferenceDto(actionCreatorUserUuid, actionCreatorUserFirstName, actionCreatorUserLastName, null);
+			? new UserReferenceDto(actionLastModifiedByUuid, actionLastModifiedByFirstName, actionLastModifiedByLastName)
+			: new UserReferenceDto(actionCreatorUserUuid, actionCreatorUserFirstName, actionCreatorUserLastName);
 	}
 
 	@Order(0)

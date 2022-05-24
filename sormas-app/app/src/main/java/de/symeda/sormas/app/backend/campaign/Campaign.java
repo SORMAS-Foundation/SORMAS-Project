@@ -133,7 +133,7 @@ public class Campaign extends PseudonymizableAdo {
 		this.campaignFormMetasJson = campaignFormMetasJson;
 	}
 
-	@MetaProperty
+	@MetaProperty //Likely obsolete, ignored due to Transient annotation
 	@Transient
 	public List<CampaignFormMeta> getCampaignFormMetas() {
 		if (campaignFormMetas == null) {

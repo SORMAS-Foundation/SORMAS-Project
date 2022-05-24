@@ -20,7 +20,9 @@ package de.symeda.sormas.ui;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import de.symeda.sormas.api.Disease;
@@ -70,29 +72,48 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRoleDto;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 
 public class TestDataCreator {
 
+	private final Map<DefaultUserRole, UserRoleReferenceDto> userRoleDtoMap = new HashMap<>();
+
 	public TestDataCreator() {
 
 	}
 
-	public UserDto createUser(RDCF rdcf, UserRole... roles) {
+	public UserDto createUser(RDCF rdcf, UserRoleReferenceDto... roles) {
 		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
 	}
 
-	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName, String lastName, UserRole... roles) {
+	public UserDto createUser(
+		String regionUuid,
+		String districtUuid,
+		String facilityUuid,
+		String firstName,
+		String lastName,
+		UserRoleReferenceDto... roles) {
 		return createUser(regionUuid, districtUuid, facilityUuid, null, firstName, lastName, Language.EN, roles);
 	}
 
 	public UserDto createPointOfEntryUser(String regionUuid, String districtUuid, String pointOfEntryUuid) {
-		return createUser(regionUuid, districtUuid, null, pointOfEntryUuid, "POE", "User", Language.EN, UserRole.POE_INFORMANT);
+		return createUser(
+			regionUuid,
+			districtUuid,
+			null,
+			pointOfEntryUuid,
+			"POE",
+			"User",
+			Language.EN,
+			userRoleDtoMap.get(DefaultUserRole.POE_INFORMANT));
 	}
 
 	public UserDto createUser(
@@ -103,13 +124,13 @@ public class TestDataCreator {
 		String firstName,
 		String lastName,
 		Language language,
-		UserRole... roles) {
+		UserRoleReferenceDto... roles) {
 
 		UserDto user = UserDto.build();
 		user.setFirstName(firstName);
 		user.setLastName(lastName);
 		user.setUserName(firstName + lastName);
-		user.setUserRoles(new HashSet<UserRole>(Arrays.asList(roles)));
+		user.setUserRoles(new HashSet<>(Arrays.asList(roles)));
 		user.setRegion(FacadeProvider.getRegionFacade().getReferenceByUuid(regionUuid));
 		user.setDistrict(FacadeProvider.getDistrictFacade().getReferenceByUuid(districtUuid));
 		user.setHealthFacility(FacadeProvider.getFacilityFacade().getReferenceByUuid(facilityUuid));
@@ -256,22 +277,6 @@ public class TestDataCreator {
 		contact = FacadeProviderMock.getContactFacade().save(contact);
 
 		return contact;
-	}
-
-	public CaseDataDto createUnclassifiedCase(Disease disease) {
-
-		RDCF rdcf = createRDCF("Region", "District", "Community", "Facility");
-		UserDto user =
-			createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = createPerson("Case", "Person");
-		return createCase(
-			user.toReference(),
-			cazePerson.toReference(),
-			disease,
-			CaseClassification.NOT_CLASSIFIED,
-			InvestigationStatus.PENDING,
-			new Date(),
-			rdcf);
 	}
 
 	public CaseDataDto createCase(
@@ -574,7 +579,7 @@ public class TestDataCreator {
 		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
 		sample.setLab(lab);
 
-		if(customConfig != null){
+		if (customConfig != null) {
 			customConfig.accept(sample);
 		}
 
@@ -757,4 +762,27 @@ public class TestDataCreator {
 		}
 	}
 
+	private void createUserRoles() {
+		Arrays.stream(DefaultUserRole.values()).forEach(defaultUserRole -> {
+			UserRoleDto userRoleDto =
+				UserRoleDto.build(defaultUserRole.getDefaultUserRights().toArray(new UserRight[defaultUserRole.getDefaultUserRights().size()]));
+			userRoleDto.setCaption(defaultUserRole.toString());
+			userRoleDto.setEnabled(true);
+			userRoleDto.setPortHealthUser(defaultUserRole.isPortHealthUser());
+			userRoleDto.setHasAssociatedDistrictUser(defaultUserRole.hasAssociatedDistrictUser());
+			userRoleDto.setHasOptionalHealthFacility(defaultUserRole.hasOptionalHealthFacility());
+			userRoleDto.setEmailNotificationTypes(defaultUserRole.getEmailNotificationTypes());
+			userRoleDto.setSmsNotificationTypes(defaultUserRole.getSmsNotificationTypes());
+			userRoleDto.setJurisdictionLevel(defaultUserRole.getJurisdictionLevel());
+			FacadeProvider.getUserRoleFacade().saveUserRole(userRoleDto);
+			userRoleDtoMap.put(defaultUserRole, userRoleDto.toReference());
+		});
+	}
+
+	public UserRoleReferenceDto getUserRoleReference(DefaultUserRole userRole) {
+		if (userRoleDtoMap.isEmpty()) {
+			createUserRoles();
+		}
+		return userRoleDtoMap.get(userRole);
+	}
 }

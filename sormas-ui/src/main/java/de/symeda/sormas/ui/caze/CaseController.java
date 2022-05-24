@@ -101,7 +101,6 @@ import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.HtmlHelper;
@@ -634,7 +633,7 @@ public class CaseController {
 		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
 		caze.setReportingUser(userReference);
 
-		if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+		if (UserProvider.getCurrent().isPortHealthUser()) {
 			caze.setResponsibleRegion(user.getRegion());
 			caze.setResponsibleDistrict(user.getDistrict());
 			caze.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
