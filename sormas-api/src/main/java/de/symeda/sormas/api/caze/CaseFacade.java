@@ -92,7 +92,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	CaseDataDto getCaseDataByUuid(String uuid);
 
-	CaseDataDto saveIgnoreChangeDate(@Valid @NotNull CaseDataDto dto) throws ValidationRuntimeException;
+	CaseDataDto updateFollowUpComment(@Valid @NotNull CaseDataDto dto) throws ValidationRuntimeException;
 
 	CaseDataDto save(@Valid @NotNull CaseDataDto dto, boolean systemSave) throws ValidationRuntimeException;
 

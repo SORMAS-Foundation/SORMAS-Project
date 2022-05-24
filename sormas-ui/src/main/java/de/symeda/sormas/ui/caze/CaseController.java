@@ -715,7 +715,7 @@ public class CaseController {
 						updatedContact = FacadeProvider.getContactFacade().save(updatedContact);
 						// when the contact is converted to a case, the same followup comment should be put in case as well
 						dto.setFollowUpComment(updatedContact.getFollowUpComment());
-						FacadeProvider.getCaseFacade().saveIgnoreChangeDate(dto);
+						FacadeProvider.getCaseFacade().updateFollowUpComment(dto);
 					}
 					FacadeProvider.getCaseFacade().setSampleAssociations(convertedContact.toReference(), dto.toReference());
 					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
