@@ -1225,10 +1225,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		filter = CriteriaBuilderHelper.or(cb, filter, filterResponsible);
 
-		if ((userFilterCriteria != null && !userFilterCriteria.isExcludeLimitedSyncRestrictions())
-			|| featureConfigurationFacade
+		if ((userFilterCriteria == null || !userFilterCriteria.isExcludeLimitedSyncRestrictions())
+			&& featureConfigurationFacade
 				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
-				&& RequestContextHolder.isMobileSync()) {
+			&& RequestContextHolder.isMobileSync()) {
 			final Predicate limitedCaseSyncPredicate = cb.not(
 				cb.and(
 					cb.equal(casePath.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE),

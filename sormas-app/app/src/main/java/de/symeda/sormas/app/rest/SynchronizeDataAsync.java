@@ -51,6 +51,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.campaign.CampaignDtoHelper;
@@ -140,10 +141,10 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				// Infrastructure always has to be pulled - otherwise referenced data may be lost (e.g. #586)
 				pullInfrastructure();
 				// Pull and remove obsolete entities when the last time this has been done is more than 24 hours ago
-//				if (ConfigProvider.getLastObsoleteUuidsSyncDate() == null
-//					|| DateHelper.getFullDaysBetween(ConfigProvider.getLastObsoleteUuidsSyncDate(), new Date()) >= 1) {
-				pullAndRemoveObsoleteUuidsSince(ConfigProvider.getLastObsoleteUuidsSyncDate());
-//				}
+				if (ConfigProvider.getLastObsoleteUuidsSyncDate() == null
+					|| DateHelper.getFullDaysBetween(ConfigProvider.getLastObsoleteUuidsSyncDate(), new Date()) >= 1) {
+					pullAndRemoveObsoleteUuidsSince(ConfigProvider.getLastObsoleteUuidsSyncDate());
+				}
 				// Pull changed data and push existing data that has been changed on the mobile device
 				synchronizeChangedData();
 

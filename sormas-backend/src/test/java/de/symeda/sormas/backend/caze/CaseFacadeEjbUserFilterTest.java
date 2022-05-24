@@ -144,7 +144,7 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetCasesWithLimitedSyncronization() {
+	public void testGetCasesWithLimitedSynchronization() {
 
 		FeatureConfigurationIndexDto featureConfiguration =
 			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
