@@ -700,6 +700,8 @@ public class CaseController {
 					transferDataToPerson(createForm, person);
 					FacadeProvider.getPersonFacade().savePerson(person);
 
+					saveCase(dto);
+
 					if (convertedContact.getDisease().equals(dto.getDisease())) {
 						// retrieve the contact just in case it has been changed during case saving
 						ContactDto updatedContact = FacadeProvider.getContactFacade().getByUuid(convertedContact.getUuid());
@@ -712,11 +714,10 @@ public class CaseController {
 							updatedContact.setResultingCase(dto.toReference());
 						}
 						updatedContact = FacadeProvider.getContactFacade().save(updatedContact);
+						// when the contact is converted to a case, the same followup comment should be put in case as well
 						dto.setFollowUpComment(updatedContact.getFollowUpComment());
+						FacadeProvider.getCaseFacade().saveIgnoreChangeDate(dto);
 					}
-
-					saveCase(dto);
-
 					FacadeProvider.getCaseFacade().setSampleAssociations(convertedContact.toReference(), dto.toReference());
 					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
 					if (!createdFromLabMessage) {

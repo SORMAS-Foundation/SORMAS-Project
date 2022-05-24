@@ -1418,6 +1418,14 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RolesAllowed({
+			UserRight._CASE_CREATE,
+			UserRight._CASE_EDIT })
+	public CaseDataDto saveIgnoreChangeDate(@Valid @NotNull CaseDataDto dto) throws ValidationRuntimeException {
+		return save(dto, true, false, true, false);
+	}
+
+	@Override
+	@RolesAllowed({
 		UserRight._CASE_CREATE,
 		UserRight._CASE_EDIT,
 		UserRight._EXTERNAL_VISITS })
