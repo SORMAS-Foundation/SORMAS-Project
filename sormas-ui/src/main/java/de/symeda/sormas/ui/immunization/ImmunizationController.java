@@ -167,6 +167,8 @@ public class ImmunizationController {
 				ImmunizationDto immunizationDtoValue = immunizationDataForm.getValue();
 				List<ImmunizationDto> similarImmunizations = findSimilarImmunizations(immunizationDtoValue);
 				if (similarImmunizations.isEmpty()) {
+					//set the change date when the operation is happening
+					immunizationDtoValue.setChangeDate(new Date());
 					FacadeProvider.getImmunizationFacade().save(immunizationDtoValue);
 					if (immunizationDtoValue.getImmunizationStatus() == ImmunizationStatus.ACQUIRED) {
 						NotificationHelper.showNotification(
