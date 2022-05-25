@@ -65,6 +65,11 @@ public class LabMessageMapper {
 				Mapping.of(person::setBirthdateMM, person.getBirthdateMM(), labMessage.getPersonBirthDateMM(), PersonDto.BIRTH_DATE_MM),
 				Mapping.of(person::setBirthdateYYYY, person.getBirthdateYYYY(), labMessage.getPersonBirthDateYYYY(), PersonDto.BIRTH_DATE_YYYY),
 				Mapping.of(person::setSex, person.getSex(), labMessage.getPersonSex(), PersonDto.SEX),
+				Mapping.of(
+					person::setPresentCondition,
+					person.getPresentCondition(),
+					labMessage.getPersonPresentCondition(),
+					PersonDto.PRESENT_CONDITION),
 				Mapping.of(person::setPhone, person.getPhone(), labMessage.getPersonPhone(), PersonDto.PERSON_CONTACT_DETAILS),
 				Mapping.of(person::setEmailAddress, person.getEmailAddress(), labMessage.getPersonEmail(), PersonDto.PERSON_CONTACT_DETAILS)));
 

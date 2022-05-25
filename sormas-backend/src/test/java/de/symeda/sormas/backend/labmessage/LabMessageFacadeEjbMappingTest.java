@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import de.symeda.sormas.api.labmessage.ExternalMessageType;
+import de.symeda.sormas.api.person.PresentCondition;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -80,6 +81,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setPersonFirstName("Person First Name");
 		source.setPersonLastName("Person Last Name");
 		source.setPersonSex(Sex.OTHER);
+		source.setPersonPresentCondition(PresentCondition.ALIVE);
 		source.setPersonBirthDateDD(1);
 		source.setPersonBirthDateDD(1);
 		source.setPersonBirthDateYYYY(1970);
@@ -116,6 +118,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getPersonFirstName(), result.getPersonFirstName());
 		assertEquals(source.getPersonLastName(), result.getPersonLastName());
 		assertEquals(source.getPersonSex(), result.getPersonSex());
+		assertEquals(source.getPersonPresentCondition(), result.getPersonPresentCondition());
 		assertEquals(source.getPersonBirthDateDD(), result.getPersonBirthDateDD());
 		assertEquals(source.getPersonBirthDateMM(), result.getPersonBirthDateMM());
 		assertEquals(source.getPersonBirthDateYYYY(), result.getPersonBirthDateYYYY());
@@ -167,6 +170,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		source.setPersonFirstName("Person First Name");
 		source.setPersonLastName("Person Last Name");
 		source.setPersonSex(Sex.OTHER);
+		source.setPersonPresentCondition(PresentCondition.DEAD);
 		source.setPersonBirthDateDD(1);
 		source.setPersonBirthDateDD(1);
 		source.setPersonBirthDateYYYY(1970);
@@ -204,6 +208,7 @@ public class LabMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getPersonFirstName(), result.getPersonFirstName());
 		assertEquals(source.getPersonLastName(), result.getPersonLastName());
 		assertEquals(source.getPersonSex(), result.getPersonSex());
+		assertEquals(source.getPersonPresentCondition(), result.getPersonPresentCondition());
 		assertEquals(source.getPersonBirthDateDD(), result.getPersonBirthDateDD());
 		assertEquals(source.getPersonBirthDateMM(), result.getPersonBirthDateMM());
 		assertEquals(source.getPersonBirthDateYYYY(), result.getPersonBirthDateYYYY());

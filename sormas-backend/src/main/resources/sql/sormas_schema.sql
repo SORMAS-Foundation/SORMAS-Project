@@ -11525,4 +11525,10 @@ CREATE TRIGGER delete_history_trigger_userroles_smsnotificationtypes
 
 INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (460, 'Replace hard-coded user roles with fully configurable user roles #4461', true);
 
+
+ALTER TABLE labmessage ADD COLUMN personpresentcondition integer;
+ALTER TABLE labmessage_history ADD COLUMN personpresentcondition integer;
+
+INSERT INTO schema_version (version_number, comment) VALUES (461, 'Add present condition mapping - #6692');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

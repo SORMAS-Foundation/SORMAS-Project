@@ -21,6 +21,7 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.labmessage.ExternalMessageType;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -85,6 +86,7 @@ public class LabMessage extends AbstractDomainObject {
 	private String personFirstName;
 	private String personLastName;
 	private Sex personSex;
+	private PresentCondition personPresentCondition;
 	private Integer personBirthDateDD;
 	private Integer personBirthDateMM;
 	private Integer personBirthDateYYYY;
@@ -246,6 +248,14 @@ public class LabMessage extends AbstractDomainObject {
 
 	public void setPersonSex(Sex personSex) {
 		this.personSex = personSex;
+	}
+
+	public PresentCondition getPersonPresentCondition() {
+		return personPresentCondition;
+	}
+
+	public void setPersonPresentCondition(PresentCondition personPresentCondition) {
+		this.personPresentCondition = personPresentCondition;
 	}
 
 	@Column(name = "personbirthdatedd")
