@@ -211,4 +211,10 @@ public class CaseResource extends EntityDtoResource {
 		return FacadeProvider.getCaseFacade().deleteCases(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
 	}
 
+	@POST
+	@Path("/specificCase/{searchTerm}")
+	public String getSpecificCase(@RequestBody CaseCriteria caseCriteria, @PathParam("searchTerm") String searchTerm) {
+		return FacadeProvider.getCaseFacade().getUuidByUuidEpidNumberOrExternalId(searchTerm, caseCriteria);
+	}
+
 }
