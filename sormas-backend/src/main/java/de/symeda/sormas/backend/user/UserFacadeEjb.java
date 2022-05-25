@@ -67,6 +67,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceWithTaskNumbersDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.user.UserSyncResult;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
@@ -679,8 +680,15 @@ public class UserFacadeEjb implements UserFacade {
 
 		Set<UserRole> userRoles = Optional.of(target).map(User::getUserRoles).orElseGet(HashSet::new);
 		target.setUserRoles(userRoles);
-		userRoles.clear();
-		source.getUserRoles().stream().map(userRoleReferenceDto -> userRoleService.getByReferenceDto(userRoleReferenceDto)).forEach(userRoles::add);
+		Set<String> targetUserRoleUuids = target.getUserRoles().stream().map(UserRole::getUuid).collect(Collectors.toSet());
+		Set<String> sourceUserRoleUuids = source.getUserRoles().stream().map(UserRoleReferenceDto::getUuid).collect(Collectors.toSet());
+		List<UserRole> newUserRoles = source.getUserRoles()
+			.stream()
+			.filter(userRoleReferenceDto -> !targetUserRoleUuids.contains(userRoleReferenceDto.getUuid()))
+			.map(userRoleReferenceDto -> userRoleService.getByReferenceDto(userRoleReferenceDto))
+			.collect(Collectors.toList());
+		target.getUserRoles().addAll(newUserRoles);
+		target.getUserRoles().removeIf(userRole -> !sourceUserRoleUuids.contains(userRole.getUuid()));
 
 		target.updateJurisdictionLevel();
 
