@@ -49,12 +49,15 @@ import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
@@ -169,6 +172,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetMatchingEventParticipants() {
+
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.LAB_USER));
 		user.setLaboratory(rdcf.facility);
