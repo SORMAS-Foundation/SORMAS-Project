@@ -117,7 +117,7 @@ public class LabMessageProcessingUIHelper {
 
 		List<PathogenTestDto> existingTests = FacadeProvider.getPathogenTestFacade().getAllBySample(sample.toReference());
 		for (PathogenTestDto existingTest : existingTests) {
-			PathogenTestForm pathogenTestForm = sampleController.addPathogenTestComponent(sampleEditComponent, existingTest, caseSampleCount);
+			PathogenTestForm pathogenTestForm = sampleController.addPathogenTestComponent(sampleEditComponent, existingTest, caseSampleCount, false);
 			// when the user removes the pathogen test from the sampleEditComponent, mark the pathogen test as to be removed on commit
 			pathogenTestForm.addDetachListener(
 				(ClientConnector.DetachEvent detachEvent) -> sampleEditComponent.getWrappedComponent()
@@ -148,7 +148,7 @@ public class LabMessageProcessingUIHelper {
 			newPathogenTests.stream().filter(p -> !existingTestExternalIds.contains(p.getExternalId())).collect(Collectors.toList());
 
 		for (PathogenTestDto test : newTestsToAdd) {
-			PathogenTestForm form = sampleController.addPathogenTestComponent(sampleEditComponent, test, caseSampleCount);
+			PathogenTestForm form = sampleController.addPathogenTestComponent(sampleEditComponent, test, caseSampleCount, true);
 			sampleController.setViaLimsFieldChecked(form);
 		}
 
@@ -157,7 +157,7 @@ public class LabMessageProcessingUIHelper {
 			sampleController.addPathogenTestComponent(
 				sampleEditComponent,
 				LabMessageProcessingHelper.buildPathogenTest(null, labMessage, sample, UserProvider.getCurrent().getUser()),
-				caseSampleCount);
+				caseSampleCount, true);
 		}
 
 		// button configuration
@@ -297,7 +297,7 @@ public class LabMessageProcessingUIHelper {
 
 		for (PathogenTestDto pathogenTest : pathogenTests) {
 			PathogenTestForm pathogenTestCreateComponent =
-				sampleController.addPathogenTestComponent(sampleCreateComponent, pathogenTest, caseSampleCount);
+				sampleController.addPathogenTestComponent(sampleCreateComponent, pathogenTest, caseSampleCount, true);
 			sampleController.setViaLimsFieldChecked(pathogenTestCreateComponent);
 		}
 	}

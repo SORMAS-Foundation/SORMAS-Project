@@ -101,7 +101,6 @@ import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.HtmlHelper;
@@ -634,7 +633,7 @@ public class CaseController {
 		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
 		caze.setReportingUser(userReference);
 
-		if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+		if (UserProvider.getCurrent().isPortHealthUser()) {
 			caze.setResponsibleRegion(user.getRegion());
 			caze.setResponsibleDistrict(user.getDistrict());
 			caze.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
@@ -700,8 +699,6 @@ public class CaseController {
 					transferDataToPerson(createForm, person);
 					FacadeProvider.getPersonFacade().savePerson(person);
 
-					saveCase(dto);
-
 					if (convertedContact.getDisease().equals(dto.getDisease())) {
 						// retrieve the contact just in case it has been changed during case saving
 						ContactDto updatedContact = FacadeProvider.getContactFacade().getByUuid(convertedContact.getUuid());
@@ -713,8 +710,12 @@ public class CaseController {
 						if (updatedContact.getResultingCase() == null && updatedContact.getDisease() == dto.getDisease()) {
 							updatedContact.setResultingCase(dto.toReference());
 						}
-						FacadeProvider.getContactFacade().save(updatedContact);
+						updatedContact = FacadeProvider.getContactFacade().save(updatedContact);
+						dto.setFollowUpComment(updatedContact.getFollowUpComment());
 					}
+
+					saveCase(dto);
+
 					FacadeProvider.getCaseFacade().setSampleAssociations(convertedContact.toReference(), dto.toReference());
 					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
 					if (!createdFromLabMessage) {

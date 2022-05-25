@@ -57,4 +57,13 @@ public class EditCasePersonPage {
   public static final By COUNTRY_COMBOBOX = By.cssSelector("#country div");
   public static final By GEOCODE_BUTTON = By.cssSelector("#geocodeButton");
   public static final By SEE_CASES_FOR_THIS_PERSON_BUTTON = By.id("See cases for this person");
+  public static final By PASSPORT_NUMBER_INPUT = By.cssSelector("#passportNumber");
+  public static final By NATIONAL_HEALTH_ID_INPUT = By.cssSelector("#nationalHealthId");
+  public static final By EDUCATION_COMBOBOX =
+      By.cssSelector("[id='educationType'] [class='v-filterselect-button']");
+  public static final By COMMUNITY_CONTACT_PERSON_INPUT = By.cssSelector("#details");
+  public static final By NICKNAME_INPUT = By.cssSelector("#nickname");
+  public static final By MOTHERS_MAIDEN_NAME_INPUT = By.cssSelector("#mothersMaidenName");
+  public static final By MOTHERS_NAME_INPUT = By.cssSelector("#mothersName");
+  public static final By FATHERS_NAME_INPUT = By.cssSelector("#fathersName");
 }

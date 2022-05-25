@@ -44,7 +44,6 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -482,7 +481,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 
 		UserProvider currentUserProvider = UserProvider.getCurrent();
 		JurisdictionLevel userJurisditionLevel =
-			currentUserProvider != null ? UserRole.getJurisdictionLevel(currentUserProvider.getUserRoles()) : JurisdictionLevel.NONE;
+			currentUserProvider != null ? UserProvider.getCurrent().getJurisdictionLevel() : JurisdictionLevel.NONE;
 
 		if (userJurisditionLevel == JurisdictionLevel.HEALTH_FACILITY) {
 			responsibleRegion.setReadOnly(true);

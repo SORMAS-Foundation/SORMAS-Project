@@ -100,6 +100,15 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			}
 		});
 
+		/*
+		immunization will try to delete in cascade also the linked case . This will throw an error because the case is
+		related to a task. In order to delete the immunization and not the case we have to unlink the case from immunization
+	    */
+		if(immunization.getRelatedCase() != null) {
+			immunization.setRelatedCase(null);
+			ensurePersisted(immunization);
+		}
+
 		super.deletePermanent(immunization);
 	}
 

@@ -57,7 +57,10 @@ public class EventResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
-	public List<EventDto> getAllEvents(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+	public List<EventDto> getAllEvents(
+		@PathParam("since") long since,
+		@PathParam("size") int size,
+		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
 		return FacadeProvider.getEventFacade().getAllAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
@@ -144,5 +147,11 @@ public class EventResource extends EntityDtoResource {
 	@Path("/children")
 	public List<String> getChildrenUuids(List<String> uuids) {
 		return FacadeProvider.getEventFacade().getSubordinateEventUuids(uuids);
+	}
+
+	@GET
+	@Path("/specificEvent/{searchTerm}")
+	public String getSpecificCase(@PathParam("searchTerm") String searchTerm) {
+		return FacadeProvider.getEventFacade().getUuidByCaseUuidOrPersonUuid(searchTerm);
 	}
 }

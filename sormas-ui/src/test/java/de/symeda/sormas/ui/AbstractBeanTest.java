@@ -18,6 +18,7 @@
 
 package de.symeda.sormas.ui;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.BufferedReader;
@@ -55,8 +56,9 @@ import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.caseimport.CaseImportFacadeEjb.CaseImportFacadeEjbLocal;
@@ -77,7 +79,6 @@ import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import de.symeda.sormas.backend.user.CurrentUserService;
-import de.symeda.sormas.backend.user.UserService;
 import info.novatec.beantest.api.BaseBeanTest;
 
 public abstract class AbstractBeanTest extends BaseBeanTest {
@@ -95,8 +96,28 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
 		System.setProperty("java.naming.factory.initial", MockProducer.class.getCanonicalName());
 		I18nProperties.setUserLanguage(Language.EN);
-		UserDto user = creator.createUser(null, null, null, null, "ad", "min", Language.EN, UserRole.ADMIN, UserRole.NATIONAL_USER);
+		UserDto user = creator.createUser(
+			null,
+			null,
+			null,
+			null,
+			"ad",
+			"min",
+			Language.EN,
+			creator.getUserRoleReference(DefaultUserRole.ADMIN),
+			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
+
+		// see CurrentUserService.hasRight
+//		when(MockProducer.getSessionContext().isCallerInRole(any(String.class))).thenAnswer(invocationOnMock -> {
+//			String role = invocationOnMock.getArgument(0);
+//			UserRight userRight = UserRight.valueOf(role);
+//			return getCurrentUserService().getCurrentUser()
+//				.getUserRoles()
+//				.stream()
+//				.anyMatch(userRole -> userRole.getUserRights().contains(userRight));
+//		});
 	}
 
 	private void initH2Functions() {
@@ -125,10 +146,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public CurrentUserService getCurrentUserService() {
 		return getBean(CurrentUserService.class);
-	}
-
-	public UserService getUserService() {
-		return getBean(UserService.class);
 	}
 
 	public PersonFacade getPersonFacade() {

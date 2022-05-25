@@ -33,8 +33,8 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolExc
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.ExternalVisitDto;
 import de.symeda.sormas.api.visit.VisitCriteria;
@@ -57,8 +57,13 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 	public void testCreateExternalVisit() {
 
 		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ext", "Vis", UserRole.REST_EXTERNAL_VISITS_USER);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Ext",
+			"Vis",
+			creator.getUserRoleReference(DefaultUserRole.REST_EXTERNAL_VISITS_USER));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -199,7 +204,8 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testUpdateContactVisitAssociations() {
 
-		UserDto user = creator.createUser(creator.createRDCFEntities(), UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user =
+			creator.createUser(creator.createRDCFEntities(), creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto person = creator.createPerson();
 		ContactDto contact = creator.createContact(user.toReference(), person.toReference());
 		VisitDto visit = creator.createVisit(contact.getDisease(), person.toReference());
@@ -253,7 +259,7 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
-		UserDto user = creator.createUser(rdcf, "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		PersonDto person = creator.createPerson();
 		PersonDto person2 = creator.createPerson();
@@ -290,7 +296,7 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetAllActiveVisitsAfter() throws InterruptedException, ExternalSurveillanceToolException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		Date date = new Date();
 
 		PersonDto person = creator.createPerson();
@@ -337,7 +343,8 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetLastVisitByContact() {
-		UserDto user = creator.createUser(creator.createRDCF(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator
+			.createUser(creator.createRDCF(), "Surv", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		PersonDto person = creator.createPerson();
 		ContactDto contact = creator.createContact(user.toReference(), person.toReference());
@@ -351,7 +358,8 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetVisitsByContactAndPeriod() {
 
-		UserDto user = creator.createUser(creator.createRDCF(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator
+			.createUser(creator.createRDCF(), "Surv", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		PersonDto person = creator.createPerson();
 		ContactDto contact = creator.createContact(user.toReference(), person.toReference());
@@ -377,7 +385,8 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetLastVisitByCase() {
-		UserDto user = creator.createUser(creator.createRDCF(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator
+			.createUser(creator.createRDCF(), "Surv", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), creator.createRDCF());
@@ -390,7 +399,8 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetIndexList() {
-		UserDto user = creator.createUser(creator.createRDCF(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator
+			.createUser(creator.createRDCF(), "Surv", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		PersonDto person = creator.createPerson();
 		PersonDto person2 = creator.createPerson();

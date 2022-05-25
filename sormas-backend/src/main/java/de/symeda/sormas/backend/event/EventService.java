@@ -54,7 +54,6 @@ import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
@@ -365,7 +364,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		final EventJoins eventJoins = queryContext.getJoins();
 		final From<?, Event> eventJoin = queryContext.getRoot();
 
-		if (jurisdictionLevel != JurisdictionLevel.NATION && !currentUser.hasUserRole(UserRole.REST_USER)) {
+		if (jurisdictionLevel != JurisdictionLevel.NATION) {
 			switch (jurisdictionLevel) {
 			case REGION:
 				if (currentUser.getRegion() != null) {
@@ -800,7 +799,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	 * Creates a default filter that should be used as the basis of queries that do not use {@link EventCriteria}.
 	 * This essentially removes {@link DeletableAdo#isDeleted()} events from the queries.
 	 */
-	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<Event> root) {
+	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, Event> root) {
 		return cb.isFalse(root.get(Event.DELETED));
 	}
 
@@ -841,7 +840,6 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			cb.and(
 				cazeJoin.get(AbstractDomainObject.ID).in(casesId),
 				cb.isFalse(eventJoin.get(Event.DELETED)),
-				cb.isFalse(eventJoin.get(Event.ARCHIVED)),
 				cb.isFalse(eventsCqRoot.get(EventParticipant.DELETED))));
 		eventsCq.multiselect(
 			cazeJoin.get(Case.ID),
@@ -867,7 +865,6 @@ public class EventService extends AbstractCoreAdoService<Event> {
 				cb.and(
 					contactJoin.get(AbstractDomainObject.UUID).in(batchedContactUuids),
 					cb.isFalse(eventJoin.get(Event.DELETED)),
-					cb.isFalse(eventJoin.get(Event.ARCHIVED)),
 					cb.isFalse(eventsCqRoot.get(EventParticipant.DELETED))));
 			eventsCq.multiselect(
 				contactJoin.get(Contact.UUID),

@@ -47,12 +47,10 @@ import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
@@ -69,6 +67,7 @@ import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 
@@ -156,46 +155,48 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		CriteriaBuilder cb = taskQueryContext.getCriteriaBuilder();
 		From<?, Task> taskPath = taskQueryContext.getRoot();
 
-		Predicate assigneeFilter = createAssigneeFilter(cb, taskQueryContext.getJoins().getAssignee());
+		TaskJoins joins = taskQueryContext.getJoins();
+		Predicate assigneeFilter = createAssigneeFilter(cb, joins.getAssignee());
 
-		Predicate contactRightsPredicate = this.createContactFilter(
-			cb,
-			taskQueryContext.getRoot(),
-			(taskQueryContext.getJoins()).getAssignee(),
-			(taskQueryContext.getJoins()).getTaskObservers(),
-			currentUser);
+		Predicate contactRightsPredicate =
+			this.createContactFilter(cb, taskQueryContext.getRoot(), joins.getAssignee(), joins.getTaskObservers(), currentUser);
 		if (contactRightsPredicate != null) {
 			assigneeFilter = cb.and(assigneeFilter, contactRightsPredicate);
 		}
 
+		Predicate relatedEntityNotDeletedFilter = cb.or(
+			cb.equal(taskPath.get(Task.TASK_CONTEXT), TaskContext.GENERAL),
+			caseService.createDefaultFilter(cb, joins.getCaze()),
+			contactService.createDefaultFilter(cb, joins.getContact()),
+			eventService.createDefaultFilter(cb, joins.getEvent()),
+			travelEntryService.createDefaultFilter(cb, joins.getTravelEntry()));
+
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
-			|| currentUser.hasUserRole(UserRole.REST_USER)) {
-			return assigneeFilter;
+		if (jurisdictionLevel == JurisdictionLevel.NATION && !currentUser.getUserRoles().stream().anyMatch(UserRole::isPortHealthUser)) {
+			return cb.and(assigneeFilter, relatedEntityNotDeletedFilter);
 		}
 
 		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), currentUser);
 		filter = cb.or(filter, cb.equal(taskPath.get(Task.ASSIGNEE_USER), currentUser));
 
-		Predicate caseFilter = caseService.createUserFilter(new CaseQueryContext(cb, cq, taskQueryContext.getJoins().getCaseJoins()));
+		Predicate caseFilter = caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()));
 		if (caseFilter != null) {
 			filter = cb.or(filter, caseFilter);
 		}
-		Predicate contactFilter = contactService.createUserFilter(new ContactQueryContext(cb, cq, taskQueryContext.getJoins().getContactJoins()));
+		Predicate contactFilter = contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()));
 		if (contactFilter != null) {
 			filter = cb.or(filter, contactFilter);
 		}
-		Predicate eventFilter = eventService.createUserFilter(new EventQueryContext(cb, cq, taskQueryContext.getJoins().getEventJoins()));
+		Predicate eventFilter = eventService.createUserFilter(new EventQueryContext(cb, cq, joins.getEventJoins()));
 		if (eventFilter != null) {
 			filter = cb.or(filter, eventFilter);
 		}
-		Predicate travelEntryFilter =
-			travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq, taskQueryContext.getJoins().getTravelEntryJoins()));
+		Predicate travelEntryFilter = travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq, joins.getTravelEntryJoins()));
 		if (travelEntryFilter != null) {
 			filter = cb.or(filter, travelEntryFilter);
 		}
 
-		return CriteriaBuilderHelper.and(cb, filter, assigneeFilter);
+		return CriteriaBuilderHelper.and(cb, filter, relatedEntityNotDeletedFilter, assigneeFilter);
 	}
 
 	public Predicate createAssigneeFilter(CriteriaBuilder cb, Join<?, User> assigneeUserJoin) {
