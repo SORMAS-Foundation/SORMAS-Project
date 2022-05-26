@@ -15,16 +15,23 @@
 
 package de.symeda.sormas.app.backend.disease;
 
-import java.sql.SQLException;
+import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
-import android.util.Log;
+import java.sql.SQLException;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 public class DiseaseConfigurationDao extends AbstractAdoDao<DiseaseConfiguration> {
@@ -41,6 +48,38 @@ public class DiseaseConfigurationDao extends AbstractAdoDao<DiseaseConfiguration
 	@Override
 	public String getTableName() {
 		return DiseaseConfiguration.TABLE_NAME;
+	}
+
+	public List<Disease> getAllDiseases(Boolean active, Boolean primary, Boolean caseBased) {
+
+		final Set<Disease> diseases = EnumSet.noneOf(Disease.class);
+
+		final List<DiseaseConfiguration> diseaseConfigurations = queryForAll();
+
+		final User currentUser = ConfigProvider.getUser();
+
+		for (DiseaseConfiguration configuration : diseaseConfigurations) {
+			final Disease limitedDisease = currentUser.getLimitedDisease();
+			if (limitedDisease == null) {
+				final Disease disease = configuration.getDisease();
+				boolean activeFlagMatches = active.equals(configuration.getActive()) || active.equals(disease.isDefaultActive());
+				boolean primaryFlagMatches = primary.equals(configuration.getPrimaryDisease()) || primary.equals(disease.isDefaultPrimary());
+				boolean caseBasedFlagMatches = caseBased.equals(configuration.getCaseBased()) || caseBased.equals(disease.isDefaultCaseBased());
+				if (activeFlagMatches && primaryFlagMatches && caseBasedFlagMatches) {
+					diseases.add(disease);
+				}
+			} else if (limitedDisease == configuration.getDisease()) {
+				boolean activeFlagMatches = active.equals(configuration.getActive()) || active.equals(limitedDisease.isDefaultActive());
+				boolean primaryFlagMatches = primary.equals(configuration.getPrimaryDisease()) || primary.equals(limitedDisease.isDefaultPrimary());
+				boolean caseBasedFlagMatches =
+					caseBased.equals(configuration.getCaseBased()) || caseBased.equals(limitedDisease.isDefaultCaseBased());
+				if (activeFlagMatches && primaryFlagMatches && caseBasedFlagMatches) {
+					diseases.add(limitedDisease);
+				}
+			}
+		}
+
+		return diseases.stream().sorted(Comparator.comparing(Disease::toString)).collect(Collectors.toList());
 	}
 
 	public DiseaseConfiguration getDiseaseConfiguration(Disease disease) {

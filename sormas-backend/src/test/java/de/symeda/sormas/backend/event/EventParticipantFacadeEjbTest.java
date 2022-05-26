@@ -32,11 +32,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.caze.VaccinationInfoSource;
-import de.symeda.sormas.api.common.DeletionDetails;
-import de.symeda.sormas.api.common.DeletionReason;
-import de.symeda.sormas.api.event.SimilarEventParticipantDto;
-import de.symeda.sormas.backend.user.UserRole;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;

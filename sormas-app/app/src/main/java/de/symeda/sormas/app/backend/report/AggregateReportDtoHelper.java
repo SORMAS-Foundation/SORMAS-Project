@@ -60,6 +60,7 @@ public class AggregateReportDtoHelper extends AdoDtoHelper<AggregateReport, Aggr
 		target.setNewCases(source.getNewCases());
 		target.setLabConfirmations(source.getLabConfirmations());
 		target.setDeaths(source.getDeaths());
+		target.setAgeGroup(source.getAgeGroup());
 	}
 
 	@Override
@@ -105,6 +106,7 @@ public class AggregateReportDtoHelper extends AdoDtoHelper<AggregateReport, Aggr
 		target.setNewCases(source.getNewCases());
 		target.setLabConfirmations(source.getLabConfirmations());
 		target.setDeaths(source.getDeaths());
+		target.setAgeGroup(source.getAgeGroup());
 	}
 
     @Override
