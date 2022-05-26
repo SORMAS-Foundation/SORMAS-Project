@@ -169,12 +169,12 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		Button discardButton = getDiscardButton();
 		buttonsPanel.addComponent(discardButton);
 		buttonsPanel.setComponentAlignment(discardButton, Alignment.BOTTOM_RIGHT);
-		buttonsPanel.setExpandRatio(discardButton, 1);
+		buttonsPanel.setExpandRatio(discardButton, 4);
 
 		Button commitButton = getCommitButton();
 		buttonsPanel.addComponent(commitButton);
 		buttonsPanel.setComponentAlignment(commitButton, Alignment.BOTTOM_RIGHT);
-		buttonsPanel.setExpandRatio(commitButton, 0);
+		buttonsPanel.setExpandRatio(commitButton, 1);
 
 		addComponent(buttonsPanel);
 		setComponentAlignment(buttonsPanel, Alignment.BOTTOM_RIGHT);
