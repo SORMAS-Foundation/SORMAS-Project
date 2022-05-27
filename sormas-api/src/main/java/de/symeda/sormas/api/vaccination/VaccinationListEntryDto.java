@@ -15,16 +15,17 @@
 
 package de.symeda.sormas.api.vaccination;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.utils.DataHelper;
 import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.Vaccine;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
+import org.apache.commons.lang3.StringUtils;
 
 public class VaccinationListEntryDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
 
@@ -99,7 +100,7 @@ public class VaccinationListEntryDto extends PseudonymizableIndexDto implements 
 	}
 
 	@Override
-	public String toString() {
+	public String getCaption() {
 		String date = DateFormatHelper.formatLocalDate(vaccinationDate);
 
 		final String vaccine;
@@ -110,5 +111,10 @@ public class VaccinationListEntryDto extends PseudonymizableIndexDto implements 
 		}
 
 		return (date.isEmpty() ? "" : date + " - ") + vaccine + " (" + DataHelper.getShortUuid(uuid) +")";
+	}
+
+	@Override
+	public String toString() {
+		return VaccinationDto.I18N_PREFIX + StringUtils.SPACE + uuid;
 	}
 }

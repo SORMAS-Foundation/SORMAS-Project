@@ -78,6 +78,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
+import org.apache.commons.lang3.StringUtils;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
 public class CaseDataDto extends SormasToSormasShareableDto {
@@ -1723,6 +1724,6 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 
 	@Override
 	public String toString() {
-		return this.getUuid() + " - " + this.getExternalID();
+		return CaseDataDto.I18N_PREFIX + StringUtils.SPACE + this.getUuid() + " - " + this.getExternalID();
 	}
 }

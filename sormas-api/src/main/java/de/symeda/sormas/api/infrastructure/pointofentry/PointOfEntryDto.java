@@ -16,6 +16,7 @@ import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import org.apache.commons.lang3.StringUtils;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
 public class PointOfEntryDto extends InfrastructureDto {
@@ -205,8 +206,13 @@ public class PointOfEntryDto extends InfrastructureDto {
 	}
 
 	@Override
-	public String toString() {
+	public String getCaption() {
 		return InfrastructureHelper.buildPointOfEntryString(getUuid(), name);
+	}
+
+	@Override
+	public String toString() {
+		return I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 
 	public PointOfEntryReferenceDto toReference() {

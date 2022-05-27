@@ -34,6 +34,8 @@ import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
+import org.apache.commons.lang3.StringUtils;
 
 public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIndexDto, Serializable, Cloneable {
 
@@ -391,8 +393,13 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 	}
 
 	@Override
-	public String toString() {
+	public String getCaption() {
 		return CaseReferenceDto.buildCaption(getUuid(), getPersonFirstName(), getPersonLastName());
+	}
+
+	@Override
+	public String toString() {
+		return CaseDataDto.I18N_PREFIX + StringUtils.SPACE + uuid;
 	}
 
 	@Override

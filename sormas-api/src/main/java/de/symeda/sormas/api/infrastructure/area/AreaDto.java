@@ -8,6 +8,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import org.apache.commons.lang3.StringUtils;
 
 @DependingOnFeatureType(featureType = FeatureType.INFRASTRUCTURE_TYPE_AREA)
 public class AreaDto extends InfrastructureDto {
@@ -59,7 +60,13 @@ public class AreaDto extends InfrastructureDto {
 	}
 
 	@Override
-	public String toString() {
+	public String getCaption() {
 		return getName();
 	}
+
+	@Override
+	public String toString() {
+		return I18N_PREFIX + StringUtils.SPACE + getUuid();
+	}
+
 }

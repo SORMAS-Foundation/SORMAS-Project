@@ -8,6 +8,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
+import org.apache.commons.lang3.StringUtils;
 
 public class CaseSelectionDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
 
@@ -197,8 +198,13 @@ public class CaseSelectionDto extends PseudonymizableIndexDto implements Seriali
 	}
 
 	@Override
-	public String toString() {
+	public String getCaption() {
 		return CaseReferenceDto.buildCaption(getUuid(), getPersonFirstName(), getPersonLastName());
+	}
+
+	@Override
+	public String toString() {
+		return CaseDataDto.I18N_PREFIX + StringUtils.SPACE + uuid;
 	}
 
 	@Override

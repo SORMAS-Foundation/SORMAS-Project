@@ -29,6 +29,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
+import org.apache.commons.lang3.StringUtils;
 
 public class UserRoleDto extends EntityDto {
 
@@ -168,16 +169,17 @@ public class UserRoleDto extends EntityDto {
 		return laboratoryJurisdictionPresent ? JurisdictionLevel.LABORATORY : JurisdictionLevel.NONE;
 	}
 
-	@SuppressWarnings("serial")
-	public static class UserRoleValidationException extends ValidationException {
+	@Override public String toString() {
+		return I18N_PREFIX + StringUtils.SPACE + getUuid();
+	}
+
+	@SuppressWarnings("serial") public static class UserRoleValidationException extends ValidationException {
 
 		private final UserRoleDto checkedUserRole;
 		private final UserRoleDto forbiddenUserRole;
 
 		public UserRoleValidationException(UserRoleDto checkedUserRole, UserRoleDto forbiddenUserRole) {
-			super(
-				checkedUserRole.getCaption() + " " + I18nProperties.getString(Strings.messageUserRoleCombination) + " "
-					+ forbiddenUserRole.getCaption());
+			super(checkedUserRole.getCaption() + " " + I18nProperties.getString(Strings.messageUserRoleCombination) + " " + forbiddenUserRole.getCaption());
 			this.checkedUserRole = checkedUserRole;
 			this.forbiddenUserRole = forbiddenUserRole;
 		}
@@ -189,10 +191,5 @@ public class UserRoleDto extends EntityDto {
 		public UserRoleDto getForbiddenUserRole() {
 			return forbiddenUserRole;
 		}
-	}
-
-	@Override
-	public String toString() {
-		return caption;
 	}
 }

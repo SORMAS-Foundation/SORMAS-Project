@@ -22,6 +22,8 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureDto;
@@ -32,6 +34,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import org.apache.commons.lang3.StringUtils;
 
 @DependingOnFeatureType(featureType = {
 	FeatureType.CASE_SURVEILANCE,
@@ -333,8 +336,13 @@ public class FacilityDto extends InfrastructureDto {
 	}
 
 	@Override
-	public String toString() {
+	public String getCaption() {
 		return FacilityHelper.buildFacilityString(getUuid(), name);
+	}
+
+	@Override
+	public String toString() {
+		return I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 
 	public static FacilityDto build() {

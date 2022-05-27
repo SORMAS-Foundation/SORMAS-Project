@@ -11,6 +11,7 @@ import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import org.apache.commons.lang3.StringUtils;
 
 @DependingOnFeatureType(featureType = {
 	FeatureType.CASE_SURVEILANCE,
@@ -115,8 +116,13 @@ public class CountryDto extends InfrastructureDto {
 	}
 
 	@Override
-	public String toString() {
+	public String getCaption() {
 		return getDefaultName();
+	}
+
+	@Override
+	public String toString() {
+		return I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 
 	public static CountryDto build() {

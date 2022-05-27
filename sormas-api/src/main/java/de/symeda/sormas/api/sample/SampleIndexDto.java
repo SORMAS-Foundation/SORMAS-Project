@@ -26,12 +26,14 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.EmptyValuePseudonymizer;
+import org.apache.commons.lang3.StringUtils;
 
 public class SampleIndexDto extends PseudonymizableIndexDto implements Serializable {
 
@@ -384,7 +386,7 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 		this.lastTestCqValue = lastTestCqValue;
 	}
 
-	public String toString() {
+	public String getCaption() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(DateFormatHelper.formatLocalDateTime(sampleDateTime)).append(" - ");
 		sb.append(sampleMaterial);
@@ -393,5 +395,10 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 			sb.append(": ").append(pathogenTestResult);
 		}
 		return sb.toString();
+	}
+
+	@Override
+	public String toString() {
+		return SampleDto.I18N_PREFIX + StringUtils.SPACE + uuid;
 	}
 }

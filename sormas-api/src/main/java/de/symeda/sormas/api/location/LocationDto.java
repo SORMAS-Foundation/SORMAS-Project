@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.location;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import javax.validation.constraints.Max;
@@ -356,8 +358,7 @@ public class LocationDto extends PseudonymizableDto {
 	}
 
 	@Override
-	public String toString() {
-
+	public String getCaption() {
 		return LocationReferenceDto.buildCaption(
 			region != null ? region.getCaption() : null,
 			district != null ? district.getCaption() : null,
@@ -366,6 +367,11 @@ public class LocationDto extends PseudonymizableDto {
 			street,
 			houseNumber,
 			additionalInformation);
+	}
+
+	@Override
+	public String toString() {
+		return LocationDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 
 	public LocationReferenceDto toReference() {

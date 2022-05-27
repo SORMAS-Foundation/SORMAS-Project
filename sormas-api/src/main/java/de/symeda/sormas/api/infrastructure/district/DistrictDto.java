@@ -24,6 +24,7 @@ import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import org.apache.commons.lang3.StringUtils;
 
 @FeatureIndependent
 public class DistrictDto extends InfrastructureDto {
@@ -99,8 +100,13 @@ public class DistrictDto extends InfrastructureDto {
 	}
 
 	@Override
-	public String toString() {
+	public String getCaption() {
 		return getName();
+	}
+
+	@Override
+	public String toString() {
+		return I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 
 	public Float getGrowthRate() {

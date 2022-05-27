@@ -1010,8 +1010,13 @@ public class PersonDto extends PseudonymizableDto {
 	}
 
 	@Override
-	public String toString() {
+	public String getCaption() {
 		return buildCaption(firstName, lastName);
+	}
+
+	@Override
+	public String toString() {
+		return I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 
 	public PersonReferenceDto toReference() {

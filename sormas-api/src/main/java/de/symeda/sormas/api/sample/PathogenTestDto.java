@@ -14,6 +14,8 @@
  */
 package de.symeda.sormas.api.sample;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
@@ -38,6 +40,7 @@ import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
+import org.apache.commons.lang3.StringUtils;
 
 @DependingOnFeatureType(featureType = FeatureType.SAMPLES_LAB)
 public class PathogenTestDto extends PseudonymizableDto {
@@ -316,8 +319,14 @@ public class PathogenTestDto extends PseudonymizableDto {
 		this.cqValue = cqValue;
 	}
 
-	public String toString() {
+	@Override
+	public String getCaption() {
 		return DateFormatHelper.formatLocalDateTime(testDateTime) + " - " + testType + " (" + testedDisease + "): " + testResult;
+	}
+
+	@Override
+	public String toString() {
+		return PathogenTestDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 
 	public Date getReportDate() {

@@ -35,6 +35,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import org.apache.commons.lang3.StringUtils;
 
 @FeatureIndependent
 public class UserDto extends EntityDto {
@@ -182,8 +183,13 @@ public class UserDto extends EntityDto {
 	}
 
 	@Override
-	public String toString() {
+	public String getCaption() {
 		return UserReferenceDto.buildCaption(firstName, lastName);
+	}
+
+	@Override
+	public String toString() {
+		return I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 
 	public UserReferenceDto getAssociatedOfficer() {

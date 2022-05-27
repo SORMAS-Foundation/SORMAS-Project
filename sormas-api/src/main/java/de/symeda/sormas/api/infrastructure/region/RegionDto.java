@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.api.infrastructure.region;
 
+import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.utils.FeatureIndependent;
 import java.util.Date;
 
@@ -28,6 +29,7 @@ import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
+import org.apache.commons.lang3.StringUtils;
 
 @FeatureIndependent
 public class RegionDto extends InfrastructureDto {
@@ -104,11 +106,6 @@ public class RegionDto extends InfrastructureDto {
 		this.epidCode = epidCode;
 	}
 
-	@Override
-	public String toString() {
-		return getName();
-	}
-
 	public Float getGrowthRate() {
 		return growthRate;
 	}
@@ -154,11 +151,19 @@ public class RegionDto extends InfrastructureDto {
 		return new RegionReferenceDto(getUuid(), name, externalID);
 	}
 
-
-
 	public static RegionDto build() {
 		RegionDto dto = new RegionDto();
 		dto.setUuid(DataHelper.createUuid());
 		return dto;
+	}
+
+	@Override
+	public String getCaption() {
+		return getName();
+	}
+
+	@Override
+	public String toString() {
+		return I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 }

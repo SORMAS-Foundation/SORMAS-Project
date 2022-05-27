@@ -128,4 +128,13 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 
 		return (EntityDto) super.clone();
 	}
+
+	public String getCaption() {
+		return toString();
+	}
+
+	@Override
+	public String toString() {
+		return super.toString();
+	}
 }

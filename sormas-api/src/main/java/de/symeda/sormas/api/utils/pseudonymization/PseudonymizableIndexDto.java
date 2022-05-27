@@ -28,4 +28,13 @@ public class PseudonymizableIndexDto implements Pseudonymizable, Serializable {
 	public void setPseudonymized(boolean pseudonymized) {
 		this.pseudonymized = pseudonymized;
 	}
+
+	public String getCaption() {
+		return toString();
+	}
+
+	@Override
+	public String toString() {
+		return super.toString();
+	}
 }

@@ -2,6 +2,7 @@ package de.symeda.sormas.api.infrastructure.country;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
+import org.apache.commons.lang3.StringUtils;
 
 public class CountryIndexDto extends EntityDto {
 
@@ -77,5 +78,15 @@ public class CountryIndexDto extends EntityDto {
 
 	public void setSubcontinent(SubcontinentReferenceDto subcontinent) {
 		this.subcontinent = subcontinent;
+	}
+
+	@Override
+	public String getCaption() {
+		return getDefaultName();
+	}
+
+	@Override
+	public String toString() {
+		return I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 }
