@@ -1584,6 +1584,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return caseSave(dto, handleChanges, existingCase, toDto(existingCase), checkChangeDate, internal);
 	}
 
+	@RolesAllowed({ UserRight._CASE_EDIT })
+	public CaseDataDto updateFollowUpComment(@Valid @NotNull CaseDataDto dto) throws ValidationRuntimeException {
+		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
+		Case caze = service.getByUuid(dto.getUuid());
+		caze.setFollowUpComment(dto.getFollowUpComment());
+		service.ensurePersisted(caze);
+		return convertToDto(caze, pseudonymizer);
+	}
+
 	private CaseDataDto caseSave(
 		@Valid CaseDataDto dto,
 		boolean handleChanges,
