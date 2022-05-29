@@ -1,14 +1,18 @@
 package de.symeda.sormas.backend.infrastructure;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.infrastructure.InfrastructureDto;
+import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
@@ -19,9 +23,6 @@ import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 public abstract class AbstractInfrastructureFacadeEjb<ADO extends InfrastructureAdo, DTO extends InfrastructureDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, SRV extends AbstractInfrastructureAdoService<ADO, CRITERIA>, CRITERIA extends BaseCriteria>
 	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA>
@@ -132,6 +133,24 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		}
 	}
 
+	public List<String> archive(List<String> entityUuids) {
+		List<String> archivedEntityUuids = new ArrayList<>();
+		entityUuids.forEach(entityUuid -> {
+			archive(entityUuid);
+			archivedEntityUuids.add(entityUuid);
+		});
+		return archivedEntityUuids;
+	}
+
+	public List<String> dearchive(List<String> entityUuids) {
+		List<String> dearchivedEntityUuids = new ArrayList<>();
+		entityUuids.forEach(entityUuid -> {
+			dearchive(entityUuid);
+			dearchivedEntityUuids.add(entityUuid);
+		});
+		return dearchivedEntityUuids;
+	}
+
 	protected void checkInfraDataLocked() {
 		if (!featureConfiguration.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.infrastructureDataLocked));
@@ -142,7 +161,6 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	public long count(CRITERIA criteria) {
 		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
 	}
-
 
 	protected abstract List<ADO> findDuplicates(DTO dto, boolean includeArchived);
 

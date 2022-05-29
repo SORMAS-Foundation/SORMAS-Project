@@ -30,4 +30,8 @@ public interface InfrastructureFacade<DTO extends EntityDto, INDEX_DTO extends S
 	void archive(String uuid);
 
 	void dearchive(String uuid);
+
+	List<String> archive(List<String> entityUuids);
+
+	List<String> dearchive(List<String> entityUuids);
 }
