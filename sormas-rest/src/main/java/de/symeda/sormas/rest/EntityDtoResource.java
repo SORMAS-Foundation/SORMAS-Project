@@ -21,8 +21,9 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.utils.OutdatedEntityException;
 import de.symeda.sormas.api.utils.ValidationException;
+import de.symeda.sormas.api.error.CustomizedExceptionHandler;
 
-public abstract class EntityDtoResource {
+public abstract class EntityDtoResource extends CustomizedExceptionHandler {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 

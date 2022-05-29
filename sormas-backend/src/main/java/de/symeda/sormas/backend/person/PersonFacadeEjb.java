@@ -14,6 +14,8 @@
  */
 package de.symeda.sormas.backend.person;
 
+import static de.symeda.sormas.api.error.templates.ExceptionsTemplate.RECORD_NOT_FOUND_MSG;
+import static de.symeda.sormas.api.error.templates.ExceptionsTemplate.errorMap;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.maxBy;
@@ -52,6 +54,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.SerializationUtils;
@@ -75,6 +78,8 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.FollowUpStatusDto;
+import de.symeda.sormas.api.error.CustomizedExceptionHandler;
+import de.symeda.sormas.api.error.implementations.CustomizedException;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
@@ -174,7 +179,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "PersonFacade")
 @RolesAllowed(UserRight._PERSON_VIEW)
-public class PersonFacadeEjb implements PersonFacade {
+public class PersonFacadeEjb extends CustomizedExceptionHandler implements PersonFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -318,7 +323,9 @@ public class PersonFacadeEjb implements PersonFacade {
 		return Optional.of(uuid)
 			.map(u -> personService.getByUuid(u))
 			.map(p -> convertToDto(p, pseudonymizer, personService.inJurisdictionOrOwned(p)))
-			.orElse(null);
+			.orElseThrow( () -> new CustomizedException(Response.Status.NOT_FOUND, RECORD_NOT_FOUND_MSG,
+					PersonFacadeEjb.class,errorMap.get(RECORD_NOT_FOUND_MSG ).getId(),
+							errorMap.get(RECORD_NOT_FOUND_MSG ).getArgumentsList()));
 	}
 
 	@Override

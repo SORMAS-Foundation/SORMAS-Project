@@ -35,6 +35,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.error.implementations.CustomizedException;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.person.PersonCriteria;
@@ -43,6 +44,10 @@ import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+
+import static de.symeda.sormas.api.error.templates.ExceptionsTemplate.RECORD_NOT_FOUND_MSG;
+import static de.symeda.sormas.api.error.templates.ExceptionsTemplate.errorMap;
+import static java.util.Objects.nonNull;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey
@@ -93,7 +98,13 @@ public class PersonResource extends EntityDtoResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllUuids() {
-		return FacadeProvider.getPersonFacade().getAllUuids();
+		List<String> strings = FacadeProvider.getPersonFacade().getAllUuids();
+		if(nonNull(strings) || ( strings.isEmpty())){
+			throw new CustomizedException(Response.Status.BAD_REQUEST, RECORD_NOT_FOUND_MSG,
+					PersonResource.class,errorMap.get(RECORD_NOT_FOUND_MSG ).getId(),
+					errorMap.get(RECORD_NOT_FOUND_MSG ).getArgumentsList());
+		}
+		return strings;
 	}
 
 	@GET
