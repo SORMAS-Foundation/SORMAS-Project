@@ -1022,7 +1022,9 @@ public class SampleFacadeEjb implements SampleFacade {
 		return sampleService.isSampleEditAllowed(sample);
 	}
 
-	@RolesAllowed(UserRight._SAMPLE_CREATE)
+	@RolesAllowed({
+		UserRight._SAMPLE_CREATE,
+		UserRight._CASE_CREATE })
 	public void cloneSampleForCase(Sample sample, Case caze) {
 		SampleDto newSample = SampleDto.build(sample.getReportingUser().toReference(), caze.toReference());
 		DtoHelper.copyDtoValues(newSample, SampleFacadeEjb.toDto(sample), true);
