@@ -11540,6 +11540,7 @@ CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON externalm
     FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'externalmessage_history', true);
 
 UPDATE featureconfiguration SET featuretype = 'EXTERNAL_MESSAGES' WHERE featuretype = 'LAB_MESSAGES';
+UPDATE featureconfiguration SET featuretype = 'SORMAS_TO_SORMAS_SHARE_EXTERNAL_MESSAGES' WHERE featuretype = 'SORMAS_TO_SORMAS_SHARE_LAB_MESSAGES';
 
 UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES' WHERE userright = 'PERFORM_BULK_OPERATIONS_LAB_MESSAGES';
 UPDATE userroles_userrights SET userright = 'EXTERNAL_MESSAGE_VIEW' WHERE userright = 'LAB_MESSAGE';

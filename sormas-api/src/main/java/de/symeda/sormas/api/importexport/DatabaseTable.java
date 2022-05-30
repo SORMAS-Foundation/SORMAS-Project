@@ -95,8 +95,8 @@ public enum DatabaseTable {
 	CAMPAIGN_FORM_DATA(DatabaseTableType.SORMAS, CAMPAIGNS, "campaign_from_data"),
 	CAMPAIGN_DIAGRAM_DEFINITIONS(DatabaseTableType.SORMAS, CAMPAIGNS, "campaign_diagram_definitions"),
 
-	LAB_MESSAGES(DatabaseTableType.EXTERNAL, "lab_messages", dependingOnFeature(FeatureType.EXTERNAL_MESSAGES)),
-	TEST_REPORTS(DatabaseTableType.EXTERNAL, LAB_MESSAGES, "test_reports"),
+	EXTERNAL_MESSAGES(DatabaseTableType.EXTERNAL, "external_messages", dependingOnFeature(FeatureType.EXTERNAL_MESSAGES)),
+	TEST_REPORTS(DatabaseTableType.EXTERNAL, EXTERNAL_MESSAGES, "test_reports"),
 
 	SORMAS_TO_SORMAS_ORIGIN_INFO(DatabaseTableType.EXTERNAL, null, "sormas_to_sormas_origin_info", dependingOnS2S()),
 	SORMAS_TO_SORMAS_SHARE_INFO(DatabaseTableType.EXTERNAL, null, "sormas_to_sormas_share_info", dependingOnS2S()),

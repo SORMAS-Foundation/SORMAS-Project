@@ -348,9 +348,9 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF();
 
 		UserDto generalSurveillanceOfficer =
-			creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", creator.getUserRoleReference(SURVEILLANCE_OFFICER)); // has TRAVEL_ENTRY_MANAGEMENT_ACCESS, but not the LAB_MESSAGES right
+			creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", creator.getUserRoleReference(SURVEILLANCE_OFFICER)); // has TRAVEL_ENTRY_MANAGEMENT_ACCESS, but not the EXTERNAL_MESSAGES right
 		UserDto limitedSurveillanceOfficer =
-			creator.createUser(rdcf, "Limited Dengue", "SURVEILLANCE_OFFICER", Disease.DENGUE, creator.getUserRoleReference(SURVEILLANCE_OFFICER)); // has TRAVEL_ENTRY_MANAGEMENT_ACCESS, but not the LAB_MESSAGES right
+			creator.createUser(rdcf, "Limited Dengue", "SURVEILLANCE_OFFICER", Disease.DENGUE, creator.getUserRoleReference(SURVEILLANCE_OFFICER)); // has TRAVEL_ENTRY_MANAGEMENT_ACCESS, but not the EXTERNAL_MESSAGES right
 
 		// given district and disease
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUserRefsByDistrict(rdcf.district, Disease.CORONAVIRUS);

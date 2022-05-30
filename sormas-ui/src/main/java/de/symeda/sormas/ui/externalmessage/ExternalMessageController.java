@@ -14,7 +14,7 @@
  */
 package de.symeda.sormas.ui.externalmessage;
 
-import static de.symeda.sormas.ui.externalmessage.processing.LabMessageProcessingUIHelper.showAlreadyProcessedPopup;
+import static de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingUIHelper.showAlreadyProcessedPopup;
 
 import java.util.Collection;
 import java.util.List;
@@ -53,7 +53,10 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
+import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageProcessingFlow;
+import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageSlider;
+import de.symeda.sormas.ui.externalmessage.labmessage.RelatedLabMessageHandler;
+import de.symeda.sormas.ui.externalmessage.labmessage.processing.flow.ProcessingResultStatus;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;

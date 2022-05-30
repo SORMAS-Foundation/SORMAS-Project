@@ -45,7 +45,7 @@ import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.event.eventimport.EventImportFacadeEjb;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb;
-import de.symeda.sormas.backend.externalmessage.TestReportFacadeEjb;
+import de.symeda.sormas.backend.externalmessage.labmessage.TestReportFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.info.InfoFacadeEjb;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb;

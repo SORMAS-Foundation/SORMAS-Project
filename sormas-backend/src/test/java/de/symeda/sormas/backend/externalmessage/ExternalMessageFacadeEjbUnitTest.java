@@ -139,7 +139,7 @@ public class ExternalMessageFacadeEjbUnitTest {
 
 	@Test
 	public void testInitializeUpdateDateWithNoPreviousSuccess() {
-		assertEquals(syncFacadeEjb.findLastSyncDateFor(SystemEventType.FETCH_LAB_MESSAGES), new Date(0));
+		assertEquals(syncFacadeEjb.findLastSyncDateFor(SystemEventType.FETCH_EXTERNAL_MESSAGES), new Date(0));
 	}
 
 	@Test
@@ -149,11 +149,11 @@ public class ExternalMessageFacadeEjbUnitTest {
 		Date first = new Date(100, 0, 1);
 		Date second = new Date(100, 0, 2);
 		systemEvent.setStatus(SystemEventStatus.SUCCESS);
-		systemEvent.setType(SystemEventType.FETCH_LAB_MESSAGES);
+		systemEvent.setType(SystemEventType.FETCH_EXTERNAL_MESSAGES);
 		systemEvent.setAdditionalInfo("Last synchronization date: " + first.getTime());
 		systemEvent.setStartDate(second);
-		when(systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES)).thenReturn(systemEvent);
-		assertEquals(syncFacadeEjb.findLastSyncDateFor(SystemEventType.FETCH_LAB_MESSAGES), first);
+		when(systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_EXTERNAL_MESSAGES)).thenReturn(systemEvent);
+		assertEquals(syncFacadeEjb.findLastSyncDateFor(SystemEventType.FETCH_EXTERNAL_MESSAGES), first);
 	}
 
 	@Test
@@ -162,19 +162,19 @@ public class ExternalMessageFacadeEjbUnitTest {
 		SystemEventDto systemEvent = SystemEventDto.build();
 		Date date = new Date(100, 0, 1);
 		systemEvent.setStatus(SystemEventStatus.SUCCESS);
-		systemEvent.setType(SystemEventType.FETCH_LAB_MESSAGES);
+		systemEvent.setType(SystemEventType.FETCH_EXTERNAL_MESSAGES);
 		systemEvent.setAdditionalInfo("The cake is a lie");
 		systemEvent.setStartDate(date);
-		when(systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES)).thenReturn(systemEvent);
-		assertEquals(syncFacadeEjb.findLastSyncDateFor(SystemEventType.FETCH_LAB_MESSAGES), date);
+		when(systemEventFacade.getLatestSuccessByType(SystemEventType.FETCH_EXTERNAL_MESSAGES)).thenReturn(systemEvent);
+		assertEquals(syncFacadeEjb.findLastSyncDateFor(SystemEventType.FETCH_EXTERNAL_MESSAGES), date);
 	}
 
 	@Test
 	public void testInitializeFetchEventTest() {
-		SystemEventDto systemEventDto = syncFacadeEjb.startSyncFor(SystemEventType.FETCH_LAB_MESSAGES);
+		SystemEventDto systemEventDto = syncFacadeEjb.startSyncFor(SystemEventType.FETCH_EXTERNAL_MESSAGES);
 		// must be null for parsing the notification last update date
 		assertEquals(systemEventDto.getAdditionalInfo(), null);
 		assertEquals(systemEventDto.getStatus(), SystemEventStatus.STARTED);
-		assertEquals(systemEventDto.getType(), SystemEventType.FETCH_LAB_MESSAGES);
+		assertEquals(systemEventDto.getType(), SystemEventType.FETCH_EXTERNAL_MESSAGES);
 	}
 }

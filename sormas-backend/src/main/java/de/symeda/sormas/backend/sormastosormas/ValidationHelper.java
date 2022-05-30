@@ -71,7 +71,7 @@ public class ValidationHelper {
 		return buildValidationGroupName(Captions.Immunization_uuid, immunization);
 	}
 
-	public static ValidationErrorGroup buildLabMessageValidationGroupName(ExternalMessageDto externalMessageDto) {
+	public static ValidationErrorGroup buildExternalMessageValidationGroupName(ExternalMessageDto externalMessageDto) {
 		return buildValidationGroupName(Captions.ExternalMessage, externalMessageDto);
 	}
 

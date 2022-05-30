@@ -158,7 +158,7 @@ public enum FeatureType {
 			EVENT_SURVEILLANCE },
 		null,
 		null),
-	SORMAS_TO_SORMAS_SHARE_LAB_MESSAGES(true,
+	SORMAS_TO_SORMAS_SHARE_EXTERNAL_MESSAGES(true,
 		false,
 		new FeatureType[] {
 			EXTERNAL_MESSAGES },

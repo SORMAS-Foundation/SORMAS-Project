@@ -39,7 +39,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-import de.symeda.sormas.api.externalmessage.ExternalLabResultsFacade;
+import de.symeda.sormas.api.externalmessage.ExternalMessageAdapterFacade;
 import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
@@ -49,7 +49,7 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageReferenceDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageResult;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.NewMessagesState;
-import de.symeda.sormas.api.externalmessage.TestReportDto;
+import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -61,6 +61,8 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.externalmessage.labmessage.TestReport;
+import de.symeda.sormas.backend.externalmessage.labmessage.TestReportFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.systemevent.sync.SyncFacadeEjb;
 import de.symeda.sormas.backend.user.User;
@@ -380,7 +382,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@RolesAllowed(UserRight._SYSTEM)
 	public ExternalMessageFetchResult fetchAndSaveExternalMessages(Date since) {
 
-		SystemEventDto currentSync = syncFacadeEjb.startSyncFor(SystemEventType.FETCH_LAB_MESSAGES);
+		SystemEventDto currentSync = syncFacadeEjb.startSyncFor(SystemEventType.FETCH_EXTERNAL_MESSAGES);
 
 		try {
 			return fetchAndSaveExternalMessages(currentSync, since);
@@ -398,7 +400,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	protected ExternalMessageFetchResult fetchAndSaveExternalMessages(SystemEventDto currentSync, Date since) throws NamingException {
 		if (since == null) {
-			since = syncFacadeEjb.findLastSyncDateFor(SystemEventType.FETCH_LAB_MESSAGES);
+			since = syncFacadeEjb.findLastSyncDateFor(SystemEventType.FETCH_EXTERNAL_MESSAGES);
 		}
 		ExternalMessageResult<List<ExternalMessageDto>> externalMessageResult = fetchExternalMessages(since);
 		if (externalMessageResult.isSuccess()) {
@@ -413,11 +415,11 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	}
 
 	protected ExternalMessageResult<List<ExternalMessageDto>> fetchExternalMessages(Date since) throws NamingException {
-		ExternalLabResultsFacade labResultsFacade = getExternalLabResultsFacade();
+		ExternalMessageAdapterFacade labResultsFacade = getExternalLabResultsFacade();
 		return labResultsFacade.getExternalMessages(since);
 	}
 
-	private ExternalLabResultsFacade getExternalLabResultsFacade() throws NamingException {
+	private ExternalMessageAdapterFacade getExternalLabResultsFacade() throws NamingException {
 		InitialContext ic = new InitialContext();
 		String jndiName = configFacade.getDemisJndiName();
 
@@ -425,13 +427,13 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			throw new CannotProceedException(I18nProperties.getValidationError(Validations.externalMessageConfigError));
 		}
 
-		return (ExternalLabResultsFacade) ic.lookup(jndiName);
+		return (ExternalMessageAdapterFacade) ic.lookup(jndiName);
 	}
 
 	@Override
 	@PermitAll
 	public String getExternalMessagesAdapterVersion() throws NamingException {
-		ExternalLabResultsFacade labResultsFacade = getExternalLabResultsFacade();
+		ExternalMessageAdapterFacade labResultsFacade = getExternalLabResultsFacade();
 		String version = I18nProperties.getCaption(Captions.versionIsMissing);
 		try {
 			version = labResultsFacade.getVersion();

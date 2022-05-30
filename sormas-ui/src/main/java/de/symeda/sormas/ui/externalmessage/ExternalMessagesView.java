@@ -252,7 +252,7 @@ public class ExternalMessagesView extends AbstractView {
 	}
 
 	private void checkForConcurrentEventsAndFetch() {
-		boolean fetchAlreadyStarted = FacadeProvider.getSystemEventFacade().existsStartedEvent(SystemEventType.FETCH_LAB_MESSAGES);
+		boolean fetchAlreadyStarted = FacadeProvider.getSystemEventFacade().existsStartedEvent(SystemEventType.FETCH_EXTERNAL_MESSAGES);
 		if (fetchAlreadyStarted) {
 			VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getString(Strings.headingFetchExternalMessages),
@@ -271,7 +271,7 @@ public class ExternalMessagesView extends AbstractView {
 	}
 
 	private void askForSinceDateAndFetch() {
-		boolean atLeastOneFetchExecuted = FacadeProvider.getSyncFacade().hasAtLeastOneSuccessfullSyncOf(SystemEventType.FETCH_LAB_MESSAGES);
+		boolean atLeastOneFetchExecuted = FacadeProvider.getSyncFacade().hasAtLeastOneSuccessfullSyncOf(SystemEventType.FETCH_EXTERNAL_MESSAGES);
 		if (atLeastOneFetchExecuted) {
 			fetchExternalMessages(null);
 		} else {

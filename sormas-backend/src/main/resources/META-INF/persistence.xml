@@ -82,7 +82,7 @@
 		<class>de.symeda.sormas.backend.vaccination.LastVaccineType</class>
 		<class>de.symeda.sormas.backend.vaccination.LastVaccinationDate</class>
 		<class>de.symeda.sormas.backend.vaccination.FirstVaccinationDate</class>
-		<class>de.symeda.sormas.backend.externalmessage.TestReport</class>
+		<class>de.symeda.sormas.backend.externalmessage.labmessage.TestReport</class>
 		<class>de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration</class>
 
 

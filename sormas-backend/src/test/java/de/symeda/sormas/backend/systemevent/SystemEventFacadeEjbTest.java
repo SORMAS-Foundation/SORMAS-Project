@@ -31,14 +31,15 @@ public class SystemEventFacadeEjbTest extends AbstractBeanTest {
 		Date intermediateDate = new Date(200000L);
 		Date latestDate = new Date(300000L);
 
-		SystemEventDto earlierSuccess = creator.createSystemEvent(SystemEventType.FETCH_LAB_MESSAGES, earliestDate, SystemEventStatus.SUCCESS);
-		SystemEventDto latestSuccess = creator.createSystemEvent(SystemEventType.FETCH_LAB_MESSAGES, intermediateDate, SystemEventStatus.SUCCESS);
-		SystemEventDto error = creator.createSystemEvent(SystemEventType.FETCH_LAB_MESSAGES, latestDate, SystemEventStatus.ERROR);
+		SystemEventDto earlierSuccess = creator.createSystemEvent(SystemEventType.FETCH_EXTERNAL_MESSAGES, earliestDate, SystemEventStatus.SUCCESS);
+		SystemEventDto latestSuccess =
+			creator.createSystemEvent(SystemEventType.FETCH_EXTERNAL_MESSAGES, intermediateDate, SystemEventStatus.SUCCESS);
+		SystemEventDto error = creator.createSystemEvent(SystemEventType.FETCH_EXTERNAL_MESSAGES, latestDate, SystemEventStatus.ERROR);
 
 		getSystemEventFacade().saveSystemEvent(earlierSuccess);
 		getSystemEventFacade().saveSystemEvent(latestSuccess);
 		getSystemEventFacade().saveSystemEvent(error);
-		assertEquals(latestSuccess, getSystemEventFacade().getLatestSuccessByType(SystemEventType.FETCH_LAB_MESSAGES));
+		assertEquals(latestSuccess, getSystemEventFacade().getLatestSuccessByType(SystemEventType.FETCH_EXTERNAL_MESSAGES));
 	}
 
 	@Test
@@ -47,14 +48,14 @@ public class SystemEventFacadeEjbTest extends AbstractBeanTest {
 		LocalDateTime start = LocalDateTime.now();
 		// Small delay for the timesteps to have different milliseconds
 		Thread.sleep(5L);
-		SystemEventDto systemEvent1 = creator.createSystemEvent(SystemEventType.FETCH_LAB_MESSAGES, new Date(), SystemEventStatus.ERROR);
+		SystemEventDto systemEvent1 = creator.createSystemEvent(SystemEventType.FETCH_EXTERNAL_MESSAGES, new Date(), SystemEventStatus.ERROR);
 		getSystemEventFacade().saveSystemEvent(systemEvent1);
 		Thread.sleep(5L);
 
 		LocalDateTime inBetween = LocalDateTime.now();
 		Thread.sleep(5L);
 
-		SystemEventDto systemEvent2 = creator.createSystemEvent(SystemEventType.FETCH_LAB_MESSAGES, new Date(), SystemEventStatus.SUCCESS);
+		SystemEventDto systemEvent2 = creator.createSystemEvent(SystemEventType.FETCH_EXTERNAL_MESSAGES, new Date(), SystemEventStatus.SUCCESS);
 		getSystemEventFacade().saveSystemEvent(systemEvent2);
 
 		SystemEventFacadeEjb systemEventFacadeEjb = (SystemEventFacadeEjb) getSystemEventFacade();
