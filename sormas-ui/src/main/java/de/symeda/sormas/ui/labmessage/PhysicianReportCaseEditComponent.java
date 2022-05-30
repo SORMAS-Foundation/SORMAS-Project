@@ -1,0 +1,192 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package de.symeda.sormas.ui.labmessage;
+
+import com.vaadin.shared.ui.MarginInfo;
+import de.symeda.sormas.api.labmessage.LabMessageDto;
+import de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingUIHelper;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+
+import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
+
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.person.PersonContext;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SubMenu;
+import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.ViewMode;
+
+import static de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingUIHelper.addProcessedInMeantimeCheck;
+
+public class PhysicianReportCaseEditComponent extends CommitDiscardWrapperComponent<VerticalLayout> {
+
+	private static final long serialVersionUID = 1452145334216485391L;
+
+	private final SubMenu tabsMenu;
+	private final Button backButton;
+	private final Button nextButton;
+	private final Button saveAndOpenCaseButton;
+	private final List<TabConfig> tabConfigs;
+	private final ViewMode viewMode = ViewMode.NORMAL;
+	private final CaseDataDto caze;
+	private final LabMessageDto labMessage;
+	private CommitDiscardWrapperComponent<?> activeTabComponent;
+	private int activeTabIndex;
+
+	public PhysicianReportCaseEditComponent(CaseDataDto caze, LabMessageDto labMessage) {
+		super(createLayout());
+		this.caze = caze;
+		this.labMessage = labMessage;
+
+		setMargin(new MarginInfo(false, true));
+
+		tabsMenu = new SubMenu();
+		tabConfigs = createTabConfigs();
+
+		backButton = ButtonHelper.createButton(Captions.actionBack, (e) -> {
+			if (activeTabIndex > 0) {
+				setActiveTab(tabConfigs.get(activeTabIndex - 1).captionTag);
+			}
+		}, ValoTheme.BUTTON_PRIMARY);
+		getButtonsPanel().addComponent(backButton, 0);
+
+		nextButton = ButtonHelper.createButton(Captions.actionNext, (b) -> {
+			activeTabComponent.commit();
+			if (activeTabIndex <= tabConfigs.size() - 1) {
+				setActiveTab(tabConfigs.get(activeTabIndex + 1).captionTag);
+			}
+		}, ValoTheme.BUTTON_PRIMARY);
+		getButtonsPanel().addComponent(nextButton);
+
+		saveAndOpenCaseButton = ButtonHelper.createButton(Captions.actionSaveAndOpenCase, (b) -> {
+			activeTabComponent.commit();
+			commit();
+			ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
+		}, ValoTheme.BUTTON_PRIMARY);
+
+		getButtonsPanel().addComponent(saveAndOpenCaseButton, getButtonsPanel().getComponentIndex(getCommitButton()));
+
+		for (TabConfig tabConfig : tabConfigs) {
+			tabsMenu.addView(tabConfig.captionTag, I18nProperties.getCaption(tabConfig.captionTag), e -> {
+				setActiveTab(tabConfig.captionTag);
+			});
+		}
+
+		getWrappedComponent().addComponent(tabsMenu);
+		setActiveTab(Captions.CaseData_hospitalization);
+
+		addCommitListener(() -> {
+			activeTabComponent.commit();
+		});
+	}
+
+	private static VerticalLayout createLayout() {
+		VerticalLayout layout = new VerticalLayout();
+		layout.setMargin(false);
+
+		return layout;
+	}
+
+	private void setActiveTab(String tabCaptionTag) {
+		tabsMenu.setActiveView(tabCaptionTag);
+		TabConfig tabConfig = tabConfigs.stream()
+			.filter(c -> c.captionTag == tabCaptionTag)
+			.findFirst()
+			.orElseThrow(() -> new RuntimeException("Tab [" + tabCaptionTag + "] not found"));
+
+		setActiveTabComponent(tabConfig.contentSupplier.get(), tabConfigs.indexOf(tabConfig));
+	}
+
+	private List<TabConfig> createTabConfigs() {
+		List<TabConfig> configs = new ArrayList<>();
+
+		configs.add(TabConfig.of(Captions.CaseData, () -> ControllerProvider.getCaseController().getCaseDataEditComponent(caze.getUuid(), viewMode)));
+		configs.add(
+			TabConfig.of(
+				Captions.CaseData_person,
+				() -> ControllerProvider.getPersonController()
+					.getPersonEditComponent(
+						PersonContext.CASE,
+						caze.getPerson().getUuid(),
+						caze.getDisease(),
+						caze.getDiseaseDetails(),
+						UserRight.CASE_EDIT,
+						viewMode)));
+		configs.add(
+			TabConfig.of(
+				Captions.CaseData_hospitalization,
+				() -> ControllerProvider.getCaseController().getHospitalizationComponent(caze.getUuid(), viewMode)));
+		configs.add(
+			TabConfig
+				.of(Captions.CaseData_symptoms, () -> ControllerProvider.getCaseController().getSymptomsEditComponent(caze.getUuid(), viewMode)));
+		configs.add(TabConfig.of(Captions.CaseData_epiData, () -> ControllerProvider.getCaseController().getEpiDataComponent(caze.getUuid(), null)));
+		configs.add(TabConfig.of("immunizations", () -> ControllerProvider.getCaseController().getEpiDataComponent(caze.getUuid(), null)));
+
+		return configs;
+	}
+
+	private void setActiveTabComponent(CommitDiscardWrapperComponent<?> activeTabComponent, int activeTabIndex) {
+		if (this.activeTabComponent != null) {
+			getWrappedComponent().removeComponent(this.activeTabComponent);
+		}
+
+		activeTabComponent.setShortcutsEnabled(false);
+		activeTabComponent.setButtonsVisible(false);
+		addProcessedInMeantimeCheck(activeTabComponent, labMessage, false);
+		getWrappedComponent().addComponent(activeTabComponent);
+		this.activeTabComponent = activeTabComponent;
+		this.activeTabIndex = activeTabIndex;
+
+		backButton.setEnabled(activeTabIndex > 0);
+
+		boolean isLastTab = activeTabIndex == tabConfigs.size() - 1;
+		HorizontalLayout buttonsPanel = getButtonsPanel();
+		Button commitButton = getCommitButton();
+		if (isLastTab) {
+			commitButton.setVisible(true);
+			nextButton.setVisible(false);
+			saveAndOpenCaseButton.setVisible(true);
+		} else {
+			commitButton.setVisible(false);
+			nextButton.setVisible(true);
+			saveAndOpenCaseButton.setVisible(false);
+		}
+	}
+
+	private static class TabConfig {
+
+		private String captionTag;
+
+		private Supplier<CommitDiscardWrapperComponent<?>> contentSupplier;
+
+		static TabConfig of(String captionTag, Supplier<CommitDiscardWrapperComponent<?>> contentSupplier) {
+			TabConfig config = new TabConfig();
+			config.captionTag = captionTag;
+			config.contentSupplier = contentSupplier;
+
+			return config;
+		}
+	}
+}

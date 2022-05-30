@@ -87,6 +87,7 @@ public interface Captions {
 	String actionNewAction = "actionNewAction";
 	String actionNewEntry = "actionNewEntry";
 	String actionNewForm = "actionNewForm";
+	String actionNext = "actionNext";
 	String actionNo = "actionNo";
 	String actionNoActions = "actionNoActions";
 	String actionOkay = "actionOkay";

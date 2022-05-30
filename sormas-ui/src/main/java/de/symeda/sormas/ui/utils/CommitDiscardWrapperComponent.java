@@ -880,4 +880,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			}
 		}
 	}
+
+	public void setButtonsVisible(boolean visible) {
+		buttonsPanel.setVisible(visible);
+	}
 }

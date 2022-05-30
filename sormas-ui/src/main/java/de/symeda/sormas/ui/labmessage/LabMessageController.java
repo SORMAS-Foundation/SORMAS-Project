@@ -14,10 +14,13 @@
  */
 package de.symeda.sormas.ui.labmessage;
 
-import de.symeda.sormas.api.sample.SampleReferenceDto;
+import static de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingUIHelper.showAlreadyProcessedPopup;
+
+import de.symeda.sormas.api.caze.CaseDataDto;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import javax.naming.NamingException;
@@ -46,16 +49,17 @@ import de.symeda.sormas.api.labmessage.ExternalMessageResult;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.labmessage.processing.SampleAndPathogenTests;
+import de.symeda.sormas.ui.labmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.ui.labmessage.processing.flow.ProcessingResultStatus;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-
-import static de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingUIHelper.showAlreadyProcessedPopup;
 
 public class LabMessageController {
 
@@ -100,15 +104,56 @@ public class LabMessageController {
 		LabMessageDto labMessage = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
 		LabMessageProcessingFlow flow = new LabMessageProcessingFlow();
 
-		flow.run(labMessage, relatedLabMessageHandler).thenAccept(result -> {
+		flow.run(labMessage, relatedLabMessageHandler)
+			.handle((BiFunction<? super ProcessingResult<SampleAndPathogenTests>, Throwable, Void>) (result, exception) -> {
+				if (exception != null) {
+					logger.error("Unexpected exception while processing lab message", exception);
+
+					Notification.show(
+						I18nProperties.getString(Strings.errorOccurred, I18nProperties.getString(Strings.errorOccurred)),
+						I18nProperties.getString(Strings.errorWasReported),
+						Notification.Type.ERROR_MESSAGE);
+
+					return null;
+				}
+
+				ProcessingResultStatus status = result.getStatus();
+
+				if (status == ProcessingResultStatus.CANCELED_WITH_CORRECTIONS) {
+					showCorrectionsSavedPopup();
+				} else if (status == ProcessingResultStatus.DONE) {
+					markLabMessageAsProcessed(labMessage, result.getData().getSample().toReference());
+					SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME);
+				}
+
+				return null;
+			});
+	}
+
+	public void processPhysicianReport(String uuid) {
+		LabMessageDto labMessage = FacadeProvider.getLabMessageFacade().getByUuid(uuid);
+		PhysicianReportProcessingFlow flow = new PhysicianReportProcessingFlow();
+
+		flow.run(labMessage).handle((BiFunction<? super ProcessingResult<CaseDataDto>, Throwable, Void>) (result, exception) -> {
+			if (exception != null) {
+				logger.error("Unexpected exception while processing lab message", exception);
+
+				Notification.show(
+					I18nProperties.getString(Strings.errorOccurred, I18nProperties.getString(Strings.errorOccurred)),
+					I18nProperties.getString(Strings.errorWasReported),
+					Notification.Type.ERROR_MESSAGE);
+
+				return null;
+			}
+
 			ProcessingResultStatus status = result.getStatus();
 
-			if (status == ProcessingResultStatus.CANCELED_WITH_CORRECTIONS) {
-				showCorrectionsSavedPopup();
-			} else if (status == ProcessingResultStatus.DONE) {
-				markLabMessageAsProcessed(labMessage, result.getData().getSample().toReference());
+			if (status == ProcessingResultStatus.DONE) {
+				markLabMessageAsProcessed(labMessage, null);
 				SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME);
 			}
+
+			return null;
 		});
 	}
 

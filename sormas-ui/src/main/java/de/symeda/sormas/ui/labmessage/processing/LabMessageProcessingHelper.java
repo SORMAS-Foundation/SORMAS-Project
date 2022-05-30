@@ -18,6 +18,8 @@
 
 package de.symeda.sormas.ui.labmessage.processing;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.person.PersonDto;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,5 +51,15 @@ public class LabMessageProcessingHelper {
 		LabMessageMapper.forLabMessage(labMessage).mapToPathogenTest(testReport, pathogenTest);
 
 		return pathogenTest;
+	}
+
+	public static void updateAddressAndSavePerson(PersonDto personDto, LabMessageDto labMessageDto) {
+		if (personDto.getAddress().getCity() == null
+			&& personDto.getAddress().getHouseNumber() == null
+			&& personDto.getAddress().getPostalCode() == null
+			&& personDto.getAddress().getStreet() == null) {
+			LabMessageMapper.forLabMessage(labMessageDto).mapToLocation(personDto.getAddress());
+		}
+		FacadeProvider.getPersonFacade().savePerson(personDto);
 	}
 }

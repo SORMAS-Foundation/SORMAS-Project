@@ -1,9 +1,16 @@
 package de.symeda.sormas.ui.labmessage;
 
-import de.symeda.sormas.ui.labmessage.processing.PickOrCreateEntryResult;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.collections.CollectionUtils;
+
+import com.vaadin.data.provider.Query;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
@@ -21,41 +28,28 @@ import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.ui.caze.components.caseselection.CaseSelectionGrid;
 import de.symeda.sormas.ui.contact.ContactSelectionGrid;
 import de.symeda.sormas.ui.events.EventParticipantSelectionGrid;
+import de.symeda.sormas.ui.labmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 
-	private static final Object CREATE_CASE = "createCase";
-	private static final Object CREATE_CONTACT = "createContact";
-	private static final Object CREATE_EVENT_PARTICIPANT = "createEventParticipant";
-	private static final Object SELECT_CASE = "selectCase";
-	private static final Object SELECT_CONTACT = "selectContact";
-	private static final Object SELECT_EVENT_PARTICIPANT = "selectEventParticipant";
-	private final LabMessageDto labMessageDto;
-	private final List<CaseSelectionDto> cases;
-	private final List<SimilarContactDto> contacts;
-	private final List<SimilarEventParticipantDto> eventParticipants;
 	private VerticalLayout mainLayout;
-	private RadioButtonGroup<Object> rbSelectCase;
-	private RadioButtonGroup<Object> rbSelectContact;
-	private RadioButtonGroup<Object> rbSelectEventParticipant;
-	private RadioButtonGroup<Object> rbCreateEntity;
+	private final LabMessageDto labMessageDto;
+	private final Options selectableOptions;
+	private RadioButtonGroup<OptionType> rbSelectCase;
+	private RadioButtonGroup<OptionType> rbSelectContact;
 	private Consumer<Boolean> selectionChangeCallback;
 	protected CaseSelectionGrid caseGrid;
 	protected ContactSelectionGrid contactGrid;
 	protected EventParticipantSelectionGrid eventParticipantGrid;
+	private RadioButtonGroup<OptionType> rbSelectEventParticipant;
+	private RadioButtonGroup<OptionType> rbCreateEntity;
 
-	public EntrySelectionField(
-		LabMessageDto labMessageDto,
-		List<CaseSelectionDto> cases,
-		List<SimilarContactDto> contacts,
-		List<SimilarEventParticipantDto> eventParticipants) {
+	public EntrySelectionField(LabMessageDto labMessageDto, Options selectableOptions) {
 
 		this.labMessageDto = labMessageDto;
-		this.cases = cases;
-		this.contacts = contacts;
-		this.eventParticipants = eventParticipants;
+		this.selectableOptions = selectableOptions;
 	}
 
 	@Override
@@ -68,81 +62,46 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 
 		addInfoComponent();
 		addLabMessageComponent();
-		if (cases != null && !cases.isEmpty()) {
-			addSelectCaseRadioGroup();
-			addCaseGrid();
+
+		for (Option<?> option : selectableOptions.options) {
+			switch (option.type) {
+			case SELECT_CASE: {
+				if (CollectionUtils.isNotEmpty(option.selectableItems)) {
+					addSelectCaseRadioGroup();
+					addCaseGrid((List<CaseSelectionDto>) option.selectableItems);
+				}
+				break;
+			}
+			case SELECT_CONTACT: {
+				if (CollectionUtils.isNotEmpty(option.selectableItems)) {
+					addSelectContactRadioGroup();
+					addContactGrid((List<SimilarContactDto>) option.selectableItems);
+				}
+				break;
+			}
+			case SELECT_EVENT_PARTICIPANT: {
+				if (CollectionUtils.isNotEmpty(option.selectableItems)) {
+					addSelectEventParticipantRadioGroup();
+					addEventParticipantGrid((List<SimilarEventParticipantDto>) option.selectableItems);
+				}
+				break;
+			}
+			default:
+				addCreateEntityRadio(option.type);
+			}
+
 		}
-		if (contacts != null && !contacts.isEmpty()) {
-			addSelectContactRadioGroup();
-			addContactGrid();
-		}
-		if (eventParticipants != null && !eventParticipants.isEmpty()) {
-			addSelectEventParticipantRadioGroup();
-			addEventParticipantGrid();
-		}
-		addCreateEntityRadioGroup();
 
 		return mainLayout;
 	}
 
-	private void addCreateEntityRadioGroup() {
-		rbCreateEntity = new RadioButtonGroup<>();
-		rbCreateEntity.setItems(CREATE_CASE, CREATE_CONTACT, CREATE_EVENT_PARTICIPANT);
-		rbCreateEntity.setItemCaptionGenerator((item) -> {
-			if (item == CREATE_CASE) {
-				return I18nProperties.getCaption(Captions.caseCreateNew);
-			} else if (item == CREATE_CONTACT) {
-				return I18nProperties.getCaption(Captions.contactCreateNew);
-			} else if (item == CREATE_EVENT_PARTICIPANT) {
-				return I18nProperties.getCaption(Captions.eventParticipantCreateNew);
-			}
-			throw new IllegalArgumentException((String) item);
-		});
-		rbCreateEntity.addValueChangeListener(e -> {
-			if (e.getValue() != null) {
-				if (rbSelectCase != null) {
-					rbSelectCase.setValue(null);
-				}
-				if (rbSelectContact != null) {
-					rbSelectContact.setValue(null);
-				}
-				if (rbSelectEventParticipant != null) {
-					rbSelectEventParticipant.setValue(null);
-				}
-				if (caseGrid != null) {
-					caseGrid.deselectAll();
-					caseGrid.setEnabled(false);
-				}
-				if (contactGrid != null) {
-					contactGrid.deselectAll();
-					contactGrid.setEnabled(false);
-				}
-				if (eventParticipantGrid != null) {
-					eventParticipantGrid.deselectAll();
-					eventParticipantGrid.setEnabled(false);
-				}
-				if (selectionChangeCallback != null) {
-					selectionChangeCallback.accept(true);
-				}
-			}
-		});
-		CssStyles.style(rbCreateEntity, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
-
-		mainLayout.addComponent(rbCreateEntity);
-	}
-
-	private void addEventParticipantGrid() {
+	private void addEventParticipantGrid(List<SimilarEventParticipantDto> eventParticipants) {
 		eventParticipantGrid = new EventParticipantSelectionGrid(eventParticipants);
 		eventParticipantGrid.addSelectionListener(e -> {
 			if (e.getSelected().size() > 0) {
-				rbCreateEntity.setValue(null);
-				if (rbSelectCase != null) {
-					rbSelectCase.setValue(null);
-				}
-				if (rbSelectContact != null) {
-					rbSelectContact.setValue(null);
-				}
+				onRadioSelected(rbSelectEventParticipant);
 			}
+
 			if (selectionChangeCallback != null) {
 				selectionChangeCallback.accept(!e.getSelected().isEmpty());
 			}
@@ -151,48 +110,13 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 		mainLayout.addComponent(eventParticipantGrid);
 	}
 
-	private void addSelectEventParticipantRadioGroup() {
-		rbSelectEventParticipant = new RadioButtonGroup<>();
-		rbSelectEventParticipant.setItems(SELECT_EVENT_PARTICIPANT);
-		rbSelectEventParticipant.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.eventParticipantSelect));
-		CssStyles.style(rbSelectEventParticipant, CssStyles.VSPACE_NONE);
-		rbSelectEventParticipant.addValueChangeListener(e -> {
-			if (e.getValue() != null) {
-				rbCreateEntity.setValue(null);
-				if (rbSelectCase != null) {
-					rbSelectCase.setValue(null);
-				}
-				if (rbSelectContact != null) {
-					rbSelectContact.setValue(null);
-				}
-				eventParticipantGrid.setEnabled(true);
-				if (caseGrid != null) {
-					caseGrid.setEnabled(false);
-				}
-				if (contactGrid != null) {
-					contactGrid.setEnabled(false);
-				}
-				if (selectionChangeCallback != null) {
-					selectionChangeCallback.accept(eventParticipantGrid.getSelectedRow() != null);
-				}
-			}
-		});
-
-		mainLayout.addComponent(rbSelectEventParticipant);
-	}
-
-	private void addContactGrid() {
+	private void addContactGrid(List<SimilarContactDto> contacts) {
 		contactGrid = new ContactSelectionGrid(contacts);
 		contactGrid.addSelectionListener(e -> {
 			if (e.getSelected().size() > 0) {
-				rbCreateEntity.setValue(null);
-				if (rbSelectCase != null) {
-					rbSelectCase.setValue(null);
-				}
-				if (rbSelectEventParticipant != null) {
-					rbSelectEventParticipant.setValue(null);
-				}
+				onRadioSelected(rbSelectContact);
 			}
+
 			if (selectionChangeCallback != null) {
 				selectionChangeCallback.accept(!e.getSelected().isEmpty());
 			}
@@ -201,48 +125,52 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 		mainLayout.addComponent(contactGrid);
 	}
 
-	private void addSelectContactRadioGroup() {
-		rbSelectContact = new RadioButtonGroup<>();
-		rbSelectContact.setItems(SELECT_CONTACT);
-		rbSelectContact.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.contactSelect));
-		CssStyles.style(rbSelectContact, CssStyles.VSPACE_NONE);
-		rbSelectContact.addValueChangeListener(e -> {
-			if (e.getValue() != null) {
-				rbCreateEntity.setValue(null);
-				if (rbSelectCase != null) {
-					rbSelectCase.setValue(null);
+	private void addCreateEntityRadio(OptionType creationOptionType) {
+		if (rbCreateEntity == null) {
+			rbCreateEntity = new RadioButtonGroup<>();
+			rbCreateEntity.setItemCaptionGenerator((item) -> {
+				if (item == OptionType.CREATE_CASE) {
+					return I18nProperties.getCaption(Captions.caseCreateNew);
+				} else if (item == OptionType.CREATE_CONTACT) {
+					return I18nProperties.getCaption(Captions.contactCreateNew);
+				} else if (item == OptionType.CREATE_EVENT_PARTICIPANT) {
+					return I18nProperties.getCaption(Captions.eventParticipantCreateNew);
 				}
-				if (rbSelectEventParticipant != null) {
-					rbSelectEventParticipant.setValue(null);
-				}
-				contactGrid.setEnabled(true);
-				if (caseGrid != null) {
-					caseGrid.setEnabled(false);
-				}
-				if (eventParticipantGrid != null) {
-					eventParticipantGrid.setEnabled(false);
-				}
-				if (selectionChangeCallback != null) {
-					selectionChangeCallback.accept(contactGrid.getSelectedRow() != null);
-				}
-			}
-		});
+				throw new IllegalArgumentException(item.name());
+			});
 
-		mainLayout.addComponent(rbSelectContact);
+			rbCreateEntity.addValueChangeListener(e -> {
+				if (e.getValue() != null) {
+					onRadioSelected(rbCreateEntity);
+
+					if (selectionChangeCallback != null) {
+						selectionChangeCallback.accept(true);
+					}
+				}
+			});
+			CssStyles.style(rbCreateEntity, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
+
+			mainLayout.addComponent(rbCreateEntity);
+		}
+
+		rbCreateEntity.setItems(
+			Stream.concat(rbCreateEntity.getDataProvider().fetch(new Query<>()), Stream.of(creationOptionType)).collect(Collectors.toList()));
 	}
 
-	private void addCaseGrid() {
+	private void onRadioSelected(RadioButtonGroup<OptionType> radio) {
+		Stream.of(rbSelectCase, rbSelectContact, rbSelectEventParticipant, rbCreateEntity)
+			.filter(Objects::nonNull)
+			.filter(rb -> !rb.equals(radio))
+			.forEach(rb -> rb.setValue(null));
+	}
+
+	private void addCaseGrid(List<CaseSelectionDto> cases) {
 		caseGrid = new CaseSelectionGrid(cases);
 		caseGrid.addSelectionListener(e -> {
 			if (e.getSelected().size() > 0) {
-				rbCreateEntity.setValue(null);
-				if (rbSelectContact != null) {
-					rbSelectContact.setValue(null);
-				}
-				if (rbSelectEventParticipant != null) {
-					rbSelectEventParticipant.setValue(null);
-				}
+				onRadioSelected(rbSelectCase);
 			}
+
 			if (selectionChangeCallback != null) {
 				selectionChangeCallback.accept(!e.getSelected().isEmpty());
 			}
@@ -251,30 +179,66 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 		mainLayout.addComponent(caseGrid);
 	}
 
+	private void addSelectEventParticipantRadioGroup() {
+		rbSelectEventParticipant = new RadioButtonGroup<>();
+		rbSelectEventParticipant.setItems(OptionType.SELECT_EVENT_PARTICIPANT);
+		rbSelectEventParticipant.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.eventParticipantSelect));
+		CssStyles.style(rbSelectEventParticipant, CssStyles.VSPACE_NONE);
+		rbSelectEventParticipant.addValueChangeListener(e -> {
+			if (e.getValue() != null) {
+				onRadioSelected(rbSelectEventParticipant);
+				eventParticipantGrid.setEnabled(true);
+
+				if (selectionChangeCallback != null) {
+					selectionChangeCallback.accept(eventParticipantGrid.getSelectedRow() != null);
+				}
+			} else {
+				eventParticipantGrid.deselectAll();
+				eventParticipantGrid.setEnabled(false);
+			}
+		});
+
+		mainLayout.addComponent(rbSelectEventParticipant);
+	}
+
+	private void addSelectContactRadioGroup() {
+		rbSelectContact = new RadioButtonGroup<>();
+		rbSelectContact.setItems(OptionType.SELECT_CONTACT);
+		rbSelectContact.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.contactSelect));
+		CssStyles.style(rbSelectContact, CssStyles.VSPACE_NONE);
+		rbSelectContact.addValueChangeListener(e -> {
+			if (e.getValue() != null) {
+				onRadioSelected(rbSelectContact);
+				contactGrid.setEnabled(true);
+
+				if (selectionChangeCallback != null) {
+					selectionChangeCallback.accept(contactGrid.getSelectedRow() != null);
+				}
+			} else {
+				contactGrid.deselectAll();
+				contactGrid.setEnabled(true);
+			}
+		});
+
+		mainLayout.addComponent(rbSelectContact);
+	}
+
 	private void addSelectCaseRadioGroup() {
 		rbSelectCase = new RadioButtonGroup<>();
-		rbSelectCase.setItems(SELECT_CASE);
+		rbSelectCase.setItems(OptionType.SELECT_CASE);
 		rbSelectCase.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.caseSelect));
 		CssStyles.style(rbSelectCase, CssStyles.VSPACE_NONE);
 		rbSelectCase.addValueChangeListener(e -> {
 			if (e.getValue() != null) {
-				rbCreateEntity.setValue(null);
-				if (rbSelectContact != null) {
-					rbSelectContact.setValue(null);
-				}
-				if (rbSelectEventParticipant != null) {
-					rbSelectEventParticipant.setValue(null);
-				}
+				onRadioSelected(rbSelectCase);
 				caseGrid.setEnabled(true);
-				if (contactGrid != null) {
-					contactGrid.setEnabled(false);
-				}
-				if (eventParticipantGrid != null) {
-					eventParticipantGrid.setEnabled(false);
-				}
+
 				if (selectionChangeCallback != null) {
 					selectionChangeCallback.accept(caseGrid.getSelectedRow() != null);
 				}
+			} else {
+				caseGrid.deselectAll();
+				caseGrid.setEnabled(false);
 			}
 		});
 
@@ -308,13 +272,21 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 	}
 
 	private void addInfoComponent() {
-		if (cases != null && !cases.isEmpty()
-			|| contacts != null && !contacts.isEmpty()
-			|| eventParticipants != null && !eventParticipants.isEmpty()) {
+		if (CollectionUtils.isNotEmpty(getSelectableItems(OptionType.SELECT_CASE))
+			|| CollectionUtils.isNotEmpty(getSelectableItems(OptionType.SELECT_CONTACT))
+			|| CollectionUtils.isNotEmpty(getSelectableItems(OptionType.SELECT_EVENT_PARTICIPANT))) {
 			mainLayout.addComponent(VaadinUiUtil.createInfoComponent(I18nProperties.getString(Strings.infoSelectOrCreateEntry)));
 		} else {
 			mainLayout.addComponent(VaadinUiUtil.createInfoComponent(I18nProperties.getString(Strings.infoCreateEntry)));
 		}
+	}
+
+	private List<?> getSelectableItems(OptionType optionType) {
+		return selectableOptions.options.stream()
+			.filter(o -> o.type == optionType)
+			.map(o -> o.selectableItems)
+			.findFirst()
+			.orElseGet(Collections::emptyList);
 	}
 
 	@Override
@@ -324,13 +296,13 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 		}
 
 		if (pickOrCreateEntryResult.getCaze() != null) {
-			rbSelectCase.setValue(SELECT_CASE);
+			rbSelectCase.setValue(OptionType.SELECT_CASE);
 			caseGrid.select(pickOrCreateEntryResult.getCaze());
 		} else if (pickOrCreateEntryResult.getContact() != null) {
-			rbSelectContact.setValue(SELECT_CONTACT);
+			rbSelectContact.setValue(OptionType.SELECT_CONTACT);
 			contactGrid.select(pickOrCreateEntryResult.getContact());
 		} else if (pickOrCreateEntryResult.getEventParticipant() != null) {
-			rbSelectEventParticipant.setValue(SELECT_EVENT_PARTICIPANT);
+			rbSelectEventParticipant.setValue(OptionType.SELECT_EVENT_PARTICIPANT);
 			eventParticipantGrid.select(pickOrCreateEntryResult.getEventParticipant());
 		}
 	}
@@ -349,15 +321,15 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 			PickOrCreateEntryResult value = new PickOrCreateEntryResult();
 			value.setEventParticipant((SimilarEventParticipantDto) eventParticipantGrid.getSelectedRow());
 			return value;
-		} else if (CREATE_CASE.equals(rbCreateEntity.getValue())) {
+		} else if (OptionType.CREATE_CASE.equals(rbCreateEntity.getValue())) {
 			PickOrCreateEntryResult value = new PickOrCreateEntryResult();
 			value.setNewCase(true);
 			return value;
-		} else if (CREATE_CONTACT.equals(rbCreateEntity.getValue())) {
+		} else if (OptionType.CREATE_CONTACT.equals(rbCreateEntity.getValue())) {
 			PickOrCreateEntryResult value = new PickOrCreateEntryResult();
 			value.setNewContact(true);
 			return value;
-		} else if (CREATE_EVENT_PARTICIPANT.equals(rbCreateEntity.getValue())) {
+		} else if (OptionType.CREATE_EVENT_PARTICIPANT.equals(rbCreateEntity.getValue())) {
 			PickOrCreateEntryResult value = new PickOrCreateEntryResult();
 			value.setNewEventParticipant(true);
 			return value;
@@ -367,5 +339,69 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 
 	public void setSelectionChangeCallback(Consumer<Boolean> callback) {
 		this.selectionChangeCallback = callback;
+	}
+
+	public enum OptionType {
+		CREATE_CASE,
+		CREATE_CONTACT,
+		CREATE_EVENT_PARTICIPANT,
+		SELECT_CASE,
+		SELECT_CONTACT,
+		SELECT_EVENT_PARTICIPANT;
+	}
+
+	private static class Option<T> {
+
+		private OptionType type;
+		private List<T> selectableItems;
+
+		private Option(OptionType type, List<T> selectableItems) {
+			this.type = type;
+			this.selectableItems = selectableItems;
+		}
+	}
+
+	public static class Options {
+
+		private final List<Option<?>> options;
+
+		private Options(List<Option<?>> options) {
+			this.options = options;
+		}
+
+		public static class Builder {
+
+			private final List<Option<?>> options;
+
+			public Builder() {
+				options = new ArrayList<>();
+			}
+
+			public Builder addSelectCase(List<CaseSelectionDto> selectableCases) {
+				return add(OptionType.SELECT_CASE, selectableCases);
+			}
+
+			public Builder addSelectContact(List<SimilarContactDto> selectableContacts) {
+				return add(OptionType.SELECT_CONTACT, selectableContacts);
+			}
+
+			public Builder addSelectEventParticipant(List<SimilarEventParticipantDto> selectableEventParticipants) {
+				return add(OptionType.SELECT_EVENT_PARTICIPANT, selectableEventParticipants);
+			}
+
+			public Builder addCreateEntry(OptionType optionType) {
+				return add(optionType, null);
+			}
+
+			private Builder add(OptionType optionType, List<?> selectableOptions) {
+				options.add(new Option<>(optionType, selectableOptions));
+
+				return this;
+			}
+
+			public Options build() {
+				return new Options(options);
+			}
+		}
 	}
 }

@@ -213,7 +213,8 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 			// build process button
 			return ButtonHelper.createButton(
 				Captions.labMessageProcess,
-				e -> ControllerProvider.getLabMessageController().processLabMessage(indexDto.getUuid()),
+//				e -> ControllerProvider.getLabMessageController().processLabMessage(indexDto.getUuid()),
+				e -> ControllerProvider.getLabMessageController().processPhysicianReport(indexDto.getUuid()),
 				ValoTheme.BUTTON_PRIMARY);
 		} else {
 			// build placeholder necessary to circumvent a vaadin scaling issue (see #7681)
