@@ -92,9 +92,9 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               ASSIGNED_USER_FILTER_INPUT);
           String assignedUser = CreateNewTaskSteps.task.getAssignedTo();
-          int indexToSubstring = assignedUser.indexOf("-");
           webDriverHelpers.fillInWebElement(
-              ASSIGNED_USER_FILTER_INPUT, assignedUser.substring(0, indexToSubstring).trim());
+              ASSIGNED_USER_FILTER_INPUT,
+              assignedUser);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(lastTaskEditButton, 40);
           webDriverHelpers.clickElementSeveralTimesUntilNextElementIsDisplayed(
