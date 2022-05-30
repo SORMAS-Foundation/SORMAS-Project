@@ -15,30 +15,29 @@
 
 package de.symeda.sormas.ui.labmessage;
 
-import com.vaadin.shared.ui.MarginInfo;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingUIHelper;
+import static de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingUIHelper.addProcessedInMeantimeCheck;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.DirtyCheckPopup;
 import de.symeda.sormas.ui.utils.ViewMode;
-
-import static de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingUIHelper.addProcessedInMeantimeCheck;
 
 public class PhysicianReportCaseEditComponent extends CommitDiscardWrapperComponent<VerticalLayout> {
 
@@ -67,38 +66,60 @@ public class PhysicianReportCaseEditComponent extends CommitDiscardWrapperCompon
 
 		backButton = ButtonHelper.createButton(Captions.actionBack, (e) -> {
 			if (activeTabIndex > 0) {
-				setActiveTab(tabConfigs.get(activeTabIndex - 1).captionTag);
+				String previousTab = tabConfigs.get(activeTabIndex - 1).captionTag;
+
+				if (activeTabComponent.isDirty()) {
+					DirtyCheckPopup.show(activeTabComponent, () -> setActiveTab(previousTab));
+				} else {
+					setActiveTab(previousTab);
+				}
 			}
 		}, ValoTheme.BUTTON_PRIMARY);
 		getButtonsPanel().addComponent(backButton, 0);
 
 		nextButton = ButtonHelper.createButton(Captions.actionNext, (b) -> {
-			activeTabComponent.commit();
 			if (activeTabIndex <= tabConfigs.size() - 1) {
-				setActiveTab(tabConfigs.get(activeTabIndex + 1).captionTag);
+				boolean committed = activeTabComponent.commitAndHandle();
+				if (committed) {
+					setActiveTab(tabConfigs.get(activeTabIndex + 1).captionTag);
+				}
 			}
 		}, ValoTheme.BUTTON_PRIMARY);
 		getButtonsPanel().addComponent(nextButton);
 
 		saveAndOpenCaseButton = ButtonHelper.createButton(Captions.actionSaveAndOpenCase, (b) -> {
-			activeTabComponent.commit();
-			commit();
-			ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
+			if (activeTabComponent.commitAndHandle()) {
+				commit();
+				ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
+			}
 		}, ValoTheme.BUTTON_PRIMARY);
 
 		getButtonsPanel().addComponent(saveAndOpenCaseButton, getButtonsPanel().getComponentIndex(getCommitButton()));
 
 		for (TabConfig tabConfig : tabConfigs) {
-			tabsMenu.addView(tabConfig.captionTag, I18nProperties.getCaption(tabConfig.captionTag), e -> {
-				setActiveTab(tabConfig.captionTag);
+			tabsMenu.addView(tabConfig.captionTag, I18nProperties.getCaption(tabConfig.captionTag), () -> {
+				if (activeTabComponent.isDirty()) {
+					DirtyCheckPopup.show(activeTabComponent, () -> {
+						setActiveTab(tabConfig.captionTag);
+						tabsMenu.setActiveView(tabConfig.captionTag);
+					});
+
+					return false;
+				} else {
+					setActiveTab(tabConfig.captionTag);
+
+					return true;
+				}
 			});
 		}
 
 		getWrappedComponent().addComponent(tabsMenu);
 		setActiveTab(Captions.CaseData_hospitalization);
 
-		addCommitListener(() -> {
-			activeTabComponent.commit();
+		setPreCommitListener((callback) -> {
+			if (activeTabComponent.commitAndHandle()) {
+				callback.run();
+			}
 		});
 	}
 
@@ -159,10 +180,9 @@ public class PhysicianReportCaseEditComponent extends CommitDiscardWrapperCompon
 		this.activeTabComponent = activeTabComponent;
 		this.activeTabIndex = activeTabIndex;
 
-		backButton.setEnabled(activeTabIndex > 0);
+		backButton.setVisible(activeTabIndex > 0);
 
 		boolean isLastTab = activeTabIndex == tabConfigs.size() - 1;
-		HorizontalLayout buttonsPanel = getButtonsPanel();
 		Button commitButton = getCommitButton();
 		if (isLastTab) {
 			commitButton.setVisible(true);
