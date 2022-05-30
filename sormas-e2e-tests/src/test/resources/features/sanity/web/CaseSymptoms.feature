@@ -21,11 +21,9 @@ Feature: Case symptoms tab e2e test cases
     Then I check if created data is correctly displayed in Symptoms tab for Set cleared to UNKNOWN
     Then I set Other clinican symptomps to YES
     And I check if Specify Other Symptoms field is available and I fill it
-    Then I set Feeling Ill Symptoms to YES
     Then I set Chills and Sweats Symptoms to YES
     Then I set Fever Symptoms to YES
     And I set First Symptom as Fever
-    And I set First Symptom as Feeling ill
     And I set First Symptom as Chills or sweats
     And I set First Symptom as Other clinical symptoms
     And I set Date of symptom onset

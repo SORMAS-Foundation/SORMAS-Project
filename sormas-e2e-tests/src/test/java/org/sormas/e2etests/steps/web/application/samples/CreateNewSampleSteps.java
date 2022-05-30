@@ -341,7 +341,18 @@ public class CreateNewSampleSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EDIT_TEST_RESULTS_BUTTON);
           final Sample actualSampleTestResult = collectPathogenTestResultsData();
-          ComparisonHelper.compareEqualEntities(sampleTestResult, actualSampleTestResult);
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              sampleTestResult,
+              actualSampleTestResult,
+              List.of(
+                  "typeOfTest",
+                  "testedDisease",
+                  "laboratory",
+                  "sampleTestResults",
+                  "dateOfResult",
+                  "timeOfResult",
+                  "resultVerified",
+                  "testResultsComment"));
         });
 
     When(

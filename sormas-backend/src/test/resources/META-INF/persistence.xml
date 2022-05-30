@@ -35,7 +35,7 @@
 		<class>de.symeda.sormas.backend.task.Task</class>
 		<class>de.symeda.sormas.backend.user.User</class>
 		<class>de.symeda.sormas.backend.user.UserReference</class>
-		<class>de.symeda.sormas.backend.user.UserRoleConfig</class>
+		<class>de.symeda.sormas.backend.user.UserRole</class>
 		<class>de.symeda.sormas.backend.visit.Visit</class>
 		<class>de.symeda.sormas.backend.therapy.Therapy</class>
 		<class>de.symeda.sormas.backend.therapy.Treatment</class>

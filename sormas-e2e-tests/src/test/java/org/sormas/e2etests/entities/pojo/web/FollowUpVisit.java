@@ -56,5 +56,24 @@ public class FollowUpVisit {
   String otherClinicalSymptoms;
   String comments;
   String firstSymptom;
+  String fatigueWeakness;
+  String jointPain;
+  String abnormalLungXrayFindings;
+  String coughWithHeamoptysis;
+  String coughWithSputum;
+  String fluidInLungCavityXray;
+  String fluidInLungCavityAuscultation;
+  String inDrawingOfChestWall;
+  String abdominalPain;
+  String vomiting;
+  String skinUlcers;
+  String unexplainedBleeding;
+  String coma;
+  String lymphadenopathy;
+  String inabilityToWalk;
+  String skinRash;
+  String confusedDisoriented;
+  String seizures;
+  String otherComplications;
   LocalDate dateOfSymptomOnset;
 }
