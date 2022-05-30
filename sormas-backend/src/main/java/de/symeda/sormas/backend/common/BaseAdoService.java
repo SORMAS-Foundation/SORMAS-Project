@@ -22,7 +22,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -216,19 +218,33 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		return em.createQuery(cq).getSingleResult();
 	}
 
+	/**
+	 * Sorts also by {@value AbstractDomainObject#CHANGE_DATE}, {@value AbstractDomainObject#UUID}, {@value AbstractDomainObject#ID} ASC
+	 * to match sorting for {@code getAllAfter} pattern (to be in sync with
+	 * {@link #getBatchedQueryResults(CriteriaBuilder, CriteriaQuery, From, Integer)} and
+	 * {@link #getBatchedAttributesQueryResults(CriteriaBuilder, CriteriaQuery, From, Integer)}).
+	 */
 	public List<ADO> getByIds(List<Long> ids) {
 
-		List<ADO> result = new ArrayList<>();
+		/*
+		 * Use Set here to avoid possible duplicates over several batches or within one batch.
+		 * This also avoids costly DISTINCT argument.
+		 */
+		Set<ADO> result = new LinkedHashSet<>();
 		IterableHelper.executeBatched(ids, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
 
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 			Root<ADO> from = cq.from(getElementClass());
 			cq.where(from.get(AbstractDomainObject.ID).in(batchedIds));
+			cq.orderBy(
+				cb.asc(from.get(AbstractDomainObject.CHANGE_DATE)),
+				cb.asc(from.get(AbstractDomainObject.UUID)),
+				cb.asc(from.get(AbstractDomainObject.ID)));
 			result.addAll(em.createQuery(cq).getResultList());
 		});
 
-		return result;
+		return new ArrayList<>(result);
 	}
 
 	public List<ADO> getByUuids(List<String> uuids) {
