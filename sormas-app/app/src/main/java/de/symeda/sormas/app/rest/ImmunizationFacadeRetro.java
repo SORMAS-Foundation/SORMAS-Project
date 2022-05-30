@@ -42,9 +42,6 @@ public interface ImmunizationFacadeRetro {
 	@GET("immunizations/uuids")
 	Call<List<String>> pullUuids();
 
-	@GET("immunizations/archived/{since}")
-	Call<List<String>> pullArchivedUuidsSince(@Path("since") long since);
-
-	@GET("immunizations/deleted/{since}")
-	Call<List<String>> pullDeletedUuidsSince(@Path("since") long since);
+	@GET("immunizations/obsolete/{since}")
+	Call<List<String>> pullObsoleteUuidsSince(@Path("since") long since);
 }

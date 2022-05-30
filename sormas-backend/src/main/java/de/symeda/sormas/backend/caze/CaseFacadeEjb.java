@@ -1676,7 +1676,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			final Contact contact = contactService.getByUuid(sourceContact.getUuid());
 			final Case caze = service.getByUuid(cazeRef.getUuid());
 			contact.getSamples().forEach(sample -> {
-				if(!sample.isDeleted()) {
+				if (!sample.isDeleted()) {
 					if (sample.getAssociatedCase() == null) {
 						sample.setAssociatedCase(caze);
 					} else {
@@ -2083,7 +2083,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 						newCase.setClassificationDate(new Date());
 					}
 				}
+			} else if (newCase.getCaseClassification() != existingCase.getCaseClassification()) {
+				newCase.setClassificationUser(userService.getCurrentUser());
+				newCase.setClassificationDate(new Date());
 			}
+		} else if (newCase.getCaseClassification() != existingCase.getCaseClassification()) {
+			newCase.setClassificationUser(userService.getCurrentUser());
+			newCase.setClassificationDate(new Date());
 		}
 
 		// calculate reference definition for cases
