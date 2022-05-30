@@ -59,7 +59,7 @@ public class TaskService {
         .suggestedStartTime(LocalTime.of(12, 30))
         .dueDateDate(LocalDate.now().plusDays(2))
         .dueDateTime(LocalTime.of(13, 30))
-        .assignedTo("Surveillance OFFICER - Surveillance Officer")
+        .assignedTo("Surveillance OFFICER")
         .priority("High")
         .commentsOnTask("Task comment-" + timeStamp)
         .commentsOnExecution("Execution comment-" + timeStamp)
