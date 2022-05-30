@@ -3,6 +3,7 @@ package de.symeda.sormas.backend;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -225,11 +226,11 @@ public class ArchitectureTest {
 	}
 
 	@ArchTest
-	public void testLabMessageFacadeEjbAuthorization(JavaClasses classes) {
+	public void testExternalMessageFacadeEjbAuthorization(JavaClasses classes) {
 		assertFacadeEjbAnnotated(
 			ExternalMessageFacadeEjb.class,
 			AuthMode.CLASS_ONLY,
-			Collections.singletonList("fetchAndSaveExternalMessages"),
+			Arrays.asList("fetchAndSaveExternalMessages", "bulkAssignExternalMessages", "deleteExternalMessage", "deleteExternalMessages"),
 			classes);
 	}
 

@@ -11547,6 +11547,8 @@ UPDATE userroles_userrights SET userright = 'EXTERNAL_MESSAGE_VIEW' WHERE userri
 INSERT INTO userroles_userrights (userrole_id, userright) SELECT userrole_id, 'EXTERNAL_MESSAGE_PROCESS' FROM userroles_userrights WHERE userright = 'EXTERNAL_MESSAGE_VIEW';
 INSERT INTO userroles_userrights (userrole_id, userright) SELECT userrole_id, 'EXTERNAL_MESSAGE_DELETE' FROM userroles_userrights WHERE userright = 'EXTERNAL_MESSAGE_VIEW';
 
+UPDATE systemevent SET type = 'FETCH_EXTERNAL_MESSAGES' WHERE userright = 'FETCH_LAB_MESSAGES';
+
 INSERT INTO schema_version (version_number, comment) VALUES (461, 'Rename lab message to external message #8895');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
