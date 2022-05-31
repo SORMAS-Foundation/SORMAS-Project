@@ -883,10 +883,6 @@ public class CreateNewCaseSteps implements En {
 
   private void fillAllCaseFieldsForFacility(Case caze) {
     selectCaseOrigin(caze.getCaseOrigin());
-    // field that is no longer available
-    // fillExternalId(caze.getExternalId());
-    // new field
-    // fillEpidNumber(caze.getEpidNumber());
     fillDisease(caze.getDisease());
     selectResponsibleRegion(caze.getResponsibleRegion());
     selectResponsibleDistrict(caze.getResponsibleDistrict());
