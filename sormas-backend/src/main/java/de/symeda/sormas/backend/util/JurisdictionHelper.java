@@ -21,7 +21,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -29,25 +28,6 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 public class JurisdictionHelper {
 
 	private JurisdictionHelper() {
-	}
-
-	public static JurisdictionLevel getSuperordinateJurisdiction(JurisdictionLevel jurisdition) {
-		switch (jurisdition) {
-		case NATION:
-			return JurisdictionLevel.NONE;
-		case REGION:
-			return JurisdictionLevel.NATION;
-		case DISTRICT:
-			return JurisdictionLevel.REGION;
-		case COMMUNITY:
-		case POINT_OF_ENTRY:
-		case HEALTH_FACILITY:
-			return JurisdictionLevel.DISTRICT;
-		case LABORATORY:
-		case EXTERNAL_LABORATORY:
-		default:
-			return JurisdictionLevel.NONE;
-		}
 	}
 
 	public static List<Region> getCaseRegions(Case caze) {

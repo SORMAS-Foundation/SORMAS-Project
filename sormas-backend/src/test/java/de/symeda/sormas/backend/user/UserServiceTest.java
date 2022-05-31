@@ -152,4 +152,22 @@ public class UserServiceTest extends AbstractBeanTest {
 			assertFalse(result.contains(randomUser));
 		}
 	}
+
+	@Test
+	public void testGetUserRefsByInfrastructure() {
+
+		RDCF rdcf1 = creator.createRDCF("R1", "D1", "C1", "F1", "P1");
+		RDCF rdcf2 = creator.createRDCF("R2", "D2", "C2", "F2", "P2");
+
+		UserDto survOff11 = creator.createUser(rdcf1, "SO", "11", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto surfOff12 = creator.createUser(rdcf1, "SO", "12", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto survOff21 = creator.createUser(rdcf2, "SO", "21", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+
+		List<UserReference> users =
+			getUserService().getUserRefsByInfrastructure(rdcf1.district.getUuid(), JurisdictionLevel.DISTRICT, JurisdictionLevel.DISTRICT, null);
+
+		assertThat(
+			getUserService().getUserRefsByInfrastructure(rdcf1.district.getUuid(), JurisdictionLevel.DISTRICT, JurisdictionLevel.DISTRICT, null),
+			hasSize(3));
+	}
 }
