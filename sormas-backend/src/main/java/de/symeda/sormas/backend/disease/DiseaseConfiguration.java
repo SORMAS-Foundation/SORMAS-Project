@@ -1,5 +1,9 @@
 package de.symeda.sormas.backend.disease;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_TEXT;
+
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -9,10 +13,6 @@ import javax.persistence.Enumerated;
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-
-import java.util.List;
-
-import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 @Entity(name = DiseaseConfiguration.TABLE_NAME)
 @Audited
@@ -133,7 +133,7 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 		this.extendedClassificationMulti = extendedClassificationMulti;
 	}
 
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_TEXT)
 	@Convert(converter = AgeGroupsConverter.class)
 	public List<String> getAgeGroups() {
 		return ageGroups;

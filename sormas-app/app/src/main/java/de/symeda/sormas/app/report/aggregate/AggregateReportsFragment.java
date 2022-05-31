@@ -242,13 +242,11 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 				RowReportAggregateDiseaseLayoutBinding viewBinding =
 					DataBindingUtil.inflate(diseaseInflater, R.layout.row_report_aggregate_disease_layout, contentBinding.reportContent, true);
 				viewBinding.setDisease(disease);
-				int i = 0;
 				for (String ageGroup : ageGroups) {
 					LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 					RowReportAggregateAgegroupLayoutBinding binding =
 						DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_agegroup_layout, contentBinding.reportContent, true);
 					binding.setAgeGroup(AgeGroupUtils.createCaption(ageGroup));
-					i++;
 				}
 			}
 		}
