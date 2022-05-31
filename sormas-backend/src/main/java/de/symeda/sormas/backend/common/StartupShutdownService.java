@@ -749,12 +749,22 @@ public class StartupShutdownService {
 				fillDefaultUserRoles();
 				break;
 			case 461:
-				List<User> users = userService.getAll();
-				UserRole importuserUserRole = userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.IMPORT_USER));
-				users.stream().filter(user -> user.getUserRoles().isEmpty()).forEach(user -> {
-					user.getUserRoles().add(importuserUserRole);
-					userService.persist(user);
-				});
+				List<User> usersWithoutUserRoles =
+					userService.getAll().stream().filter(user -> user.getUserRoles().isEmpty()).collect(Collectors.toList());
+				if (!usersWithoutUserRoles.isEmpty()) {
+					UserRole importuserUserRole = null;
+					try {
+						importuserUserRole = userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.IMPORT_USER));
+					} catch (Exception e) {
+						throw new IllegalArgumentException(
+							"Could not find default IMPORT_USER role in the database; Please ensure that the database contains no user without a user role and redeploy the server.");
+					}
+					UserRole finalImportuserUserRole = importuserUserRole;
+					usersWithoutUserRoles.forEach(user -> {
+						user.getUserRoles().add(finalImportuserUserRole);
+						userService.persist(user);
+					});
+				}
 				break;
 
 			default:
