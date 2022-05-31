@@ -1,5 +1,11 @@
 package de.symeda.sormas.app.backend.report;
 
+import android.util.Log;
+
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
@@ -7,19 +13,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
-
-import android.util.Log;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 public class AggregateReportDao extends AbstractAdoDao<AggregateReport> {
 
@@ -51,13 +50,6 @@ public class AggregateReportDao extends AbstractAdoDao<AggregateReport> {
 			Set<Disease> diseasesWithReports = new HashSet<>();
 			for (AggregateReport report : reports) {
 				diseasesWithReports.add(report.getDisease());
-			}
-
-			List<Disease> aggregateDiseases = DiseaseConfigurationCache.getInstance().getAllDiseases(true, null, false);
-			for (Disease disease : aggregateDiseases) {
-				if (!diseasesWithReports.contains(disease)) {
-					reports.add(build(disease, epiWeek));
-				}
 			}
 
 			Collections.sort(reports, new Comparator<AggregateReport>() {
