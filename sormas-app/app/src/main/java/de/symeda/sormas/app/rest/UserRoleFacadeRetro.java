@@ -32,9 +32,6 @@ public interface UserRoleFacadeRetro {
 	@GET("userroles/uuids")
 	Call<List<String>> pullUuids();
 
-	@GET("userroles/deleted/{since}")
-	Call<List<String>> pullDeletedUuidsSince(@Path("since") long since);
-
 	@POST("userroles/query")
 	Call<List<UserRoleDto>> pullByUuids(@Body List<String> uuids);
 }
