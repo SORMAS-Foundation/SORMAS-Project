@@ -583,7 +583,7 @@ Feature: Create events
     And I open the last created Person via API
     And I check that SEE EVENTS FOR THIS PERSON button appears on Edit Person page
 
-  @env_main @#8555
+  @env_main @#8555 @ignore
   Scenario: Add back a person to an event who was previously deleted as event participant
     Given API: I create a new person
     And API: I check that POST call body is "OK"

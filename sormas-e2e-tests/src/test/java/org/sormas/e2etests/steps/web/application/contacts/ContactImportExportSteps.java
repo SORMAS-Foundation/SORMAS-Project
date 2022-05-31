@@ -178,7 +178,7 @@ public class ContactImportExportSteps implements En {
     List<String[]> r = null;
     String[] values = new String[] {};
     CustomContactExportCSV builder = null;
-    CSVParser csvParser = new CSVParserBuilder().withSeparator(';').build();
+    CSVParser csvParser = new CSVParserBuilder().withSeparator(',').build();
     try (CSVReader reader =
         new CSVReaderBuilder(new FileReader(fileName))
             .withCSVParser(csvParser)
@@ -211,7 +211,7 @@ public class ContactImportExportSteps implements En {
     List<String[]> r = null;
     String[] values = new String[] {};
     Contact builder = null;
-    CSVParser csvParser = new CSVParserBuilder().withSeparator(';').build();
+    CSVParser csvParser = new CSVParserBuilder().withSeparator(',').build();
     try (CSVReader reader =
         new CSVReaderBuilder(new FileReader(fileName))
             .withCSVParser(csvParser)
