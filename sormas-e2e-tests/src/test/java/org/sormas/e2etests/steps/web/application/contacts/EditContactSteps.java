@@ -33,6 +33,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DO
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UPLOAD_DOCUMENT_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
@@ -609,7 +610,7 @@ public class EditContactSteps implements En {
         "I click Save in Add Event Participant form on Edit Contact Page",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(ADD_A_PARTICIPANT_HEADER);
-          webDriverHelpers.clickOnWebElementBySelector(By.cssSelector(".popupContent #commit"));
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT;
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           TimeUnit.SECONDS.sleep(5);
         });
