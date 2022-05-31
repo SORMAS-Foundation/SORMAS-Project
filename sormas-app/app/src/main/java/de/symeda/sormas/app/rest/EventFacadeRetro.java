@@ -28,10 +28,7 @@ import retrofit2.http.Path;
 public interface EventFacadeRetro {
 
 	@GET("events/all/{since}/{size}/{lastSynchronizedUuid}")
-	Call<List<EventDto>> pullAllSince(
-			@Path("since") long since,
-			@Path("size") int size,
-			@Path("lastSynchronizedUuid") String lastSynchronizedUuid);
+	Call<List<EventDto>> pullAllSince(@Path("since") long since, @Path("size") int size, @Path("lastSynchronizedUuid") String lastSynchronizedUuid);
 
 	@POST("events/query")
 	Call<List<EventDto>> pullByUuids(@Body List<String> uuids);
@@ -42,10 +39,7 @@ public interface EventFacadeRetro {
 	@GET("events/uuids")
 	Call<List<String>> pullUuids();
 
-	@GET("events/archived/{since}")
-	Call<List<String>> pullArchivedUuidsSince(@Path("since") long since);
-
-	@GET("events/deleted/{since}")
-	Call<List<String>> pullDeletedUuidsSince(@Path("since") long since);
+	@GET("events/obsolete/{since}")
+	Call<List<String>> pullObsoleteUuidsSince(@Path("since") long since);
 
 }

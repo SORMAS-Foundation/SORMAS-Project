@@ -80,4 +80,6 @@ public interface TaskFacade {
 	List<DistrictReferenceDto> getDistrictsByTaskUuids(List<String> taskUuids, Long limit);
 
 	List<String> getArchivedUuidsSince(Date since);
+
+	List<String> getObsoleteUuidsSince(Date since);
 }

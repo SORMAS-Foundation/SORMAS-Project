@@ -149,6 +149,6 @@ public class EditEventPage {
               "//label[text()='Erreger-Feintypisierung stimmt mit der der F\u00E4lle \u00FCberein']");
 
   public static By getGroupEventName(String groupEventName) {
-    return By.xpath("//*[contains(text(),'" + groupEventName + "')]");
+    return By.xpath("//*[contains(text(),\"" + groupEventName + "\")]");
   }
 }
