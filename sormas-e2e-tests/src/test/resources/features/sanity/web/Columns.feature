@@ -206,7 +206,6 @@ Scenario Outline: Sort column <col> alphabetically in Events directory
     |8 |
     |9 |
     |10 |
-    |11 |
     |12 |
     |13 |
 #    |14 |  Non-alphabetical sorting order - find out whether it's a bug or a feature
@@ -217,6 +216,21 @@ Scenario Outline: Sort column <col> alphabetically in Events directory
     |20 |
     |22 |
     |23 |
+
+@env_main @issue=SORDEV-5342 @Event
+Scenario Outline: Sort column <col> by date in Events directory
+  Given I log in with National User
+  And I click on the Events button from navbar
+  When I click the header of column <col>
+  Then I check that column <col> is sorted by date in ascending order
+  And I check that an upwards arrow appears in the header of column <col>
+  When I click the header of column <col>
+  Then I check that column <col> is sorted by date in descending order
+  And I check that a downwards arrow appears in the header of column <col>
+
+  Examples:
+    | col |
+    |11 |
 
 @env_main @issue=SORDEV-5342 @Sample
 Scenario Outline: Sort column <col> alphabetically in Samples directory
@@ -238,7 +252,6 @@ Scenario Outline: Sort column <col> alphabetically in Samples directory
     |8 |
     |9 |
     |10 |
-    |11 |
     |12 |
     |13 |
     |14 |
@@ -259,3 +272,56 @@ Scenario Outline: Sort column <col> by last name in Samples directory
     |4 |
     |5 |
     |6 |
+
+@env_main @issue=SORDEV-5342 @Sample
+Scenario Outline: Sort column <col> by date in Samples directory
+  Given I log in with National User
+  And I click on the Sample button from navbar
+  When I click the header of column <col>
+  Then I check that column <col> is sorted by date in ascending order
+  And I check that an upwards arrow appears in the header of column <col>
+  When I click the header of column <col>
+  Then I check that column <col> is sorted by date in descending order
+  And I check that a downwards arrow appears in the header of column <col>
+
+  Examples:
+    | col |
+    |11 |
+
+@env_de @issue=SORDEV-7162 @TravelEntries
+Scenario Outline: Sort column <col> alphabetically in Entries directory
+  Given I log in with National User
+  And I click on the Entries button from navbar
+  When I click the header of column <col>
+  Then I check that column <col> is sorted alphabetically in ascending order
+  And I check that an upwards arrow appears in the header of column <col>
+  When I click the header of column <col>
+  Then I check that column <col> is sorted alphabetically in descending order
+  And I check that a downwards arrow appears in the header of column <col>
+
+  Examples:
+    | col |
+    |1 |
+    |2 |
+    |3 |
+    |4 |
+    |5 |
+#    |6 |   Non-alphabetical sorting order - find out whether it's a bug or a feature
+#    |7 |   Non-alphabetical sorting order - find out whether it's a bug or a feature
+#    |8 |   Non-alphabetical sorting order - find out whether it's a bug or a feature
+#    |9 |   Non-alphabetical sorting order - find out whether it's a bug or a feature
+
+@env_de @issue=SORDEV-7162 @TravelEntries
+Scenario Outline: Sort column <col> by date in Entries directory
+  Given I log in with National User
+  And I click on the Entries button from navbar
+  When I click the header of column <col>
+  Then I check that column <col> is sorted by German date in ascending order
+  And I check that an upwards arrow appears in the header of column <col>
+  When I click the header of column <col>
+  Then I check that column <col> is sorted by German date in descending order
+  And I check that a downwards arrow appears in the header of column <col>
+
+  Examples:
+    | col |
+    |10 |
