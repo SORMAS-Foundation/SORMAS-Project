@@ -399,8 +399,6 @@ public class CreateNewCaseSteps implements En {
           fillAllCaseFieldsForFacility(caze);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
-
-          TimeUnit.SECONDS.sleep(2);
         });
 
     When(

@@ -57,5 +57,6 @@ public class HospitalizationTabPage {
       By.cssSelector(".v-window-contents #commit");
   public static final By DESCRIPTION_INPUT = By.cssSelector("#description");
   public static final By PREVIOUS_HOSPITALIZATION_POPUP =
-      By.cssSelector("#1174_window_maximizerestore");
+      By.xpath(
+          "//*[contains(@class, 'v-window-header') and contains(text(),'Previous hospitalization')]");
 }

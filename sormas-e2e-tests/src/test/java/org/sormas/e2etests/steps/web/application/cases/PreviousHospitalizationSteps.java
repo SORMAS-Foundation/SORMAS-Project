@@ -100,11 +100,6 @@ public class PreviousHospitalizationSteps implements En {
               "Reason for hospitalization is not correct");
 
           softly.assertEquals(
-              collectedHospitalization.getSpecifyReason(),
-              createdHospitalization.getSpecifyReason(),
-              "Specify reason is not correct.");
-
-          softly.assertEquals(
               collectedHospitalization.getStayInTheIntensiveCareUnit(),
               createdHospitalization.getStayInTheIntensiveCareUnit(),
               "Stay in the intensive care unit is not correct");
@@ -123,6 +118,18 @@ public class PreviousHospitalizationSteps implements En {
               collectedHospitalization.getIsolation(),
               createdHospitalization.getIsolation(),
               "Isolation is not correct");
+
+          softly.assertEquals(
+              collectedHospitalization.getDateOfIsolation(),
+              createdHospitalization.getDateOfIsolation(),
+              "Date of isolation is not correct");
+
+          softly.assertEquals(
+              collectedHospitalization.getWasPatientAdmittedAtTheFacilityAsAnInpatient(),
+              createdHospitalization.getWasPatientAdmittedAtTheFacilityAsAnInpatient(),
+              "Was patient admitted at the facility as an inpatient is not correct");
+
+          softly.assertAll();
         });
   }
 
@@ -207,6 +214,9 @@ public class PreviousHospitalizationSteps implements En {
             LocalDate.parse(
                 webDriverHelpers.getValueFromWebElement(END_OF_STAY_DATE_INPUT), DATE_FORMATTER))
         .isolation(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(ISOLATION_OPTIONS))
+        .dateOfIsolation(
+            LocalDate.parse(
+                webDriverHelpers.getValueFromWebElement(DATE_OF_ISOLATION), DATE_FORMATTER))
         .description(webDriverHelpers.getValueFromWebElement(DESCRIPTION_INPUT))
         .facilityNameDescription(
             webDriverHelpers.getValueFromWebElement(FACILITY_NAME_DESCRIPTION_INPUT))
@@ -214,6 +224,9 @@ public class PreviousHospitalizationSteps implements En {
         .district(webDriverHelpers.getValueFromCombobox(DISTRICT_COMBOBOX))
         .community(webDriverHelpers.getValueFromCombobox(COMMUNITY_COMBOBOX))
         .hospital(webDriverHelpers.getValueFromCombobox(HOSPITAL_COMBOBOX))
+        .wasPatientAdmittedAtTheFacilityAsAnInpatient(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                WAS_THE_PATIENT_ADMITTED_AS_INPATIENT_OPTIONS))
         .build();
   }
 }
