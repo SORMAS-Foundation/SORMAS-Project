@@ -34,6 +34,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_A
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_RESULT_IN_EVENT_PARTICIPANT_TABLE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_EDIT_EVENT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BASIC_EVENT_EXPORT_BUTTON;
@@ -929,7 +930,10 @@ public class EventDirectorySteps implements En {
 
     When(
         "I open the first event from events list",
-        () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_ID_BUTTON));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_ID_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_EDIT_EVENT);
+        });
 
     When(
         "I open the first event group from events list group",
