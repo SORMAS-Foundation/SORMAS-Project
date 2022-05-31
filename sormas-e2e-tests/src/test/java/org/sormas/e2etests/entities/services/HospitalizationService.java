@@ -18,7 +18,7 @@ public class HospitalizationService {
   public Hospitalization generateHospitalization() {
     return Hospitalization.builder()
         .dateOfVisitOrAdmission(LocalDate.now().minusDays(3))
-        .dateOfDischargeOrTransfer(LocalDate.now().plusDays(2))
+        .dateOfDischargeOrTransfer(LocalDate.now().minusDays(1))
         .reasonForHospitalization("Other reason")
         .specifyReason(faker.book().title() + " " + faker.dragonBall().character())
         .stayInTheIntensiveCareUnit(YES.toString())

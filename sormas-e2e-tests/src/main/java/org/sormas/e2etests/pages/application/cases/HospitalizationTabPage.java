@@ -55,4 +55,7 @@ public class HospitalizationTabPage {
       By.cssSelector(".v-window-contents #healthFacility div");
   public static final By PLACE_OF_STAY_IN_HOSPITAL_POPUP_SAVE_BUTTON =
       By.cssSelector(".v-window-contents #commit");
+  public static final By DESCRIPTION_INPUT = By.cssSelector("#description");
+  public static final By PREVIOUS_HOSPITALIZATION_POPUP =
+      By.cssSelector("#1174_window_maximizerestore");
 }

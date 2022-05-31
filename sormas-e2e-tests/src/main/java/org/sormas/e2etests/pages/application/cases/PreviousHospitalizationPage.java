@@ -48,4 +48,8 @@ public class PreviousHospitalizationPage {
   public static final By END_OF_STAY_DATE_INPUT =
       By.cssSelector(".v-window #intensiveCareUnitEnd input");
   public static final By DONE_BUTTON = By.cssSelector(".v-window #commit");
+  public static final By ADMITTED_AS_INPATIENT =
+      By.xpath("//*[contains(text(), 'Was patient admitted at the facility as an inpatient?'");
+  public static final By DATE_OF_ISOLATION = By.xpath("//*[contains(text(), 'Date of isolation'");
+  public static final By DISCARD_BUTTON = By.cssSelector(".v-window #discard");
 }

@@ -148,6 +148,24 @@ public class HospitalizationTabSteps implements En {
           webDriverHelpers.selectFromCombobox(
               REASON_FOR_HOSPITALIZATION_COMBOBOX, reasonForHospitalization);
         });
+
+    Then(
+        "^I check if description text field is available in Current Hospitalization tab$",
+        () -> webDriverHelpers.waitUntilIdentifiedElementIsPresent(DESCRIPTION_INPUT));
+
+    When(
+        "I set Was the patient hospitalized previously option to {string}",
+        (String option) ->
+            webDriverHelpers.clickWebElementByText(
+                WAS_THE_PATIENT_HOSPITALIZED_PREVIOUSLY_OPTIONS, option));
+
+    And(
+        "^I click on New entry to add a previous hospitalization$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(NEW_ENTRY_LINK));
+
+    And(
+        "^I check if Previous Hospitalization Popup is displayed$",
+        () -> webDriverHelpers.isElementVisibleWithTimeout(PREVIOUS_HOSPITALIZATION_POPUP, 10));
   }
 
   @SneakyThrows

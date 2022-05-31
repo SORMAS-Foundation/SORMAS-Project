@@ -9,19 +9,25 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Hospitalization;
 import org.sormas.e2etests.entities.pojo.web.PreviousHospitalization;
+import org.sormas.e2etests.entities.services.HospitalizationService;
 import org.sormas.e2etests.entities.services.PreviousHospitalizationService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.testng.asserts.SoftAssert;
 
 public class PreviousHospitalizationSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   public static PreviousHospitalization previousHospitalization;
+  private static Hospitalization createdHospitalization;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
   @Inject
   public PreviousHospitalizationSteps(
       WebDriverHelpers webDriverHelpers,
-      PreviousHospitalizationService previousHospitalizationService) {
+      PreviousHospitalizationService previousHospitalizationService,
+      HospitalizationService hospitalizationService,
+      SoftAssert softly) {
 
     this.webDriverHelpers = webDriverHelpers;
 
@@ -56,6 +62,67 @@ public class PreviousHospitalizationSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(REGION_COMBOBOX);
           PreviousHospitalization collectedHospitalization = collectPreviousHospitalizationData();
           ComparisonHelper.compareEqualEntities(collectedHospitalization, previousHospitalization);
+        });
+
+    And(
+        "^I check if Previous hospitalization Popup contains additional fields$",
+        () -> {
+          webDriverHelpers.isElementVisibleWithTimeout(ADMITTED_AS_INPATIENT, 1);
+          webDriverHelpers.isElementVisibleWithTimeout(DATE_OF_ISOLATION, 1);
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON);
+        });
+
+    And(
+        "I set Isolation as {string}",
+        (String isolationOption) ->
+            webDriverHelpers.clickWebElementByText(ISOLATION_OPTIONS, isolationOption));
+
+    Then(
+        "^I check the edited and saved current hospitalization is correctly displayed in previous hospitalization window$",
+        () -> {
+          createdHospitalization = hospitalizationService.generateHospitalization();
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_PREVIOUS_HOSPITALIZATION_ENTRY);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(REGION_COMBOBOX);
+          PreviousHospitalization collectedHospitalization = collectPreviousHospitalizationData();
+          softly.assertEquals(
+              collectedHospitalization.getDateOfVisitOrAdmission(),
+              createdHospitalization.getDateOfVisitOrAdmission(),
+              "Date of visit or admission is not correct");
+
+          softly.assertEquals(
+              collectedHospitalization.getDateOfDischargeOrTransfer(),
+              createdHospitalization.getDateOfDischargeOrTransfer(),
+              "Date of discharge or transfer is not correct");
+
+          softly.assertEquals(
+              collectedHospitalization.getReasonForHospitalization(),
+              createdHospitalization.getReasonForHospitalization(),
+              "Reason for hospitalization is not correct");
+
+          softly.assertEquals(
+              collectedHospitalization.getSpecifyReason(),
+              createdHospitalization.getSpecifyReason(),
+              "Specify reason is not correct.");
+
+          softly.assertEquals(
+              collectedHospitalization.getStayInTheIntensiveCareUnit(),
+              createdHospitalization.getStayInTheIntensiveCareUnit(),
+              "Stay in the intensive care unit is not correct");
+
+          softly.assertEquals(
+              collectedHospitalization.getStartOfStayDate(),
+              createdHospitalization.getStartOfStayDate(),
+              "Start of stay date is not correct");
+
+          softly.assertEquals(
+              collectedHospitalization.getEndOfStayDate(),
+              createdHospitalization.getEndOfStayDate(),
+              "End of stay date is not correct");
+
+          softly.assertEquals(
+              collectedHospitalization.getIsolation(),
+              createdHospitalization.getIsolation(),
+              "Isolation is not correct");
         });
   }
 
