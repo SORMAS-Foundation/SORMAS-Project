@@ -610,7 +610,7 @@ public class EditContactSteps implements En {
         "I click Save in Add Event Participant form on Edit Contact Page",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(ADD_A_PARTICIPANT_HEADER);
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT;
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           TimeUnit.SECONDS.sleep(5);
         });
