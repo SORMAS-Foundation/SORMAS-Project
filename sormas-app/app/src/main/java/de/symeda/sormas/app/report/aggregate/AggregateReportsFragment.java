@@ -168,8 +168,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 
 		contentBinding.reportContent.removeAllViews();
 
-
-			Date latestLocalChangeDate = null;
+		Date latestLocalChangeDate = null;
 
 		final Map<Disease, List<AggregateReport>> reportsByDisease = new HashMap<>();
 		final EpiWeek epiWeek = (EpiWeek) contentBinding.aggregateReportsWeek.getValue();
@@ -193,38 +192,40 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 		Map<String, Disease> diseaseMap = diseaseList.stream().collect(Collectors.toMap(Disease::toString, disease -> disease));
 		Map<String, Disease> diseasesWithoutReport = new HashMap<>(diseaseMap);
 
-		reportsByDisease.forEach((disease, aggregateReports) -> {
+		for (Map.Entry<Disease, List<AggregateReport>> entry : reportsByDisease.entrySet()) {
+			Disease key = entry.getKey();
+			List<AggregateReport> aggregateReports = entry.getValue();
 			if (aggregateReports.size() == 1) {
 				LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				RowReportAggregateLayoutBinding binding =
-					DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_layout, contentBinding.reportContent, true);
+						DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_layout, contentBinding.reportContent, true);
 				AggregateReport report = aggregateReports.get(0);
 				binding.setData(report);
-//				if (latestLocalChangeDate == null
-//					|| (report.getLocalChangeDate() != null && latestLocalChangeDate.before(report.getLocalChangeDate()))) {
-//					latestLocalChangeDate = report.getLocalChangeDate();
-//				}
+				if (latestLocalChangeDate == null
+					|| (report.getLocalChangeDate() != null && latestLocalChangeDate.before(report.getLocalChangeDate()))) {
+					latestLocalChangeDate = report.getLocalChangeDate();
+				}
 			} else {
 				LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				RowReportAggregateDiseaseLayoutBinding diseaseBinding = DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_disease_layout, contentBinding.reportContent, true);
-				diseaseBinding.setDisease(disease.toString());
-				aggregateReports.forEach(report -> {
+				diseaseBinding.setDisease(key.toString());
+				for (AggregateReport report : aggregateReports) {
 					RowReportAggregateAgegroupLayoutBinding binding =
-						DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_agegroup_layout, contentBinding.reportContent, true);
+							DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_agegroup_layout, contentBinding.reportContent, true);
 					binding.setData(report);
 					String ageGroup = report.getAgeGroup();
 					if (ageGroup != null) {
 						binding.setAgeGroup(AgeGroupUtils.createCaption(ageGroup));
 					}
-//					if (latestLocalChangeDate == null
-//						|| (report.getLocalChangeDate() != null && latestLocalChangeDate.before(report.getLocalChangeDate()))) {
-//						latestLocalChangeDate = report.getLocalChangeDate();
-//					}
-				});
+					if (latestLocalChangeDate == null
+							|| (report.getLocalChangeDate() != null && latestLocalChangeDate.before(report.getLocalChangeDate()))) {
+						latestLocalChangeDate = report.getLocalChangeDate();
+					}
+				}
 			}
 
-			diseasesWithoutReport.remove(disease.toString());
-		});
+			diseasesWithoutReport.remove(key.toString());
+		}
 
 		for (String disease : diseasesWithoutReport.keySet()) {
 

@@ -55,6 +55,12 @@ public class AggregateReportEditForm extends AbstractEditForm<AggregateReportDto
 		} else {
 			return this.firstGroup
 				? LayoutUtil.fluidRow(LayoutUtil.oneOfTwoCol(DISEASE_LOC))
+					+ StringUtils.EMPTY
+					+ LayoutUtil.fluidRow(
+						LayoutUtil.oneOfTwoCol(AGE_GROUP_LOC),
+						LayoutUtil.oneOfSixCol(AggregateReportDto.NEW_CASES),
+						LayoutUtil.oneOfSixCol(AggregateReportDto.LAB_CONFIRMATIONS),
+						LayoutUtil.oneOfSixCol(AggregateReportDto.DEATHS))
 				: StringUtils.EMPTY
 					+ LayoutUtil.fluidRow(
 						LayoutUtil.oneOfTwoCol(AGE_GROUP_LOC),
