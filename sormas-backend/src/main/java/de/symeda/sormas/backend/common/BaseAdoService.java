@@ -219,10 +219,11 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	}
 
 	/**
-	 * Sorts also by {@value AbstractDomainObject#CHANGE_DATE}, {@value AbstractDomainObject#UUID}, {@value AbstractDomainObject#ID} ASC
-	 * to match sorting for {@code getAllAfter} pattern (to be in sync with
-	 * {@link #getBatchedQueryResults(CriteriaBuilder, CriteriaQuery, From, Integer)} and
-	 * {@link #getBatchedAttributesQueryResults(CriteriaBuilder, CriteriaQuery, From, Integer)}).
+	 * @return List of <strong>read-only</strong> entities. Sorts also by {@value AbstractDomainObject#CHANGE_DATE},
+	 *         {@value AbstractDomainObject#UUID}, {@value AbstractDomainObject#ID} ASC
+	 *         to match sorting for {@code getAllAfter} pattern (to be in sync with
+	 *         {@link #getBatchedQueryResults(CriteriaBuilder, CriteriaQuery, From, Integer)} and
+	 *         {@link #getBatchedAttributesQueryResults(CriteriaBuilder, CriteriaQuery, From, Integer)}).
 	 */
 	public List<ADO> getByIds(List<Long> ids) {
 
@@ -241,7 +242,8 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 				cb.asc(from.get(AbstractDomainObject.CHANGE_DATE)),
 				cb.asc(from.get(AbstractDomainObject.UUID)),
 				cb.asc(from.get(AbstractDomainObject.ID)));
-			result.addAll(em.createQuery(cq).getResultList());
+			List<ADO> batchResult = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+			result.addAll(batchResult);
 		});
 
 		return new ArrayList<>(result);
