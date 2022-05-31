@@ -790,7 +790,10 @@ public class EditEventSteps implements En {
 
     When(
         "I click on the Create button from Event Document Templates",
-        () -> webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CREATE_DOCUMENT_BUTTON));
+        () -> {
+          webDriverHelpers.scrollToElement(EditEventPage.CREATE_DOCUMENT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CREATE_DOCUMENT_BUTTON);
+        });
 
     When(
         "I create and download an event document from template",

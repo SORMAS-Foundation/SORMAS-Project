@@ -71,7 +71,7 @@ public class TaskService {
     return buildGeneratedTask().toBuilder()
         .taskContext("EVENT")
         .taskType("vaccination activities")
-        .assignedTo("National USER - National User")
+        .assignedTo("National USER")
         .build();
   }
 }
