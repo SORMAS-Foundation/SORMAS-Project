@@ -141,7 +141,7 @@ public class EditContactPage {
   public static final By CONVERT_SOME = By.id("convertSome");
   public static final By ALL_CHECKBOX =
       By.xpath("//div[@class=\"popupContent\"]//input[@type=\"checkbox\"]");
-  public static final By LINKED_EVENT_INDICATIOR = By.xpath("unlink-event-0");
+  public static final By LINKED_EVENT_INDICATIOR = By.id("unlink-event-0");
   public static final By CONTACT_DATA_TITLE = By.cssSelector("[location='contactDataHeadingLoc']");
   public static final By ARCHIVE_CONTACT_BUTTON = By.cssSelector("#archiveDearchive");
   public static final By ARCHIVE_POPUP_WINDOW_HEADER = By.xpath("//div[@class='v-window-header']");

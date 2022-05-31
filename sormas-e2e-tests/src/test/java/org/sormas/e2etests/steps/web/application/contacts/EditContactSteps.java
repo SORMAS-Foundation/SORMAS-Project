@@ -629,7 +629,7 @@ public class EditContactSteps implements En {
         "^I click Yes, for all in conversion to case form$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
-            webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
     When(
         "^I click No in conversion to case form$",
@@ -642,6 +642,7 @@ public class EditContactSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(ALL_CHECKBOX);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_FOR_POPUP_WINDOWS);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
     When(
         "^I check if there are entities assigned to new created case from contact$",
