@@ -790,3 +790,18 @@ Feature: Create events
     Then I click on the Event participant tab
     And I choose Active event participants from combobox in the Event participant tab
     Then I check if participant appears in the event participants list
+
+  @issue=SORDEV-9788 @env_de
+  Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Event Participant directory
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Events button from navbar
+    When I open the last created event via api
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    Then I click on ADD PARTICIPANT button
+    And I click on the person search button in add new event participant form
+    Then I check that National Health ID is not visible in Person search popup
+    And I check that Passport Number is not visible in Person search popup
+    And I check that Nickname is not visible in Person search popup

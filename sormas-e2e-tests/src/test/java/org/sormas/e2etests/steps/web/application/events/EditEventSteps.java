@@ -468,6 +468,12 @@ public class EditEventSteps implements En {
           }
         });
     When(
+        "I click on ADD PARTICIPANT button",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ADD_PARTICIPANT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
+        });
+    When(
         "I add a participant to the event",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
