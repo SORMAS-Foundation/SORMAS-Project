@@ -97,6 +97,7 @@ public class EditContactPage {
       By.cssSelector(".v-verticallayout [location='contactOfficer'] [role='combobox'] div");
   public static final By GENERAL_COMMENT_TEXT = By.id("additionalDetails");
   public static final By SAVE_EDIT_BUTTON = By.id("commit");
+  public static final By DISCARD_POPUP_BUTTON = By.cssSelector(".popupContent #discard");
   public static final By FOLLOW_UP_VISITS = By.id("tab-contacts-visits");
   public static final By CHOOSE_SOURCE_CASE_BUTTON = By.id("contactChooseSourceCase");
   public static final By POPUP_YES_BUTTON = By.id("actionConfirm");
@@ -121,6 +122,7 @@ public class EditContactPage {
       By.xpath(
           "//span[contains(text(), 'Case classification')]/ancestor::div[@class='v-caption']/following-sibling::div");
   public static final By REMOVE_CASE_CTA_LINK = By.id("contactRemoveCase");
+  public static final By LINK_EVENT_BUTTON = By.id("Link event");
   public static final By CASE_CHANGE_POPUP_SUCCESS_MESSAGE =
       By.xpath("//*[contains(text(),'The source case of the contact has been changed')]");
   public static final By CASE_CHANGE_POPUP_SUCCESS_MESSAGE_DE =
@@ -136,6 +138,10 @@ public class EditContactPage {
   public static final By QUARANTINE_ORDER_COMBOBOX =
       By.cssSelector(".popupContent div[role='combobox'] div");
   public static final By CREATE_CASE_FROM_CONTACT_BUTTON = By.id("contactCreateContactCase");
+  public static final By CONVERT_SOME = By.id("convertSome");
+  public static final By ALL_CHECKBOX =
+      By.xpath("//div[@class=\"popupContent\"]//input[@type=\"checkbox\"]");
+  public static final By LINKED_EVENT_INDICATIOR = By.xpath("unlink-event-0");
   public static final By CONTACT_DATA_TITLE = By.cssSelector("[location='contactDataHeadingLoc']");
   public static final By ARCHIVE_CONTACT_BUTTON = By.cssSelector("#archiveDearchive");
   public static final By ARCHIVE_POPUP_WINDOW_HEADER = By.xpath("//div[@class='v-window-header']");
@@ -144,4 +150,11 @@ public class EditContactPage {
   public static final By END_OF_PROCESSING_DATE_POPUP_INPUT = By.cssSelector(".popupContent input");
   public static final By DELETE_CONTACT_REASON_POPUP =
       By.xpath("//div[@class='popupContent']//div[@class='v-filterselect-button']");
+  public static final By ADD_A_PARTICIPANT_HEADER =
+      By.xpath("//*[contains(text(),'Add new event participant')]");
+
+  public static By getByEventIndex(int index) {
+    return By.xpath(
+        String.format("//*[contains(text(),'Pick or create event')]//..//..//../tr[%s]", index));
+  }
 }
