@@ -44,7 +44,6 @@ import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -152,7 +151,7 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 		// For facility users, this checks where the facility is located and considers the district & community of the faciliy the "higher level"
 		// For national users, there is no higher level
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ASSIGN_TASKS_TO_HIGHER_LEVEL)
-			&& UserRole.getJurisdictionLevel(userDto.getUserRoles()) != JurisdictionLevel.NATION) {
+			&& UserProvider.getCurrent().getJurisdictionLevel() != JurisdictionLevel.NATION) {
 
 			List<UserReferenceDto> superordinateUsers = FacadeProvider.getUserFacade().getUsersWithSuperiorJurisdiction(userDto);
 			if (superordinateUsers != null) {

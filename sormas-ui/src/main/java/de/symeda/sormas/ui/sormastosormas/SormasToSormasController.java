@@ -196,7 +196,8 @@ public class SormasToSormasController {
 				VaadinUiUtil.showWarningPopup(ex.getMessage());
 				callback.run();
 			} else {
-				Component messageComponent = buildShareErrorMessage(ex.getHumanMessage(), ex.getErrors());
+				Component messageComponent =
+					buildShareErrorMessage(ex.getHumanMessage() + " " + I18nProperties.getString(Strings.reloadPageToSeeChanges), ex.getErrors());
 				messageComponent.setWidth(100, Sizeable.Unit.PERCENTAGE);
 				VaadinUiUtil.showPopupWindowWithWidth(
 					new VerticalLayout(messageComponent),
@@ -251,10 +252,8 @@ public class SormasToSormasController {
 			Label groupLabel = new Label(e.getHumanMessage() + ":");
 			groupLabel.addStyleName(CssStyles.LABEL_BOLD);
 			Label label = new Label(
-					String
-							.join(", ", e.getMessages().stream().map(ValidationErrorMessage::getHumanMessage).collect(Collectors.toList()).toString()));
-			HorizontalLayout layout = new HorizontalLayout(
-				groupLabel, label);
+				String.join(", ", e.getMessages().stream().map(ValidationErrorMessage::getHumanMessage).collect(Collectors.toList()).toString()));
+			HorizontalLayout layout = new HorizontalLayout(groupLabel, label);
 			label.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
 			layout.setMargin(false);
 

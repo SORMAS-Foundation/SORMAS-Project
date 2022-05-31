@@ -73,3 +73,44 @@ Feature: Sample filter functionality
     And I select "Received" filter from quick filter
     And I select "Referred to other lab" filter from quick filter
     And I click on reset filters button from Sample Directory
+
+  @issue=SORDEV-5982 @env_de
+  Scenario: Check all filters are work properly in Samples directory for DE version
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new sample
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Sample button from navbar
+    Then I fill full name of last created via API Person into Sample Directory
+    And I select Test result filter value with the value for pathogen test result of last created via API Sample in Sample Directory for DE version
+    And I select Specimen condition filter value with value for specimen condition of the last created via API Sample in Sample Directory for De version
+    And I select Case classification filter value with value for case classification of the last created via API Case in Sample Directory for DE version
+    And I set Disease filter to disease value of last created via API Case in Sample Directory
+    And I click on apply filters button from Sample Directory
+    And I check that number of displayed sample results is 1
+    Then I select a Test result value different than the test result of the last created via API Sample Pathogen test result for DE version
+    And I click on apply filters button from Sample Directory
+    And I check that number of displayed sample results is 0
+    And I select Test result filter value with the value for pathogen test result of last created via API Sample in Sample Directory for DE version
+    Then I select "Nicht ausreichend" Specimen condition option among the filter options
+    And I click on apply filters button from Sample Directory
+    And I check that number of displayed sample results is 0
+    And I select Specimen condition filter value with value for specimen condition of the last created via API Sample in Sample Directory for De version
+    Then I select a Case classification value different than the case classification value of last created via API Case in Sample Directory for DE version
+    And I click on apply filters button from Sample Directory
+    And I check that number of displayed sample results is 0
+    And I select Case classification filter value with value for case classification of the last created via API Case in Sample Directory for DE version
+    And I click on apply filters button from Sample Directory
+    And I check that number of displayed sample results is 1
+    And I click on reset filters button from Sample Directory
+    Then I select "Nicht versendet" filter from quick filter for DE version
+    And I select "Versandt" filter from quick filter for DE version
+    And I select "Erhalten" filter from quick filter for DE version
+    And I select "An ein anderes Labor weitergeleitet" filter from quick filter for DE version
+    And I click on reset filters button from Sample Directory

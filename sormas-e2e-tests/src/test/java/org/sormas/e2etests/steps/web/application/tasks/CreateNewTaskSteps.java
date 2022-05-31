@@ -24,6 +24,7 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Task;
@@ -89,6 +90,8 @@ public class CreateNewTaskSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(OBSERVER_USER_INPUT);
           webDriverHelpers.fillAndSubmitInWebElement(OBSERVER_USER_INPUT, user);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          TimeUnit.SECONDS.sleep(1); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
