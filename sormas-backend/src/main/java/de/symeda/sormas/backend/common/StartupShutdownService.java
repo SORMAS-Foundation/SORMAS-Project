@@ -748,6 +748,14 @@ public class StartupShutdownService {
 			case 460:
 				fillDefaultUserRoles();
 				break;
+			case 461:
+				List<User> users = userService.getAll();
+				UserRole importuserUserRole = userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.IMPORT_USER));
+				users.stream().filter(user -> user.getUserRoles().isEmpty()).forEach(user -> {
+					user.getUserRoles().add(importuserUserRole);
+					userService.persist(user);
+				});
+				break;
 
 			default:
 				throw new NoSuchElementException(DataHelper.toStringNullable(versionNeedingUpgrade));
