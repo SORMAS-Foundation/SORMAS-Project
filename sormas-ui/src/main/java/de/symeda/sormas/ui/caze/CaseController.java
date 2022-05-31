@@ -885,6 +885,17 @@ public class CaseController {
 
 		editView.addDiscardListener(() -> caseEditForm.onDiscard());
 
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_FROM_POE) && caze.checkIsUnreferredPortHealthCase()) {
+
+			Button.ClickListener clickListener = clickEvent -> {
+				editView.commit();
+				CaseDataDto caseDto = findCase(caze.getUuid());
+				referFromPointOfEntry(caseDto);
+			};
+
+			editView.getWrappedComponent().addButtonListener(CaseDataForm.CASE_REFER_POINT_OF_ENTRY_BTN_LOC, clickListener);
+		}
+
 		appendSpecialCommands(caze, editView);
 
 		return editView;
@@ -1120,17 +1131,6 @@ public class CaseController {
 					CoreEntityArchiveMessages.CASE,
 					editView,
 					() -> navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null));
-		}
-
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_FROM_POE) && caze.checkIsUnreferredPortHealthCase()) {
-			Button btnReferFromPointOfEntry = ButtonHelper.createButton(Captions.caseReferFromPointOfEntry, e -> {
-				editView.commit();
-				CaseDataDto caseDto = findCase(caze.getUuid());
-				referFromPointOfEntry(caseDto);
-			});
-
-			editView.getButtonsPanel().addComponentAsFirst(btnReferFromPointOfEntry);
-			editView.getButtonsPanel().setComponentAlignment(btnReferFromPointOfEntry, Alignment.BOTTOM_LEFT);
 		}
 	}
 
