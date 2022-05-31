@@ -32,6 +32,7 @@ public abstract class InfrastructureDataReferenceDto extends ReferenceDto implem
 		this.externalId = externalId;
 	}
 
+	// todo shouldn't this be also a list then?
 	public String getExternalId() {
 		return externalId;
 	}

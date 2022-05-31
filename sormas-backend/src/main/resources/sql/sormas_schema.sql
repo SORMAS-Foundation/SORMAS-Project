@@ -11600,4 +11600,20 @@ ALTER TABLE externalmessage_history ADD COLUMN caze_id bigint;
 
 INSERT INTO schema_version (version_number, comment) VALUES (467, '[DEMIS2SORMAS] Introduce processing for physician reports #8980');
 
+-- 2022-06-13 lab organization ids #8949
+ALTER TABLE labmessage ALTER COLUMN labexternalid TYPE VARCHAR(255)[] USING ARRAY[labexternalid];
+ALTER TABLE labmessage_history ALTER COLUMN labexternalid TYPE VARCHAR(255)[] USING ARRAY[labexternalid];
+
+ALTER TABLE labmessage RENAME COLUMN labexternalid TO labexternalids;
+ALTER TABLE labmessage_history RENAME COLUMN labexternalid TO labexternalids;
+
+ALTER TABLE testreport ALTER COLUMN testlabexternalid TYPE VARCHAR(255)[] USING ARRAY[testlabexternalid];
+ALTER TABLE testreport_history ALTER COLUMN testlabexternalid TYPE VARCHAR(255)[] USING ARRAY[testlabexternalid];
+
+ALTER TABLE testreport RENAME COLUMN testlabexternalid TO testlabexternalids;
+ALTER TABLE testreport_history RENAME COLUMN testlabexternalid TO testlabexternalids;
+
+INSERT INTO schema_version (version_number, comment) VALUES (468, 'Compare the list of Organization Ids with facilities in SORMAS #8949');
+
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.externalmessage.labmessage;
 import static org.mockito.Mockito.when;
 
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.junit.Test;
@@ -55,7 +56,7 @@ public class TestReportFacadeEjbMappingTest extends TestCase {
 		source.setUuid("UUID");
 		source.setLabMessage(labMessageReference);
 		source.setTestLabName("Test Lab Name");
-		source.setTestLabExternalId("Test Lab External Id");
+		source.setTestLabExternalIds(Arrays.asList("Test Lab External Id 1", "Test Lab External Id 2"));
 		source.setTestLabPostalCode("38100");
 		source.setTestLabCity("Braunschweig");
 		source.setTestType(PathogenTestType.ANTIBODY_DETECTION);
@@ -72,7 +73,7 @@ public class TestReportFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getUuid(), result.getUuid());
 		assertEquals(source.getLabMessage(), ExternalMessageFacadeEjb.toReferenceDto(result.getLabMessage()));
 		assertEquals(source.getTestLabName(), result.getTestLabName());
-		assertEquals(source.getTestLabExternalId(), result.getTestLabExternalId());
+		assertEquals(source.getTestLabExternalIds(), result.getTestLabExternalIds());
 		assertEquals(source.getTestLabPostalCode(), result.getTestLabPostalCode());
 		assertEquals(source.getTestLabCity(), result.getTestLabCity());
 		assertEquals(source.getTestType(), result.getTestType());
@@ -97,7 +98,7 @@ public class TestReportFacadeEjbMappingTest extends TestCase {
 		source.setUuid("UUID");
 		source.setLabMessage(externalMessage);
 		source.setTestLabName("Test Lab Name");
-		source.setTestLabExternalId("Test Lab External Id");
+		source.setTestLabExternalIds(Arrays.asList("Test Lab External Id 1", "Test Lab External Id 2"));
 		source.setTestLabPostalCode("38100");
 		source.setTestLabCity("Braunschweig");
 		source.setTestType(PathogenTestType.ANTIBODY_DETECTION);
@@ -114,7 +115,7 @@ public class TestReportFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getUuid(), result.getUuid());
 		assertEquals(ExternalMessageFacadeEjb.toReferenceDto(source.getLabMessage()), result.getLabMessage());
 		assertEquals(source.getTestLabName(), result.getTestLabName());
-		assertEquals(source.getTestLabExternalId(), result.getTestLabExternalId());
+		assertEquals(source.getTestLabExternalIds(), result.getTestLabExternalIds());
 		assertEquals(source.getTestLabPostalCode(), result.getTestLabPostalCode());
 		assertEquals(source.getTestLabCity(), result.getTestLabCity());
 		assertEquals(source.getTestType(), result.getTestType());

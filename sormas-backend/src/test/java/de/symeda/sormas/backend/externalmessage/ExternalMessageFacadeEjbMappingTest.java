@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.junit.Test;
@@ -75,7 +76,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		source.setSampleMaterial(SampleMaterial.NASAL_SWAB);
 		source.setSampleMaterialText("Sample material text");
 		source.setReporterName("Test Lab Name");
-		source.setLabExternalId("Test Lab External Id");
+		source.setLabExternalIds(Arrays.asList("Test Lab External Id 1", "Test Lab External Id 2"));
 		source.setReporterPostalCode("Test Lab Postal Code");
 		source.setReporterCity("Test Lab City");
 		source.setSpecimenCondition(SpecimenCondition.ADEQUATE);
@@ -112,7 +113,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getSampleMaterial(), result.getSampleMaterial());
 		assertEquals(source.getSampleMaterialText(), result.getSampleMaterialText());
 		assertEquals(source.getReporterName(), result.getReporterName());
-		assertEquals(source.getLabExternalId(), result.getLabExternalId());
+		assertEquals(source.getLabExternalIds(), result.getLabExternalIds());
 		assertEquals(source.getReporterPostalCode(), result.getReporterPostalCode());
 		assertEquals(source.getReporterCity(), result.getReporterCity());
 		assertEquals(source.getSpecimenCondition(), result.getSpecimenCondition());
@@ -164,7 +165,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		source.setSampleMaterial(SampleMaterial.NASAL_SWAB);
 		source.setSampleMaterialText("Sample material text");
 		source.setReporterName("Test Lab Name");
-		source.setLabExternalId("Test Lab External Id");
+		source.setLabExternalIds(Arrays.asList("Test Lab External Id 1", "Test Lab External Id 2"));
 		source.setReporterPostalCode("Test Lab Postal Code");
 		source.setReporterCity("Test Lab City");
 		source.setSpecimenCondition(SpecimenCondition.ADEQUATE);
@@ -202,7 +203,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getSampleMaterial(), result.getSampleMaterial());
 		assertEquals(source.getSampleMaterialText(), result.getSampleMaterialText());
 		assertEquals(source.getReporterName(), result.getReporterName());
-		assertEquals(source.getLabExternalId(), result.getLabExternalId());
+		assertEquals(source.getLabExternalIds(), result.getLabExternalIds());
 		assertEquals(source.getReporterPostalCode(), result.getReporterPostalCode());
 		assertEquals(source.getReporterCity(), result.getReporterCity());
 		assertEquals(source.getSpecimenCondition(), result.getSpecimenCondition());

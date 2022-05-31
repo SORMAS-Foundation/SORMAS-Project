@@ -18,6 +18,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+
+import com.vladmihalcea.hibernate.type.array.ListArrayType;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
@@ -34,6 +39,7 @@ import de.symeda.sormas.backend.user.User;
 
 @Entity(name = ExternalMessage.TABLE_NAME)
 @Audited
+@TypeDef(name = "list-array", typeClass = ListArrayType.class)
 public class ExternalMessage extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "externalmessage";
@@ -48,7 +54,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String SAMPLE_MATERIAL_TEXT = "sampleMaterialText";
 	public static final String SPECIMEN_CONDITION = "specimenCondition";
 	public static final String REPORTER_NAME = "reporterName";
-	public static final String LAB_EXTERNAL_ID = "labExternalId";
+	public static final String LAB_EXTERNAL_IDS = "labExternalIds";
 	public static final String REPORTER_POSTAL_CODE = "reporterPostalCode";
 	public static final String REPORTER_CITY = "reporterCity";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
@@ -81,7 +87,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	private SpecimenCondition specimenCondition;
 
 	private String reporterName;
-	private String labExternalId;
+	private List<String> labExternalIds;
 	private String reporterPostalCode;
 	private String reporterCity;
 
@@ -199,13 +205,17 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.reporterName = labName;
 	}
 
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
-	public String getLabExternalId() {
-		return labExternalId;
+	@Type(type = "list-array")
+	@Column(
+			name = "labexternalids",
+			columnDefinition = "VARCHAR(255) ARRAY"
+	)
+	public List<String> getLabExternalIds() {
+		return labExternalIds;
 	}
 
-	public void setLabExternalId(String labExternalId) {
-		this.labExternalId = labExternalId;
+	public void setLabExternalIds(List<String> labExternalIds) {
+		this.labExternalIds = labExternalIds;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)

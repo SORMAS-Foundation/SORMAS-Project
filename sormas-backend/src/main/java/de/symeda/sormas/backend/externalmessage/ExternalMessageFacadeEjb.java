@@ -138,7 +138,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonPhone(source.getPersonPhone());
 		target.setPersonEmail(source.getPersonEmail());
 		target.setReporterCity(source.getReporterCity());
-		target.setLabExternalId(source.getLabExternalId());
+		target.setLabExternalIds(source.getLabExternalIds());
 		target.setReporterName(source.getReporterName());
 		target.setReporterPostalCode(source.getReporterPostalCode());
 		if (source.getTestReports() != null) {
@@ -203,7 +203,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonPhone(source.getPersonPhone());
 		target.setPersonEmail(source.getPersonEmail());
 		target.setReporterCity(source.getReporterCity());
-		target.setLabExternalId(source.getLabExternalId());
+		target.setLabExternalIds(source.getLabExternalIds());
 		target.setReporterName(source.getReporterName());
 		target.setReporterPostalCode(source.getReporterPostalCode());
 		target.setStatus(source.getStatus());
@@ -213,7 +213,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setSampleReceivedDate(source.getSampleReceivedDate());
 		target.setSpecimenCondition(source.getSpecimenCondition());
 		if (source.getTestReports() != null) {
-			target.setTestReports(source.getTestReports().stream().map(t -> TestReportFacadeEjb.toDto(t)).collect(toList()));
+			target.setTestReports(source.getTestReports().stream().map(TestReportFacadeEjb::toDto).collect(toList()));
 		}
 		target.setReportId(source.getReportId());
 		target.setSampleOverallTestResult(source.getSampleOverallTestResult());

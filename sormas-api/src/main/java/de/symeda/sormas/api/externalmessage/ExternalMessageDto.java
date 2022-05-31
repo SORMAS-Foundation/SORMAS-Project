@@ -76,8 +76,8 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String reporterName;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
-	private String labExternalId;
+
+	private List<String> labExternalIds;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String reporterPostalCode;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
@@ -201,12 +201,12 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.reporterName = reporterName;
 	}
 
-	public String getLabExternalId() {
-		return labExternalId;
+	public List<String> getLabExternalIds() {
+		return labExternalIds;
 	}
 
-	public void setLabExternalId(String labExternalId) {
-		this.labExternalId = labExternalId;
+	public void setLabExternalIds(List<String> labExternalIds) {
+		this.labExternalIds = labExternalIds;
 	}
 
 	public String getReporterPostalCode() {
