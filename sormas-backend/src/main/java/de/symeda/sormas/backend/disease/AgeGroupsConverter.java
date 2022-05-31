@@ -15,8 +15,8 @@
 
 package de.symeda.sormas.backend.disease;
 
-import static de.symeda.sormas.api.disease.AgeGroupUtils.convertToList;
-import static de.symeda.sormas.api.disease.AgeGroupUtils.convertToString;
+import static de.symeda.sormas.api.utils.AgeGroupUtils.convertToList;
+import static de.symeda.sormas.api.utils.AgeGroupUtils.convertToString;
 
 import java.util.List;
 

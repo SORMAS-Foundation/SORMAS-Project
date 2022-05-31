@@ -4,7 +4,7 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.disease.AgeGroupUtils;
+import de.symeda.sormas.api.utils.AgeGroupUtils;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregatedCaseCountDto;

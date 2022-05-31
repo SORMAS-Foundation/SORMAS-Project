@@ -14,8 +14,9 @@
  *
  */
 
-package de.symeda.sormas.api.disease;
+package de.symeda.sormas.api.utils;
 
+import de.symeda.sormas.api.utils.AgeGroupUtils;
 import org.junit.Assert;
 import org.junit.Test;
 

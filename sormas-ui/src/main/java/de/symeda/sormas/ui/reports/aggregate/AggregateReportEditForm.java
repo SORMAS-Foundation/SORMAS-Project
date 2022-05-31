@@ -5,7 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.TextField;
 
-import de.symeda.sormas.api.disease.AgeGroupUtils;
+import de.symeda.sormas.api.utils.AgeGroupUtils;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
