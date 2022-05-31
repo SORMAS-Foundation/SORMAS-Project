@@ -408,7 +408,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 
 		for (PathogenTestDto pathogenTest : pathogenTestsToAdd) {
 			PathogenTestForm pathogenTestCreateComponent =
-				sampleController.addPathogenTestComponent(sampleCreateComponent, pathogenTest, caseSampleCount);
+				sampleController.addPathogenTestComponent(sampleCreateComponent, pathogenTest, caseSampleCount, true);
 			sampleController.setViaLimsFieldChecked(pathogenTestCreateComponent);
 		}
 	}

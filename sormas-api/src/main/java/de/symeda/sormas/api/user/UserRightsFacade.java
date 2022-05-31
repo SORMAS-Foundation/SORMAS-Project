@@ -22,5 +22,5 @@ import javax.ejb.Remote;
 @Remote
 public interface UserRightsFacade {
 
-	String generateUserRightsDocument(boolean withDbOverrides) throws IOException;
+	String generateUserRightsDocument() throws IOException;
 }

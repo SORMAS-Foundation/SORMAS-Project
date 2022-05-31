@@ -583,7 +583,7 @@ Feature: Create events
     And I open the last created Person via API
     And I check that SEE EVENTS FOR THIS PERSON button appears on Edit Person page
 
-  @env_main @#8555
+  @env_main @#8555 @ignore
   Scenario: Add back a person to an event who was previously deleted as event participant
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -713,6 +713,21 @@ Feature: Create events
     And I click on Show more filters in Events
     And I check that Responsible User Info icon is visible on Event Directory Page
     And I check the displayed message is correct after hover to Responsible User Info icon
+
+  @env_main @issue=SORDEV-7460
+  Scenario: Test Extend the exposure and event startDate and endDate to include a startTime and endTime
+    Given I log in with National User
+    Then I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    Then I check Multi-day event checkbox and I pick Start date and End date on Create New Event Page
+    And I fill event Title field on Create New Event Page
+    And I click on save button on Create New Event Page
+    Then I navigate to EVENT from edit event page
+    And I collect the UUID displayed on Create New Event Page
+    And I collect the Date of Event from Create New Event Page
+    Then I navigate to EVENTS LIST from edit event page
+    And  I search for the last event uuid created by UI
+    Then I check that Date of EVENT displays event start date and event end date in table on event directory
 
   @issue=SORDEV-8667 @env_main
   Scenario: Test Adjustments to the jurisdiction definition process of event participants

@@ -104,6 +104,12 @@ public class ImmunizationResource extends EntityDtoResource {
 	}
 
 	@GET
+	@Path("/obsolete/{since}")
+	public List<String> getObsoleteUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getImmunizationFacade().getObsoleteUuidsSince(new Date(since));
+	}
+
+	@GET
 	@Path("/{uuid}")
 	public ImmunizationDto getByUuid(@PathParam("uuid") String uuid) {
 		return FacadeProvider.getImmunizationFacade().getByUuid(uuid);
@@ -122,7 +128,8 @@ public class ImmunizationResource extends EntityDtoResource {
 	@POST
 	@Path("/delete")
 	public List<String> delete(List<String> uuids) {
-		return FacadeProvider.getImmunizationFacade().deleteImmunizations(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, null));
+		return FacadeProvider.getImmunizationFacade()
+			.deleteImmunizations(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
 	}
 
 	@POST

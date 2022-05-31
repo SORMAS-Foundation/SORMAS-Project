@@ -72,8 +72,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.common.DeletionDetails;
-import de.symeda.sormas.api.common.DeletionReason;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -129,6 +127,8 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -327,7 +327,8 @@ import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserReference;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb;
+import de.symeda.sormas.backend.user.UserRoleFacadeEjb;
+import de.symeda.sormas.backend.user.UserRoleService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -438,7 +439,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
-	private UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	private UserRoleFacadeEjb.UserRoleFacadeEjbLocal userRoleFacade;
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 	@EJB
@@ -475,6 +476,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private VaccinationService vaccinationService;
 	@EJB
 	private CaseService caseService;
+	@EJB
+	private UserRoleService userRoleService;
 
 	@Resource
 	private ManagedScheduledExecutorService executorService;
@@ -698,7 +701,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@RolesAllowed({
-		UserRight._CASE_EDIT})
+		UserRight._CASE_EDIT })
 	public CaseDataDto postUpdate(String uuid, JsonNode caseDataDtoJson) {
 		CaseDataDto existingCaseDto = getCaseDataWithoutPseudonyimization(uuid);
 		PatchHelper.postUpdate(caseDataDtoJson, existingCaseDto);
@@ -739,7 +742,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			cb.and(
 				cb.equal(resultingCase.get(Case.ID), caseRoot.get(Case.ID)),
 				cb.isFalse(event.get(Event.DELETED)),
-				cb.isFalse(event.get(Event.ARCHIVED)),
 				cb.isFalse(eventCountRoot.get(EventParticipant.DELETED))));
 		eventCountSq.select(cb.countDistinct(event.get(Event.ID)));
 
@@ -1199,14 +1201,16 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 						UserReference user = caseUsers.get(exportDto.getReportingUserId());
 
 						exportDto.setReportingUserName(user.getName());
-						exportDto.setReportingUserRoles(user.getUserRoles());
+						exportDto.setReportingUserRoles(
+							user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toReferenceDto(userRole)).collect(Collectors.toSet()));
 					}
 
 					if (exportDto.getFollowUpStatusChangeUserId() != null) {
 						UserReference user = caseUsers.get(exportDto.getFollowUpStatusChangeUserId());
 
 						exportDto.setFollowUpStatusChangeUserName(user.getName());
-						exportDto.setFollowUpStatusChangeUserRoles(user.getUserRoles());
+						exportDto.setFollowUpStatusChangeUserRoles(
+							user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toReferenceDto(userRole)).collect(Collectors.toSet()));
 					}
 				}
 
@@ -1254,7 +1258,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Root<ClinicalVisit> clinicalVisitRoot = clinicalVisitCountSq.from(ClinicalVisit.class);
 		Join<ClinicalVisit, ClinicalCourse> clinicalVisitClinicalCourseJoin = clinicalVisitRoot.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
 		clinicalVisitCountSq.where(
-				cb.and(cb.equal(clinicalVisitClinicalCourseJoin.get(ClinicalCourse.ID), caseRoot.get(Case.CLINICAL_COURSE).get(ClinicalCourse.ID))));
+			cb.and(cb.equal(clinicalVisitClinicalCourseJoin.get(ClinicalCourse.ID), caseRoot.get(Case.CLINICAL_COURSE).get(ClinicalCourse.ID))));
 		clinicalVisitCountSq.select(cb.countDistinct(clinicalVisitRoot.get(ClinicalVisit.ID)));
 		return clinicalVisitCountSq;
 	}
@@ -1580,6 +1584,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return caseSave(dto, handleChanges, existingCase, toDto(existingCase), checkChangeDate, internal);
 	}
 
+	@RolesAllowed({ UserRight._CASE_EDIT })
+	public CaseDataDto updateFollowUpComment(@Valid @NotNull CaseDataDto dto) throws ValidationRuntimeException {
+		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
+		Case caze = service.getByUuid(dto.getUuid());
+		caze.setFollowUpComment(dto.getFollowUpComment());
+		service.ensurePersisted(caze);
+		return convertToDto(caze, pseudonymizer);
+	}
+
 	private CaseDataDto caseSave(
 		@Valid CaseDataDto dto,
 		boolean handleChanges,
@@ -1663,10 +1676,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			final Contact contact = contactService.getByUuid(sourceContact.getUuid());
 			final Case caze = service.getByUuid(cazeRef.getUuid());
 			contact.getSamples().forEach(sample -> {
-				if (sample.getAssociatedCase() == null) {
-					sample.setAssociatedCase(caze);
-				} else {
-					sampleFacade.cloneSampleForCase(sample, caze);
+				if (!sample.isDeleted()) {
+					if (sample.getAssociatedCase() == null) {
+						sample.setAssociatedCase(caze);
+					} else {
+						sampleFacade.cloneSampleForCase(sample, caze);
+					}
 				}
 			});
 
@@ -2068,7 +2083,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 						newCase.setClassificationDate(new Date());
 					}
 				}
+			} else if (newCase.getCaseClassification() != existingCase.getCaseClassification()) {
+				newCase.setClassificationUser(userService.getCurrentUser());
+				newCase.setClassificationDate(new Date());
 			}
+		} else if (newCase.getCaseClassification() != existingCase.getCaseClassification()) {
+			newCase.setClassificationUser(userService.getCurrentUser());
+			newCase.setClassificationDate(new Date());
 		}
 
 		// calculate reference definition for cases
@@ -2220,7 +2241,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT)) {
 			District reportingUserDistrict = caze.getReportingUser().getDistrict();
 
-			if (userRoleConfigFacade.hasUserRight(caze.getReportingUser().getUserRoles(), UserRight.CASE_RESPONSIBLE)
+			if (userRoleService.hasUserRight(caze.getReportingUser().getUserRoles(), UserRight.CASE_RESPONSIBLE)
 				&& (reportingUserDistrict == null
 					|| reportingUserDistrict.equals(caze.getResponsibleDistrict())
 					|| reportingUserDistrict.equals(caze.getDistrict()))) {
@@ -2474,7 +2495,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@RolesAllowed(UserRight._CASE_DELETE)
 	@Override
-	public List<String> deleteCases(List<String> caseUuids) {
+	public List<String> deleteCases(List<String> caseUuids, DeletionDetails deletionDetails) {
 
 		List<String> deletedCasesUuids = new ArrayList<>();
 		List<Case> casesToBeDeleted = service.getByUuids(caseUuids);
@@ -2482,7 +2503,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			casesToBeDeleted.forEach(caseToBeDeleted -> {
 				if (!caseToBeDeleted.isDeleted()) {
 					try {
-						deleteCase(caseToBeDeleted, null);
+						deleteCase(caseToBeDeleted, deletionDetails);
 						deletedCasesUuids.add(caseToBeDeleted.getUuid());
 					} catch (ExternalSurveillanceToolException e) {
 						logger.error("The case with uuid:" + caseToBeDeleted.getUuid() + "could not be deleted");
@@ -2550,8 +2571,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RolesAllowed({
-			UserRight._CASE_CREATE,
-			UserRight._CASE_EDIT })
+		UserRight._CASE_CREATE,
+		UserRight._CASE_EDIT })
 	public void setResultingCase(EventParticipantReferenceDto eventParticipantReferenceDto, CaseReferenceDto caseReferenceDto) {
 		final EventParticipant eventParticipant = eventParticipantService.getByUuid(eventParticipantReferenceDto.getUuid());
 		if (eventParticipant != null) {
@@ -3217,8 +3238,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 
 		if (assignee == null) {
-			if (caze.getReportingUser() != null
-				&& (userRoleConfigFacade.hasUserRight(caze.getReportingUser().getUserRoles(), UserRight.TASK_ASSIGN))) {
+			if (caze.getReportingUser() != null && (userRoleService.hasUserRight(caze.getReportingUser().getUserRoles(), UserRight.TASK_ASSIGN))) {
 				// 4) If the case was created by a surveillance supervisor, assign them
 				assignee = caze.getReportingUser();
 			} else {

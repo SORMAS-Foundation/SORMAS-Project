@@ -24,13 +24,15 @@ import lombok.SneakyThrows;
 
 @Getter
 public enum SpecimenConditions {
-  ADEQUATE("Adequate"),
-  NOT_ADEQUATE("Not adequate");
+  ADEQUATE("Adequate", "Ausreichend"),
+  NOT_ADEQUATE("Not adequate", "Nicht ausreichend");
 
   private final String condition;
+  private final String conditionDE;
 
-  SpecimenConditions(String aSpecimen) {
+  SpecimenConditions(String aSpecimen, String aSpecimenDE) {
     condition = aSpecimen;
+    conditionDE = aSpecimenDE;
   }
 
   @SneakyThrows

@@ -24,16 +24,18 @@ import lombok.SneakyThrows;
 
 @Getter
 public enum PathogenTestResults {
-  INDETERMINATE("Indeterminate"),
-  PENDING("Pending"),
-  NEGATIVE("Negative"),
-  POSITIVE("Positive"),
-  NOT_DONE("Not done");
+  INDETERMINATE("Indeterminate", "Unbestimmt"),
+  PENDING("Pending", "Ausstehend"),
+  NEGATIVE("Negative", "Negativ"),
+  POSITIVE("Positive", "Positiv"),
+  NOT_DONE("Not done", "Nicht durchgef\u00FChrt");
 
   private final String pathogenResults;
+  private final String pathogenResultsDE;
 
-  PathogenTestResults(String vPathogen) {
+  PathogenTestResults(String vPathogen, String vPathogenDE) {
     pathogenResults = vPathogen;
+    pathogenResultsDE = vPathogenDE;
   }
 
   public static String getRandomResult() {
@@ -53,6 +55,16 @@ public enum PathogenTestResults {
     for (PathogenTestResults value : pathogenTestResults) {
       if (!value.getPathogenResults().equalsIgnoreCase(excludedOption))
         return value.getPathogenResults();
+    }
+    throw new Exception("Unable to provide option different than: " + excludedOption);
+  }
+
+  @SneakyThrows
+  public static String geRandomResultNameDifferentThanDE(String excludedOption) {
+    PathogenTestResults[] pathogenTestResults = PathogenTestResults.values();
+    for (PathogenTestResults value : pathogenTestResults) {
+      if (!value.getPathogenResults().equalsIgnoreCase(excludedOption))
+        return value.getPathogenResultsDE();
     }
     throw new Exception("Unable to provide option different than: " + excludedOption);
   }

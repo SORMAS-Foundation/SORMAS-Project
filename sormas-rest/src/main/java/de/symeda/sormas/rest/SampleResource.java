@@ -54,7 +54,10 @@ public class SampleResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
-	public List<SampleDto> getAllSamples(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+	public List<SampleDto> getAllSamples(
+		@PathParam("since") long since,
+		@PathParam("size") int size,
+		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
 		return FacadeProvider.getSampleFacade().getAllActiveSamplesAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
@@ -97,6 +100,12 @@ public class SampleResource extends EntityDtoResource {
 		return FacadeProvider.getSampleFacade().getDeletedUuidsSince(new Date(since));
 	}
 
+	@GET
+	@Path("/obsolete/{since}")
+	public List<String> getObsoleteUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getSampleFacade().getObsoleteUuidsSince(new Date(since));
+	}
+
 	@POST
 	@Path("/indexList")
 	public Page<SampleIndexDto> getIndexList(
@@ -110,7 +119,7 @@ public class SampleResource extends EntityDtoResource {
 	@POST
 	@Path("/delete")
 	public List<String> delete(List<String> uuids) {
-		return FacadeProvider.getSampleFacade().deleteSamples(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, null));
+		return FacadeProvider.getSampleFacade().deleteSamples(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
 	}
 
 }

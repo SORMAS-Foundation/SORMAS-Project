@@ -138,7 +138,7 @@ public class TherapyController {
 				new Label(I18nProperties.getString(Strings.confirmationDeletePrescriptionWithTreatment)),
 				I18nProperties.getCaption(Captions.prescriptionAlone),
 				I18nProperties.getCaption(Captions.prescriptionWithTreatment),
-				null,
+				650,
 				resultConsumer,
 				true);
 	}

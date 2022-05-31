@@ -2,7 +2,6 @@ package de.symeda.sormas.ui.travelentry;
 
 import java.util.Collection;
 
-import de.symeda.sormas.api.common.DeletionReason;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -13,6 +12,7 @@ import com.vaadin.ui.UI;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -165,7 +165,7 @@ public class TravelEntryController {
 			editComponent.addDeleteWithReasonListener((deleteDetails) -> {
 				FacadeProvider.getTravelEntryFacade().delete(travelEntry.getUuid(), deleteDetails);
 				UI.getCurrent().getNavigator().navigateTo(TravelEntriesView.VIEW_NAME);
-			}, I18nProperties.getString(Strings.entityTravel));
+			}, I18nProperties.getString(Strings.entityTravelEntry));
 		}
 
 		// Initialize 'Archive' button

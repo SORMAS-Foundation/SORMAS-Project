@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -48,11 +47,9 @@ import de.symeda.sormas.api.user.NotificationProtocol;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -70,7 +67,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class UserService extends AdoServiceWithUserFilter<User> {
 
 	@EJB
-	private UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	private UserRoleFacadeEjb.UserRoleFacadeEjbLocal userRoleFacade;
 
 	public UserService() {
 		super(User.class);
@@ -113,7 +110,8 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	public List<User> getAllByRegionsAndNotificationTypes(
 		List<Region> regions,
 		NotificationProtocol notificationProtocol,
-		Collection<NotificationType> notificationTypes) {
+		Collection<NotificationType> notificationTypes,
+		boolean fetchNotificationTypes) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
@@ -121,11 +119,18 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 
 		Predicate filter = from.get(User.REGION).in(regions);
 		if (!notificationTypes.isEmpty()) {
-			// TODO #4461 replace with direct join to notification types
-			UserRole[] userRoles = UserRole.getWithNotificationTypes(notificationProtocol, notificationTypes);
-			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
-			Predicate rolesFilter = joinRoles.in(userRoles);
-			filter = CriteriaBuilderHelper.and(cb, filter, rolesFilter);
+			Join<User, UserRole> rolesJoin = from.join(User.USER_ROLES, JoinType.LEFT);
+			Join<UserRole, NotificationType> notificationsJoin = rolesJoin.join(
+				NotificationProtocol.EMAIL.equals(notificationProtocol) ? UserRole.EMAIL_NOTIFICATIONS : UserRole.SMS_NOTIFICATIONS,
+				JoinType.LEFT);
+			Predicate notificationsFilter = notificationsJoin.in(notificationTypes);
+			filter = CriteriaBuilderHelper.and(cb, filter, notificationsFilter);
+		}
+		if (fetchNotificationTypes) {
+			from.fetch(User.USER_ROLES, JoinType.LEFT)
+				.fetch(
+					NotificationProtocol.EMAIL.equals(notificationProtocol) ? UserRole.EMAIL_NOTIFICATIONS : UserRole.SMS_NOTIFICATIONS,
+					JoinType.LEFT);
 		}
 		cq.where(CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from)));
 
@@ -493,18 +498,20 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(User.ACTIVE), userCriteria.getActive()));
 		}
 		if (userCriteria.getUserRole() != null) {
-			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
-			filter = CriteriaBuilderHelper.and(cb, filter, joinRoles.in(Collections.singletonList(userCriteria.getUserRole())));
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.equal(from.join(User.USER_ROLES, JoinType.LEFT).get(AbstractDomainObject.UUID), userCriteria.getUserRole().getUuid()));
 		}
 		if (userCriteria.getRegion() != null) {
 			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.equal(from.join(Case.REGION, JoinType.LEFT).get(AbstractDomainObject.UUID), userCriteria.getRegion().getUuid()));
+				.and(cb, filter, cb.equal(from.join(User.REGION, JoinType.LEFT).get(AbstractDomainObject.UUID), userCriteria.getRegion().getUuid()));
 		}
 		if (userCriteria.getDistrict() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.equal(from.join(Case.DISTRICT, JoinType.LEFT).get(AbstractDomainObject.UUID), userCriteria.getDistrict().getUuid()));
+				cb.equal(from.join(User.DISTRICT, JoinType.LEFT).get(AbstractDomainObject.UUID), userCriteria.getDistrict().getUuid()));
 		}
 		if (userCriteria.getFreeText() != null) {
 			String[] textFilters = userCriteria.getFreeText().split("\\s+");
@@ -564,12 +571,9 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	public Predicate buildUserRightsFilter(Root<User> from, Collection<UserRight> userRights) {
 
 		if (userRights != null && !userRights.isEmpty()) {
-			// TODO #4461: Replace by joinging rights of roles
-			Set<UserRole> userRoles = userRoleConfigFacade.getEffectiveUserRoles(userRights);
-			if (!userRoles.isEmpty()) {
-				Join<User, UserRole> rolesJoin = from.join(User.USER_ROLES, JoinType.LEFT);
-				return rolesJoin.in(Collections.singletonList(userRoles));
-			}
+			Join<User, UserRole> rolesJoin = from.join(User.USER_ROLES, JoinType.LEFT);
+			Join<UserRole, UserRight> rightsJoin = rolesJoin.join(UserRole.USER_RIGHTS, JoinType.LEFT);
+			return rightsJoin.in(Collections.singletonList(userRights));
 		}
 
 		return null;
@@ -660,13 +664,8 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	public boolean hasRole(UserRole userRoleName) {
-		return getCurrentUser().getUserRoles().contains(userRoleName);
-	}
-
-	public boolean hasRight(UserRight right) {
-		User currentUser = getCurrentUser();
-		return userRoleConfigFacade.getEffectiveUserRights(currentUser.getUserRoles().toArray(new UserRole[0])).contains(right);
+	public boolean hasRole(UserRole userRole) {
+		return getCurrentUser().getUserRoles().contains(userRole);
 	}
 
 	public boolean hasRegion(RegionReferenceDto regionReference) {
@@ -675,6 +674,20 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			return false;
 		}
 		return currentUser.getRegion().getUuid().equals(regionReference.getUuid());
+	}
+
+	/**
+	 * Make sure lazy loaded roles are loaded
+	 */
+	public User loadRoles(User user) {
+		if (!em.contains(user)) {
+			user = em.merge(user);
+		}
+		for (UserRole userRole : user.getUserRoles()) {
+			userRole.getEmailNotificationTypes().size();
+			userRole.getSmsNotificationTypes().size();
+		}
+		return user;
 	}
 
 	/**
