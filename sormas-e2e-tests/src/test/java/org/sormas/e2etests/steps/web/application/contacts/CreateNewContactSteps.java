@@ -106,9 +106,10 @@ public class CreateNewContactSteps implements En {
           selectResponsibleDistrict(duplicatedContact.getResponsibleDistrict());
           selectResponsibleCommunity(duplicatedContact.getResponsibleCommunity());
           selectTypeOfContact(duplicatedContact.getTypeOfContact());
-          fillAdditionalInformationOnTheTypeOfContact(
-              duplicatedContact.getAdditionalInformationOnContactType());
-          selectContactCategory(duplicatedContact.getContactCategory().toUpperCase());
+          // field no longer available
+          //          fillAdditionalInformationOnTheTypeOfContact(
+          //              duplicatedContact.getAdditionalInformationOnContactType());
+          //          selectContactCategory(duplicatedContact.getContactCategory().toUpperCase());
           fillRelationshipWithCase(duplicatedContact.getRelationshipWithCase());
           fillDescriptionOfHowContactTookPlace(
               duplicatedContact.getDescriptionOfHowContactTookPlace());
@@ -191,9 +192,9 @@ public class CreateNewContactSteps implements En {
           selectResponsibleDistrict(contact.getResponsibleDistrict());
           selectResponsibleCommunity(contact.getResponsibleCommunity());
           selectTypeOfContact(contact.getTypeOfContact());
-          fillAdditionalInformationOnTheTypeOfContact(
-              contact.getAdditionalInformationOnContactType());
-          selectContactCategory(contact.getContactCategory().toUpperCase());
+          //          fillAdditionalInformationOnTheTypeOfContact(
+          //              contact.getAdditionalInformationOnContactType());
+          //          selectContactCategory(contact.getContactCategory().toUpperCase());
           fillRelationshipWithCase(contact.getRelationshipWithCase());
           fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
         });
@@ -212,9 +213,11 @@ public class CreateNewContactSteps implements En {
           selectResponsibleDistrict(contact.getResponsibleDistrict());
           selectResponsibleCommunity(contact.getResponsibleCommunity());
           selectTypeOfContact(contact.getTypeOfContact());
-          fillAdditionalInformationOnTheTypeOfContact(
-              contact.getAdditionalInformationOnContactType());
-          selectContactCategory(contact.getContactCategory().toUpperCase());
+          // field no longer available
+          //          fillAdditionalInformationOnTheTypeOfContact(
+          //              contact.getAdditionalInformationOnContactType());
+          // field no longer available
+          // selectContactCategory(contact.getContactCategory().toUpperCase());
           fillRelationshipWithCase(contact.getRelationshipWithCase());
           fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
         });
@@ -238,9 +241,11 @@ public class CreateNewContactSteps implements En {
           selectResponsibleDistrict(contact.getResponsibleDistrict());
           selectResponsibleCommunity(contact.getResponsibleCommunity());
           selectTypeOfContact(contact.getTypeOfContact());
-          fillAdditionalInformationOnTheTypeOfContact(
-              contact.getAdditionalInformationOnContactType());
-          selectContactCategory(contact.getContactCategory().toUpperCase());
+          // field no longer available
+          //          fillAdditionalInformationOnTheTypeOfContact(
+          //              contact.getAdditionalInformationOnContactType());
+          // field no longer available
+          //  selectContactCategory(contact.getContactCategory().toUpperCase());
           fillRelationshipWithCase(contact.getRelationshipWithCase());
           fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
         });

@@ -44,7 +44,7 @@ public class CustomizableGrid extends Grid {
 
 	@Override
 	public void setColumns(Object... propertyIds) {
-		throw new UnsupportedOperationException("This method should not be used! Please use setColumns of SormasGrid!");
+		throw new UnsupportedOperationException("This method should not be used! Please use setColumns of CustomizableGrid!");
 	}
 
 	public static class CustomizableGridColumn {

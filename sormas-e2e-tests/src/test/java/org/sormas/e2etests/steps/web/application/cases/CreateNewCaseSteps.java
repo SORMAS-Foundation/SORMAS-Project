@@ -42,6 +42,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_DETAILED_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_CASE_LABEL_DE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_PERSON_LABEL_DE;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.SEARCH_PERSON_BY_FREE_TEXT;
@@ -109,6 +110,7 @@ public class CreateNewCaseSteps implements En {
             faker.number().numberBetween(1, 27));
     UUID randomUUID_first_user = UUID.randomUUID();
     UUID randomUUID_second_user = UUID.randomUUID();
+    List<String> casesUUID = new ArrayList<>();
     oneCase = caseService.buildGeneratedCaseForOnePerson(firstName, lastName, dateOfBirth);
     oneCase = oneCase.toBuilder().disease("COVID-19").build();
 
@@ -135,7 +137,9 @@ public class CreateNewCaseSteps implements En {
           LocalDate date = LocalDate.now().minusMonths(1);
           caze = caseService.buildGeneratedCaseForOnePerson(firstName, lastName, dateOfBirth);
           selectCaseOrigin(caze.getCaseOrigin());
-          fillExternalId(randomUUID_first_user.toString());
+          // field that is no longer available
+          // fillExternalId(randomUUID_first_user.toString());
+          fillEpidNumber(randomUUID_first_user.toString());
           fillDisease(caze.getDisease());
           selectResponsibleRegion(caze.getResponsibleRegion());
           selectResponsibleDistrict(caze.getResponsibleDistrict());
@@ -159,7 +163,9 @@ public class CreateNewCaseSteps implements En {
           LocalDate date = LocalDate.now();
           caze = caseService.buildGeneratedCaseForOnePerson(firstName, lastName, dateOfBirth);
           selectCaseOrigin(caze.getCaseOrigin());
-          fillExternalId(randomUUID_second_user.toString());
+          // field that is no longer available
+          // fillExternalId(randomUUID_second_user.toString());
+          fillEpidNumber(randomUUID_second_user.toString());
           fillDisease(caze.getDisease());
           selectResponsibleRegion(caze.getResponsibleRegion());
           selectResponsibleDistrict(caze.getResponsibleDistrict());
@@ -199,17 +205,23 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
+        "I collect uuid of the case",
+        () -> {
+          casesUUID.add(webDriverHelpers.getValueFromWebElement(UUID_INPUT));
+        });
+
+    When(
         "I select ([^\"]*) created case for person from Cases list",
         (String option) -> {
           if (option.equals("first")) {
             webDriverHelpers.fillInWebElement(
-                CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, randomUUID_first_user.toString());
+                CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, casesUUID.get(0));
             webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           }
           if (option.equals("second")) {
             webDriverHelpers.fillInWebElement(
-                CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, randomUUID_second_user.toString());
+                CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, casesUUID.get(1));
             webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           }
@@ -259,13 +271,13 @@ public class CreateNewCaseSteps implements En {
         (String option) -> {
           if (option.equals("first")) {
             webDriverHelpers.fillInWebElement(
-                CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, randomUUID_first_user.toString());
+                CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, casesUUID.get(0));
             webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           }
           if (option.equals("second")) {
             webDriverHelpers.fillInWebElement(
-                CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, randomUUID_second_user.toString());
+                CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, casesUUID.get(1));
             webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           }
@@ -383,6 +395,24 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
+        "^I create a new case with specific data and new person$",
+        () -> {
+          caze = caseService.buildGeneratedCase();
+          fillAllCaseFields(caze);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(
+              CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON, 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          }
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+
+          TimeUnit.SECONDS.sleep(2);
+        });
+
+    When(
         "I create a new case with disease {string}",
         (String caseDisease) -> {
           caze = caseService.buildCaseWithDisease(caseDisease);
@@ -407,7 +437,9 @@ public class CreateNewCaseSteps implements En {
         () -> {
           caze = caseService.buildGeneratedCase();
           selectCaseOrigin(caze.getCaseOrigin());
-          fillExternalId(caze.getExternalId());
+          // field that is no longer available
+          // fillExternalId(caze.getExternalId());
+          fillEpidNumber(caze.getEpidNumber());
           fillDisease(caze.getDisease());
           selectResponsibleRegion(caze.getResponsibleRegion());
           selectResponsibleDistrict(caze.getResponsibleDistrict());
@@ -439,7 +471,8 @@ public class CreateNewCaseSteps implements En {
         () -> {
           caze = caseService.buildGeneratedCase();
           selectCaseOrigin(caze.getCaseOrigin());
-          fillExternalId(caze.getExternalId());
+          // field that is no longer available
+          // fillExternalId(caze.getExternalId());
           fillDisease(caze.getDisease());
           selectResponsibleRegion(caze.getResponsibleRegion());
           selectResponsibleDistrict(caze.getResponsibleDistrict());
@@ -575,7 +608,7 @@ public class CreateNewCaseSteps implements En {
           caze = caseService.buildGeneratedCase();
           fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
           selectCaseOrigin(caze.getCaseOrigin());
-          fillExternalId(caze.getExternalId());
+          //          fillExternalId(caze.getExternalId());
           selectResponsibleRegion(caze.getResponsibleRegion());
           selectResponsibleDistrict(caze.getResponsibleDistrict());
           selectResponsibleCommunity(caze.getResponsibleCommunity());
@@ -626,7 +659,8 @@ public class CreateNewCaseSteps implements En {
         () -> {
           caze = caseService.buildGeneratedCase();
           selectCaseOrigin(caze.getCaseOrigin());
-          fillExternalId(caze.getExternalId());
+          // field no longer available
+          //          fillExternalId(caze.getExternalId());
           selectResponsibleRegion(caze.getResponsibleRegion());
           selectResponsibleDistrict(caze.getResponsibleDistrict());
           selectResponsibleCommunity(caze.getResponsibleCommunity());
@@ -742,6 +776,10 @@ public class CreateNewCaseSteps implements En {
     webDriverHelpers.fillInWebElement(EXTERNAL_ID_INPUT, externalId);
   }
 
+  private void fillEpidNumber(String epidNumber) {
+    webDriverHelpers.fillInWebElement(EPID_NUMBER_INPUT, epidNumber);
+  }
+
   private void fillDisease(String disease) {
     webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
   }
@@ -830,7 +868,10 @@ public class CreateNewCaseSteps implements En {
 
   private void fillAllCaseFields(Case caze) {
     selectCaseOrigin(caze.getCaseOrigin());
-    fillExternalId(caze.getExternalId());
+    // field that is no longer available
+    // fillExternalId(caze.getExternalId());
+    // new field
+    // fillEpidNumber(caze.getEpidNumber());
     fillDisease(caze.getDisease());
     selectResponsibleRegion(caze.getResponsibleRegion());
     selectResponsibleDistrict(caze.getResponsibleDistrict());

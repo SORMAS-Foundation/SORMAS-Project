@@ -192,7 +192,7 @@ public class CaseDirectorySteps implements En {
         "I check if downloaded zip file for Quarantine Order is correct",
         () -> {
           Path path =
-              Paths.get(userDirPath + "/downloads/sormas_dokumente_" + LocalDate.now() + "_.zip");
+              Paths.get(userDirPath + "/downloads/sormas_documents_" + LocalDate.now() + "_.zip");
           assertHelpers.assertWithPoll(
               () ->
                   Assert.assertTrue(
@@ -205,7 +205,7 @@ public class CaseDirectorySteps implements En {
         "I delete downloaded file created from Quarantine order",
         () -> {
           File toDelete =
-              new File(userDirPath + "/downloads/sormas_dokumente_" + LocalDate.now() + "_.zip");
+              new File(userDirPath + "/downloads/sormas_documents_" + LocalDate.now() + "_.zip");
           toDelete.deleteOnExit();
         });
     When(
@@ -229,9 +229,10 @@ public class CaseDirectorySteps implements En {
         "I click on the DETAILED button from Case directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CASE_DIRECTORY_DETAILED_RADIOBUTTON);
+          TimeUnit.SECONDS.sleep(4);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               By.xpath(String.format(RESULTS_GRID_HEADER, "Sex")), 20);
-          webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(GRID_HEADERS, 41);
+          webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(GRID_HEADERS, 39);
         });
     When(
         "I click on the More button on Case directory page",
@@ -985,7 +986,7 @@ public class CaseDirectorySteps implements En {
         "I check if Data Dictionary for cases was downloaded correctly",
         () -> {
           String fileName =
-              "sormas_datenbeschreibungsverzeichnis_"
+              "sormas_data_dictionary_"
                   + LocalDate.now().format(formatterDataDictionary)
                   + "_.xlsx";
           Path path = Paths.get(userDirPath + "/downloads/" + fileName);

@@ -17,8 +17,9 @@ Feature: Case Classification functionality
     And I select sore throat option
     And I click on save button from Edit Case page
     Then I click on Case tab from Symptoms tab directory
-    And From Case page I click on Calculate Case Classification button
-    And I click on save button from Edit Case page
+    #steps no longer actual
+#    And From Case page I click on Calculate Case Classification button
+#    And I click on save button from Edit Case page
     Then For the current Case the Case Classification value should be "Suspect case"
 
   @env_main
@@ -36,6 +37,7 @@ Feature: Case Classification functionality
     When I click on Clear all button From Symptoms tab
     And I click on save button from Edit Case page
     Then I click on Case tab from Symptoms tab directory
-    And From Case page I click on Calculate Case Classification button
+        #steps no longer actual
+#    And From Case page I click on Calculate Case Classification button
     And I click on save button from Edit Case page
     Then For the current Case the Case Classification value should be "Not yet classified"

@@ -19,12 +19,10 @@
 package org.sormas.e2etests.steps.web.application.countries;
 
 import static org.sormas.e2etests.pages.application.configuration.ConfigurationTabsPage.CONFIGURATION_COUNTRIES_TAB;
-import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.SEARCH_COUNTRY;
-import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.SUBCONTINENT_TABLE_VALUE;
+import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.*;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
@@ -49,13 +47,14 @@ public class ConfigurationCountriesSteps implements En {
     When(
         "I fill search filter with {string} country name on Country Configuration Page",
         (String country) -> webDriverHelpers.fillInWebElement(SEARCH_COUNTRY, country));
+
     When(
-        "I check the subcontinent name for Germany on Country Configuration Page",
-        () -> {
-          TimeUnit.SECONDS.sleep(4); // waiting for page loaded
+        "I check the {string} name for the country on Country Configuration Page",
+        (String expectedSubcontinentName) -> {
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              COUNTRY_GRID_RESULTS_ROWS, expectedSubcontinentName);
           String subcontinentName =
               webDriverHelpers.getTextFromWebElement(SUBCONTINENT_TABLE_VALUE);
-          String expectedSubcontinentName = "Central Europe";
           softly.assertEquals(
               subcontinentName,
               expectedSubcontinentName,

@@ -730,6 +730,21 @@ Feature: Create events
     And I click on save button in Add Participant form
     And I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
 
+  @env_main @issue=SORDEV-7460
+  Scenario: Test Extend the exposure and event startDate and endDate to include a startTime and endTime
+    Given I log in with National User
+    Then I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    Then I check Multi-day event checkbox and I pick Start date and End date on Create New Event Page
+    And I fill event Title field on Create New Event Page
+    And I click on save button on Create New Event Page
+    Then I navigate to EVENT from edit event page
+    And I collect the UUID displayed on Create New Event Page
+    And I collect the Date of Event from Create New Event Page
+    Then I navigate to EVENTS LIST from edit event page
+    And  I search for the last event uuid created by UI
+    Then I check that Date of EVENT displays event start date and event end date in table on event directory
+
   @issue=SORDEV-8667 @env_main
   Scenario: Test Adjustments to the jurisdiction definition process of event participants
     Given API: I create a new event

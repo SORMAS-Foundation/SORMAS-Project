@@ -15,10 +15,10 @@
 
 package de.symeda.sormas.api.contact;
 
-import de.symeda.sormas.api.importexport.ExportEntity;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -34,6 +34,7 @@ import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.importexport.ExportEntity;
 import de.symeda.sormas.api.importexport.ExportGroup;
 import de.symeda.sormas.api.importexport.ExportGroupType;
 import de.symeda.sormas.api.importexport.ExportProperty;
@@ -49,7 +50,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -1236,7 +1237,7 @@ public class ContactExportDto implements Serializable {
 		return reportingUserRoles;
 	}
 
-	public void setReportingUserRoles(Set<UserRole> roles) {
+	public void setReportingUserRoles(Set<UserRoleReferenceDto> roles) {
 		this.reportingUserRoles = StringUtils.join(roles, ", ");
 	}
 
@@ -1264,7 +1265,7 @@ public class ContactExportDto implements Serializable {
 		return followUpStatusChangeUserRoles;
 	}
 
-	public void setFollowUpStatusChangeUserRoles(Set<UserRole> roles) {
+	public void setFollowUpStatusChangeUserRoles(Set<UserRoleReferenceDto> roles) {
 		this.followUpStatusChangeUserRoles = StringUtils.join(roles, ", ");
 	}
 

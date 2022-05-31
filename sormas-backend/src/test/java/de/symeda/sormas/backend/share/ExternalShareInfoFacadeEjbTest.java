@@ -30,8 +30,8 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.share.ExternalShareInfoCriteria;
 import de.symeda.sormas.api.share.ExternalShareInfoDto;
 import de.symeda.sormas.api.share.ExternalShareStatus;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -41,7 +41,8 @@ public class ExternalShareInfoFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetIndexList() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserReferenceDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto officer =
+			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 
 		CaseDataDto caze = creator.createCase(officer, rdcf, null);
 		ExternalShareInfo caseShareInfoOld = creator.createExternalShareInfo(caze.toReference(), officer, ExternalShareStatus.SHARED, (i) -> {

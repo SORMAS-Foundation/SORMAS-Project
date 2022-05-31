@@ -36,6 +36,7 @@ public class Case {
   String outcomeOfCase;
   String reportingDistrict;
   String externalId;
+  String epidNumber;
   String externalToken;
   String uuid;
   String facilityCategory;

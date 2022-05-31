@@ -587,9 +587,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		facilityField.addValueChangeListener(e -> {
 			updateFacilityDetailsVisibility(detailsField, (FacilityReferenceDto) e.getProperty().getValue());
-			if (facilityField.equals(cbPlaceOfBirthFacility)) {
-				this.getValue().setPlaceOfBirthFacilityType((FacilityType) typeField.getValue());
-			}
 		});
 		// Set initial visibility
 		updateFacilityDetailsVisibility(detailsField, (FacilityReferenceDto) facilityField.getValue());

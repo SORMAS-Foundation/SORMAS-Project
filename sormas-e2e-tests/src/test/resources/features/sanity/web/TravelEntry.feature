@@ -151,7 +151,7 @@ Feature: Create travel entries
     And I click on Bulk Actions combobox in Travel Entry Directory
     And I click on Delete button from Bulk Actions Combobox in Travel Entry Directory
     And I click yes on the CONFIRM REMOVAL popup from Task Directory page
-    And I check if popup deletion message appeared
+    And I choose the reason of deletion in popup for Travel Entry
 
   @issue=SORDEV-9818 @env_de
   Scenario: Deleting entry assigned to a person in Travel Entry Directory
@@ -176,7 +176,7 @@ Feature: Create travel entries
     And I click on Bulk Actions combobox in Travel Entry Directory
     And I click on Delete button from Bulk Actions Combobox in Travel Entry Directory
     And I click yes on the CONFIRM REMOVAL popup from Task Directory page
-    And I check if popup deletion message appeared
+    And I choose the reason of deletion in popup for Travel Entry
     When I click on the Persons button from navbar
     And I fill UUID of the collected person from last created Travel Entry
     Then I apply on the APPLY FILTERS button
@@ -195,3 +195,31 @@ Feature: Create travel entries
     When I fill the required fields in a new travel entry form with same person data
     And I click on Save button from the new travel entry form
     Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
+    @issue=SORDEV-7166 @env_de
+    Scenario: Test Link DEA TravelEntries to cases
+      Given I log in as a Admin User
+      And I click on the Entries button from navbar
+      And I click on the New Travel Entry button from Travel Entries directory
+      When I fill the required fields in a new travel entry form
+      And I click on Save button from the new travel entry form
+      Then I check the created data is correctly displayed on Edit travel entry page for DE version
+      And I collect travel UUID from travel entry
+      When I click on new case button for travel entry
+      Then I check if data from travel entry for new case is correct
+      And I save the new case for travel entry
+      Then I navigate to epidemiological data tab in Edit case page
+      Then I check if created travel entries are listed in the epidemiological data tab
+      And I click on edit travel entry button form case epidemiological tab
+      Then I check the created data is correctly displayed on Edit travel entry page for DE version
+      And I click on Open case of this travel entry on Travel entry tab for DE version
+      Then I navigate to epidemiological data tab in Edit case page
+      And I click on the New Travel Entry button from Epidemiological data tab in Case directory
+      When I fill the required fields for new case in existing travel entry form
+      And I click on Save button from the new travel entry form
+      Then I check the created data is correctly displayed on Edit travel entry page for DE version
+      And I collect travel UUID from travel entry
+      And I click on the Entries button from navbar
+      Then I search for first created travel entry by UUID for person in Travel Entries Directory
+      And I check if first Travel Entry UUID is available in Travel Entries Directory List
+      Then I search for second created travel entry by UUID for person in Travel Entries Directory
+      And I check if second Travel Entry UUID is available in Travel Entries Directory List

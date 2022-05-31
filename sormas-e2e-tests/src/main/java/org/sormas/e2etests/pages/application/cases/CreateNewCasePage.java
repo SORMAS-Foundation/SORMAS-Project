@@ -46,6 +46,7 @@ public class CreateNewCasePage {
   public static final By CASE_ORIGIN_OPTIONS =
       By.cssSelector(".popupContent #caseOrigin .v-select-option");
   public static final By EXTERNAL_ID_INPUT = By.cssSelector(".popupContent #externalID");
+  public static final By EPID_NUMBER_INPUT = By.cssSelector(".popupContent #epidNumber");
   public static final By PLACE_OF_STAY =
       By.cssSelector(".popupContent div[location='facilityOrHomeLoc'] span.v-select-option label");
   public static final By PLACE_DESCRIPTION_INPUT =
