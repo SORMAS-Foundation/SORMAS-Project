@@ -735,3 +735,13 @@ Feature: Contacts end to end tests
     Then I filter by last created contact via api
     Then I open the first contact from contacts list
     And I check if Archive button changed name to Archive
+
+  @issue=SORDEV-9788 @env_de
+  Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Contact directory
+    Given I log in with National User
+    And I click on the Contacts button from navbar
+    When I click on the NEW CONTACT button
+    And I click on the person search button in create new contact form
+    Then I check that National Health ID is not visible in Person search popup
+    And I check that Passport Number is not visible in Person search popup
+    And I check that Nickname is not visible in Person search popup
