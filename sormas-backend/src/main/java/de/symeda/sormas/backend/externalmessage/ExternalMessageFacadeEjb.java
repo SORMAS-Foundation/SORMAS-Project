@@ -379,7 +379,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	 * @return An indication whether the fetching of new labMessage was successful. If it was not, an error message meant for UI users.
 	 */
 	@Override
-	@RolesAllowed(UserRight._SYSTEM)
+	@RolesAllowed({
+		UserRight._SYSTEM,
+		UserRight._EXTERNAL_MESSAGE_VIEW })
 	public ExternalMessageFetchResult fetchAndSaveExternalMessages(Date since) {
 
 		SystemEventDto currentSync = syncFacadeEjb.startSyncFor(SystemEventType.FETCH_EXTERNAL_MESSAGES);
