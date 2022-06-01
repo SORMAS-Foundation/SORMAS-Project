@@ -54,7 +54,7 @@ public class CreateNewTaskPage {
   public static By getDeleteIconByUser(String user) {
     return By.xpath(
         String.format(
-            "//div[contains(@class, 'v-label') and text()=\"%s\"]/../..//div[contains(@class,'v-button')]",
+            "//div[@class='popupContent']//div[contains(@class, 'v-label') and text()=\"%s\"]/../..//div[contains(@class,'v-button')]",
             user));
   }
 }
