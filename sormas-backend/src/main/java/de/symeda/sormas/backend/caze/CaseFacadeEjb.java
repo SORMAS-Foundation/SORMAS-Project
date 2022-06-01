@@ -1584,6 +1584,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return caseSave(dto, handleChanges, existingCase, toDto(existingCase), checkChangeDate, internal);
 	}
 
+	@RolesAllowed({ UserRight._CASE_EDIT })
+	public CaseDataDto updateFollowUpComment(@Valid @NotNull CaseDataDto dto) throws ValidationRuntimeException {
+		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
+		Case caze = service.getByUuid(dto.getUuid());
+		caze.setFollowUpComment(dto.getFollowUpComment());
+		service.ensurePersisted(caze);
+		return convertToDto(caze, pseudonymizer);
+	}
+
 	private CaseDataDto caseSave(
 		@Valid CaseDataDto dto,
 		boolean handleChanges,
@@ -1667,7 +1676,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			final Contact contact = contactService.getByUuid(sourceContact.getUuid());
 			final Case caze = service.getByUuid(cazeRef.getUuid());
 			contact.getSamples().forEach(sample -> {
-				if(!sample.isDeleted()) {
+				if (!sample.isDeleted()) {
 					if (sample.getAssociatedCase() == null) {
 						sample.setAssociatedCase(caze);
 					} else {
@@ -2074,7 +2083,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 						newCase.setClassificationDate(new Date());
 					}
 				}
+			} else if (newCase.getCaseClassification() != existingCase.getCaseClassification()) {
+				newCase.setClassificationUser(userService.getCurrentUser());
+				newCase.setClassificationDate(new Date());
 			}
+		} else if (newCase.getCaseClassification() != existingCase.getCaseClassification()) {
+			newCase.setClassificationUser(userService.getCurrentUser());
+			newCase.setClassificationDate(new Date());
 		}
 
 		// calculate reference definition for cases

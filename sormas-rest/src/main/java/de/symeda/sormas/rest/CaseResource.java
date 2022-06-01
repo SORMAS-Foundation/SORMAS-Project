@@ -121,6 +121,12 @@ public class CaseResource extends EntityDtoResource {
 		return FacadeProvider.getCaseFacade().getDeletedUuidsSince(new Date(since));
 	}
 
+	@GET
+	@Path("/obsolete/{since}")
+	public List<String> getObsoleteUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getCaseFacade().getObsoleteUuidsSince(new Date(since));
+	}
+
 	@POST
 	@Path("/getduplicates")
 	public List<CasePersonDto> getDuplicates(@Valid CasePersonDto casePerson) {

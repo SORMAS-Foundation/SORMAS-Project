@@ -140,7 +140,6 @@ Feature: Tasks functionalities
     Given I log in as a National User
     And I click on the Tasks button from navbar
     Then I open last created task by API using Contact UUID
-    And I select "Surveillance SUPERVISOR - Surveillance Supervisor" user from Observed by combobox on Edit Task page
-    And I click on Save button in New Task form
+    And I select "Surveillance SUPERVISOR" user from Observed by combobox on Edit Task page
     Then I open last created task by API using Contact UUID
     And I check that respected user is selected on Edit Task page

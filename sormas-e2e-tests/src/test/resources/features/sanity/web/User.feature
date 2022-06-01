@@ -16,7 +16,6 @@ Feature: Create user
       | POE National User       |
       | Import User             |
       | External Visits User    |
-      | ReST User               |
       | Sormas to Sormas Client |
       | National Clinician      |
 

@@ -1013,6 +1013,16 @@ public class TaskFacadeEjb implements TaskFacade {
 		return taskService.getArchivedUuidsSince(since);
 	}
 
+	@Override
+	public List<String> getObsoleteUuidsSince(Date since) {
+
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+
+		return taskService.getObsoleteUuidsSince(since);
+	}
+
 	private String buildSpecificTaskMessage(String messageTemplate, TaskType taskType, TaskContext taskContext, AbstractDomainObject entity) {
 		String entityReference = buildAssociatedEntityReference(taskContext, entity);
 		String linkContent = buildAssociatedEntityLinkContent(taskContext, entity);
