@@ -897,6 +897,7 @@ public class ContactDirectorySteps implements En {
         "I search after last created contact via API by UUID and open",
         () -> {
           searchAfterContactByMultipleOptions(apiState.getCreatedContact().getUuid());
+          TimeUnit.SECONDS.sleep(2);
           openContactFromResultsByUUID(apiState.getCreatedContact().getUuid());
         });
 

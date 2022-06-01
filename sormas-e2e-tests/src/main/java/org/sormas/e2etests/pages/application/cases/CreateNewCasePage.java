@@ -100,6 +100,15 @@ public class CreateNewCasePage {
       By.xpath("(//div[@location='documents']//div[@class='v-button v-widget'])[2]");
   public static final By ACTION_CONFIRM_POPUP_BUTTON =
       By.cssSelector(".popupContent #actionConfirm");
+  public static final By NATIONAL_HEALTH_ID_POPUP_TABLE_HEADER =
+      By.xpath(
+          "//div[@class='popupContent']//div[contains(@class,'v-grid-column-header-content') and text()=\"Krankenversicherungsnummer\"]");
+  public static final By NICKNAME_POPUP_TABLE_HEADER =
+      By.xpath(
+          "//div[@class='popupContent']//div[contains(@class,'v-grid-column-header-content') and text()=\"Spitzname\"]");
+  public static final By PASSPORT_NUMBER_POPUP_TABLE_HEADER =
+      By.xpath(
+          "//div[@class='popupContent']//div[contains(@class,'v-grid-column-header-content') and text()=\"Reisepassnummer\"]");
   public static final By NICKNAME_ATTRIBUTE =
       By.xpath("//span[@class=\"v-captiontext\" and text()=\"Spitzname\"]");
   public static final By PASSPORT_NUMBER_ATTRIBUTE =

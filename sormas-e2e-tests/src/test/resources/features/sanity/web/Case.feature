@@ -1122,6 +1122,33 @@ Feature: Case end to end tests
     And I check that Mother's Name is not visible
     And I check that Father's Name is not visible
 
+  @issue=SORDEV-9788 @env_de
+  Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Case directory
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    Then I click on the NEW CASE button
+    And I click on the person search button in new case form
+    Then I check that National Health ID is not visible in Person search popup
+    And I check that Passport Number is not visible in Person search popup
+    And I check that Nickname is not visible in Person search popup
+
+  @issue=SORDEV-9788 @env_de
+  Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Case Contact directory
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    When I open last created case
+    And I open the Case Contacts tab
+    Then I click on new contact button from Case Contacts tab
+    And I click on the person search button in create new contact form
+    Then I check that National Health ID is not visible in Person search popup
+    And I check that Passport Number is not visible in Person search popup
+    And I check that Nickname is not visible in Person search popup
+
+
+
+
+
+
 
   @env_de @issue=SORDEV-9946
   Scenario: Test Hide country specific fields in the 'Pick or create person' form of the duplicate detection pop-up, in German and French systems

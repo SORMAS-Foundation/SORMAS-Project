@@ -223,3 +223,13 @@ Feature: Create travel entries
       And I check if first Travel Entry UUID is available in Travel Entries Directory List
       Then I search for second created travel entry by UUID for person in Travel Entries Directory
       And I check if second Travel Entry UUID is available in Travel Entries Directory List
+
+  @issue=SORDEV-9788 @env_de
+  Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Travel Entry directory
+    Given I log in with National User
+    And I click on the Entries button from navbar
+    Then I click on the New Travel Entry button from Travel Entries directory
+    And I click on the person search button in create new travel entry form
+    Then I check that National Health ID is not visible in Person search popup
+    And I check that Passport Number is not visible in Person search popup
+    And I check that Nickname is not visible in Person search popup

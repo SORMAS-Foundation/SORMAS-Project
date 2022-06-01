@@ -619,7 +619,7 @@ public class CreateNewCaseSteps implements En {
           fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
 
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
@@ -758,6 +758,31 @@ public class CreateNewCaseSteps implements En {
           softly.assertTrue(Files.exists(path));
           softly.assertAll();
           Files.delete(path); // clean
+        });
+    When(
+        "I check that ([^\"]*) is not visible in Person search popup",
+        (String option) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          By selector = null;
+          Boolean elementVisible = true;
+          switch (option) {
+            case "Passport Number":
+              selector = PASSPORT_NUMBER_POPUP_TABLE_HEADER;
+              break;
+            case "National Health ID":
+              selector = NATIONAL_HEALTH_ID_POPUP_TABLE_HEADER;
+              break;
+            case "Nickname":
+              selector = NICKNAME_POPUP_TABLE_HEADER;
+              break;
+          }
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(selector);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertFalse(elementVisible, option + " is visible!");
+          softly.assertAll();
         });
   }
 
