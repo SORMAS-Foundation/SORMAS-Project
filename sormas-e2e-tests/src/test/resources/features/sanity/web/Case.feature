@@ -530,7 +530,7 @@ Feature: Case end to end tests
     And I click on first person in person directory
     And I check if Date of dead for specified case is correct
 
-  @issue=SORDEV-6843 @env_main @testIt
+  @issue=SORDEV-6843 @env_main
   Scenario: Refine the update mechanism between case outcome and person other cause date
     Given I log in with National User
     And I click on the Cases button from navbar
