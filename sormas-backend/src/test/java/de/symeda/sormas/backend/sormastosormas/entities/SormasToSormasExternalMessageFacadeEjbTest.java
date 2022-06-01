@@ -55,7 +55,7 @@ public class SormasToSormasExternalMessageFacadeEjbTest extends SormasToSormasTe
 					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
 			.thenAnswer(invocation -> {
 				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_ID));
-				assertThat(invocation.getArgument(1, String.class), is("/sormasToSormas/labmessages"));
+				assertThat(invocation.getArgument(1, String.class), is("/sormasToSormas/externalmessages"));
 
 				List<SormasToSormasExternalMessageDto> postBody = invocation.getArgument(2, List.class);
 				assertThat(postBody.size(), is(1));
