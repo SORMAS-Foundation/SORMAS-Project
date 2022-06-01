@@ -43,6 +43,8 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_CASE_LABEL_DE;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_PERSON_LABEL_DE;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.SEARCH_PERSON_BY_FREE_TEXT;
 import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.aCase;
 
@@ -546,6 +548,23 @@ public class CreateNewCaseSteps implements En {
         "^I click on Save button in Case form$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+    When(
+        "^I check if National Health Id, Nickname and Passport number appear in Pick or create person popup$",
+        () -> {
+          softly.assertEquals(
+              false, webDriverHelpers.isElementVisibleWithTimeout(NICKNAME_ATTRIBUTE, 2));
+          softly.assertEquals(
+              false, webDriverHelpers.isElementVisibleWithTimeout(PASSPORT_NUMBER_ATTRIBUTE, 2));
+          softly.assertEquals(
+              false, webDriverHelpers.isElementVisibleWithTimeout(NATIONAL_HEALTH_ID_ATTRIBUTE, 2));
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(PICK_A_EXISTING_PERSON_LABEL_DE);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_A_EXISTING_CASE_LABEL_DE, 4)) {
+            webDriverHelpers.clickOnWebElementBySelector(PICK_A_EXISTING_CASE_LABEL_DE);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          }
         });
 
     When(

@@ -714,6 +714,22 @@ Feature: Create events
     And I check that Responsible User Info icon is visible on Event Directory Page
     And I check the displayed message is correct after hover to Responsible User Info icon
 
+  @issue=SORDEV-9946 @env_de
+  Scenario: Test Hide country specific fields in the 'Pick or create person' form of the duplicate detection pop-up, in German and French systems
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data for DE version
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I click on Add Participant button
+    Then I add Participant to an Event with same person data
+    And I click on save button in Add Participant form
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I click on Add Participant button
+    Then I add Participant to an Event with same person data
+    And I click on save button in Add Participant form
+    And I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
+
   @env_main @issue=SORDEV-7460
   Scenario: Test Extend the exposure and event startDate and endDate to include a startTime and endTime
     Given I log in with National User

@@ -745,3 +745,17 @@ Feature: Contacts end to end tests
     Then I check that National Health ID is not visible in Person search popup
     And I check that Passport Number is not visible in Person search popup
     And I check that Nickname is not visible in Person search popup
+
+
+  @env_de @issue=SORDEV-9946
+  Scenario: Test Hide country specific fields in the 'Pick or create person' form of the duplicate detection pop-up, in German and French systems
+    Given I log in as a Admin User
+    Then I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form with same person data for DE version
+    And I click on SAVE new contact button
+    Then I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form with same person data for DE version
+    And I click on SAVE new contact case button
+    And I check if National Health Id, Nickname and Passport number appear in Pick or create person popup

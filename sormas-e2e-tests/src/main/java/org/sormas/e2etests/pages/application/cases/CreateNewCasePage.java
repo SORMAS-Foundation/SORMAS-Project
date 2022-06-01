@@ -109,4 +109,10 @@ public class CreateNewCasePage {
   public static final By PASSPORT_NUMBER_POPUP_TABLE_HEADER =
       By.xpath(
           "//div[@class='popupContent']//div[contains(@class,'v-grid-column-header-content') and text()=\"Reisepassnummer\"]");
+  public static final By NICKNAME_ATTRIBUTE =
+      By.xpath("//span[@class=\"v-captiontext\" and text()=\"Spitzname\"]");
+  public static final By PASSPORT_NUMBER_ATTRIBUTE =
+      By.xpath("//span[@class=\"v-captiontext\" and text()=\"Reisepassnummer\"]");
+  public static final By NATIONAL_HEALTH_ID_ATTRIBUTE =
+      By.xpath("//span[@class=\"v-captiontext\" and text()=\"Krankenversicherungsnummer\"]");
 }

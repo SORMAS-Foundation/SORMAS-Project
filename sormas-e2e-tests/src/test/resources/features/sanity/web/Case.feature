@@ -1148,3 +1148,26 @@ Feature: Case end to end tests
 
 
 
+
+
+  @env_de @issue=SORDEV-9946
+  Scenario: Test Hide country specific fields in the 'Pick or create person' form of the duplicate detection pop-up, in German and French systems
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill a new case form with same person details for DE version
+    And I click on Save button in Case form
+    Then I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill a new case form with same person details for DE version
+    And I click on Save button in Case form
+    Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
+    And I open the Case Contacts tab
+    And I click on the NEW CONTACT button
+    And I fill a new contact form with same person data for DE version
+    And I click on SAVE new contact button
+    And I open the Case Contacts tab
+    And I click on the NEW CONTACT button
+    And I fill a new contact form with same person data for DE version
+    And I click on SAVE new contact case button
+    Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup

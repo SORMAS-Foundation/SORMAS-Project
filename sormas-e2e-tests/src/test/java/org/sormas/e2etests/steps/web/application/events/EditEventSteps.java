@@ -153,6 +153,7 @@ import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
@@ -206,6 +207,11 @@ public class EditEventSteps implements En {
       RunningConfiguration runningConfiguration,
       ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
+    Random r = new Random();
+    char c = (char) (r.nextInt(26) + 'a');
+    String firstName = faker.name().firstName() + c;
+    String lastName = faker.name().lastName() + c;
+    String sex = GenderValues.getRandomGenderDE();
 
     When(
         "^I change the event status to ([^\"]*)",
@@ -491,6 +497,28 @@ public class EditEventSteps implements En {
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(ADD_PARTICIPANT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
+        });
+    When(
+        "I click on Add Participant button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
+        });
+    When(
+        "I add Participant to an Event with same person data",
+        () -> {
+          webDriverHelpers.fillInWebElement(PARTICIPANT_FIRST_NAME_INPUT, firstName);
+          webDriverHelpers.fillInWebElement(PARTICIPANT_LAST_NAME_INPUT, lastName);
+          webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);
+          webDriverHelpers.selectFromCombobox(
+              PARTICIPANT_REGION_COMBOBOX, RegionsValues.VoreingestellteBundeslander.getName());
+          webDriverHelpers.selectFromCombobox(
+              PARTICIPANT_DISTRICT_COMBOBOX, DistrictsValues.VoreingestellterLandkreis.getName());
+        });
+
+    When(
+        "I click on save button in Add Participant form",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
     When(
         "I add a participant to the event",
