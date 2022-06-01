@@ -352,16 +352,21 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		Root<User> userRoot = cq.from(User.class);
 		cq.select(root);
 
-		Predicate filter = createDefaultFilter(cb, root);
+		Predicate filter = CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, root), cb.equal(root.get(UserReference.ID), userRoot.get(User.ID)));
 
 		Predicate jurisdictionFilter = null;
 		while (jurisdictionLevel.getOrder() >= allowedJurisdictionLevel.getOrder()) {
-			Predicate jurisdictionPredicate = createUserRefsByInfrastructurePredicate(cb, userRoot, infrastructureUuid, jurisdictionLevel);
+			Predicate jurisdictionPredicate = createUserRefsByInfrastructurePredicate(cb, userRoot, baseInfrastructure.getUuid(), jurisdictionLevel);
 			jurisdictionFilter = CriteriaBuilderHelper.or(cb, jurisdictionFilter, jurisdictionPredicate);
-			jurisdictionLevel = baseInfrastructure instanceof Facility && ((Facility) baseInfrastructure).getCommunity() != null
-				? JurisdictionLevel.COMMUNITY
-				: InfrastructureHelper.getSuperordinateJurisdiction(jurisdictionLevel);
-			infrastructureUuid = getParentInfrastructureUuid(baseInfrastructure, jurisdictionLevel);
+
+			if (jurisdictionLevel.getOrder() > 2) {
+				jurisdictionLevel = baseInfrastructure instanceof Facility && ((Facility) baseInfrastructure).getCommunity() != null
+					? JurisdictionLevel.COMMUNITY
+					: InfrastructureHelper.getSuperordinateJurisdiction(jurisdictionLevel);
+				baseInfrastructure = getParentInfrastructure(baseInfrastructure, jurisdictionLevel);
+			} else {
+				break;
+			}
 		}
 
 		filter = CriteriaBuilderHelper.and(cb, filter, jurisdictionFilter);
@@ -372,28 +377,27 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			filter = CriteriaBuilderHelper.and(cb, filter, restrictOtherLimitedDiseaseUsers);
 		}
 
-		if (filter != null) {
-			cq.where(filter);
-		}
-
+		cq.where(filter);
 		cq.distinct(true);
 		cq.orderBy(cb.asc(root.get(AbstractDomainObject.ID)));
 
 		return em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 	}
 
-	private String getParentInfrastructureUuid(InfrastructureAdo infrastructure, JurisdictionLevel parentJurisdictionLevel) {
+	private InfrastructureAdo getParentInfrastructure(InfrastructureAdo infrastructure, JurisdictionLevel parentJurisdictionLevel) {
 
 		if (infrastructure instanceof Facility) {
 			if (parentJurisdictionLevel == JurisdictionLevel.COMMUNITY) {
-				return ((Facility) infrastructure).getCommunity().getUuid();
+				return ((Facility) infrastructure).getCommunity();
 			} else {
-				return ((Facility) infrastructure).getDistrict().getUuid();
+				return ((Facility) infrastructure).getDistrict();
 			}
 		} else if (infrastructure instanceof PointOfEntry) {
-			return ((PointOfEntry) infrastructure).getDistrict().getUuid();
+			return ((PointOfEntry) infrastructure).getDistrict();
+		} else if (infrastructure instanceof Community) {
+			return ((Community) infrastructure).getDistrict();
 		} else if (infrastructure instanceof District) {
-			return ((District) infrastructure).getRegion().getUuid();
+			return ((District) infrastructure).getRegion();
 		} else {
 			throw new IllegalArgumentException("Infrastructure must be on district level or below to have a parent infrastructure");
 		}
@@ -416,16 +420,24 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			predicate = cb.equal(root.get(User.LABORATORY).get(Facility.UUID), infrastructureUuid);
 			break;
 		case COMMUNITY:
-			predicate = cb.equal(root.get(User.COMMUNITY).get(Community.UUID), infrastructureUuid);
+			predicate = cb.and(
+				cb.isNull(root.get(User.HEALTH_FACILITY)),
+				cb.isNull(root.get(User.LABORATORY)),
+				cb.equal(root.get(User.COMMUNITY).get(Community.UUID), infrastructureUuid));
 			break;
 		case POINT_OF_ENTRY:
 			predicate = cb.equal(root.get(User.POINT_OF_ENTRY).get(PointOfEntry.UUID), infrastructureUuid);
 			break;
 		case DISTRICT:
-			predicate = cb.equal(root.get(User.DISTRICT).get(District.UUID), infrastructureUuid);
+			predicate = cb.and(
+				cb.isNull(root.get(User.COMMUNITY)),
+				cb.isNull(root.get(User.HEALTH_FACILITY)),
+				cb.isNull(root.get(User.LABORATORY)),
+				cb.isNull(root.get(User.POINT_OF_ENTRY)),
+				cb.equal(root.get(User.DISTRICT).get(District.UUID), infrastructureUuid));
 			break;
 		case REGION:
-			predicate = cb.equal(root.get(User.REGION).get(Region.UUID), infrastructureUuid);
+			predicate = cb.and(cb.isNull(root.get(User.DISTRICT)), cb.equal(root.get(User.REGION).get(Region.UUID), infrastructureUuid));
 			break;
 		default:
 			break;

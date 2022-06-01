@@ -159,15 +159,50 @@ public class UserServiceTest extends AbstractBeanTest {
 		RDCF rdcf1 = creator.createRDCF("R1", "D1", "C1", "F1", "P1");
 		RDCF rdcf2 = creator.createRDCF("R2", "D2", "C2", "F2", "P2");
 
-		UserDto survOff11 = creator.createUser(rdcf1, "SO", "11", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
-		UserDto surfOff12 = creator.createUser(rdcf1, "SO", "12", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
-		UserDto survOff21 = creator.createUser(rdcf2, "SO", "21", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
-
-		List<UserReference> users =
-			getUserService().getUserRefsByInfrastructure(rdcf1.district.getUuid(), JurisdictionLevel.DISTRICT, JurisdictionLevel.DISTRICT, null);
+		UserDto hospInf1 = creator.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "HI", "1");
+		UserDto hospInf2 = creator.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "HI", "2");
+		UserDto survOff11 = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			null,
+			"SO",
+			"11",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto surfOff12 = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			null,
+			"SO",
+			"12",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto survOff21 = creator.createUser(
+			rdcf2.region.getUuid(),
+			rdcf2.district.getUuid(),
+			null,
+			"SO",
+			"21",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto survSup1 =
+			creator.createUser(rdcf1.region.getUuid(), null, null, "SS", "1", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto survSup2 =
+			creator.createUser(rdcf2.region.getUuid(), null, null, "SS", "2", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		assertThat(
 			getUserService().getUserRefsByInfrastructure(rdcf1.district.getUuid(), JurisdictionLevel.DISTRICT, JurisdictionLevel.DISTRICT, null),
+			hasSize(2));
+		assertThat(
+			getUserService().getUserRefsByInfrastructure(rdcf1.region.getUuid(), JurisdictionLevel.REGION, JurisdictionLevel.REGION, null),
+			hasSize(1));
+		assertThat(
+			getUserService().getUserRefsByInfrastructure(rdcf2.district.getUuid(), JurisdictionLevel.DISTRICT, JurisdictionLevel.DISTRICT, null),
+			hasSize(1));
+		assertThat(
+			getUserService()
+				.getUserRefsByInfrastructure(rdcf1.facility.getUuid(), JurisdictionLevel.HEALTH_FACILITY, JurisdictionLevel.DISTRICT, null),
 			hasSize(3));
+		assertThat(
+			getUserService().getUserRefsByInfrastructure(rdcf2.district.getUuid(), JurisdictionLevel.DISTRICT, JurisdictionLevel.REGION, null),
+			hasSize(2));
+
 	}
 }
