@@ -1065,6 +1065,7 @@ public class EventDirectorySteps implements En {
         "I click on the Import button from Events directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(IMPORT_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FILE_PICKER);
         });
 
     When(
