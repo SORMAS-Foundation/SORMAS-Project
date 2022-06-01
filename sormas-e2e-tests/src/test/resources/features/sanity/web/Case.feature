@@ -530,18 +530,20 @@ Feature: Case end to end tests
     And I click on first person in person directory
     And I check if Date of dead for specified case is correct
 
-  @issue=SORDEV-6843 @env_main
+  @issue=SORDEV-6843 @env_main @testIt
   Scenario: Refine the update mechanism between case outcome and person other cause date
     Given I log in with National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I fill new case with for one person with specified date for month ago
     Then I click on save case button
+    And I collect uuid of the case
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     Then I fill second new case with for one person with specified date for present day
     And I confirm changes in selected Case
     And I confirm Pick person in Case
+    And I collect uuid of the case
     Then I click on the Cases button from navbar
     And I filter Cases by created person name
     Then I select second created case for person from Cases list
