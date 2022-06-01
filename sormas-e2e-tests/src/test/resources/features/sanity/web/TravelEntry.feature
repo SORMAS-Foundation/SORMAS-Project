@@ -183,6 +183,18 @@ Feature: Create travel entries
     And I click on first person in person directory
     Then I check if there is no travel entry assigned to Person
 
+  @issue=SORDEV-9946 @env_de
+  Scenario: Test Hide country specific fields in the 'Pick or create person' form of the duplicate detection pop-up, in German and French systems
+    Given I log in as a National User
+    And I click on the Entries button from navbar
+    And I click on the New Travel Entry button from Travel Entries directory
+    When I fill the required fields in a new travel entry form with same person data
+    And I click on Save button from the new travel entry form
+    And I click on the Entries button from navbar
+    And I click on the New Travel Entry button from Travel Entries directory
+    When I fill the required fields in a new travel entry form with same person data
+    And I click on Save button from the new travel entry form
+    Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
     @issue=SORDEV-7166 @env_de
     Scenario: Test Link DEA TravelEntries to cases
       Given I log in as a Admin User
@@ -217,3 +229,13 @@ Feature: Create travel entries
     Given I log in with National User
     And I click on the Entries button from navbar
     Then I check that the Entries table structure is correct DE specific
+
+  @issue=SORDEV-9788 @env_de
+  Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Travel Entry directory
+    Given I log in with National User
+    And I click on the Entries button from navbar
+    Then I click on the New Travel Entry button from Travel Entries directory
+    And I click on the person search button in create new travel entry form
+    Then I check that National Health ID is not visible in Person search popup
+    And I check that Passport Number is not visible in Person search popup
+    And I check that Nickname is not visible in Person search popup

@@ -55,12 +55,14 @@ import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TRAVEL_ENTRY_TAB;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PERSON_FILTER_INPUT;
 
+import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
@@ -68,6 +70,7 @@ import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.pojo.web.TravelEntry;
 import org.sormas.e2etests.entities.services.TravelEntryService;
+import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage;
 import org.sormas.e2etests.pages.application.entries.EditTravelEntryPage;
@@ -90,6 +93,7 @@ public class CreateNewTravelEntrySteps implements En {
   String sex;
   String disease;
   String entryPoint = "Test entry point";
+  protected static TravelEntry travelEntryWithSamePersonData;
   List<TravelEntry> TravelEntryUuidList = new ArrayList<>();
 
   @Inject
@@ -97,8 +101,17 @@ public class CreateNewTravelEntrySteps implements En {
       WebDriverHelpers webDriverHelpers,
       TravelEntryService travelEntryService,
       ApiState apiState,
+      Faker faker,
       SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
+    Random r = new Random();
+    char c = (char) (r.nextInt(26) + 'a');
+    String firstNameforDuplicatedPerson = faker.name().firstName() + c;
+    String lastNameforDuplicatedPerson = faker.name().lastName() + c;
+    String sexforDuplicatedPerson = GenderValues.getRandomGenderDE();
+    travelEntryWithSamePersonData =
+        travelEntryService.buildGeneratedEntryWithParametrizedPersonDataDE(
+            firstNameforDuplicatedPerson, lastNameforDuplicatedPerson, sexforDuplicatedPerson);
 
     When(
         "^I fill the required fields in a new travel entry form$",
@@ -121,6 +134,23 @@ public class CreateNewTravelEntrySteps implements En {
 
           fillPointOfEntry(travelEntry.getPointOfEntry());
           fillPointOfEntryDetails(travelEntry.getPointOfEntryDetails());
+        });
+    When(
+        "^I fill the required fields in a new travel entry form with same person data$",
+        () -> {
+          fillFirstName(travelEntryWithSamePersonData.getFirstName());
+          fillLastName(travelEntryWithSamePersonData.getLastName());
+          selectSex(travelEntryWithSamePersonData.getSex());
+          fillDateOfArrival(travelEntryWithSamePersonData.getDateOfArrival(), Locale.GERMAN);
+          selectResponsibleRegion(travelEntryWithSamePersonData.getResponsibleRegion());
+          selectResponsibleDistrict(travelEntryWithSamePersonData.getResponsibleDistrict());
+          selectResponsibleCommunity(travelEntryWithSamePersonData.getResponsibleCommunity());
+          fillDisease(travelEntryWithSamePersonData.getDisease());
+          if (travelEntryWithSamePersonData.getDisease().equals("Andere epidemische Krankheit"))
+            fillOtherDisease("Test");
+
+          fillPointOfEntry(travelEntryWithSamePersonData.getPointOfEntry());
+          fillPointOfEntryDetails(travelEntryWithSamePersonData.getPointOfEntryDetails());
         });
 
     When(
