@@ -36,10 +36,10 @@ import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
@@ -106,9 +106,10 @@ public class SormasToSormasController {
 			SormasToSormasOptionsForm.forEvent(currentShares));
 	}
 
-	public void shareLabMessage(LabMessageDto labMessage, Runnable callback) {
+	public void shareLabMessage(ExternalMessageDto labMessage, Runnable callback) {
 		handleShareWithOptions(
-			options -> FacadeProvider.getSormasToSormasLabMessageFacade().sendLabMessages(Collections.singletonList(labMessage.getUuid()), options),
+			options -> FacadeProvider.getSormasToSormasLabMessageFacade()
+				.sendExternalMessages(Collections.singletonList(labMessage.getUuid()), options),
 			callback,
 			SormasToSormasOptionsForm.withoutOptions(),
 			new SormasToSormasOptionsDto());
