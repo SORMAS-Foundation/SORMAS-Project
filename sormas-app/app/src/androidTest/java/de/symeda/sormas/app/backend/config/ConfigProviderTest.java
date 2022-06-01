@@ -83,21 +83,12 @@ public class ConfigProviderTest {
 	}
 
 	@Test
-	public void setLastArchivedSyncDate() {
-		ConfigProvider.setLastArchivedSyncDate(null);
-		assertNull(ConfigProvider.getLastArchivedSyncDate());
+	public void setLastObsoleteUuidsSyncDate() {
+		ConfigProvider.setLastObsoleteUuidsSyncDate(null);
+		assertNull(ConfigProvider.getLastObsoleteUuidsSyncDate());
 		Date date = new Date();
-		ConfigProvider.setLastArchivedSyncDate(date);
-		assertThat(ConfigProvider.getLastArchivedSyncDate(), is(date));
-	}
-
-	@Test
-	public void setLastDeletedSyncDate() {
-		ConfigProvider.setLastDeletedSyncDate(null);
-		assertNull(ConfigProvider.getLastDeletedSyncDate());
-		Date date = new Date();
-		ConfigProvider.setLastDeletedSyncDate(date);
-		assertThat(ConfigProvider.getLastDeletedSyncDate(), is(date));
+		ConfigProvider.setLastObsoleteUuidsSyncDate(date);
+		assertThat(ConfigProvider.getLastObsoleteUuidsSyncDate(), is(date));
 	}
 
 	@Test(expected = NullPointerException.class)

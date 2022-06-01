@@ -151,6 +151,8 @@ public class CreateNewEventSteps implements En {
           webDriverHelpers.scrollToElement(TITLE_INPUT);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(TITLE_INPUT);
           webDriverHelpers.fillInWebElement(TITLE_INPUT, faker.book().title());
+          selectResponsibleRegion(RegionsValues.VoreingestellteBundeslander.getName());
+          selectResponsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName());
         });
 
     When(
@@ -328,7 +330,7 @@ public class CreateNewEventSteps implements En {
     List<String[]> r = null;
     String[] values = new String[] {};
     Event builder = null;
-    CSVParser csvParser = new CSVParserBuilder().withSeparator(';').build();
+    CSVParser csvParser = new CSVParserBuilder().withSeparator(',').build();
     try (CSVReader reader =
         new CSVReaderBuilder(new FileReader(fileName))
             .withCSVParser(csvParser)
@@ -363,7 +365,7 @@ public class CreateNewEventSteps implements En {
     List<String[]> r = null;
     String[] values = new String[] {};
     Event builder = null;
-    CSVParser csvParser = new CSVParserBuilder().withSeparator(';').build();
+    CSVParser csvParser = new CSVParserBuilder().withSeparator(',').build();
     try (CSVReader reader =
         new CSVReaderBuilder(new FileReader(fileName))
             .withCSVParser(csvParser)

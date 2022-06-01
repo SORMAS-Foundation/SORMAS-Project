@@ -197,7 +197,8 @@ public class SormasToSormasController {
 				VaadinUiUtil.showWarningPopup(ex.getMessage());
 				callback.run();
 			} else {
-				Component messageComponent = buildShareErrorMessage(ex.getHumanMessage(), ex.getErrors());
+				Component messageComponent =
+					buildShareErrorMessage(ex.getHumanMessage() + " " + I18nProperties.getString(Strings.reloadPageToSeeChanges), ex.getErrors());
 				messageComponent.setWidth(100, Sizeable.Unit.PERCENTAGE);
 				VaadinUiUtil.showPopupWindowWithWidth(
 					new VerticalLayout(messageComponent),

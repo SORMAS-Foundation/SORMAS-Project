@@ -2844,6 +2844,30 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("test reason", getCaseFacade().getByUuid(caze.getUuid()).getOtherDeletionReason());
 	}
 
+	@Test
+	public void testUpdateFollowUpComment(){
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto person = creator.createPerson();
+
+		String initialComment = "comment1";
+
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf, c -> {
+			c.setFollowUpComment(initialComment);
+		});
+
+		CaseDataDto resultCaseDto = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(initialComment , resultCaseDto.getFollowUpComment());
+
+		String updateComment = "comment2";
+		caze.setFollowUpComment(updateComment);
+		CaseDataDto updateCase = getCaseFacade().updateFollowUpComment(caze);
+
+		assertEquals(updateComment , updateCase.getFollowUpComment());
+		resultCaseDto = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(updateComment , resultCaseDto.getFollowUpComment());
+	}
+
 	private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";
 	private static final SecureRandom rnd = new SecureRandom();
 

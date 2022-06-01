@@ -32,9 +32,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.caze.VaccinationInfoSource;
-import de.symeda.sormas.api.common.DeletionDetails;
-import de.symeda.sormas.api.common.DeletionReason;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -47,12 +44,15 @@ import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
 import de.symeda.sormas.api.event.EventStatus;
+import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
@@ -163,6 +163,24 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(secondVaccination.getVaccineBatchNumber(), exportDto.getVaccineBatchNumber());
 		assertEquals(secondVaccination.getVaccineAtcCode(), exportDto.getVaccineAtcCode());
 		assertEquals(secondVaccination.getVaccineDose(), exportDto.getVaccinationDoses());
+	}
+
+	@Test
+	public void testGetMatchingEventParticipants() {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.LAB_USER));
+		user.setLaboratory(rdcf.facility);
+		getUserFacade().saveUser(user);
+		loginWith(user);
+
+		EventDto event = createEvent(user, rdcf);
+		PersonDto eventPerson = creator.createPerson("Event", "Organizer");
+		creator.createEventParticipant(event.toReference(), eventPerson, "event Director", user.toReference());
+
+		EventParticipantCriteria criteria = new EventParticipantCriteria();
+		List<SimilarEventParticipantDto> result = getEventParticipantFacade().getMatchingEventParticipants(criteria);
+		assertThat(result, hasSize(1));
 	}
 
 	@Test

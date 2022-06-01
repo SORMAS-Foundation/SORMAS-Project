@@ -245,7 +245,7 @@ Feature: Case filter functionality
     And I filter by CaseID on Case directory page
     And I click SHOW MORE FILTERS button on Case directory page
     And I apply Region filter "Voreingestellte Bundesländer" on Case directory page
-    And I apply Surveillance Officer filter "Surveillance OFFICER - Surveillance Officer" on Case directory page
+    And I apply Surveillance Officer filter "Surveillance OFFICER" on Case directory page
     And I apply Reporting User filter "Rest AUTOMATION" on Case directory page
     And I apply Vaccination Status filter to "Vaccinated" on Case directory page
     And I apply Quarantine filter to "Home" on Case directory page
