@@ -47,10 +47,13 @@ public class PreviousHospitalizationSteps implements En {
           selectHospital(previousHospitalization.getHospital());
           fillStartOfStayDate(previousHospitalization.getStartOfStayDate());
           selectIsolation(previousHospitalization.getIsolation());
+          fillDateOfIsolation(previousHospitalization.getDateOfIsolation());
           fillEndOfStayDate(previousHospitalization.getEndOfStayDate());
           fillSpecifyReason(previousHospitalization.getSpecifyReason());
           fillDescription(previousHospitalization.getDescription());
           fillFacilityNameDescription(previousHospitalization.getFacilityNameDescription());
+          selectWasPatientAdmittedAtTheFacilityAsAnInpatient(
+              previousHospitalization.getIsolation());
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_ENTRY_LINK);
         });
@@ -100,6 +103,11 @@ public class PreviousHospitalizationSteps implements En {
               "Reason for hospitalization is not correct");
 
           softly.assertEquals(
+              collectedHospitalization.getSpecifyReason(),
+              createdHospitalization.getSpecifyReason(),
+              "Specify reason is not correct");
+
+          softly.assertEquals(
               collectedHospitalization.getStayInTheIntensiveCareUnit(),
               createdHospitalization.getStayInTheIntensiveCareUnit(),
               "Stay in the intensive care unit is not correct");
@@ -128,6 +136,11 @@ public class PreviousHospitalizationSteps implements En {
               collectedHospitalization.getWasPatientAdmittedAtTheFacilityAsAnInpatient(),
               createdHospitalization.getWasPatientAdmittedAtTheFacilityAsAnInpatient(),
               "Was patient admitted at the facility as an inpatient is not correct");
+
+          softly.assertEquals(
+              collectedHospitalization.getDescription(),
+              createdHospitalization.getDescription(),
+              "Description is not correct");
 
           softly.assertAll();
         });
@@ -167,6 +180,10 @@ public class PreviousHospitalizationSteps implements En {
     webDriverHelpers.clickWebElementByText(ISOLATION_OPTIONS, option);
   }
 
+  private void fillDateOfIsolation(LocalDate date) {
+    webDriverHelpers.fillInWebElement(DATE_OF_ISOLATION, DATE_FORMATTER.format(date));
+  }
+
   private void selectRegion(String option) {
     webDriverHelpers.selectFromCombobox(REGION_COMBOBOX, option);
   }
@@ -189,6 +206,10 @@ public class PreviousHospitalizationSteps implements En {
 
   private void fillFacilityNameDescription(String text) {
     webDriverHelpers.fillInWebElement(FACILITY_NAME_DESCRIPTION_INPUT, text);
+  }
+
+  private void selectWasPatientAdmittedAtTheFacilityAsAnInpatient(String option) {
+    webDriverHelpers.clickWebElementByText(WAS_THE_PATIENT_ADMITTED_AS_INPATIENT_OPTIONS, option);
   }
 
   private PreviousHospitalization collectPreviousHospitalizationData() {

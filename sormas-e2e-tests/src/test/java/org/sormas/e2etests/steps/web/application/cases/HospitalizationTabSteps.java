@@ -69,6 +69,7 @@ public class HospitalizationTabSteps implements En {
           selectWasThePatientHospitalizedPreviously(
               hospitalization.getWasThePatientHospitalizedPreviously());
           selectLeftAgainstMedicalAdvice(hospitalization.getLeftAgainstMedicalAdvice());
+          fillDescription(hospitalization.getDescription());
 
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SUCCESSFUL_SAVE_POPUP);
@@ -221,6 +222,10 @@ public class HospitalizationTabSteps implements En {
     webDriverHelpers.clickWebElementByText(LEFT_AGAINST_MEDICAL_ADVICE_OPTIONS, option);
   }
 
+  private void fillDescription(String option) {
+    webDriverHelpers.fillInWebElement(DESCRIPTION_INPUT, option);
+  }
+
   private Hospitalization collectHospitalizationData() {
     return Hospitalization.builder()
         .dateOfVisitOrAdmission(
@@ -256,6 +261,7 @@ public class HospitalizationTabSteps implements En {
         .leftAgainstMedicalAdvice(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
                 LEFT_AGAINST_MEDICAL_ADVICE_OPTIONS))
+        .description(webDriverHelpers.getValueFromWebElement(DESCRIPTION_INPUT))
         .build();
   }
 
