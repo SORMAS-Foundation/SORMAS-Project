@@ -47,6 +47,7 @@ import de.symeda.sormas.app.databinding.RowReportAggregateLayoutBinding;
 import de.symeda.sormas.app.report.EpiWeekFilterOption;
 import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DateFormatHelper;
+import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 public class AggregateReportsFragment extends BaseReportFragment<FragmentReportsAggregateLayoutBinding> {
 
@@ -175,7 +176,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 		final User user = ConfigProvider.getUser();
 		reports = DatabaseHelper.getAggregateReportDao().getReportsByEpiWeekAndUser(epiWeek, user);
 
-		List<Disease> diseaseList = DatabaseHelper.getDiseaseConfigurationDao().getAllDiseases(true, false, false);
+		List<Disease> diseaseList = DiseaseConfigurationCache.getInstance().getAllDiseases(true, false, false);
 		Map<String, Disease> diseaseMap = diseaseList.stream().collect(Collectors.toMap(Disease::toString, disease -> disease));
 		Map<String, Disease> diseasesWithoutReport = new HashMap<>(diseaseMap);
 
