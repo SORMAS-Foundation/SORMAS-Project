@@ -11524,6 +11524,19 @@ CREATE TRIGGER delete_history_trigger_userroles_smsnotificationtypes
 
 INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (460, 'Replace hard-coded user roles with fully configurable user roles #4461', true);
 
+-- 2022-05-30 Add indices to improve person fetch #8946
+DROP INDEX IF EXISTS idx_cases_person_id;
+DROP INDEX IF EXISTS idx_eventparticipant_person_id;
+DROP INDEX IF EXISTS idx_contact_person_id;
+CREATE INDEX IF NOT EXISTS idx_person_changedate_uuid_id ON person USING btree (changedate ASC, uuid ASC, id ASC);
+CREATE INDEX IF NOT EXISTS idx_cases_person_id ON cases USING btree (person_id);
+CREATE INDEX IF NOT EXISTS idx_contact_person_id ON contact USING btree (person_id);
+CREATE INDEX IF NOT EXISTS idx_eventparticipant_person_id ON eventparticipant USING btree (person_id);
+CREATE INDEX IF NOT EXISTS idx_immunization_person_id ON immunization USING btree (person_id);
+CREATE INDEX IF NOT EXISTS idx_travelentry_person_id ON travelentry USING btree (person_id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (461, 'Add hash indices to improve person fetch #8946');
+
 -- 2022-05-17 Rename lab message to external message #8895
 ALTER TABLE labmessage RENAME TO externalmessage;
 ALTER TABLE externalmessage RENAME COLUMN labname to reportername;
@@ -11549,6 +11562,6 @@ INSERT INTO userroles_userrights (userrole_id, userright) SELECT userrole_id, 'E
 
 UPDATE systemevent SET type = 'FETCH_EXTERNAL_MESSAGES' WHERE type = 'FETCH_LAB_MESSAGES';
 
-INSERT INTO schema_version (version_number, comment) VALUES (461, 'Rename lab message to external message #8895');
+INSERT INTO schema_version (version_number, comment) VALUES (462, 'Rename lab message to external message #8895');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

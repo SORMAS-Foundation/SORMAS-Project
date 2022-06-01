@@ -13,16 +13,15 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.util;
+package de.symeda.sormas.backend.common;
 
 import java.util.Comparator;
 
-import de.symeda.sormas.backend.common.AbstractDomainObject;
-
-public class ChangeDateUuidComparator<T extends AbstractDomainObject> implements Comparator<T> {
+public class ChangeDateUuidComparator implements Comparator<AdoAttributes> {
 
 	@Override
-	public int compare(T o1, T o2) {
+	public int compare(AdoAttributes o1, AdoAttributes o2) {
+
 		if (o2 == null) {
 			return o1 == null ? 0 : 1;
 		}

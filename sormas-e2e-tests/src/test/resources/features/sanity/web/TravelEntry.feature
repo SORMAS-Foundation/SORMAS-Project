@@ -224,6 +224,12 @@ Feature: Create travel entries
       Then I search for second created travel entry by UUID for person in Travel Entries Directory
       And I check if second Travel Entry UUID is available in Travel Entries Directory List
 
+  @issue=SORDEV-7162 @env_de
+  Scenario: Test column structure in Travel Entries directory
+    Given I log in with National User
+    And I click on the Entries button from navbar
+    Then I check that the Entries table structure is correct DE specific
+
   @issue=SORDEV-9788 @env_de
   Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Travel Entry directory
     Given I log in with National User

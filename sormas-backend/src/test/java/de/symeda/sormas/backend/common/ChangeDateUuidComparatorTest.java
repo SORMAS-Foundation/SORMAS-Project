@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.util;
+package de.symeda.sormas.backend.common;
 
 import static org.junit.Assert.assertEquals;
 
@@ -25,11 +25,9 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
-import de.symeda.sormas.backend.common.AbstractDomainObject;
-
 public class ChangeDateUuidComparatorTest {
 
-	long TEST_TIME = 1642006703753L;
+	private static final long TEST_TIME = 1642006703753L;
 
 	@Test
 	public void testSortChangeDateUuid() {
@@ -53,16 +51,16 @@ public class ChangeDateUuidComparatorTest {
 		String uuid6 = "AAAAAA-AAAAAA-AAAAAA-AAAAAB";
 		String uuid7 = "AAAAAA-AAAAAA-AAAAAA-AAAAAA";
 
-		ArrayList<AbstractDomainObject> ados = new ArrayList<>();
-		ados.add(createAbstractDomainObject(testTimestamp7, uuid7));
-		ados.add(createAbstractDomainObject(testTimestamp6, uuid6));
-		ados.add(createAbstractDomainObject(testTimestamp5, uuid5));
-		ados.add(createAbstractDomainObject(testTimestamp4, uuid4));
-		ados.add(createAbstractDomainObject(testTimestamp3, uuid3));
-		ados.add(createAbstractDomainObject(testTimestamp2, uuid2));
-		ados.add(createAbstractDomainObject(testTimestamp1, uuid1));
+		List<AdoAttributes> ados = new ArrayList<>();
+		ados.add(create(testTimestamp7, uuid7));
+		ados.add(create(testTimestamp6, uuid6));
+		ados.add(create(testTimestamp5, uuid5));
+		ados.add(create(testTimestamp4, uuid4));
+		ados.add(create(testTimestamp3, uuid3));
+		ados.add(create(testTimestamp2, uuid2));
+		ados.add(create(testTimestamp1, uuid1));
 
-		List<AbstractDomainObject> sortedAdos = ados.stream().sorted(new ChangeDateUuidComparator<>()).collect(Collectors.toList());
+		List<AdoAttributes> sortedAdos = ados.stream().sorted(new ChangeDateUuidComparator()).collect(Collectors.toList());
 
 		assertEquals(uuid1, sortedAdos.get(0).getUuid());
 		assertEquals(uuid2, sortedAdos.get(1).getUuid());
@@ -74,11 +72,8 @@ public class ChangeDateUuidComparatorTest {
 	}
 
 	@NotNull
-	private AbstractDomainObject createAbstractDomainObject(Timestamp testTimestamp, String uuid) {
-		AbstractDomainObject testObject = new AbstractDomainObject() {
-		};
-		testObject.setChangeDate(testTimestamp);
-		testObject.setUuid(uuid);
+	private AdoAttributes create(Timestamp testTimestamp, String uuid) {
+		AdoAttributes testObject = new AdoAttributes(0L, uuid, testTimestamp);
 		return testObject;
 	}
 }
