@@ -600,7 +600,7 @@ public class CreateNewCaseSteps implements En {
           fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
 
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });

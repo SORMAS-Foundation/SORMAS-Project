@@ -491,6 +491,100 @@ Feature: Contacts end to end tests
     And I open the last created Person via API
     And I check that SEE CONTACTS FOR THIS PERSON button appears on Edit Person page
 
+  @issue=SORDEV-6140 @env_main
+  Scenario: Ask user to automatically convert some additional contacts and event participants to case
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    When I click on the Contacts button from navbar
+    Then I click on the NEW CONTACT button
+    And I fill a new contact form with specific person data
+    And I click on SAVE new contact button
+    Then I check the created data is correctly displayed on Edit Contact page
+    And I click Link Event button on Edit Contact Page
+    And I select 2 event in Link Event popup and create and Event Participant
+    And I click Save in Add Event Participant form on Edit Contact Page
+    And I click Link Event button on Edit Contact Page
+    And I select 3 event in Link Event popup and create and Event Participant
+    And I click Save in Add Event Participant form on Edit Contact Page
+    And I click Link Event button on Edit Contact Page
+    And I select 5 event in Link Event popup and create and Event Participant
+    And I click Save in Add Event Participant form on Edit Contact Page
+    When I navigate to the last created through API Event page via URL
+    And I click on the Event participant tab
+    And I add same person data as one used for Contact creation for event participant
+    And I navigate to the last created UI contact via the url
+   And I click on CONFIRMED CONTACT radio button Contact Person tab
+    Then I click SAVE button on Edit Contact Page
+    And I click Create Case from Contact button
+    And I create a new case for contact with specific data
+    And I click Yes, for some in conversion to case form
+    And I click on checkbox to select all available options
+    And I check if there are entities assigned to new created case from contact
+
+  @issue=SORDEV-6140 @env_main
+  Scenario: Ask user to automatically convert all additional contacts and event participants to case
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    When I click on the Contacts button from navbar
+    Then I click on the NEW CONTACT button
+    And I fill a new contact form with specific person data
+    And I click on SAVE new contact button
+    Then I check the created data is correctly displayed on Edit Contact page
+    And I click Link Event button on Edit Contact Page
+    And I select 2 event in Link Event popup and create and Event Participant
+    And I click Save in Add Event Participant form on Edit Contact Page
+    And I click Link Event button on Edit Contact Page
+    And I select 3 event in Link Event popup and create and Event Participant
+    And I click Save in Add Event Participant form on Edit Contact Page
+    And I click Link Event button on Edit Contact Page
+    And I select 5 event in Link Event popup and create and Event Participant
+    And I click Save in Add Event Participant form on Edit Contact Page
+    When I navigate to the last created through API Event page via URL
+    And I click on the Event participant tab
+    And I add same person data as one used for Contact creation for event participant
+    And I navigate to the last created UI contact via the url
+    And I click on CONFIRMED CONTACT radio button Contact Person tab
+    Then I click SAVE button on Edit Contact Page
+    And I click Create Case from Contact button
+    And I create a new case for contact with specific data
+    And I click Yes, for all in conversion to case form
+    And I check if there are entities assigned to new created case from contact
+
+  @issue=SORDEV-6140 @env_main
+  Scenario: Ask user to automatically convert no additional contacts and event participants to case
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    When I click on the Contacts button from navbar
+    Then I click on the NEW CONTACT button
+    And I fill a new contact form with specific person data
+    And I click on SAVE new contact button
+    Then I check the created data is correctly displayed on Edit Contact page
+    And I click Link Event button on Edit Contact Page
+    And I select 2 event in Link Event popup and create and Event Participant
+    And I click Save in Add Event Participant form on Edit Contact Page
+    And I click Link Event button on Edit Contact Page
+    And I select 3 event in Link Event popup and create and Event Participant
+    And I click Save in Add Event Participant form on Edit Contact Page
+    And I click Link Event button on Edit Contact Page
+    And I select 5 event in Link Event popup and create and Event Participant
+    And I click Save in Add Event Participant form on Edit Contact Page
+    When I navigate to the last created through API Event page via URL
+    And I click on the Event participant tab
+    And I add same person data as one used for Contact creation for event participant
+    And I navigate to the last created UI contact via the url
+    And I click on CONFIRMED CONTACT radio button Contact Person tab
+    Then I click SAVE button on Edit Contact Page
+    And I click Create Case from Contact button
+    And I create a new case for contact with specific data
+    And I click No in conversion to case form
+    And I check if there are no entities assigned to new created case from contact
+
     @issue=SORDEV-10265 @env_main
     Scenario: Manual archiving for contacts
       When API: I create a new person

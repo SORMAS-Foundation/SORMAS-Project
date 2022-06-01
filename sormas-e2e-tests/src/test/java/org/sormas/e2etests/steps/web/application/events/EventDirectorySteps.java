@@ -408,7 +408,6 @@ public class EventDirectorySteps implements En {
     When(
         "^I click on SAVE button in Link Event to group form$",
         () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_IN_LINK_FORM));
-
     When(
         "^I click on Linked Group Id on Edit Event Page$",
         () -> webDriverHelpers.clickOnWebElementBySelector(LINKED_EVENT_GROUP_ID));
