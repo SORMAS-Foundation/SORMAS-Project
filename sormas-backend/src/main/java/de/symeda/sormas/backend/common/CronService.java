@@ -80,7 +80,7 @@ public class CronService {
 	@EJB
 	private SystemEventFacadeEjbLocal systemEventFacade;
 	@EJB
-	private ExternalMessageFacadeEjbLocal labMessageFacade;
+	private ExternalMessageFacadeEjbLocal externalMessageFacade;
 	@EJB
 	private ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacade;
 	@EJB
@@ -199,9 +199,9 @@ public class CronService {
 	}
 
 	@Schedule(hour = "1", minute = "35", second = "0", persistent = false)
-	public void fetchLabMessages() {
+	public void fetchExternalMessages() {
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.EXTERNAL_MESSAGES)) {
-			labMessageFacade.fetchAndSaveExternalMessages(null);
+			externalMessageFacade.fetchAndSaveExternalMessages(null);
 		}
 	}
 
