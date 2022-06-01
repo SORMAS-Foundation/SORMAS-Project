@@ -15,10 +15,6 @@
 
 package de.symeda.sormas.app.backend.disease;
 
-import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
-
-import java.util.List;
-
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -31,7 +27,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.Transient;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.disease.AgeGroupUtils;
+import de.symeda.sormas.api.utils.AgeGroupUtils;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 
 @Entity(name = DiseaseConfiguration.TABLE_NAME)

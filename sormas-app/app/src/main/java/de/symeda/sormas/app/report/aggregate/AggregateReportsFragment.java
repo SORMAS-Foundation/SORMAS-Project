@@ -1,7 +1,6 @@
 package de.symeda.sormas.app.report.aggregate;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,11 +16,9 @@ import android.view.LayoutInflater;
 
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ObservableArrayList;
-import androidx.databinding.ViewDataBinding;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.disease.AgeGroupUtils;
+import de.symeda.sormas.api.utils.AgeGroupUtils;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -41,7 +38,6 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.databinding.FragmentReportsAggregateLayoutBinding;
 import de.symeda.sormas.app.databinding.RowReportAggregateAgegroupLayoutBinding;
-import de.symeda.sormas.app.databinding.RowReportAggregateAgegroupLayoutBindingImpl;
 import de.symeda.sormas.app.databinding.RowReportAggregateDiseaseLayoutBinding;
 import de.symeda.sormas.app.databinding.RowReportAggregateLayoutBinding;
 import de.symeda.sormas.app.report.EpiWeekFilterOption;
