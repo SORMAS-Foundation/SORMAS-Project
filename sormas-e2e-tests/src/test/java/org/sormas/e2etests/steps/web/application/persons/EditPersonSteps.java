@@ -137,7 +137,7 @@ public class EditPersonSteps implements En {
     When(
         "I check that previous edited person is correctly displayed in Edit Person page",
         () -> {
-          TimeUnit.SECONDS.sleep(1); // wait for reaction
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(PRESENT_CONDITION_INPUT);
           collectedPerson = collectPersonData();
@@ -469,8 +469,8 @@ public class EditPersonSteps implements En {
         .lastName(contactInfo.getLastName())
         .dateOfBirth(contactInfo.getDateOfBirth())
         .uuid(contactInfo.getUuid())
-        .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
         .presentConditionOfPerson(webDriverHelpers.getValueFromWebElement(PRESENT_CONDITION_INPUT))
+        .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
         .typeOfOccupation(webDriverHelpers.getValueFromWebElement(TYPE_OF_OCCUPATION_INPUT))
         .region(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
         .district(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
