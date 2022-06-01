@@ -11556,7 +11556,7 @@ UPDATE featureconfiguration SET featuretype = 'EXTERNAL_MESSAGES' WHERE featuret
 UPDATE featureconfiguration SET featuretype = 'SORMAS_TO_SORMAS_SHARE_EXTERNAL_MESSAGES' WHERE featuretype = 'SORMAS_TO_SORMAS_SHARE_LAB_MESSAGES';
 
 UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES' WHERE userright = 'PERFORM_BULK_OPERATIONS_LAB_MESSAGES';
-UPDATE userroles_userrights SET userright = 'EXTERNAL_MESSAGE_VIEW' WHERE userright = 'LAB_MESSAGE';
+UPDATE userroles_userrights SET userright = 'EXTERNAL_MESSAGE_VIEW' WHERE userright = 'LAB_MESSAGES';
 INSERT INTO userroles_userrights (userrole_id, userright) SELECT userrole_id, 'EXTERNAL_MESSAGE_PROCESS' FROM userroles_userrights WHERE userright = 'EXTERNAL_MESSAGE_VIEW';
 INSERT INTO userroles_userrights (userrole_id, userright) SELECT userrole_id, 'EXTERNAL_MESSAGE_DELETE' FROM userroles_userrights WHERE userright = 'EXTERNAL_MESSAGE_VIEW';
 
