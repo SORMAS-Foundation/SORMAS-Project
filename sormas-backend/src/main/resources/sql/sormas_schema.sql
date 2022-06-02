@@ -11567,7 +11567,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (462, 'Rename lab me
 -- 2022-05-30 Handle users without userroles #4461
 INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (463, 'Handle users without userroles #4461', true);
 
--- 2022-06-02 Fixed triggers on externalmessage table #4461
+-- 2022-06-02 Fixed triggers on externalmessage table #8895
 DROP TRIGGER IF EXISTS versioning_trigger ON externalmessage;
 CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE ON externalmessage
     FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'externalmessage_history', true);
@@ -11576,6 +11576,6 @@ CREATE TRIGGER delete_history_trigger
     AFTER DELETE ON externalmessage
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('externalmessage_history', 'id');
 
-INSERT INTO schema_version (version_number, comment) VALUES (464, 'Fixed triggers on externalmessage table #4461');
+INSERT INTO schema_version (version_number, comment) VALUES (464, 'Fixed triggers on externalmessage table #8895');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
