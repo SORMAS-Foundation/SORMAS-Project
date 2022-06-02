@@ -470,7 +470,6 @@ public class EditPersonSteps implements En {
         .dateOfBirth(contactInfo.getDateOfBirth())
         .uuid(contactInfo.getUuid())
         .presentConditionOfPerson(webDriverHelpers.getValueFromWebElement(PRESENT_CONDITION_INPUT))
-        .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
         .typeOfOccupation(webDriverHelpers.getValueFromWebElement(TYPE_OF_OCCUPATION_INPUT))
         .region(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
         .district(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
@@ -500,6 +499,7 @@ public class EditPersonSteps implements En {
                 .trim())
         .phoneNumber(webDriverHelpers.getTextFromWebElement(PHONE_FIELD))
         .emailAddress(webDriverHelpers.getTextFromWebElement(EMAIL_FIELD))
+        .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
         .build();
   }
 
