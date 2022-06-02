@@ -498,11 +498,13 @@ Feature: Case end to end tests
     And I click on the NEW CASE button
     When I fill new case with for one person with specified date for month ago
     Then I click on save case button
+    And I collect uuid of the case
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     Then I fill second new case with for one person with specified date for present day
     And I confirm changes in selected Case
     And I confirm Pick person in Case
+    And I collect uuid of the case
     Then I click on the Cases button from navbar
     And I filter Cases by created person name
     Then I select second created case for person from Cases list
@@ -535,11 +537,13 @@ Feature: Case end to end tests
     And I click on the NEW CASE button
     When I fill new case with for one person with specified date for month ago
     Then I click on save case button
+    And I collect uuid of the case
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     Then I fill second new case with for one person with specified date for present day
     And I confirm changes in selected Case
     And I confirm Pick person in Case
+    And I collect uuid of the case
     Then I click on the Cases button from navbar
     And I filter Cases by created person name
     Then I select second created case for person from Cases list
@@ -751,7 +755,6 @@ Feature: Case end to end tests
     And I select first existing contact from the Case Contact Import popup
     And I check that an import success notification appears in the Import Case Contact popup
     Then I delete exported file from Case Contact Directory
-
 
   @issue=SORDEV-7456 @env_de
   Scenario: Check different facility types depending on type of place in Epidemiological Tab
@@ -1031,7 +1034,7 @@ Feature: Case end to end tests
     Then I click on New Sample
     And I check if value "Urine p.m" is unavailable in Type of Sample combobox on Create new Sample page
 
-  @env_main @issue=SORDEV-9155
+  @issue=SORDEV-9155 @env_main
   Scenario: Test Vaccinations get lost when merging cases with duplicate persons
     Given I log in as a Admin User
     And I click on the Cases button from navbar
@@ -1059,7 +1062,7 @@ Feature: Case end to end tests
     And I open last created case
     And I check if Vaccination Status is set to "Vaccinated" on Edit Case page
 
-  @env_main @issue=SORDEV-7460
+  @issue=SORDEV-7460 @env_main
   Scenario: Test Extend the exposure and event startDate and endDate to include a startTime and endTime
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -1079,7 +1082,7 @@ Feature: Case end to end tests
     And I collect the Date of Start and End Exposure from Exposure page
     Then I check that Date field displays start date and end date in table Exposure on Epidemiological data tab
 
-    @env_main @issue=SORDEV-5613
+     @issue=SORDEV-5613 @env_main
       Scenario: Option to attach document like pdf, word, jpeg to cases
       Given I log in with National User
       When I click on the Cases button from navbar
@@ -1121,3 +1124,47 @@ Feature: Case end to end tests
     And I check that Mother's Maiden Name is not visible
     And I check that Mother's Name is not visible
     And I check that Father's Name is not visible
+
+  @issue=SORDEV-9788 @env_de
+  Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Case directory
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    Then I click on the NEW CASE button
+    And I click on the person search button in new case form
+    Then I check that National Health ID is not visible in Person search popup
+    And I check that Passport Number is not visible in Person search popup
+    And I check that Nickname is not visible in Person search popup
+
+  @issue=SORDEV-9788 @env_de
+  Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Case Contact directory
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    When I open last created case
+    And I open the Case Contacts tab
+    Then I click on new contact button from Case Contacts tab
+    And I click on the person search button in create new contact form
+    Then I check that National Health ID is not visible in Person search popup
+    And I check that Passport Number is not visible in Person search popup
+    And I check that Nickname is not visible in Person search popup
+
+  @issue=SORDEV-9946 @env_de
+  Scenario: Test Hide country specific fields in the 'Pick or create person' form of the duplicate detection pop-up, in German and French systems
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill a new case form with same person details for DE version
+    And I click on Save button in Case form
+    Then I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill a new case form with same person details for DE version
+    And I click on Save button in Case form
+    Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
+    And I open the Case Contacts tab
+    And I click on the NEW CONTACT button
+    And I fill a new contact form with same person data for DE version
+    And I click on SAVE new contact button
+    And I open the Case Contacts tab
+    And I click on the NEW CONTACT button
+    And I fill a new contact form with same person data for DE version
+    And I click on SAVE new contact case button
+    Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup

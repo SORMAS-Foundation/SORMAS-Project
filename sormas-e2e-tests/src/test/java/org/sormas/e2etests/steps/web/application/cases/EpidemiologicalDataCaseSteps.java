@@ -341,6 +341,7 @@ public class EpidemiologicalDataCaseSteps implements En {
               TypeOfActivityExposure.ListOfTypeOfActivityExposureDE;
           for (String value : ListOfTypeOfActivityExposure) {
             webDriverHelpers.selectFromCombobox(TYPE_OF_ACTIVITY_COMBOBOX, value);
+            webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           }
         });
     When(

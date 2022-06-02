@@ -184,6 +184,8 @@ public class EditCasePage {
       By.xpath("//*[contains(text(),'Pick or create case')]");
   public static final By CREATE_NEW_PERSON_CHECKBOX =
       By.xpath("//label[text()='Create a new person']");
+  public static final By SELECT_MATCHING_PERSON_CHECKBOX =
+      By.xpath("//label[text()='Select a matching person']");
   public static final By CREATE_NEW_CASE_CHECKBOX = By.xpath("//label[text()='Create a new case']");
   public static final By CURRENT_HOSPITALIZATION_POPUP =
       By.xpath("//*[contains(text(),'Current hospitalization')]");
