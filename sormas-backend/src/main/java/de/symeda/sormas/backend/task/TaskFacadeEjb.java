@@ -444,28 +444,6 @@ public class TaskFacadeEjb implements TaskFacade {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	private Expression<Object> getIndexJurisdictionExpression(
-		CriteriaBuilder cb,
-		Join<?, ?> caseResponsibleJurisdictionJoin,
-		Join<?, ?> caseJurisdictionJoin,
-		Join<?, ?> contactJurisdictionJoin,
-		Join<?, ?> eventJurisdictionJoin,
-		Join<?, ?> travelEntryResponsibleJurisdictionJoin,
-		String propertyName) {
-		return cb.selectCase()
-			.when(cb.isNotNull(caseResponsibleJurisdictionJoin), caseResponsibleJurisdictionJoin.get(propertyName))
-			.otherwise(
-				cb.selectCase()
-					.when(cb.isNotNull(caseJurisdictionJoin), caseJurisdictionJoin.get(propertyName))
-					.otherwise(
-						cb.selectCase()
-							.when(cb.isNotNull(contactJurisdictionJoin), contactJurisdictionJoin.get(propertyName))
-							.otherwise(
-								cb.selectCase()
-									.when(cb.isNotNull(eventJurisdictionJoin), eventJurisdictionJoin.get(propertyName))
-									.otherwise(travelEntryResponsibleJurisdictionJoin.get(propertyName)))));
-	}
-
 	@Override
 	public List<TaskIndexDto> getIndexList(TaskCriteria taskCriteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
@@ -702,6 +680,29 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		return tasks;
+	}
+
+	private Expression<Object> getIndexJurisdictionExpression(
+		CriteriaBuilder cb,
+		Join<?, ?> caseResponsibleJurisdictionJoin,
+		Join<?, ?> caseJurisdictionJoin,
+		Join<?, ?> contactJurisdictionJoin,
+		Join<?, ?> eventJurisdictionJoin,
+		Join<?, ?> travelEntryResponsibleJurisdictionJoin,
+		String propertyName) {
+
+		return cb.selectCase()
+			.when(cb.isNotNull(caseResponsibleJurisdictionJoin), caseResponsibleJurisdictionJoin.get(propertyName))
+			.otherwise(
+				cb.selectCase()
+					.when(cb.isNotNull(caseJurisdictionJoin), caseJurisdictionJoin.get(propertyName))
+					.otherwise(
+						cb.selectCase()
+							.when(cb.isNotNull(contactJurisdictionJoin), contactJurisdictionJoin.get(propertyName))
+							.otherwise(
+								cb.selectCase()
+									.when(cb.isNotNull(eventJurisdictionJoin), eventJurisdictionJoin.get(propertyName))
+									.otherwise(travelEntryResponsibleJurisdictionJoin.get(propertyName)))));
 	}
 
 	@Override
