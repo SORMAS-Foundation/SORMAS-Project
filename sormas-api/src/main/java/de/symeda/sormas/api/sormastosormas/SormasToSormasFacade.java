@@ -51,5 +51,5 @@ public interface SormasToSormasFacade {
 
 	boolean isSharingEventsEnabledForUser();
 
-	boolean isSharingLabMessagesEnabledForUser();
+	boolean isSharingExternalMessagesEnabledForUser();
 }

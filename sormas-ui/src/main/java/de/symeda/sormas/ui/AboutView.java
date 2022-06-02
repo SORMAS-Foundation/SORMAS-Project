@@ -58,7 +58,6 @@ import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -142,10 +141,10 @@ public class AboutView extends VerticalLayout implements View {
 			infoLayout.replaceComponent(versionLabel, commitLink);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.LAB_MESSAGES)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EXTERNAL_MESSAGES)) {
 			addExternalServiceVersion(
-				Captions.aboutLabMessageAdapter,
-				() -> FacadeProvider.getLabMessageFacade().getLabMessagesAdapterVersion(),
+				Captions.aboutExternalMessageAdapter,
+				() -> FacadeProvider.getExternalMessageFacade().getExternalMessagesAdapterVersion(),
 				infoLayout);
 		}
 

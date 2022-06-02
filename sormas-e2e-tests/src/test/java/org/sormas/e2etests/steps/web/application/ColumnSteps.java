@@ -162,6 +162,38 @@ public class ColumnSteps implements En {
         });
 
     When(
+        "I check that column {int} is sorted by German date in ascending order",
+        (Integer col) -> {
+          TimeUnit.SECONDS.sleep(3); // For preventing premature data collection
+          List<String> rawColumnData = getTableColumnDataByIndex(col, 10);
+          rawColumnData.replaceAll(element -> nullifyEmptyString(element));
+          rawColumnData.replaceAll(element -> makeDateSortableDE(element));
+          List<String> ascColumnData = new ArrayList<>(rawColumnData);
+          ascColumnData.sort(Comparator.nullsLast(Comparator.naturalOrder()));
+          softly.assertEquals(
+              rawColumnData,
+              ascColumnData,
+              "Column " + col.toString() + " is not correctly sorted!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check that column {int} is sorted by German date in descending order",
+        (Integer col) -> {
+          TimeUnit.SECONDS.sleep(3); // For preventing premature data collection
+          List<String> rawColumnData = getTableColumnDataByIndex(col, 10);
+          rawColumnData.replaceAll(element -> nullifyEmptyString(element));
+          rawColumnData.replaceAll(element -> makeDateSortableDE(element));
+          List<String> desColumnData = new ArrayList<>(rawColumnData);
+          desColumnData.sort(Comparator.nullsFirst(Comparator.reverseOrder()));
+          softly.assertEquals(
+              rawColumnData,
+              desColumnData,
+              "Column " + col.toString() + " is not correctly sorted!");
+          softly.assertAll();
+        });
+
+    When(
         "I check that column {int} is sorted by date and time in ascending order",
         (Integer col) -> {
           TimeUnit.SECONDS.sleep(3); // For preventing premature data collection
@@ -241,6 +273,15 @@ public class ColumnSteps implements En {
     if (date != null) {
       date =
           LocalDate.parse(date, DateTimeFormatter.ofPattern("M/d/yyyy"))
+              .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
+    return date;
+  }
+
+  private String makeDateSortableDE(String date) {
+    if (date != null) {
+      date =
+          LocalDate.parse(date, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
               .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
     return date;

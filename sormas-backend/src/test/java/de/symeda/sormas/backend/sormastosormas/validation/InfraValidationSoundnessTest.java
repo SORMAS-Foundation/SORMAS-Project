@@ -42,8 +42,8 @@ import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
+import de.symeda.sormas.api.sormastosormas.externalmessage.SormasToSormasExternalMessageDto;
 import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
-import de.symeda.sormas.api.sormastosormas.labmessage.SormasToSormasLabMessageDto;
 import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
@@ -68,8 +68,8 @@ import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseD
 import de.symeda.sormas.backend.sormastosormas.entities.contact.SormasToSormasContactDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.eventparticipant.SormasToSormasEventParticipantDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.immunization.SormasToSormasImmunizationDtoValidator;
-import de.symeda.sormas.backend.sormastosormas.entities.labmessage.SormasToSormasLabMessageDtoValidator;
 
 public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 
@@ -81,7 +81,7 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 	protected SormasToSormasEventDtoValidator eventDtoValidator;
 	protected SormasToSormasEventParticipantDtoValidator eventParticipantDtoValidator;
 	protected SormasToSormasImmunizationDtoValidator immunizationDtoValidator;
-	protected SormasToSormasLabMessageDtoValidator labMessageDtoValidator;
+	protected SormasToSormasExternalMessageDtoValidator labMessageDtoValidator;
 
 	@Override
 	public void init() {
@@ -534,9 +534,9 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 		Set<String> expected = getExpected(entity, rootNode);
 		if (expected.isEmpty()) {
 			assertEquals(
-				"SormasToSormasLabMessageDto have no infra. fields as of now, therefore, the are not populated at all. "
+				"SormasToSormasExternalMessageDto have no infra. fields as of now, therefore, the are not populated at all. "
 					+ "Other types are not expected to be completely empty.",
-				"de.symeda.sormas.api.sormastosormas.labmessage.SormasToSormasLabMessageDto",
+				"de.symeda.sormas.api.sormastosormas.externalmessage.SormasToSormasExternalMessageDto",
 				typeResolver.resolve(entity.getClass()).getTypeName());
 			return;
 		}
@@ -559,10 +559,10 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 		Set<String> expected = getExpected(entity, rootNode);
 		if (expected.isEmpty()) {
 			assertEquals(
-					"SormasToSormasLabMessageDto have no infra. fields as of now, therefore, the are not populated at all. "
-							+ "Other types are not expected to be completely empty.",
-					"de.symeda.sormas.api.sormastosormas.labmessage.SormasToSormasLabMessageDto",
-					typeResolver.resolve(entity.getClass()).getTypeName());
+				"SormasToSormasExternalMessageDto have no infra. fields as of now, therefore, the are not populated at all. "
+					+ "Other types are not expected to be completely empty.",
+				"de.symeda.sormas.api.sormastosormas.externalmessage.SormasToSormasExternalMessageDto",
+				typeResolver.resolve(entity.getClass()).getTypeName());
 			return;
 		}
 		Set<String> foundFieldsIncoming = getRejectedFields(getPreviewValidationErrors(entity, validator));
@@ -734,9 +734,9 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 	public void testShareLabMessageValidation()
 		throws NoSuchFieldException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 
-		class LabMessageDtoRootNode extends DtoRootNode<SormasToSormasLabMessageDto> {
+		class LabMessageDtoRootNode extends DtoRootNode<SormasToSormasExternalMessageDto> {
 
-			public LabMessageDtoRootNode(SormasToSormasLabMessageDto dtoUnderTest) {
+			public LabMessageDtoRootNode(SormasToSormasExternalMessageDto dtoUnderTest) {
 				super(dtoUnderTest);
 			}
 		}
@@ -749,7 +749,7 @@ public abstract class InfraValidationSoundnessTest extends AbstractBeanTest {
 			}
 		}
 		before();
-		SormasToSormasLabMessageDto labMessageDto = new SormasToSormasLabMessageDto();
+		SormasToSormasExternalMessageDto labMessageDto = new SormasToSormasExternalMessageDto();
 		LabMessageDtoRootNode rootNode = new LabMessageDtoRootNode(labMessageDto);
 		assertValidationDto(labMessageDto, rootNode, labMessageDtoValidator);
 	}

@@ -498,11 +498,13 @@ Feature: Case end to end tests
     And I click on the NEW CASE button
     When I fill new case with for one person with specified date for month ago
     Then I click on save case button
+    And I collect uuid of the case
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     Then I fill second new case with for one person with specified date for present day
     And I confirm changes in selected Case
     And I confirm Pick person in Case
+    And I collect uuid of the case
     Then I click on the Cases button from navbar
     And I filter Cases by created person name
     Then I select second created case for person from Cases list
@@ -535,11 +537,13 @@ Feature: Case end to end tests
     And I click on the NEW CASE button
     When I fill new case with for one person with specified date for month ago
     Then I click on save case button
+    And I collect uuid of the case
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     Then I fill second new case with for one person with specified date for present day
     And I confirm changes in selected Case
     And I confirm Pick person in Case
+    And I collect uuid of the case
     Then I click on the Cases button from navbar
     And I filter Cases by created person name
     Then I select second created case for person from Cases list
@@ -1121,3 +1125,53 @@ Feature: Case end to end tests
     And I check that Mother's Maiden Name is not visible
     And I check that Mother's Name is not visible
     And I check that Father's Name is not visible
+
+  @issue=SORDEV-9788 @env_de
+  Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Case directory
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    Then I click on the NEW CASE button
+    And I click on the person search button in new case form
+    Then I check that National Health ID is not visible in Person search popup
+    And I check that Passport Number is not visible in Person search popup
+    And I check that Nickname is not visible in Person search popup
+
+  @issue=SORDEV-9788 @env_de
+  Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Case Contact directory
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    When I open last created case
+    And I open the Case Contacts tab
+    Then I click on new contact button from Case Contacts tab
+    And I click on the person search button in create new contact form
+    Then I check that National Health ID is not visible in Person search popup
+    And I check that Passport Number is not visible in Person search popup
+    And I check that Nickname is not visible in Person search popup
+
+
+
+
+
+
+
+  @env_de @issue=SORDEV-9946
+  Scenario: Test Hide country specific fields in the 'Pick or create person' form of the duplicate detection pop-up, in German and French systems
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill a new case form with same person details for DE version
+    And I click on Save button in Case form
+    Then I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill a new case form with same person details for DE version
+    And I click on Save button in Case form
+    Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
+    And I open the Case Contacts tab
+    And I click on the NEW CONTACT button
+    And I fill a new contact form with same person data for DE version
+    And I click on SAVE new contact button
+    And I open the Case Contacts tab
+    And I click on the NEW CONTACT button
+    And I fill a new contact form with same person data for DE version
+    And I click on SAVE new contact case button
+    Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
