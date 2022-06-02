@@ -546,8 +546,13 @@ public class StartupShutdownService {
 
 		User existingUser = userService.getByUserName(username);
 
+		boolean allUserRolesExist = userRoles != null && !userRoles.isEmpty() && !userRoles.stream().anyMatch(userRole -> userRole == null);
 		if (existingUser == null) {
-			if (!DataHelper.isNullOrEmpty(password)) {
+			if (!allUserRolesExist) {
+				logger.warn(
+					"User '" + firstName + " " + lastName
+						+ "' was not created because at least one of the user roles to be assigned cannot be found in the database.");
+			} else if (!DataHelper.isNullOrEmpty(password)) {
 				User newUser = MockDataGenerator.createUser(userRoles, firstName, lastName, password);
 				newUser.setUserName(username);
 
@@ -557,14 +562,26 @@ public class StartupShutdownService {
 		} else if (!DataHelper.equal(existingUser.getPassword(), PasswordHelper.encodePassword(password, existingUser.getSeed()))) {
 			existingUser.setSeed(PasswordHelper.createPass(16));
 			existingUser.setPassword(PasswordHelper.encodePassword(password, existingUser.getSeed()));
-			existingUser.setUserRoles(userRoles);
+			if (allUserRolesExist) {
+				existingUser.setUserRoles(userRoles);
+			} else {
+				logger.warn(
+					"User roles of user '" + firstName + " " + lastName
+						+ "' were not updated because at least one of the user roles to be assigned cannot be found in the database.");
+			}
 
 			userService.persist(existingUser);
 			passwordResetEvent.fire(new PasswordResetEvent(existingUser));
 		} else if (userRoles.stream().anyMatch(r -> !existingUser.getUserRoles().contains(r))
 			|| existingUser.getUserRoles().stream().anyMatch(r -> !userRoles.contains(r))) {
-			existingUser.setUserRoles(userRoles);
-			userService.persist(existingUser);
+			if (allUserRolesExist) {
+				existingUser.setUserRoles(userRoles);
+				userService.persist(existingUser);
+			} else {
+				logger.warn(
+					"User roles of user '" + firstName + " " + lastName
+						+ "' were not updated because at least one of the user roles to be assigned cannot be found in the database.");
+			}
 		}
 
 	}
