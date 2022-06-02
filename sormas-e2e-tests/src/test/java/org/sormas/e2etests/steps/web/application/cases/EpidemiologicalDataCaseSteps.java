@@ -62,6 +62,7 @@ import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPag
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_WINDOW_CONTACT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.ANIMAL_CONTACT_LABEL;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_ACTIVITY_DETAILS;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_DETAILS;
@@ -660,6 +661,21 @@ public class EpidemiologicalDataCaseSteps implements En {
               generatedExposureData.getExposureDescription(),
               values.get(5),
               "Exposure descriptions are not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if Exposure Type of activity has not a ([^\"]*) option",
+        (String option) -> {
+          softly.assertFalse(
+              webDriverHelpers.checkIfElementExistsInCombobox(TYPE_OF_ACTIVITY_COMBOBOX, option));
+          softly.assertAll();
+        });
+
+    When(
+        "I check if Exposure details has a ([^\"]*) option",
+        (String option) -> {
+          softly.assertFalse(webDriverHelpers.isElementVisibleWithTimeout(ANIMAL_CONTACT_LABEL, 1));
           softly.assertAll();
         });
   }
