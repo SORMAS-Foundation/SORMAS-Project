@@ -67,6 +67,7 @@ import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.util.IterableHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless
@@ -342,6 +343,9 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		case REGION:
 			baseInfrastructure = regionService.getByUuid(infrastructureUuid);
 			break;
+		case NATION:
+			baseInfrastructure = null;
+			break;
 		default:
 			throw new IllegalArgumentException("Unsupported jurisdiction level: " + jurisdictionLevel.name());
 		}
@@ -350,20 +354,28 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		CriteriaQuery<UserReference> cq = cb.createQuery(UserReference.class);
 		Root<UserReference> root = cq.from(UserReference.class);
 		Root<User> userRoot = cq.from(User.class);
+		UserQueryContext queryContext = new UserQueryContext(cb, cq, userRoot);
+		UserJoins joins = queryContext.getJoins();
 		cq.select(root);
 
 		Predicate filter = CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, root), cb.equal(root.get(UserReference.ID), userRoot.get(User.ID)));
 
 		Predicate jurisdictionFilter = null;
 		while (jurisdictionLevel.getOrder() >= allowedJurisdictionLevel.getOrder()) {
-			Predicate jurisdictionPredicate = createUserRefsByInfrastructurePredicate(cb, userRoot, baseInfrastructure.getUuid(), jurisdictionLevel);
+			Predicate jurisdictionPredicate = createUserRefsByInfrastructurePredicate(
+				cb,
+				joins,
+				baseInfrastructure != null ? baseInfrastructure.getUuid() : null,
+				jurisdictionLevel);
 			jurisdictionFilter = CriteriaBuilderHelper.or(cb, jurisdictionFilter, jurisdictionPredicate);
 
-			if (jurisdictionLevel.getOrder() > 2) {
+			if (jurisdictionLevel.getOrder() > 1) {
 				jurisdictionLevel = baseInfrastructure instanceof Facility && ((Facility) baseInfrastructure).getCommunity() != null
 					? JurisdictionLevel.COMMUNITY
 					: InfrastructureHelper.getSuperordinateJurisdiction(jurisdictionLevel);
-				baseInfrastructure = getParentInfrastructure(baseInfrastructure, jurisdictionLevel);
+				if (jurisdictionLevel.getOrder() > 1) {
+					baseInfrastructure = JurisdictionHelper.getParentInfrastructure(baseInfrastructure, jurisdictionLevel);
+				}
 			} else {
 				break;
 			}
@@ -384,28 +396,9 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 	}
 
-	private InfrastructureAdo getParentInfrastructure(InfrastructureAdo infrastructure, JurisdictionLevel parentJurisdictionLevel) {
-
-		if (infrastructure instanceof Facility) {
-			if (parentJurisdictionLevel == JurisdictionLevel.COMMUNITY) {
-				return ((Facility) infrastructure).getCommunity();
-			} else {
-				return ((Facility) infrastructure).getDistrict();
-			}
-		} else if (infrastructure instanceof PointOfEntry) {
-			return ((PointOfEntry) infrastructure).getDistrict();
-		} else if (infrastructure instanceof Community) {
-			return ((Community) infrastructure).getDistrict();
-		} else if (infrastructure instanceof District) {
-			return ((District) infrastructure).getRegion();
-		} else {
-			throw new IllegalArgumentException("Infrastructure must be on district level or below to have a parent infrastructure");
-		}
-	}
-
 	private Predicate createUserRefsByInfrastructurePredicate(
 		CriteriaBuilder cb,
-		Root<User> root,
+		UserJoins joins,
 		String infrastructureUuid,
 		JurisdictionLevel jurisdictionLevel) {
 
@@ -413,31 +406,34 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 
 		switch (jurisdictionLevel) {
 		case HEALTH_FACILITY:
-			predicate = cb.equal(root.get(User.HEALTH_FACILITY).get(Facility.UUID), infrastructureUuid);
+			predicate = cb.equal(joins.getHealthFacility().get(Facility.UUID), infrastructureUuid);
 			break;
 		case LABORATORY:
 		case EXTERNAL_LABORATORY:
-			predicate = cb.equal(root.get(User.LABORATORY).get(Facility.UUID), infrastructureUuid);
+			predicate = cb.equal(joins.getLaboratory().get(Facility.UUID), infrastructureUuid);
 			break;
 		case COMMUNITY:
 			predicate = cb.and(
-				cb.isNull(root.get(User.HEALTH_FACILITY)),
-				cb.isNull(root.get(User.LABORATORY)),
-				cb.equal(root.get(User.COMMUNITY).get(Community.UUID), infrastructureUuid));
+				cb.isNull(joins.getHealthFacility()),
+				cb.isNull(joins.getLaboratory()),
+				cb.equal(joins.getCommunity().get(Community.UUID), infrastructureUuid));
 			break;
 		case POINT_OF_ENTRY:
-			predicate = cb.equal(root.get(User.POINT_OF_ENTRY).get(PointOfEntry.UUID), infrastructureUuid);
+			predicate = cb.equal(joins.getPointOfEntry().get(PointOfEntry.UUID), infrastructureUuid);
 			break;
 		case DISTRICT:
 			predicate = cb.and(
-				cb.isNull(root.get(User.COMMUNITY)),
-				cb.isNull(root.get(User.HEALTH_FACILITY)),
-				cb.isNull(root.get(User.LABORATORY)),
-				cb.isNull(root.get(User.POINT_OF_ENTRY)),
-				cb.equal(root.get(User.DISTRICT).get(District.UUID), infrastructureUuid));
+				cb.isNull(joins.getCommunity()),
+				cb.isNull(joins.getHealthFacility()),
+				cb.isNull(joins.getLaboratory()),
+				cb.isNull(joins.getPointOfEntry()),
+				cb.equal(joins.getDistrict().get(District.UUID), infrastructureUuid));
 			break;
 		case REGION:
-			predicate = cb.and(cb.isNull(root.get(User.DISTRICT)), cb.equal(root.get(User.REGION).get(Region.UUID), infrastructureUuid));
+			predicate = cb.and(cb.isNull(joins.getDistrict()), cb.equal(joins.getRegion().get(Region.UUID), infrastructureUuid));
+			break;
+		case NATION:
+			predicate = cb.isNull(joins.getRegion());
 			break;
 		default:
 			break;

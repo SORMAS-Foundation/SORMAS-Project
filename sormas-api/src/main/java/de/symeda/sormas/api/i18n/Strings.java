@@ -852,6 +852,7 @@ public interface Strings {
 	String infoStatisticsResults = "infoStatisticsResults";
 	String infoSurveillanceDashboard = "infoSurveillanceDashboard";
 	String infoSyncUsers = "infoSyncUsers";
+	String infoTasksWithMultipleJurisdictionsSelected = "infoTasksWithMultipleJurisdictionsSelected";
 	String infoUploadDocumentTemplate = "infoUploadDocumentTemplate";
 	String infoUsageOfEditableCampaignGrids = "infoUsageOfEditableCampaignGrids";
 	String infoUserEmail = "infoUserEmail";

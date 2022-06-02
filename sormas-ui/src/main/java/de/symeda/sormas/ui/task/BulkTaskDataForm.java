@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.task;
 
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_4;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_5;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 
@@ -28,6 +29,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 
@@ -38,6 +42,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -48,16 +53,19 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
 public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 
 	public static final String ASSIGNEE_CHECKBOX = "assigneeCheckbox";
+	public static final String ASSIGNEE_HINT = "assigneeHint";
 	public static final String PRORITY_CHECKBOX = "prorityCheckbox";
 	public static final String STATUS_CHECKBOX = "statusCheckbox";
 	private static final long serialVersionUID = 1L;
 	private static final String HTML_LAYOUT = fluidRowLocsCss(VSPACE_4, ASSIGNEE_CHECKBOX)
+		+ fluidRowLocs(ASSIGNEE_HINT)
 		+ fluidRowLocs(TaskBulkEditData.TASK_ASSIGNEE)
 		+ fluidRowLocsCss(VSPACE_4, PRORITY_CHECKBOX)
 		+ fluidRowLocs(TaskBulkEditData.TASK_PRIORITY)
@@ -104,9 +112,7 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 		NullableOptionGroup priority = addField(TaskBulkEditData.TASK_PRIORITY, NullableOptionGroup.class);
 		priority.setEnabled(false);
 		FieldHelper.setRequiredWhen(getFieldGroup(), priorityCheckbox, Arrays.asList(TaskBulkEditData.TASK_PRIORITY), Arrays.asList(true));
-		priorityCheckbox.addValueChangeListener(e -> {
-			priority.setEnabled((boolean) e.getProperty().getValue());
-		});
+		priorityCheckbox.addValueChangeListener(e -> priority.setEnabled((boolean) e.getProperty().getValue()));
 
 		assigneeCheckbox = new CheckBox(I18nProperties.getCaption(Captions.bulkTaskAssignee));
 		getContent().addComponent(assigneeCheckbox, ASSIGNEE_CHECKBOX);
@@ -114,6 +120,13 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 		assignee.setEnabled(false);
 		FieldHelper
 			.addSoftRequiredStyleWhen(getFieldGroup(), assigneeCheckbox, Arrays.asList(TaskBulkEditData.TASK_ASSIGNEE), Arrays.asList(true), null);
+
+		Label assigneeHint = new Label();
+		getContent().addComponent(assigneeHint, ASSIGNEE_HINT);
+		CssStyles.style(assigneeHint, VSPACE_4, VSPACE_TOP_5);
+		assigneeHint.setVisible(false);
+		assigneeHint.setWidthFull();
+		assigneeHint.setContentMode(ContentMode.HTML);
 
 		assigneeCheckbox.addValueChangeListener(e -> {
 			boolean changeAssignee = (boolean) e.getProperty().getValue();
@@ -162,8 +175,16 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 				}
 			}
 
-			if (changeAssignee) {
-
+			if (changeAssignee && lowestCommonJurisdictionLevel.getOrder() < 5 && lowestCommonJurisdictionLevel != JurisdictionLevel.POINT_OF_ENTRY) {
+				assigneeHint.setValue(
+					VaadinIcons.INFO_CIRCLE.getHtml() + " "
+						+ String.format(
+							I18nProperties.getString(Strings.infoTasksWithMultipleJurisdictionsSelected),
+							lowestCommonJurisdictionLevel.toString()));
+				assigneeHint.setVisible(true);
+			} else {
+				assigneeHint.setValue("");
+				assigneeHint.setVisible(false);
 			}
 		});
 	}

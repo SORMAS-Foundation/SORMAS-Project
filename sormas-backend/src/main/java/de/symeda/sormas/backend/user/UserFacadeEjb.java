@@ -342,7 +342,12 @@ public class UserFacadeEjb implements UserFacade {
 			return Collections.emptyList();
 		}
 
-		return userService.getUserRefsByInfrastructure(infrastructure.getUuid(), jurisdictionLevel, allowedJurisdictionLevel, limitedDisease)
+		return userService
+			.getUserRefsByInfrastructure(
+				infrastructure != null ? infrastructure.getUuid() : null,
+				jurisdictionLevel,
+				allowedJurisdictionLevel,
+				limitedDisease)
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
