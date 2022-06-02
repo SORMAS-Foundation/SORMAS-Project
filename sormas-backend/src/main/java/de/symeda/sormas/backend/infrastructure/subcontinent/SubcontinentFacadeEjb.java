@@ -90,7 +90,7 @@ public class SubcontinentFacadeEjb
 		if (dto == null) {
 			return null;
 		}
-		return new SubcontinentReferenceDto(dto.getUuid(), dto.toString(), dto.getExternalId());
+		return new SubcontinentReferenceDto(dto.getUuid(), dto.getCaption(), dto.getExternalId());
 	}
 
 	@Override

@@ -862,12 +862,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		if (deathPlaceType.isVisible() && deathPlaceType.getValue() == null) {
 			if (deathPlaceDesc.isVisible() && StringUtils.isBlank(deathPlaceDesc.getValue())) {
-				deathPlaceDesc.setValue(getValue().getAddress().toString());
+				deathPlaceDesc.setValue(getValue().getAddress().getCaption());
 			}
 		}
 
 		if (burialPlaceDesc.isVisible() && StringUtils.isBlank(burialPlaceDesc.getValue())) {
-			burialPlaceDesc.setValue(getValue().getAddress().toString());
+			burialPlaceDesc.setValue(getValue().getAddress().getCaption());
 		}
 	}
 

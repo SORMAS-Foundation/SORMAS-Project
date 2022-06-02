@@ -85,7 +85,7 @@ public class ContinentFacadeEjb
 		if (dto == null) {
 			return null;
 		}
-		return new ContinentReferenceDto(dto.getUuid(), dto.toString(), dto.getExternalId());
+		return new ContinentReferenceDto(dto.getUuid(), dto.getCaption(), dto.getExternalId());
 	}
 
 	@Override
