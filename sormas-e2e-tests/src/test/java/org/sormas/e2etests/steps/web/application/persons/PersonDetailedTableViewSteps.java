@@ -39,7 +39,7 @@ public class PersonDetailedTableViewSteps implements En {
               headers.contains("LAST NAME=2"), "The LAST NAME column is not correctly displayed!");
           softly.assertTrue(
               headers.contains("AGE AND BIRTH DATE=3"),
-              "The PERSON ID column is not correctly displayed!");
+              "The AGE AND BIRTH DATE column is not correctly displayed!");
           softly.assertTrue(
               headers.contains("SEX=4"), "The SEX column is not correctly displayed!");
           softly.assertTrue(

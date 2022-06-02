@@ -20,3 +20,23 @@ Feature: APIs loading time
   @env_performance
   Scenario: Check response time for sample creation
     Given API: I check response time for sample creation is less than 2000 milliseconds
+
+  @env_performance
+  Scenario: Check response time for get persons uuids
+    Given API: I check response time for get all persons uuids is less than 20000 milliseconds
+
+  @env_performance
+  Scenario: Check response time for get events uuids
+    Given API: I check response time for get all events uuids is less than 1000 milliseconds
+
+  @env_performance
+  Scenario: Check response time for get cases uuids
+    Given API: I check response time for get all cases uuids is less than 1000 milliseconds
+
+  @env_performance
+  Scenario: Check response time for get contacts uuids
+    Given API: I check response time for get all contacts uuids is less than 1000 milliseconds
+
+  @env_performance
+  Scenario: Check response time for get samples uuids
+    Given API: I check response time for get all samples uuids is less than 1000 milliseconds

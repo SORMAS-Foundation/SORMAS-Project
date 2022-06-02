@@ -23,14 +23,17 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLO
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_DOCUMENT_EMPTY_TEXT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_UPLOADED_TEST_FILE;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DELETE_LAST_UPDATED_CASE_DOCUMENT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DOWNLOAD_LAST_UPDATED_CASE_DOCUMENT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NEW_DOCUMENT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.START_DATA_IMPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UPLOAD_DOCUMENT_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
@@ -42,6 +45,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.MULTIPLE_OPTIONS_SEARCH_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_TAB;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.SAVE_BUTTON_FOR_POPUP_WINDOWS;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.GENERAL_SEARCH_INPUT;
 
 import cucumber.api.java8.En;
@@ -588,11 +592,74 @@ public class EditContactSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_SAVED_POPUP);
         });
     When(
+        "^I click Link Event button on Edit Contact Page$",
+        () -> {
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(LINK_EVENT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON);
+        });
+    When(
+        "I select {int} event in Link Event popup and create and Event Participant",
+        (Integer index) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(getByEventIndex(index));
+          webDriverHelpers.clickOnWebElementBySelector(getByEventIndex(index));
+          webDriverHelpers.waitForRowToBeSelected(getByEventIndex(index));
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_CONFIRM_BUTTON);
+        });
+    When(
+        "I click Save in Add Event Participant form on Edit Contact Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ADD_A_PARTICIPANT_HEADER);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          TimeUnit.SECONDS.sleep(5);
+        });
+
+    When(
         "^I click Create Case from Contact button$",
         () -> {
           webDriverHelpers.scrollToElement(CREATE_CASE_FROM_CONTACT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_FROM_CONTACT_BUTTON);
         });
+    When(
+        "^I click Yes, for some in conversion to case form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CONVERT_SOME);
+        });
+    When(
+        "^I click Yes, for all in conversion to case form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+    When(
+        "^I click No in conversion to case form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_POPUP_BUTTON);
+        });
+    When(
+        "^I click on checkbox to select all available options$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ALL_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_FOR_POPUP_WINDOWS);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+    When(
+        "^I check if there are entities assigned to new created case from contact$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(LINKED_EVENT_INDICATIOR);
+        });
+    When(
+        "^I check if there are no entities assigned to new created case from contact$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          softly.assertEquals(
+              false, webDriverHelpers.isElementVisibleWithTimeout(LINKED_EVENT_INDICATIOR, 10));
+          softly.assertAll();
+        });
+
     When(
         "I check if Vaccination Status is set to {string} on Edit Contact page",
         (String expected) -> {
