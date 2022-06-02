@@ -49,6 +49,7 @@ import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.sample.AdditionalTestType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
@@ -546,15 +547,6 @@ public class Sample extends DeletableAdo implements SormasToSormasShareable {
 		this.samplingReasonDetails = samplingReasonDetails;
 	}
 
-	@Override
-	public String toString() {
-		return SampleReferenceDto.buildCaption(
-			getSampleMaterial(),
-			getAssociatedCase() != null ? getAssociatedCase().getUuid() : null,
-			getAssociatedContact() != null ? getAssociatedContact().getUuid() : null,
-			getAssociatedEventParticipant() != null ? getAssociatedEventParticipant().getUuid() : null);
-	}
-
 	public SampleReferenceDto toReference() {
 		return new SampleReferenceDto(
 			getUuid(),
@@ -612,5 +604,20 @@ public class Sample extends DeletableAdo implements SormasToSormasShareable {
 
 	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
 		this.sormasToSormasShares = sormasToSormasShares;
+	}
+
+	@Override
+	public String toString() {
+		return SampleDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
+	}
+
+	@Override
+	@Transient
+	public String caption() {
+		return SampleReferenceDto.buildCaption(
+			getSampleMaterial(),
+			getAssociatedCase() != null ? getAssociatedCase().getUuid() : null,
+			getAssociatedContact() != null ? getAssociatedContact().getUuid() : null,
+			getAssociatedEventParticipant() != null ? getAssociatedEventParticipant().getUuid() : null);
 	}
 }

@@ -10,6 +10,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
@@ -100,5 +102,10 @@ public class SystemEvent extends AbstractDomainObject {
 	@Override
 	public int hashCode() {
 		return Objects.hash(super.hashCode(), type, startDate, endDate, status, additionalInfo);
+	}
+
+	@Override
+	public String toString() {
+		return TABLE_NAME + StringUtils.SPACE + getUuid();
 	}
 }

@@ -9,7 +9,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
+import javax.persistence.Transient;
 
+import org.apache.commons.lang3.StringUtils;
+
+import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentDto;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.continent.Continent;
 import de.symeda.sormas.backend.infrastructure.country.Country;
@@ -66,6 +70,12 @@ public class Subcontinent extends InfrastructureAdo {
 
 	@Override
 	public String toString() {
+		return SubcontinentDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
+	}
+
+	@Override
+	@Transient
+	public String caption() {
 		return getDefaultName();
 	}
 }

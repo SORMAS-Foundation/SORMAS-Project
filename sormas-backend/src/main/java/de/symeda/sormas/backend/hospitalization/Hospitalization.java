@@ -32,7 +32,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -211,5 +214,10 @@ public class Hospitalization extends AbstractDomainObject {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	@Override
+	public String toString() {
+		return HospitalizationDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 }

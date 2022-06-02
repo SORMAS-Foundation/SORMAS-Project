@@ -9,7 +9,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.AgeGroup;
+import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -99,5 +102,10 @@ public class PopulationData extends AbstractDomainObject {
 
 	public void setCollectionDate(Date collectionDate) {
 		this.collectionDate = collectionDate;
+	}
+
+	@Override
+	public String toString() {
+		return PopulationDataDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 }

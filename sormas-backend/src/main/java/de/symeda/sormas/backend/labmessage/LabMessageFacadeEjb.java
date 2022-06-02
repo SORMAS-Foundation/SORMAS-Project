@@ -496,7 +496,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			return null;
 		}
 
-		return new LabMessageReferenceDto(entity.getUuid(), entity.toString());
+		return new LabMessageReferenceDto(entity.getUuid(), entity.caption());
 	}
 
 	@LocalBean

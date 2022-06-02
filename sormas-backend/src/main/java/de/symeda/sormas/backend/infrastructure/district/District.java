@@ -29,7 +29,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
+import javax.persistence.Transient;
 
+import org.apache.commons.lang3.StringUtils;
+
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfiguration;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -123,6 +127,12 @@ public class District extends InfrastructureAdo {
 
 	@Override
 	public String toString() {
+		return DistrictDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
+	}
+
+	@Override
+	@Transient
+	public String caption() {
 		return getName();
 	}
 }

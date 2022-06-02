@@ -55,7 +55,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.common.DeletionDetails;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -65,6 +64,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDetailedReferenceDto;
@@ -176,7 +176,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			return null;
 		}
 
-		return new EventReferenceDto(entity.getUuid(), entity.toString());
+		return new EventReferenceDto(entity.getUuid(), entity.caption());
 	}
 
 	public static EventReferenceDto toDetailedReferenceDto(Event entity) {
@@ -187,7 +187,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		return new EventDetailedReferenceDto(
 			entity.getUuid(),
-			entity.toString(),
+			entity.caption(),
 			entity.getEventStatus(),
 			entity.getEventTitle(),
 			entity.getReportDateTime());

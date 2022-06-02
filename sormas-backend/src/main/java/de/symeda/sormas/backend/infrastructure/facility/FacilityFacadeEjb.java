@@ -348,7 +348,7 @@ public class FacilityFacadeEjb
 			return null;
 		}
 
-		return new FacilityReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
+		return new FacilityReferenceDto(entity.getUuid(), entity.caption(), entity.getExternalID());
 	}
 
 	@Override

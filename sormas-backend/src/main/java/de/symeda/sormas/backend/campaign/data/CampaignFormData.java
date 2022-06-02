@@ -30,10 +30,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
 import de.symeda.sormas.backend.campaign.Campaign;
@@ -160,5 +162,10 @@ public class CampaignFormData extends AbstractDomainObject {
 
 	public CampaignFormDataReferenceDto toReference() {
 		return new CampaignFormDataReferenceDto(getUuid());
+	}
+
+	@Override
+	public String toString() {
+		return CampaignFormDataDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 }

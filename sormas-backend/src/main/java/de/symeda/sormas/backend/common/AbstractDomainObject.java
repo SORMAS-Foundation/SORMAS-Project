@@ -181,6 +181,15 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 		return getUuid().hashCode();
 	}
 
+	public String caption() {
+		return toString();
+	}
+
+	@Override
+	public String toString() {
+		return super.toString();
+	}
+
 	static class AdoListener {
 
 		private User getCurrentUser() {

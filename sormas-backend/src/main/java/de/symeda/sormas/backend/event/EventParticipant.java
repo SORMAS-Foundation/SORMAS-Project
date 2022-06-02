@@ -32,9 +32,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.caze.VaccinationStatus;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -116,11 +119,6 @@ public class EventParticipant extends CoreAdo implements SormasToSormasShareable
 		this.involvementDescription = involvementDescription;
 	}
 
-	@Override
-	public String toString() {
-		return getPerson().toString();
-	}
-
 	@ManyToOne
 	@JoinColumn
 	public Case getResultingCase() {
@@ -191,5 +189,16 @@ public class EventParticipant extends CoreAdo implements SormasToSormasShareable
 
 	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
 		this.vaccinationStatus = vaccinationStatus;
+	}
+
+	@Override
+	public String toString() {
+		return EventParticipantDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
+	}
+
+	@Override
+	@Transient
+	public String caption() {
+		return getPerson().caption();
 	}
 }

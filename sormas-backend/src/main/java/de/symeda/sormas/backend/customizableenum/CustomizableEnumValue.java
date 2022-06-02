@@ -76,7 +76,7 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 	}
 
 	@Column(nullable = false)
-	public String getCaption() {
+	public String caption() {
 		return caption;
 	}
 

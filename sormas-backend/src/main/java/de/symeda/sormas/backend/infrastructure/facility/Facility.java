@@ -25,8 +25,12 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
+
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.infrastructure.area.AreaType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
@@ -250,6 +254,12 @@ public class Facility extends InfrastructureAdo {
 
 	@Override
 	public String toString() {
+		return FacilityDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
+	}
+
+	@Override
+	@Transient
+	public String caption() {
 		return FacilityHelper.buildFacilityString(getUuid(), name);
 	}
 }

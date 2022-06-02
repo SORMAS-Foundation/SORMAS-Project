@@ -94,7 +94,7 @@ public class UserRole extends AbstractDomainObject {
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
-	public String getCaption() {
+	public String caption() {
 		return caption;
 	}
 

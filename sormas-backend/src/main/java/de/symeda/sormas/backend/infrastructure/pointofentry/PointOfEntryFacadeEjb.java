@@ -73,7 +73,7 @@ public class PointOfEntryFacadeEjb
 			return null;
 		}
 
-		return new PointOfEntryReferenceDto(entity.getUuid(), entity.toString(), entity.getPointOfEntryType(), entity.getExternalID());
+		return new PointOfEntryReferenceDto(entity.getUuid(), entity.caption(), entity.getPointOfEntryType(), entity.getExternalID());
 	}
 
 	@Override

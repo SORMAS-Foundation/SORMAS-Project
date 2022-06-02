@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 
 import de.symeda.auditlog.api.Audited;
@@ -20,6 +21,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.travelentry.DeaContentEntry;
+import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.CoreAdo;
@@ -481,5 +483,10 @@ public class TravelEntry extends CoreAdo {
 
 	public void setDateOfArrival(Date dateOfArrival) {
 		this.dateOfArrival = dateOfArrival;
+	}
+
+	@Override
+	public String toString() {
+		return TravelEntryDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 }

@@ -41,12 +41,15 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIdentificationSource;
 import de.symeda.sormas.api.contact.ContactProximity;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -503,17 +506,6 @@ public class Contact extends CoreAdo implements SormasToSormasShareable, HasExte
 
 	public void setResultingCase(Case resultingCase) {
 		this.resultingCase = resultingCase;
-	}
-
-	@Override
-	public String toString() {
-		Person contactPerson = getPerson();
-		return ContactReferenceDto.buildCaption(
-			contactPerson.getFirstName(),
-			contactPerson.getLastName(),
-			getCaze() != null ? getCaze().getPerson().getFirstName() : null,
-			getCaze() != null ? getCaze().getPerson().getLastName() : null,
-			getUuid());
 	}
 
 	public ContactReferenceDto toReference() {
@@ -1091,5 +1083,22 @@ public class Contact extends CoreAdo implements SormasToSormasShareable, HasExte
 
 	public void setQuarantineChangeComment(String quarantineChangeComment) {
 		this.quarantineChangeComment = quarantineChangeComment;
+	}
+
+	@Override
+	public String toString() {
+		return ContactDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
+	}
+
+	@Override
+	@Transient
+	public String caption() {
+		Person contactPerson = getPerson();
+		return ContactReferenceDto.buildCaption(
+			contactPerson.getFirstName(),
+			contactPerson.getLastName(),
+			getCaze() != null ? getCaze().getPerson().getFirstName() : null,
+			getCaze() != null ? getCaze().getPerson().getLastName() : null,
+			getUuid());
 	}
 }

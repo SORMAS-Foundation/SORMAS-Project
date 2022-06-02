@@ -27,7 +27,10 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -137,5 +140,10 @@ public class EpiData extends AbstractDomainObject {
 
 	public void setContactWithSourceCaseKnown(YesNoUnknown contactWithSourceCaseKnown) {
 		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
+	}
+
+	@Override
+	public String toString() {
+		return EpiDataDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 }

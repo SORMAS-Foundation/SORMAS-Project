@@ -14,15 +14,16 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
-import de.symeda.sormas.backend.common.CoreAdo;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
-import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 
@@ -97,11 +98,6 @@ public class Campaign extends CoreAdo {
 		this.creatingUser = creatingUser;
 	}
 
-	@Override
-	public String toString() {
-		return name;
-	}
-
 	@AuditedIgnore
 	@Type(type = ModelConstants.HIBERNATE_TYPE_JSON)
 	@Column(columnDefinition = ModelConstants.COLUMN_DEFINITION_JSON)
@@ -124,5 +120,16 @@ public class Campaign extends CoreAdo {
 
 	public void setCampaignFormMetas(Set<CampaignFormMeta> campaignFormMetas) {
 		this.campaignFormMetas = campaignFormMetas;
+	}
+
+	@Override
+	public String toString() {
+		return TABLE_NAME + StringUtils.SPACE + getUuid();
+	}
+
+	@Override
+	@Transient
+	public String caption() {
+		return name;
 	}
 }

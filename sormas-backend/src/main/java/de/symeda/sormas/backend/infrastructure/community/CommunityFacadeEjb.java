@@ -247,7 +247,7 @@ public class CommunityFacadeEjb
 		if (entity == null) {
 			return null;
 		}
-		return new CommunityReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
+		return new CommunityReferenceDto(entity.getUuid(), entity.caption(), entity.getExternalID());
 	}
 
 	@Override

@@ -29,8 +29,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.action.ActionContext;
+import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.action.ActionMeasure;
 import de.symeda.sormas.api.action.ActionPriority;
 import de.symeda.sormas.api.action.ActionStatus;
@@ -179,5 +182,10 @@ public class Action extends AbstractDomainObject {
 
 	public void setActionMeasure(ActionMeasure actionMeasure) {
 		this.actionMeasure = actionMeasure;
+	}
+
+	@Override
+	public String toString() {
+		return ActionDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 }

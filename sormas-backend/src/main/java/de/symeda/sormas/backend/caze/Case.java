@@ -42,12 +42,14 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIdentificationSource;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
@@ -947,12 +949,6 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 		this.epidNumber = epidNumber;
 	}
 
-	@Override
-	public String toString() {
-		//TODO lga how to pseudonymize
-		return CaseReferenceDto.buildCaption(getUuid(), person.getFirstName(), person.getLastName());
-	}
-
 	public CaseReferenceDto toReference() {
 		return new CaseReferenceDto(getUuid(), person.getFirstName(), person.getLastName());
 	}
@@ -1749,5 +1745,16 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 
 	public void setExternalData(Map<String, String> externalData) {
 		this.externalData = externalData;
+	}
+
+	@Override
+	public String toString() {
+		return CaseDataDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
+	}
+
+	@Override
+	@Transient
+	public String caption() {
+		return CaseReferenceDto.buildCaption(getUuid(), person.getFirstName(), person.getLastName());
 	}
 }

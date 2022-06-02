@@ -27,7 +27,11 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
+import javax.persistence.Transient;
 
+import org.apache.commons.lang3.StringUtils;
+
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.country.Country;
@@ -82,11 +86,6 @@ public class Region extends InfrastructureAdo {
 		this.districts = districts;
 	}
 
-	@Override
-	public String toString() {
-		return getName();
-	}
-
 	public Float getGrowthRate() {
 		return growthRate;
 	}
@@ -120,5 +119,16 @@ public class Region extends InfrastructureAdo {
 
 	public void setCountry(Country country) {
 		this.country = country;
+	}
+
+	@Override
+	public String toString() {
+		return RegionDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
+	}
+
+	@Override
+	@Transient
+	public String caption() {
+		return getName();
 	}
 }

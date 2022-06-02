@@ -167,7 +167,12 @@ public class CampaignFormMeta extends AbstractDomainObject {
 
 	@Override
 	public String toString() {
-		return formName;
+		return TABLE_NAME + StringUtils.SPACE + getUuid();
 	}
 
+	@Override
+	@Transient
+	public String caption() {
+		return formName;
+	}
 }

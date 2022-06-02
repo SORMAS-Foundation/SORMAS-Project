@@ -3,7 +3,11 @@ package de.symeda.sormas.backend.infrastructure.country;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
+import org.apache.commons.lang3.StringUtils;
+
+import de.symeda.sormas.api.infrastructure.country.CountryDto;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
 
@@ -69,6 +73,12 @@ public class Country extends InfrastructureAdo {
 
 	@Override
 	public String toString() {
-		return this.defaultName;
+		return CountryDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
+	}
+
+	@Override
+	@Transient
+	public String caption() {
+		return getDefaultName();
 	}
 }

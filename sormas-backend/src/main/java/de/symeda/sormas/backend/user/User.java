@@ -36,6 +36,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.StringUtils;
@@ -45,6 +46,7 @@ import de.symeda.auditlog.api.AuditedAttribute;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -253,11 +255,6 @@ public class User extends AbstractDomainObject {
 		this.associatedOfficer = associatedOfficer;
 	}
 
-	@Override
-	public String toString() {
-		return UserReferenceDto.buildCaption(getFirstName(), getLastName());
-	}
-
 	public UserReferenceDto toReference() {
 		return new UserReferenceDto(getUuid(), getFirstName(), getLastName());
 	}
@@ -363,5 +360,16 @@ public class User extends AbstractDomainObject {
 		private void beforeAnyUpdate(User user) {
 			UserCache.getInstance().remove(user.getUserName());
 		}
+	}
+
+	@Override
+	public String toString() {
+		return UserDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
+	}
+
+	@Override
+	@Transient
+	public String caption() {
+		return UserReferenceDto.buildCaption(getFirstName(), getLastName());
 	}
 }

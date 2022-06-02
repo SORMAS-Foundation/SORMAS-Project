@@ -33,12 +33,12 @@ import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
 
-import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
 import de.symeda.sormas.api.customizableenum.CustomizableEnum;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumFacade;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumTranslation;
@@ -198,7 +198,7 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 			if (isCountryLanguage || CollectionUtils.isEmpty(customizableEnumValue.getTranslations())) {
 				// If the enum value does not have any translations or the user uses the server language,
 				// add the server language to the cache and use the default caption of the enum value
-				caption = customizableEnumValue.getCaption();
+				caption = customizableEnumValue.caption();
 			} else {
 				// Check whether the list of translations contains the user language; if yes, add that language
 				// to the cache and use its translation; if not, fall back to the default caption of the enum value
@@ -209,7 +209,7 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 				if (translation.isPresent()) {
 					caption = translation.get().getValue();
 				} else {
-					caption = customizableEnumValue.getCaption();
+					caption = customizableEnumValue.caption();
 				}
 			}
 			languageEnumValues.put(customizableEnumValue.getValue(), caption);
@@ -287,7 +287,7 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 
 		target.setDataType(source.getDataType());
 		target.setValue(source.getValue());
-		target.setCaption(source.getCaption());
+		target.setCaption(source.caption());
 		target.setTranslations(source.getTranslations());
 		target.setDiseases(source.getDiseases());
 		target.setDescription(source.getDescription());

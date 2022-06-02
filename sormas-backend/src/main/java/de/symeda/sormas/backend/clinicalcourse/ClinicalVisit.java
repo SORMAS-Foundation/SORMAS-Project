@@ -16,8 +16,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 
@@ -99,5 +102,10 @@ public class ClinicalVisit extends AbstractDomainObject {
 
 	public void setVisitingPerson(String visitingPerson) {
 		this.visitingPerson = visitingPerson;
+	}
+
+	@Override
+	public String toString() {
+		return ClinicalVisitDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 }

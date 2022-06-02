@@ -1091,7 +1091,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 							.forEach(
 								exposure -> travelHistoryBuilder.append(
 									EpiDataHelper.buildDetailedTravelString(
-										exposure.getLocation().toString(),
+										exposure.getLocation().caption(),
 										exposure.getDescription(),
 										exposure.getStartDate(),
 										exposure.getEndDate(),

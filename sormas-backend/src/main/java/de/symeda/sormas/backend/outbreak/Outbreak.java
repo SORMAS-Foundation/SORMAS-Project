@@ -29,7 +29,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.user.User;
@@ -113,4 +116,9 @@ public class Outbreak extends AbstractDomainObject {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
+	@Override
+	public String toString() {
+		return OutbreakDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
+	}
+
 }

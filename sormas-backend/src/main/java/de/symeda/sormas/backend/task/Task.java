@@ -34,9 +34,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
 import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
@@ -294,5 +297,10 @@ public class Task extends AbstractDomainObject {
 
 	public void setTravelEntry(TravelEntry travelEntry) {
 		this.travelEntry = travelEntry;
+	}
+
+	@Override
+	public String toString() {
+		return TaskDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 }

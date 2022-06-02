@@ -176,6 +176,6 @@ public class FacilityIndexDto implements Serializable, HasUuid {
 
 
 	public FacilityReferenceDto toReference() {
-		return new FacilityReferenceDto(getUuid(), toString(), getExternalID());
+		return new FacilityReferenceDto(getUuid(), getCaption(), getExternalID());
 	}
 }

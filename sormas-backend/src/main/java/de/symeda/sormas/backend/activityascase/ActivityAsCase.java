@@ -35,7 +35,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.activityascase.ActivityAsCaseDto;
 import de.symeda.sormas.api.activityascase.ActivityAsCaseType;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -269,5 +272,10 @@ public class ActivityAsCase extends AbstractDomainObject {
 
 	public void setHabitationDetails(String habitationDetails) {
 		this.habitationDetails = habitationDetails;
+	}
+
+	@Override
+	public String toString() {
+		return ActivityAsCaseDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 }

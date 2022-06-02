@@ -31,8 +31,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.hospitalization.HospitalizationReasonType;
+import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -233,5 +236,10 @@ public class PreviousHospitalization extends AbstractDomainObject {
 
 	public void setIntensiveCareUnitEnd(Date intensiveCareUnitEnd) {
 		this.intensiveCareUnitEnd = intensiveCareUnitEnd;
+	}
+
+	@Override
+	public String toString() {
+		return PreviousHospitalizationDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 }

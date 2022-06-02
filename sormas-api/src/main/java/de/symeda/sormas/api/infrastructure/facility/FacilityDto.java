@@ -324,7 +324,7 @@ public class FacilityDto extends InfrastructureDto {
 	}
 
 	public FacilityReferenceDto toReference() {
-		return new FacilityReferenceDto(getUuid(), toString(), externalID);
+		return new FacilityReferenceDto(getUuid(), getCaption(), externalID);
 	}
 
 	public String getExternalID() {

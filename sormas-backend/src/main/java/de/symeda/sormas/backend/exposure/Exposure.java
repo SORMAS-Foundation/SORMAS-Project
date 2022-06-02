@@ -30,12 +30,15 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.epidata.AnimalCondition;
 import de.symeda.sormas.api.epidata.WaterSource;
 import de.symeda.sormas.api.event.MeansOfTransport;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.exposure.AnimalContactType;
+import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureRole;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.GatheringType;
@@ -620,5 +623,10 @@ public class Exposure extends AbstractDomainObject {
 
 	public void setLargeAttendanceNumber(YesNoUnknown largeAttendanceNumber) {
 		this.largeAttendanceNumber = largeAttendanceNumber;
+	}
+
+	@Override
+	public String toString() {
+		return ExposureDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 }

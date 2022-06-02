@@ -4,7 +4,10 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
@@ -27,5 +30,10 @@ public class ClinicalCourse extends AbstractDomainObject {
 
 	public void setCaze(Case caze) {
 		this.caze = caze;
+	}
+
+	@Override
+	public String toString() {
+		return ClinicalCourseDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 }

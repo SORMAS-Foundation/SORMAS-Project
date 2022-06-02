@@ -7,11 +7,14 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.report.AggregateReportDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
-import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 
@@ -146,5 +149,10 @@ public class AggregateReport extends AbstractDomainObject {
 
 	public void setDeaths(Integer deaths) {
 		this.deaths = deaths;
+	}
+
+	@Override
+	public String toString() {
+		return AggregateReportDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 }

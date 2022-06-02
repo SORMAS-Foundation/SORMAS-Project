@@ -41,6 +41,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.externaldata.HasExternalData;
@@ -811,8 +813,13 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 	}
 
 	@Override
-	public String toString() {
+	@Transient
+	public String caption() {
 		return PersonDto.buildCaption(firstName, lastName);
 	}
 
+	@Override
+	public String toString() {
+		return PersonDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
+	}
 }

@@ -14,7 +14,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentRoute;
 import de.symeda.sormas.api.therapy.TreatmentType;
 import de.symeda.sormas.api.therapy.TypeOfDrug;
@@ -154,4 +157,8 @@ public class Treatment extends AbstractDomainObject {
 		this.prescription = prescription;
 	}
 
+	@Override
+	public String toString() {
+		return TreatmentDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
+	}
 }

@@ -37,7 +37,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 
 import de.symeda.auditlog.api.Audited;
@@ -46,6 +48,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.DiseaseTransmissionMode;
 import de.symeda.sormas.api.event.EpidemiologicalEvidenceDetail;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIdentificationSource;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventManagementStatus;
@@ -687,6 +690,12 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 
 	@Override
 	public String toString() {
+		return EventDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
+	}
+
+	@Override
+	@Transient
+	public String caption() {
 		return EventReferenceDto.buildCaption(getDisease(), getDiseaseDetails(), getEventStatus(), getEventInvestigationStatus(), getStartDate());
 	}
 

@@ -30,10 +30,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang3.StringUtils;
+
+import de.symeda.sormas.api.report.WeeklyReportDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "weeklyreport")
@@ -173,6 +176,11 @@ public class WeeklyReport extends AbstractDomainObject {
 	}
 
 	public void setAssignedOfficer(User assignedOfficer) {
+
 		this.assignedOfficer = assignedOfficer;
+	}
+	@Override
+	public String toString() {
+		return WeeklyReportDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 }

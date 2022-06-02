@@ -23,6 +23,7 @@ import java.util.Date;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import de.symeda.sormas.api.i18n.Validations;
@@ -129,6 +130,7 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 		return (EntityDto) super.clone();
 	}
 
+	@JsonIgnore
 	public String getCaption() {
 		return toString();
 	}

@@ -17,9 +17,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.labmessage.ExternalMessageType;
+import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -394,4 +397,8 @@ public class LabMessage extends AbstractDomainObject {
 		this.sample = sample;
 	}
 
+	@Override
+	public String toString() {
+		return LabMessageDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
+	}
 }

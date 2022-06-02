@@ -22,7 +22,7 @@ public class ClinicalCourseFacadeEjb implements ClinicalCourseFacade {
 			return null;
 		}
 
-		ClinicalCourseReferenceDto dto = new ClinicalCourseReferenceDto(entity.getUuid(), entity.toString());
+		ClinicalCourseReferenceDto dto = new ClinicalCourseReferenceDto(entity.getUuid(), entity.caption());
 		return dto;
 	}
 

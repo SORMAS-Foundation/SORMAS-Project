@@ -150,7 +150,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 
 		target.setUserRights(new HashSet<>(source.getUserRights()));
 		target.setEnabled(source.isEnabled());
-		target.setCaption(source.getCaption());
+		target.setCaption(source.caption());
 		target.setDescription(source.getDescription());
 		target.setHasOptionalHealthFacility(source.hasOptionalHealthFacility());
 		target.setHasAssociatedDistrictUser(source.hasAssociatedDistrictUser());
@@ -207,7 +207,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 			return null;
 		}
 
-		return new UserRoleReferenceDto(entity.getUuid(), entity.getCaption());
+		return new UserRoleReferenceDto(entity.getUuid(), entity.caption());
 	}
 
 	@Override

@@ -15,7 +15,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
@@ -209,5 +212,10 @@ public class TestReport extends AbstractDomainObject {
 
 	public void setTestPcrTestSpecification(PCRTestSpecification testPcrTestSpecification) {
 		this.testPcrTestSpecification = testPcrTestSpecification;
+	}
+
+	@Override
+	public String toString() {
+		return TestReportDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 }
