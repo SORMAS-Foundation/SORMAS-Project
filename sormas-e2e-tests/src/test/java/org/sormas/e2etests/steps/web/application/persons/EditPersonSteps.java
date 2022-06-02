@@ -126,25 +126,20 @@ public class EditPersonSteps implements En {
               List.of(
                   "firstName",
                   "lastName",
-                  // field no longer available
-                  //                  "externalId",
-                  //                  "externalToken",
                   "street",
                   "houseNumber",
                   "city",
                   "postalCode",
                   "contactPersonFirstName",
-                  "contactPersonLastName"
-                  // field no longer available
-                  //                  "birthName",
-                  //                  "nameOfGuardians"
-                  ));
+                  "contactPersonLastName"));
         });
 
     When(
         "I check that previous edited person is correctly displayed in Edit Person page",
         () -> {
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(PRESENT_CONDITION_INPUT);
           collectedPerson = collectPersonData();
           ComparisonHelper.compareDifferentFieldsOfEntities(
               previousCreatedPerson,
@@ -474,17 +469,9 @@ public class EditPersonSteps implements En {
         .lastName(contactInfo.getLastName())
         .dateOfBirth(contactInfo.getDateOfBirth())
         .uuid(contactInfo.getUuid())
-        // field no longer available
-        //        .salutation(webDriverHelpers.getValueFromWebElement(SALUTATION_INPUT))
-        .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
         .presentConditionOfPerson(webDriverHelpers.getValueFromWebElement(PRESENT_CONDITION_INPUT))
-        // field no longer available
-        //        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
-        //        .externalToken(webDriverHelpers.getValueFromWebElement(EXTERNAL_TOKEN_INPUT))
+        .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
         .typeOfOccupation(webDriverHelpers.getValueFromWebElement(TYPE_OF_OCCUPATION_INPUT))
-        // field no longer available
-        //
-        // .staffOfArmedForces(webDriverHelpers.getValueFromWebElement(STAFF_OF_ARMED_FORCES_INPUT))
         .region(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
         .district(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
         .community(webDriverHelpers.getValueFromWebElement(COMMUNITY_INPUT))
@@ -504,9 +491,6 @@ public class EditPersonSteps implements En {
             webDriverHelpers.getValueFromWebElement(CONTACT_PERSON_FIRST_NAME_INPUT))
         .contactPersonLastName(
             webDriverHelpers.getValueFromWebElement(CONTACT_PERSON_LAST_NAME_INPUT))
-        //        .birthName(webDriverHelpers.getValueFromWebElement(BIRTH_NAME_INPUT))
-        //
-        // .nameOfGuardians(webDriverHelpers.getValueFromWebElement(NAMES_OF_GUARDIANS_INPUT))
         .personContactDetailsContactInformation(
             webDriverHelpers.getTextFromPresentWebElement(
                 PERSON_CONTACT_DETAILS_CONTACT_INFORMATION_INPUT))

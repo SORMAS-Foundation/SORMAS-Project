@@ -43,6 +43,8 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_CASE_LABEL_DE;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_PERSON_LABEL_DE;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.SEARCH_PERSON_BY_FREE_TEXT;
 import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.aCase;
 
@@ -547,6 +549,23 @@ public class CreateNewCaseSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
+    When(
+        "^I check if National Health Id, Nickname and Passport number appear in Pick or create person popup$",
+        () -> {
+          softly.assertEquals(
+              false, webDriverHelpers.isElementVisibleWithTimeout(NICKNAME_ATTRIBUTE, 2));
+          softly.assertEquals(
+              false, webDriverHelpers.isElementVisibleWithTimeout(PASSPORT_NUMBER_ATTRIBUTE, 2));
+          softly.assertEquals(
+              false, webDriverHelpers.isElementVisibleWithTimeout(NATIONAL_HEALTH_ID_ATTRIBUTE, 2));
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(PICK_A_EXISTING_PERSON_LABEL_DE);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_A_EXISTING_CASE_LABEL_DE, 4)) {
+            webDriverHelpers.clickOnWebElementBySelector(PICK_A_EXISTING_CASE_LABEL_DE);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          }
+        });
 
     When(
         "^I Pick an existing case in Pick or create person popup in Case entry$",
@@ -600,7 +619,7 @@ public class CreateNewCaseSteps implements En {
           fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
 
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
@@ -739,6 +758,31 @@ public class CreateNewCaseSteps implements En {
           softly.assertTrue(Files.exists(path));
           softly.assertAll();
           Files.delete(path); // clean
+        });
+    When(
+        "I check that ([^\"]*) is not visible in Person search popup",
+        (String option) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          By selector = null;
+          Boolean elementVisible = true;
+          switch (option) {
+            case "Passport Number":
+              selector = PASSPORT_NUMBER_POPUP_TABLE_HEADER;
+              break;
+            case "National Health ID":
+              selector = NATIONAL_HEALTH_ID_POPUP_TABLE_HEADER;
+              break;
+            case "Nickname":
+              selector = NICKNAME_POPUP_TABLE_HEADER;
+              break;
+          }
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(selector);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertFalse(elementVisible, option + " is visible!");
+          softly.assertAll();
         });
   }
 
