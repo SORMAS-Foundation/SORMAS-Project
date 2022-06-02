@@ -11526,5 +11526,5 @@ CREATE TRIGGER delete_history_trigger_userroles_smsnotificationtypes
 INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (460, 'Replace hard-coded user roles with fully configurable user roles #4461', true);
 
 -- 2022-05-30 Handle users without userroles #4461
-INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (461, 'Handle users without userroles #4461', true);
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (463, 'Handle users without userroles #4461', true);
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
