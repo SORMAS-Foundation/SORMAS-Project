@@ -1169,7 +1169,7 @@ Feature: Case end to end tests
     And I click on SAVE new contact case button
     Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
 
-  @env_de @issue=SORDEV-9496
+  @issue=SORDEV-9496 @env_de
   Scenario: Test Handle person related fields and search button for travel entry forms
     Given API: I create a new person
     And API: I check that POST call body is "OK"
