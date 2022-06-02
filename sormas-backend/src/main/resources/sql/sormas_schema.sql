@@ -11360,7 +11360,6 @@ DROP FUNCTION IF EXISTS create_additional_healthconditions();
 
 INSERT INTO schema_version (version_number, comment) VALUES (458, 'Permanent Deletion | Immunization | healthconditions_id violates not-null constraint error #8983');
 
-
 -- 2022-05-10 Add reason for deletion to confirmation dialogue - #8162
 ALTER TABLE cases ADD COLUMN  deletionreason varchar(255);
 ALTER TABLE cases ADD COLUMN  otherdeletionreason text;
@@ -11538,5 +11537,31 @@ CREATE INDEX IF NOT EXISTS idx_travelentry_person_id ON travelentry USING btree 
 
 INSERT INTO schema_version (version_number, comment) VALUES (461, 'Add hash indices to improve person fetch #8946');
 
+-- 2022-05-17 Rename lab message to external message #8895
+ALTER TABLE labmessage RENAME TO externalmessage;
+ALTER TABLE externalmessage RENAME COLUMN labname to reportername;
+ALTER TABLE externalmessage RENAME COLUMN labcity to reportercity;
+ALTER TABLE externalmessage RENAME COLUMN labpostalcode to reporterpostalcode;
+ALTER TABLE externalmessage RENAME COLUMN labMessageDetails to externalmessagedetails;
+ALTER TABLE labmessage_history RENAME TO externalmessage_history;
+ALTER TABLE externalmessage_history RENAME COLUMN labname to reportername;
+ALTER TABLE externalmessage_history RENAME COLUMN labcity to reportercity;
+ALTER TABLE externalmessage_history RENAME COLUMN labpostalcode to reporterpostalcode;
+ALTER TABLE externalmessage_history RENAME COLUMN labMessageDetails to externalmessagedetails;
+DROP TRIGGER IF EXISTS versioning_trigger ON externalmessage;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON externalmessage
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'externalmessage_history', true);
+
+UPDATE featureconfiguration SET featuretype = 'EXTERNAL_MESSAGES' WHERE featuretype = 'LAB_MESSAGES';
+UPDATE featureconfiguration SET featuretype = 'SORMAS_TO_SORMAS_SHARE_EXTERNAL_MESSAGES' WHERE featuretype = 'SORMAS_TO_SORMAS_SHARE_LAB_MESSAGES';
+
+UPDATE userroles_userrights SET userright = 'PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES' WHERE userright = 'PERFORM_BULK_OPERATIONS_LAB_MESSAGES';
+UPDATE userroles_userrights SET userright = 'EXTERNAL_MESSAGE_VIEW' WHERE userright = 'LAB_MESSAGES';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT userrole_id, 'EXTERNAL_MESSAGE_PROCESS' FROM userroles_userrights WHERE userright = 'EXTERNAL_MESSAGE_VIEW';
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT userrole_id, 'EXTERNAL_MESSAGE_DELETE' FROM userroles_userrights WHERE userright = 'EXTERNAL_MESSAGE_VIEW';
+
+UPDATE systemevent SET type = 'FETCH_EXTERNAL_MESSAGES' WHERE type = 'FETCH_LAB_MESSAGES';
+
+INSERT INTO schema_version (version_number, comment) VALUES (462, 'Rename lab message to external message #8895');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

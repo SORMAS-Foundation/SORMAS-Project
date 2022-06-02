@@ -11,7 +11,7 @@ import org.junit.Test;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
@@ -39,7 +39,7 @@ public class SampleServiceTest extends AbstractBeanTest {
 			creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> s.setReferredTo(sample.toReference()));
 		creator.createPathogenTest(sample.toReference(), caze);
 		creator.createAdditionalTest(sample.toReference());
-		LabMessageDto labMessage = creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
+		ExternalMessageDto labMessage = creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
 
 		getSampleFacade().deleteSample(sample.toReference(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
