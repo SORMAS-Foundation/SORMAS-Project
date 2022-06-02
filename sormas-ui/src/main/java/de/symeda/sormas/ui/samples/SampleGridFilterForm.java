@@ -106,7 +106,7 @@ public class SampleGridFilterForm extends AbstractFilterForm<SampleCriteria> {
 
 		TextField searchField = addField(
 			FieldConfiguration
-				.withCaptionAndPixelSized(SampleCriteria.CASE_CODE_ID_LIKE, I18nProperties.getString(Strings.promptSamplesSearchField), 200));
+				.withCaptionAndPixelSized(SampleCriteria.CASE_CODE_ID_LIKE, I18nProperties.getString(Strings.promptSamplesSearchField), 530));
 		searchField.setNullRepresentation("");
 
 	}
