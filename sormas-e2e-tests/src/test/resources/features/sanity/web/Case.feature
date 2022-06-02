@@ -756,7 +756,6 @@ Feature: Case end to end tests
     And I check that an import success notification appears in the Import Case Contact popup
     Then I delete exported file from Case Contact Directory
 
-
   @issue=SORDEV-7456 @env_de
   Scenario: Check different facility types depending on type of place in Epidemiological Tab
     Given I log in with National User
@@ -1035,7 +1034,7 @@ Feature: Case end to end tests
     Then I click on New Sample
     And I check if value "Urine p.m" is unavailable in Type of Sample combobox on Create new Sample page
 
-  @env_main @issue=SORDEV-9155
+  @issue=SORDEV-9155 @env_main
   Scenario: Test Vaccinations get lost when merging cases with duplicate persons
     Given I log in as a Admin User
     And I click on the Cases button from navbar
@@ -1063,7 +1062,7 @@ Feature: Case end to end tests
     And I open last created case
     And I check if Vaccination Status is set to "Vaccinated" on Edit Case page
 
-  @env_main @issue=SORDEV-7460
+  @issue=SORDEV-7460 @env_main
   Scenario: Test Extend the exposure and event startDate and endDate to include a startTime and endTime
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -1083,7 +1082,7 @@ Feature: Case end to end tests
     And I collect the Date of Start and End Exposure from Exposure page
     Then I check that Date field displays start date and end date in table Exposure on Epidemiological data tab
 
-    @env_main @issue=SORDEV-5613
+     @issue=SORDEV-5613 @env_main
       Scenario: Option to attach document like pdf, word, jpeg to cases
       Given I log in with National User
       When I click on the Cases button from navbar
@@ -1148,13 +1147,7 @@ Feature: Case end to end tests
     And I check that Passport Number is not visible in Person search popup
     And I check that Nickname is not visible in Person search popup
 
-
-
-
-
-
-
-  @env_de @issue=SORDEV-9946
+  @issue=SORDEV-9946 @env_de
   Scenario: Test Hide country specific fields in the 'Pick or create person' form of the duplicate detection pop-up, in German and French systems
     Given I log in as a Admin User
     And I click on the Cases button from navbar
