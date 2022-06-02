@@ -11564,4 +11564,7 @@ UPDATE systemevent SET type = 'FETCH_EXTERNAL_MESSAGES' WHERE type = 'FETCH_LAB_
 
 INSERT INTO schema_version (version_number, comment) VALUES (462, 'Rename lab message to external message #8895');
 
+-- 2022-05-30 Handle users without userroles #4461
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (463, 'Handle users without userroles #4461', true);
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
