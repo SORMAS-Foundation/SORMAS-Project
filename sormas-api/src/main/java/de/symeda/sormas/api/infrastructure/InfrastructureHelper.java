@@ -77,8 +77,6 @@ public final class InfrastructureHelper {
 
 	public static JurisdictionLevel getSuperordinateJurisdiction(JurisdictionLevel jurisdiction) {
 		switch (jurisdiction) {
-		case NATION:
-			return JurisdictionLevel.NONE;
 		case REGION:
 			return JurisdictionLevel.NATION;
 		case DISTRICT:
@@ -89,6 +87,7 @@ public final class InfrastructureHelper {
 			return JurisdictionLevel.DISTRICT;
 		case LABORATORY:
 		case EXTERNAL_LABORATORY:
+		case NATION:
 		default:
 			return JurisdictionLevel.NONE;
 		}

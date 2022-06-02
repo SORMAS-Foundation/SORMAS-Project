@@ -9,10 +9,10 @@ public enum JurisdictionLevel {
 	REGION(2),
 	DISTRICT(3),
 	COMMUNITY(4),
+	POINT_OF_ENTRY(4),
 	HEALTH_FACILITY(5),
 	LABORATORY(5),
-	EXTERNAL_LABORATORY(5),
-	POINT_OF_ENTRY(4);
+	EXTERNAL_LABORATORY(5);
 
 	private int order;
 
