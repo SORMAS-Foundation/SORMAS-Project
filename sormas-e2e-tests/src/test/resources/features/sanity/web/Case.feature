@@ -1168,3 +1168,37 @@ Feature: Case end to end tests
     And I fill a new contact form with same person data for DE version
     And I click on SAVE new contact case button
     Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
+
+  @issue=SORDEV-9496 @env_de
+  Scenario: Test Handle person related fields and search button for travel entry forms
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new case
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    Then I click on the Cases button from navbar
+    When I open the last created Case via API
+    Then I navigate to Epidemiological Data tab on Edit Case Page
+    And I click on new entry button from Epidemiological Data tab for DE
+    When I fill the required fields in a new travel entry form without disease and person data
+    Then I check that First Name is not visible in New Travel Entry popup
+    And I check that Last Name is not visible in New Travel Entry popup
+    And I check that Sex is not visible in New Travel Entry popup
+    And I check that disease in New Travel Entry popup is disabled
+    And I click on Save button from the new travel entry form
+    Then I click on the Cases button from navbar
+    When I open the last created Case via API
+    Then I navigate to Epidemiological Data tab on Edit Case Page
+    Then I check if added travel Entry appeared in Epi Data tab
+    And I navigate to the last created via api Person page via URL
+    Then I click on new entry button on Edit Person Page for DE
+    When I fill the required fields in a new travel entry form without disease and person data
+    Then I check that First Name is not visible in New Travel Entry popup
+    And I check that Last Name is not visible in New Travel Entry popup
+    And I check that Sex is not visible in New Travel Entry popup
+    And I check that disease in New Travel Entry popup is enabled
+    And I click on Save button from the new travel entry form
+    Then I navigate to the last created via api Person page via URL
+    And I check if added travel Entry appeared on Edit Person Page
