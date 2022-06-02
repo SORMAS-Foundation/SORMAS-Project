@@ -155,7 +155,6 @@ public class ContactImportExportSteps implements En {
           TimeUnit.SECONDS.sleep(1);
           String file =
               "./downloads/sormas_contacts_" + LocalDate.now().format(formatter) + "_.csv";
-
           Path path = Paths.get(file);
           assertHelpers.assertWithPoll20Second(
               () ->
@@ -164,7 +163,6 @@ public class ContactImportExportSteps implements En {
                       "Basic contact document was not downloaded. Path used for check: "
                           + path.toAbsolutePath()));
           Contact reader = parseBasicContactExport(file);
-
           softly.assertEquals(
               reader.getUuid(), apiState.getCreatedContact().getUuid(), "UUIDs are not equal");
           Files.delete(path);
