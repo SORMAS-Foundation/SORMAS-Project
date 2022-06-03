@@ -54,6 +54,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -480,12 +481,20 @@ public class StartupShutdownService {
 		String lastName,
 		DataHelper.Pair<String, String> usernameAndPassword,
 		Consumer<User> userModificator) {
-		User user = MockDataGenerator.createUser(userRole, firstName, lastName, usernameAndPassword.getElement1());
-		user.setUserName(usernameAndPassword.getElement0());
-		userModificator.accept(user);
-		userService.persist(user);
-		userUpdateEvent.fire(new UserUpdateEvent(user));
-		return user;
+		if (userRole != null) {
+			User user = MockDataGenerator.createUser(userRole, firstName, lastName, usernameAndPassword.getElement1());
+			user.setUserName(usernameAndPassword.getElement0());
+			userModificator.accept(user);
+			userService.persist(user);
+			userUpdateEvent.fire(new UserUpdateEvent(user));
+			return user;
+		} else {
+			logger.warn(
+				"Default user '{} {}' was not created because the user role to be assigned cannot be found in the database.",
+				firstName,
+				lastName);
+			return null;
+		}
 	}
 
 	private void createOrUpdateSormasToSormasUser() {
@@ -546,12 +555,13 @@ public class StartupShutdownService {
 
 		User existingUser = userService.getByUserName(username);
 
-		boolean allUserRolesExist = userRoles != null && !userRoles.isEmpty() && !userRoles.stream().anyMatch(userRole -> userRole == null);
+		boolean allUserRolesExist = !CollectionUtils.isEmpty(userRoles) && !userRoles.stream().anyMatch(userRole -> userRole == null);
 		if (existingUser == null) {
 			if (!allUserRolesExist) {
 				logger.warn(
-					"User '" + firstName + " " + lastName
-						+ "' was not created because at least one of the user roles to be assigned cannot be found in the database.");
+					"User '{} {}' was not created because at least one of the user roles to be assigned cannot be found in the database.",
+					firstName,
+					lastName);
 			} else if (!DataHelper.isNullOrEmpty(password)) {
 				User newUser = MockDataGenerator.createUser(userRoles, firstName, lastName, password);
 				newUser.setUserName(username);
@@ -566,8 +576,9 @@ public class StartupShutdownService {
 				existingUser.setUserRoles(userRoles);
 			} else {
 				logger.warn(
-					"User roles of user '" + firstName + " " + lastName
-						+ "' were not updated because at least one of the user roles to be assigned cannot be found in the database.");
+					"User roles of user '{} {}' were not updated because at least one of the user roles to be assigned cannot be found in the database.",
+					firstName,
+					lastName);
 			}
 
 			userService.persist(existingUser);
@@ -579,8 +590,9 @@ public class StartupShutdownService {
 				userService.persist(existingUser);
 			} else {
 				logger.warn(
-					"User roles of user '" + firstName + " " + lastName
-						+ "' were not updated because at least one of the user roles to be assigned cannot be found in the database.");
+					"User roles of user '{} {}' were not updated because at least one of the user roles to be assigned cannot be found in the database.",
+					firstName,
+					lastName);
 			}
 		}
 
