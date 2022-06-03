@@ -280,7 +280,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	public List<CampaignFormDataIndexDto> getIndexList(CampaignFormDataCriteria criteria, Integer first, Integer max,
 			List<SortProperty> sortProperties) {
 
-		System.out.println("sdddddddddddddfdsyu876456uiuytrertyuyttyukldsssssssssssssssss");
+		System.out.println("sdddddddddddddfdsyu876456uiuytrertyuyttyukldsssssssssssssssss formValues");
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CampaignFormDataIndexDto> cq = cb.createQuery(CampaignFormDataIndexDto.class);

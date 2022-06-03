@@ -70,7 +70,7 @@ public class CampaignDiagramSeries implements Serializable {
 	}
 
 	public void setStack(String stack) {
-		this.stack = stack;
+		this.stack = stack; 
 	}
 
 	public String getCaption() {

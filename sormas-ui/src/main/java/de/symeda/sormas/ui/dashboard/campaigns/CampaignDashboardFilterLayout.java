@@ -49,7 +49,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 	
 	private CampaignFormPhaseSelector campaignFormPhaseSelector;
 
-	private OptionGroup campaignPhaseSelector;
+	//private OptionGroup campaignPhaseSelector;
 
 	public CampaignDashboardFilterLayout(CampaignDashboardView dashboardView, CampaignDashboardDataProvider dashboardDataProvider) {
 
@@ -62,11 +62,11 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		this.areaFilter = ComboBoxHelper.createComboBoxV7();
 		this.campaignJurisdictionGroupByFilter = ComboBoxHelper.createComboBoxV7();
 		
-		setStyleName(CssStyles.FORCE_CAPTION);
+		//setStyleName(CssStyles.FORCE_CAPTION);
 
 		setSpacing(true);
-		//setWidthFull();
-		setMargin(new MarginInfo(false, false, false, true));
+		setWidthFull();
+		setMargin(new MarginInfo(true, true, false, true));
 
 		infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 		infoLabel.setSizeUndefined();

@@ -198,7 +198,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 			final CssLayout diagramsLayout = new CssLayout();
 			diagramsLayout.setSizeFull();
-			final String gridCssClass = (tabId + subTabId).replaceAll("[^a-zA-Z]+", "") + generateRandomString() + GRID_CONTAINER+" default-height-720px";
+			final String gridCssClass = (tabId + subTabId).replaceAll("[^a-zA-Z]+", "") + generateRandomString() + GRID_CONTAINER;//+" default-height-720px";
 
 			styles.add(
 				createDiagramGridStyle(

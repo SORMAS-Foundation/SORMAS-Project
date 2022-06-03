@@ -3,5 +3,9 @@ package de.symeda.sormas.api.campaign.diagram;
 public enum DiagramType {
     COLUMN,
     BAR,
-    PIE
+    STACK,
+    AREA,
+    LINE,
+    PIE,
+    DOUGHNUT
 }
