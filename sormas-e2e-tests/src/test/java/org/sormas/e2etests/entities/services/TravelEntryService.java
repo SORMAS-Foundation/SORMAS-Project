@@ -64,6 +64,24 @@ public class TravelEntryService {
         .build();
   }
 
+  public TravelEntry buildGeneratedEntryWithParametrizedPersonDataDE(
+      String firstName, String lastName, String sex) {
+    return TravelEntry.builder()
+        .reportDate(LocalDate.now())
+        .dateOfArrival(LocalDate.now())
+        .firstName(firstName)
+        .lastName(lastName)
+        .sex(sex)
+        .reportDate(LocalDate.now())
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .disease("COVID-19")
+        .pointOfEntry(getRandomPointOfEntryDE())
+        .pointOfEntryDetails("Automated test dummy description")
+        .build();
+  }
+
   public TravelEntry buildGeneratedEntryWithPointOfEntryDetailsDE(String pointOfEntry) {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();
