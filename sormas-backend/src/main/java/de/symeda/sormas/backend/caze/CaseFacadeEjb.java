@@ -1584,7 +1584,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return caseSave(dto, handleChanges, existingCase, toDto(existingCase), checkChangeDate, internal);
 	}
 
-	@RolesAllowed({ UserRight._CASE_EDIT })
+	@RolesAllowed({
+		UserRight._CASE_EDIT })
 	public CaseDataDto updateFollowUpComment(@Valid @NotNull CaseDataDto dto) throws ValidationRuntimeException {
 		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
 		Case caze = service.getByUuid(dto.getUuid());
@@ -2065,6 +2066,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		// Update case classification if the feature is enabled
 		CaseClassification classification = null;
+		boolean setClassificationInfo = true;
 		if (configFacade.isFeatureAutomaticCaseClassification()) {
 			if (newCase.getCaseClassification() != CaseClassification.NO_CASE) {
 				// calculate classification
@@ -2081,13 +2083,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 						newCase.setCaseClassification(classification);
 						newCase.setClassificationUser(null);
 						newCase.setClassificationDate(new Date());
+						setClassificationInfo = false;
 					}
 				}
-			} else if (newCase.getCaseClassification() != existingCase.getCaseClassification()) {
-				newCase.setClassificationUser(userService.getCurrentUser());
-				newCase.setClassificationDate(new Date());
 			}
-		} else if (newCase.getCaseClassification() != existingCase.getCaseClassification()) {
+		}
+
+		if (setClassificationInfo && existingCase != null && newCase.getCaseClassification() != existingCase.getCaseClassification()) {
 			newCase.setClassificationUser(userService.getCurrentUser());
 			newCase.setClassificationDate(new Date());
 		}
