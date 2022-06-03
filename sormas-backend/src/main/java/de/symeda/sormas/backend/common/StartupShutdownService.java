@@ -556,7 +556,7 @@ public class StartupShutdownService {
 
 		User existingUser = userService.getByUserName(username);
 
-		boolean allUserRolesExist = !CollectionUtils.isEmpty(userRoles) && !userRoles.stream().noneMatch(Objects::isNull);
+		boolean allUserRolesExist = !CollectionUtils.isEmpty(userRoles) && userRoles.stream().noneMatch(Objects::isNull);
 		if (existingUser == null) {
 			if (!allUserRolesExist) {
 				logger.warn(
