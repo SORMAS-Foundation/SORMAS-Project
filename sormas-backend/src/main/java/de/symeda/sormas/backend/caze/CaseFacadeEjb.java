@@ -2089,7 +2089,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			}
 		}
 
-		if (setClassificationInfo && existingCase != null && newCase.getCaseClassification() != existingCase.getCaseClassification()) {
+		if (setClassificationInfo
+			&& ((existingCase == null && newCase.getCaseClassification() != CaseClassification.NOT_CLASSIFIED)
+				|| (existingCase != null && newCase.getCaseClassification() != existingCase.getCaseClassification()))) {
 			newCase.setClassificationUser(userService.getCurrentUser());
 			newCase.setClassificationDate(new Date());
 		}
