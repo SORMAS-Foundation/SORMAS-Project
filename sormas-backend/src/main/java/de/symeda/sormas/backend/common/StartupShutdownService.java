@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
@@ -555,7 +556,7 @@ public class StartupShutdownService {
 
 		User existingUser = userService.getByUserName(username);
 
-		boolean allUserRolesExist = !CollectionUtils.isEmpty(userRoles) && !userRoles.stream().anyMatch(userRole -> userRole == null);
+		boolean allUserRolesExist = !CollectionUtils.isEmpty(userRoles) && !userRoles.stream().noneMatch(Objects::isNull);
 		if (existingUser == null) {
 			if (!allUserRolesExist) {
 				logger.warn(
