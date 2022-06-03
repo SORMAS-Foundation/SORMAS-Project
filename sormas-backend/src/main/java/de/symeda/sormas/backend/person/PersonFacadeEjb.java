@@ -1714,8 +1714,9 @@ public class PersonFacadeEjb implements PersonFacade {
 			}
 		}
 		if (!leadPerson.getUuid().equals(otherPerson.getUuid())) {
-			for (ImmunizationDto immunizationDto : immunizationFacade.getByPersonUuids(Collections.singletonList(otherPerson.getUuid()))) {
-				immunizationFacade.copyImmunizationsToLeadPerson(immunizationDto, leadPerson);
+			List<ImmunizationDto> immunizations = immunizationFacade.getByPersonUuids(Collections.singletonList(otherPerson.getUuid()));
+			for (ImmunizationDto immunizationDto : immunizations) {
+				immunizationFacade.copyImmunizationsToLeadPerson(immunizationDto, leadPerson, immunizations);
 			}
 		}
 
