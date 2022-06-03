@@ -796,6 +796,18 @@ public class WebDriverHelpers {
     }
   }
 
+  public boolean checkCheckboxIsCheckedByHTMLFromParent(
+      final By selector, final String text, final String expected) {
+    try {
+      return getWebElementBySelectorAndText(selector, text)
+          .findElement((By.xpath("./..")))
+          .getAttribute("outerHTML")
+          .contains(expected);
+    } catch (ConditionTimeoutException ignored) {
+      throw new NoSuchElementException(String.format("Element: %s not found", selector));
+    }
+  }
+
   public boolean isElementDisplayedIn20SecondsOrThrowException(Object selector) {
     if (selector instanceof WebElement) {
       try {

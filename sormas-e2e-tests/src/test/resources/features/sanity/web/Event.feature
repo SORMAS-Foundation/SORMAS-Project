@@ -844,3 +844,16 @@ Feature: Create events
     Then I check if error popup is displayed with message Please check the input data
     And I check if error popup contains Date of report has to be after or on the same day as Start date
     And I check if error popup contains Start date has to be before or on the same day as Date of report
+
+  @issue=SORDEV-7094 @env_main
+  Scenario: Test Event identification source fields
+    Given I log in with National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with event identification source UNKNOWN
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with event identification source BACKWARD-TRACING
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with event identification source FORWARD-TRACING
