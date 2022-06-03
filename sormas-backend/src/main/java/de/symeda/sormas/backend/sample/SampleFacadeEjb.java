@@ -367,6 +367,8 @@ public class SampleFacadeEjb implements SampleFacade {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorSampleNotEditable));
 		}
 
+		validate(dto);
+
 		SampleDto existingSampleDto = toDto(existingSample);
 
 		restorePseudonymizedDto(dto, existingSample, existingSampleDto);
