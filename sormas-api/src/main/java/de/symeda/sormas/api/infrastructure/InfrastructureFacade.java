@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.infrastructure;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -34,4 +35,8 @@ public interface InfrastructureFacade<DTO extends EntityDto, INDEX_DTO extends S
 	List<String> archive(List<String> entityUuids);
 
 	List<String> dearchive(List<String> entityUuids);
+
+	boolean isUsedInOtherInfrastructureData(Collection<String> uuids);
+
+	boolean hasArchivedParentInfrastructure(Collection<String> uuids);
 }
