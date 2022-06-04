@@ -97,6 +97,11 @@ public class UserProvider {
 		return getJurisdictionLevel() == JurisdictionLevel.NATION;
 	}
 
+	public boolean isAdmin() {
+		return ((user.getUserRoles().stream().peek(i->i.getCaption().contains("Administrator")).count()==1)
+				||(user.getUserRoles().stream().peek(i->i.getCaption().contains("Admin")).count()==1));
+	}
+
 	public boolean hasRegionJurisdictionLevel() {
 		return getJurisdictionLevel() == JurisdictionLevel.REGION;
 	}

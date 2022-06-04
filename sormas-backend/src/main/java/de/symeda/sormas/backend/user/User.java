@@ -36,6 +36,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.StringUtils;
@@ -232,6 +233,12 @@ public class User extends AbstractDomainObject {
 	@Column(nullable = false)
 	public JurisdictionLevel getJurisdictionLevel() {
 		return jurisdictionLevel;
+	}
+
+	@Transient
+	public boolean isAdmin() {
+		return ((this.getUserRoles().stream().peek(i->i.getCaption().contains("Administrator")).count()==1)
+				||(this.getUserRoles().stream().peek(i->i.getCaption().contains("Admin")).count()==1));
 	}
 
 	public void setJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
