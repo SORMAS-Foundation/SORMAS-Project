@@ -28,6 +28,7 @@ import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.COMM
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CONVERTE_TO_CASE_ENTRIES;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.DELETE_BULK;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.DELETE_TRAVEL_ENTRY_POPUP;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.ENTRY_DETAILED_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.EPI_DATA_CASE_NEW_TRAVEL_ENTRY_DE_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.FIRST_NAME_IMPORTED_PERSON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.FIRST_RESULT_ID;
@@ -58,13 +59,17 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.IsoFields;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
@@ -72,6 +77,8 @@ public class TravelEntryDirectorySteps implements En {
   public static final String userDirPath = System.getProperty("user.dir");
   private final WebDriverHelpers webDriverHelpers;
   public static String fullName;
+  private static BaseSteps baseSteps;
+  static Map<String, Integer> headersMap;
 
   @Inject
   public TravelEntryDirectorySteps(
@@ -79,8 +86,10 @@ public class TravelEntryDirectorySteps implements En {
       RunningConfiguration runningConfiguration,
       ApiState apiState,
       AssertHelpers assertHelpers,
+      BaseSteps baseSteps,
       SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
+    this.baseSteps = baseSteps;
 
     When(
         "I click on the Import button from Travel Entries directory",
@@ -363,5 +372,88 @@ public class TravelEntryDirectorySteps implements En {
           webDriverHelpers.scrollToElement(TRAVEL_ENTRY_FIRST_RECORD_IN_TABLE);
           webDriverHelpers.doubleClickOnWebElementBySelector(TRAVEL_ENTRY_FIRST_RECORD_IN_TABLE);
         });
+
+    When(
+        "I check that the Entries table structure is correct (DE specific)",
+        () -> {
+          headersMap = extractColumnHeadersHashMap();
+          String headers = headersMap.toString();
+          System.out.println(headers);
+          softly.assertTrue(
+              headers.contains("EINREISE-ID=0"),
+              "The TRAVEL ENTRY ID column is not correctly displayed!");
+          softly.assertTrue(
+              headers.contains("EXTERNE ID=1"),
+              "The EXTERNAL ID column is not correctly displayed!");
+          softly.assertTrue(
+              headers.contains("VORNAME DER PERSON=2"),
+              "The PERSON FIRST NAME column is not correctly displayed!");
+          softly.assertTrue(
+              headers.contains("NACHNAME DER PERSON=3"),
+              "The PERSON LAST NAME column is not correctly displayed!");
+          softly.assertTrue(
+              headers.contains("HEIMAT LANDKREIS/KREISFREIE STADT=4"),
+              "The HOME DISTRICT column is not correctly displayed!");
+          softly.assertTrue(
+              headers.contains("EINREISEORT=5"),
+              "The POINT OF ENTRY NAME column is not correctly displayed!");
+          softly.assertTrue(
+              headers.contains("GENESEN=6"), "The RECOVERED column is not correctly displayed!");
+          softly.assertTrue(
+              headers.contains("GEIMPFT=7"), "The VACCINATED column is not correctly displayed!");
+          softly.assertTrue(
+              headers.contains("NEGATIV GETESTET=8"),
+              "The TESTED NEGATIVE column is not correctly displayed!");
+          softly.assertTrue(
+              headers.contains("QUARANT\u00c4NE ENDE=9"),
+              "The QUARANTINE END column is not correctly displayed!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check that ([^\"]*) is visible",
+        (String option) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          By selector = null;
+          switch (option) {
+            case "Person Name, External ID or Travel Entry ID Free Text Filter":
+              selector = PERSON_FILTER_INPUT;
+              break;
+            case "Recovered Checkbox Filter":
+              selector = RECOVERED_ENTRIES;
+              break;
+            case "Vaccinated Checkbox Filter":
+              selector = VACCINATED_ENTRIES;
+              break;
+            case "Negatively Tested Checkbox Filter":
+              selector = NEGATIVE_TESTES_ENTRIES;
+              break;
+            case "Converted to Case Checkbox Filter":
+              selector = CONVERTE_TO_CASE_ENTRIES;
+              break;
+          }
+          webDriverHelpers.scrollToElementUntilIsVisible(selector);
+          softly.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(selector, 2),
+              option + " is not visible!");
+          softly.assertAll();
+        });
+  }
+
+  private Map<String, Integer> extractColumnHeadersHashMap() {
+    AtomicInteger atomicInt = new AtomicInteger();
+    HashMap<String, Integer> headerHashmap = new HashMap<>();
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(ENTRY_DETAILED_COLUMN_HEADERS);
+    webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(ENTRY_DETAILED_COLUMN_HEADERS);
+    webDriverHelpers.scrollToElementUntilIsVisible(ENTRY_DETAILED_COLUMN_HEADERS);
+    baseSteps
+        .getDriver()
+        .findElements(ENTRY_DETAILED_COLUMN_HEADERS)
+        .forEach(
+            webElement -> {
+              webDriverHelpers.scrollToElementUntilIsVisible(webElement);
+              headerHashmap.put(webElement.getText(), atomicInt.getAndIncrement());
+            });
+    return headerHashmap;
   }
 }

@@ -1,0 +1,39 @@
+package org.sormas.e2etests.steps.web.application.samples;
+
+public enum SampleTableColumnsHeaders {
+  LABORATORY("LABORATORY", "LABOR"),
+  PURPOSE_OF_THE_SAMPLE("PURPOSE OF THE SAMPLE", "ZWECK DER PROBE"),
+  ASSOCIATED_CONTACT("ASSOCIATED CONTACT", "ZUGEH\u00D6RIGER KONTAKT"),
+  LAB_SAMPLE_ID("LAB SAMPLE ID", "LABOR PROBEN-ID"),
+  RECEIVED("RECEIVED", "ERHALTEN"),
+  DISTRICT("DISTRICT", "LANDKREIS/KREISFREIE STADT"),
+  SENT_DISPATCHED("SENT/DISPATCHED", "VERSANDT"),
+  FINAL_LABORATORY_RESULT("FINAL LABORATORY RESULT", " ENDERGEBNIS DES LABORS"),
+  TYPE_OF_SAMPLE("TYPE OF SAMPLE", "PROBENTYP"),
+  DISEASE("DISEASE", "KRANKHEIT"),
+  LATEST_PATHOGEN_TEST("LATEST PATHOGEN TEST (CT/CQ-VALUE)", "NEUESTER ERREGERTEST (CT/CQ-WERT)"),
+  NUMBER_OF_TESTS("NUMBER OF TESTS", "ANZAHL DER TESTS"),
+  DATE_SAMPLE_WAS_SENT("DATE SAMPLE WAS SENT", "DATUM PROBENVERSENDUNG"),
+  EPID_NUMBER("EPID NUMBER", ""),
+  ASSOCIATED_CASE("ASSOCIATED CASE", "ZUGEH\u00D6RIGER FALL"),
+  SAMPLE_ID("SAMPLE ID", "PROBEN-ID"),
+  ASSOCIATED_EVENT_PARTICIPANT(
+      "ASSOCIATED EVENT PARTICIPANT", "ZUGEH\u00D6RIGER EREIGNISTEILNEHMER");
+
+  private final String columnHeader;
+  private final String columnHeaderDE;
+
+  SampleTableColumnsHeaders(String columnHeader, String columnHeaderDE) {
+    this.columnHeader = columnHeader;
+    this.columnHeaderDE = columnHeaderDE;
+  }
+
+  @Override
+  public String toString() {
+    return this.columnHeader;
+  }
+
+  public String toStringDE() {
+    return this.columnHeaderDE;
+  }
+}

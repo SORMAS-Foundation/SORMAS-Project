@@ -109,6 +109,12 @@ public class EventResource extends EntityDtoResource {
 		return FacadeProvider.getEventFacade().getDeletedUuidsSince(new Date(since));
 	}
 
+	@GET
+	@Path("/obsolete/{since}")
+	public List<String> getObsoleteUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getEventFacade().getObsoleteUuidsSince(new Date(since));
+	}
+
 	/**
 	 * 
 	 * @param criteriaWithSorting

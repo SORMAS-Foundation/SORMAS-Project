@@ -33,7 +33,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
@@ -171,22 +170,9 @@ public class TaskController {
 			return;
 		}
 
-		// Check if tasks with multiple districts have been selected
-		// In that situation we won't allow editing them
-		List<String> taskUuids = selectedTasks.stream().map(TaskIndexDto::getUuid).collect(Collectors.toList());
-		List<DistrictReferenceDto> districts = FacadeProvider.getTaskFacade().getDistrictsByTaskUuids(taskUuids, 2L);
-		if (districts.size() == 2) {
-			new Notification(
-				I18nProperties.getString(Strings.headingUnavailableTaskEdition),
-				I18nProperties.getString(Strings.messageUnavailableTaskEditionDueToDifferentDistricts),
-				Type.WARNING_MESSAGE,
-				false).show(Page.getCurrent());
-			return;
-		}
-
 		// Create a temporary task in order to use the CommitDiscardWrapperComponent
 		TaskBulkEditData bulkEditData = new TaskBulkEditData();
-		BulkTaskDataForm form = new BulkTaskDataForm(districts.stream().findFirst().orElse(null), selectedTasks);
+		BulkTaskDataForm form = new BulkTaskDataForm(selectedTasks);
 		form.setValue(bulkEditData);
 		final CommitDiscardWrapperComponent<BulkTaskDataForm> editView = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 

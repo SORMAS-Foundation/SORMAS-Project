@@ -193,3 +193,26 @@ Feature: Pathogen Functionalities
     And I search for Sample using Sample UUID from the created Sample
     When I open created Sample
     Then I check if Pathogen test result in Samples is displayed correctly and save
+
+    @issue=SORDEV-7092 @env_de
+      Scenario: Test Enhance availability of pathogen test information
+      Given API: I create a new person
+      Then API: I check that POST call body is "OK"
+      And API: I check that POST call status code is 200
+      And API: I create a new case
+      Then API: I check that POST call body is "OK"
+      And API: I check that POST call status code is 200
+      And API: I create a new sample
+      Then API: I check that POST call body is "OK"
+      And API: I check that POST call status code is 200
+      When I log in with National User
+      And I click on the Sample button from navbar
+      And I am opening the last created via API Sample by url navigation
+      Then I click on the new pathogen test from the Edit Sample page for DE version
+      And I complete all fields from Pathogen test result popup for PCR RT PCR Value Detection test type for DE version and save
+      And I check if pathogen test card is correctly displayed for DE version
+      Then I navigate to case tab
+      And I check if sample card is correctly displayed in case edit tab for DE version
+      Then I click on the Sample button from navbar
+      And I search after the last created Sample via API
+      Then I check if created sample is correctly displayed in samples list
