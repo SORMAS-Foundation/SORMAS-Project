@@ -26,6 +26,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -102,6 +103,12 @@ public interface UserFacade {
 	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, boolean excludeLimitedDiseaseUsers, UserRight... userRights);
 
 	List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districts, Disease limitedDisease, UserRight... userRights);
+
+	List<UserReferenceDto> getUserRefsByInfrastructure(
+		InfrastructureDataReferenceDto infrastructure,
+		JurisdictionLevel jurisdictionLevel,
+		JurisdictionLevel allowedJurisdictionLevel,
+		Disease limitedDisease);
 
 	List<UserReferenceDto> getAllUserRefs(boolean includeInactive);
 
