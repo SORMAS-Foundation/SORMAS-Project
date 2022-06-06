@@ -89,6 +89,7 @@ public class EditCasePage {
   public static final By FACILITY_CATEGORY_COMBOBOX = By.cssSelector("#typeGroup div");
   public static final By FACILITY_TYPE_COMBOBOX = By.cssSelector("#facilityType div");
   public static final By FACILITY_HEALTH_COMBOBOX = By.cssSelector("#healthFacility div");
+  public static final By FACILITY_HEALTH_INPUT = By.cssSelector("#healthFacility input");
   public static final By FACILITY_ACTIVITY_COMBOBOX =
       By.cssSelector("[id='typeOfPlace'] [class='v-filterselect-button']");
   public static final By REGION_COMBOBOX = By.cssSelector("#responsibleRegion div");
@@ -233,6 +234,9 @@ public class EditCasePage {
   public static final By ARCHIVE_CASE_BUTTON = By.id("archiveDearchive");
   public static final By ARCHIVE_RELATED_CONTACTS_CHECKBOX =
       By.cssSelector(".popupContent span[class='v-checkbox v-widget']");
+  public static final By INFRASTRUCTURE_DATA_POPUP =
+      By.xpath("//*[contains(text(),'Infrastructure data has changed')]");
+  public static final By ACTION_CONFIRM = By.cssSelector("[id='actionConfirm']");
   public static final By SAMPLES_CARD_DATE_OF_COLLECTED_SAMPLE =
       By.xpath("(//div[@location='samples']//div[@class='v-label v-widget v-label-undef-w'])[1]");
   public static final By SAMPLES_CARD_LABORATORY =

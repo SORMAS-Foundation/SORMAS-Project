@@ -395,6 +395,15 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
+        "^I create a new case with Facility as a Place of stay$",
+        () -> {
+          caze = caseService.buildGeneratedCaseWithFacility();
+          fillAllCaseFieldsForFacility(caze);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
+
+    When(
         "^I create a new case with specific data and new person$",
         () -> {
           caze = caseService.buildGeneratedCase();
@@ -548,6 +557,11 @@ public class CreateNewCaseSteps implements En {
         "^I click on Save button in Case form$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP_HEADER, 1)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+          }
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
     When(
         "^I check if National Health Id, Nickname and Passport number appear in Pick or create person popup$",
@@ -912,6 +926,26 @@ public class CreateNewCaseSteps implements En {
     fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
     fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
     fillPlaceDescription(caze.getPlaceDescription());
+  }
+
+  private void fillAllCaseFieldsForFacility(Case caze) {
+    selectCaseOrigin(caze.getCaseOrigin());
+    fillDisease(caze.getDisease());
+    selectResponsibleRegion(caze.getResponsibleRegion());
+    selectResponsibleDistrict(caze.getResponsibleDistrict());
+    selectResponsibleCommunity(caze.getResponsibleCommunity());
+    selectPlaceOfStay(caze.getPlaceOfStay());
+    fillFirstName(caze.getFirstName());
+    fillLastName(caze.getLastName());
+    fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
+    selectSex(caze.getSex());
+    selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+    fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
+    fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+    fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+    fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+    selectFacility(caze.getFacility());
+    fillPlaceDescription(caze.getFacilityNameAndDescription());
   }
 
   private List<WebElement> getTableRows() {
