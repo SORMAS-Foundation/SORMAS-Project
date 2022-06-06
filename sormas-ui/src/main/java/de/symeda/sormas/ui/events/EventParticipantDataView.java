@@ -41,8 +41,8 @@ import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.ContactListComponent;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
+import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
-import de.symeda.sormas.ui.labmessage.LabMessagesView;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponentLayout;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
@@ -226,10 +226,10 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			eventParticipantDto.getEvent().getUuid(),
 			true);
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.LAB_MESSAGES)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.LAB_MESSAGES)
-			&& FacadeProvider.getLabMessageFacade().existsLabMessageForEntity(getReference())) {
-			menu.addView(LabMessagesView.VIEW_NAME, I18nProperties.getCaption(Captions.labMessageLabMessagesList));
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EXTERNAL_MESSAGES)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_MESSAGE_VIEW)
+			&& FacadeProvider.getExternalMessageFacade().existsExternalMessageForEntity(getReference())) {
+			menu.addView(ExternalMessagesView.VIEW_NAME, I18nProperties.getCaption(Captions.externalMessagesList));
 		}
 
 		menu.addView(EventParticipantDataView.VIEW_NAME, I18nProperties.getCaption(EventParticipantDto.I18N_PREFIX), params);
@@ -242,7 +242,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		super.setSubComponent(newComponent);
 
 		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(getReference().getUuid());
-		if(eventParticipant.isDeleted()){
+		if (eventParticipant.isDeleted()) {
 			newComponent.setEnabled(false);
 		}
 

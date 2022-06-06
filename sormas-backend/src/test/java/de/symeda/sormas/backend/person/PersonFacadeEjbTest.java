@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.person;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
@@ -21,8 +22,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.common.DeletionDetails;
-import de.symeda.sormas.api.common.DeletionReason;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -32,6 +31,8 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.event.EventDto;
@@ -67,6 +68,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 
 public class PersonFacadeEjbTest extends AbstractBeanTest {
@@ -635,73 +637,75 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetPersonsAfter() throws InterruptedException {
+	public void testGetPersonsAfter() {
+
+		int batchSize = 4;
 		Date t1 = new Date();
 
-		PersonDto person1 = creator.createPerson();
-		person1 = getPersonFacade().savePerson(person1);
-		final ContactDto contact1 = creator.createContact(nationalUser.toReference(), person1.toReference());
-		getContactFacade().save(contact1);
+		// 0. Make sure that empty result works
+		assertThat(getPersonFacade().getPersonsAfter(t1), is(empty()));
+		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, null), is(empty()));
+		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID), is(empty()));
 
-		List<PersonDto> personsAfterT1 = getPersonFacade().getPersonsAfter(t1);
-		assertEquals(1, personsAfterT1.size());
-		assertEquals(person1.getUuid(), personsAfterT1.get(0).getUuid());
+		// 1. Check one persons with two timestamps
+		PersonDto person1 = creator.createPerson("First", "Person");
+		creator.createContact(nationalUser.toReference(), person1.toReference());
+
+		assertThat(getPersonFacade().getPersonsAfter(t1), contains(person1));
+		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, null), contains(person1));
+		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1));
+		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, person1.getUuid()), contains(person1));
+		assertThat(getPersonFacade().getPersonsAfter(person1.getChangeDate(), batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1));
+		{
+			List<PersonDto> result = getPersonFacade().getPersonsAfter(t1, batchSize, person1.getUuid());
+			assertThat(result, contains(person1));
+			assertThat(getPersonFacade().getPersonsAfter(result.get(0).getChangeDate(), batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1));
+			// person1 still in result because of Contact reference
+			assertThat(getPersonFacade().getPersonsAfter(result.get(0).getChangeDate(), batchSize, person1.getUuid()), contains(person1));
+		}
 
 		Date t2 = new Date();
+		assertThat(getPersonFacade().getPersonsAfter(t2), is(empty()));
+		assertThat(getPersonFacade().getPersonsAfter(t2, batchSize, null), is(empty()));
+		assertThat(getPersonFacade().getPersonsAfter(t2, batchSize, EntityDto.NO_LAST_SYNCED_UUID), is(empty()));
 
-		PersonDto person2 = creator.createPerson();
-		person2 = getPersonFacade().savePerson(person2);
-		final ContactDto contact2 = creator.createContact(nationalUser.toReference(), person2.toReference());
-		getContactFacade().save(contact2);
+		// 2. Check two persons with two timestamps
+		PersonDto person2 = creator.createPerson("Second", "Person");
+		creator.createContact(nationalUser.toReference(), person2.toReference());
 
-		List<PersonDto> personsAfterT2 = getPersonFacade().getPersonsAfter(t2);
-		assertEquals(1, personsAfterT2.size());
-		assertEquals(person2.getUuid(), personsAfterT2.get(0).getUuid());
+		assertThat(getPersonFacade().getPersonsAfter(t1), contains(person1, person2));
+		assertThat(getPersonFacade().getPersonsAfter(t2), contains(person2));
 
-		personsAfterT1 = getPersonFacade().getPersonsAfter(t1);
-		assertEquals(2, personsAfterT1.size());
-
-		PersonDto person3 = creator.createPerson();
-		person3 = getPersonFacade().savePerson(person3);
-
+		// 3. Check with third person with TravelEntry
+		Date t3 = new Date();
+		PersonDto person3 = creator.createPerson("Third", "Person");
 		creator
 			.createTravelEntry(person3.toReference(), nationalUser.toReference(), Disease.CORONAVIRUS, rdcf.region, rdcf.district, rdcf.pointOfEntry);
 
-		personsAfterT1 = getPersonFacade().getPersonsAfter(t1);
-		assertEquals(3, personsAfterT1.size());
+		// 3a. Found by TravelEntry
+		assertThat(getPersonFacade().getPersonsAfter(t1), contains(person1, person2, person3));
+		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1, person2, person3));
+		assertThat(getPersonFacade().getPersonsAfter(t3, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person3));
 
-		personsAfterT1 = getPersonFacade().getPersonsAfter(t1, 4, EntityDto.NO_LAST_SYNCED_UUID);
-		assertEquals(2, personsAfterT1.size());
+		// 3b. Exclude TravelEntries from mobileSync
+		MockProducer.setMobileSync(true);
+		List<PersonDto> personsAfterT1;
+		personsAfterT1 = getPersonFacade().getPersonsAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID);
+		assertThat(personsAfterT1, contains(person1, person2));
 
+		// 4. Test retrieval of persons for mobileSync with different changeDates and uuids
 		PersonDto personRead1 = personsAfterT1.get(0);
 		PersonDto personRead2 = personsAfterT1.get(1);
 
-		personsAfterT1 = getPersonFacade().getPersonsAfter(t1, 1, EntityDto.NO_LAST_SYNCED_UUID);
-		assertEquals(1, personsAfterT1.size());
+		assertThat(getPersonFacade().getPersonsAfter(t1, 1, EntityDto.NO_LAST_SYNCED_UUID), contains(person1));
+		assertThat(getPersonFacade().getPersonsAfter(personRead1.getChangeDate(), batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person2));
+		assertThat(getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), batchSize, EntityDto.NO_LAST_SYNCED_UUID), is(empty()));
+		Date changeDateBeforePerson2 = new Date(personRead2.getChangeDate().getTime() - 1L);
+		assertThat(getPersonFacade().getPersonsAfter(changeDateBeforePerson2, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person2));
 
-		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead1.getChangeDate(), 4, null);
-		assertEquals(1, personsAfterT1.size());
-
-		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead1.getChangeDate(), 4, EntityDto.NO_LAST_SYNCED_UUID);
-		assertEquals(1, personsAfterT1.size());
-
-		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), 4, null);
-		assertEquals(0, personsAfterT1.size());
-
-		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), 4, EntityDto.NO_LAST_SYNCED_UUID);
-		assertEquals(0, personsAfterT1.size());
-
-		personsAfterT1 = getPersonFacade().getPersonsAfter(new Date(personRead2.getChangeDate().getTime() - 1L), 4, EntityDto.NO_LAST_SYNCED_UUID);
-		assertEquals(1, personsAfterT1.size());
-
-		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), 4, "AAAAAA-AAAAAA-AAAAAA-AAAAAA");
-		assertEquals(1, personsAfterT1.size());
-
-		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), 4, "ZZZZZZ-ZZZZZZ-ZZZZZZ-ZZZZZZ");
-		assertEquals(0, personsAfterT1.size());
-
-		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), 4, personRead2.getUuid());
-		assertEquals(0, personsAfterT1.size());
+		assertThat(getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), batchSize, "AAAAAA-AAAAAA-AAAAAA-AAAAAA"), contains(person2));
+		assertThat(getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), batchSize, "ZZZZZZ-ZZZZZZ-ZZZZZZ-ZZZZZZ"), is(empty()));
+		assertThat(getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), batchSize, personRead2.getUuid()), is(empty()));
 	}
 
 	@Test

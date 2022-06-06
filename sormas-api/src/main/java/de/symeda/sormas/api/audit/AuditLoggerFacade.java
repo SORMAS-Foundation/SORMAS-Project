@@ -1,8 +1,9 @@
 package de.symeda.sormas.api.audit;
 
-import javax.ejb.Remote;
 import java.util.Date;
 import java.util.List;
+
+import javax.ejb.Remote;
 
 @Remote
 public interface AuditLoggerFacade {
@@ -13,16 +14,16 @@ public interface AuditLoggerFacade {
 
 	void logFailedRestLogin(String authorizationHeader, String method, String pathInfo);
 
-	void logGetExternalLabMessagesSuccess(Date since, List<String> externalLabMessages, Date start, Date end, String authAlias);
+	void logGetExternalMessagesSuccess(Date since, List<String> externalLabMessages, Date start, Date end, String authAlias);
 
-	void logExternalLabMessagesHtmlSuccess(String uuid, int length, Date start, Date end, String authAlias);
+	void logExternalMessagesHtmlSuccess(String uuid, int length, Date start, Date end, String authAlias);
 
-	void logExternalLabMessagesPdfSuccess(String uuid, int length, Date start, Date end, String authAlias);
+	void logExternalMessagesPdfSuccess(String uuid, int length, Date start, Date end, String authAlias);
 
-	void logGetExternalLabMessagesError(String outcome, String error, Date start, Date end, String authAlias);
+	void logGetExternalMessagesError(String outcome, String error, Date start, Date end, String authAlias);
 
-	void logExternalLabMessagesHtmlError(String messageUuid, String outcome, String error, Date start, Date end, String authAlias);
+	void logExternalMessagesHtmlError(String messageUuid, String outcome, String error, Date start, Date end, String authAlias);
 
-	void logExternalLabMessagesPdfError(String messageUuid, String outcome, String error, Date start, Date end, String authAlias);
+	void logExternalMessagesPdfError(String messageUuid, String outcome, String error, Date start, Date end, String authAlias);
 
 }

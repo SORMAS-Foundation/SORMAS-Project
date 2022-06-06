@@ -48,12 +48,14 @@ import org.apache.commons.beanutils.BeanUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
@@ -113,7 +115,6 @@ import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
@@ -227,7 +228,7 @@ public class UserFacadeEjb implements UserFacade {
 	 * For facility users, this includes district and community users, if their district/community is identical with that of the facility
 	 */
 	public List<UserReferenceDto> getUsersWithSuperiorJurisdiction(UserDto user) {
-		JurisdictionLevel superordinateJurisdiction = JurisdictionHelper.getSuperordinateJurisdiction(user.getJurisdictionLevel());
+		JurisdictionLevel superordinateJurisdiction = InfrastructureHelper.getSuperordinateJurisdiction(user.getJurisdictionLevel());
 
 		List<UserReference> superiorUsersList = Collections.emptyList();
 		switch (superordinateJurisdiction) {
@@ -326,6 +327,28 @@ public class UserFacadeEjb implements UserFacade {
 				true,
 				limitedDisease,
 				userRights)
+			.stream()
+			.map(UserFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<UserReferenceDto> getUserRefsByInfrastructure(
+		InfrastructureDataReferenceDto infrastructure,
+		JurisdictionLevel jurisdictionLevel,
+		JurisdictionLevel allowedJurisdictionLevel,
+		Disease limitedDisease) {
+
+		if (jurisdictionLevel.getOrder() < allowedJurisdictionLevel.getOrder()) {
+			return Collections.emptyList();
+		}
+
+		return userService
+			.getUserRefsByInfrastructure(
+				infrastructure != null ? infrastructure.getUuid() : null,
+				jurisdictionLevel,
+				allowedJurisdictionLevel,
+				limitedDisease)
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());

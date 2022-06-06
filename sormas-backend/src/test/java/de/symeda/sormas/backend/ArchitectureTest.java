@@ -3,6 +3,7 @@ package de.symeda.sormas.backend;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,10 +45,10 @@ import de.symeda.sormas.backend.event.EventGroupFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.event.eventimport.EventImportFacadeEjb;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalFacadeEjb;
+import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb;
+import de.symeda.sormas.backend.externalmessage.labmessage.TestReportFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.info.InfoFacadeEjb;
-import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb;
-import de.symeda.sormas.backend.labmessage.TestReportFacadeEjb;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb;
 import de.symeda.sormas.backend.report.AggregateReportFacadeEjb;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb;
@@ -225,11 +226,11 @@ public class ArchitectureTest {
 	}
 
 	@ArchTest
-	public void testLabMessageFacadeEjbAuthorization(JavaClasses classes) {
+	public void testExternalMessageFacadeEjbAuthorization(JavaClasses classes) {
 		assertFacadeEjbAnnotated(
-			LabMessageFacadeEjb.class,
+			ExternalMessageFacadeEjb.class,
 			AuthMode.CLASS_ONLY,
-			Collections.singletonList("fetchAndSaveExternalLabMessages"),
+			Arrays.asList("fetchAndSaveExternalMessages", "bulkAssignExternalMessages", "deleteExternalMessage", "deleteExternalMessages"),
 			classes);
 	}
 

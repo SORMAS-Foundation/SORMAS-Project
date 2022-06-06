@@ -23,9 +23,9 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleListEntryDto;
@@ -72,7 +72,7 @@ public class SampleList extends PaginationList<SampleListEntryDto> {
 					"edit-sample-" + sampleUuid,
 					(ClickListener) event -> ControllerProvider.getSampleController().navigateToData(sampleUuid));
 			}
-			if(UserProvider.getCurrent().getUserRights().contains(UserRight.LAB_MESSAGES)){
+			if (UserProvider.getCurrent().getUserRights().contains(UserRight.EXTERNAL_MESSAGE_VIEW)) {
 				addViewLabMessageButton(listEntry);
 			}
 			listLayout.addComponent(listEntry);
@@ -80,10 +80,12 @@ public class SampleList extends PaginationList<SampleListEntryDto> {
 	}
 
 	private void addViewLabMessageButton(SampleListEntry listEntry) {
-		if (UserProvider.getCurrent().hasUserRight(UserRight.LAB_MESSAGES)) {
-			List<LabMessageDto> labMessages = FacadeProvider.getLabMessageFacade().getForSample(listEntry.getSampleListEntryDto().toReference());
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_MESSAGE_VIEW)) {
+			List<ExternalMessageDto> labMessages =
+				FacadeProvider.getExternalMessageFacade().getForSample(listEntry.getSampleListEntryDto().toReference());
 			if (!labMessages.isEmpty()) {
-				listEntry.addAssociatedLabMessagesListener(clickEvent -> ControllerProvider.getLabMessageController().showLabMessagesSlider(labMessages));
+				listEntry.addAssociatedLabMessagesListener(
+					clickEvent -> ControllerProvider.getExternalMessageController().showLabMessagesSlider(labMessages));
 			}
 		}
 	}

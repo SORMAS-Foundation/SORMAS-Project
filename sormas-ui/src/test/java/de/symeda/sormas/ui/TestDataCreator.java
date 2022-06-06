@@ -46,6 +46,7 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
@@ -57,7 +58,6 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
@@ -711,12 +711,12 @@ public class TestDataCreator {
 		return campaignForm;
 	}
 
-	public LabMessageDto createLabMessage(Consumer<LabMessageDto> config) {
-		LabMessageDto labMessage = LabMessageDto.build();
+	public ExternalMessageDto createLabMessage(Consumer<ExternalMessageDto> config) {
+		ExternalMessageDto labMessage = ExternalMessageDto.build();
 
 		config.accept(labMessage);
 
-		labMessage = FacadeProvider.getLabMessageFacade().save(labMessage);
+		labMessage = FacadeProvider.getExternalMessageFacade().save(labMessage);
 
 		return labMessage;
 	}

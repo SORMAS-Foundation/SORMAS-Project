@@ -43,6 +43,8 @@ import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
 import javax.transaction.UserTransaction;
 
+import de.symeda.sormas.api.RequestContextHolder;
+import de.symeda.sormas.api.RequestContextTO;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.central.EtcdCentralClient;
 import de.symeda.sormas.backend.central.EtcdCentralClientProducer;
@@ -80,6 +82,7 @@ public class MockProducer implements InitialContextFactory {
 	private static TimerService timerService = mock(TimerService.class);
 	private static Properties properties = new Properties();
 	private static UserTransaction userTransaction = mock(UserTransaction.class);
+	private static RequestContextTO requestContextTO = new RequestContextTO(false);
 	private static SormasToSormasRestClient s2sRestClient = mock(SormasToSormasRestClient.class);
 	private static final EtcdCentralClient etcdCentralClient = mock(EtcdCentralClient.class);
 	private static ManagedScheduledExecutorService managedScheduledExecutorService = mock(ManagedScheduledExecutorService.class);
@@ -118,6 +121,7 @@ public class MockProducer implements InitialContextFactory {
 		reset(sessionContext, principal, topic, connectionFactory, timerService, userTransaction, s2sRestClient, managedScheduledExecutorService);
 		wireMocks();
 		resetProperties();
+		requestContextTO.setMobileSync(false);
 	}
 
 	private static void resetProperties() {
@@ -131,6 +135,7 @@ public class MockProducer implements InitialContextFactory {
 	public static void wireMocks() {
 
 		when(sessionContext.getCallerPrincipal()).thenReturn(getPrincipal());
+		RequestContextHolder.setRequestContext(requestContextTO);
 	}
 
 	@Produces
@@ -212,5 +217,13 @@ public class MockProducer implements InitialContextFactory {
 
 	public static void mockProperty(String property, String value) {
 		properties.setProperty(property, value);
+	}
+
+	/**
+	 * @param mobileSync
+	 *            {@code true} simulates mobile call.
+	 */
+	public static void setMobileSync(boolean mobileSync) {
+		requestContextTO.setMobileSync(mobileSync);
 	}
 }

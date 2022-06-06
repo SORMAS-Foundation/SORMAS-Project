@@ -65,4 +65,6 @@ public class TravelEntryPage {
       By.cssSelector("[id='weekTo'] [class='v-filterselect-button']");
   public static final By DELETE_TRAVEL_ENTRY_POPUP =
       By.xpath("//div[@class='popupContent']//div[@class='v-filterselect-button']");
+  public static final By ENTRY_DETAILED_COLUMN_HEADERS =
+      By.cssSelector("thead .v-grid-column-default-header-content");
 }
