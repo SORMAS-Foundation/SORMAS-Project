@@ -16,8 +16,14 @@
 
 package de.symeda.sormas.backend.report;
 
+import java.util.Date;
+import java.util.List;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
 import de.symeda.sormas.api.report.AggregatedCaseCountDto;
@@ -27,17 +33,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.infrastructure.community.Community;
-import de.symeda.sormas.backend.infrastructure.district.District;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.Date;
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class AggregateReportFacadeEjbTest  extends AbstractBeanTest {
 
@@ -45,8 +40,6 @@ public class AggregateReportFacadeEjbTest  extends AbstractBeanTest {
 	private UserDto officer;
 	private UserDto informant1;
 	private UserDto informant2;
-	private UserDto informant3;
-	private UserDto informant4;
 
 	@Before
 	public void setupData() {

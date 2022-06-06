@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
@@ -179,7 +178,11 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		}
 
 		List<AggregatedCaseCountDto> reportList = new ArrayList<>(reportSet);
-		reportList.sort(Comparator.comparing(r -> r.getDisease().toString()));
+		Function<AggregatedCaseCountDto, String> objectObjectFunction = r -> r.getDisease().toString();
+		Comparator<AggregatedCaseCountDto> comparator = Comparator.comparing(objectObjectFunction)
+			.thenComparing(r -> r.getAgeGroup().replaceAll("\\d", ""))
+			.thenComparing(r -> r.getAgeGroup().replaceAll("_", ""));
+		reportList.sort(comparator);
 		return reportList;
 	}
 

@@ -58,7 +58,13 @@ public class AggregateReportDao extends AbstractAdoDao<AggregateReport> {
 				public int compare(AggregateReport o1, AggregateReport o2) {
 					return o1.getDisease().toString().compareTo(o2.getDisease().toString());
 				}
-			});
+			}.thenComparing(new Comparator<AggregateReport>() {
+
+				@Override
+				public int compare(AggregateReport o1, AggregateReport o2) {
+					return o1.getAgeGroup().compareTo(o2.getAgeGroup());
+				}
+			}));
 
 			return reports;
 		} catch (SQLException e) {

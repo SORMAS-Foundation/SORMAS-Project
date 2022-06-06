@@ -210,11 +210,11 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 				for (AggregateReport report : aggregateReports) {
 					RowReportAggregateAgegroupLayoutBinding binding =
 							DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_agegroup_layout, contentBinding.reportContent, true);
-					binding.setData(report);
 					String ageGroup = report.getAgeGroup();
 					if (ageGroup != null) {
-						binding.setAgeGroup(AgeGroupUtils.createCaption(ageGroup));
+						report.setAgeGroup(AgeGroupUtils.createCaption(ageGroup));
 					}
+					binding.setData(report);
 					if (latestLocalChangeDate == null
 							|| (report.getLocalChangeDate() != null && latestLocalChangeDate.before(report.getLocalChangeDate()))) {
 						latestLocalChangeDate = report.getLocalChangeDate();
@@ -231,9 +231,10 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 				LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				RowReportAggregateLayoutBinding binding =
 					DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_layout, contentBinding.reportContent, true);
-				AggregateReport data = new AggregateReport();
+				AggregateReport data = DatabaseHelper.getAggregateReportDao().build();
 				data.setDisease(diseaseEnum);
 				binding.setData(data);
+				reports.add(data);
 			} else {
 				LayoutInflater diseaseInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				RowReportAggregateDiseaseLayoutBinding viewBinding =
@@ -243,7 +244,11 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 					LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 					RowReportAggregateAgegroupLayoutBinding binding =
 						DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_agegroup_layout, contentBinding.reportContent, true);
-					binding.setAgeGroup(AgeGroupUtils.createCaption(ageGroup));
+					AggregateReport data = DatabaseHelper.getAggregateReportDao().build();
+					data.setDisease(diseaseEnum);
+					data.setAgeGroup(AgeGroupUtils.createCaption(ageGroup));
+					binding.setData(data);
+					reports.add(data);
 				}
 			}
 		}
@@ -293,6 +298,15 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 						if (report.getDeaths() == null) {
 							report.setDeaths(0);
 						}
+
+						final EpiWeek epiWeek = (EpiWeek) contentBinding.aggregateReportsWeek.getValue();
+						if (epiWeek != null) {
+							report.setEpiWeek(epiWeek.getWeek());
+							report.setYear(epiWeek.getYear());
+						}
+
+						User currentUser = ConfigProvider.getUser();
+						report.setReportingUser(currentUser);
 
 						DatabaseHelper.getAggregateReportDao().saveAndSnapshot(report);
 					}
