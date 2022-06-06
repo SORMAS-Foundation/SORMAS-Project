@@ -80,6 +80,9 @@ public class EditEventPage {
   public static final By NAVIGATE_TO_EVENT_GROUP_BUTTON = By.id("tab-events-data");
   public static final By NAVIGATE_TO_EVENT_PARTICIPANTS_BUTTON =
       By.id("tab-events-eventparticipants");
+  public static final By EVENT_PARTICIPANT_HEADER =
+      By.xpath(
+          "//div[@class='v-label v-widget h2 v-label-h2 primary v-label-primary vspace-none v-label-vspace-none vspace-top-none v-label-vspace-top-none caption-truncated v-label-caption-truncated v-label-undef-w']");
   public static final By SAVE_BUTTON_FOR_EDIT_EVENT_GROUP = By.id("commit");
   public static final By FIRST_GROUP_ID = By.xpath("//table/tbody/tr[1]/td[2]");
   public static final By TOTAL_ACTIONS_COUNTER = By.cssSelector(".badge");

@@ -192,6 +192,7 @@ import static org.sormas.e2etests.steps.web.application.contacts.ContactDirector
 
 import cucumber.api.java8.En;
 import java.io.File;
+import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -203,6 +204,9 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Case;
@@ -223,6 +227,7 @@ import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
@@ -433,6 +438,78 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CREATE_QUARANTINE_ORDER_BUTTON);
         });
 
+    When(
+        "I check if generated document for Case based on {string} was downloaded properly",
+        (String name) -> {
+          String uuid = apiState.getCreatedCase().getUuid();
+          String pathToFile =
+              userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name;
+          Path path = Paths.get(pathToFile);
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      "Case document was not downloaded. Path used for check: "
+                          + path.toAbsolutePath()),
+              120);
+        });
+    When(
+        "I check if generated document for Case based on {string} contains all required fields",
+        (String name) -> {
+          String uuid = apiState.getCreatedCase().getUuid();
+          String pathToFile =
+              userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name;
+          FileInputStream fis = new FileInputStream(pathToFile);
+          XWPFDocument xdoc = new XWPFDocument(OPCPackage.open(fis));
+          List<XWPFParagraph> paragraphList = xdoc.getParagraphs();
+          String[] line = paragraphList.get(29).getText().split(":");
+          softly.assertEquals(line[0], "Report Date");
+          line = paragraphList.get(31).getText().split(":");
+          softly.assertEquals(line[0], "Vaccination Date");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination
+                  .getVaccinationDate()
+                  .format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+          line = paragraphList.get(32).getText().split(":");
+          softly.assertEquals(line[0], "Vaccine name");
+          softly.assertEquals(
+              line[1].trim(), CreateNewVaccinationSteps.vaccination.getVaccineName());
+          line = paragraphList.get(33).getText().split(":");
+          softly.assertEquals(line[0], "Vaccine name Details");
+          line = paragraphList.get(34).getText().split(":");
+          softly.assertEquals(line[0], "Vaccine Manufacturer");
+          softly.assertEquals(
+              line[1].trim(), CreateNewVaccinationSteps.vaccination.getVaccineManufacturer());
+          line = paragraphList.get(35).getText().split(":");
+          softly.assertEquals(line[0], "Vaccine Manufacturer details");
+          line = paragraphList.get(36).getText().split(":");
+          softly.assertEquals(line[0], "Vaccine Type");
+          softly.assertEquals(
+              line[1].trim(), CreateNewVaccinationSteps.vaccination.getVaccineType());
+          line = paragraphList.get(37).getText().split(":");
+          softly.assertEquals(line[0], "Vaccine Dose");
+          softly.assertEquals(
+              line[1].trim(), CreateNewVaccinationSteps.vaccination.getVaccineDose());
+          line = paragraphList.get(38).getText().split(":");
+          softly.assertEquals(line[0], "INN");
+          softly.assertEquals(line[1].trim(), CreateNewVaccinationSteps.vaccination.getInn());
+          line = paragraphList.get(39).getText().split(":");
+          softly.assertEquals(line[0], "Batch");
+          softly.assertEquals(
+              line[1].trim(), CreateNewVaccinationSteps.vaccination.getBatchNumber());
+          line = paragraphList.get(40).getText().split(":");
+          softly.assertEquals(line[0], "UNII Code");
+          softly.assertEquals(line[1].trim(), CreateNewVaccinationSteps.vaccination.getUniiCode());
+          line = paragraphList.get(41).getText().split(":");
+          softly.assertEquals(line[0], "ATC Code");
+          softly.assertEquals(line[1].trim(), CreateNewVaccinationSteps.vaccination.getAtcCode());
+          line = paragraphList.get(42).getText().split(":");
+          softly.assertEquals(line[0], "Vaccination Info Source");
+          softly.assertEquals(
+              line[1].trim(), CreateNewVaccinationSteps.vaccination.getVaccinationInfoSource());
+          softly.assertAll();
+        });
     When(
         "I check the created data is correctly displayed on Edit case page",
         () -> {
