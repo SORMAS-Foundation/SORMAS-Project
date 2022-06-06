@@ -27,6 +27,7 @@ public class PreviousHospitalizationService {
         .community(CommunityValues.VoreingestellteGemeinde.getName())
         .hospital("Other facility")
         .isolation(YES.toString())
+        .dateOfIsolation(LocalDate.now().minusDays(8))
         .facilityNameDescription(faker.beer().name())
         .reasonForHospitalization("Other reason")
         .specifyReason(faker.book().title())
@@ -34,6 +35,7 @@ public class PreviousHospitalizationService {
         .startOfStayDate(LocalDate.now().minusDays(9))
         .endOfStayDate(LocalDate.now().minusDays(7))
         .description(faker.cat().breed() + " " + faker.color().name())
+        .wasPatientAdmittedAtTheFacilityAsAnInpatient(YES.toString())
         .build();
   }
 }

@@ -30,6 +30,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUI
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.ARRIVAL_DATE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DATE_OF_ARRIVAL_LABEL_DE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DATE_OF_ARRIVAL_POPUP_CLOSE;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DISEASE_COMBOBOX_DISABLED;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_TRAVEL_ENTRY_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_UUID_TABLE_TRAVEL_ENTRIES;
@@ -41,6 +42,7 @@ import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntry
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.REPORT_DATE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SAVE_POPUP_CONTENT;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SEX_COMBOBOX;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CASE_PERSON_NAME;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CREATE_CASE_FROM_TRAVEL_ENTRY;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISEASE_NAME_INPUT;
@@ -136,6 +138,17 @@ public class CreateNewTravelEntrySteps implements En {
           fillPointOfEntryDetails(travelEntry.getPointOfEntryDetails());
         });
     When(
+        "^I fill the required fields in a new travel entry form without disease and person data$",
+        () -> {
+          travelEntry = travelEntryService.buildGeneratedEntryDE();
+          fillDateOfArrival(travelEntry.getDateOfArrival(), Locale.GERMAN);
+          selectResponsibleRegion(travelEntry.getResponsibleRegion());
+          selectResponsibleDistrict(travelEntry.getResponsibleDistrict());
+          selectResponsibleCommunity(travelEntry.getResponsibleCommunity());
+          fillPointOfEntry(travelEntry.getPointOfEntry());
+          fillPointOfEntryDetails(travelEntry.getPointOfEntryDetails());
+        });
+    When(
         "^I fill the required fields in a new travel entry form with same person data$",
         () -> {
           fillFirstName(travelEntryWithSamePersonData.getFirstName());
@@ -160,6 +173,57 @@ public class CreateNewTravelEntrySteps implements En {
           fillReportDate(previousWeekDate, Locale.GERMAN);
         });
 
+    When(
+        "I check that ([^\"]*) is not visible in New Travel Entry popup",
+        (String option) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          By selector = null;
+          Boolean elementVisible = true;
+          switch (option) {
+            case "First Name":
+              selector = FIRST_NAME_OF_CONTACT_PERSON_INPUT;
+              break;
+            case "Last Name":
+              selector = LAST_NAME_OF_CONTACT_PERSON_INPUT;
+              break;
+            case "Sex":
+              selector = SEX_COMBOBOX;
+              break;
+          }
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(selector);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertFalse(elementVisible, option + " is visible!");
+          softly.assertAll();
+        });
+    When(
+        "I check that disease in New Travel Entry popup is disabled",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          Boolean elementVisible = true;
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(DISEASE_COMBOBOX_DISABLED);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertTrue(elementVisible, "Disease combobox is enabled!");
+          softly.assertAll();
+        });
+    When(
+        "I check that disease in New Travel Entry popup is enabled",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          Boolean elementVisible = true;
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(DISEASE_COMBOBOX_DISABLED);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertFalse(elementVisible, "Disease combobox is disabled!");
+          softly.assertAll();
+        });
     When(
         "^I open last created Travel Entry",
         () -> {
@@ -522,7 +586,7 @@ public class CreateNewTravelEntrySteps implements En {
   }
 
   private void selectSex(String sex) {
-    webDriverHelpers.selectFromCombobox(CreateNewTravelEntryPage.SEX_COMBOBOX, sex);
+    webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);
   }
 
   private void selectResponsibleRegion(String selectResponsibleRegion) {

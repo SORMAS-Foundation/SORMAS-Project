@@ -22,6 +22,7 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DATE_EXPOSURE_TABLE;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DONE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EDIT_TRAVEL_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.END_OF_EXPOSURE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EXPOSURE_ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EXPOSURE_ACTION_CONFIRM;
@@ -343,6 +344,19 @@ public class EpidemiologicalDataCaseSteps implements En {
             webDriverHelpers.selectFromCombobox(TYPE_OF_ACTIVITY_COMBOBOX, value);
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           }
+        });
+    When(
+        "I check if added travel Entry appeared in Epi Data tab",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          Boolean elementVisible = true;
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(EDIT_TRAVEL_ENTRY_BUTTON);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertTrue(elementVisible, "Travel Entry isn't visible");
+          softly.assertAll();
         });
     When(
         "I select from Combobox all Type of gathering in Exposure for Epidemiological data tab in Cases",
