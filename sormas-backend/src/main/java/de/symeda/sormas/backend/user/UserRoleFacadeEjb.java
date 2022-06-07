@@ -150,7 +150,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 
 		target.setUserRights(new HashSet<>(source.getUserRights()));
 		target.setEnabled(source.isEnabled());
-		target.setCaption(source.caption());
+		target.setCaption(source.getCaption());
 		target.setDescription(source.getDescription());
 		target.setHasOptionalHealthFacility(source.hasOptionalHealthFacility());
 		target.setHasAssociatedDistrictUser(source.hasAssociatedDistrictUser());
