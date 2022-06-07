@@ -11579,8 +11579,8 @@ CREATE TRIGGER delete_history_trigger
 INSERT INTO schema_version (version_number, comment) VALUES (464, 'Fixed triggers on externalmessage table #8895');
 
 
-ALTER TABLE labmessage ADD COLUMN personpresentcondition integer;
-ALTER TABLE labmessage_history ADD COLUMN personpresentcondition integer;
+ALTER TABLE externalmessage ADD COLUMN personpresentcondition integer;
+ALTER TABLE externalmessage_history ADD COLUMN personpresentcondition integer;
 
 INSERT INTO schema_version (version_number, comment) VALUES (465, 'Add present condition mapping - #6692');
 

@@ -69,7 +69,7 @@ public class ExternalMessageMapper {
 				Mapping.of(
 					person::setPresentCondition,
 					person.getPresentCondition(),
-					labMessage.getPersonPresentCondition(),
+					externalMessage.getPersonPresentCondition(),
 					PersonDto.PRESENT_CONDITION),
 				Mapping.of(person::setPhone, person.getPhone(), externalMessage.getPersonPhone(), PersonDto.PERSON_CONTACT_DETAILS),
 				Mapping.of(person::setEmailAddress, person.getEmailAddress(), externalMessage.getPersonEmail(), PersonDto.PERSON_CONTACT_DETAILS)));

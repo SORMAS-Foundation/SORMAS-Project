@@ -161,9 +161,9 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 
 	@Test
 	public void testMapToPersonPresentCondition() {
-		LabMessageDto labMessage = LabMessageDto.build();
+		ExternalMessageDto labMessage = ExternalMessageDto.build();
 		PersonDto person = PersonDto.build();
-		LabMessageMapper mapper = LabMessageMapper.forLabMessage(labMessage);
+		ExternalMessageMapper mapper = ExternalMessageMapper.forLabMessage(labMessage);
 
 		// both values null
 		List<String[]> result = mapper.mapToPerson(person);
