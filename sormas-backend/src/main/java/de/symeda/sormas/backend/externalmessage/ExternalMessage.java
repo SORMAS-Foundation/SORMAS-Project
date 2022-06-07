@@ -21,9 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.labmessage.ExternalMessageType;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.api.labmessage.LabMessageStatus;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.person.Sex;
@@ -402,6 +400,6 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	@Override
 	public String toString() {
-		return LabMessageDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
+		return ExternalMessageDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
 	}
 }
