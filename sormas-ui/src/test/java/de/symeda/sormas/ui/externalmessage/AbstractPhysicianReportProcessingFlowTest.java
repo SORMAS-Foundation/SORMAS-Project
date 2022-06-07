@@ -13,10 +13,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.labmessage;
+package de.symeda.sormas.ui.externalmessage;
 
-import static de.symeda.sormas.ui.labmessage.processing.flow.ProcessingResultStatus.CANCELED;
-import static de.symeda.sormas.ui.labmessage.processing.flow.ProcessingResultStatus.DONE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,6 +25,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -51,19 +52,16 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.api.labmessage.LabMessageStatus;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
-import de.symeda.sormas.ui.labmessage.processing.AbstractPhysicianReportProcessingFlow;
-import de.symeda.sormas.ui.labmessage.processing.AbstractProcessingFlow.HandlerCallback;
-import de.symeda.sormas.ui.labmessage.processing.PickOrCreateEntryResult;
-import de.symeda.sormas.ui.labmessage.processing.flow.ProcessingResult;
-import de.symeda.sormas.ui.labmessage.processing.flow.ProcessingResultStatus;
+import de.symeda.sormas.ui.externalmessage.physicianreport.AbstractPhysicianReportProcessingFlow;
+import de.symeda.sormas.ui.externalmessage.processing.AbstractProcessingFlow.HandlerCallback;
+import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
 
 public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest {
 
@@ -75,6 +73,7 @@ public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest 
 	private PickOrCreateEntryHandler handlePickOrCreateEntry;
 	private CaseCreationHandler handleCreateCase;
 	private BiFunction<CaseDataDto, HandlerCallback<CaseDataDto>, Void> handleUpdateCase;
+	private BiFunction<CaseDataDto, HandlerCallback<Void>, Void> handleConvertSamePersonContactsAndEventparticipants;
 
 	private TestDataCreator.RDCF rdcf;
 	private UserDto user;
@@ -110,6 +109,12 @@ public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest 
 			return null;
 		}).when(handleUpdateCase).apply(any(), any());
 
+		handleConvertSamePersonContactsAndEventparticipants = Mockito.mock(BiFunction.class);
+		doAnswer(invocation -> {
+			getCallbackParam(invocation).done(invocation.getArgument(0));
+			return null;
+		}).when(handleConvertSamePersonContactsAndEventparticipants).apply(any(), any());
+
 		rdcf = creator.createRDCF();
 		user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
@@ -133,26 +138,36 @@ public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest 
 			@Override
 			protected void handlePickOrCreateEntry(
 				List<CaseSelectionDto> similarCases,
-				LabMessageDto labMessageDto,
+				ExternalMessageDto externalMessage,
 				HandlerCallback<PickOrCreateEntryResult> callback) {
 				handlePickOrCreateEntry.handle(similarCases, callback);
 			}
 
 			@Override
-			protected void handleCreateCase(CaseDataDto caze, PersonDto person, LabMessageDto labMessage, HandlerCallback<CaseDataDto> callback) {
+			protected void handleCreateCase(
+				CaseDataDto caze,
+				PersonDto person,
+				ExternalMessageDto externalMessage,
+				HandlerCallback<CaseDataDto> callback) {
 				handleCreateCase.handle(caze, person, callback);
 			}
 
 			@Override
-			protected void handleUpdateCase(CaseDataDto caze, LabMessageDto labMessage, HandlerCallback<CaseDataDto> callback) {
+			protected void handleUpdateCase(CaseDataDto caze, ExternalMessageDto externalMessage, HandlerCallback<CaseDataDto> callback) {
 				handleUpdateCase.apply(caze, callback);
+			}
+
+			@Override
+			protected void handleConvertSamePersonContactsAndEventparticipants(CaseDataDto caze, HandlerCallback<Void> callback) {
+				handleConvertSamePersonContactsAndEventparticipants.apply(caze, callback);
 			}
 		};
 	}
 
 	@Test
 	public void testRunFlow() throws ExecutionException, InterruptedException {
-		ProcessingResult<CaseDataDto> result = runFlow(createLabMessage(Disease.CORONAVIRUS, "test-report-id", LabMessageStatus.UNPROCESSED));
+		ProcessingResult<CaseDataDto> result =
+			runFlow(createExternalMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED));
 
 		assertThat(result.getStatus(), is(ProcessingResultStatus.DONE));
 	}
@@ -160,15 +175,15 @@ public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest 
 	@Test
 	public void testHandleMissingDisease() throws ExecutionException, InterruptedException {
 
-		ProcessingResult<CaseDataDto> result = runFlow(createLabMessage(null, "", LabMessageStatus.UNPROCESSED));
-		assertThat(result.getStatus(), is(DONE));
+		ProcessingResult<CaseDataDto> result = runFlow(createExternalMessage(null, "", ExternalMessageStatus.UNPROCESSED));
+		assertThat(result.getStatus(), is(ProcessingResultStatus.DONE));
 		Mockito.verify(missingDiseaseHandler, Mockito.times(1)).get();
 	}
 
 	@Test
 	public void testHandleMissingDiseaseNotNeeded() throws ExecutionException, InterruptedException {
 
-		runFlow(createLabMessage(Disease.CORONAVIRUS, "", LabMessageStatus.UNPROCESSED));
+		runFlow(createExternalMessage(Disease.CORONAVIRUS, "", ExternalMessageStatus.UNPROCESSED));
 		Mockito.verify(missingDiseaseHandler, Mockito.times(0)).get();
 	}
 
@@ -177,9 +192,9 @@ public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest 
 
 		when(missingDiseaseHandler.get()).thenReturn(CompletableFuture.completedFuture(false));
 
-		ProcessingResult<CaseDataDto> result = runFlow(createLabMessage(null, "", LabMessageStatus.UNPROCESSED));
+		ProcessingResult<CaseDataDto> result = runFlow(createExternalMessage(null, "", ExternalMessageStatus.UNPROCESSED));
 
-		assertThat(result.getStatus(), is(CANCELED));
+		assertThat(result.getStatus(), is(ProcessingResultStatus.CANCELED));
 		verify(relatedForwardedMessagesHandler, times(0)).get();
 		verify(handlePickOrCreatePerson, times(0)).apply(any(), any());
 	}
@@ -187,13 +202,14 @@ public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest 
 	@Test
 	public void testHandleRelatedForwardedMessages() throws ExecutionException, InterruptedException {
 
-		FacadeProvider.getLabMessageFacade().save(createLabMessage(Disease.CORONAVIRUS, "test-report-id", LabMessageStatus.FORWARDED));
+		FacadeProvider.getExternalMessageFacade().save(createExternalMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.FORWARDED));
 
 		when(relatedForwardedMessagesHandler.get()).thenReturn(CompletableFuture.completedFuture(true));
 
-		ProcessingResult<CaseDataDto> result = runFlow(createLabMessage(Disease.CORONAVIRUS, "test-report-id", LabMessageStatus.UNPROCESSED));
+		ProcessingResult<CaseDataDto> result =
+			runFlow(createExternalMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED));
 
-		assertThat(result.getStatus(), is(DONE));
+		assertThat(result.getStatus(), is(ProcessingResultStatus.DONE));
 		verify(relatedForwardedMessagesHandler, times(1)).get();
 		verify(handlePickOrCreatePerson, times(1)).apply(any(), any());
 	}
@@ -203,9 +219,10 @@ public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest 
 
 		when(relatedForwardedMessagesHandler.get()).thenReturn(CompletableFuture.completedFuture(true));
 
-		ProcessingResult<CaseDataDto> result = runFlow(createLabMessage(Disease.CORONAVIRUS, "test-report-id", LabMessageStatus.UNPROCESSED));
+		ProcessingResult<CaseDataDto> result =
+			runFlow(createExternalMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED));
 
-		assertThat(result.getStatus(), is(DONE));
+		assertThat(result.getStatus(), is(ProcessingResultStatus.DONE));
 		verify(relatedForwardedMessagesHandler, times(0)).get();
 		verify(handlePickOrCreatePerson, times(1)).apply(any(), any());
 	}
@@ -213,13 +230,14 @@ public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest 
 	@Test
 	public void testHandleRelatedForwardedMessagesCancel() throws ExecutionException, InterruptedException {
 
-		FacadeProvider.getLabMessageFacade().save(createLabMessage(Disease.CORONAVIRUS, "test-report-id", LabMessageStatus.FORWARDED));
+		FacadeProvider.getExternalMessageFacade().save(createExternalMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.FORWARDED));
 
 		when(relatedForwardedMessagesHandler.get()).thenReturn(CompletableFuture.completedFuture(false));
 
-		ProcessingResult<CaseDataDto> result = runFlow(createLabMessage(Disease.CORONAVIRUS, "test-report-id", LabMessageStatus.UNPROCESSED));
+		ProcessingResult<CaseDataDto> result =
+			runFlow(createExternalMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED));
 
-		assertThat(result.getStatus(), is(CANCELED));
+		assertThat(result.getStatus(), is(ProcessingResultStatus.CANCELED));
 		verify(handlePickOrCreatePerson, times(0)).apply(any(), any());
 	}
 
@@ -235,19 +253,19 @@ public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest 
 			return null;
 		}).when(handleCreateCase).handle(caseCaptor.capture(), any(), any());
 
-		LabMessageDto labMessage = createLabMessage(Disease.CORONAVIRUS, "test-report-id", LabMessageStatus.UNPROCESSED);
-		labMessage.setPersonFirstName("Ftest");
-		labMessage.setPersonLastName("Ltest");
-		labMessage.setPersonSex(Sex.UNKNOWN);
-		labMessage.setPersonStreet("Test st.");
+		ExternalMessageDto externalMessage = createExternalMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED);
+		externalMessage.setPersonFirstName("Ftest");
+		externalMessage.setPersonLastName("Ltest");
+		externalMessage.setPersonSex(Sex.UNKNOWN);
+		externalMessage.setPersonStreet("Test st.");
 
-		ProcessingResult<CaseDataDto> result = runFlow(labMessage);
+		ProcessingResult<CaseDataDto> result = runFlow(externalMessage);
 
-		assertThat(result.getStatus(), is(DONE));
-		assertThat(personCaptor.getValue().getFirstName(), is(labMessage.getPersonFirstName()));
-		assertThat(personCaptor.getValue().getLastName(), is(labMessage.getPersonLastName()));
-		assertThat(personCaptor.getValue().getSex(), is(labMessage.getPersonSex()));
-		assertThat(personCaptor.getValue().getAddress().getStreet(), is(labMessage.getPersonStreet()));
+		assertThat(result.getStatus(), is(ProcessingResultStatus.DONE));
+		assertThat(personCaptor.getValue().getFirstName(), is(externalMessage.getPersonFirstName()));
+		assertThat(personCaptor.getValue().getLastName(), is(externalMessage.getPersonLastName()));
+		assertThat(personCaptor.getValue().getSex(), is(externalMessage.getPersonSex()));
+		assertThat(personCaptor.getValue().getAddress().getStreet(), is(externalMessage.getPersonStreet()));
 
 		// the created person should be assigned to the case
 		assertThat(caseCaptor.getValue().getPerson(), is(personCaptor.getValue().toReference()));
@@ -270,9 +288,10 @@ public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest 
 			return null;
 		}).when(handleCreateCase).handle(caseCaptor.capture(), any(), any());
 
-		ProcessingResult<CaseDataDto> result = runFlow(createLabMessage(Disease.CORONAVIRUS, "test-report-id", LabMessageStatus.UNPROCESSED));
+		ProcessingResult<CaseDataDto> result =
+			runFlow(createExternalMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED));
 
-		assertThat(result.getStatus(), is(DONE));
+		assertThat(result.getStatus(), is(ProcessingResultStatus.DONE));
 
 		// the selected person should be assigned to the case
 		assertThat(caseCaptor.getValue().getPerson(), is(person.toReference()));
@@ -286,9 +305,10 @@ public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest 
 			return null;
 		}).when(handlePickOrCreatePerson).apply(any(), any());
 
-		ProcessingResult<CaseDataDto> result = runFlow(createLabMessage(Disease.CORONAVIRUS, "test-report-id", LabMessageStatus.UNPROCESSED));
+		ProcessingResult<CaseDataDto> result =
+			runFlow(createExternalMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED));
 
-		assertThat(result.getStatus(), is(CANCELED));
+		assertThat(result.getStatus(), is(ProcessingResultStatus.CANCELED));
 		verify(handlePickOrCreateEntry, times(0)).handle(any(), any());
 	}
 
@@ -300,9 +320,10 @@ public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest 
 			return null;
 		}).when(handlePickOrCreateEntry).handle(any(), any());
 
-		ProcessingResult<CaseDataDto> result = runFlow(createLabMessage(Disease.CORONAVIRUS, "test-report-id", LabMessageStatus.UNPROCESSED));
+		ProcessingResult<CaseDataDto> result =
+			runFlow(createExternalMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED));
 
-		assertThat(result.getStatus(), is(CANCELED));
+		assertThat(result.getStatus(), is(ProcessingResultStatus.CANCELED));
 		verify(handleCreateCase, times(0)).handle(any(), any(), any());
 		verify(handleUpdateCase, times(0)).apply(any(), any());
 	}
@@ -324,7 +345,8 @@ public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest 
 			return null;
 		}).when(handleCreateCase).handle(caseCaptor.capture(), any(), any());
 
-		ProcessingResult<CaseDataDto> result = runFlow(createLabMessage(Disease.CORONAVIRUS, "test-report-id", LabMessageStatus.UNPROCESSED));
+		ProcessingResult<CaseDataDto> result =
+			runFlow(createExternalMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED));
 
 		verify(handleCreateCase).handle(argThat(c -> {
 			assertThat(c.getPerson(), is(personCaptor.getValue().toReference()));
@@ -334,7 +356,7 @@ public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest 
 			return true;
 		}), argThat(p -> p.equals(personCaptor.getValue())), any());
 
-		assertThat(result.getStatus(), is(DONE));
+		assertThat(result.getStatus(), is(ProcessingResultStatus.DONE));
 		assertThat(caseCaptor.getValue(), is(result.getData()));
 		verify(handleUpdateCase, times(1)).apply(argThat(c -> {
 			assertThat(c, is(caseCaptor.getValue()));
@@ -357,9 +379,10 @@ public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest 
 			return null;
 		}).when(handleCreateCase).handle(any(), any(), any());
 
-		ProcessingResult<CaseDataDto> result = runFlow(createLabMessage(Disease.CORONAVIRUS, "test-report-id", LabMessageStatus.UNPROCESSED));
+		ProcessingResult<CaseDataDto> result =
+			runFlow(createExternalMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED));
 
-		assertThat(result.getStatus(), is(CANCELED));
+		assertThat(result.getStatus(), is(ProcessingResultStatus.CANCELED));
 		verify(handleUpdateCase, times(0)).apply(any(), any());
 	}
 
@@ -400,7 +423,8 @@ public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest 
 			return null;
 		}).when(handleUpdateCase).apply(caseCaptor.capture(), any());
 
-		ProcessingResult<CaseDataDto> result = runFlow(createLabMessage(Disease.CORONAVIRUS, "test-report-id", LabMessageStatus.UNPROCESSED));
+		ProcessingResult<CaseDataDto> result =
+			runFlow(createExternalMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED));
 
 		verify(handleUpdateCase).apply(argThat(c -> {
 			assertThat(c.getUuid(), is(caze.getUuid()));
@@ -410,7 +434,7 @@ public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest 
 			return true;
 		}), any());
 
-		assertThat(result.getStatus(), is(DONE));
+		assertThat(result.getStatus(), is(ProcessingResultStatus.DONE));
 		assertThat(caze, is(result.getData()));
 		assertThat(result.getData().getCaseClassification(), is(CaseClassification.NO_CASE));
 		assertThat(result.getData().getOutcome(), is(CaseOutcome.RECOVERED));
@@ -446,9 +470,10 @@ public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest 
 			return null;
 		}).when(handleUpdateCase).apply(any(), any());
 
-		ProcessingResult<CaseDataDto> result = runFlow(createLabMessage(Disease.CORONAVIRUS, "test-report-id", LabMessageStatus.UNPROCESSED));
+		ProcessingResult<CaseDataDto> result =
+			runFlow(createExternalMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED));
 
-		assertThat(result.getStatus(), is(CANCELED));
+		assertThat(result.getStatus(), is(ProcessingResultStatus.CANCELED));
 	}
 
 	@Test(expected = ExecutionException.class)
@@ -468,30 +493,34 @@ public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest 
 
 		doThrow(new RuntimeException("Error")).when(handlePickOrCreateEntry).handle(any(), any());
 
-		runFlow(createLabMessage(Disease.CORONAVIRUS, "test-report-id", LabMessageStatus.UNPROCESSED));
+		runFlow(createExternalMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED));
 	}
 
-	private ProcessingResult<CaseDataDto> runFlow(LabMessageDto labMessage) throws ExecutionException, InterruptedException {
+	private ProcessingResult<CaseDataDto> runFlow(ExternalMessageDto externalMessage) throws ExecutionException, InterruptedException {
 
-		return flow.run(labMessage).toCompletableFuture().get();
+		return flow.run(externalMessage).toCompletableFuture().get();
 	}
 
-	private LabMessageDto createLabMessage(Disease disease, String reportId, LabMessageStatus status) {
-		return createLabMessage(disease, reportId, status, null);
+	private ExternalMessageDto createExternalMessage(Disease disease, String reportId, ExternalMessageStatus status) {
+		return createExternalMessage(disease, reportId, status, null);
 	}
 
-	private LabMessageDto createLabMessage(Disease disease, String reportId, LabMessageStatus status, Consumer<LabMessageDto> customConfig) {
-		LabMessageDto labMessage = LabMessageDto.build();
+	private ExternalMessageDto createExternalMessage(
+		Disease disease,
+		String reportId,
+		ExternalMessageStatus status,
+		Consumer<ExternalMessageDto> customConfig) {
+		ExternalMessageDto externalMessage = ExternalMessageDto.build();
 
-		labMessage.setTestedDisease(disease);
-		labMessage.setReportId(reportId);
-		labMessage.setStatus(status);
+		externalMessage.setTestedDisease(disease);
+		externalMessage.setReportId(reportId);
+		externalMessage.setStatus(status);
 
 		if (customConfig != null) {
-			customConfig.accept(labMessage);
+			customConfig.accept(externalMessage);
 		}
 
-		return labMessage;
+		return externalMessage;
 	}
 
 	@NotNull

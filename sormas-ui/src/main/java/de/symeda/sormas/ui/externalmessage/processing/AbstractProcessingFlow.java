@@ -13,25 +13,26 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.labmessage.processing;
+package de.symeda.sormas.ui.externalmessage.processing;
 
-import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseSelectionDto;
-import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.ui.labmessage.LabMessageMapper;
+import de.symeda.sormas.ui.externalmessage.ExternalMessageMapper;
+import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractLabMessageProcessingFlow;
+import de.symeda.sormas.ui.externalmessage.processing.flow.FlowThen;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.ui.labmessage.processing.flow.FlowThen;
-import de.symeda.sormas.ui.labmessage.processing.flow.ProcessingResult;
-import de.symeda.sormas.ui.labmessage.processing.flow.ProcessingResultStatus;
+import de.symeda.sormas.api.caze.CaseCriteria;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseSelectionDto;
+import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 
 public abstract class AbstractProcessingFlow {
 
@@ -41,11 +42,11 @@ public abstract class AbstractProcessingFlow {
 		this.user = user;
 	}
 
-	protected FlowThen<Void> doInitialChecks(LabMessageDto labMessage) {
+	protected FlowThen<Void> doInitialChecks(ExternalMessageDto labMessage) {
 		return new FlowThen<Void>().then(ignored -> checkDisease(labMessage)).then(ignored -> checkRelatedForwardedMessages(labMessage));
 	}
 
-	private CompletionStage<ProcessingResult<Void>> checkDisease(LabMessageDto labMessage) {
+	private CompletionStage<ProcessingResult<Void>> checkDisease(ExternalMessageDto labMessage) {
 
 		if (labMessage.getTestedDisease() == null) {
 			return handleMissingDisease().thenCompose(
@@ -59,9 +60,9 @@ public abstract class AbstractProcessingFlow {
 
 	protected abstract CompletionStage<Boolean> handleMissingDisease();
 
-	private CompletionStage<ProcessingResult<Void>> checkRelatedForwardedMessages(LabMessageDto labMessage) {
+	private CompletionStage<ProcessingResult<Void>> checkRelatedForwardedMessages(ExternalMessageDto labMessage) {
 
-		if (FacadeProvider.getLabMessageFacade().existsForwardedLabMessageWith(labMessage.getReportId())) {
+		if (FacadeProvider.getExternalMessageFacade().existsForwardedExternalMessageWith(labMessage.getReportId())) {
 			return handleRelatedForwardedMessages().thenCompose(
 				next -> ProcessingResult
 					.<Void> withStatus(Boolean.TRUE.equals(next) ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED)
@@ -73,9 +74,9 @@ public abstract class AbstractProcessingFlow {
 
 	protected abstract CompletionStage<Boolean> handleRelatedForwardedMessages();
 
-	protected CompletionStage<ProcessingResult<PersonDto>> pickOrCreatePerson(LabMessageDto labMessage) {
+	protected CompletionStage<ProcessingResult<PersonDto>> pickOrCreatePerson(ExternalMessageDto labMessage) {
 
-		final PersonDto person = buildPerson(LabMessageMapper.forLabMessage(labMessage));
+		final PersonDto person = buildPerson(ExternalMessageMapper.forLabMessage(labMessage));
 
 		AbstractLabMessageProcessingFlow.HandlerCallback<PersonDto> callback = new HandlerCallback<>();
 		handlePickOrCreatePerson(person, callback);
@@ -85,7 +86,7 @@ public abstract class AbstractProcessingFlow {
 
 	protected abstract void handlePickOrCreatePerson(PersonDto person, HandlerCallback<PersonDto> callback);
 
-	private PersonDto buildPerson(LabMessageMapper mapper) {
+	private PersonDto buildPerson(ExternalMessageMapper mapper) {
 
 		final PersonDto personDto = PersonDto.build();
 
@@ -95,7 +96,7 @@ public abstract class AbstractProcessingFlow {
 		return personDto;
 	}
 
-	protected List<CaseSelectionDto> getSimilarCases(PersonReferenceDto selectedPerson, LabMessageDto labMessage) {
+	protected List<CaseSelectionDto> getSimilarCases(PersonReferenceDto selectedPerson, ExternalMessageDto labMessage) {
 
 		CaseCriteria caseCriteria = new CaseCriteria();
 		caseCriteria.person(selectedPerson);
@@ -107,7 +108,7 @@ public abstract class AbstractProcessingFlow {
 		return FacadeProvider.getCaseFacade().getSimilarCases(caseSimilarityCriteria);
 	}
 
-	protected CaseDataDto buildCase(PersonDto person, LabMessageDto labMessage) {
+	protected CaseDataDto buildCase(PersonDto person, ExternalMessageDto labMessage) {
 
 		CaseDataDto caseDto = CaseDataDto.build(person.toReference(), labMessage.getTestedDisease());
 		caseDto.setReportingUser(user.toReference());
@@ -116,9 +117,9 @@ public abstract class AbstractProcessingFlow {
 
 	public static class HandlerCallback<T> {
 
-		protected final CompletableFuture<ProcessingResult<T>> futureResult;
+		public final CompletableFuture<ProcessingResult<T>> futureResult;
 
-		protected HandlerCallback() {
+		public HandlerCallback() {
 			this.futureResult = new CompletableFuture<>();
 		}
 

@@ -15,13 +15,12 @@
 
 package de.symeda.sormas.ui.externalmessage.labmessage;
 
-import static de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingHelper.updateAddressAndSavePerson;
-import static de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingUIHelper.showCreateCaseWindow;
-import static de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingUIHelper.showFormWithLabMessage;
-import static de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingUIHelper.showMissingDiseaseConfiguration;
-import static de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingUIHelper.showPickOrCreateEntryWindow;
-import static de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingUIHelper.showPickOrCreatePersonWindow;
-import static de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingUIHelper.showRelatedForwardedMessageConfirmation;
+import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showCreateCaseWindow;
+import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showFormWithLabMessage;
+import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showMissingDiseaseConfiguration;
+import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showPickOrCreateEntryWindow;
+import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showPickOrCreatePersonWindow;
+import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showRelatedForwardedMessageConfirmation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +47,6 @@ import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -62,12 +60,11 @@ import de.symeda.sormas.ui.contact.ContactCreateForm;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.events.EventParticipantEditForm;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
-import de.symeda.sormas.ui.externalmessage.EntrySelectionField;
-import de.symeda.sormas.ui.externalmessage.ExternalMessageMapper;
+import de.symeda.sormas.ui.externalmessage.processing.EntrySelectionField;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractLabMessageProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingHelper;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingUIHelper;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateEntryResult;
+import de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper;
+import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateEventResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateSampleResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
@@ -161,7 +158,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 			ControllerProvider.getContactController().getContactCreateComponent(null, false, null, true);
 
 		contactCreateComponent.addCommitListener(() -> {
-			updateAddressAndSavePerson(
+			LabMessageProcessingHelper.updateAddressAndSavePerson(
 				FacadeProvider.getPersonFacade().getPersonByUuid(contactCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
 				labMessage);
 
@@ -329,7 +326,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		ExternalMessageDto labMessage,
 		HandlerCallback<SampleAndPathogenTests> callback) {
 
-		LabMessageProcessingUIHelper.showEditSampleWindow(sample, newPathogenTests, labMessage, callback::done, callback::cancel);
+		ExternalMessageProcessingUIHelper.showEditSampleWindow(sample, newPathogenTests, labMessage, callback::done, callback::cancel);
 	}
 
 	private CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(

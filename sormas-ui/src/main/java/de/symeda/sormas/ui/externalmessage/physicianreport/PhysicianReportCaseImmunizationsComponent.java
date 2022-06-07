@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.labmessage;
+package de.symeda.sormas.ui.externalmessage.physicianreport;
 
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 
@@ -172,6 +172,9 @@ public class PhysicianReportCaseImmunizationsComponent extends CommitDiscardWrap
 					vaccinationsToDisplay.add(v);
 					vaccinationList.setVaccinations(vaccinationsToDisplay);
 				}));
+		createVaccinationComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
+		createVaccinationComponent.getButtonsPanel().setComponentAlignment(createVaccinationComponent.getDiscardButton(), Alignment.BOTTOM_LEFT);
+
 		createVaccinationComponent.addDoneListener(() -> {
 			getWrappedComponent().removeComponent(createVaccinationComponent);
 			createVaccinationComponent = null;
@@ -212,6 +215,10 @@ public class PhysicianReportCaseImmunizationsComponent extends CommitDiscardWrap
 				UiFieldAccessCheckers.getDefault(caze.isPseudonymized()),
 				false,
 				vaccinationsToUpdate::add);
+
+		currentVaccinationEditComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
+		currentVaccinationEditComponent.getButtonsPanel()
+			.setComponentAlignment(currentVaccinationEditComponent.getDiscardButton(), Alignment.BOTTOM_LEFT);
 
 		currentVaccinationEditComponent.addDoneListener(() -> {
 			vaccinationList.setVaccinations(vaccinationsToDisplay);

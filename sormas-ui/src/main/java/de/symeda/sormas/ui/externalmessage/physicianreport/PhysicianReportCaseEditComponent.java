@@ -13,9 +13,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.labmessage;
+package de.symeda.sormas.ui.externalmessage.physicianreport;
 
-import static de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingUIHelper.addProcessedInMeantimeCheck;
+import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.addProcessedInMeantimeCheck;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,9 +27,9 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -50,14 +50,14 @@ public class PhysicianReportCaseEditComponent extends CommitDiscardWrapperCompon
 	private final List<TabConfig> tabConfigs;
 	private final ViewMode viewMode = ViewMode.NORMAL;
 	private final CaseDataDto caze;
-	private final LabMessageDto labMessage;
+	private final ExternalMessageDto externalMessage;
 	private CommitDiscardWrapperComponent<?> activeTabComponent;
 	private int activeTabIndex;
 
-	public PhysicianReportCaseEditComponent(CaseDataDto caze, LabMessageDto labMessage) {
+	public PhysicianReportCaseEditComponent(CaseDataDto caze, ExternalMessageDto externalMessage) {
 		super(createLayout());
 		this.caze = caze;
-		this.labMessage = labMessage;
+		this.externalMessage = externalMessage;
 
 		setMargin(new MarginInfo(false, true));
 
@@ -177,7 +177,7 @@ public class PhysicianReportCaseEditComponent extends CommitDiscardWrapperCompon
 		activeTabComponent.setShortcutsEnabled(false);
 		activeTabComponent.setButtonsVisible(false);
 		activeTabComponent.setWidthFull();
-		addProcessedInMeantimeCheck(activeTabComponent, labMessage, false);
+		addProcessedInMeantimeCheck(activeTabComponent, externalMessage, false);
 		getWrappedComponent().addComponent(activeTabComponent);
 		this.activeTabComponent = activeTabComponent;
 		this.activeTabIndex = activeTabIndex;

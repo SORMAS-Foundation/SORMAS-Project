@@ -51,12 +51,12 @@ public class LabMessageProcessingHelper {
 		return pathogenTest;
 	}
 
-	public static void updateAddressAndSavePerson(PersonDto personDto, LabMessageDto labMessageDto) {
+	public static void updateAddressAndSavePerson(PersonDto personDto, ExternalMessageDto labMessageDto) {
 		if (personDto.getAddress().getCity() == null
 			&& personDto.getAddress().getHouseNumber() == null
 			&& personDto.getAddress().getPostalCode() == null
 			&& personDto.getAddress().getStreet() == null) {
-			LabMessageMapper.forLabMessage(labMessageDto).mapToLocation(personDto.getAddress());
+			ExternalMessageMapper.forLabMessage(labMessageDto).mapToLocation(personDto.getAddress());
 		}
 		FacadeProvider.getPersonFacade().savePerson(personDto);
 	}

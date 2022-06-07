@@ -13,14 +13,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.labmessage.processing;
+package de.symeda.sormas.ui.externalmessage.processing;
 
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.person.PersonDto;
 
-final class PersonAndPickOrCreateEntryResult {
+public class PersonAndPickOrCreateEntryResult {
 
 	private final PersonDto person;
 	private final PickOrCreateEntryResult pickOrCreateEntryResult;

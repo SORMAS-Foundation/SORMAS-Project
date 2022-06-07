@@ -13,8 +13,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.labmessage;
+package de.symeda.sormas.ui.externalmessage.physicianreport;
 
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.externalmessage.processing.EntrySelectionField;
+import de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper;
+import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 
@@ -26,12 +31,8 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.labmessage.processing.AbstractPhysicianReportProcessingFlow;
-import de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingUIHelper;
-import de.symeda.sormas.ui.labmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class PhysicianReportProcessingFlow extends AbstractPhysicianReportProcessingFlow {
@@ -42,23 +43,23 @@ public class PhysicianReportProcessingFlow extends AbstractPhysicianReportProces
 
 	@Override
 	protected CompletionStage<Boolean> handleMissingDisease() {
-		return LabMessageProcessingUIHelper.showMissingDiseaseConfiguration();
+		return ExternalMessageProcessingUIHelper.showMissingDiseaseConfiguration();
 	}
 
 	@Override
 	protected CompletionStage<Boolean> handleRelatedForwardedMessages() {
-		return LabMessageProcessingUIHelper.showRelatedForwardedMessageConfirmation();
+		return ExternalMessageProcessingUIHelper.showRelatedForwardedMessageConfirmation();
 	}
 
 	@Override
 	protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<PersonDto> callback) {
-		LabMessageProcessingUIHelper.showPickOrCreatePersonWindow(person, callback);
+		ExternalMessageProcessingUIHelper.showPickOrCreatePersonWindow(person, callback);
 	}
 
 	@Override
 	protected void handlePickOrCreateEntry(
 		List<CaseSelectionDto> similarCases,
-		LabMessageDto labMessage,
+		ExternalMessageDto externalMessage,
 		HandlerCallback<PickOrCreateEntryResult> callback) {
 
 		if (CollectionUtils.isEmpty(similarCases)) {
@@ -72,21 +73,28 @@ public class PhysicianReportProcessingFlow extends AbstractPhysicianReportProces
 		EntrySelectionField.Options.Builder optionsBuilder =
 			new EntrySelectionField.Options.Builder().addSelectCase(similarCases).addCreateEntry(EntrySelectionField.OptionType.CREATE_CASE);
 
-		LabMessageProcessingUIHelper.showPickOrCreateEntryWindow(optionsBuilder.build(), labMessage, callback);
+		ExternalMessageProcessingUIHelper.showPickOrCreateEntryWindow(optionsBuilder.build(), externalMessage, callback);
 	}
 
 	@Override
-	protected void handleCreateCase(CaseDataDto caze, PersonDto person, LabMessageDto labMessage, HandlerCallback<CaseDataDto> callback) {
-		LabMessageProcessingUIHelper.showCreateCaseWindow(caze, person, labMessage, callback);
+	protected void handleCreateCase(CaseDataDto caze, PersonDto person, ExternalMessageDto externalMessage, HandlerCallback<CaseDataDto> callback) {
+		ExternalMessageProcessingUIHelper.showCreateCaseWindow(caze, person, externalMessage, callback);
 	}
 
 	@Override
-	protected void handleUpdateCase(CaseDataDto caze, LabMessageDto labMessage, HandlerCallback<CaseDataDto> callback) {
+	protected void handleUpdateCase(CaseDataDto caze, ExternalMessageDto externalMessage, HandlerCallback<CaseDataDto> callback) {
 
-		PhysicianReportCaseEditComponent caseComponent = new PhysicianReportCaseEditComponent(caze, labMessage);
+		PhysicianReportCaseEditComponent caseComponent = new PhysicianReportCaseEditComponent(caze, externalMessage);
 
 		Window window = VaadinUiUtil.createPopupWindow();
-		LabMessageProcessingUIHelper
-			.showFormWithLabMessage(labMessage, caseComponent, window, I18nProperties.getString(Strings.headingCreateNewCase), false);
+		ExternalMessageProcessingUIHelper
+			.showFormWithLabMessage(externalMessage, caseComponent, window, I18nProperties.getString(Strings.headingProcessPhysicianReport), false);
+	}
+
+	@Override
+	protected void handleConvertSamePersonContactsAndEventparticipants(CaseDataDto caze, HandlerCallback<Void> callback) {
+		ControllerProvider.getCaseController().convertSamePersonContactsAndEventparticipants(caze, () -> {
+			callback.done(null);
+		});
 	}
 }

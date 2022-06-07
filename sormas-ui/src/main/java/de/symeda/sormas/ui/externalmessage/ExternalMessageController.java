@@ -14,9 +14,13 @@
  */
 package de.symeda.sormas.ui.externalmessage;
 
-import static de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingUIHelper.showAlreadyProcessedPopup;
+import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showAlreadyProcessedPopup;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
+import de.symeda.sormas.ui.externalmessage.physicianreport.PhysicianReportProcessingFlow;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -51,17 +55,13 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.labmessage.processing.SampleAndPathogenTests;
-import de.symeda.sormas.ui.labmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageSlider;
 import de.symeda.sormas.ui.externalmessage.labmessage.RelatedLabMessageHandler;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.flow.ProcessingResultStatus;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -136,7 +136,7 @@ public class ExternalMessageController {
 	}
 
 	public void processPhysicianReport(String uuid) {
-		LabMessageDto labMessage = FacadeProvider.getLabMessageFacade().getByUuid(uuid);
+		ExternalMessageDto labMessage = FacadeProvider.getExternalMessageFacade().getByUuid(uuid);
 		PhysicianReportProcessingFlow flow = new PhysicianReportProcessingFlow();
 
 		flow.run(labMessage).handle((BiFunction<? super ProcessingResult<CaseDataDto>, Throwable, Void>) (result, exception) -> {
@@ -154,8 +154,8 @@ public class ExternalMessageController {
 			ProcessingResultStatus status = result.getStatus();
 
 			if (status == ProcessingResultStatus.DONE) {
-				markLabMessageAsProcessed(labMessage, null);
-				SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME);
+				markExternalMessageAsProcessed(labMessage, null);
+				SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
 			}
 
 			return null;

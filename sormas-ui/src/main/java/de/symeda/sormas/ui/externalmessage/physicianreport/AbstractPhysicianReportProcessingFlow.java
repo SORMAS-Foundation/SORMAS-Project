@@ -13,8 +13,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.labmessage.processing;
+package de.symeda.sormas.ui.externalmessage.physicianreport;
 
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.ui.externalmessage.processing.AbstractProcessingFlow;
+import de.symeda.sormas.ui.externalmessage.processing.PersonAndPickOrCreateEntryResult;
+import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -22,13 +28,10 @@ import java.util.concurrent.CompletionStage;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.labmessage.processing.flow.ProcessingResult;
-import de.symeda.sormas.ui.labmessage.processing.flow.ProcessingResultStatus;
 
 public abstract class AbstractPhysicianReportProcessingFlow extends AbstractProcessingFlow {
 
@@ -36,32 +39,34 @@ public abstract class AbstractPhysicianReportProcessingFlow extends AbstractProc
 		super(user);
 	}
 
-	public CompletionStage<ProcessingResult<CaseDataDto>> run(LabMessageDto labMessage) {
+	public CompletionStage<ProcessingResult<CaseDataDto>> run(ExternalMessageDto externalMessage) {
 
 		//@formatter:off
-		return doInitialChecks(labMessage)
-			.then((ignored) -> pickOrCreatePerson(labMessage))
-			.then((p) -> pickOrCreateEntry(p.getData(), labMessage))
+		return doInitialChecks(externalMessage)
+			.then((ignored) -> pickOrCreatePerson(externalMessage))
+			.then((p) -> pickOrCreateEntry(p.getData(), externalMessage))
 			.thenSwitch()
 				.when(PersonAndPickOrCreateEntryResult::isNewCase, (f, e) -> f
-						.then((ignored) -> createCase(e.getPerson(), labMessage)).then((c) ->
+						.then((ignored) -> createCase(e.getPerson(), externalMessage)).then((c) ->
 								convertSamePersonContactsAndEventparticipants(c.getData()).thenCompose((ignored) -> CompletableFuture.completedFuture(c)))
-						.then((c) -> updateCase(c.getData(), labMessage)))
-				.when(PersonAndPickOrCreateEntryResult::isSelectedCase, (f, e) -> f.then((ignored) -> updateCase(e.getCaze(), labMessage)))
+						.then((c) -> updateCase(c.getData(), externalMessage)))
+				.when(PersonAndPickOrCreateEntryResult::isSelectedCase, (f, e) -> f.then((ignored) -> updateCase(e.getCaze(), externalMessage)))
 				.then(s -> ProcessingResult.continueWith(s.getData()).asCompletedFuture())
 			.then(currentResult -> ProcessingResult.of(ProcessingResultStatus.DONE, currentResult.getData()).asCompletedFuture())
 			.getResult();
 		//@formatter:on
 	}
 
-	private CompletionStage<ProcessingResult<PersonAndPickOrCreateEntryResult>> pickOrCreateEntry(PersonDto person, LabMessageDto labMessage) {
+	private CompletionStage<ProcessingResult<PersonAndPickOrCreateEntryResult>> pickOrCreateEntry(
+		PersonDto person,
+		ExternalMessageDto externalMessage) {
 
 		PersonReferenceDto personRef = person.toReference();
-		List<CaseSelectionDto> similarCases = getSimilarCases(personRef, labMessage);
+		List<CaseSelectionDto> similarCases = getSimilarCases(personRef, externalMessage);
 
 		HandlerCallback<PickOrCreateEntryResult> callback = new HandlerCallback<>();
 
-		handlePickOrCreateEntry(similarCases, labMessage, callback);
+		handlePickOrCreateEntry(similarCases, externalMessage, callback);
 
 		return callback.futureResult.thenCompose(p -> {
 			if (p.getStatus().isCanceled()) {
@@ -74,43 +79,48 @@ public abstract class AbstractPhysicianReportProcessingFlow extends AbstractProc
 
 	protected abstract void handlePickOrCreateEntry(
 		List<CaseSelectionDto> similarCases,
-		LabMessageDto labMessage,
+		ExternalMessageDto externalMessage,
 		HandlerCallback<PickOrCreateEntryResult> callback);
 
-	private CompletionStage<ProcessingResult<CaseDataDto>> createCase(PersonDto person, LabMessageDto labMessage) {
+	private CompletionStage<ProcessingResult<CaseDataDto>> createCase(PersonDto person, ExternalMessageDto externalMessage) {
 
-		CaseDataDto caze = buildCase(person, labMessage);
+		CaseDataDto caze = buildCase(person, externalMessage);
 
 		HandlerCallback<CaseDataDto> callback = new HandlerCallback<>();
-		handleCreateCase(caze, person, labMessage, callback);
+		handleCreateCase(caze, person, externalMessage, callback);
 
 		return callback.futureResult;
 	}
 
-	protected abstract void handleCreateCase(CaseDataDto caze, PersonDto person, LabMessageDto labMessage, HandlerCallback<CaseDataDto> callback);
+	protected abstract void handleCreateCase(
+		CaseDataDto caze,
+		PersonDto person,
+		ExternalMessageDto externalMessage,
+		HandlerCallback<CaseDataDto> callback);
 
-	private CompletionStage<ProcessingResult<CaseDataDto>> updateCase(CaseSelectionDto selectedCase, LabMessageDto labMessage) {
+	private CompletionStage<ProcessingResult<CaseDataDto>> updateCase(CaseSelectionDto selectedCase, ExternalMessageDto externalMessage) {
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(selectedCase.getUuid());;
 
-		return updateCase(caze, labMessage);
+		return updateCase(caze, externalMessage);
 	}
 
-	private CompletionStage<ProcessingResult<CaseDataDto>> updateCase(CaseDataDto caze, LabMessageDto labMessage) {
+	private CompletionStage<ProcessingResult<CaseDataDto>> updateCase(CaseDataDto caze, ExternalMessageDto externalMessage) {
 
 		HandlerCallback<CaseDataDto> callback = new HandlerCallback<>();
-		handleUpdateCase(caze, labMessage, callback);
+		handleUpdateCase(caze, externalMessage, callback);
 
 		return callback.futureResult;
 	}
 
-	protected abstract void handleUpdateCase(CaseDataDto caze, LabMessageDto labMessage, HandlerCallback<CaseDataDto> callback);
+	protected abstract void handleUpdateCase(CaseDataDto caze, ExternalMessageDto externalMessage, HandlerCallback<CaseDataDto> callback);
 
-	private CompletionStage<Void> convertSamePersonContactsAndEventparticipants(CaseDataDto caze) {
-		CompletableFuture<Void> ret = new CompletableFuture<>();
-		ControllerProvider.getCaseController().convertSamePersonContactsAndEventparticipants(caze, () -> {
-			ret.complete(null);
-		});
+	private CompletionStage<ProcessingResult<Void>> convertSamePersonContactsAndEventparticipants(CaseDataDto caze) {
 
-		return ret;
+		HandlerCallback<Void> callback = new HandlerCallback<>();
+		handleConvertSamePersonContactsAndEventparticipants(caze, callback);
+
+		return callback.futureResult;
 	}
+
+	protected abstract void handleConvertSamePersonContactsAndEventparticipants(CaseDataDto caze, HandlerCallback<Void> callback);
 }

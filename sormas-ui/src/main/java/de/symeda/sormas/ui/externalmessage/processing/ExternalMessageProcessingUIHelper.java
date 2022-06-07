@@ -13,14 +13,15 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.externalmessage.labmessage.processing;
+package de.symeda.sormas.ui.externalmessage.processing;
 
 import com.vaadin.shared.ui.MarginInfo;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.ui.caze.CaseCreateForm;
-import de.symeda.sormas.ui.labmessage.EntrySelectionField;
+import de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingHelper;
+import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -75,14 +76,14 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 /**
  * Collection of common UI related functions used by processing related code placed in multiple classes
  */
-public class LabMessageProcessingUIHelper {
+public class ExternalMessageProcessingUIHelper {
 
-	private LabMessageProcessingUIHelper() {
+	private ExternalMessageProcessingUIHelper() {
 	}
 
 	public static CompletionStage<Boolean> showMissingDiseaseConfiguration() {
 		return VaadinUiUtil.showConfirmationPopup(
-			I18nProperties.getCaption(Captions.labMessageNoDisease),
+			I18nProperties.getCaption(Captions.externalMessageNoDisease),
 			new Label(I18nProperties.getString(Strings.messageDiseaseNotSpecifiedInLabMessage)),
 			I18nProperties.getCaption(Captions.actionContinue),
 			I18nProperties.getCaption(Captions.actionCancel));
@@ -90,8 +91,8 @@ public class LabMessageProcessingUIHelper {
 
 	public static CompletionStage<Boolean> showRelatedForwardedMessageConfirmation() {
 		return VaadinUiUtil.showConfirmationPopup(
-			I18nProperties.getCaption(Captions.labMessageForwardedMessageFound),
-			new Label(I18nProperties.getString(Strings.messageForwardedLabMessageFound)),
+			I18nProperties.getCaption(Captions.externalMessageForwardedMessageFound),
+			new Label(I18nProperties.getString(Strings.messageForwardedExternalMessageFound)),
 			I18nProperties.getCaption(Captions.actionYes),
 			I18nProperties.getCaption(Captions.actionCancel));
 	}
@@ -119,7 +120,7 @@ public class LabMessageProcessingUIHelper {
 
 	public static void showPickOrCreateEntryWindow(
 		EntrySelectionField.Options options,
-		LabMessageDto labMessage,
+		ExternalMessageDto labMessage,
 		AbstractProcessingFlow.HandlerCallback<PickOrCreateEntryResult> callback) {
 		EntrySelectionField selectField = new EntrySelectionField(labMessage, options);
 
@@ -139,7 +140,7 @@ public class LabMessageProcessingUIHelper {
 	public static void showCreateCaseWindow(
 		CaseDataDto caze,
 		PersonDto person,
-		LabMessageDto labMessage,
+		ExternalMessageDto labMessage,
 		AbstractProcessingFlow.HandlerCallback<CaseDataDto> callback) {
 		Window window = VaadinUiUtil.createPopupWindow();
 
@@ -176,7 +177,8 @@ public class LabMessageProcessingUIHelper {
 		Registration closeListener = window.addCloseListener(e -> editComponentWrapper.getValue().discard());
 
 		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent =
-			LabMessageProcessingUIHelper.getSampleEditComponent(sample, newPathogenTests, externalMessageDto, commitHandler, cancelHandler, () -> {
+			ExternalMessageProcessingUIHelper
+				.getSampleEditComponent(sample, newPathogenTests, externalMessageDto, commitHandler, cancelHandler, () -> {
 				// do not discard
 				closeListener.remove();
 				window.close();
