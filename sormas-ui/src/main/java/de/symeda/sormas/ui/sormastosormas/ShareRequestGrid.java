@@ -32,9 +32,9 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.externalmessage.ExternalMessageIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestCriteria;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestIndexDto;
@@ -87,7 +87,7 @@ public class ShareRequestGrid extends FilteredGrid<SormasToSormasShareRequestInd
 			COLUMN_ACTIONS);
 
 		getColumn(COLUMN_ACTIONS).setMinimumWidth(260);
-		((Column<SormasToSormasShareRequestIndexDto, String>) getColumn(LabMessageIndexDto.UUID)).setRenderer(new UuidRenderer());
+		((Column<SormasToSormasShareRequestIndexDto, String>) getColumn(ExternalMessageIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<SormasToSormasShareRequestIndexDto, Date>) getColumn(SormasToSormasShareRequestIndexDto.CREATION_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
 		getColumn(SormasToSormasShareRequestIndexDto.ORGANIZATION_NAME).setSortable(false);

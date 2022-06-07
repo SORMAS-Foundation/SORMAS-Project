@@ -92,9 +92,7 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               ASSIGNED_USER_FILTER_INPUT);
           String assignedUser = CreateNewTaskSteps.task.getAssignedTo();
-          webDriverHelpers.fillInWebElement(
-              ASSIGNED_USER_FILTER_INPUT,
-              assignedUser);
+          webDriverHelpers.fillInWebElement(ASSIGNED_USER_FILTER_INPUT, assignedUser);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(lastTaskEditButton, 40);
           webDriverHelpers.clickElementSeveralTimesUntilNextElementIsDisplayed(

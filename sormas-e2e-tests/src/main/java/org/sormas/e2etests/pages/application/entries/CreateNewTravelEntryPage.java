@@ -34,6 +34,9 @@ public class CreateNewTravelEntryPage {
       By.cssSelector(".v-window #responsibleDistrict div");
   public static final By RESPONSIBLE_COMMUNITY_COMBOBOX =
       By.cssSelector(".v-window #responsibleCommunity div");
+  public static final By DISEASE_COMBOBOX_DISABLED =
+      By.xpath(
+          "//div[@class='popupContent']//div[contains(@class,'v-disabled') and @id='disease']");
   public static final By DISEASE_COMBOBOX = By.cssSelector(" #disease div");
   public static final By POINT_OF_ENTRY_COMBOBOX = By.cssSelector(".v-window #pointOfEntry div");
   public static final By POINT_OF_ENTRY_DETAILS_INPUT =
