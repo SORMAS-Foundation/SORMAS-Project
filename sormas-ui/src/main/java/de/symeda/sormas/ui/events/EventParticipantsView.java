@@ -281,7 +281,7 @@ public class EventParticipantsView extends AbstractEventView {
 			gridLayout.setStyleName("crud-main-layout");
 			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 			setSubComponent(gridLayout);
-			gridLayout.setEnabled(isEventEditAllowed());
+			gridLayout.setEnabled(isEventEditAllowed() || UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT));
 		}
 
 		if (params.startsWith("?")) {
