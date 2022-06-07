@@ -126,6 +126,7 @@ public class PhysicianReportCaseEditComponent extends CommitDiscardWrapperCompon
 	private static VerticalLayout createLayout() {
 		VerticalLayout layout = new VerticalLayout();
 		layout.setMargin(false);
+		layout.setWidthFull();
 
 		return layout;
 	}
@@ -163,7 +164,7 @@ public class PhysicianReportCaseEditComponent extends CommitDiscardWrapperCompon
 			TabConfig
 				.of(Captions.CaseData_symptoms, () -> ControllerProvider.getCaseController().getSymptomsEditComponent(caze.getUuid(), viewMode)));
 		configs.add(TabConfig.of(Captions.CaseData_epiData, () -> ControllerProvider.getCaseController().getEpiDataComponent(caze.getUuid(), null)));
-		configs.add(TabConfig.of("immunizations", () -> ControllerProvider.getCaseController().getEpiDataComponent(caze.getUuid(), null)));
+		configs.add(TabConfig.of(Captions.physicianReportCaseImmunizations, () -> new PhysicianReportCaseImmunizationsComponent(caze)));
 
 		return configs;
 	}
@@ -175,6 +176,7 @@ public class PhysicianReportCaseEditComponent extends CommitDiscardWrapperCompon
 
 		activeTabComponent.setShortcutsEnabled(false);
 		activeTabComponent.setButtonsVisible(false);
+		activeTabComponent.setWidthFull();
 		addProcessedInMeantimeCheck(activeTabComponent, labMessage, false);
 		getWrappedComponent().addComponent(activeTabComponent);
 		this.activeTabComponent = activeTabComponent;

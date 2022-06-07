@@ -684,7 +684,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			primaryCommitListener = null;
 	}
 
-	private void onCommit() {
+	protected void onCommit() {
 
 		for (CommitListener listener : commitListeners) {
 			try {

@@ -539,33 +539,33 @@ public class StartupShutdownService {
 
 	private void createOrUpdateDefaultUser(Set<UserRole> userRoles, String username, String password, String firstName, String lastName) {
 
-		if (StringUtils.isAnyBlank(username, password)) {
-			logger.debug("Invalid user details. Will not create/update default user");
-			return;
-		}
-
-		User existingUser = userService.getByUserName(username);
-
-		if (existingUser == null) {
-			if (!DataHelper.isNullOrEmpty(password)) {
-				User newUser = MockDataGenerator.createUser(userRoles, firstName, lastName, password);
-				newUser.setUserName(username);
-
-				userService.persist(newUser);
-				userUpdateEvent.fire(new UserUpdateEvent(newUser));
-			}
-		} else if (!DataHelper.equal(existingUser.getPassword(), PasswordHelper.encodePassword(password, existingUser.getSeed()))) {
-			existingUser.setSeed(PasswordHelper.createPass(16));
-			existingUser.setPassword(PasswordHelper.encodePassword(password, existingUser.getSeed()));
-			existingUser.setUserRoles(userRoles);
-
-			userService.persist(existingUser);
-			passwordResetEvent.fire(new PasswordResetEvent(existingUser));
-		} else if (userRoles.stream().anyMatch(r -> !existingUser.getUserRoles().contains(r))
-			|| existingUser.getUserRoles().stream().anyMatch(r -> !userRoles.contains(r))) {
-			existingUser.setUserRoles(userRoles);
-			userService.persist(existingUser);
-		}
+//		if (StringUtils.isAnyBlank(username, password)) {
+//			logger.debug("Invalid user details. Will not create/update default user");
+//			return;
+//		}
+//
+//		User existingUser = userService.getByUserName(username);
+//
+//		if (existingUser == null) {
+//			if (!DataHelper.isNullOrEmpty(password)) {
+//				User newUser = MockDataGenerator.createUser(userRoles, firstName, lastName, password);
+//				newUser.setUserName(username);
+//
+//				userService.persist(newUser);
+//				userUpdateEvent.fire(new UserUpdateEvent(newUser));
+//			}
+//		} else if (!DataHelper.equal(existingUser.getPassword(), PasswordHelper.encodePassword(password, existingUser.getSeed()))) {
+//			existingUser.setSeed(PasswordHelper.createPass(16));
+//			existingUser.setPassword(PasswordHelper.encodePassword(password, existingUser.getSeed()));
+//			existingUser.setUserRoles(userRoles);
+//
+//			userService.persist(existingUser);
+//			passwordResetEvent.fire(new PasswordResetEvent(existingUser));
+//		} else if (userRoles.stream().anyMatch(r -> !existingUser.getUserRoles().contains(r))
+//			|| existingUser.getUserRoles().stream().anyMatch(r -> !userRoles.contains(r))) {
+//			existingUser.setUserRoles(userRoles);
+//			userService.persist(existingUser);
+//		}
 
 	}
 

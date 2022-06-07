@@ -60,6 +60,8 @@ public interface VaccinationFacade {
 
 	List<VaccinationDto> getAllVaccinations(String personUuid, Disease disease);
 
+	List<VaccinationDto> getVaccinationsByCriteria(VaccinationListCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
 	List<VaccinationListEntryDto> getEntriesList(VaccinationListCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	List<VaccinationListEntryDto> getEntriesListWithRelevance(
