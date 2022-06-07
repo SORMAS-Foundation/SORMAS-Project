@@ -343,6 +343,36 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
+        "^I create a new case with Point Of Entry for DE version$",
+        () -> {
+          caze = caseService.buildGeneratedCaseWithPointOfEntryDE();
+          selectCaseOrigin(caze.getCaseOrigin());
+          fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
+          fillDisease(caze.getDisease());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectPointOfEntryRegion(caze.getPointOfEntryRegion());
+          selectPointOfEntryDistrict(caze.getPointOfEntryDistrict());
+          selectPointOfEntry(caze.getPointOfEntry());
+          fillPointOfEntryDetails(caze.getPointOfEntryDetails());
+          fillDateOfBirth(caze.getDateOfBirth(), Locale.GERMAN);
+          selectSex(caze.getSex());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+
+    When(
+        "I select {string} as a Case Origin in Case Popup",
+        (String option) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_ORIGIN_OPTIONS);
+          webDriverHelpers.clickWebElementByText(CASE_ORIGIN_OPTIONS, option);
+        });
+
+    When(
         "I create a new case with only the required data for DE version",
         () -> {
           caze = caseService.buildGeneratedCaseDE();
@@ -798,6 +828,42 @@ public class CreateNewCaseSteps implements En {
           softly.assertFalse(elementVisible, option + " is visible!");
           softly.assertAll();
         });
+
+    Then(
+        "^I check if Different Point Of Entry Jurisdiction checkbox appears$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              DIFFERENT_POINT_OF_ENTRY_JURISDICTION);
+        });
+
+    When(
+        "^I select Different Point Of Entry Jurisdiction checkbox$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DIFFERENT_POINT_OF_ENTRY_JURISDICTION);
+        });
+
+    Then(
+        "^I check if additional Point Of Entry fields appear$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(POINT_OF_ENTRY_REGION_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(POINT_OF_ENTRY_DISTRICT_BUTTON);
+        });
+  }
+
+  private void fillPointOfEntryDetails(String pointOfEntryDetails) {
+    webDriverHelpers.fillInWebElement(POINT_OF_ENTRY_DETAILS, pointOfEntryDetails);
+  }
+
+  private void selectPointOfEntry(String pointOfEntry) {
+    webDriverHelpers.selectFromCombobox(POINT_OF_ENTRY_COMBOBOX, pointOfEntry);
+  }
+
+  private void selectPointOfEntryDistrict(String pointOfEntryDistrict) {
+    webDriverHelpers.selectFromCombobox(POINT_OF_ENTRY_DISTRICT_BUTTON, pointOfEntryDistrict);
+  }
+
+  private void selectPointOfEntryRegion(String pointOfEntryRegion) {
+    webDriverHelpers.selectFromCombobox(POINT_OF_ENTRY_REGION_BUTTON, pointOfEntryRegion);
   }
 
   private void selectCaseOrigin(String caseOrigin) {

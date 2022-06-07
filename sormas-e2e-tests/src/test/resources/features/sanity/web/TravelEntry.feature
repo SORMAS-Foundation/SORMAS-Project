@@ -239,3 +239,17 @@ Feature: Create travel entries
     Then I check that National Health ID is not visible in Person search popup
     And I check that Passport Number is not visible in Person search popup
     And I check that Nickname is not visible in Person search popup
+
+  @issue=SORDEV-8411 @env_de
+  Scenario: Test Travel Entry conversion to case
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I select "EINREISEORT" as a Case Origin in Case Popup
+    Then I check if Different Point Of Entry Jurisdiction checkbox appears
+    When I select Different Point Of Entry Jurisdiction checkbox
+    Then I check if additional Point Of Entry fields appear
+    When I create a new case with Point Of Entry for DE version
+    And I check that Point Of Entry information is displayed as read-only on Edit case page
+    And I refer case from Point Of Entry
+    And I check that Point Of Entry and Place Of Stay information is display on Edit case page
