@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.externalmessage;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -20,11 +21,16 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.ui.AbstractBeanTest;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class ExternalMessageMapperTest extends AbstractBeanTest {
@@ -151,5 +157,42 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 			assertEquals(diseaseVariant, result.getMiddle());
 			assertNull(result.getRight());
 		}
+	}
+
+	@Test
+	public void testMapToPersonPresentCondition() {
+		ExternalMessageDto labMessage = ExternalMessageDto.build();
+		PersonDto person = PersonDto.build();
+		ExternalMessageMapper mapper = ExternalMessageMapper.forLabMessage(labMessage);
+
+		// both values null
+		List<String[]> result = mapper.mapToPerson(person);
+		assertTrue(result.isEmpty());
+		assertNull(person.getPresentCondition());
+
+		// person value already set
+		person.setPresentCondition(PresentCondition.DEAD);
+		result = mapper.mapToPerson(person);
+		assertTrue(result.isEmpty());
+		assertEquals(PresentCondition.DEAD, person.getPresentCondition());
+
+		// equal values in person and lab message
+		labMessage.setPersonPresentCondition(PresentCondition.DEAD);
+		result = mapper.mapToPerson(person);
+		assertTrue(result.isEmpty());
+		assertEquals(PresentCondition.DEAD, person.getPresentCondition());
+
+		// different values in person and lab message
+		labMessage.setPersonPresentCondition(PresentCondition.ALIVE);
+		result = mapper.mapToPerson(person);
+		ArrayList<String[]> expectedResult = new ArrayList();
+		expectedResult.add(
+			new String[] {
+				"presentCondition" });
+		assertEquals(expectedResult.size(), result.size());
+		assertEquals(expectedResult.get(0).length, result.get(0).length);
+		assertEquals(expectedResult.get(0)[0], result.get(0)[0]);
+		assertEquals(PresentCondition.ALIVE, person.getPresentCondition());
+
 	}
 }
