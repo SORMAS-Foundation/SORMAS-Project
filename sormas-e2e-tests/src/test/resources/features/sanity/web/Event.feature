@@ -821,3 +821,26 @@ Feature: Create events
     Then I check that National Health ID is not visible in Person search popup
     And I check that Passport Number is not visible in Person search popup
     And I check that Nickname is not visible in Person search popup
+
+  @issue=SORDEV-6076 @env_main
+  Scenario: Test Make event report date editable
+    Given I log in with National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    When I create a new event with today for date of report and date of event
+    Then I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    Then I check the only mandatory created data is correctly displayed in event edit page
+    Then I change the report event date for minus 1 day from today
+    And I click on Save Button in Edit Event directory
+    Then I check if date of report is set for 1 day ago from today
+    Then I change the report event date for minus 0 day from today
+    And I click on Save Button in Edit Event directory
+    And I set the date of event for today
+    And I change the report event date for minus 2 day from today
+    Then I check if date of report has an error exclamation mark with correct error message
+    And I click on Save Button in Edit Event directory
+    Then I check if error popup is displayed with message Please check the input data
+    And I check if error popup contains Date of report has to be after or on the same day as Start date
+    And I check if error popup contains Start date has to be before or on the same day as Date of report
