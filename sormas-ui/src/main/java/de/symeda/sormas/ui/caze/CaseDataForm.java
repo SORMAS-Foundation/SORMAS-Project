@@ -1293,7 +1293,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				setVisible(true, CaseDataDto.POINT_OF_ENTRY);
 				if (getValue().getPointOfEntry() != null) {
 					setVisible(getValue().getPointOfEntry().isOtherPointOfEntry(), CaseDataDto.POINT_OF_ENTRY_DETAILS);
-					btnReferFromPointOfEntry.setVisible(true);
+					btnReferFromPointOfEntry.setVisible(UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_FROM_POE));
 				}
 
 				if (getValue().getHealthFacility() == null) {
