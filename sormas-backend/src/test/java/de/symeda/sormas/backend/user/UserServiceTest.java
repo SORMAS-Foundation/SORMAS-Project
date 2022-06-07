@@ -27,6 +27,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import de.symeda.sormas.api.AuthProvider;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
@@ -151,5 +152,96 @@ public class UserServiceTest extends AbstractBeanTest {
 		for (User randomUser : randomUsers) {
 			assertFalse(result.contains(randomUser));
 		}
+	}
+
+	@Test
+	public void testGetUserRefsByInfrastructure() {
+
+		RDCF rdcf1 = creator.createRDCF("R1", "D1", "C1", "F1", "P1");
+		RDCF rdcf2 = creator.createRDCF("R2", "D2", "C2", "F2", "P2");
+
+		UserDto hospInf1 = creator.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "HI", "1");
+		UserDto hospInf2 = creator.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "HI", "2");
+		UserDto survOff11 = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			null,
+			"SO",
+			"11",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto surfOff12 = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			null,
+			"SO",
+			"12",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto survOff21 = creator.createUser(
+			rdcf2.region.getUuid(),
+			rdcf2.district.getUuid(),
+			null,
+			"SO",
+			"21",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto survSup1 =
+			creator.createUser(rdcf1.region.getUuid(), null, null, "SS", "1", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto survSup2 =
+			creator.createUser(rdcf2.region.getUuid(), null, null, "SS", "2", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto commOff1 = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			null,
+			"CO",
+			"1",
+			creator.getUserRoleReference(DefaultUserRole.COMMUNITY_OFFICER));
+		commOff1.setCommunity(rdcf1.community);
+		getUserFacade().saveUser(commOff1);
+		UserDto poeSup1 = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			null,
+			"PS",
+			"1",
+			creator.getUserRoleReference(DefaultUserRole.POE_SUPERVISOR));
+		poeSup1.setPointOfEntry(rdcf1.pointOfEntry);
+		getUserFacade().saveUser(poeSup1);
+
+		assertThat(
+			getUserService().getUserRefsByInfrastructure(rdcf1.district.getUuid(), JurisdictionLevel.DISTRICT, JurisdictionLevel.DISTRICT, null),
+			hasSize(2));
+		assertThat(
+			getUserService().getUserRefsByInfrastructure(rdcf1.region.getUuid(), JurisdictionLevel.REGION, JurisdictionLevel.REGION, null),
+			hasSize(1));
+		assertThat(
+			getUserService()
+				.getUserRefsByInfrastructure(rdcf1.facility.getUuid(), JurisdictionLevel.HEALTH_FACILITY, JurisdictionLevel.DISTRICT, null),
+			hasSize(4));
+		assertThat(
+			getUserService().getUserRefsByInfrastructure(rdcf2.district.getUuid(), JurisdictionLevel.DISTRICT, JurisdictionLevel.DISTRICT, null),
+			hasSize(1));
+		assertThat(
+			getUserService().getUserRefsByInfrastructure(rdcf2.district.getUuid(), JurisdictionLevel.DISTRICT, JurisdictionLevel.REGION, null),
+			hasSize(2));
+		assertThat(
+			getUserService()
+				.getUserRefsByInfrastructure(rdcf1.pointOfEntry.getUuid(), JurisdictionLevel.POINT_OF_ENTRY, JurisdictionLevel.POINT_OF_ENTRY, null),
+			hasSize(1));
+		assertThat(
+			getUserService().getUserRefsByInfrastructure(rdcf1.community.getUuid(), JurisdictionLevel.COMMUNITY, JurisdictionLevel.REGION, null),
+			hasSize(4));
+		assertThat(getUserService().getUserRefsByInfrastructure(null, JurisdictionLevel.NATION, JurisdictionLevel.NATION, null), hasSize(1));
+		assertThat(
+			getUserService().getUserRefsByInfrastructure(rdcf1.region.getUuid(), JurisdictionLevel.REGION, JurisdictionLevel.NATION, null),
+			hasSize(2));
+
+		commOff1.setLimitedDisease(Disease.EVD);
+		getUserFacade().saveUser(commOff1);
+		survOff11.setLimitedDisease(Disease.CHOLERA);
+		getUserFacade().saveUser(survOff11);
+		assertThat(
+			getUserService()
+				.getUserRefsByInfrastructure(rdcf1.community.getUuid(), JurisdictionLevel.COMMUNITY, JurisdictionLevel.REGION, Disease.CHOLERA),
+			hasSize(3));
+
 	}
 }
