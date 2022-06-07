@@ -6,12 +6,15 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.Where;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -52,19 +55,12 @@ public class AggregateReportDao extends AbstractAdoDao<AggregateReport> {
 				diseasesWithReports.add(report.getDisease());
 			}
 
-			Collections.sort(reports, new Comparator<AggregateReport>() {
+			Function<AggregateReport, String> diseaseComparator = r -> r.getDisease().toString();
+			Comparator<AggregateReport> comparator = Comparator.comparing(diseaseComparator)
+				.thenComparing(r -> r.getAgeGroup() != null ? r.getAgeGroup().replaceAll("\\d", StringUtils.EMPTY) : StringUtils.EMPTY)
+				.thenComparing(r -> r.getAgeGroup() != null ? r.getAgeGroup().replaceAll("_", StringUtils.EMPTY) : StringUtils.EMPTY);
 
-				@Override
-				public int compare(AggregateReport o1, AggregateReport o2) {
-					return o1.getDisease().toString().compareTo(o2.getDisease().toString());
-				}
-			}.thenComparing(new Comparator<AggregateReport>() {
-
-				@Override
-				public int compare(AggregateReport o1, AggregateReport o2) {
-					return o1.getAgeGroup().compareTo(o2.getAgeGroup());
-				}
-			}));
+			Collections.sort(reports, comparator);
 
 			return reports;
 		} catch (SQLException e) {

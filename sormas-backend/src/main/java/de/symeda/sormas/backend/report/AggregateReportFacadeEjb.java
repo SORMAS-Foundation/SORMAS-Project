@@ -44,6 +44,7 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import org.apache.commons.lang3.StringUtils;
 
 @Stateless(name = "AggregateReportFacade")
 @RolesAllowed(UserRight._AGGREGATE_REPORT_VIEW)
@@ -178,10 +179,10 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		}
 
 		List<AggregatedCaseCountDto> reportList = new ArrayList<>(reportSet);
-		Function<AggregatedCaseCountDto, String> objectObjectFunction = r -> r.getDisease().toString();
-		Comparator<AggregatedCaseCountDto> comparator = Comparator.comparing(objectObjectFunction)
-			.thenComparing(r -> r.getAgeGroup().replaceAll("\\d", ""))
-			.thenComparing(r -> r.getAgeGroup().replaceAll("_", ""));
+		Function<AggregatedCaseCountDto, String> diseaseComparator = r -> r.getDisease().toString();
+		Comparator<AggregatedCaseCountDto> comparator = Comparator.comparing(diseaseComparator)
+			.thenComparing(r -> r.getAgeGroup() != null ? r.getAgeGroup().replaceAll("\\d", StringUtils.EMPTY) : StringUtils.EMPTY)
+			.thenComparing(r -> r.getAgeGroup() != null ? r.getAgeGroup().replaceAll("_", StringUtils.EMPTY) : StringUtils.EMPTY);
 		reportList.sort(comparator);
 		return reportList;
 	}
