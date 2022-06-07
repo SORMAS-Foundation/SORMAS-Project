@@ -342,12 +342,12 @@ public class CreateNewContactSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
         });
-      When(
-              "^I click on SAVE new contact case button$",
-              () -> {
-                  webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
-                  webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-              });
+    When(
+        "^I click on SAVE new contact case button$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
     When(
         "^I click on SAVE new contact button in the CHOOSE SOURCE popup of Create Contact window$",
         () -> {

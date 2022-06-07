@@ -19,8 +19,10 @@ package org.sormas.e2etests.enums;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
+@Slf4j
 public enum CommunityValues {
   VoreingestellteGemeinde(
       "Voreingestellte Gemeinde", "QWK33J-XYN3DE-5CSXFJ-MMFOKNKM", "UPKYUC-HD6D2W-EZVF5S-Q3PQSE5A");
@@ -37,6 +39,7 @@ public enum CommunityValues {
 
   @SneakyThrows
   public static String getNameValueForUuid(String option) {
+    log.warn("Please migrate to new implementation and take data from EnvironmentManager class");
     CommunityValues[] communityValuesOptions = CommunityValues.values();
     for (CommunityValues value : communityValuesOptions) {
       if (value.uuidMain.equalsIgnoreCase(option) || value.uuidDE.equalsIgnoreCase(option))
@@ -47,6 +50,7 @@ public enum CommunityValues {
 
   @SneakyThrows
   public static String getUuidValueForLocale(String communityName, String locale) {
+    log.warn("Please migrate to new implementation and take data from EnvironmentManager class");
     CommunityValues[] communityValues = CommunityValues.values();
     for (CommunityValues value : communityValues) {
       if (value.name().equalsIgnoreCase(communityName)) {
