@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -753,6 +754,25 @@ public final class DateHelper {
 		secondCalendar.set(Calendar.WEEK_OF_YEAR, anotherEpiWeek.getWeek());
 
 		return secondCalendar.getTime().after(calendar.getTime());
+	}
+
+	/**
+	 * @return The same {@link EpiWeek} within the the given {@code options} (first matching week number),
+	 *         {@code null} if no option matches.
+	 */
+	public static EpiWeek getSameEpiWeek(EpiWeek epiWeek, List<EpiWeek> options) {
+
+		EpiWeek result = null;
+		if (epiWeek != null && CollectionUtils.isNotEmpty(options)) {
+			for (EpiWeek option : options) {
+				if (epiWeek.getWeek() == option.getWeek()) {
+					result = option;
+					break;
+				}
+			}
+		}
+
+		return result;
 	}
 
 	/**
