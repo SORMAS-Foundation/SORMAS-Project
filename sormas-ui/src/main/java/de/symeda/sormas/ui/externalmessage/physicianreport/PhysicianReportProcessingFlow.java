@@ -85,6 +85,8 @@ public class PhysicianReportProcessingFlow extends AbstractPhysicianReportProces
 	protected void handleUpdateCase(CaseDataDto caze, ExternalMessageDto externalMessage, HandlerCallback<CaseDataDto> callback) {
 
 		PhysicianReportCaseEditComponent caseComponent = new PhysicianReportCaseEditComponent(caze, externalMessage);
+		caseComponent.addCommitListener(() -> callback.done(caze));
+		caseComponent.addDiscardListener(callback::cancel);
 
 		Window window = VaadinUiUtil.createPopupWindow();
 		ExternalMessageProcessingUIHelper

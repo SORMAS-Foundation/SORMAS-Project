@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.externalmessage;
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showAlreadyProcessedPopup;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
 import de.symeda.sormas.ui.externalmessage.physicianreport.PhysicianReportProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
@@ -154,7 +155,7 @@ public class ExternalMessageController {
 			ProcessingResultStatus status = result.getStatus();
 
 			if (status == ProcessingResultStatus.DONE) {
-				markExternalMessageAsProcessed(labMessage, null);
+				markExternalMessageAsProcessed(labMessage, result.getData().toReference());
 				SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
 			}
 
@@ -164,6 +165,12 @@ public class ExternalMessageController {
 
 	public void markExternalMessageAsProcessed(ExternalMessageDto externalMessage, SampleReferenceDto sample) {
 		externalMessage.setSample(sample);
+		externalMessage.setStatus(ExternalMessageStatus.PROCESSED);
+		FacadeProvider.getExternalMessageFacade().save(externalMessage);
+	}
+
+	public void markExternalMessageAsProcessed(ExternalMessageDto externalMessage, CaseReferenceDto caze) {
+		externalMessage.setCaze(caze);
 		externalMessage.setStatus(ExternalMessageStatus.PROCESSED);
 		FacadeProvider.getExternalMessageFacade().save(externalMessage);
 	}

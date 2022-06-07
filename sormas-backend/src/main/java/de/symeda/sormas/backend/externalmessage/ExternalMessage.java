@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.externalmessage;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
+import de.symeda.sormas.backend.caze.Case;
 import java.util.Date;
 import java.util.List;
 
@@ -101,6 +102,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	private String reportId;
 	private PathogenTestResultType sampleOverallTestResult;
 	private Sample sample;
+	private Case caze;
 
 	private ExternalMessageStatus status = ExternalMessageStatus.UNPROCESSED;
 	private User assignee;
@@ -395,4 +397,12 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.sample = sample;
 	}
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Case getCaze() {
+		return caze;
+	}
+
+	public void setCaze(Case caze) {
+		this.caze = caze;
+	}
 }

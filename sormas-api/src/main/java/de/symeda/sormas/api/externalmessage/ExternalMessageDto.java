@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.externalmessage;
 
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -101,6 +102,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	private String personEmail;
 
 	private SampleReferenceDto sample;
+	private CaseReferenceDto caze;
 
 	@Valid
 	private List<TestReportDto> testReports = new ArrayList<>();
@@ -395,6 +397,14 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setSample(SampleReferenceDto sample) {
 		this.sample = sample;
+	}
+
+	public CaseReferenceDto getCaze() {
+		return caze;
+	}
+
+	public void setCaze(CaseReferenceDto caze) {
+		this.caze = caze;
 	}
 
 	@Override
