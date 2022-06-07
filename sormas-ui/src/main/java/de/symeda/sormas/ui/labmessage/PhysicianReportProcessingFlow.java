@@ -15,22 +15,24 @@
 
 package de.symeda.sormas.ui.labmessage;
 
-import com.vaadin.ui.Window;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingUIHelper;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 
+import org.apache.commons.collections.CollectionUtils;
+
+import com.vaadin.ui.Window;
+
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.labmessage.processing.AbstractPhysicianReportProcessingFlow;
+import de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingUIHelper;
 import de.symeda.sormas.ui.labmessage.processing.PickOrCreateEntryResult;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class PhysicianReportProcessingFlow extends AbstractPhysicianReportProcessingFlow {
 
@@ -58,6 +60,14 @@ public class PhysicianReportProcessingFlow extends AbstractPhysicianReportProces
 		List<CaseSelectionDto> similarCases,
 		LabMessageDto labMessage,
 		HandlerCallback<PickOrCreateEntryResult> callback) {
+
+		if (CollectionUtils.isEmpty(similarCases)) {
+			PickOrCreateEntryResult result = new PickOrCreateEntryResult();
+			result.setNewCase(true);
+
+			callback.done(result);
+			return;
+		}
 
 		EntrySelectionField.Options.Builder optionsBuilder =
 			new EntrySelectionField.Options.Builder().addSelectCase(similarCases).addCreateEntry(EntrySelectionField.OptionType.CREATE_CASE);
