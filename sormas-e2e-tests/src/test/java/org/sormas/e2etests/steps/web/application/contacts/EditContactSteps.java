@@ -803,6 +803,10 @@ public class EditContactSteps implements En {
           softly.assertAll();
           Files.delete(path); // clean
         });
+
+    When(
+        "I navigate to follow-up visits tab",
+        () -> webDriverHelpers.clickOnWebElementBySelector(FOLLOW_UP_VISITS));
   }
 
   private void selectContactClassification(String classification) {

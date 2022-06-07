@@ -73,6 +73,25 @@ public class EventService {
         .build();
   }
 
+  public Event buildGeneratedEventWithDate(LocalDate date) {
+    String timestamp = String.valueOf(System.currentTimeMillis());
+    return Event.builder()
+        .eventStatus("EVENT")
+        .investigationStatus("INVESTIGATION PENDING") // change back to ongoing after bug fix 5547
+        .eventManagementStatus("ONGOING")
+        .disease("COVID-19")
+        .title("EVENT_AUTOMATION_" + timestamp + faker.address().city())
+        .reportDate(date)
+        .eventDate(date)
+        .eventLocation("Home")
+        .riskLevel("Moderate risk")
+        .sourceType("Not applicable")
+        .region(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
+        .community(CommunityValues.VoreingestellteGemeinde.getName())
+        .build();
+  }
+
   public Event buildEditEvent() {
     String timestamp = String.valueOf(System.currentTimeMillis());
     return Event.builder()
