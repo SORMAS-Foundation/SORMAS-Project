@@ -32,8 +32,6 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.RequestContextHolder;
-import de.symeda.sormas.api.RequestContextTO;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -47,6 +45,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.feature.FeatureConfiguration;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -144,7 +143,7 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetCasesWithLimitedSyncronization() {
+	public void testGetCasesWithLimitedSynchronization() {
 
 		FeatureConfigurationIndexDto featureConfiguration =
 			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);
@@ -158,7 +157,7 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 		singleResult.setProperties(properties);
 		em.save(singleResult);
 
-		RequestContextHolder.setRequestContext(new RequestContextTO(true)); // simulate mobile call
+		MockProducer.setMobileSync(true);
 
 		loginWith(districtUser1);
 

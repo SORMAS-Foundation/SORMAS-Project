@@ -71,6 +71,8 @@ public interface SampleFacade {
 
 	List<String> getDeletedUuidsSince(Date since);
 
+	List<String> getObsoleteUuidsSince(Date since);
+
 	boolean isDeleted(String sampleUuid);
 
 	List<SampleDto> getByCaseUuids(List<String> caseUuids);

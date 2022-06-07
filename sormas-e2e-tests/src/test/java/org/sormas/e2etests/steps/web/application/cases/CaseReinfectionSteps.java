@@ -152,6 +152,29 @@ public class CaseReinfectionSteps implements En {
         });
 
     When(
+        "I fill a new case form with same person details for DE version",
+        () -> {
+          LocalDate reportDate = LocalDate.now();
+          caze =
+              caseService.buildGeneratedCaseDEForOnePerson(
+                  firstName, lastName, dateOfBirth, reportDate, personSex);
+          selectCaseOrigin(caze.getCaseOrigin());
+          fillExternalId(caze.getExternalId());
+          fillDisease(caze.getDisease());
+          fillDiseaseVariant(caze.getDiseaseVariant());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          fillDateOfBirth(caze.getDateOfBirth(), Locale.GERMAN);
+          selectSex(caze.getSex());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
+        });
+
+    When(
         "I create a new case with specific data for DE version with saved person details",
         () -> {
           LocalDate reportDate = LocalDate.now().minusDays(2);

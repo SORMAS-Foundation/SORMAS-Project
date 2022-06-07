@@ -30,6 +30,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUI
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.ARRIVAL_DATE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DATE_OF_ARRIVAL_LABEL_DE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DATE_OF_ARRIVAL_POPUP_CLOSE;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DISEASE_COMBOBOX_DISABLED;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_TRAVEL_ENTRY_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_UUID_TABLE_TRAVEL_ENTRIES;
@@ -41,6 +42,7 @@ import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntry
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.REPORT_DATE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SAVE_POPUP_CONTENT;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SEX_COMBOBOX;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CASE_PERSON_NAME;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CREATE_CASE_FROM_TRAVEL_ENTRY;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISEASE_NAME_INPUT;
@@ -55,12 +57,14 @@ import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TRAVEL_ENTRY_TAB;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PERSON_FILTER_INPUT;
 
+import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
@@ -68,6 +72,7 @@ import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.pojo.web.TravelEntry;
 import org.sormas.e2etests.entities.services.TravelEntryService;
+import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage;
 import org.sormas.e2etests.pages.application.entries.EditTravelEntryPage;
@@ -90,6 +95,7 @@ public class CreateNewTravelEntrySteps implements En {
   String sex;
   String disease;
   String entryPoint = "Test entry point";
+  protected static TravelEntry travelEntryWithSamePersonData;
   List<TravelEntry> TravelEntryUuidList = new ArrayList<>();
 
   @Inject
@@ -97,8 +103,17 @@ public class CreateNewTravelEntrySteps implements En {
       WebDriverHelpers webDriverHelpers,
       TravelEntryService travelEntryService,
       ApiState apiState,
+      Faker faker,
       SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
+    Random r = new Random();
+    char c = (char) (r.nextInt(26) + 'a');
+    String firstNameforDuplicatedPerson = faker.name().firstName() + c;
+    String lastNameforDuplicatedPerson = faker.name().lastName() + c;
+    String sexforDuplicatedPerson = GenderValues.getRandomGenderDE();
+    travelEntryWithSamePersonData =
+        travelEntryService.buildGeneratedEntryWithParametrizedPersonDataDE(
+            firstNameforDuplicatedPerson, lastNameforDuplicatedPerson, sexforDuplicatedPerson);
 
     When(
         "^I fill the required fields in a new travel entry form$",
@@ -122,6 +137,34 @@ public class CreateNewTravelEntrySteps implements En {
           fillPointOfEntry(travelEntry.getPointOfEntry());
           fillPointOfEntryDetails(travelEntry.getPointOfEntryDetails());
         });
+    When(
+        "^I fill the required fields in a new travel entry form without disease and person data$",
+        () -> {
+          travelEntry = travelEntryService.buildGeneratedEntryDE();
+          fillDateOfArrival(travelEntry.getDateOfArrival(), Locale.GERMAN);
+          selectResponsibleRegion(travelEntry.getResponsibleRegion());
+          selectResponsibleDistrict(travelEntry.getResponsibleDistrict());
+          selectResponsibleCommunity(travelEntry.getResponsibleCommunity());
+          fillPointOfEntry(travelEntry.getPointOfEntry());
+          fillPointOfEntryDetails(travelEntry.getPointOfEntryDetails());
+        });
+    When(
+        "^I fill the required fields in a new travel entry form with same person data$",
+        () -> {
+          fillFirstName(travelEntryWithSamePersonData.getFirstName());
+          fillLastName(travelEntryWithSamePersonData.getLastName());
+          selectSex(travelEntryWithSamePersonData.getSex());
+          fillDateOfArrival(travelEntryWithSamePersonData.getDateOfArrival(), Locale.GERMAN);
+          selectResponsibleRegion(travelEntryWithSamePersonData.getResponsibleRegion());
+          selectResponsibleDistrict(travelEntryWithSamePersonData.getResponsibleDistrict());
+          selectResponsibleCommunity(travelEntryWithSamePersonData.getResponsibleCommunity());
+          fillDisease(travelEntryWithSamePersonData.getDisease());
+          if (travelEntryWithSamePersonData.getDisease().equals("Andere epidemische Krankheit"))
+            fillOtherDisease("Test");
+
+          fillPointOfEntry(travelEntryWithSamePersonData.getPointOfEntry());
+          fillPointOfEntryDetails(travelEntryWithSamePersonData.getPointOfEntryDetails());
+        });
 
     When(
         "^I change a Report Date for previous week date$",
@@ -130,6 +173,57 @@ public class CreateNewTravelEntrySteps implements En {
           fillReportDate(previousWeekDate, Locale.GERMAN);
         });
 
+    When(
+        "I check that ([^\"]*) is not visible in New Travel Entry popup",
+        (String option) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          By selector = null;
+          Boolean elementVisible = true;
+          switch (option) {
+            case "First Name":
+              selector = FIRST_NAME_OF_CONTACT_PERSON_INPUT;
+              break;
+            case "Last Name":
+              selector = LAST_NAME_OF_CONTACT_PERSON_INPUT;
+              break;
+            case "Sex":
+              selector = SEX_COMBOBOX;
+              break;
+          }
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(selector);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertFalse(elementVisible, option + " is visible!");
+          softly.assertAll();
+        });
+    When(
+        "I check that disease in New Travel Entry popup is disabled",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          Boolean elementVisible = true;
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(DISEASE_COMBOBOX_DISABLED);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertTrue(elementVisible, "Disease combobox is enabled!");
+          softly.assertAll();
+        });
+    When(
+        "I check that disease in New Travel Entry popup is enabled",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          Boolean elementVisible = true;
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(DISEASE_COMBOBOX_DISABLED);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertFalse(elementVisible, "Disease combobox is disabled!");
+          softly.assertAll();
+        });
     When(
         "^I open last created Travel Entry",
         () -> {
@@ -492,7 +586,7 @@ public class CreateNewTravelEntrySteps implements En {
   }
 
   private void selectSex(String sex) {
-    webDriverHelpers.selectFromCombobox(CreateNewTravelEntryPage.SEX_COMBOBOX, sex);
+    webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);
   }
 
   private void selectResponsibleRegion(String selectResponsibleRegion) {
