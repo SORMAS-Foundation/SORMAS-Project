@@ -373,7 +373,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		sample.setReportLat(null);
 		sample.setReportLon(null);
 		sample.setReportLatLonAccuracy(20F);
-		sample.setLab(null);
+		sample.setLab(rdcf1.facility);
 
 		getSampleFacade().saveSample(sample);
 
@@ -382,7 +382,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(updatedSample.getReportLat(), is(46.432));
 		assertThat(updatedSample.getReportLon(), is(23.234));
 		assertThat(updatedSample.getReportLatLonAccuracy(), is(20F));
-		assertThat(updatedSample.getLab(), is(nullValue()));
+		assertThat(updatedSample.getLab().getUuid(), is(rdcf1.facility.getUuid()));
 	}
 
 	@Test
@@ -394,7 +394,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		sample.setReportLat(null);
 		sample.setReportLon(null);
 		sample.setReportLatLonAccuracy(20F);
-		sample.setLab(null);
+		sample.setLab(rdcf2.facility);
 
 		getSampleFacade().saveSample(sample);
 
@@ -403,7 +403,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(updatedSample.getReportLat(), is(46.432));
 		assertThat(updatedSample.getReportLon(), is(23.234));
 		assertThat(updatedSample.getReportLatLonAccuracy(), is(20F));
-		assertThat(updatedSample.getLab(), is(nullValue()));
+		assertThat(updatedSample.getLab().getUuid(), is(rdcf2.facility.getUuid()));
 	}
 
 	private SampleDto createCaseSample(CaseDataDto caze, UserDto reportingUser) {
