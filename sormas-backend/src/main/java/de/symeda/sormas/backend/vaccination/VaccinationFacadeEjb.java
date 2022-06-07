@@ -530,11 +530,11 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	}
 
 	@RolesAllowed(UserRight._IMMUNIZATION_EDIT)
-	public void copyOrMergeVaccinations(ImmunizationDto immunizationDto, Immunization newImmunization, List<VaccinationDto> allPersonVaccinations) {
+	public void copyOrMergeVaccinations(ImmunizationDto immunizationDto, Immunization newImmunization, List<VaccinationDto> leadPersonVaccinations) {
 
 		List<Vaccination> vaccinationEntities = new ArrayList<>();
 		for (VaccinationDto vaccinationDto : immunizationDto.getVaccinations()) {
-			Optional<VaccinationDto> duplicateVaccination = allPersonVaccinations.stream().filter(v -> isDuplicateOf(vaccinationDto, v)).findFirst();
+			Optional<VaccinationDto> duplicateVaccination = leadPersonVaccinations.stream().filter(v -> isDuplicateOf(vaccinationDto, v)).findFirst();
 
 			if (duplicateVaccination.isPresent()) {
 				VaccinationDto updatedVaccination = DtoHelper.copyDtoValues(duplicateVaccination.get(), vaccinationDto, false);
@@ -559,7 +559,10 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 	private boolean isDuplicateOf(VaccinationDto vaccination1, VaccinationDto vaccination2) {
 
-		return DateHelper.isSameDay(vaccination1.getVaccinationDate(), vaccination2.getVaccinationDate())
+		return !vaccination1.getUuid().equals(vaccination2.getUuid())
+			&& vaccination1.getVaccinationDate() != null
+			&& vaccination2.getVaccinationDate() != null
+			&& DateHelper.isSameDay(vaccination1.getVaccinationDate(), vaccination2.getVaccinationDate())
 			&& vaccination1.getVaccineName() == vaccination2.getVaccineName()
 			&& (vaccination1.getVaccineName() != Vaccine.OTHER
 				|| StringUtils.equals(vaccination1.getOtherVaccineName(), vaccination2.getOtherVaccineName()));

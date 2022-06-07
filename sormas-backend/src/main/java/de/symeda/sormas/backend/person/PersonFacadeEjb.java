@@ -1701,6 +1701,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	@RolesAllowed(UserRight._PERSON_EDIT)
 	public void mergePerson(PersonDto leadPerson, PersonDto otherPerson) {
+
 		// Make sure the resulting person does not have multiple primary contact details
 		Set primaryContactDetailTypes = new HashSet<>();
 		for (PersonContactDetailDto contactDetailDto : leadPerson.getPersonContactDetails()) {
@@ -1714,9 +1715,8 @@ public class PersonFacadeEjb implements PersonFacade {
 			}
 		}
 		if (!leadPerson.getUuid().equals(otherPerson.getUuid())) {
-			List<ImmunizationDto> immunizations = immunizationFacade.getByPersonUuids(Collections.singletonList(otherPerson.getUuid()));
-			for (ImmunizationDto immunizationDto : immunizations) {
-				immunizationFacade.copyImmunizationsToLeadPerson(immunizationDto, leadPerson, immunizations);
+			for (ImmunizationDto immunizationDto : immunizationFacade.getByPersonUuids(Collections.singletonList(otherPerson.getUuid()))) {
+				immunizationFacade.copyImmunizationToLeadPerson(immunizationDto, leadPerson);
 			}
 		}
 
