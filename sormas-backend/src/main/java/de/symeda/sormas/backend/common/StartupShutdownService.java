@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
@@ -54,6 +55,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -480,12 +482,20 @@ public class StartupShutdownService {
 		String lastName,
 		DataHelper.Pair<String, String> usernameAndPassword,
 		Consumer<User> userModificator) {
-		User user = MockDataGenerator.createUser(userRole, firstName, lastName, usernameAndPassword.getElement1());
-		user.setUserName(usernameAndPassword.getElement0());
-		userModificator.accept(user);
-		userService.persist(user);
-		userUpdateEvent.fire(new UserUpdateEvent(user));
-		return user;
+		if (userRole != null) {
+			User user = MockDataGenerator.createUser(userRole, firstName, lastName, usernameAndPassword.getElement1());
+			user.setUserName(usernameAndPassword.getElement0());
+			userModificator.accept(user);
+			userService.persist(user);
+			userUpdateEvent.fire(new UserUpdateEvent(user));
+			return user;
+		} else {
+			logger.warn(
+				"Default user '{} {}' was not created because the user role to be assigned cannot be found in the database.",
+				firstName,
+				lastName);
+			return null;
+		}
 	}
 
 	private void createOrUpdateSormasToSormasUser() {
@@ -546,8 +556,14 @@ public class StartupShutdownService {
 
 		User existingUser = userService.getByUserName(username);
 
+		boolean allUserRolesExist = !CollectionUtils.isEmpty(userRoles) && userRoles.stream().noneMatch(Objects::isNull);
 		if (existingUser == null) {
-			if (!DataHelper.isNullOrEmpty(password)) {
+			if (!allUserRolesExist) {
+				logger.warn(
+					"User '{} {}' was not created because at least one of the user roles to be assigned cannot be found in the database.",
+					firstName,
+					lastName);
+			} else if (!DataHelper.isNullOrEmpty(password)) {
 				User newUser = MockDataGenerator.createUser(userRoles, firstName, lastName, password);
 				newUser.setUserName(username);
 
@@ -557,14 +573,28 @@ public class StartupShutdownService {
 		} else if (!DataHelper.equal(existingUser.getPassword(), PasswordHelper.encodePassword(password, existingUser.getSeed()))) {
 			existingUser.setSeed(PasswordHelper.createPass(16));
 			existingUser.setPassword(PasswordHelper.encodePassword(password, existingUser.getSeed()));
-			existingUser.setUserRoles(userRoles);
+			if (allUserRolesExist) {
+				existingUser.setUserRoles(userRoles);
+			} else {
+				logger.warn(
+					"User roles of user '{} {}' were not updated because at least one of the user roles to be assigned cannot be found in the database.",
+					firstName,
+					lastName);
+			}
 
 			userService.persist(existingUser);
 			passwordResetEvent.fire(new PasswordResetEvent(existingUser));
 		} else if (userRoles.stream().anyMatch(r -> !existingUser.getUserRoles().contains(r))
 			|| existingUser.getUserRoles().stream().anyMatch(r -> !userRoles.contains(r))) {
-			existingUser.setUserRoles(userRoles);
-			userService.persist(existingUser);
+			if (allUserRolesExist) {
+				existingUser.setUserRoles(userRoles);
+				userService.persist(existingUser);
+			} else {
+				logger.warn(
+					"User roles of user '{} {}' were not updated because at least one of the user roles to be assigned cannot be found in the database.",
+					firstName,
+					lastName);
+			}
 		}
 
 	}
@@ -747,6 +777,22 @@ public class StartupShutdownService {
 				break;
 			case 460:
 				fillDefaultUserRoles();
+				break;
+			case 463:
+				List<User> usersWithoutUserRoles =
+					userService.getAll().stream().filter(user -> user.getUserRoles().isEmpty()).collect(Collectors.toList());
+				if (!usersWithoutUserRoles.isEmpty()) {
+					UserRole importuserUserRole = userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.IMPORT_USER));
+					if (importuserUserRole == null) {
+						throw new IllegalArgumentException(
+							"Could not find default IMPORT_USER role in the database; Please ensure that the database contains no user without a user role and redeploy the server.");
+					} else {
+						usersWithoutUserRoles.forEach(user -> {
+							user.getUserRoles().add(importuserUserRole);
+							userService.persist(user);
+						});
+					}
+				}
 				break;
 
 			default:

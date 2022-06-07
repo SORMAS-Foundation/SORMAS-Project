@@ -583,7 +583,7 @@ Feature: Create events
     And I open the last created Person via API
     And I check that SEE EVENTS FOR THIS PERSON button appears on Edit Person page
 
-  @env_main @#8555
+  @env_main @#8555 @ignore
   Scenario: Add back a person to an event who was previously deleted as event participant
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -714,6 +714,22 @@ Feature: Create events
     And I check that Responsible User Info icon is visible on Event Directory Page
     And I check the displayed message is correct after hover to Responsible User Info icon
 
+  @issue=SORDEV-9946 @env_de
+  Scenario: Test Hide country specific fields in the 'Pick or create person' form of the duplicate detection pop-up, in German and French systems
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data for DE version
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I click on Add Participant button
+    Then I add Participant to an Event with same person data
+    And I click on save button in Add Participant form
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I click on Add Participant button
+    Then I add Participant to an Event with same person data
+    And I click on save button in Add Participant form
+    And I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
+
   @env_main @issue=SORDEV-7460
   Scenario: Test Extend the exposure and event startDate and endDate to include a startTime and endTime
     Given I log in with National User
@@ -790,3 +806,41 @@ Feature: Create events
     Then I click on the Event participant tab
     And I choose Active event participants from combobox in the Event participant tab
     Then I check if participant appears in the event participants list
+
+  @issue=SORDEV-9788 @env_de
+  Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Event Participant directory
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Events button from navbar
+    When I open the last created event via api
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    Then I click on ADD PARTICIPANT button
+    And I click on the person search button in add new event participant form
+    Then I check that National Health ID is not visible in Person search popup
+    And I check that Passport Number is not visible in Person search popup
+    And I check that Nickname is not visible in Person search popup
+
+  @issue=SORDEV-6076 @env_main
+  Scenario: Test Make event report date editable
+    Given I log in with National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    When I create a new event with today for date of report and date of event
+    Then I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    Then I check the only mandatory created data is correctly displayed in event edit page
+    Then I change the report event date for minus 1 day from today
+    And I click on Save Button in Edit Event directory
+    Then I check if date of report is set for 1 day ago from today
+    Then I change the report event date for minus 0 day from today
+    And I click on Save Button in Edit Event directory
+    And I set the date of event for today
+    And I change the report event date for minus 2 day from today
+    Then I check if date of report has an error exclamation mark with correct error message
+    And I click on Save Button in Edit Event directory
+    Then I check if error popup is displayed with message Please check the input data
+    And I check if error popup contains Date of report has to be after or on the same day as Start date
+    And I check if error popup contains Start date has to be before or on the same day as Date of report

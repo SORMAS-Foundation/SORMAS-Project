@@ -491,6 +491,100 @@ Feature: Contacts end to end tests
     And I open the last created Person via API
     And I check that SEE CONTACTS FOR THIS PERSON button appears on Edit Person page
 
+  @issue=SORDEV-6140 @env_main
+  Scenario: Ask user to automatically convert some additional contacts and event participants to case
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    When I click on the Contacts button from navbar
+    Then I click on the NEW CONTACT button
+    And I fill a new contact form with specific person data
+    And I click on SAVE new contact button
+    Then I check the created data is correctly displayed on Edit Contact page
+    And I click Link Event button on Edit Contact Page
+    And I select 2 event in Link Event popup and create and Event Participant
+    And I click Save in Add Event Participant form on Edit Contact Page
+    And I click Link Event button on Edit Contact Page
+    And I select 3 event in Link Event popup and create and Event Participant
+    And I click Save in Add Event Participant form on Edit Contact Page
+    And I click Link Event button on Edit Contact Page
+    And I select 5 event in Link Event popup and create and Event Participant
+    And I click Save in Add Event Participant form on Edit Contact Page
+    When I navigate to the last created through API Event page via URL
+    And I click on the Event participant tab
+    And I add same person data as one used for Contact creation for event participant
+    And I navigate to the last created UI contact via the url
+   And I click on CONFIRMED CONTACT radio button Contact Person tab
+    Then I click SAVE button on Edit Contact Page
+    And I click Create Case from Contact button
+    And I create a new case for contact with specific data
+    And I click Yes, for some in conversion to case form
+    And I click on checkbox to select all available options
+    And I check if there are entities assigned to new created case from contact
+
+  @issue=SORDEV-6140 @env_main
+  Scenario: Ask user to automatically convert all additional contacts and event participants to case
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    When I click on the Contacts button from navbar
+    Then I click on the NEW CONTACT button
+    And I fill a new contact form with specific person data
+    And I click on SAVE new contact button
+    Then I check the created data is correctly displayed on Edit Contact page
+    And I click Link Event button on Edit Contact Page
+    And I select 2 event in Link Event popup and create and Event Participant
+    And I click Save in Add Event Participant form on Edit Contact Page
+    And I click Link Event button on Edit Contact Page
+    And I select 3 event in Link Event popup and create and Event Participant
+    And I click Save in Add Event Participant form on Edit Contact Page
+    And I click Link Event button on Edit Contact Page
+    And I select 5 event in Link Event popup and create and Event Participant
+    And I click Save in Add Event Participant form on Edit Contact Page
+    When I navigate to the last created through API Event page via URL
+    And I click on the Event participant tab
+    And I add same person data as one used for Contact creation for event participant
+    And I navigate to the last created UI contact via the url
+    And I click on CONFIRMED CONTACT radio button Contact Person tab
+    Then I click SAVE button on Edit Contact Page
+    And I click Create Case from Contact button
+    And I create a new case for contact with specific data
+    And I click Yes, for all in conversion to case form
+    And I check if there are entities assigned to new created case from contact
+
+  @issue=SORDEV-6140 @env_main
+  Scenario: Ask user to automatically convert no additional contacts and event participants to case
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    When I click on the Contacts button from navbar
+    Then I click on the NEW CONTACT button
+    And I fill a new contact form with specific person data
+    And I click on SAVE new contact button
+    Then I check the created data is correctly displayed on Edit Contact page
+    And I click Link Event button on Edit Contact Page
+    And I select 2 event in Link Event popup and create and Event Participant
+    And I click Save in Add Event Participant form on Edit Contact Page
+    And I click Link Event button on Edit Contact Page
+    And I select 3 event in Link Event popup and create and Event Participant
+    And I click Save in Add Event Participant form on Edit Contact Page
+    And I click Link Event button on Edit Contact Page
+    And I select 5 event in Link Event popup and create and Event Participant
+    And I click Save in Add Event Participant form on Edit Contact Page
+    When I navigate to the last created through API Event page via URL
+    And I click on the Event participant tab
+    And I add same person data as one used for Contact creation for event participant
+    And I navigate to the last created UI contact via the url
+    And I click on CONFIRMED CONTACT radio button Contact Person tab
+    Then I click SAVE button on Edit Contact Page
+    And I click Create Case from Contact button
+    And I create a new case for contact with specific data
+    And I click No in conversion to case form
+    And I check if there are no entities assigned to new created case from contact
+
     @issue=SORDEV-10265 @env_main
     Scenario: Manual archiving for contacts
       When API: I create a new person
@@ -566,7 +660,7 @@ Feature: Contacts end to end tests
     Then I open the first contact from contacts list
     And I check if Vaccination Status is set to "Vaccinated" on Edit Contact page
 
-  @env_main @issue=SORDEV-7460
+  @issue=SORDEV-7460 @env_main
   Scenario: Test Extend the exposure and event startDate and endDate to include a startTime and endTime
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -586,7 +680,7 @@ Feature: Contacts end to end tests
     And I collect the Date of Start and End Exposure from Exposure page
     Then I check that Date field displays start date and end date in table Exposure on Epidemiological data tab
 
-  @env_main @issue=SORDEV-5613
+  @issue=SORDEV-5613 @env_main
   Scenario: Option to attach document like pdf, word, jpeg to contacts
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -641,3 +735,38 @@ Feature: Contacts end to end tests
     Then I filter by last created contact via api
     Then I open the first contact from contacts list
     And I check if Archive button changed name to Archive
+
+  @issue=SORDEV-9788 @env_de
+  Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Contact directory
+    Given I log in with National User
+    And I click on the Contacts button from navbar
+    When I click on the NEW CONTACT button
+    And I click on the person search button in create new contact form
+    Then I check that National Health ID is not visible in Person search popup
+    And I check that Passport Number is not visible in Person search popup
+    And I check that Nickname is not visible in Person search popup
+    
+  @issue=SORDEV-9946 @env_de
+  Scenario: Test Hide country specific fields in the 'Pick or create person' form of the duplicate detection pop-up, in German and French systems
+    Given I log in as a Admin User
+    Then I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form with same person data for DE version
+    And I click on SAVE new contact button
+    Then I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form with same person data for DE version
+    And I click on SAVE new contact case button
+    And I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
+
+  @issue=SORDEV-6434 @env_main
+  Scenario: Check if username shows up in visit origin
+    Given I log in with National User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click on SAVE new contact button
+    And I navigate to follow-up visits tab
+    When I click on new Visit button
+    And I create a new Visit with specific data
+    Then I check that username is displayed in the Visit Origin column

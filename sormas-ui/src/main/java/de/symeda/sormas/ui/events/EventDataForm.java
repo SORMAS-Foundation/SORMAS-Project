@@ -160,7 +160,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 	private final Boolean isCreateForm;
 	private final boolean isPseudonymized;
-	private List<UserReferenceDto> regionEventResponsibles;
+	private List<UserReferenceDto> regionEventResponsibles = new ArrayList<>();
+	private List<UserReferenceDto> districtEventResponsibles = new ArrayList<>();
 	private EpidemiologicalEvidenceCheckBoxTree epidemiologicalEvidenceCheckBoxTree;
 	private LaboratoryDiagnosticEvidenceCheckBoxTree laboratoryDiagnosticEvidenceCheckBoxTree;
 	private LocationEditForm locationForm;
@@ -570,22 +571,18 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			} else {
 				regionEventResponsibles.clear();
 			}
+			addRegionAndDistrict(responsibleUserField);
 		});
 
 		districtField.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) districtField.getValue();
 			if (district != null) {
-				List<UserReferenceDto> districtEventResponsibles =
+				districtEventResponsibles =
 					FacadeProvider.getUserFacade().getUserRefsByDistrict(district, getValue().getDisease(), UserRight.EVENT_RESPONSIBLE);
-
-				List<UserReferenceDto> responsibleUsers = new ArrayList<>();
-				responsibleUsers.addAll(districtEventResponsibles);
-				responsibleUsers.addAll(regionEventResponsibles);
-
-				FieldHelper.updateItems(responsibleUserField, responsibleUsers);
 			} else {
-				responsibleUserField.removeAllItems();
+				districtEventResponsibles.clear();
 			}
+			addRegionAndDistrict(responsibleUserField);
 		});
 
 		FieldHelper.addSoftRequiredStyle(
@@ -631,6 +628,14 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 				specificRiskField.setVisible(isVisibleAllowed(EventDto.SPECIFIC_RISK) && CollectionUtils.isNotEmpty(specificRiskValues));
 			}
 		});
+	}
+
+	private void addRegionAndDistrict(ComboBox responsibleUserField) {
+		List<UserReferenceDto> responsibleUsers = new ArrayList<>();
+		responsibleUsers.addAll(regionEventResponsibles);
+		responsibleUsers.addAll(districtEventResponsibles);
+
+		FieldHelper.updateItems(responsibleUserField, responsibleUsers);
 	}
 
 	private CheckBoxTree.CheckBoxElement<EpidemiologicalEvidenceDetail> epidemiologicalEvidenceDetailToCheckBoxElement(

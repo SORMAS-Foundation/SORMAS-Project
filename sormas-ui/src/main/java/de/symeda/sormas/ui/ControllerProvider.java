@@ -32,8 +32,8 @@ import de.symeda.sormas.ui.docgeneration.DocGenerationController;
 import de.symeda.sormas.ui.events.EventController;
 import de.symeda.sormas.ui.events.EventGroupController;
 import de.symeda.sormas.ui.events.EventParticipantsController;
+import de.symeda.sormas.ui.externalmessage.ExternalMessageController;
 import de.symeda.sormas.ui.immunization.ImmunizationController;
-import de.symeda.sormas.ui.labmessage.LabMessageController;
 import de.symeda.sormas.ui.person.PersonController;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportController;
 import de.symeda.sormas.ui.samples.AdditionalTestController;
@@ -75,7 +75,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final CampaignController campaignController;
 	private final SormasToSormasController sormasToSormasController;
 	private final CustomExportController customExportController;
-	private final LabMessageController labMessageController;
+	private final ExternalMessageController externalMessageController;
 	private final SurveillanceReportController surveillanceReportController;
 	private final DocGenerationController docGenerationController;
 	private final TravelEntryController travelEntryController;
@@ -110,7 +110,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		campaignController = new CampaignController();
 		sormasToSormasController = new SormasToSormasController();
 		customExportController = new CustomExportController();
-		labMessageController = new LabMessageController();
+		externalMessageController = new ExternalMessageController();
 		surveillanceReportController = new SurveillanceReportController();
 		docGenerationController = new DocGenerationController();
 		travelEntryController = new TravelEntryController();
@@ -216,8 +216,8 @@ public class ControllerProvider extends BaseControllerProvider {
 		return get().customExportController;
 	}
 
-	public static LabMessageController getLabMessageController() {
-		return get().labMessageController;
+	public static ExternalMessageController getExternalMessageController() {
+		return get().externalMessageController;
 	}
 
 	public static SurveillanceReportController getSurveillanceReportController() {

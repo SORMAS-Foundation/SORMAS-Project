@@ -26,6 +26,7 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_PERSON_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SELECT_MATCHING_PERSON_CHECKBOX;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_CREATED_POPUP;
@@ -44,6 +45,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.services.ContactService;
+import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
@@ -55,6 +57,7 @@ public class CreateNewContactSteps implements En {
   private final SoftAssert softly;
   public static Contact collectedContactUUID;
   protected static Contact duplicatedContact;
+  protected static Contact samePersonDataContact;
   private final Faker faker;
 
   @Inject
@@ -76,9 +79,13 @@ public class CreateNewContactSteps implements En {
             faker.number().numberBetween(1900, 2002),
             faker.number().numberBetween(1, 12),
             faker.number().numberBetween(1, 27));
+    String sex = GenderValues.getRandomGenderDE();
     duplicatedContact =
         contactService.buildGeneratedContactWithParametrizedPersonData(
             firstName, lastName, dateOfBirth);
+    samePersonDataContact =
+        contactService.buildGeneratedContactWithParametrizedPersonDataDE(
+            firstName, lastName, dateOfBirth, sex);
 
     When(
         "^I fill a new contact form for duplicated contact with same person data$",
@@ -136,7 +143,60 @@ public class CreateNewContactSteps implements En {
           fillRelationshipWithCase(contact.getRelationshipWithCase());
           fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
         });
+    When(
+        "^I fill a new contact form with same person data for DE version$",
+        () -> {
+          fillFirstName(samePersonDataContact.getFirstName());
+          fillLastName(samePersonDataContact.getLastName());
+          fillDateOfBirth(samePersonDataContact.getDateOfBirth(), Locale.GERMAN);
+          selectSex(samePersonDataContact.getSex());
+          fillPrimaryPhoneNumber(samePersonDataContact.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(samePersonDataContact.getPrimaryEmailAddress());
+          selectReturningTraveler(samePersonDataContact.getReturningTraveler());
+          fillDateOfReport(samePersonDataContact.getReportDate(), Locale.GERMAN);
+          selectMultiDayContact();
+          fillDateOfFirstContact(samePersonDataContact.getDateOfFirstContact(), Locale.GERMAN);
+          fillDateOfLastContact(samePersonDataContact.getDateOfLastContact(), Locale.GERMAN);
+          selectResponsibleRegion(samePersonDataContact.getResponsibleRegion());
+          selectResponsibleDistrict(samePersonDataContact.getResponsibleDistrict());
+          selectResponsibleCommunity(samePersonDataContact.getResponsibleCommunity());
+          selectTypeOfContact(samePersonDataContact.getTypeOfContact());
+          fillAdditionalInformationOnTheTypeOfContact(
+              samePersonDataContact.getAdditionalInformationOnContactType());
+          selectContactCategory(samePersonDataContact.getContactCategory().toUpperCase());
+          fillRelationshipWithCase(samePersonDataContact.getRelationshipWithCase());
+          fillDescriptionOfHowContactTookPlace(
+              samePersonDataContact.getDescriptionOfHowContactTookPlace());
+        });
 
+    When(
+        "^I fill a new contact form with specific person data$",
+        () -> {
+          contact =
+              contactService.buildGeneratedContactWithParametrizedPersonData(
+                  firstName, lastName, dateOfBirth);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          fillFirstName(contact.getFirstName());
+          fillLastName(contact.getLastName());
+          fillDateOfBirth(contact.getDateOfBirth(), Locale.ENGLISH);
+          selectSex(contact.getSex());
+          fillPrimaryPhoneNumber(contact.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(contact.getPrimaryEmailAddress());
+          selectReturningTraveler(contact.getReturningTraveler());
+          fillDateOfReport(contact.getReportDate(), Locale.ENGLISH);
+          fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
+          fillCaseIdInExternalSystem(contact.getCaseIdInExternalSystem());
+          selectMultiDayContact();
+          fillDateOfFirstContact(contact.getDateOfFirstContact(), Locale.ENGLISH);
+          fillDateOfLastContact(contact.getDateOfLastContact(), Locale.ENGLISH);
+          fillCaseOrEventInformation(contact.getCaseOrEventInformation());
+          selectResponsibleRegion(contact.getResponsibleRegion());
+          selectResponsibleDistrict(contact.getResponsibleDistrict());
+          selectResponsibleCommunity(contact.getResponsibleCommunity());
+          selectTypeOfContact(contact.getTypeOfContact());
+          fillRelationshipWithCase(contact.getRelationshipWithCase());
+          fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
+        });
     When(
         "^I fill a new contact form$",
         () -> {
@@ -269,7 +329,25 @@ public class CreateNewContactSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
         });
-
+    When(
+        "^I click on SAVE new contact button and choose same person in duplicate detection$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP_HEADER, 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(SELECT_MATCHING_PERSON_CHECKBOX);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+            TimeUnit.SECONDS.sleep(1);
+          }
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
+        });
+    When(
+        "^I click on SAVE new contact case button$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
     When(
         "^I click on SAVE new contact button in the CHOOSE SOURCE popup of Create Contact window$",
         () -> {

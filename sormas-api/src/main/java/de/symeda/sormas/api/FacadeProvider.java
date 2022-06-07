@@ -48,6 +48,9 @@ import de.symeda.sormas.api.event.EventGroupFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.eventimport.EventImportFacade;
 import de.symeda.sormas.api.externaljournal.ExternalJournalFacade;
+import de.symeda.sormas.api.externalmessage.ExternalMessageAdapterFacade;
+import de.symeda.sormas.api.externalmessage.ExternalMessageFacade;
+import de.symeda.sormas.api.externalmessage.labmessage.TestReportFacade;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.geo.GeoShapeProvider;
@@ -69,9 +72,6 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
-import de.symeda.sormas.api.labmessage.ExternalLabResultsFacade;
-import de.symeda.sormas.api.labmessage.LabMessageFacade;
-import de.symeda.sormas.api.labmessage.TestReportFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.report.AggregateReportFacade;
@@ -85,7 +85,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasFacade;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
-import de.symeda.sormas.api.sormastosormas.labmessage.SormasToSormasLabMessageFacade;
+import de.symeda.sormas.api.sormastosormas.externalmessage.SormasToSormasExternalMessageFacade;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoFacade;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestFacade;
 import de.symeda.sormas.api.symptoms.SymptomsFacade;
@@ -380,8 +380,8 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(SormasToSormasEventFacade.class);
 	}
 
-	public static SormasToSormasLabMessageFacade getSormasToSormasLabMessageFacade() {
-		return get().lookupEjbRemote(SormasToSormasLabMessageFacade.class);
+	public static SormasToSormasExternalMessageFacade getSormasToSormasLabMessageFacade() {
+		return get().lookupEjbRemote(SormasToSormasExternalMessageFacade.class);
 	}
 
 	public static SormasToSormasEncryptionFacade getSormasToSormasEncryptionFacade() {
@@ -425,17 +425,17 @@ public class FacadeProvider {
 		return get().lookupEjbRemote(SystemEventFacade.class);
 	}
 
-	public static LabMessageFacade getLabMessageFacade() {
-		return get().lookupEjbRemote(LabMessageFacade.class);
+	public static ExternalMessageFacade getExternalMessageFacade() {
+		return get().lookupEjbRemote(ExternalMessageFacade.class);
 	}
 
-	public static ExternalLabResultsFacade getExternalLabResultsFacade() throws NamingException {
+	public static ExternalMessageAdapterFacade getExternalLabResultsFacade() throws NamingException {
 
 		String jndiName = FacadeProvider.getConfigFacade().getDemisJndiName();
 		if (jndiName == null) {
 			throw new ConfigurationException("No LabResultAdapter JNDI name is configured in the sormas.properties");
 		} else {
-			return (ExternalLabResultsFacade) get().ic.lookup(jndiName);
+			return (ExternalMessageAdapterFacade) get().ic.lookup(jndiName);
 		}
 	}
 

@@ -22,8 +22,10 @@ import static org.sormas.e2etests.pages.application.actions.CreateNewActionPage.
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_POPUP_YES_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SELECT_MATCHING_PERSON_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.ARCHIVE_POPUP_WINDOW_HEADER;
+import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.START_DATA_TIME;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CASE_CONTROL_STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.COHORT_STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.COMPLIANT_PATHOGEN_FINE_TYPING_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
@@ -43,6 +45,11 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.EPIDEMI
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_ACTIONS_TAB;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_CLUSTER_EDIT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_DATA_SAVED_MESSAGE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_DATE_OF_REPORT_EXCLAMATION_MARK;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_DATE_OF_REPORT_EXCLAMATION_MARK_MESSAGE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_ERROR_POPUP_FIRST_MESSAGE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_ERROR_POPUP_MESSAGE_WITH_INPUT_DATA_TITLE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_ERROR_POPUP_SECOND_MESSAGE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_HANDOUT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_INVESTIGATION_STATUS_OPTIONS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_MANAGEMENT_STATUS_OPTIONS;
@@ -152,6 +159,7 @@ import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
@@ -172,6 +180,8 @@ import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.events.EditEventPage;
 import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps;
+import org.sormas.e2etests.steps.web.application.contacts.EditContactSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
@@ -203,6 +213,11 @@ public class EditEventSteps implements En {
       RunningConfiguration runningConfiguration,
       ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
+    Random r = new Random();
+    char c = (char) (r.nextInt(26) + 'a');
+    String firstName = faker.name().firstName() + c;
+    String lastName = faker.name().lastName() + c;
+    String sex = GenderValues.getRandomGenderDE();
 
     When(
         "^I change the event status to ([^\"]*)",
@@ -425,6 +440,87 @@ public class EditEventSteps implements En {
         });
 
     When(
+        "I check the only mandatory created data is correctly displayed in event edit page",
+        () -> {
+          collectedEvent = collectEventMandatoryData();
+          createdEvent = CreateNewEventSteps.newEvent;
+
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              collectedEvent, createdEvent, List.of("uuid", "reportDate", "title"));
+        });
+
+    When(
+        "I change the report event date for minus {int} day from today",
+        (Integer day) -> {
+          webDriverHelpers.scrollToElement(REPORT_DATE_INPUT);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              REPORT_DATE_INPUT, DATE_FORMATTER.format(LocalDate.now().minusDays(day)));
+          webDriverHelpers.selectFromCombobox(START_DATA_TIME, "01:15");
+          TimeUnit.SECONDS.sleep(1); // wait for reaction
+        });
+
+    When(
+        "I check if date of report has an error exclamation mark with correct error message",
+        () -> {
+          String expectedText = "Date of report has to be after or on the same day as Start date";
+          webDriverHelpers.hoverToElement(EVENT_DATE_OF_REPORT_EXCLAMATION_MARK);
+          TimeUnit.SECONDS.sleep(1);
+          String displayedText =
+              webDriverHelpers.getTextFromWebElement(EVENT_DATE_OF_REPORT_EXCLAMATION_MARK_MESSAGE);
+          softly.assertEquals(expectedText, displayedText, "Error messages are not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "^I check if error popup is displayed with message ([^\"]*)$",
+        (String message) -> {
+          String displayedStr =
+              webDriverHelpers.getTextFromWebElement(
+                  EVENT_ERROR_POPUP_MESSAGE_WITH_INPUT_DATA_TITLE);
+          softly.assertEquals(message, displayedStr, "Error messages are not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "^I check if error popup contains Date of report has to be after or on the same day as Start date$",
+        () -> {
+          String expectedStr = "Date of report has to be after or on the same day as Start date";
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EVENT_ERROR_POPUP_FIRST_MESSAGE);
+          String displayedStr =
+              webDriverHelpers.getTextFromWebElement(EVENT_ERROR_POPUP_FIRST_MESSAGE);
+          softly.assertEquals(expectedStr, displayedStr, "Error messages are not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "^I check if error popup contains Start date has to be before or on the same day as Date of report$",
+        () -> {
+          String expectedStr = "Start date has to be before or on the same day as Date of report";
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EVENT_ERROR_POPUP_SECOND_MESSAGE);
+          String displayedStr =
+              webDriverHelpers.getTextFromWebElement(EVENT_ERROR_POPUP_SECOND_MESSAGE);
+          softly.assertEquals(expectedStr, displayedStr, "Error messages are not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if date of report is set for {int} day ago from today",
+        (Integer day) -> {
+          String reportingDate = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
+          LocalDate reportDate = LocalDate.parse(reportingDate, DATE_FORMATTER);
+          softly.assertEquals(reportDate, LocalDate.now().minusDays(day));
+          softly.assertAll();
+        });
+
+    When(
+        "I set the date of event for today",
+        () -> {
+          webDriverHelpers.scrollToElement(START_DATA_INPUT);
+          webDriverHelpers.fillInWebElement(
+              START_DATA_INPUT, DATE_FORMATTER.format(LocalDate.now()));
+        });
+
+    When(
         "I change the fields of event and save",
         () -> {
           collectedEvent = eventService.buildEditEvent();
@@ -466,6 +562,50 @@ public class EditEventSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_RADIO_BUTTON);
             webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
           }
+        });
+
+    When(
+        "I add same person data as one used for Contact creation for event participant",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
+          webDriverHelpers.fillInWebElement(
+              PARTICIPANT_FIRST_NAME_INPUT, EditContactSteps.collectedContact.getFirstName());
+          webDriverHelpers.fillInWebElement(
+              PARTICIPANT_LAST_NAME_INPUT, EditContactSteps.collectedContact.getLastName());
+          webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, CreateNewContactSteps.contact.getSex());
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP, 15)) {
+            webDriverHelpers.clickOnWebElementBySelector(SELECT_MATCHING_PERSON_CHECKBOX);
+            webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
+          }
+        });
+    When(
+        "I click on ADD PARTICIPANT button",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ADD_PARTICIPANT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
+        });
+    When(
+        "I click on Add Participant button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
+        });
+    When(
+        "I add Participant to an Event with same person data",
+        () -> {
+          webDriverHelpers.fillInWebElement(PARTICIPANT_FIRST_NAME_INPUT, firstName);
+          webDriverHelpers.fillInWebElement(PARTICIPANT_LAST_NAME_INPUT, lastName);
+          webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);
+          webDriverHelpers.selectFromCombobox(
+              PARTICIPANT_REGION_COMBOBOX, RegionsValues.VoreingestellteBundeslander.getName());
+          webDriverHelpers.selectFromCombobox(
+              PARTICIPANT_DISTRICT_COMBOBOX, DistrictsValues.VoreingestellterLandkreis.getName());
+        });
+
+    When(
+        "I click on save button in Add Participant form",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
     When(
         "I add a participant to the event",
@@ -790,7 +930,10 @@ public class EditEventSteps implements En {
 
     When(
         "I click on the Create button from Event Document Templates",
-        () -> webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CREATE_DOCUMENT_BUTTON));
+        () -> {
+          webDriverHelpers.scrollToElement(EditEventPage.CREATE_DOCUMENT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CREATE_DOCUMENT_BUTTON);
+        });
 
     When(
         "I create and download an event document from template",
@@ -871,6 +1014,8 @@ public class EditEventSteps implements En {
         () -> {
           webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          TimeUnit.SECONDS.sleep(1); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_DATA_SAVED_MESSAGE);
         });
 
@@ -1076,6 +1221,17 @@ public class EditEventSteps implements En {
         .title(webDriverHelpers.getValueFromWebElement(TITLE_INPUT))
         .sourceType(webDriverHelpers.getValueFromWebElement(SOURCE_TYPE_INPUT))
         .eventLocation(webDriverHelpers.getValueFromWebElement(TYPE_OF_PLACE_INPUT))
+        .build();
+  }
+
+  private Event collectEventMandatoryData() {
+    String reportingDate = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
+    LocalDate reportDate = LocalDate.parse(reportingDate, DATE_FORMATTER);
+
+    return Event.builder()
+        .reportDate(reportDate)
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .title(webDriverHelpers.getValueFromWebElement(TITLE_INPUT))
         .build();
   }
 
