@@ -26,7 +26,7 @@ public class CreateNewEventPage {
   public static final By DISCARD_BUTTON = By.id("discard");
   public static final By EVENT_STATUS_OPTIONS =
       By.cssSelector(".popupContent #eventStatus .v-select-option label");
-  public static final By EVENT_IDENTIFICATION_SOURCE =
+  public static final By EVENT_IDENTIFICATION_SOURCE_COMBOBOX =
       By.xpath(".//div[@id='eventIdentificationSource']//label");
   public static final By RISK_LEVEL_COMBOBOX = By.cssSelector(".popupContent #riskLevel div");
   public static final By EVENT_MANAGEMENT_STATUS_OPTIONS =

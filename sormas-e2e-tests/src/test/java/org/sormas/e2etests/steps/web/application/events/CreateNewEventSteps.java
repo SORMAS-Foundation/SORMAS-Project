@@ -22,7 +22,6 @@ import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.*;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
-import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_TAB;
 
 import com.github.javafaker.Faker;
 import com.opencsv.CSVParser;
@@ -48,7 +47,6 @@ import org.sormas.e2etests.entities.services.EventService;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 @Slf4j
@@ -274,7 +272,7 @@ public class CreateNewEventSteps implements En {
         });
 
     When(
-        "^I create a new event with event identification source ([^\"]*)",
+        "I create a new event with event identification source {string}",
         (String eventIdentificationSource) -> {
           newEvent = collectEventUuid();
           String timestamp = String.valueOf(System.currentTimeMillis());
@@ -284,10 +282,6 @@ public class CreateNewEventSteps implements En {
           selectResponsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CREATED_MESSAGE);
-          webDriverHelpers.clickOnWebElementBySelector(EVENT_TAB);
-          Assert.assertTrue(
-              webDriverHelpers.checkCheckboxIsCheckedByHTMLFromParent(
-                  EVENT_IDENTIFICATION_SOURCE, eventIdentificationSource, "checked"));
         });
   }
 
@@ -301,7 +295,8 @@ public class CreateNewEventSteps implements En {
   }
 
   private void selectEventIdentificationSource(String eventIdentificationSource) {
-    webDriverHelpers.clickWebElementByText(EVENT_IDENTIFICATION_SOURCE, eventIdentificationSource);
+    webDriverHelpers.clickWebElementByText(
+        EVENT_IDENTIFICATION_SOURCE_COMBOBOX, eventIdentificationSource);
   }
 
   private void selectRiskLevel(String riskLevel) {

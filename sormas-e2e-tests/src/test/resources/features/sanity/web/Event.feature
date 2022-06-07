@@ -846,14 +846,16 @@ Feature: Create events
     And I check if error popup contains Start date has to be before or on the same day as Date of report
 
   @issue=SORDEV-7094 @env_main
-  Scenario: Test Event identification source fields
+  Scenario Outline: Test Event identification source fields
     Given I log in with National User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
-    And I create a new event with event identification source UNKNOWN
-    And I click on the Events button from navbar
-    And I click on the NEW EVENT button
-    And I create a new event with event identification source BACKWARD-TRACING
-    And I click on the Events button from navbar
-    And I click on the NEW EVENT button
-    And I create a new event with event identification source FORWARD-TRACING
+    And I create a new event with event identification source "<name>"
+    And I back to the Event tab
+    Then I check that checkbox Event Identification source with selected "<name>" have HTML value: "checked"
+
+    Examples:
+      | name             |
+      | UNKNOWN          |
+      | BACKWARD-TRACING |
+      | FORWARD-TRACING  |

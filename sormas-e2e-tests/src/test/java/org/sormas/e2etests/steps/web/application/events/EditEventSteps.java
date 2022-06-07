@@ -25,6 +25,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_PO
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SELECT_MATCHING_PERSON_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.ARCHIVE_POPUP_WINDOW_HEADER;
+import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.EVENT_IDENTIFICATION_SOURCE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.START_DATA_TIME;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CASE_CONTROL_STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.COHORT_STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
@@ -1187,6 +1188,14 @@ public class EditEventSteps implements En {
           final String personUuid = eventParticipantList.get(1).getUuid();
           webDriverHelpers.clickOnWebElementBySelector(EditEventPage.EVENT_PARTICIPANTS_TAB);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
+        });
+
+    Then(
+        "I check that checkbox Event Identification source with selected {string} have HTML value: {string}",
+        (final String text, final String expected) -> {
+          Assert.assertTrue(
+              webDriverHelpers.checkCheckboxIsCheckedByHTMLFromParent(
+                  EVENT_IDENTIFICATION_SOURCE_COMBOBOX, text, expected));
         });
   }
 
