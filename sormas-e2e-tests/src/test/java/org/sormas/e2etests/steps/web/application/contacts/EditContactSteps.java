@@ -172,51 +172,90 @@ public class EditContactSteps implements En {
           XWPFDocument xdoc = new XWPFDocument(OPCPackage.open(fis));
           List<XWPFParagraph> paragraphList = xdoc.getParagraphs();
           String[] line = paragraphList.get(26).getText().split(":");
-          softly.assertEquals(line[0], "Report Date");
+          softly.assertEquals(
+              line[0], "Report Date", "Report date label is different than expected");
           line = paragraphList.get(28).getText().split(":");
-          softly.assertEquals(line[0], "Vaccination Date");
+          softly.assertEquals(
+              line[0], "Vaccination Date", "Vaccination date label is different than expected");
           softly.assertEquals(
               line[1].trim(),
               CreateNewVaccinationSteps.vaccination
                   .getVaccinationDate()
-                  .format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+                  .format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+              "Vaccination date value is different than expected");
           line = paragraphList.get(29).getText().split(":");
-          softly.assertEquals(line[0], "Vaccine name");
           softly.assertEquals(
-              line[1].trim(), CreateNewVaccinationSteps.vaccination.getVaccineName());
+              line[0], "Vaccine name", "Vaccination name label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getVaccineName(),
+              "Vaccination name value is different than expected");
           line = paragraphList.get(30).getText().split(":");
-          softly.assertEquals(line[0], "Vaccine name Details");
+          softly.assertEquals(
+              line[0],
+              "Vaccine name Details",
+              "Vaccination name Details label is different than expected");
           line = paragraphList.get(31).getText().split(":");
-          softly.assertEquals(line[0], "Vaccine Manufacturer");
           softly.assertEquals(
-              line[1].trim(), CreateNewVaccinationSteps.vaccination.getVaccineManufacturer());
+              line[0],
+              "Vaccine Manufacturer",
+              "Vaccination Manufacturer label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getVaccineManufacturer(),
+              "Vaccination Manufacturer label is different than expected");
           line = paragraphList.get(32).getText().split(":");
-          softly.assertEquals(line[0], "Vaccine Manufacturer details");
+          softly.assertEquals(
+              line[0],
+              "Vaccine Manufacturer details",
+              "Vaccination Manufacturer details label is different than expected");
           line = paragraphList.get(33).getText().split(":");
-          softly.assertEquals(line[0], "Vaccine Type");
           softly.assertEquals(
-              line[1].trim(), CreateNewVaccinationSteps.vaccination.getVaccineType());
+              line[0], "Vaccine Type", "Vaccination Type label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getVaccineType(),
+              "Vaccination Type value is different than expected");
           line = paragraphList.get(34).getText().split(":");
-          softly.assertEquals(line[0], "Vaccine Dose");
           softly.assertEquals(
-              line[1].trim(), CreateNewVaccinationSteps.vaccination.getVaccineDose());
+              line[0], "Vaccine Dose", "Vaccination Dose label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getVaccineDose(),
+              "Vaccination Dose value is different than expected");
           line = paragraphList.get(35).getText().split(":");
-          softly.assertEquals(line[0], "INN");
-          softly.assertEquals(line[1].trim(), CreateNewVaccinationSteps.vaccination.getInn());
+          softly.assertEquals(line[0], "INN", "INN label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getInn(),
+              "INN value is different than expected");
           line = paragraphList.get(36).getText().split(":");
-          softly.assertEquals(line[0], "Batch");
+          softly.assertEquals(line[0], "Batch", "Batch label is different than expected");
           softly.assertEquals(
-              line[1].trim(), CreateNewVaccinationSteps.vaccination.getBatchNumber());
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getBatchNumber(),
+              "Batch value is different than expected");
           line = paragraphList.get(37).getText().split(":");
-          softly.assertEquals(line[0], "UNII Code");
-          softly.assertEquals(line[1].trim(), CreateNewVaccinationSteps.vaccination.getUniiCode());
-          line = paragraphList.get(38).getText().split(":");
-          softly.assertEquals(line[0], "ATC Code");
-          softly.assertEquals(line[1].trim(), CreateNewVaccinationSteps.vaccination.getAtcCode());
-          line = paragraphList.get(39).getText().split(":");
-          softly.assertEquals(line[0], "Vaccination Info Source");
+          softly.assertEquals(line[0], "UNII Code", "UNII Code label is different than expected");
           softly.assertEquals(
-              line[1].trim(), CreateNewVaccinationSteps.vaccination.getVaccinationInfoSource());
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getUniiCode(),
+              "UNII Code value is different than expected");
+          line = paragraphList.get(38).getText().split(":");
+          softly.assertEquals(line[0], "ATC Code", "ATC Code label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getAtcCode(),
+              "ATC Code value is different than expected");
+          line = paragraphList.get(39).getText().split(":");
+          softly.assertEquals(
+              line[0],
+              "Vaccination Info Source",
+              "Vaccination Info Source label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getVaccinationInfoSource(),
+              "Vaccination Info Source value is different than expected");
           softly.assertAll();
         });
     When(
