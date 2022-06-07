@@ -1440,11 +1440,11 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 			return null;
 		}).when(handleEditSample).handle(any(), any(), any());
 
-		LabMessageDto labMessage = createLabMessage(Disease.CORONAVIRUS, "test-report-id", LabMessageStatus.UNPROCESSED, l -> {
-			l.setLabSampleId(similarSample.getLabSampleID());
+		ExternalMessageDto externalMessage = createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED, m -> {
+			m.setLabSampleId(similarSample.getLabSampleID());
 		});
 
-		ProcessingResult<SampleAndPathogenTests> result = runFlow(labMessage);
+		ProcessingResult<SampleAndPathogenTests> result = runFlow(externalMessage);
 
 		assertThat(result.getStatus(), is(DONE));
 
