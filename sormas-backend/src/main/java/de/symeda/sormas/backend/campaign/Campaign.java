@@ -123,11 +123,6 @@ public class Campaign extends CoreAdo {
 	}
 
 	@Override
-	public String toString() {
-		return TABLE_NAME + StringUtils.SPACE + getUuid();
-	}
-
-	@Override
 	@Transient
 	public String caption() {
 		return name;

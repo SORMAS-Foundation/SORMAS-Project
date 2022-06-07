@@ -178,9 +178,4 @@ public class Prescription extends AbstractDomainObject {
 	public void setAdditionalNotes(String additionalNotes) {
 		this.additionalNotes = additionalNotes;
 	}
-
-	@Override
-	public String toString() {
-		return PrescriptionDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

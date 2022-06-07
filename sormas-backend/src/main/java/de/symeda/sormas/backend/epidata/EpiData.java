@@ -141,9 +141,4 @@ public class EpiData extends AbstractDomainObject {
 	public void setContactWithSourceCaseKnown(YesNoUnknown contactWithSourceCaseKnown) {
 		this.contactWithSourceCaseKnown = contactWithSourceCaseKnown;
 	}
-
-	@Override
-	public String toString() {
-		return EpiDataDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

@@ -103,9 +103,4 @@ public class ClinicalVisit extends AbstractDomainObject {
 	public void setVisitingPerson(String visitingPerson) {
 		this.visitingPerson = visitingPerson;
 	}
-
-	@Override
-	public String toString() {
-		return ClinicalVisitDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

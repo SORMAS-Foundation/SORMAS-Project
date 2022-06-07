@@ -31,9 +31,4 @@ public class Therapy extends AbstractDomainObject {
 	public void setCaze(Case caze) {
 		this.caze = caze;
 	}
-
-	@Override
-	public String toString() {
-		return TherapyDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

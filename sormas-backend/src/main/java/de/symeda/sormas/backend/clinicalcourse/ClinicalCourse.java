@@ -31,9 +31,4 @@ public class ClinicalCourse extends AbstractDomainObject {
 	public void setCaze(Case caze) {
 		this.caze = caze;
 	}
-
-	@Override
-	public String toString() {
-		return ClinicalCourseDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

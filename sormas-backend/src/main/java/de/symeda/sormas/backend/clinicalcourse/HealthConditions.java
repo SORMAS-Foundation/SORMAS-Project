@@ -252,9 +252,4 @@ public class HealthConditions extends AbstractDomainObject {
 	public void setImmunodeficiencyIncludingHiv(YesNoUnknown immunodeficiencyIncludingHiv) {
 		this.immunodeficiencyIncludingHiv = immunodeficiencyIncludingHiv;
 	}
-
-	@Override
-	public String toString() {
-		return HealthConditionsDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

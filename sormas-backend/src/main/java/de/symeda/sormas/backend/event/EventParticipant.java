@@ -192,11 +192,6 @@ public class EventParticipant extends CoreAdo implements SormasToSormasShareable
 	}
 
 	@Override
-	public String toString() {
-		return EventParticipantDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
-
-	@Override
 	@Transient
 	public String caption() {
 		return getPerson().caption();

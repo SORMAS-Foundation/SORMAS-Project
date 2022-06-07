@@ -484,9 +484,4 @@ public class TravelEntry extends CoreAdo {
 	public void setDateOfArrival(Date dateOfArrival) {
 		this.dateOfArrival = dateOfArrival;
 	}
-
-	@Override
-	public String toString() {
-		return TravelEntryDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

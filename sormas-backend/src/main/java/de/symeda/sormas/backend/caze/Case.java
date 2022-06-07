@@ -1748,11 +1748,6 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	}
 
 	@Override
-	public String toString() {
-		return CaseDataDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
-
-	@Override
 	@Transient
 	public String caption() {
 		return CaseReferenceDto.buildCaption(getUuid(), person.getFirstName(), person.getLastName());

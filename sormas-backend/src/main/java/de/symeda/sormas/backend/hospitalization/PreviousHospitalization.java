@@ -237,9 +237,4 @@ public class PreviousHospitalization extends AbstractDomainObject {
 	public void setIntensiveCareUnitEnd(Date intensiveCareUnitEnd) {
 		this.intensiveCareUnitEnd = intensiveCareUnitEnd;
 	}
-
-	@Override
-	public String toString() {
-		return PreviousHospitalizationDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

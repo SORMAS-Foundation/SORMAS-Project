@@ -397,9 +397,4 @@ public class ExternalMessage extends AbstractDomainObject {
 	public void setSample(Sample sample) {
 		this.sample = sample;
 	}
-
-	@Override
-	public String toString() {
-		return ExternalMessageDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

@@ -253,11 +253,6 @@ public class Facility extends InfrastructureAdo {
 	}
 
 	@Override
-	public String toString() {
-		return FacilityDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
-
-	@Override
 	@Transient
 	public String caption() {
 		return FacilityHelper.buildFacilityString(getUuid(), name);

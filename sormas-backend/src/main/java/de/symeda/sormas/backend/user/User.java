@@ -363,11 +363,6 @@ public class User extends AbstractDomainObject {
 	}
 
 	@Override
-	public String toString() {
-		return UserDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
-
-	@Override
 	@Transient
 	public String caption() {
 		return UserReferenceDto.buildCaption(getFirstName(), getLastName());

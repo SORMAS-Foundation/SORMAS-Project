@@ -1844,9 +1844,4 @@ public class Symptoms extends AbstractDomainObject {
 	public void setOtherComplicationsText(String otherComplicationsText) {
 		this.otherComplicationsText = otherComplicationsText;
 	}
-
-	@Override
-	public String toString() {
-		return SymptomsDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

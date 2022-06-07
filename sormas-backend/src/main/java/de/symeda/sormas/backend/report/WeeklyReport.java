@@ -179,8 +179,4 @@ public class WeeklyReport extends AbstractDomainObject {
 
 		this.assignedOfficer = assignedOfficer;
 	}
-	@Override
-	public String toString() {
-		return WeeklyReportDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

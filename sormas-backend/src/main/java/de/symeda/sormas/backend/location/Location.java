@@ -367,9 +367,4 @@ public class Location extends AbstractDomainObject {
 			houseNumber,
 			additionalInformation);
 	}
-
-	@Override
-	public String toString() {
-		return LocationDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

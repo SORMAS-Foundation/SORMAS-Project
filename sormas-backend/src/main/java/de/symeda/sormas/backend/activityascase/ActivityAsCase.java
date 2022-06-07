@@ -273,9 +273,4 @@ public class ActivityAsCase extends AbstractDomainObject {
 	public void setHabitationDetails(String habitationDetails) {
 		this.habitationDetails = habitationDetails;
 	}
-
-	@Override
-	public String toString() {
-		return ActivityAsCaseDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

@@ -208,9 +208,4 @@ public class Visit extends AbstractDomainObject {
 	public void setOrigin(VisitOrigin origin) {
 		this.origin = origin;
 	}
-
-	@Override
-	public String toString() {
-		return VisitDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

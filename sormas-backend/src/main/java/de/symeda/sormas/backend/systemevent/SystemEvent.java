@@ -103,9 +103,4 @@ public class SystemEvent extends AbstractDomainObject {
 	public int hashCode() {
 		return Objects.hash(super.hashCode(), type, startDate, endDate, status, additionalInfo);
 	}
-
-	@Override
-	public String toString() {
-		return TABLE_NAME + StringUtils.SPACE + getUuid();
-	}
 }

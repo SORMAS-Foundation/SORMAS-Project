@@ -72,11 +72,6 @@ public class Country extends InfrastructureAdo {
 	}
 
 	@Override
-	public String toString() {
-		return CountryDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
-
-	@Override
 	@Transient
 	public String caption() {
 		return getDefaultName();

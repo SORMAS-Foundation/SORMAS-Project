@@ -607,11 +607,6 @@ public class Sample extends DeletableAdo implements SormasToSormasShareable {
 	}
 
 	@Override
-	public String toString() {
-		return SampleDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
-
-	@Override
 	@Transient
 	public String caption() {
 		return SampleReferenceDto.buildCaption(

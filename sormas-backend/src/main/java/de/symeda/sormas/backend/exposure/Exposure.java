@@ -624,9 +624,4 @@ public class Exposure extends AbstractDomainObject {
 	public void setLargeAttendanceNumber(YesNoUnknown largeAttendanceNumber) {
 		this.largeAttendanceNumber = largeAttendanceNumber;
 	}
-
-	@Override
-	public String toString() {
-		return ExposureDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

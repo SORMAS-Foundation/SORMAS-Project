@@ -328,9 +328,4 @@ public class PathogenTest extends DeletableAdo {
 	public PathogenTestReferenceDto toReference() {
 		return new PathogenTestReferenceDto(getUuid());
 	}
-
-	@Override
-	public String toString() {
-		return PathogenTestDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

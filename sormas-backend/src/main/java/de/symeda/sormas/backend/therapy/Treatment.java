@@ -156,9 +156,4 @@ public class Treatment extends AbstractDomainObject {
 	public void setPrescription(Prescription prescription) {
 		this.prescription = prescription;
 	}
-
-	@Override
-	public String toString() {
-		return TreatmentDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

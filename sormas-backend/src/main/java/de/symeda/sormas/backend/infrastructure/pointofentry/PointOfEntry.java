@@ -113,11 +113,6 @@ public class PointOfEntry extends InfrastructureAdo {
 	}
 
 	@Override
-	public String toString() {
-		return PointOfEntryDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
-
-	@Override
 	@Transient
 	public String caption() {
 		return InfrastructureHelper.buildPointOfEntryString(getUuid(), name);

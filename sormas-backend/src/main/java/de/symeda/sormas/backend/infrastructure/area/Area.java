@@ -43,11 +43,6 @@ public class Area extends InfrastructureAdo {
 	}
 
 	@Override
-	public String toString() {
-		return AreaDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
-
-	@Override
 	@Transient
 	public String caption() {
 		return getName();

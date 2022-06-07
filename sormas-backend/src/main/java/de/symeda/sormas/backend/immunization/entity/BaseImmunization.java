@@ -398,9 +398,4 @@ public class BaseImmunization extends CoreAdo implements SormasToSormasShareable
 	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
 		this.sormasToSormasShares = sormasToSormasShares;
 	}
-
-	@Override
-	public String toString() {
-		return ImmunizationDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

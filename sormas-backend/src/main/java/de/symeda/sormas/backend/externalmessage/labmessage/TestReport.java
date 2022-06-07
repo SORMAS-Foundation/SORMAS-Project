@@ -214,9 +214,4 @@ public class TestReport extends AbstractDomainObject {
 	public void setTestPcrTestSpecification(PCRTestSpecification testPcrTestSpecification) {
 		this.testPcrTestSpecification = testPcrTestSpecification;
 	}
-
-	@Override
-	public String toString() {
-		return TestReportDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

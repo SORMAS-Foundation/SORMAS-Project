@@ -116,9 +116,4 @@ public class Outbreak extends AbstractDomainObject {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
-	@Override
-	public String toString() {
-		return OutbreakDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
-
 }

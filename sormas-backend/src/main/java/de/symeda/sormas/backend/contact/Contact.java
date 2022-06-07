@@ -1086,11 +1086,6 @@ public class Contact extends CoreAdo implements SormasToSormasShareable, HasExte
 	}
 
 	@Override
-	public String toString() {
-		return ContactDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
-
-	@Override
 	@Transient
 	public String caption() {
 		Person contactPerson = getPerson();

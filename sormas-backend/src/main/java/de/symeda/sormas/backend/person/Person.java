@@ -817,9 +817,4 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 	public String caption() {
 		return PersonDto.buildCaption(firstName, lastName);
 	}
-
-	@Override
-	public String toString() {
-		return PersonDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

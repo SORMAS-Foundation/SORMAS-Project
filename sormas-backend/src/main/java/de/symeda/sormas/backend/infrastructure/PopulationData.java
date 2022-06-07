@@ -103,9 +103,4 @@ public class PopulationData extends AbstractDomainObject {
 	public void setCollectionDate(Date collectionDate) {
 		this.collectionDate = collectionDate;
 	}
-
-	@Override
-	public String toString() {
-		return PopulationDataDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

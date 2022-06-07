@@ -298,9 +298,4 @@ public class Task extends AbstractDomainObject {
 	public void setTravelEntry(TravelEntry travelEntry) {
 		this.travelEntry = travelEntry;
 	}
-
-	@Override
-	public String toString() {
-		return TaskDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

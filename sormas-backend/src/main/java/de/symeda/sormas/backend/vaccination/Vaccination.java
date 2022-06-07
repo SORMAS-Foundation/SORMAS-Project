@@ -256,9 +256,4 @@ public class Vaccination extends AbstractDomainObject {
 	public void setTrimester(Trimester trimester) {
 		this.trimester = trimester;
 	}
-
-	@Override
-	public String toString() {
-		return VaccinationDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

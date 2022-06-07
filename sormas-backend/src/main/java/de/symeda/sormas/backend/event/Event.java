@@ -689,11 +689,6 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	}
 
 	@Override
-	public String toString() {
-		return EventDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
-
-	@Override
 	@Transient
 	public String caption() {
 		return EventReferenceDto.buildCaption(getDisease(), getDiseaseDetails(), getEventStatus(), getEventInvestigationStatus(), getStartDate());

@@ -150,9 +150,4 @@ public class AggregateReport extends AbstractDomainObject {
 	public void setDeaths(Integer deaths) {
 		this.deaths = deaths;
 	}
-
-	@Override
-	public String toString() {
-		return AggregateReportDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }

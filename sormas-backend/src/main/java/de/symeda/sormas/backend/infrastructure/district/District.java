@@ -126,11 +126,6 @@ public class District extends InfrastructureAdo {
 	}
 
 	@Override
-	public String toString() {
-		return DistrictDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
-
-	@Override
 	@Transient
 	public String caption() {
 		return getName();

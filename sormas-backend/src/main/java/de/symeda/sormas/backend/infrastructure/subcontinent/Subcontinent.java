@@ -69,11 +69,6 @@ public class Subcontinent extends InfrastructureAdo {
 	}
 
 	@Override
-	public String toString() {
-		return SubcontinentDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
-
-	@Override
 	@Transient
 	public String caption() {
 		return getDefaultName();

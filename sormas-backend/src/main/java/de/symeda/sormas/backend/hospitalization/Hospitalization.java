@@ -215,9 +215,4 @@ public class Hospitalization extends AbstractDomainObject {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
-	@Override
-	public String toString() {
-		return HospitalizationDto.I18N_PREFIX + StringUtils.SPACE + getUuid();
-	}
 }
