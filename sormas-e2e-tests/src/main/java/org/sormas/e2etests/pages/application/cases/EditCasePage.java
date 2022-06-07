@@ -251,6 +251,7 @@ public class EditCasePage {
   public static final By SAMPLES_CARD_TEST_TYPE =
       By.xpath("(//div[@location='samples']//div[@class='v-label v-widget v-label-undef-w'])[5]");
   public static final By POINT_OF_ENTRY_TEXT = By.cssSelector("#pointOfEntry input");
+  public static final By POINT_OF_ENTRY_DETAILS = By.cssSelector("#pointOfEntryDetails");
   public static final By REFER_CASE_FROM_POINT_OF_ENTRY =
       By.cssSelector("#caseReferFromPointOfEntry");
   public static final By REFER_CASE_FROM_POINT_OF_ENTRY_POPUP =
@@ -262,4 +263,5 @@ public class EditCasePage {
       By.cssSelector(".popupContent #district div[role='button'");
   public static final By REFER_CASE_FROM_POINT_OF_ENTRY_SAVE_BUTTON =
       By.cssSelector(".popupContent #commit");
+  public static final By CASE_ORIGIN = By.cssSelector("#caseOrigin input");
 }
