@@ -18,6 +18,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.entities.pojo.csv.CustomEventParticipantExportCSV;
@@ -46,15 +47,15 @@ public class EventExportSteps implements En {
         () -> {
           CustomEventParticipantExportCSV reader =
               parseCustomEventParticipantExport(
-                  "./downloads/sormas_ereignisteilnehmer_" + LocalDate.now() + "_.csv");
+                  "./downloads/sormas_event_participants_" + LocalDate.now() + "_.csv");
           softly.assertEquals(
               reader.getRegion(),
               RegionsValues.VoreingestellteBundeslander.getName(),
-              "First names are not equal");
+              "Regions are not equal");
           softly.assertEquals(
-              reader.getDistrict(),
-              DistrictsValues.VoreingestellterLandkreis.getName(),
-              "Last names are not equal");
+              reader.getDistrict().toLowerCase(Locale.GERMANY),
+              DistrictsValues.VoreingestellterLandkreis.getName().toLowerCase(Locale.GERMANY),
+              "Districts are not equal");
           softly.assertAll();
         });
     When(
@@ -75,7 +76,7 @@ public class EventExportSteps implements En {
     List<String[]> r = null;
     String[] values = new String[] {};
     CustomEventParticipantExportCSV builder = null;
-    CSVParser csvParser = new CSVParserBuilder().withSeparator(';').build();
+    CSVParser csvParser = new CSVParserBuilder().withSeparator(',').build();
     try (CSVReader reader =
         new CSVReaderBuilder(new FileReader(fileName))
             .withCSVParser(csvParser)

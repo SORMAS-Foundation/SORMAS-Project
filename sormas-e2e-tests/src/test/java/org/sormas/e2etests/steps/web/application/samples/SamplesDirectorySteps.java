@@ -121,6 +121,17 @@ public class SamplesDirectorySteps implements En {
         });
 
     When(
+        "I select Test result filter value with the value for pathogen test result of last created via API Sample in Sample Directory for DE version",
+        () -> {
+          String testResult =
+              PathogenTestResults.valueOf(apiState.getCreatedSample().getPathogenTestResult())
+                  .getPathogenResultsDE();
+          webDriverHelpers.selectFromCombobox(
+              TEST_RESULTS_SEARCH_COMBOBOX,
+              testResult.substring(0, 1).toUpperCase() + testResult.substring(1).toLowerCase());
+        });
+
+    When(
         "I select a Test result value different than the test result of the last created via API Sample Pathogen test result",
         () -> {
           String apiTestResult = apiState.getCreatedSample().getPathogenTestResult();
@@ -130,11 +141,30 @@ public class SamplesDirectorySteps implements En {
         });
 
     When(
+        "I select a Test result value different than the test result of the last created via API Sample Pathogen test result for DE version",
+        () -> {
+          String apiTestResult = apiState.getCreatedSample().getPathogenTestResult();
+          webDriverHelpers.selectFromCombobox(
+              TEST_RESULTS_SEARCH_COMBOBOX,
+              PathogenTestResults.geRandomResultNameDifferentThanDE(apiTestResult));
+        });
+
+    When(
         "I select Specimen condition filter value with value for specimen condition of the last created via API Sample in Sample Directory",
         () -> {
           String specimenCondition = apiState.getCreatedSample().getSpecimenCondition();
           webDriverHelpers.selectFromCombobox(
               SPECIMEN_CONDITION_SEARCH_COMBOBOX, SpecimenConditions.getForName(specimenCondition));
+        });
+
+    When(
+        "I select Specimen condition filter value with value for specimen condition of the last created via API Sample in Sample Directory for De version",
+        () -> {
+          String specimenCondition =
+              SpecimenConditions.valueOf(apiState.getCreatedSample().getSpecimenCondition())
+                  .getConditionDE();
+          webDriverHelpers.selectFromCombobox(
+              SPECIMEN_CONDITION_SEARCH_COMBOBOX, specimenCondition);
         });
 
     When(
@@ -154,6 +184,16 @@ public class SamplesDirectorySteps implements En {
         });
 
     When(
+        "I select Case classification filter value with value for case classification of the last created via API Case in Sample Directory for DE version",
+        () -> {
+          String caseClassification =
+              CaseClassification.valueOf(apiState.getCreatedCase().getCaseClassification())
+                  .getClassificationUIvalueDE();
+          webDriverHelpers.selectFromCombobox(
+              SAMPLE_CLASIFICATION_SEARCH_COMBOBOX, caseClassification);
+        });
+
+    When(
         "I select a Case classification value different than the case classification value of last created via API Case in Sample Directory",
         () -> {
           String apiCaseSpecification = apiState.getCreatedCase().getCaseClassification();
@@ -163,9 +203,28 @@ public class SamplesDirectorySteps implements En {
         });
 
     When(
+        "I select a Case classification value different than the case classification value of last created via API Case in Sample Directory for DE version",
+        () -> {
+          String apiCaseSpecification = apiState.getCreatedCase().getCaseClassification();
+          webDriverHelpers.selectFromCombobox(
+              SAMPLE_CLASIFICATION_SEARCH_COMBOBOX,
+              CaseClassification.getRandomUIClassificationDifferentThanDE(apiCaseSpecification));
+        });
+
+    When(
         "I set Disease filter to disease value of last created via API Case in Sample Directory",
         () -> {
           String disease = apiState.getCreatedCase().getDisease();
+          webDriverHelpers.selectFromCombobox(
+              SAMPLE_DISEASE_SEARCH_COMBOBOX, DiseasesValues.getCaptionForName(disease));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+        });
+
+    When(
+        "I set Disease filter to disease value of last created via API Case in Sample Directory for De version",
+        () -> {
+          String disease =
+              DiseasesValues.valueOf(apiState.getCreatedCase().getDisease()).getDiseaseCaptionDE();
           webDriverHelpers.selectFromCombobox(
               SAMPLE_DISEASE_SEARCH_COMBOBOX, DiseasesValues.getCaptionForName(disease));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
@@ -296,6 +355,29 @@ public class SamplesDirectorySteps implements En {
         });
 
     Then(
+        "I select {string} filter from quick filter for DE version",
+        (String searchCriteria) -> {
+          switch (searchCriteria) {
+            case "Nicht versendet":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAMPLE_NOT_SHIPPED);
+              webDriverHelpers.clickOnWebElementBySelector(SAMPLE_NOT_SHIPPED);
+              break;
+            case "Versandt":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAMPLE_SHIPPED);
+              webDriverHelpers.clickOnWebElementBySelector(SAMPLE_SHIPPED);
+              break;
+            case "Erhalten":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAMPLE_RECEIVED);
+              webDriverHelpers.clickOnWebElementBySelector(SAMPLE_RECEIVED);
+              break;
+            case "An ein anderes Labor weitergeleitet":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAMPLE_REFFERED_TO_OTHER_LAB);
+              webDriverHelpers.clickOnWebElementBySelector(SAMPLE_REFFERED_TO_OTHER_LAB);
+              break;
+          }
+        });
+
+    Then(
         "^I check the displayed test results filter dropdown",
         () ->
             Arrays.stream(PathogenTestResults.values())
@@ -418,7 +500,7 @@ public class SamplesDirectorySteps implements En {
     When(
         "I check if downloaded data generated by basic export option is correct",
         () -> {
-          String file = userDirPath + "/downloads/sormas_proben_" + LocalDate.now() + "_.csv";
+          String file = userDirPath + "/downloads/sormas_samples_" + LocalDate.now() + "_.csv";
           Sample reader = parseBasicSampleExport(file);
           Path path = Paths.get(file);
           Files.delete(path);
@@ -431,7 +513,7 @@ public class SamplesDirectorySteps implements En {
     When(
         "I check if downloaded data generated by detailed export option is correct",
         () -> {
-          String file = userDirPath + "/downloads/sormas_proben_" + LocalDate.now() + "_.csv";
+          String file = userDirPath + "/downloads/sormas_samples_" + LocalDate.now() + "_.csv";
           Sample reader = parseDetailedSampleExport(file);
           Path path = Paths.get(file);
           Files.delete(path);
@@ -445,7 +527,7 @@ public class SamplesDirectorySteps implements En {
         "I delete exported file from Sample Directory",
         () -> {
           File toDelete =
-              new File(userDirPath + "/downloads/sormas_proben_" + LocalDate.now() + "_.csv");
+              new File(userDirPath + "/downloads/sormas_samples_" + LocalDate.now() + "_.csv");
           toDelete.deleteOnExit();
         });
   }
@@ -454,7 +536,7 @@ public class SamplesDirectorySteps implements En {
     List<String[]> r = null;
     String[] values = new String[] {};
     Sample builder = null;
-    CSVParser csvParser = new CSVParserBuilder().withSeparator(';').build();
+    CSVParser csvParser = new CSVParserBuilder().withSeparator(',').build();
     try (CSVReader reader =
         new CSVReaderBuilder(new FileReader(fileName))
             .withCSVParser(csvParser)
@@ -481,7 +563,7 @@ public class SamplesDirectorySteps implements En {
     List<String[]> r = null;
     String[] values = new String[] {};
     Sample builder = null;
-    CSVParser csvParser = new CSVParserBuilder().withSeparator(';').build();
+    CSVParser csvParser = new CSVParserBuilder().withSeparator(',').build();
     try (CSVReader reader =
         new CSVReaderBuilder(new FileReader(fileName))
             .withCSVParser(csvParser)

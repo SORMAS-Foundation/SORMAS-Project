@@ -119,6 +119,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.PLACE_O
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EVENT_PARTICIPANTS_DATA_TAB;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACILITY_INPUT;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.contacts.ContactDirectorySteps.exposureData;
 
@@ -229,9 +230,9 @@ public class EditCaseSteps implements En {
         "I check that Case Classification has {string} value",
         (String caseClassificationValue) -> {
           String caseClassificationComboboxValue =
-              (webDriverHelpers.getValueFromCombobox(CASE_CLASSIFICATION_COMBOBOX));
+              (webDriverHelpers.getTextFromWebElement(CASE_CLASSIFICATION_SPAN));
           softly.assertEquals(
-              caseClassificationValue,
+              caseClassificationValue.toUpperCase(),
               caseClassificationComboboxValue,
               "The case classification field has unexpected value ");
           softly.assertAll();
@@ -340,7 +341,8 @@ public class EditCaseSteps implements En {
               List.of(
                   "dateOfReport",
                   "disease",
-                  "externalId",
+                  //   "externalId",
+                  // "epidNumber",
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
@@ -350,6 +352,28 @@ public class EditCaseSteps implements En {
                   "lastName",
                   "dateOfBirth"));
         });
+
+    When(
+        "^I check the created data for Facility is correctly displayed on Edit case page$",
+        () -> {
+          aCase = collectCasePersonDataWithFacility();
+          createdCase = CreateNewCaseSteps.caze;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              aCase,
+              createdCase,
+              List.of(
+                  "dateOfReport",
+                  "disease",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "placeOfStay",
+                  "placeDescription",
+                  "firstName",
+                  "lastName",
+                  "dateOfBirth"));
+        });
+
     When(
         "I check the created data for duplicated case is correctly displayed on Edit case page",
         () -> {
@@ -393,7 +417,7 @@ public class EditCaseSteps implements En {
               List.of(
                   "dateOfReport",
                   "disease",
-                  "externalId",
+                  // "externalId",
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
@@ -584,6 +608,13 @@ public class EditCaseSteps implements En {
         });
 
     When(
+        "I click on {string} as place of stay in Case Edit tab for DE version",
+        (String placeOfStay) -> {
+          webDriverHelpers.clickWebElementByText(
+              PLACE_OF_STAY_OPTIONS, CaseOutcome.getValueForDE(placeOfStay).toUpperCase());
+        });
+
+    When(
         "I click on ([^\"]*) as German place of stay",
         (String option) -> {
           String placeOfStay = new String();
@@ -752,7 +783,7 @@ public class EditCaseSteps implements En {
           String quarantineText;
           String expectedTextReduce = "Are you sure you want to reduce the quarantine?";
           String expectedTextExtend = "Are you sure you want to extend the quarantine?";
-          webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_ORDERED_VERBALLY_CHECKBOX_LABEL);
+          webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_COMBOBOX);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(QUARANTINE_POPUP_MESSAGE);
           quarantineText = webDriverHelpers.getTextFromWebElement(QUARANTINE_POPUP_MESSAGE);
           if (option.equals("Reduce")) softly.assertEquals(quarantineText, expectedTextReduce);
@@ -950,7 +981,6 @@ public class EditCaseSteps implements En {
               List.of(
                   "dateOfReport",
                   "disease",
-                  "externalId",
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
@@ -1184,6 +1214,8 @@ public class EditCaseSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
           webDriverHelpers.scrollToElement(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+          webDriverHelpers.selectFromCombobox(
+              DELETE_SAMPLE_REASON_POPUP, "Entity created without legal reason");
           webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(CASE_APPLY_FILTERS_BUTTON);
         });
@@ -1360,6 +1392,17 @@ public class EditCaseSteps implements En {
           TimeUnit.SECONDS.sleep(3); // wait for response after confirm
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+
+    And(
+        "I check if Infrastructure Data Has Change popup is displayed",
+        () -> webDriverHelpers.isElementVisibleWithTimeout(INFRASTRUCTURE_DATA_POPUP, 1));
+
+    And(
+        "I click on TRANSFER CASE in Infrastructure Data Has Change popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
     When(
         "I click on the Archive case button and confirm popup",
         () -> {
@@ -1454,7 +1497,8 @@ public class EditCaseSteps implements En {
         .firstName(userInfo.getFirstName())
         .lastName(userInfo.getLastName())
         .dateOfBirth(userInfo.getDateOfBirth())
-        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
+        // field that is no longer available
+        // .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
         .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
         .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
@@ -1606,7 +1650,7 @@ public class EditCaseSteps implements En {
         .firstName(userInfo.getFirstName())
         .lastName(userInfo.getLastName())
         .dateOfBirth(userInfo.getDateOfBirth())
-        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
+        // .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
         .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
         .placeDescription(webDriverHelpers.getValueFromWebElement(PLACE_DESCRIPTION_INPUT))
@@ -1639,6 +1683,24 @@ public class EditCaseSteps implements En {
             webDriverHelpers.getValueFromCombobox(VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX))
         .region(webDriverHelpers.getValueFromCombobox(PLACE_OF_STAY_REGION_COMBOBOX))
         .district(webDriverHelpers.getValueFromCombobox(PLACE_OF_STAY_DISTRICT_COMBOBOX))
+        .build();
+  }
+
+  private Case collectCasePersonDataWithFacility() {
+    Case userInfo = getUserInformation();
+
+    return Case.builder()
+        .dateOfReport(getDateOfReport())
+        .firstName(userInfo.getFirstName())
+        .lastName(userInfo.getLastName())
+        .dateOfBirth(userInfo.getDateOfBirth())
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
+        .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
+        .responsibleDistrict(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
+        .responsibleCommunity(webDriverHelpers.getValueFromWebElement(COMMUNITY_INPUT))
+        .placeOfStay(webDriverHelpers.getTextFromWebElement(PLACE_OF_STAY_SELECTED_VALUE))
+        .facility(webDriverHelpers.getValueFromWebElement(FACILITY_HEALTH_INPUT))
         .build();
   }
 

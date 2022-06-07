@@ -14,20 +14,9 @@
  */
 package de.symeda.sormas.rest.security;
 
-import de.symeda.sormas.api.AuthProvider;
-import de.symeda.sormas.api.ConfigFacade;
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
-import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.DefaultEntityHelper;
-import de.symeda.sormas.rest.security.config.KeycloakConfigResolver;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.security.enterprise.AuthenticationException;
@@ -48,6 +37,21 @@ import org.glassfish.soteria.Utils;
 import org.glassfish.soteria.cdi.BasicAuthenticationMechanismDefinitionAnnotationLiteral;
 import org.glassfish.soteria.mechanisms.BasicAuthenticationMechanism;
 import org.keycloak.KeycloakSecurityContext;
+
+import de.symeda.sormas.api.AuthProvider;
+import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DefaultEntityHelper;
+import de.symeda.sormas.rest.security.config.KeycloakConfigResolver;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Mechanism which allows configuration of multiple providers trough a system property.
@@ -84,6 +88,8 @@ interface extractCallerFromRequest {
 @SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT")
 @ApplicationScoped
 public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism {
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private final extractCallerFromRequest extractor;
 	private final HttpAuthenticationMechanism authenticationMechanism;
@@ -167,7 +173,15 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 	private AuthenticationStatus validateRequestS2S(HttpMessageContext context) {
 
 		UserDto s2sUser = FacadeProvider.getUserFacade().getByUserName(DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME);
-		Set<UserRight> userRights = FacadeProvider.getUserRoleConfigFacade().getEffectiveUserRights(s2sUser.getUserRoles());
+		if (s2sUser == null) {
+			logger.warn("validateRequestS2S failed. Could not find a SORMAS to SORMAS user by name '" + DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME + "'");
+			return AuthenticationStatus.SEND_FAILURE;
+		}
+		Set<UserRight> userRights = FacadeProvider.getUserFacade()
+			.getUserRoles(s2sUser)
+			.stream()
+			.flatMap(userRoleDto -> userRoleDto.getUserRights().stream())
+			.collect(Collectors.toSet());
 
 		return context.notifyContainerAboutLogin(
 			() -> DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME,

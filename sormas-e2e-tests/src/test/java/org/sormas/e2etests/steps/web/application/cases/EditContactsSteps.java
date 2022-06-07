@@ -194,7 +194,7 @@ public class EditContactsSteps implements En {
         () -> {
           TimeUnit.SECONDS.sleep(3);
           webDriverHelpers.sendFile(
-              FILE_PICKER, userDirPath + "/downloads/sormas_kontakte_" + LocalDate.now() + "_.csv");
+              FILE_PICKER, userDirPath + "/downloads/sormas_contacts_" + LocalDate.now() + "_.csv");
         });
     When(
         "I click on the Import button from Case Contacts directory",
@@ -206,6 +206,7 @@ public class EditContactsSteps implements En {
         "I click on the {string} button from the Import Case Contacts popup",
         (String buttonName) -> {
           webDriverHelpers.clickWebElementByText(IMPORT_POPUP_BUTTON, buttonName);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(COMMIT_BUTTON);
         });
     When(
@@ -242,7 +243,7 @@ public class EditContactsSteps implements En {
         "I delete exported file from Case Contact Directory",
         () -> {
           File toDelete =
-              new File(userDirPath + "/downloads/sormas_kontakte_" + LocalDate.now() + "_.csv");
+              new File(userDirPath + "/downloads/sormas_contacts_" + LocalDate.now() + "_.csv");
           toDelete.deleteOnExit();
         });
 
@@ -263,9 +264,11 @@ public class EditContactsSteps implements En {
           selectResponsibleDistrict(contact.getResponsibleDistrict());
           selectResponsibleCommunity(contact.getResponsibleCommunity());
           selectTypeOfContact(contact.getTypeOfContact());
-          fillAdditionalInformationOnTheTypeOfContact(
-              contact.getAdditionalInformationOnContactType());
-          selectContactCategory(contact.getContactCategory().toUpperCase());
+          // field no longer available
+          //          fillAdditionalInformationOnTheTypeOfContact(
+          //              contact.getAdditionalInformationOnContactType());
+          // field no longer available
+          //          selectContactCategory(contact.getContactCategory().toUpperCase());
           fillRelationshipWithCase(contact.getRelationshipWithCase());
           fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
@@ -309,9 +312,11 @@ public class EditContactsSteps implements En {
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
-                  "additionalInformationOnContactType",
+                  // field no longer available
+                  //                  "additionalInformationOnContactType",
                   "typeOfContact",
-                  "contactCategory",
+                  // field no longer available
+                  //                  "contactCategory",
                   "relationshipWithCase",
                   "descriptionOfHowContactTookPlace"));
         });
@@ -319,6 +324,7 @@ public class EditContactsSteps implements En {
     Then(
         "I check the linked contact information is correctly displayed",
         () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               By.cssSelector(
                   String.format(
@@ -327,20 +333,20 @@ public class EditContactsSteps implements En {
               webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[2]/a"));
           String contactDisease =
               (webDriverHelpers
-                      .getTextFromWebElement(By.xpath("//tbody/tr[1]//td[6]"))
+                      .getTextFromWebElement(By.xpath("//tbody/tr[1]//td[4]"))
                       .equals("COVID-19"))
                   ? "CORONAVIRUS"
                   : "Not expected string!";
           String contactClassification =
               (webDriverHelpers
-                      .getTextFromWebElement(By.xpath("//tbody/tr[1]//td[7]"))
+                      .getTextFromWebElement(By.xpath("//tbody/tr[1]//td[5]"))
                       .equals("Unconfirmed contact"))
                   ? "UNCONFIRMED"
                   : "Not expected string!";
           String firstName =
-              webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[10]"));
+              webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[8]"));
           String lastName =
-              webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[11]"));
+              webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[9]"));
 
           softly.assertTrue(
               apiState.getCreatedContact().getUuid().substring(0, 6).equalsIgnoreCase(contactId),
@@ -563,13 +569,16 @@ public class EditContactsSteps implements En {
         .responsibleRegion(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_REGION_INPUT))
         .responsibleDistrict(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_DISTRICT_INPUT))
         .responsibleCommunity(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_COMMUNITY_INPUT))
-        .additionalInformationOnContactType(
-            webDriverHelpers.getValueFromWebElement(
-                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
+        // field no longer available
+        //        .additionalInformationOnContactType(
+        //            webDriverHelpers.getValueFromWebElement(
+        //                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
         .typeOfContact(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(TYPE_OF_CONTACT_OPTIONS))
-        .contactCategory(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
+        // field no longer available
+        //        .contactCategory(
+        //
+        // webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
         .relationshipWithCase(webDriverHelpers.getValueFromWebElement(RELATIONSHIP_WITH_CASE_INPUT))
         .descriptionOfHowContactTookPlace(
             webDriverHelpers.getValueFromWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT))

@@ -87,12 +87,45 @@ public class CaseService {
         .caseOrigin("IN-COUNTRY")
         .dateOfReport(LocalDate.now().minusDays(1))
         .externalId(UUID.randomUUID().toString())
+        .epidNumber(UUID.randomUUID().toString())
         .disease("COVID-19")
         .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
         .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
         .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
         .placeOfStay("HOME")
         .placeDescription(faker.harryPotter().location())
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .sex(GenderValues.getRandomGender())
+        .presentConditionOfPerson("Alive")
+        .dateOfSymptomOnset(LocalDate.now().minusDays(1))
+        .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
+        .primaryEmailAddress(
+            ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
+        .build();
+  }
+
+  public Case buildGeneratedCaseWithFacility() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
+    return Case.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .caseOrigin("IN-COUNTRY")
+        .dateOfReport(LocalDate.now().minusDays(1))
+        .externalId(UUID.randomUUID().toString())
+        .epidNumber(UUID.randomUUID().toString())
+        .disease("COVID-19")
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .placeOfStay("FACILITY")
+        .facility("Other facility")
+        .facilityNameAndDescription("MagicHospital")
         .dateOfBirth(
             LocalDate.of(
                 faker.number().numberBetween(1900, 2002),
@@ -116,7 +149,7 @@ public class CaseService {
         .lastName(lastName)
         .caseOrigin("IN-COUNTRY")
         .dateOfReport(LocalDate.now().minusDays(1))
-        .externalId(UUID.randomUUID().toString())
+        //  .externalId(UUID.randomUUID().toString())
         .disease(DiseasesValues.getCaptionFor(diseaseValue))
         .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
         .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())

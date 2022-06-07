@@ -23,14 +23,17 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLO
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_DOCUMENT_EMPTY_TEXT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_UPLOADED_TEST_FILE;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DELETE_LAST_UPDATED_CASE_DOCUMENT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DOWNLOAD_LAST_UPDATED_CASE_DOCUMENT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NEW_DOCUMENT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.START_DATA_IMPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UPLOAD_DOCUMENT_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
@@ -42,6 +45,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.MULTIPLE_OPTIONS_SEARCH_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_TAB;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.SAVE_BUTTON_FOR_POPUP_WINDOWS;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.GENERAL_SEARCH_INPUT;
 
 import cucumber.api.java8.En;
@@ -156,9 +160,11 @@ public class EditContactSteps implements En {
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
-                  "additionalInformationOnContactType",
+                  // field no longer available
+                  //                  "additionalInformationOnContactType",
                   "typeOfContact",
-                  "contactCategory",
+                  // field no longer available
+                  //                  "contactCategory",
                   "relationshipWithCase",
                   "descriptionOfHowContactTookPlace"));
         });
@@ -182,9 +188,11 @@ public class EditContactSteps implements En {
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
-                  "additionalInformationOnContactType",
+                  // field no longer available
+                  //                  "additionalInformationOnContactType",
                   "typeOfContact",
-                  "contactCategory",
+                  // field no longer available
+                  //                  "contactCategory",
                   "relationshipWithCase",
                   "descriptionOfHowContactTookPlace"));
         });
@@ -213,9 +221,11 @@ public class EditContactSteps implements En {
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
-                  "additionalInformationOnContactType",
+                  // field no longer available
+                  //                  "additionalInformationOnContactType",
                   "typeOfContact",
-                  "contactCategory",
+                  // field no longer available
+                  //                  "contactCategory",
                   "relationshipWithCase",
                   "descriptionOfHowContactTookPlace"));
         });
@@ -242,9 +252,11 @@ public class EditContactSteps implements En {
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
-                  "additionalInformationOnContactType",
+                  // field no longer available
+                  // "additionalInformationOnContactType",
                   "typeOfContact",
-                  "contactCategory",
+                  // field no longer available
+                  // "contactCategory",
                   "relationshipWithCase",
                   "descriptionOfHowContactTookPlace"));
         });
@@ -273,9 +285,11 @@ public class EditContactSteps implements En {
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
-                  "additionalInformationOnContactType",
+                  // field no longer available
+                  //                  "additionalInformationOnContactType",
                   "typeOfContact",
-                  "contactCategory",
+                  // field no longer available
+                  //                  "contactCategory",
                   "relationshipWithCase",
                   "descriptionOfHowContactTookPlace"));
         });
@@ -329,7 +343,52 @@ public class EditContactSteps implements En {
         "I check the edited data is correctly displayed on Edit Contact page after editing",
         () -> {
           collectedContact = collectContactDataAfterEdit();
-          ComparisonHelper.compareEqualEntities(editedContact, collectedContact);
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              editedContact,
+              collectedContact,
+              List.of(
+                  "firstName",
+                  "lastName",
+                  "dateOfBirth",
+                  "sex",
+                  "primaryEmailAddress",
+                  "primaryPhoneNumber",
+                  "returningTraveler",
+                  "reportDate",
+                  "diseaseOfSourceCase",
+                  "caseIdInExternalSystem",
+                  "dateOfLastContact",
+                  "caseOrEventInformation",
+                  "responsibleDistrict",
+                  "responsibleRegion",
+                  "responsibleCommunity",
+                  "typeOfContact",
+                  "relationshipWithCase",
+                  "descriptionOfHowContactTookPlace",
+                  "uuid",
+                  "classification",
+                  "status",
+                  "multiDay",
+                  "dateOfFirstContact",
+                  "externalToken",
+                  "category",
+                  "quarantine",
+                  "highPriority",
+                  "diabetes",
+                  "liverDisease",
+                  "malignancy",
+                  "chronicPulmonaryDisease",
+                  "renalDisease",
+                  "chronicNeurologicalNeuromuscularDisease",
+                  "cardiovascularDiseaseIncludingHypertension",
+                  "additionalRelevantPreexistingConditions",
+                  "vaccinationStatusForThisDisease",
+                  "cancelFollowUp",
+                  "overwriteFollowUp",
+                  "dateOfFollowUpUntil",
+                  "followUpStatusComment",
+                  "responsibleContactOfficer",
+                  "generalComment"));
         });
 
     When(
@@ -344,6 +403,8 @@ public class EditContactSteps implements En {
         () -> {
           webDriverHelpers.scrollToElement(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+          webDriverHelpers.selectFromCombobox(
+              DELETE_CONTACT_REASON_POPUP, "Deletion request by another authority");
           webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
         });
 
@@ -370,31 +431,42 @@ public class EditContactSteps implements En {
           selectMultiDayContact(editedContact.getMultiDay());
           fillDateOfFirstContact(editedContact.getDateOfFirstContact());
           selectDiseaseOfSourceCase(editedContact.getDiseaseOfSourceCase());
-          fillExternalId(editedContact.getExternalId());
+          // field no longer available
+          //          fillExternalId(editedContact.getExternalId());
           fillDateOfLastContact(editedContact.getDateOfLastContact());
           fillExternalToken(editedContact.getExternalToken());
           fillReportDate(editedContact.getReportDate());
-          selectReportingDistrict(editedContact.getReportingDistrict());
+          // field no longer available
+          //          selectReportingDistrict(editedContact.getReportingDistrict());
           selectResponsibleRegion(editedContact.getResponsibleRegion());
           selectResponsibleDistrict(editedContact.getResponsibleDistrict());
           selectResponsibleCommunity(editedContact.getResponsibleCommunity());
           selectReturningTraveler(editedContact.getReturningTraveler());
           fillCaseIdExternalSystem(editedContact.getCaseIdInExternalSystem());
           fillCaseOrEventInformation(editedContact.getCaseOrEventInformation());
-          selectIdentificationSource(editedContact.getIdentificationSource());
-          fillIdentificationSource(editedContact.getIdentificationSourceDetails());
+          // field no longer available
+          //          selectIdentificationSource(editedContact.getIdentificationSource());
+          // field no longer available
+          //          fillIdentificationSource(editedContact.getIdentificationSourceDetails());
           selectContactType(editedContact.getTypeOfContact());
-          fillAdditionalInformationOnContactType(
-              editedContact.getAdditionalInformationOnContactType());
-          selectContactCategory(editedContact.getContactCategory());
+          // field no longer available
+          //          fillAdditionalInformationOnContactType(
+          //              editedContact.getAdditionalInformationOnContactType());
+          // field no longer available
+          //          selectContactCategory(editedContact.getContactCategory());
           selectRelationShipWithCase(editedContact.getRelationshipWithCase());
           fillDescriptionOfHowContactTookPlace(editedContact.getDescriptionOfHowContactTookPlace());
-          selectProhibitionToWork(editedContact.getProhibitionToWork());
-          selectHomeBasedQuarantinePossible(editedContact.getHomeBasedQuarantinePossible());
+          // field no longer available
+          //          selectProhibitionToWork(editedContact.getProhibitionToWork());
+          // field no longer available
+          //
+          // selectHomeBasedQuarantinePossible(editedContact.getHomeBasedQuarantinePossible());
           selectQuarantine(editedContact.getQuarantine());
           selectHighPriority(editedContact.getHighPriority());
           selectPreexistingConditionDiabetes(editedContact.getDiabetes());
-          selectPreexistingConditionHiv(editedContact.getImmunodeficiencyIncludingHiv());
+          // field no longer available
+          //
+          // selectPreexistingConditionHiv(editedContact.getImmunodeficiencyIncludingHiv());
           selectPreexistingConditionLiver(editedContact.getLiverDisease());
           selectPreexistingConditionMalignancy(editedContact.getMalignancy());
           selectPreexistingConditionChronicPulmonary(editedContact.getChronicPulmonaryDisease());
@@ -406,8 +478,10 @@ public class EditContactSteps implements En {
           fillAdditionalRelevantPreexistingConditions(
               editedContact.getAdditionalRelevantPreexistingConditions());
           selectVaccinationStatusForThisDisease(editedContact.getVaccinationStatusForThisDisease());
-          selectImmunosuppressiveTherapy(editedContact.getImmunosuppressiveTherapy());
-          selectActiveInCare(editedContact.getActiveInCare());
+          // field no longer available
+          //          selectImmunosuppressiveTherapy(editedContact.getImmunosuppressiveTherapy());
+          // field no longer available
+          //          selectActiveInCare(editedContact.getActiveInCare());
           clickCancelFollowUpButton();
           // TODO enable it back once 6803 is fixed
           // selectOverwriteFollowUp(editedContact.getOverwriteFollowUp());
@@ -518,11 +592,74 @@ public class EditContactSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_SAVED_POPUP);
         });
     When(
+        "^I click Link Event button on Edit Contact Page$",
+        () -> {
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(LINK_EVENT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON);
+        });
+    When(
+        "I select {int} event in Link Event popup and create and Event Participant",
+        (Integer index) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(getByEventIndex(index));
+          webDriverHelpers.clickOnWebElementBySelector(getByEventIndex(index));
+          webDriverHelpers.waitForRowToBeSelected(getByEventIndex(index));
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_CONFIRM_BUTTON);
+        });
+    When(
+        "I click Save in Add Event Participant form on Edit Contact Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ADD_A_PARTICIPANT_HEADER);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          TimeUnit.SECONDS.sleep(5);
+        });
+
+    When(
         "^I click Create Case from Contact button$",
         () -> {
           webDriverHelpers.scrollToElement(CREATE_CASE_FROM_CONTACT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_FROM_CONTACT_BUTTON);
         });
+    When(
+        "^I click Yes, for some in conversion to case form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CONVERT_SOME);
+        });
+    When(
+        "^I click Yes, for all in conversion to case form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+    When(
+        "^I click No in conversion to case form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_POPUP_BUTTON);
+        });
+    When(
+        "^I click on checkbox to select all available options$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ALL_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_FOR_POPUP_WINDOWS);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+    When(
+        "^I check if there are entities assigned to new created case from contact$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(LINKED_EVENT_INDICATIOR);
+        });
+    When(
+        "^I check if there are no entities assigned to new created case from contact$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          softly.assertEquals(
+              false, webDriverHelpers.isElementVisibleWithTimeout(LINKED_EVENT_INDICATIOR, 10));
+          softly.assertAll();
+        });
+
     When(
         "I check if Vaccination Status is set to {string} on Edit Contact page",
         (String expected) -> {
@@ -549,8 +686,8 @@ public class EditContactSteps implements En {
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
-                  "additionalInformationOnContactType",
-                  "contactCategory",
+                  //                  "additionalInformationOnContactType",
+                  //                  "contactCategory",
                   "relationshipWithCase",
                   "descriptionOfHowContactTookPlace"));
         });
@@ -914,13 +1051,16 @@ public class EditContactSteps implements En {
         .responsibleRegion(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_REGION_COMBOBOX))
         .responsibleDistrict(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX))
         .responsibleCommunity(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX))
-        .additionalInformationOnContactType(
-            webDriverHelpers.getValueFromWebElement(
-                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
+        // field no longer available
+        //        .additionalInformationOnContactType(
+        //            webDriverHelpers.getValueFromWebElement(
+        //                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
         .typeOfContact(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(TYPE_OF_CONTACT_OPTIONS))
-        .contactCategory(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
+        // field no longer available
+        //        .contactCategory(
+        //
+        // webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
         .relationshipWithCase(
             webDriverHelpers.getValueFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX))
         .descriptionOfHowContactTookPlace(
@@ -946,13 +1086,16 @@ public class EditContactSteps implements En {
         .responsibleRegion(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_REGION_COMBOBOX))
         .responsibleDistrict(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX))
         .responsibleCommunity(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX))
-        .additionalInformationOnContactType(
-            webDriverHelpers.getValueFromWebElement(
-                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
+        // field no longer available
+        //        .additionalInformationOnContactType(
+        //            webDriverHelpers.getValueFromWebElement(
+        //                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
         .typeOfContact(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(TYPE_OF_CONTACT_OPTIONS))
-        .contactCategory(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
+        // field no longer available
+        //        .contactCategory(
+        //
+        // webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
         .relationshipWithCase(
             webDriverHelpers.getValueFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX))
         .descriptionOfHowContactTookPlace(
@@ -979,13 +1122,16 @@ public class EditContactSteps implements En {
         .responsibleRegion(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_REGION_COMBOBOX))
         .responsibleDistrict(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX))
         .responsibleCommunity(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX))
-        .additionalInformationOnContactType(
-            webDriverHelpers.getValueFromWebElement(
-                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
+        // field no longer available
+        //        .additionalInformationOnContactType(
+        //            webDriverHelpers.getValueFromWebElement(
+        //                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
         .typeOfContact(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(TYPE_OF_CONTACT_OPTIONS))
-        .contactCategory(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
+        // field no longer available
+        //        .contactCategory(
+        //
+        // webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
         .relationshipWithCase(
             webDriverHelpers.getValueFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX))
         .descriptionOfHowContactTookPlace(
@@ -1003,17 +1149,19 @@ public class EditContactSteps implements En {
     //    LocalDate parsedDateOfFollowUp =
     //        LocalDate.parse(webDriverHelpers.getValueFromWebElement(FOLLOW_UP_UNTIL_DATE),
     // formatter);
-    String identificationSource =
-        webDriverHelpers.getValueFromWebElement(IDENTIFICATION_SOURCE_INPUT);
+    // field no longer available
+    //    String identificationSource =
+    //        webDriverHelpers.getValueFromWebElement(IDENTIFICATION_SOURCE_INPUT);
 
     return Contact.builder()
         .classification(classification)
         .multiDay(webDriverHelpers.getTextFromLabelIfCheckboxIsChecked(MULTI_DAY_CONTACT_CHECKBOX))
         .diseaseOfSourceCase(webDriverHelpers.getValueFromCombobox(DISEASE_COMBOBOX))
-        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
+        //        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
         .externalToken(webDriverHelpers.getValueFromWebElement(EXTERNAL_TOKEN_INPUT))
         .reportDate(parsedDateOfReport)
-        .reportingDistrict(webDriverHelpers.getValueFromCombobox(REPORTING_DISTRICT_COMBOBOX))
+        //
+        // .reportingDistrict(webDriverHelpers.getValueFromCombobox(REPORTING_DISTRICT_COMBOBOX))
         .responsibleRegion(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_REGION_COMBOBOX))
         .responsibleDistrict(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX))
         .responsibleCommunity(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX))
@@ -1023,30 +1171,33 @@ public class EditContactSteps implements En {
             webDriverHelpers.getValueFromWebElement(CASE_ID_IN_EXTERNAL_SYSTEM_INPUT))
         .caseOrEventInformation(
             webDriverHelpers.getValueFromWebElement(CASE_OR_EVENT_INFORMATION_INPUT))
-        .identificationSource(
-            webDriverHelpers.getValueFromCombobox(CONTACT_IDENTIFICATION_SOURCE_DETAILS_COMBOBOX))
-        .identificationSourceDetails(identificationSource)
+        //       .identificationSource(
+        //
+        // webDriverHelpers.getValueFromCombobox(CONTACT_IDENTIFICATION_SOURCE_DETAILS_COMBOBOX))
+        //        .identificationSourceDetails(identificationSource)
         .typeOfContact(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(TYPE_OF_CONTACT_OPTIONS))
-        .additionalInformationOnContactType(
-            webDriverHelpers.getValueFromWebElement(
-                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
-        .contactCategory(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
+        //        .additionalInformationOnContactType(
+        //            webDriverHelpers.getValueFromWebElement(
+        //                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
+        //        .contactCategory(
+        //
+        // webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
         .relationshipWithCase(
             webDriverHelpers.getValueFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX))
         .descriptionOfHowContactTookPlace(
             webDriverHelpers.getValueFromWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT))
-        .prohibitionToWork(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(PROHIBITION_TO_WORK_OPTIONS))
-        .homeBasedQuarantinePossible(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                HOME_BASED_QUARANTINE_OPTIONS))
+        //        .prohibitionToWork(
+        //
+        // webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(PROHIBITION_TO_WORK_OPTIONS))
+        //        .homeBasedQuarantinePossible(
+        //            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+        //                HOME_BASED_QUARANTINE_OPTIONS))
         .quarantine(webDriverHelpers.getValueFromCombobox(QUARANTINE_COMBOBOX))
         .highPriority(webDriverHelpers.getTextFromLabelIfCheckboxIsChecked(HIGH_PRIORITY_CHECKBOX))
         .diabetes(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(DIABETES_OPTIONS))
-        .immunodeficiencyIncludingHiv(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(HIV_OPTIONS))
+        //        .immunodeficiencyIncludingHiv(
+        //            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(HIV_OPTIONS))
         .liverDisease(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LIVER_OPTIONS))
         .malignancy(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(MALIGNANCY_OPTIONS))
         .chronicPulmonaryDisease(
@@ -1060,11 +1211,12 @@ public class EditContactSteps implements En {
             webDriverHelpers.getValueFromWebElement(ADDITIONAL_RELEVANT_PRE_CONDITIONS_TEXT))
         .vaccinationStatusForThisDisease(
             webDriverHelpers.getValueFromCombobox(VACCINATION_STATUS_COMBOBOX))
-        .immunosuppressiveTherapy(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                IMMUNOSUPPRESSIVE_THERAPY_OPTIONS))
-        .activeInCare(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CARE_OVER_60_OPTIONS))
+        //        .immunosuppressiveTherapy(
+        //            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+        //                IMMUNOSUPPRESSIVE_THERAPY_OPTIONS))
+        //        .activeInCare(
+        //
+        // webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CARE_OVER_60_OPTIONS))
         // TODO enable it back once 6803 is fixed
         //            .overwriteFollowUp(
         //
@@ -1122,11 +1274,13 @@ public class EditContactSteps implements En {
         .responsibleRegion(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_REGION_COMBOBOX))
         .responsibleDistrict(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX))
         .responsibleCommunity(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX))
-        .additionalInformationOnContactType(
-            webDriverHelpers.getValueFromWebElement(
-                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
-        .contactCategory(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
+        // field no longer available
+        //        .additionalInformationOnContactType(
+        //            webDriverHelpers.getValueFromWebElement(
+        //                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
+        //        .contactCategory(
+        //
+        // webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
         .relationshipWithCase(
             webDriverHelpers.getValueFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX))
         .descriptionOfHowContactTookPlace(

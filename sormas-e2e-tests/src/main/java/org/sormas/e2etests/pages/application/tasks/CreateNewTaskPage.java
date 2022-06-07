@@ -35,6 +35,7 @@ public class CreateNewTaskPage {
   public static final By DUE_DATE_TIME_COMBOBOX =
       By.cssSelector(".v-window #dueDate_time input+div");
   public static final By ASSIGNED_TO_COMBOBOX = By.cssSelector(".v-window #assigneeUser input+div");
+  public static final By OBSERVED_BY_COMBOBOX = By.cssSelector(".v-window #observerUsers input");
   public static final By ASSIGNED_TO_INPUT = By.cssSelector(".v-window #assigneeUser input");
   public static final By PRIORITY_COMBOBOX = By.cssSelector(".v-window #priority input+div");
   public static final By PRIORITY_INPUT = By.cssSelector(".v-window #priority input");
@@ -49,4 +50,11 @@ public class CreateNewTaskPage {
       By.xpath("//*[@id='observerUsers']//div[@role='combobox']//input");
   public static final By SELECTED_OBSERVER_USER =
       By.xpath("//*[@id='observerUsers']//div[@class='v-label v-widget v-has-width']");
+
+  public static By getDeleteIconByUser(String user) {
+    return By.xpath(
+        String.format(
+            "//div[@class='popupContent']//div[contains(@class, 'v-label') and text()=\"%s\"]/../..//div[contains(@class,'v-button')]",
+            user));
+  }
 }

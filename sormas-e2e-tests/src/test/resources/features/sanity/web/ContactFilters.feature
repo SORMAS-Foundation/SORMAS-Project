@@ -59,18 +59,6 @@ Feature: Contact filter functionality
     And I click APPLY BUTTON in Contact Directory Page
     And I click SHOW MORE FILTERS button on Contact directory page
     And I check that number of displayed contact results is 1
-    And I click "Quarantine ordered verbally?" checkbox on Contact directory page
-    And I click APPLY BUTTON in Contact Directory Page
-    And I check that number of displayed contact results is 0
-    And I click "Quarantine ordered verbally?" checkbox on Contact directory page
-    And I click "Quarantine ordered by official document?" checkbox on Contact directory page
-    And I click APPLY BUTTON in Contact Directory Page
-    And I check that number of displayed contact results is 0
-    And I click "Quarantine ordered by official document?" checkbox on Contact directory page
-    And I click "No quarantine ordered" checkbox on Contact directory page
-    And I click APPLY BUTTON in Contact Directory Page
-    And I check that number of displayed contact results is 1
-    And I click "No quarantine ordered" checkbox on Contact directory page
     And I click "Help needed in quarantine" checkbox on Contact directory page
     And I click APPLY BUTTON in Contact Directory Page
     And I check that number of displayed contact results is 0

@@ -37,8 +37,8 @@ import de.symeda.sormas.api.immunization.ImmunizationSimilarityCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -66,13 +66,23 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			rdcf1.facility.getUuid(),
 			"Nat",
 			"User",
-			UserRole.NATIONAL_USER);
+			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
-		districtUser1 = creator
-			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off1", UserRole.SURVEILLANCE_OFFICER);
+		districtUser1 = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			rdcf1.facility.getUuid(),
+			"Surv",
+			"Off1",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
-		districtUser2 = creator
-			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
+		districtUser2 = creator.createUser(
+			rdcf2.region.getUuid(),
+			rdcf2.district.getUuid(),
+			rdcf2.facility.getUuid(),
+			"Surv",
+			"Off2",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		covidLimitedDistrictUser = creator.createUser(
 			rdcf1.region.getUuid(),
@@ -80,7 +90,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			rdcf1.facility.getUuid(),
 			"Surv",
 			"OffCovid",
-			UserRole.SURVEILLANCE_OFFICER);
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 		covidLimitedDistrictUser.setLimitedDisease(Disease.CORONAVIRUS);
 		getUserFacade().saveUser(covidLimitedDistrictUser);
 	}

@@ -38,7 +38,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UserProvider;
@@ -61,7 +60,7 @@ public class ReportsView extends AbstractView {
 	public ReportsView() {
 		super(VIEW_NAME);
 
-		JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(Objects.requireNonNull(UserProvider.getCurrent()).getUserRoles());
+		JurisdictionLevel jurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
 		if (jurisdictionLevel == JurisdictionLevel.NONE || jurisdictionLevel == JurisdictionLevel.NATION) {
 			grid = new WeeklyReportRegionsGrid();
 		} else {

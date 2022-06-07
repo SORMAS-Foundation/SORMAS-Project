@@ -143,7 +143,7 @@ public class ConfigurationFacilitiesSteps implements En {
         "I read exported csv from facilities tab",
         () -> {
           facilityFile =
-              "./downloads/sormas_einrichtungen_" + LocalDate.now().format(formatter) + "_.csv";
+              "./downloads/sormas_facilities_" + LocalDate.now().format(formatter) + "_.csv";
           FacilityCSV reader = parseCSVintoPOJOFacilityTab(facilityFile);
           writeCSVFromPOJOFacilityTab(reader);
           TimeUnit.SECONDS.sleep(5); // wait for reader
@@ -195,7 +195,7 @@ public class ConfigurationFacilitiesSteps implements En {
     } catch (CsvException e) {
       log.error("CsvException header reader: ", e);
     }
-    CSVParser csvParser = new CSVParserBuilder().withSeparator(';').build(); // custom separator
+    CSVParser csvParser = new CSVParserBuilder().withSeparator(',').build(); // custom separator
     try (CSVReader reader =
         new CSVReaderBuilder(new FileReader(fileName))
             .withCSVParser(csvParser) // custom CSV parser
@@ -262,41 +262,41 @@ public class ConfigurationFacilitiesSteps implements En {
       String[] rowdata = {
         "\""
             + UUID.randomUUID().toString().substring(0, 26).toUpperCase()
-            + "\";\""
+            + "\",\""
             + aFacilityName
-            + "\";\""
+            + "\",\""
             + facilityData.getType()
-            + "\";\""
+            + "\",\""
             + facilityData.getRegion()
-            + "\";\""
+            + "\",\""
             + facilityData.getDistrict()
-            + "\";\""
+            + "\",\""
             + facilityData.getCommunity()
-            + "\";\""
+            + "\",\""
             + cityName
-            + "\";\""
+            + "\",\""
             + facilityData.getPostalCode()
-            + "\";\""
+            + "\",\""
             + facilityData.getStreet()
-            + "\";\""
+            + "\",\""
             + facilityData.getHouseNumber()
-            + "\";\""
+            + "\",\""
             + facilityData.getAdditionalInformation()
-            + "\";\""
+            + "\",\""
             + facilityData.getAreaType()
-            + "\";\""
+            + "\",\""
             + facilityData.getContactPersonFirstName()
-            + "\";\""
+            + "\",\""
             + facilityData.getContactPersonFirstName()
-            + "\";\""
+            + "\",\""
             + facilityData.getContactPersonPhone()
-            + "\";\""
+            + "\",\""
             + facilityData.getContactPersonEmail()
-            + "\";\""
+            + "\",\""
             + facilityData.getLatitude()
-            + "\";\""
+            + "\",\""
             + facilityData.getLongitude()
-            + "\";\""
+            + "\",\""
             + facilityData.getExternalID()
             + "\""
       };
