@@ -383,91 +383,92 @@ public class EditContactsSteps implements En {
     When(
         "I open last edited contact by API via URL navigation",
         () -> {
-            String contactLinkPath = "/sormas-ui/#!contacts/data/";
-            String uuid = apiState.getCreatedContact().getUuid();
-            webDriverHelpers.accessWebSite(
-                    runningConfiguration.getEnvironmentUrlForMarket(locale) + contactLinkPath + uuid);
-            webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
+          String contactLinkPath = "/sormas-ui/#!contacts/data/";
+          String uuid = apiState.getCreatedContact().getUuid();
+          webDriverHelpers.accessWebSite(
+              runningConfiguration.getEnvironmentUrlForMarket(locale) + contactLinkPath + uuid);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
     When(
         "I click on the Archive contact button and confirm popup",
         () -> {
-            webDriverHelpers.scrollToElement(ARCHIVE_CONTACT_BUTTON);
-            webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_CONTACT_BUTTON);
-            webDriverHelpers.scrollToElement(POPUP_YES_BUTTON);
-            webDriverHelpers.clickOnWebElementBySelector(POPUP_YES_BUTTON);
+          webDriverHelpers.scrollToElement(ARCHIVE_CONTACT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_CONTACT_BUTTON);
+          webDriverHelpers.scrollToElement(POPUP_YES_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_YES_BUTTON);
         });
     When(
         "I check if editable fields are read only for an archived contact",
         () -> {
-           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-           TimeUnit.SECONDS.sleep(15);
-           webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONTACTS_LIST);
-           softly.assertEquals(
-                   webDriverHelpers.isElementEnabled(CONTACT_CLASSIFICATION_OPTIONS),
-                   false,
-                   "Event status option is not in read only state!");
-           softly.assertEquals(
-                   webDriverHelpers.isElementEnabled(DISEASE_OF_SOURCE_CASE_COMBOBOX),
-                   false,
-                   "Risk level input is not in read only state!");
-           softly.assertEquals(
-                   webDriverHelpers.isElementEnabled(REPORT_DATE),
-                   false,
-                   "Title input is not in read only state!");
-           softly.assertEquals(
-                   webDriverHelpers.isElementEnabled(RESPONSIBLE_DISTRICT_INPUT),
-                   false,
-                   "Event management status option is not in read only state!");
-           softly.assertEquals(
-                   webDriverHelpers.isElementEnabled(RESPONSIBLE_REGION_INPUT),
-                   false,
-                   "Event investigation status option is not in read only state!");
-           softly.assertEquals(
-                   webDriverHelpers.isElementEnabled(REPORTING_DISTRICT_COMBOBOX),
-                   false,
-                   "Risk level combobox is not in read only state!");
-           softly.assertEquals(
-                   webDriverHelpers.isElementEnabled(RESPONSIBLE_COMMUNITY_INPUT),
-                   false,
-                   "New task button is not in read only state!");
-           softly.assertEquals(
-                   webDriverHelpers.isElementEnabled(CONTACT_IDENTIFICATION_SOURCE_DETAILS_COMBOBOX),
-                   false,
-                   "New action button is not in read only state!");
-           softly.assertEquals(
-                   webDriverHelpers.isElementEnabled(RELATIONSHIP_WITH_CASE_INPUT),
-                   false,
-                   "Link event group button is not in read only state!");
-           softly.assertEquals(
-                   webDriverHelpers.isElementEnabled(CONTACT_CATEGORY_OPTIONS),
-                   false,
-                   "Disease combobox is not in read only state!");
-           softly.assertEquals(
-                   webDriverHelpers.isElementEnabled(ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT),
-                   false,
-                   "Place of stay combobox is not in read only state!");
-           softly.assertEquals(
-                   webDriverHelpers.isElementEnabled(VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX),
-                   false,
-                   "Source type combobox is not in read only state!");
-           softly.assertEquals(
-                   webDriverHelpers.isElementEnabled(RESPONSIBLE_SURVEILLANCE_OFFICER_COMBOBOX),
-                   false,
-                   "Event status options is not in read only state!");
-           softly.assertEquals(
-                   webDriverHelpers.isElementEnabled(SAVE_EDIT_BUTTON),
-                   false,
-                   "Save button is not in read only state!");
-           softly.assertEquals(
-                   webDriverHelpers.isElementEnabled(DISCARD_BUTTON),
-                   false,
-                   "Discard button is not in read only state!");
-           softly.assertEquals(
-                   webDriverHelpers.isElementEnabled(DELETE_BUTTON),
-                   false,
-                   "Delete button is not in read only state!");
-              });
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          TimeUnit.SECONDS.sleep(15);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONTACTS_LIST);
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(CONTACT_CLASSIFICATION_OPTIONS),
+              false,
+              "Event status option is not in read only state!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DISEASE_OF_SOURCE_CASE_COMBOBOX),
+              false,
+              "Risk level input is not in read only state!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(REPORT_DATE),
+              false,
+              "Title input is not in read only state!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RESPONSIBLE_DISTRICT_INPUT),
+              false,
+              "Event management status option is not in read only state!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RESPONSIBLE_REGION_INPUT),
+              false,
+              "Event investigation status option is not in read only state!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(REPORTING_DISTRICT_COMBOBOX),
+              false,
+              "Risk level combobox is not in read only state!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RESPONSIBLE_COMMUNITY_INPUT),
+              false,
+              "New task button is not in read only state!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(CONTACT_IDENTIFICATION_SOURCE_DETAILS_COMBOBOX),
+              false,
+              "New action button is not in read only state!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RELATIONSHIP_WITH_CASE_INPUT),
+              false,
+              "Link event group button is not in read only state!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(CONTACT_CATEGORY_OPTIONS),
+              false,
+              "Disease combobox is not in read only state!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(
+                  ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT),
+              false,
+              "Place of stay combobox is not in read only state!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX),
+              false,
+              "Source type combobox is not in read only state!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RESPONSIBLE_SURVEILLANCE_OFFICER_COMBOBOX),
+              false,
+              "Event status options is not in read only state!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(SAVE_EDIT_BUTTON),
+              false,
+              "Save button is not in read only state!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DISCARD_BUTTON),
+              false,
+              "Discard button is not in read only state!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DELETE_BUTTON),
+              false,
+              "Delete button is not in read only state!");
+        });
   }
 
   private void fillFirstName(String firstName) {

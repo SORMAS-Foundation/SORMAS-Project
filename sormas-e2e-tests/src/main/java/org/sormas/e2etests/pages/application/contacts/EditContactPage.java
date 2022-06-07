@@ -157,5 +157,6 @@ public class EditContactPage {
     return By.xpath(
         String.format("//*[contains(text(),'Pick or create event')]//..//..//../tr[%s]", index));
   }
+
   public static final By CONTACTS_LIST = By.id("tab-contacts");
 }
