@@ -15,16 +15,18 @@
 
 package de.symeda.sormas.ui.labmessage.processing;
 
-import de.symeda.sormas.api.FacadeProvider;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.labmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.ui.labmessage.processing.flow.ProcessingResultStatus;
 
@@ -42,7 +44,8 @@ public abstract class AbstractPhysicianReportProcessingFlow extends AbstractProc
 			.then((p) -> pickOrCreateEntry(p.getData(), labMessage))
 			.thenSwitch()
 				.when(PersonAndPickOrCreateEntryResult::isNewCase, (f, e) -> f
-						.then((ignored) -> createCase(e.getPerson(), labMessage))
+						.then((ignored) -> createCase(e.getPerson(), labMessage)).then((c) ->
+								convertSamePersonContactsAndEventparticipants(c.getData()).thenCompose((ignored) -> CompletableFuture.completedFuture(c)))
 						.then((c) -> updateCase(c.getData(), labMessage)))
 				.when(PersonAndPickOrCreateEntryResult::isSelectedCase, (f, e) -> f.then((ignored) -> updateCase(e.getCaze(), labMessage)))
 				.then(s -> ProcessingResult.continueWith(s.getData()).asCompletedFuture())
@@ -101,4 +104,13 @@ public abstract class AbstractPhysicianReportProcessingFlow extends AbstractProc
 	}
 
 	protected abstract void handleUpdateCase(CaseDataDto caze, LabMessageDto labMessage, HandlerCallback<CaseDataDto> callback);
+
+	private CompletionStage<Void> convertSamePersonContactsAndEventparticipants(CaseDataDto caze) {
+		CompletableFuture<Void> ret = new CompletableFuture<>();
+		ControllerProvider.getCaseController().convertSamePersonContactsAndEventparticipants(caze, () -> {
+			ret.complete(null);
+		});
+
+		return ret;
+	}
 }
