@@ -139,7 +139,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	public List<String> archive(List<String> entityUuids) {
 		List<String> archivedEntityUuids = new ArrayList<>();
 		entityUuids.forEach(entityUuid -> {
-			if (isUsedInOtherInfrastructureData(Arrays.asList(entityUuid))) {
+			if (!isUsedInOtherInfrastructureData(Arrays.asList(entityUuid))) {
 				archive(entityUuid);
 				archivedEntityUuids.add(entityUuid);
 			}
@@ -151,7 +151,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	public List<String> dearchive(List<String> entityUuids) {
 		List<String> dearchivedEntityUuids = new ArrayList<>();
 		entityUuids.forEach(entityUuid -> {
-			if (hasArchivedParentInfrastructure(Arrays.asList(entityUuid))) {
+			if (!hasArchivedParentInfrastructure(Arrays.asList(entityUuid))) {
 				dearchive(entityUuid);
 				dearchivedEntityUuids.add(entityUuid);
 			}
