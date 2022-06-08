@@ -1,5 +1,8 @@
 package de.symeda.sormas.api.externalmessage;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -84,6 +87,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personLastName;
 	private Sex personSex;
+	private PresentCondition personPresentCondition;
 	private Integer personBirthDateDD;
 	private Integer personBirthDateMM;
 	private Integer personBirthDateYYYY;
@@ -245,6 +249,14 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setPersonSex(Sex personSex) {
 		this.personSex = personSex;
+	}
+
+	public PresentCondition getPersonPresentCondition() {
+		return personPresentCondition;
+	}
+
+	public void setPersonPresentCondition(PresentCondition personPresentCondition) {
+		this.personPresentCondition = personPresentCondition;
 	}
 
 	public Integer getPersonBirthDateDD() {

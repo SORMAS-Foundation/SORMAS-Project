@@ -437,7 +437,13 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		Integer year = comboBoxYear.getValue();
 
 		if (year != null) {
-			comboBoxEpiweek.setItems(DateHelper.createEpiWeekList(year));
+			EpiWeek selectedEpiWeek = comboBoxEpiweek.getValue();
+			List<EpiWeek> epiWeekOptions = DateHelper.createEpiWeekList(year);
+			comboBoxEpiweek.setItems(epiWeekOptions);
+			if (selectedEpiWeek != null) {
+				EpiWeek adjustedEpiWeek = DateHelper.getSameEpiWeek(selectedEpiWeek, epiWeekOptions);
+				comboBoxEpiweek.setValue(adjustedEpiWeek);
+			}
 		} else {
 			comboBoxEpiweek.clear();
 		}

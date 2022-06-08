@@ -1951,9 +1951,10 @@ public interface Captions {
 	String sampleReferredTo = "sampleReferredTo";
 	String sampleReferredToInternal = "sampleReferredToInternal";
 	String sampleSamplesList = "sampleSamplesList";
-	String sampleSelect = "sampleSelect";
 	String sampleShipped = "sampleShipped";
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
+	String selectOtherSample = "selectOtherSample";
+	String selectSimilarSample = "selectSimilarSample";
 	String sex = "sex";
 	String showPlacesOnMap = "showPlacesOnMap";
 	String singleDayEventDate = "singleDayEventDate";
