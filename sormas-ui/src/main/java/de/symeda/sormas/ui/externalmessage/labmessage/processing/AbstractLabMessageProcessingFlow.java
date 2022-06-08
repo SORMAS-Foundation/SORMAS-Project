@@ -51,6 +51,7 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.externalmessage.ExternalMessageMapper;
+import java.util.stream.Collectors;
 
 /**
  * Abstract class defining the flow of processing a lab message allowing to choose between multiple options like create or select a
