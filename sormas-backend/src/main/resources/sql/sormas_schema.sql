@@ -11597,7 +11597,6 @@ ALTER TABLE externalmessage ADD COLUMN caze_id bigint;
 ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 ALTER TABLE externalmessage_history ADD COLUMN caze_id bigint;
-ALTER TABLE externalmessage_history ADD CONSTRAINT fk_externalmessage_history_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 INSERT INTO schema_version (version_number, comment) VALUES (467, '[DEMIS2SORMAS] Introduce processing for physician reports #8980');
 
