@@ -59,4 +59,16 @@ public class SubcontinentResource extends EntityDtoResource {
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getSubcontinentFacade()::save);
 		return result;
 	}
+
+	@POST
+	@Path("/archive")
+	public List<String> archive(@RequestBody List<String> uuids) {
+		return FacadeProvider.getSubcontinentFacade().archive(uuids);
+	}
+
+	@POST
+	@Path("/dearchive")
+	public List<String> dearchive(@RequestBody List<String> uuids) {
+		return FacadeProvider.getSubcontinentFacade().dearchive(uuids);
+	}
 }
