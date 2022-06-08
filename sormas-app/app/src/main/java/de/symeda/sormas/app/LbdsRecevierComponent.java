@@ -92,6 +92,10 @@ public class LbdsRecevierComponent extends BroadcastReceiver {
 		HttpResult resultFromResponse = httpContainerResponse.getResult();
 
 		Log.i("SORMAS_LBDS", "Request: " + methodFromResponse);
+		if (resultFromResponse == null) {
+			Log.i("SORMAS_LBDS", "Result is null");
+			return;
+		}
 		Log.i("SORMAS_LBDS", "Result Headers: " + resultFromResponse.headers);
 		Log.i("SORMAS_LBDS", "Result Body: " + resultFromResponse.body);
 
@@ -139,6 +143,10 @@ public class LbdsRecevierComponent extends BroadcastReceiver {
 		HttpResult resultFromResponse = httpContainerResponse.getResult();
 
 		Log.i("SORMAS_LBDS", "Request: " + methodFromResponse);
+		if (resultFromResponse == null) {
+			Log.i("SORMAS_LBDS", "Result is null");
+			return;
+		}
 		Log.i("SORMAS_LBDS", "Result Headers: " + resultFromResponse.headers);
 		Log.i("SORMAS_LBDS", "Result Body: " + resultFromResponse.body);
 

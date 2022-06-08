@@ -59,4 +59,16 @@ public class ContinentResource extends EntityDtoResource {
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getContinentFacade()::save);
 		return result;
 	}
+
+	@POST
+	@Path("/archive")
+	public List<String> archive(@RequestBody List<String> uuids) {
+		return FacadeProvider.getContinentFacade().archive(uuids);
+	}
+
+	@POST
+	@Path("/dearchive")
+	public List<String> dearchive(@RequestBody List<String> uuids) {
+		return FacadeProvider.getContinentFacade().dearchive(uuids);
+	}
 }
