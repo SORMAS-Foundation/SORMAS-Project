@@ -72,6 +72,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.share.ExternalShareStatus;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -2539,10 +2540,27 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
+	public void updateStatusInExternalSurveillanceTool(String entityUuid, ExternalShareStatus externalShareStatus) {
+		Case caze = caseService.getByUuid(entityUuid);
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && caze.getExternalID() != null && !caze.getExternalID().isEmpty()) {
+			List<CaseDataDto> casesWithSameExternalId = getByExternalId(caze.getExternalID());
+			if (casesWithSameExternalId != null && casesWithSameExternalId.size() == 1) {
+				externalSurveillanceToolGatewayFacade.updateCasesStatuses(Collections.singletonList(entityUuid), externalShareStatus);
+			}
+		}
+	}
+
+/*	public void updateStatusInExternalSurveillanceToolForMultipleCases(List<String> entityUuids, ExternalShareStatus externalShareStatus) {
+		entityUuids.forEach(entityUuid -> {
+			updateStatusInExternalSurveillanceTool(entityUuid, externalShareStatus);
+		});
+	}*/
+
 	@Override
 	@RolesAllowed(UserRight._CASE_ARCHIVE)
 	public void archive(String entityUuid, Date endOfProcessingDate, boolean includeContacts) {
 		super.archive(entityUuid, endOfProcessingDate);
+		updateStatusInExternalSurveillanceTool(entityUuid, ExternalShareStatus.ARCHIVED);
 		if (includeContacts) {
 			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(Collections.singletonList(entityUuid));
 			contactService.archive(caseContacts);
@@ -2553,6 +2571,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@RolesAllowed(UserRight._CASE_ARCHIVE)
 	public void archive(List<String> entityUuids, boolean includeContacts) {
 		super.archive(entityUuids);
+		// updateStatusInExternalSurveillanceToolForMultipleCases(entityUuids, ExternalShareStatus.ARCHIVED);
 		if (includeContacts) {
 			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(entityUuids);
 			contactService.archive(caseContacts);
@@ -2563,6 +2582,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@RolesAllowed(UserRight._CASE_ARCHIVE)
 	public void dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts) {
 		super.dearchive(entityUuids, dearchiveReason);
+		// updateStatusInExternalSurveillanceToolForMultipleCases(entityUuids, ExternalShareStatus.DEARCHIVED);
 		if (includeContacts) {
 			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(entityUuids);
 			contactService.dearchive(caseContacts, dearchiveReason);

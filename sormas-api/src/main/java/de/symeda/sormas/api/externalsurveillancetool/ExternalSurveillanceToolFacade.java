@@ -21,6 +21,7 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.share.ExternalShareStatus;
 
 /**
  * Gateway to interact with the local external surveillance tool instance of the health department
@@ -36,17 +37,17 @@ public interface ExternalSurveillanceToolFacade {
 	 * @param caseUuids
 	 * @return http response code of the gateway
 	 */
-	void sendCases(List<String> caseUuids) throws ExternalSurveillanceToolException;
+	void sendCases(List<String> caseUuids, ExternalShareStatus externalShareStatus);
 
-	void sendEvents(List<String> eventUuids) throws ExternalSurveillanceToolException;
+	void sendEvents(List<String> eventUuids);
 
 	void createCaseShareInfo(List<String> caseUuids);
 
 	void createEventShareInfo(List<String> eventUuids);
 
-	void deleteCases(List<CaseDataDto> cases) throws ExternalSurveillanceToolException;
+	void deleteCases(List<CaseDataDto> cases);
 
-	void deleteEvents(List<EventDto> events) throws ExternalSurveillanceToolException;
+	void deleteEvents(List<EventDto> events);
 
-	String getVersion() throws ExternalSurveillanceToolException;
+	String getVersion();
 }
