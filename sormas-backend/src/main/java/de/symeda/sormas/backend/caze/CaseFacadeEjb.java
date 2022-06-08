@@ -2945,6 +2945,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			source.setTherapy(TherapyDto.build());
 		}
 		target.setTherapy(therapyFacade.fromDto(source.getTherapy(), checkChangeDate));
+		if (source.getHealthConditions() == null) {
+			source.setHealthConditions(HealthConditionsDto.build());
+		}
 		target.setHealthConditions(healthConditionsMapper.fromDto(source.getHealthConditions(), checkChangeDate));
 		if (source.getClinicalCourse() == null) {
 			source.setClinicalCourse(ClinicalCourseDto.build());
