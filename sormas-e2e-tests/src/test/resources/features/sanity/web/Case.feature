@@ -1202,3 +1202,16 @@ Feature: Case end to end tests
     And I click on Save button from the new travel entry form
     Then I navigate to the last created via api Person page via URL
     And I check if added travel Entry appeared on Edit Person Page
+
+  @issue=SORDEV-5623 @env_de
+  Scenario: Show date and responsible user of last follow-up status change
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with only the required data for DE version
+    Then I check that follow-up status is set to Under follow-up in German on Edit case page
+    When I click on the Cancel Follow-up button from Edit case page
+    Then I provide follow-up status comment from Edit case page
+    And I click on save button from Edit Case page
+    And I check that Date of Follow-up Status Change and Responsible User are correctly displayed on Edit case page
+
