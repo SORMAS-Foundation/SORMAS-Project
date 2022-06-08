@@ -23,6 +23,8 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
@@ -44,7 +46,6 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import org.apache.commons.lang3.StringUtils;
 
 @Stateless(name = "AggregateReportFacade")
 @RolesAllowed(UserRight._AGGREGATE_REPORT_VIEW)
@@ -181,8 +182,12 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		List<AggregatedCaseCountDto> reportList = new ArrayList<>(reportSet);
 		Function<AggregatedCaseCountDto, String> diseaseComparator = r -> r.getDisease().toString();
 		Comparator<AggregatedCaseCountDto> comparator = Comparator.comparing(diseaseComparator)
-			.thenComparing(r -> r.getAgeGroup() != null ? r.getAgeGroup().replaceAll("\\d", StringUtils.EMPTY) : StringUtils.EMPTY)
-			.thenComparing(r -> r.getAgeGroup() != null ? r.getAgeGroup().replaceAll("_", StringUtils.EMPTY) : StringUtils.EMPTY);
+			.thenComparing(
+				r -> r.getAgeGroup() != null
+					? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
+					: StringUtils.EMPTY)
+			.thenComparing(r -> r.getAgeGroup() != null ? r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY) : StringUtils.EMPTY);
+
 		reportList.sort(comparator);
 		return reportList;
 	}

@@ -98,4 +98,45 @@ public class AggregateReportFacadeEjbTest  extends AbstractBeanTest {
 		Assert.assertEquals(24, indexList.size());
 		Assert.assertEquals(1, indexList.stream().filter(aggregatedCaseCountDto -> aggregatedCaseCountDto.getDeaths() == 3).count());
 	}
+
+	@Test
+	public void testAggregateReportsSorting(){
+		loginWith(informant1);
+
+		EpiWeek epiWeek = DateHelper.getEpiWeek(new Date());
+
+		createAggregateReport(epiWeek, "61Y");
+		createAggregateReport(epiWeek, "41Y_60Y");
+		createAggregateReport(epiWeek, "21Y_30Y");
+		createAggregateReport(epiWeek, "31Y_40Y");
+		createAggregateReport(epiWeek, "60M_10Y");
+		createAggregateReport(epiWeek, "0D_30D");
+		createAggregateReport(epiWeek, "0D_59M");
+
+		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(new AggregateReportCriteria().healthFacility(rdcf.facility));
+		Assert.assertEquals(30, indexList.size());
+
+		Assert.assertEquals("0D_59M", indexList.get(5).getAgeGroup());
+		Assert.assertEquals("0D_30D", indexList.get(6).getAgeGroup());
+		Assert.assertEquals("60M_10Y", indexList.get(7).getAgeGroup());
+		Assert.assertEquals("21Y_30Y", indexList.get(8).getAgeGroup());
+		Assert.assertEquals("31Y_40Y", indexList.get(9).getAgeGroup());
+		Assert.assertEquals("41Y_60Y", indexList.get(10).getAgeGroup());
+		Assert.assertEquals("61Y", indexList.get(11).getAgeGroup());
+	}
+
+	private void createAggregateReport(EpiWeek epiWeek, String ageGroup) {
+		AggregateReportDto aggregateReportDto = AggregateReportDto.build();
+		aggregateReportDto.setDisease(Disease.HIV);
+		aggregateReportDto.setReportingUser(informant1.toReference());
+		aggregateReportDto.setNewCases(1);
+		aggregateReportDto.setDeaths(3);
+		aggregateReportDto.setLabConfirmations(2);
+		aggregateReportDto.setEpiWeek(epiWeek.getWeek());
+		aggregateReportDto.setRegion(rdcf.region);
+		aggregateReportDto.setDistrict(rdcf.district);
+		aggregateReportDto.setHealthFacility(rdcf.facility);
+		aggregateReportDto.setAgeGroup(ageGroup);
+		getAggregateReportFacade().saveAggregateReport(aggregateReportDto);
+	}
 }

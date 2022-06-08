@@ -57,8 +57,12 @@ public class AggregateReportDao extends AbstractAdoDao<AggregateReport> {
 
 			Function<AggregateReport, String> diseaseComparator = r -> r.getDisease().toString();
 			Comparator<AggregateReport> comparator = Comparator.comparing(diseaseComparator)
-				.thenComparing(r -> r.getAgeGroup() != null ? r.getAgeGroup().replaceAll("\\d", StringUtils.EMPTY) : StringUtils.EMPTY)
-				.thenComparing(r -> r.getAgeGroup() != null ? r.getAgeGroup().replaceAll("_", StringUtils.EMPTY) : StringUtils.EMPTY);
+				.thenComparing(
+					r -> r.getAgeGroup() != null
+						? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
+						: StringUtils.EMPTY)
+				.thenComparing(
+					r -> r.getAgeGroup() != null ? r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY) : StringUtils.EMPTY);
 
 			Collections.sort(reports, comparator);
 
