@@ -36,6 +36,7 @@ public class AggregateReport extends AbstractDomainObject {
 	public static final String NEW_CASES = "newCases";
 	public static final String LAB_CONFIRMATIONS = "labConfirmations";
 	public static final String DEATHS = "deaths";
+	public static final String AGE_GROUP = "ageGroup";
 
 	private User reportingUser;
 	private Disease disease;
@@ -48,6 +49,7 @@ public class AggregateReport extends AbstractDomainObject {
 	private Integer newCases;
 	private Integer labConfirmations;
 	private Integer deaths;
+	private String ageGroup;
 
 	@ManyToOne(cascade = {})
 	@JoinColumn
@@ -149,5 +151,14 @@ public class AggregateReport extends AbstractDomainObject {
 
 	public void setDeaths(Integer deaths) {
 		this.deaths = deaths;
+	}
+
+	@Column
+	public String getAgeGroup() {
+		return ageGroup;
+	}
+
+	public void setAgeGroup(String ageGroup) {
+		this.ageGroup = ageGroup;
 	}
 }

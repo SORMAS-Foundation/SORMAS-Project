@@ -42,7 +42,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.common.DeletionDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +52,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -646,7 +646,8 @@ public class ImmunizationFacadeEjb
 	@RolesAllowed({
 		UserRight._IMMUNIZATION_CREATE,
 		UserRight._PERSON_EDIT })
-	public void copyImmunizationsToLeadPerson(ImmunizationDto immunizationDto, PersonDto leadPerson) {
+	public void copyImmunizationToLeadPerson(ImmunizationDto immunizationDto, PersonDto leadPerson, List<VaccinationDto> leadPersonVaccinations) {
+
 		Immunization newImmunization = new Immunization();
 		newImmunization.setUuid(DataHelper.createUuid());
 
@@ -655,7 +656,8 @@ public class ImmunizationFacadeEjb
 		newImmunization.setPerson(personService.getByReferenceDto(leadPerson.toReference()));
 		service.persist(newImmunization);
 
-		vaccinationFacade.copyExistingVaccinationsToNewImmunization(immunizationDto, newImmunization);
+		vaccinationFacade.copyOrMergeVaccinations(immunizationDto, newImmunization, leadPersonVaccinations);
+
 		service.ensurePersisted(newImmunization);
 	}
 
