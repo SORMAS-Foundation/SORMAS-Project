@@ -15,9 +15,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
-import org.apache.commons.lang3.StringUtils;
-
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestResultType;

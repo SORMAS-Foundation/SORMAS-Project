@@ -8,9 +8,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang3.StringUtils;
-
-import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;

@@ -28,6 +28,8 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -41,8 +43,6 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Stateless(name = "ExternalSurveillanceToolFacade")
 public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveillanceToolFacade {

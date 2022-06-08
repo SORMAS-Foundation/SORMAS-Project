@@ -5,9 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang3.StringUtils;
-
-import de.symeda.sormas.api.infrastructure.country.CountryDto;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
 

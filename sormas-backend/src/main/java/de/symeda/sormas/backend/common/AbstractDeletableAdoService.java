@@ -1,13 +1,13 @@
 package de.symeda.sormas.backend.common;
 
-import de.symeda.sormas.api.common.DeletionDetails;
-
 import java.sql.Timestamp;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
+
+import de.symeda.sormas.api.common.DeletionDetails;
 
 public abstract class AbstractDeletableAdoService<ADO extends DeletableAdo> extends AdoServiceWithUserFilter<ADO> {
 

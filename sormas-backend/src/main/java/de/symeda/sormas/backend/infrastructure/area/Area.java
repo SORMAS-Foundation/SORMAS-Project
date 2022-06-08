@@ -6,9 +6,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang3.StringUtils;
-
-import de.symeda.sormas.api.infrastructure.area.AreaDto;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 
 @Entity(name = "areas")

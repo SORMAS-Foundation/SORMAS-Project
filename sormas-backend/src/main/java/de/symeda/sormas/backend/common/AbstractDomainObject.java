@@ -40,7 +40,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 import javax.validation.constraints.Size;
 
-import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.TypeDef;
 
