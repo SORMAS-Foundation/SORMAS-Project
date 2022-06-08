@@ -127,7 +127,7 @@ public class CasesView extends AbstractView {
 	private final boolean caseFollowUpEnabled;
 	private final boolean hasClinicalCourseRight;
 	private final boolean hasTherapyRight;
-	private final boolean hasExportSamples;
+	private final boolean hasExportSamplesRight;
 	private final ExportConfigurationDto detailedExportConfiguration;
 
 	private final CaseCriteria criteria;
@@ -159,7 +159,7 @@ public class CasesView extends AbstractView {
 		caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
 		hasClinicalCourseRight = UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW);
 		hasTherapyRight = UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW);
-		hasExportSamples = UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EXPORT);
+		hasExportSamplesRight = UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EXPORT);
 		detailedExportConfiguration = buildDetailedExportConfiguration();
 		viewConfiguration = ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class);
 		if (viewConfiguration.getViewType() == null) {
@@ -327,7 +327,7 @@ public class CasesView extends AbstractView {
 					Strings.infoCaseManagementExport);
 			}
 
-			if(hasExportSamples) {
+			if(hasExportSamplesRight) {
 				StreamResource sampleExportStreamResource = DownloadUtil.createCsvExportStreamResource(
 					SampleExportDto.class,
 					null,
