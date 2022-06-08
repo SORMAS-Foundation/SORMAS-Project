@@ -97,7 +97,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 				.withRequestBody(containing("caseUuids"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-		subjectUnderTest.sendCases(Arrays.asList(case1.getUuid(), case2.getUuid()));
+		subjectUnderTest.sendCases(Arrays.asList(case1.getUuid(), case2.getUuid()), ExternalShareStatus.ARCHIVED);
 
 		assertThat(getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().caze(case1.toReference()), 0, 100), hasSize(1));
 		assertThat(getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().caze(case2.toReference()), 0, 100), hasSize(1));
@@ -111,7 +111,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
 		try {
-			subjectUnderTest.sendCases(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "test-not-found"));
+			subjectUnderTest.sendCases(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "test-not-found"), ExternalShareStatus.ARCHIVED);
 		} catch (ExternalSurveillanceToolException e) {
 			assertThat(e.getMessage(), Matchers.is(I18nProperties.getString("ExternalSurveillanceToolGateway.notificationErrorSending")));
 		}
