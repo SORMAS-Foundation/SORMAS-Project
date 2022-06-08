@@ -646,7 +646,7 @@ public class ImmunizationFacadeEjb
 	@RolesAllowed({
 		UserRight._IMMUNIZATION_CREATE,
 		UserRight._PERSON_EDIT })
-	public void copyImmunizationToLeadPerson(ImmunizationDto immunizationDto, PersonDto leadPerson) {
+	public void copyImmunizationToLeadPerson(ImmunizationDto immunizationDto, PersonDto leadPerson, List<VaccinationDto> leadPersonVaccinations) {
 
 		Immunization newImmunization = new Immunization();
 		newImmunization.setUuid(DataHelper.createUuid());
@@ -656,12 +656,8 @@ public class ImmunizationFacadeEjb
 		newImmunization.setPerson(personService.getByReferenceDto(leadPerson.toReference()));
 		service.persist(newImmunization);
 
-		vaccinationFacade.copyOrMergeVaccinations(
-			immunizationDto,
-			newImmunization,
-			getByPersonUuids(Collections.singletonList(leadPerson.getUuid())).stream()
-				.flatMap(i -> i.getVaccinations().stream())
-				.collect(Collectors.toList()));
+		vaccinationFacade.copyOrMergeVaccinations(immunizationDto, newImmunization, leadPersonVaccinations);
+
 		service.ensurePersisted(newImmunization);
 	}
 

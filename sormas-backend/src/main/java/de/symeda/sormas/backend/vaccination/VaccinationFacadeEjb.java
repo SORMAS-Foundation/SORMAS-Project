@@ -534,7 +534,9 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 		List<Vaccination> vaccinationEntities = new ArrayList<>();
 		for (VaccinationDto vaccinationDto : immunizationDto.getVaccinations()) {
-			Optional<VaccinationDto> duplicateVaccination = leadPersonVaccinations.stream().filter(v -> isDuplicateOf(vaccinationDto, v)).findFirst();
+			Optional<VaccinationDto> duplicateVaccination = leadPersonVaccinations != null
+				? leadPersonVaccinations.stream().filter(v -> isDuplicateOf(vaccinationDto, v)).findFirst()
+				: Optional.empty();
 
 			if (duplicateVaccination.isPresent()) {
 				VaccinationDto updatedVaccination = DtoHelper.copyDtoValues(duplicateVaccination.get(), vaccinationDto, false);
@@ -560,6 +562,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	private boolean isDuplicateOf(VaccinationDto vaccination1, VaccinationDto vaccination2) {
 
 		return !vaccination1.getUuid().equals(vaccination2.getUuid())
+			&& vaccination1.getVaccineName() != Vaccine.UNKNOWN
+			&& vaccination2.getVaccineName() != Vaccine.UNKNOWN
 			&& vaccination1.getVaccinationDate() != null
 			&& vaccination2.getVaccinationDate() != null
 			&& DateHelper.isSameDay(vaccination1.getVaccinationDate(), vaccination2.getVaccinationDate())
