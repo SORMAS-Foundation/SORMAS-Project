@@ -39,6 +39,9 @@ public class AgeGroupUtils {
 	}
 
 	public static String createCaption(String ageGroup) {
+		if (ageGroup == null || ageGroup.isEmpty()) {
+			return StringUtils.EMPTY;
+		}
 		validateAgeGroup(ageGroup);
 		if (ageGroup.contains("_")) {
 			final String[] ageGroupSplit = ageGroup.split("_");

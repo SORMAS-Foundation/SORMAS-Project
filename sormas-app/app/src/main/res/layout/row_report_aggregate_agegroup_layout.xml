@@ -22,6 +22,7 @@
 
     <data>
         <variable name="data" type="de.symeda.sormas.app.backend.report.AggregateReport"/>
+        <import type="de.symeda.sormas.api.utils.AgeGroupUtils" />
     </data>
 
     <LinearLayout
@@ -45,7 +46,7 @@
             android:scrollHorizontally="false"
             android:paddingTop="18dp"
             android:paddingEnd="8dp"
-            app:value="@{data.ageGroup}" />
+            app:value="@{AgeGroupUtils.createCaption(data.ageGroup)}" />
 
         <de.symeda.sormas.app.component.controls.ControlTextEditField
             android:id="@+id/aggregateReport_newCases"

@@ -212,7 +212,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 							DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_agegroup_layout, contentBinding.reportContent, true);
 					String ageGroup = report.getAgeGroup();
 					if (ageGroup != null) {
-						report.setAgeGroup(AgeGroupUtils.createCaption(ageGroup));
+						report.setAgeGroup(ageGroup);
 					}
 					binding.setData(report);
 					if (latestLocalChangeDate == null
@@ -246,7 +246,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 						DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_agegroup_layout, contentBinding.reportContent, true);
 					AggregateReport data = DatabaseHelper.getAggregateReportDao().build();
 					data.setDisease(diseaseEnum);
-					data.setAgeGroup(AgeGroupUtils.createCaption(ageGroup));
+					data.setAgeGroup(ageGroup);
 					binding.setData(data);
 					reports.add(data);
 				}
