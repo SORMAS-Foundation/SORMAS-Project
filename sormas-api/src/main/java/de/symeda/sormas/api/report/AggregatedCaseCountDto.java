@@ -1,31 +1,32 @@
 package de.symeda.sormas.api.report;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import de.symeda.sormas.api.Disease;
 
 public class AggregatedCaseCountDto implements Serializable {
 
-	private static final long serialVersionUID = -6857559727281292882L;
-
 	public static final String I18N_PREFIX = "AggregateReport";
-
 	public static final String DISEASE = "disease";
+	public static final String AGE_GROUP = "ageGroup";
 	public static final String NEW_CASES = "newCases";
 	public static final String LAB_CONFIRMATIONS = "labConfirmations";
 	public static final String DEATHS = "deaths";
-
+	private static final long serialVersionUID = -6857559727281292882L;
 	private Disease disease;
 	private int newCases;
 	private int labConfirmations;
 	private int deaths;
+	private String ageGroup;
 
-	public AggregatedCaseCountDto(Disease disease, int newCases, int labConfirmations, int deaths) {
+	public AggregatedCaseCountDto(Disease disease, int newCases, int labConfirmations, int deaths, String ageGroup) {
 
 		this.disease = disease;
 		this.newCases = newCases;
 		this.labConfirmations = labConfirmations;
 		this.deaths = deaths;
+		this.ageGroup = ageGroup;
 	}
 
 	public Disease getDisease() {
@@ -60,6 +61,14 @@ public class AggregatedCaseCountDto implements Serializable {
 		this.deaths = deaths;
 	}
 
+	public String getAgeGroup() {
+		return ageGroup;
+	}
+
+	public void setAgeGroup(String ageGroup) {
+		this.ageGroup = ageGroup;
+	}
+
 	@Override
 	public int hashCode() {
 
@@ -69,6 +78,7 @@ public class AggregatedCaseCountDto implements Serializable {
 		result = prime * result + ((disease == null) ? 0 : disease.hashCode());
 		result = prime * result + labConfirmations;
 		result = prime * result + newCases;
+		result = prime * result + ((ageGroup == null) ? 0 : ageGroup.hashCode());;
 		return result;
 	}
 
@@ -89,6 +99,8 @@ public class AggregatedCaseCountDto implements Serializable {
 		if (labConfirmations != other.labConfirmations)
 			return false;
 		if (newCases != other.newCases)
+			return false;
+		if (!Objects.equals(ageGroup, other.ageGroup))
 			return false;
 		return true;
 	}

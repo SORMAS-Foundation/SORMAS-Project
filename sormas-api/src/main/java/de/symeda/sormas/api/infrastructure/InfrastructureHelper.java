@@ -6,6 +6,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 
@@ -72,5 +73,23 @@ public final class InfrastructureHelper {
 
 	public static BigDecimal getCaseIncidence(int caseCount, int population, int divisor) {
 		return new BigDecimal(caseCount).divide(new BigDecimal((double) population / divisor), 2, RoundingMode.HALF_UP);
+	}
+
+	public static JurisdictionLevel getSuperordinateJurisdiction(JurisdictionLevel jurisdiction) {
+		switch (jurisdiction) {
+		case REGION:
+			return JurisdictionLevel.NATION;
+		case DISTRICT:
+			return JurisdictionLevel.REGION;
+		case COMMUNITY:
+		case POINT_OF_ENTRY:
+		case HEALTH_FACILITY:
+			return JurisdictionLevel.DISTRICT;
+		case LABORATORY:
+		case EXTERNAL_LABORATORY:
+		case NATION:
+		default:
+			return JurisdictionLevel.NONE;
+		}
 	}
 }

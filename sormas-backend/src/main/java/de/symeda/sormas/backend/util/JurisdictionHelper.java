@@ -23,31 +23,17 @@ import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 
 public class JurisdictionHelper {
 
 	private JurisdictionHelper() {
-	}
-
-	public static JurisdictionLevel getSuperordinateJurisdiction(JurisdictionLevel jurisdition) {
-		switch (jurisdition) {
-		case NATION:
-			return JurisdictionLevel.NONE;
-		case REGION:
-			return JurisdictionLevel.NATION;
-		case DISTRICT:
-			return JurisdictionLevel.REGION;
-		case COMMUNITY:
-		case POINT_OF_ENTRY:
-		case HEALTH_FACILITY:
-			return JurisdictionLevel.DISTRICT;
-		case LABORATORY:
-		case EXTERNAL_LABORATORY:
-		default:
-			return JurisdictionLevel.NONE;
-		}
 	}
 
 	public static List<Region> getCaseRegions(Case caze) {
@@ -76,5 +62,24 @@ public class JurisdictionHelper {
 
 	public static Expression<Object> booleanSelector(CriteriaBuilder cb, Predicate jurisdictionPredicate) {
 		return cb.selectCase().when(jurisdictionPredicate, cb.literal(true)).otherwise(cb.literal(false));
+	}
+
+	public static InfrastructureAdo getParentInfrastructure(InfrastructureAdo infrastructure, JurisdictionLevel parentJurisdictionLevel) {
+
+		if (infrastructure instanceof Facility) {
+			if (parentJurisdictionLevel == JurisdictionLevel.COMMUNITY) {
+				return ((Facility) infrastructure).getCommunity();
+			} else {
+				return ((Facility) infrastructure).getDistrict();
+			}
+		} else if (infrastructure instanceof PointOfEntry) {
+			return ((PointOfEntry) infrastructure).getDistrict();
+		} else if (infrastructure instanceof Community) {
+			return ((Community) infrastructure).getDistrict();
+		} else if (infrastructure instanceof District) {
+			return ((District) infrastructure).getRegion();
+		} else {
+			throw new IllegalArgumentException("Infrastructure must be on district level or below to have a parent infrastructure");
+		}
 	}
 }

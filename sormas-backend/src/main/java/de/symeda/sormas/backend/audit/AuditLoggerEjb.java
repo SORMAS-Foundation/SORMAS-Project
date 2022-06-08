@@ -367,7 +367,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	}
 
 	@Override
-	public void logGetExternalLabMessagesSuccess(Date since, List<String> externalLabMessages, Date start, Date end, String authAlias) {
+	public void logGetExternalMessagesSuccess(Date since, List<String> externalLabMessages, Date start, Date end, String authAlias) {
 		String outcome = String.format("%d external lab messages since %s fetched", externalLabMessages.size(), since);
 
 		List<AuditEvent.AuditEventEntityDetailComponent> details = new ArrayList<>();
@@ -381,7 +381,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	}
 
 	@Override
-	public void logExternalLabMessagesHtmlSuccess(String uuid, int length, Date start, Date end, String authAlias) {
+	public void logExternalMessagesHtmlSuccess(String uuid, int length, Date start, Date end, String authAlias) {
 		String outcome = "Successfully exported HTML report";
 		List<AuditEvent.AuditEventEntityDetailComponent> details = new ArrayList<>();
 
@@ -392,7 +392,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	}
 
 	@Override
-	public void logExternalLabMessagesPdfSuccess(String uuid, int length, Date start, Date end, String authAlias) {
+	public void logExternalMessagesPdfSuccess(String uuid, int length, Date start, Date end, String authAlias) {
 		String outcome = "Successfully exported PDF report";
 		List<AuditEvent.AuditEventEntityDetailComponent> details = new ArrayList<>();
 
@@ -437,17 +437,17 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	}
 
 	@Override
-	public void logGetExternalLabMessagesError(String outcome, String error, Date start, Date end, String authAlias) {
+	public void logGetExternalMessagesError(String outcome, String error, Date start, Date end, String authAlias) {
 		logLabMessageError("", IMPORT_CODING, GET_EXTERNAL_LAB_MESSAGES, outcome, error, start, end, authAlias);
 	}
 
 	@Override
-	public void logExternalLabMessagesHtmlError(String messageUuid, String outcome, String error, Date start, Date end, String authAlias) {
+	public void logExternalMessagesHtmlError(String messageUuid, String outcome, String error, Date start, Date end, String authAlias) {
 		logLabMessageError(messageUuid, EXPORT_CODING, LAB_MESSAGE_CONVERT_TO_HTML, outcome, error, start, end, authAlias);
 	}
 
 	@Override
-	public void logExternalLabMessagesPdfError(String messageUuid, String outcome, String error, Date start, Date end, String authAlias) {
+	public void logExternalMessagesPdfError(String messageUuid, String outcome, String error, Date start, Date end, String authAlias) {
 		logLabMessageError(messageUuid, EXPORT_CODING, LAB_MESSAGE_CONVERT_TO_PDF, outcome, error, start, end, authAlias);
 	}
 

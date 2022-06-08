@@ -99,8 +99,8 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		rdcf2NewFacility = creator.createFacility("New facility", rdcf2.region, rdcf2.district, rdcf2NewCommunity.toReference());
 		rdcf2NewPointOfEntry = creator.createPointOfEntry("New point of entry", rdcf2.region, rdcf2.district);
 
-		observerUser = creator
-			.createUser(null, null, null, null, "National", "Observer", creator.getUserRoleReference(DefaultUserRole.NATIONAL_OBSERVER));
+		observerUser =
+			creator.createUser(null, null, null, null, "National", "Observer", creator.getUserRoleReference(DefaultUserRole.NATIONAL_OBSERVER));
 
 		loginWith(user2);
 	}
@@ -249,6 +249,8 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	@Test
 	public void testUpdatePseudonymizedCase() {
+
+		loginWith(user1);
 		CaseDataDto caze = createCase(rdcf1, user1);
 		loginWith(observerUser);
 		updateCase(caze, observerUser);
@@ -323,7 +325,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			user1.toReference(),
 			person,
 			Disease.CORONAVIRUS,
-			CaseClassification.PROBABLE,
+			CaseClassification.NOT_CLASSIFIED,
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcf,

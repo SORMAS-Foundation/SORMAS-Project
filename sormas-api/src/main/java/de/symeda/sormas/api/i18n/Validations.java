@@ -62,12 +62,15 @@ public interface Validations {
 	String externalJournalPersonValidationPhoneTaken = "externalJournalPersonValidationPhoneTaken";
 	String externalJournalPersonValidationSeveralEmails = "externalJournalPersonValidationSeveralEmails";
 	String externalJournalPersonValidationSeveralPhonesOrEmails = "externalJournalPersonValidationSeveralPhonesOrEmails";
+	String externalMessageAlreadyProcessedError = "externalMessageAlreadyProcessedError";
 	String externalMessageConfigError = "externalMessageConfigError";
 	String externalMessageConversionError = "externalMessageConversionError";
+	String externalMessageCorrectionsMade = "externalMessageCorrectionsMade";
 	String externalMessageDecryptError = "externalMessageDecryptError";
 	String externalMessageDisplayError = "externalMessageDisplayError";
 	String externalMessageFetchError = "externalMessageFetchError";
 	String externalMessageInitError = "externalMessageInitError";
+	String externalMessagePdfConversionError = "externalMessagePdfConversionError";
 	String feverTemperatureAboveThreshold = "feverTemperatureAboveThreshold";
 	String feverTemperatureBelowThreshold = "feverTemperatureBelowThreshold";
 	String fileTooBig = "fileTooBig";
@@ -121,9 +124,6 @@ public interface Validations {
 	String importWrongDataTypeError = "importWrongDataTypeError";
 	String infrastructureDataLocked = "infrastructureDataLocked";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
-	String labMessageAlreadyProcessedError = "labMessageAlreadyProcessedError";
-	String labMessageCorrectionsMade = "labMessageCorrectionsMade";
-	String labMessagePdfConversionError = "labMessagePdfConversionError";
 	String nameOrAnyOtherFieldShouldBeFilled = "nameOrAnyOtherFieldShouldBeFilled";
 	String noAddressCommunityInAddressDistrict = "noAddressCommunityInAddressDistrict";
 	String noAddressDistrictInAddressRegion = "noAddressDistrictInAddressRegion";
@@ -170,10 +170,10 @@ public interface Validations {
 	String sormasToSormasDistrict = "sormasToSormasDistrict";
 	String sormasToSormasEventExists = "sormasToSormasEventExists";
 	String sormasToSormasEventParticipantExists = "sormasToSormasEventParticipantExists";
+	String sormasToSormasExternalMessageExists = "sormasToSormasExternalMessageExists";
 	String sormasToSormasFacility = "sormasToSormasFacility";
 	String sormasToSormasImmunizationExists = "sormasToSormasImmunizationExists";
 	String sormasToSormasInfrastructure = "sormasToSormasInfrastructure";
-	String sormasToSormasLabMessageExists = "sormasToSormasLabMessageExists";
 	String sormasToSormasNotEditable = "sormasToSormasNotEditable";
 	String sormasToSormasOrganizationIdMissing = "sormasToSormasOrganizationIdMissing";
 	String sormasToSormasOwnershipAlreadyHandedOver = "sormasToSormasOwnershipAlreadyHandedOver";

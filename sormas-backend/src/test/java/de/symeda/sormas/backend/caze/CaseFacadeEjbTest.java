@@ -2690,7 +2690,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			cazePerson.toReference(),
 			Disease.EVD,
-			CaseClassification.PROBABLE,
+			CaseClassification.NOT_CLASSIFIED,
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcf);
@@ -2700,7 +2700,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			cazePerson2.toReference(),
 			Disease.EVD,
-			CaseClassification.PROBABLE,
+			CaseClassification.NOT_CLASSIFIED,
 			InvestigationStatus.PENDING,
 			DateUtils.addMinutes(new Date(), -3),
 			rdcf);
@@ -2842,6 +2842,30 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(0, getContactFacade().getAllActiveUuids().size());
 		assertEquals(DeletionReason.OTHER_REASON, getCaseFacade().getByUuid(caze.getUuid()).getDeletionReason());
 		assertEquals("test reason", getCaseFacade().getByUuid(caze.getUuid()).getOtherDeletionReason());
+	}
+
+	@Test
+	public void testUpdateFollowUpComment() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto person = creator.createPerson();
+
+		String initialComment = "comment1";
+
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf, c -> {
+			c.setFollowUpComment(initialComment);
+		});
+
+		CaseDataDto resultCaseDto = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(initialComment, resultCaseDto.getFollowUpComment());
+
+		String updateComment = "comment2";
+		caze.setFollowUpComment(updateComment);
+		CaseDataDto updateCase = getCaseFacade().updateFollowUpComment(caze);
+
+		assertEquals(updateComment, updateCase.getFollowUpComment());
+		resultCaseDto = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(updateComment, resultCaseDto.getFollowUpComment());
 	}
 
 	private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";

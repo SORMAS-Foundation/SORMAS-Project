@@ -1,12 +1,12 @@
 package de.symeda.sormas.app.backend.report;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -59,6 +59,8 @@ public class AggregateReport extends AbstractDomainObject {
 	private Integer labConfirmations;
 	@Column
 	private Integer deaths;
+	@Column
+	private String ageGroup;
 
 	public User getReportingUser() {
 		return reportingUser;
@@ -146,6 +148,14 @@ public class AggregateReport extends AbstractDomainObject {
 
 	public void setDeaths(Integer deaths) {
 		this.deaths = deaths;
+	}
+
+	public String getAgeGroup() {
+		return ageGroup;
+	}
+
+	public void setAgeGroup(String ageGroup) {
+		this.ageGroup = ageGroup;
 	}
 
 	@Override

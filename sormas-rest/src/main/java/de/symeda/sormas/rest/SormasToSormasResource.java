@@ -126,9 +126,9 @@ public class SormasToSormasResource {
 	}
 
 	@POST
-	@Path(SormasToSormasApiConstants.LAB_MESSAGE_ENDPOINT)
+	@Path(SormasToSormasApiConstants.EXTERNAL_MESSAGE_ENDPOINT)
 	public Response syncSharedLAbMessages(@Valid SormasToSormasEncryptedDataDto labMessages) {
-		return handleVoidRequest(() -> FacadeProvider.getSormasToSormasLabMessageFacade().saveLabMessages(labMessages));
+		return handleVoidRequest(() -> FacadeProvider.getSormasToSormasLabMessageFacade().saveExternalMessages(labMessages));
 	}
 
 	@POST

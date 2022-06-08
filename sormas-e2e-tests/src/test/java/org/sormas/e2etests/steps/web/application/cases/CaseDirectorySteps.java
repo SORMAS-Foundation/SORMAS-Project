@@ -106,6 +106,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_R
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE_DEFINITION_TEXT;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.NEW_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.getCheckboxByUUID;
@@ -437,7 +438,11 @@ public class CaseDirectorySteps implements En {
         });
     And(
         "I navigate to Epidemiological Data tab on Edit Case Page",
-        () -> webDriverHelpers.clickOnWebElementBySelector(EPI_DATA_TAB));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EPI_DATA_TAB);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE);
+        });
     When(
         "^I click on ([^\"]*) Radiobutton on Epidemiological Data Page$",
         (String buttonName) -> {
@@ -447,6 +452,13 @@ public class CaseDirectorySteps implements En {
         "I click on new entry button from Epidemiological Data tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_ENTRY_POPUP);
+        });
+
+    Then(
+        "I click on new entry button from Epidemiological Data tab for DE",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_ENTRY_POPUP);
         });
 

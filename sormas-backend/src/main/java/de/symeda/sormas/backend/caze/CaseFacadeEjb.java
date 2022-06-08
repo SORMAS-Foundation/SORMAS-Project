@@ -1584,6 +1584,16 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return caseSave(dto, handleChanges, existingCase, toDto(existingCase), checkChangeDate, internal);
 	}
 
+	@RolesAllowed({
+		UserRight._CASE_EDIT })
+	public CaseDataDto updateFollowUpComment(@Valid @NotNull CaseDataDto dto) throws ValidationRuntimeException {
+		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
+		Case caze = service.getByUuid(dto.getUuid());
+		caze.setFollowUpComment(dto.getFollowUpComment());
+		service.ensurePersisted(caze);
+		return convertToDto(caze, pseudonymizer);
+	}
+
 	private CaseDataDto caseSave(
 		@Valid CaseDataDto dto,
 		boolean handleChanges,
@@ -1667,7 +1677,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			final Contact contact = contactService.getByUuid(sourceContact.getUuid());
 			final Case caze = service.getByUuid(cazeRef.getUuid());
 			contact.getSamples().forEach(sample -> {
-				if(!sample.isDeleted()) {
+				if (!sample.isDeleted()) {
 					if (sample.getAssociatedCase() == null) {
 						sample.setAssociatedCase(caze);
 					} else {
@@ -2056,6 +2066,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		// Update case classification if the feature is enabled
 		CaseClassification classification = null;
+		boolean setClassificationInfo = true;
 		if (configFacade.isFeatureAutomaticCaseClassification()) {
 			if (newCase.getCaseClassification() != CaseClassification.NO_CASE) {
 				// calculate classification
@@ -2072,9 +2083,17 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 						newCase.setCaseClassification(classification);
 						newCase.setClassificationUser(null);
 						newCase.setClassificationDate(new Date());
+						setClassificationInfo = false;
 					}
 				}
 			}
+		}
+
+		if (setClassificationInfo
+			&& ((existingCase == null && newCase.getCaseClassification() != CaseClassification.NOT_CLASSIFIED)
+				|| (existingCase != null && newCase.getCaseClassification() != existingCase.getCaseClassification()))) {
+			newCase.setClassificationUser(userService.getCurrentUser());
+			newCase.setClassificationDate(new Date());
 		}
 
 		// calculate reference definition for cases
@@ -2926,6 +2945,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			source.setTherapy(TherapyDto.build());
 		}
 		target.setTherapy(therapyFacade.fromDto(source.getTherapy(), checkChangeDate));
+		if (source.getHealthConditions() == null) {
+			source.setHealthConditions(HealthConditionsDto.build());
+		}
 		target.setHealthConditions(healthConditionsMapper.fromDto(source.getHealthConditions(), checkChangeDate));
 		if (source.getClinicalCourse() == null) {
 			source.setClinicalCourse(ClinicalCourseDto.build());

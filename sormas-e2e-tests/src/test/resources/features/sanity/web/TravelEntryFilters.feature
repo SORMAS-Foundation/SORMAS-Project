@@ -79,3 +79,13 @@ Scenario: Check Travel Entry filters
     Then I apply the week before the last epi week for week to combobox on Travel Entry directory page
     And I click APPLY BUTTON in Travel Entry Directory Page
     And I check that number of displayed Travel Entry results is 0
+
+  @issue=SORDEV-7162 @env_de
+  Scenario: Check Travel Entry filter visibility
+    Given I log in as a National User
+    When I click on the Entries button from navbar
+    Then I check that Person Name, External ID or Travel Entry ID Free Text Filter is visible
+    And I check that Recovered Checkbox Filter is visible
+    And I check that Vaccinated Checkbox Filter is visible
+    And I check that Negatively Tested Checkbox Filter is visible
+    And I check that Converted to Case Checkbox Filter is visible

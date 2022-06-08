@@ -71,6 +71,8 @@ public interface SampleFacade {
 
 	List<String> getDeletedUuidsSince(Date since);
 
+	List<String> getObsoleteUuidsSince(Date since);
+
 	boolean isDeleted(String sampleUuid);
 
 	List<SampleDto> getByCaseUuids(List<String> caseUuids);
@@ -80,6 +82,8 @@ public interface SampleFacade {
 	List<SampleDto> getByContactUuids(List<String> contactUuids);
 
 	List<SampleDto> getSimilarSamples(SampleSimilarityCriteria criteria);
+
+	List<SampleDto> getSamplesByCriteria(SampleCriteria criteria);
 
 	boolean exists(String uuid);
 
