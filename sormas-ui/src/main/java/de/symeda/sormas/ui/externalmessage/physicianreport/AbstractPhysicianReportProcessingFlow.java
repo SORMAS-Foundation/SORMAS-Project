@@ -47,7 +47,7 @@ public abstract class AbstractPhysicianReportProcessingFlow extends AbstractProc
 			.thenSwitch()
 				.when(PersonAndPickOrCreateEntryResult::isNewCase, (f, e) -> f
 						.then((ignored) -> createCase(e.getPerson(), externalMessage)).then((c) ->
-								convertSamePersonContactsAndEventparticipants(c.getData()).thenCompose((ignored) -> CompletableFuture.completedFuture(c)))
+								convertSamePersonContactsAndEventParticipants(c.getData()).thenCompose((ignored) -> CompletableFuture.completedFuture(c)))
 						.then((c) -> updateCase(c.getData(), externalMessage)))
 				.when(PersonAndPickOrCreateEntryResult::isSelectedCase, (f, e) -> f.then((ignored) -> updateCase(e.getCaze(), externalMessage)))
 				.then(s -> ProcessingResult.continueWith(s.getData()).asCompletedFuture())
@@ -113,13 +113,13 @@ public abstract class AbstractPhysicianReportProcessingFlow extends AbstractProc
 
 	protected abstract void handleUpdateCase(CaseDataDto caze, ExternalMessageDto externalMessage, HandlerCallback<CaseDataDto> callback);
 
-	private CompletionStage<ProcessingResult<Void>> convertSamePersonContactsAndEventparticipants(CaseDataDto caze) {
+	private CompletionStage<ProcessingResult<Void>> convertSamePersonContactsAndEventParticipants(CaseDataDto caze) {
 
 		HandlerCallback<Void> callback = new HandlerCallback<>();
-		handleConvertSamePersonContactsAndEventparticipants(caze, callback);
+		handleConvertSamePersonContactsAndEventParticipants(caze, callback);
 
 		return callback.futureResult;
 	}
 
-	protected abstract void handleConvertSamePersonContactsAndEventparticipants(CaseDataDto caze, HandlerCallback<Void> callback);
+	protected abstract void handleConvertSamePersonContactsAndEventParticipants(CaseDataDto caze, HandlerCallback<Void> callback);
 }

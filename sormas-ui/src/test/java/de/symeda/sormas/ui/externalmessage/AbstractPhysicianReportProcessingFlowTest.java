@@ -158,7 +158,7 @@ public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest 
 			}
 
 			@Override
-			protected void handleConvertSamePersonContactsAndEventparticipants(CaseDataDto caze, HandlerCallback<Void> callback) {
+			protected void handleConvertSamePersonContactsAndEventParticipants(CaseDataDto caze, HandlerCallback<Void> callback) {
 				handleConvertSamePersonContactsAndEventparticipants.apply(caze, callback);
 			}
 		};

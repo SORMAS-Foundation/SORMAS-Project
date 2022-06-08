@@ -232,7 +232,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		PersonReferenceDto personRef = person.toReference();
 		List<CaseSelectionDto> similarCases = getSimilarCases(personRef, externalMessage);
 		List<SimilarContactDto> similarContacts = getSimilarContacts(personRef, externalMessage);
-		List<SimilarEventParticipantDto> similarEventParticipants = getSimilarEventParticipants(externalMessage, personRef);
+		List<SimilarEventParticipantDto> similarEventParticipants = getSimilarEventParticipants(personRef, externalMessage);
 
 		HandlerCallback<PickOrCreateEntryResult> callback = new HandlerCallback<>();
 
@@ -263,7 +263,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		return FacadeProvider.getContactFacade().getMatchingContacts(contactSimilarityCriteria);
 	}
 
-	private List<SimilarEventParticipantDto> getSimilarEventParticipants(ExternalMessageDto labMessage, PersonReferenceDto selectedPerson) {
+	private List<SimilarEventParticipantDto> getSimilarEventParticipants(PersonReferenceDto selectedPerson, ExternalMessageDto labMessage) {
 
 		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
 		eventParticipantCriteria.setPerson(selectedPerson);

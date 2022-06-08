@@ -115,12 +115,6 @@ public class PhysicianReportCaseEditComponent extends CommitDiscardWrapperCompon
 
 		getWrappedComponent().addComponent(tabsMenu);
 		setActiveTab(Captions.CaseData_hospitalization);
-
-		setPreCommitListener((callback) -> {
-			if (activeTabComponent.commitAndHandle()) {
-				callback.run();
-			}
-		});
 	}
 
 	private static VerticalLayout createLayout() {

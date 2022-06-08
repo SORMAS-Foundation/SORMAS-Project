@@ -94,8 +94,8 @@ public class PhysicianReportProcessingFlow extends AbstractPhysicianReportProces
 	}
 
 	@Override
-	protected void handleConvertSamePersonContactsAndEventparticipants(CaseDataDto caze, HandlerCallback<Void> callback) {
-		ControllerProvider.getCaseController().convertSamePersonContactsAndEventparticipants(caze, () -> {
+	protected void handleConvertSamePersonContactsAndEventParticipants(CaseDataDto caze, HandlerCallback<Void> callback) {
+		ControllerProvider.getCaseController().convertSamePersonContactsAndEventParticipants(caze, () -> {
 			callback.done(null);
 		});
 	}

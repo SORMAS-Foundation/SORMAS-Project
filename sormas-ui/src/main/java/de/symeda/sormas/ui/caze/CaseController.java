@@ -212,7 +212,7 @@ public class CaseController {
 					if (updatedEventparticipant.getResultingCase() != null) {
 						String caseUuid = updatedEventparticipant.getResultingCase().getUuid();
 						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-						convertSamePersonContactsAndEventparticipants(caze, null);
+						convertSamePersonContactsAndEventParticipants(caze, null);
 					}
 				});
 				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
@@ -224,7 +224,7 @@ public class CaseController {
 
 				FacadeProvider.getCaseFacade().setSampleAssociations(updatedEventParticipant.toReference(), selectedCase.toReference());
 
-				convertSamePersonContactsAndEventparticipants(selectedCase, null);
+				convertSamePersonContactsAndEventParticipants(selectedCase, null);
 
 				navigateToView(CaseDataView.VIEW_NAME, selectedCase.getUuid(), null);
 			}
@@ -264,7 +264,7 @@ public class CaseController {
 					if (contactDto.getResultingCase() != null) {
 						String caseUuid = contactDto.getResultingCase().getUuid();
 						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-						convertSamePersonContactsAndEventparticipants(caze, null);
+						convertSamePersonContactsAndEventParticipants(caze, null);
 					}
 				});
 				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
@@ -281,7 +281,7 @@ public class CaseController {
 
 				FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), selectedCase.toReference());
 
-				convertSamePersonContactsAndEventparticipants(selectedCase, null);
+				convertSamePersonContactsAndEventParticipants(selectedCase, null);
 
 				navigateToView(CaseDataView.VIEW_NAME, selectedCase.getUuid(), null);
 			}
@@ -312,7 +312,7 @@ public class CaseController {
 		});
 	}
 
-	public void convertSamePersonContactsAndEventparticipants(CaseDataDto caze, Runnable callback) {
+	public void convertSamePersonContactsAndEventParticipants(CaseDataDto caze, Runnable callback) {
 
 		List<SimilarContactDto> matchingContacts;
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
