@@ -127,6 +127,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonLastName(source.getPersonLastName());
 		target.setPersonPostalCode(source.getPersonPostalCode());
 		target.setPersonSex(source.getPersonSex());
+		target.setPersonPresentCondition(source.getPersonPresentCondition());
 		target.setPersonStreet(source.getPersonStreet());
 		target.setStatus(source.getStatus());
 		target.setSampleDateTime(source.getSampleDateTime());
@@ -197,6 +198,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonLastName(source.getPersonLastName());
 		target.setPersonPostalCode(source.getPersonPostalCode());
 		target.setPersonSex(source.getPersonSex());
+		target.setPersonPresentCondition(source.getPersonPresentCondition());
 		target.setPersonStreet(source.getPersonStreet());
 		target.setPersonPhone(source.getPersonPhone());
 		target.setPersonEmail(source.getPersonEmail());

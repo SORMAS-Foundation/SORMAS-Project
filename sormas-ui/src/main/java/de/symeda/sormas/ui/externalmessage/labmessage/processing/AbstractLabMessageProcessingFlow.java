@@ -21,6 +21,7 @@ import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.externalmessage.processing.flow.FlowThen;
 import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -117,7 +118,9 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 						(vf, v) -> doCreateEventParticipantAndSampleFlow(v.getEvent(), p.getPerson(), vf, labMessage))
 					.when(
 						EventValidationResult::isEventParticipantSelected,
-						(vf, v) -> doPickOrCreateSampleFlow(c -> c.eventParticipant(v.getEventParticipant()), () -> {
+						(vf, v) -> doPickOrCreateSampleFlow(
+							c -> c.sampleCriteria(new SampleCriteria().eventParticipant(v.getEventParticipant())),
+							() -> {
 							EventDto event = FacadeProvider.getEventFacade().getEventByUuid(p.getEvent().getUuid(), false);
 
 							return createSampleAndPathogenTests(v.getEventParticipant(), event, labMessage, false);
@@ -147,7 +150,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseSelection.getUuid());
 
 		return doPickOrCreateSampleFlow(
-			c -> c.caze(caze.toReference()),
+			c -> c.sampleCriteria(new SampleCriteria().caze(caze.toReference())),
 			() -> createSampleAndPathogenTests(caze, labMessage, false),
 			flow,
 			labMessage);
@@ -173,7 +176,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 
 		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactSelection.getUuid());
 		return doPickOrCreateSampleFlow(
-			c -> c.contact(contact.toReference()),
+			c -> c.sampleCriteria(new SampleCriteria().contact(contact.toReference())),
 			() -> createSampleAndPathogenTests(contact, labMessage, false),
 			flow,
 			labMessage);
@@ -188,7 +191,7 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
 
 		return doPickOrCreateSampleFlow(
-			c -> c.eventParticipant(eventParticipant.toReference()),
+			c -> c.sampleCriteria(new SampleCriteria().eventParticipant(eventParticipant.toReference())),
 			() -> createSampleAndPathogenTests(eventParticipant.toReference(), event, labMessage, false),
 			flow,
 			labMessage);
@@ -456,22 +459,25 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 		SampleSimilarityCriteria sampleCriteria = createSampleCriteria(labMessage);
 		addSampleSearchCriteria.accept(sampleCriteria);
 
-		List<SampleDto> samples = FacadeProvider.getSampleFacade().getSimilarSamples(sampleCriteria);
+		List<SampleDto> selectableSamples = FacadeProvider.getSampleFacade().getSamplesByCriteria(sampleCriteria.getSampleCriteria());
+		List<SampleDto> similarSamples = FacadeProvider.getSampleFacade().getSimilarSamples(sampleCriteria);
+		List<SampleDto> otherSamples = selectableSamples.stream().filter(s -> !similarSamples.contains(s)).collect(Collectors.toList());
 
 		PickOrCreateSampleResult result = new PickOrCreateSampleResult();
-		if (samples.isEmpty()) {
+		if (similarSamples.isEmpty() && otherSamples.isEmpty()) {
 			result.setNewSample(true);
 			return ProcessingResult.continueWith(result).asCompletedFuture();
 		}
 
 		HandlerCallback<PickOrCreateSampleResult> callback = new HandlerCallback<>();
-		handlePickOrCreateSample(samples, labMessage, callback);
+		handlePickOrCreateSample(similarSamples, otherSamples, labMessage, callback);
 
 		return callback.futureResult;
 	}
 
 	protected abstract void handlePickOrCreateSample(
-		List<SampleDto> samples,
+		List<SampleDto> similarSamples,
+		List<SampleDto> otherSamples,
 		ExternalMessageDto labMessage,
 		HandlerCallback<PickOrCreateSampleResult> callback);
 
