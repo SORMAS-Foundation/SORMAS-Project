@@ -898,6 +898,7 @@ public interface Captions {
 	String dashboardYesterday = "dashboardYesterday";
 	String dataProtectionAllFieldsSheet = "dataProtectionAllFieldsSheet";
 	String date = "date";
+	String days = "days";
 	String dearchiveReason = "dearchiveReason";
 	String defaultCommunity = "defaultCommunity";
 	String defaultDistrict = "defaultDistrict";
@@ -1568,6 +1569,7 @@ public interface Captions {
 	String messagesSendSMS = "messagesSendSMS";
 	String messagesSentBy = "messagesSentBy";
 	String messagesSms = "messagesSms";
+	String months = "months";
 	String moreActions = "moreActions";
 	String name = "name";
 	String nationalHealthId = "nationalHealthId";
@@ -2573,4 +2575,5 @@ public interface Captions {
 	String WeeklyReportRegionSummary_officerZeroReports = "WeeklyReportRegionSummary.officerZeroReports";
 	String WeeklyReportRegionSummary_region = "WeeklyReportRegionSummary.region";
 	String weeklyReportsInDistrict = "weeklyReportsInDistrict";
+	String years = "years";
 }
