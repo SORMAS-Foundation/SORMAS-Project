@@ -118,6 +118,7 @@ public class AggregateReportFacadeEjbTest  extends AbstractBeanTest {
 
 		AggregateReportCriteria criteria = new AggregateReportCriteria().healthFacility(rdcf.facility);
 		criteria.setShowZeroRowsForGrouping(true);
+
 		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
 		Assert.assertEquals(31, indexList.size());
 
