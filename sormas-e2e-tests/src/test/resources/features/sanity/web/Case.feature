@@ -1214,4 +1214,16 @@ Feature: Case end to end tests
     Then I provide follow-up status comment from Edit case page
     And I click on save button from Edit Case page
     And I check that Date of Follow-up Status Change and Responsible User are correctly displayed on Edit case page
+    When I click on the Resume Follow-up button from Edit case page
+    And I click on save button from Edit Case page
+    And I check that Date of Follow-up Status Change and Responsible User are correctly displayed on Edit case page
+    And I click on the Lost to Follow-up button from Edit case page
+    Then I provide follow-up status comment from Edit case page
+    And I click on save button from Edit Case page
+    And I check that Date of Follow-up Status Change and Responsible User are correctly displayed on Edit case page
+    And I check that Expected Follow-up Until Date is correctly displayed on Edit case page
+    When I select Overwrite Follow-up Until Date checkbox on Edit case page
+    And I set the Follow-up Until Date to exceed the Expected Follow-up Until Date on Edit case page
+    And I click on save button from Edit Case page
+    Then I check if the Follow-up Until Date is correctly displayed on Edit case page
 

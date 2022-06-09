@@ -261,4 +261,11 @@ public class EditCasePage {
   public static final By RESPONSIBLE_USER_FOR_FOLLOW_UP_STATUS_CHANGE_INPUT =
       By.cssSelector("#followUpStatusChangeUser input");
   public static final By FOLLOW_UP_COMMENT_FIELD = By.cssSelector("#followUpComment");
+  public static final By RESUME_FOLLOW_UP_BUTTON = By.cssSelector("#contactResumeFollowUp");
+  public static final By LOST_TO_FOLLOW_UP_BUTTON = By.cssSelector("#contactLostToFollowUp");
+  public static final By EXPECTED_FOLLOW_UP_UNTIL_DATE_INPUT =
+      By.cssSelector("[location='expectedFollowUpUntilDateLoc'] input");
+  public static final By OVERWRITE_FOLLOW_UP_UNTIL_DATE_LABEL =
+      By.cssSelector("#overwriteFollowUpUntil label");
+  public static final By FOLLOW_UP_UNTIL_DATE_INPUT = By.cssSelector("#followUpUntil input");
 }
