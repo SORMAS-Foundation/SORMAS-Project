@@ -345,7 +345,6 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	private String healthFacilityDetails;
 
 	@Valid
-	@Required
 	private HealthConditionsDto healthConditions;
 
 	private YesNoUnknown pregnant;

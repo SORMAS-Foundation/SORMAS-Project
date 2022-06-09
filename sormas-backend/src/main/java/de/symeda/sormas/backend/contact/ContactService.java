@@ -51,6 +51,8 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.RequestContextHolder;
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.common.DeletionDetails;
@@ -470,6 +472,24 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		cq.select(contact.get(Contact.UUID));
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	@Override
+	protected List<Predicate> getAdditionalObsoleteUuidsPredicates(Date since, CriteriaBuilder cb, CriteriaQuery<String> cq, Root<Contact> from) {
+
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
+			&& featureConfigurationFacade
+				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)) {
+
+			ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, from);
+			Join<Contact, Case> sourceCaseJoin = contactQueryContext.getJoins().getCaze();
+			return Collections.singletonList(
+				cb.and(
+					cb.equal(sourceCaseJoin.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE),
+					cb.greaterThanOrEqualTo(sourceCaseJoin.get(Case.CLASSIFICATION_DATE), since)));
+		} else {
+			return Collections.emptyList();
+		}
 	}
 
 	public Long countContactsForMap(Region region, District district, Disease disease, Date from, Date to) {
@@ -1057,6 +1077,20 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb,
 				filter,
 				cb.or(cb.equal(contactPath.get(Contact.DISEASE), currentUser.getLimitedDisease()), cb.isNull(contactPath.get(Contact.DISEASE))));
+		}
+
+		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
+			&& RequestContextHolder.isMobileSync()) {
+			Join<Contact, Case> sourceCaseJoin = qc.getJoins().getCaze();
+			final Predicate limitedCaseSyncPredicate = cb.not(
+				cb.and(
+					cb.equal(sourceCaseJoin.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE),
+					cb.or(
+						cb.notEqual(sourceCaseJoin.get(Case.REPORTING_USER), currentUser),
+						cb.and(
+							cb.equal(sourceCaseJoin.get(Case.REPORTING_USER), currentUser),
+							cb.isNull(sourceCaseJoin.get(Case.CREATION_VERSION))))));
+			filter = CriteriaBuilderHelper.and(cb, filter, limitedCaseSyncPredicate);
 		}
 
 		return filter;

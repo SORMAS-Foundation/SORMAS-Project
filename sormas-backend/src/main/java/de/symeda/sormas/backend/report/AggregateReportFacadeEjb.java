@@ -188,7 +188,8 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 				r -> r.getAgeGroup() != null
 					? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
 					: StringUtils.EMPTY)
-			.thenComparing(r -> r.getAgeGroup() != null ? r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY) : StringUtils.EMPTY);
+			.thenComparing(
+				r -> r.getAgeGroup() != null ? Integer.parseInt(r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0);
 
 		reportList.sort(comparator);
 		return reportList;
