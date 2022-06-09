@@ -81,4 +81,16 @@ public class PointOfEntryResource extends EntityDtoResource {
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getPointOfEntryFacade()::save);
 		return result;
 	}
+
+	@POST
+	@Path("/archive")
+	public List<String> archive(@RequestBody List<String> uuids) {
+		return FacadeProvider.getPointOfEntryFacade().archive(uuids);
+	}
+
+	@POST
+	@Path("/dearchive")
+	public List<String> dearchive(@RequestBody List<String> uuids) {
+		return FacadeProvider.getPointOfEntryFacade().dearchive(uuids);
+	}
 }

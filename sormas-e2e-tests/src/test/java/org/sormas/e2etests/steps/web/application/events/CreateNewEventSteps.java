@@ -123,6 +123,24 @@ public class CreateNewEventSteps implements En {
         });
 
     When(
+        "I create a new event with today for date of report and date of event",
+        () -> {
+          newEvent = eventService.buildGeneratedEventWithDate(LocalDate.now());
+          fillDateOfReport(newEvent.getReportDate(), Locale.ENGLISH);
+          selectEventStatus(newEvent.getEventStatus());
+          fillTitle(newEvent.getTitle());
+          selectResponsibleRegion(newEvent.getRegion());
+          selectResponsibleDistrict(newEvent.getDistrict());
+          selectResponsibleCommunity(newEvent.getCommunity());
+          newEvent =
+              newEvent.toBuilder()
+                  .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+                  .build();
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CREATED_MESSAGE);
+        });
+
+    When(
         "^I create a new event with status ([^\"]*)",
         (String eventStatus) -> {
           newEvent = collectEventUuid();

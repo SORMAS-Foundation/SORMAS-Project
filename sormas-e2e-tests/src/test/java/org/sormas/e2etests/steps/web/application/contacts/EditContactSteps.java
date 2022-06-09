@@ -30,6 +30,8 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NEW_
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.START_DATA_IMPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES_DE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES_POPUP_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
@@ -50,6 +52,7 @@ import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.GEN
 
 import cucumber.api.java8.En;
 import java.io.File;
+import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -58,6 +61,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Contact;
@@ -68,6 +74,7 @@ import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
@@ -139,6 +146,117 @@ public class EditContactSteps implements En {
                   Assert.assertEquals(
                       path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME)),
               120);
+        });
+    When(
+        "I check if generated document for Contact based on {string} was downloaded properly",
+        (String name) -> {
+          String uuid = apiState.getCreatedContact().getUuid();
+          String pathToFile =
+              userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name;
+          Path path = Paths.get(pathToFile);
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      "Contact document was not downloaded. Path used for check: "
+                          + path.toAbsolutePath()),
+              120);
+        });
+    When(
+        "I check if generated document for contact based on {string} contains all required fields",
+        (String name) -> {
+          String uuid = apiState.getCreatedContact().getUuid();
+          String pathToFile =
+              userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name;
+          FileInputStream fis = new FileInputStream(pathToFile);
+          XWPFDocument xdoc = new XWPFDocument(OPCPackage.open(fis));
+          List<XWPFParagraph> paragraphList = xdoc.getParagraphs();
+          String[] line = paragraphList.get(26).getText().split(":");
+          softly.assertEquals(
+              line[0], "Report Date", "Report date label is different than expected");
+          line = paragraphList.get(28).getText().split(":");
+          softly.assertEquals(
+              line[0], "Vaccination Date", "Vaccination date label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination
+                  .getVaccinationDate()
+                  .format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+              "Vaccination date value is different than expected");
+          line = paragraphList.get(29).getText().split(":");
+          softly.assertEquals(
+              line[0], "Vaccine name", "Vaccination name label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getVaccineName(),
+              "Vaccination name value is different than expected");
+          line = paragraphList.get(30).getText().split(":");
+          softly.assertEquals(
+              line[0],
+              "Vaccine name Details",
+              "Vaccination name Details label is different than expected");
+          line = paragraphList.get(31).getText().split(":");
+          softly.assertEquals(
+              line[0],
+              "Vaccine Manufacturer",
+              "Vaccination Manufacturer label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getVaccineManufacturer(),
+              "Vaccination Manufacturer label is different than expected");
+          line = paragraphList.get(32).getText().split(":");
+          softly.assertEquals(
+              line[0],
+              "Vaccine Manufacturer details",
+              "Vaccination Manufacturer details label is different than expected");
+          line = paragraphList.get(33).getText().split(":");
+          softly.assertEquals(
+              line[0], "Vaccine Type", "Vaccination Type label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getVaccineType(),
+              "Vaccination Type value is different than expected");
+          line = paragraphList.get(34).getText().split(":");
+          softly.assertEquals(
+              line[0], "Vaccine Dose", "Vaccination Dose label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getVaccineDose(),
+              "Vaccination Dose value is different than expected");
+          line = paragraphList.get(35).getText().split(":");
+          softly.assertEquals(line[0], "INN", "INN label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getInn(),
+              "INN value is different than expected");
+          line = paragraphList.get(36).getText().split(":");
+          softly.assertEquals(line[0], "Batch", "Batch label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getBatchNumber(),
+              "Batch value is different than expected");
+          line = paragraphList.get(37).getText().split(":");
+          softly.assertEquals(line[0], "UNII Code", "UNII Code label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getUniiCode(),
+              "UNII Code value is different than expected");
+          line = paragraphList.get(38).getText().split(":");
+          softly.assertEquals(line[0], "ATC Code", "ATC Code label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getAtcCode(),
+              "ATC Code value is different than expected");
+          line = paragraphList.get(39).getText().split(":");
+          softly.assertEquals(
+              line[0],
+              "Vaccination Info Source",
+              "Vaccination Info Source label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getVaccinationInfoSource(),
+              "Vaccination Info Source value is different than expected");
+          softly.assertAll();
         });
     When(
         "I check the created data is correctly displayed on Edit Contact page",
@@ -536,6 +654,12 @@ public class EditContactSteps implements En {
         "I click on Create button in Document Templates box in Edit Contact directory",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_TEMPLATES));
     And(
+        "I click on Create button in Document Templates box for DE",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_TEMPLATES_DE));
+    And(
+        "I click on Create button in Document Templates popup for DE",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_TEMPLATES_POPUP_DE));
+    And(
         "I click on checkbox to upload generated document to entity in Create Quarantine Order form in Edit Contact directory",
         () -> webDriverHelpers.clickOnWebElementBySelector(UPLOAD_DOCUMENT_CHECKBOX));
     When(
@@ -577,6 +701,11 @@ public class EditContactSteps implements En {
               new File(
                   userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name);
           toDelete.deleteOnExit();
+        });
+    When(
+        "I select {string} template in Document Template form",
+        (String name) -> {
+          webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, name);
         });
     When(
         "^I click on CONFIRMED CONTACT radio button Contact Data tab for DE version$",
@@ -803,6 +932,10 @@ public class EditContactSteps implements En {
           softly.assertAll();
           Files.delete(path); // clean
         });
+
+    When(
+        "I navigate to follow-up visits tab",
+        () -> webDriverHelpers.clickOnWebElementBySelector(FOLLOW_UP_VISITS));
   }
 
   private void selectContactClassification(String classification) {

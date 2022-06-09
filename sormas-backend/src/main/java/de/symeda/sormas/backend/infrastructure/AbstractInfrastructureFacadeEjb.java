@@ -1,14 +1,21 @@
 package de.symeda.sormas.backend.infrastructure;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+
+import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.infrastructure.InfrastructureDto;
+import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
@@ -19,9 +26,6 @@ import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 public abstract class AbstractInfrastructureFacadeEjb<ADO extends InfrastructureAdo, DTO extends InfrastructureDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, SRV extends AbstractInfrastructureAdoService<ADO, CRITERIA>, CRITERIA extends BaseCriteria>
 	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA>
@@ -124,12 +128,35 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 
 	public void dearchive(String uuid) {
 		checkInfraDataLocked();
-
 		ADO ado = service.getByUuid(uuid);
 		if (ado != null) {
 			ado.setArchived(false);
 			service.ensurePersisted(ado);
 		}
+	}
+
+	@RolesAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
+	public List<String> archive(List<String> entityUuids) {
+		List<String> archivedEntityUuids = new ArrayList<>();
+		entityUuids.forEach(entityUuid -> {
+			if (!isUsedInOtherInfrastructureData(Arrays.asList(entityUuid))) {
+				archive(entityUuid);
+				archivedEntityUuids.add(entityUuid);
+			}
+		});
+		return archivedEntityUuids;
+	}
+
+	@RolesAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
+	public List<String> dearchive(List<String> entityUuids) {
+		List<String> dearchivedEntityUuids = new ArrayList<>();
+		entityUuids.forEach(entityUuid -> {
+			if (!hasArchivedParentInfrastructure(Arrays.asList(entityUuid))) {
+				dearchive(entityUuid);
+				dearchivedEntityUuids.add(entityUuid);
+			}
+		});
+		return dearchivedEntityUuids;
 	}
 
 	protected void checkInfraDataLocked() {
@@ -143,6 +170,13 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
 	}
 
+	public boolean isUsedInOtherInfrastructureData(Collection<String> uuids) {
+		return false;
+	}
+
+	public boolean hasArchivedParentInfrastructure(Collection<String> uuids) {
+		return false;
+	}
 
 	protected abstract List<ADO> findDuplicates(DTO dto, boolean includeArchived);
 
