@@ -25,7 +25,9 @@ import java.util.Set;
 import com.vaadin.ui.UI;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -98,8 +100,7 @@ public class UserProvider {
 	}
 
 	public boolean isAdmin() {
-		return ((user.getUserRoles().stream().peek(i->i.getCaption().contains("Administrator")).count()==1)
-				||(user.getUserRoles().stream().peek(i->i.getCaption().contains("Admin")).count()==1));
+		return (user.getUserRoles().stream().filter(i->i.getCaption().contains(I18nProperties.getEnumCaption(DefaultUserRole.ADMIN))).count() == 1);
 	}
 
 	public boolean hasRegionJurisdictionLevel() {

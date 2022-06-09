@@ -39,6 +39,8 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.auditlog.api.Audited;
@@ -237,8 +239,7 @@ public class User extends AbstractDomainObject {
 
 	@Transient
 	public boolean isAdmin() {
-		return ((this.getUserRoles().stream().peek(i->i.getCaption().contains("Administrator")).count()==1)
-				||(this.getUserRoles().stream().peek(i->i.getCaption().contains("Admin")).count()==1));
+		return (this.getUserRoles().stream().filter(i->i.getCaption().contains(I18nProperties.getEnumCaption(DefaultUserRole.ADMIN))).count() == 1);
 	}
 
 	public void setJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
