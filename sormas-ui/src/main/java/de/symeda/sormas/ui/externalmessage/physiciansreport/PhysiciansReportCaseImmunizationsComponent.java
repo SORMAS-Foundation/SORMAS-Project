@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.externalmessage.physicianreport;
+package de.symeda.sormas.ui.externalmessage.physiciansreport;
 
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 
@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.naming.CannotProceedException;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -58,7 +57,7 @@ import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.vaccination.VaccinationEditForm;
 
-public class PhysicianReportCaseImmunizationsComponent extends CommitDiscardWrapperComponent<VerticalLayout> {
+public class PhysiciansReportCaseImmunizationsComponent extends CommitDiscardWrapperComponent<VerticalLayout> {
 
 	private static final long serialVersionUID = -5128676869217088760L;
 
@@ -72,7 +71,7 @@ public class PhysicianReportCaseImmunizationsComponent extends CommitDiscardWrap
 	private CommitDiscardWrapperComponent<VaccinationEditForm> currentVaccinationEditComponent;
 	private CommitDiscardWrapperComponent<VaccinationEditForm> createVaccinationComponent;
 
-	public PhysicianReportCaseImmunizationsComponent(CaseDataDto caze) {
+	public PhysiciansReportCaseImmunizationsComponent(CaseDataDto caze) {
 		super(createLayout());
 		this.caze = caze;
 
@@ -94,7 +93,7 @@ public class PhysicianReportCaseImmunizationsComponent extends CommitDiscardWrap
 
 		getWrappedComponent().addComponent(vaccinationList);
 
-		addVaccinationButton = ButtonHelper.createButton(Captions.physicianReportCaseAddVaccination, e -> {
+		addVaccinationButton = ButtonHelper.createButton(Captions.physiciansReportCaseAddVaccination, e -> {
 			handleAddVaccination(caze);
 		});
 

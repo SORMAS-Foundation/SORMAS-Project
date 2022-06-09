@@ -19,7 +19,7 @@ import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProc
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
-import de.symeda.sormas.ui.externalmessage.physicianreport.PhysicianReportProcessingFlow;
+import de.symeda.sormas.ui.externalmessage.physiciansreport.PhysiciansReportProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 import java.util.Collection;
@@ -136,9 +136,9 @@ public class ExternalMessageController {
 			});
 	}
 
-	public void processPhysicianReport(String uuid) {
+	public void processPhysiciansReport(String uuid) {
 		ExternalMessageDto labMessage = FacadeProvider.getExternalMessageFacade().getByUuid(uuid);
-		PhysicianReportProcessingFlow flow = new PhysicianReportProcessingFlow();
+		PhysiciansReportProcessingFlow flow = new PhysiciansReportProcessingFlow();
 
 		flow.run(labMessage).handle((BiFunction<? super ProcessingResult<CaseDataDto>, Throwable, Void>) (result, exception) -> {
 			if (exception != null) {

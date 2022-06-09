@@ -622,7 +622,7 @@ public interface Strings {
 	String headingPreviousPathogenTestInformation = "headingPreviousPathogenTestInformation";
 	String headingPreviousPersonInformation = "headingPreviousPersonInformation";
 	String headingPreviousSampleInformation = "headingPreviousSampleInformation";
-	String headingProcessPhysicianReport = "headingProcessPhysicianReport";
+	String headingProcessPhysiciansReport = "headingProcessPhysiciansReport";
 	String headingQuarantineForCases = "headingQuarantineForCases";
 	String headingRecovery = "headingRecovery";
 	String headingReduceQuarantine = "headingReduceQuarantine";

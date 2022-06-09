@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.externalmessage.physicianreport;
+package de.symeda.sormas.ui.externalmessage.physiciansreport;
 
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.addProcessedInMeantimeCheck;
 
@@ -39,7 +39,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DirtyCheckPopup;
 import de.symeda.sormas.ui.utils.ViewMode;
 
-public class PhysicianReportCaseEditComponent extends CommitDiscardWrapperComponent<VerticalLayout> {
+public class PhysiciansReportCaseEditComponent extends CommitDiscardWrapperComponent<VerticalLayout> {
 
 	private static final long serialVersionUID = 1452145334216485391L;
 
@@ -54,7 +54,7 @@ public class PhysicianReportCaseEditComponent extends CommitDiscardWrapperCompon
 	private CommitDiscardWrapperComponent<?> activeTabComponent;
 	private int activeTabIndex;
 
-	public PhysicianReportCaseEditComponent(CaseDataDto caze, ExternalMessageDto externalMessage) {
+	public PhysiciansReportCaseEditComponent(CaseDataDto caze, ExternalMessageDto externalMessage) {
 		super(createLayout());
 		this.caze = caze;
 		this.externalMessage = externalMessage;
@@ -158,7 +158,7 @@ public class PhysicianReportCaseEditComponent extends CommitDiscardWrapperCompon
 			TabConfig
 				.of(Captions.CaseData_symptoms, () -> ControllerProvider.getCaseController().getSymptomsEditComponent(caze.getUuid(), viewMode)));
 		configs.add(TabConfig.of(Captions.CaseData_epiData, () -> ControllerProvider.getCaseController().getEpiDataComponent(caze.getUuid(), null)));
-		configs.add(TabConfig.of(Captions.physicianReportCaseImmunizations, () -> new PhysicianReportCaseImmunizationsComponent(caze)));
+		configs.add(TabConfig.of(Captions.physiciansReportCaseImmunizations, () -> new PhysiciansReportCaseImmunizationsComponent(caze)));
 
 		return configs;
 	}

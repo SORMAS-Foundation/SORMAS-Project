@@ -1728,8 +1728,8 @@ public interface Captions {
 	String personsReplaceGeoCoordinates = "personsReplaceGeoCoordinates";
 	String personsSetMissingGeoCoordinates = "personsSetMissingGeoCoordinates";
 	String personsUpdated = "personsUpdated";
-	String physicianReportCaseAddVaccination = "physicianReportCaseAddVaccination";
-	String physicianReportCaseImmunizations = "physicianReportCaseImmunizations";
+	String physiciansReportCaseAddVaccination = "physiciansReportCaseAddVaccination";
+	String physiciansReportCaseImmunizations = "physiciansReportCaseImmunizations";
 	String PointOfEntry = "PointOfEntry";
 	String PointOfEntry_active = "PointOfEntry.active";
 	String PointOfEntry_archived = "PointOfEntry.archived";

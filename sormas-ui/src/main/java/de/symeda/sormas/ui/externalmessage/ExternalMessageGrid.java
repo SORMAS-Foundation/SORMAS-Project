@@ -225,7 +225,7 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 					if (ExternalMessageType.LAB_MESSAGE == indexDto.getType()) {
 						ControllerProvider.getExternalMessageController().processLabMessage(indexDto.getUuid());
 					} else if (ExternalMessageType.PHYSICIANS_REPORT == indexDto.getType()) {
-						ControllerProvider.getExternalMessageController().processPhysicianReport(indexDto.getUuid());
+						ControllerProvider.getExternalMessageController().processPhysiciansReport(indexDto.getUuid());
 					}
 				},
 				ValoTheme.BUTTON_PRIMARY);

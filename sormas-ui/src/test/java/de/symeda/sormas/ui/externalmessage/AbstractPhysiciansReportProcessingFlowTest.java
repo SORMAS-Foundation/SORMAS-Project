@@ -59,13 +59,13 @@ import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
-import de.symeda.sormas.ui.externalmessage.physicianreport.AbstractPhysicianReportProcessingFlow;
+import de.symeda.sormas.ui.externalmessage.physiciansreport.AbstractPhysiciansReportProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.processing.AbstractProcessingFlow.HandlerCallback;
 import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
 
-public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest {
+public class AbstractPhysiciansReportProcessingFlowTest extends AbstractBeanTest {
 
-	private AbstractPhysicianReportProcessingFlow flow;
+	private AbstractPhysiciansReportProcessingFlow flow;
 
 	private Supplier<CompletionStage<Boolean>> missingDiseaseHandler;
 	private Supplier<CompletionStage<Boolean>> relatedForwardedMessagesHandler;
@@ -118,7 +118,7 @@ public class AbstractPhysicianReportProcessingFlowTest extends AbstractBeanTest 
 		rdcf = creator.createRDCF();
 		user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
-		flow = new AbstractPhysicianReportProcessingFlow(user) {
+		flow = new AbstractPhysiciansReportProcessingFlow(user) {
 
 			@Override
 			protected CompletionStage<Boolean> handleMissingDisease() {

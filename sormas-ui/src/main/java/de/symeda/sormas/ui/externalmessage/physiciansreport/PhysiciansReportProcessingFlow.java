@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.externalmessage.physicianreport;
+package de.symeda.sormas.ui.externalmessage.physiciansreport;
 
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -35,9 +35,9 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-public class PhysicianReportProcessingFlow extends AbstractPhysicianReportProcessingFlow {
+public class PhysiciansReportProcessingFlow extends AbstractPhysiciansReportProcessingFlow {
 
-	public PhysicianReportProcessingFlow() {
+	public PhysiciansReportProcessingFlow() {
 		super(UserProvider.getCurrent().getUser());
 	}
 
@@ -84,13 +84,13 @@ public class PhysicianReportProcessingFlow extends AbstractPhysicianReportProces
 	@Override
 	protected void handleUpdateCase(CaseDataDto caze, ExternalMessageDto externalMessage, HandlerCallback<CaseDataDto> callback) {
 
-		PhysicianReportCaseEditComponent caseComponent = new PhysicianReportCaseEditComponent(caze, externalMessage);
+		PhysiciansReportCaseEditComponent caseComponent = new PhysiciansReportCaseEditComponent(caze, externalMessage);
 		caseComponent.addCommitListener(() -> callback.done(caze));
 		caseComponent.addDiscardListener(callback::cancel);
 
 		Window window = VaadinUiUtil.createPopupWindow();
 		ExternalMessageProcessingUIHelper
-			.showFormWithLabMessage(externalMessage, caseComponent, window, I18nProperties.getString(Strings.headingProcessPhysicianReport), false);
+			.showFormWithLabMessage(externalMessage, caseComponent, window, I18nProperties.getString(Strings.headingProcessPhysiciansReport), false);
 	}
 
 	@Override

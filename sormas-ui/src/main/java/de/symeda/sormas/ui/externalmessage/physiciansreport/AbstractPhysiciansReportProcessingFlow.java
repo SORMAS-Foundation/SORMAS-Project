@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.externalmessage.physicianreport;
+package de.symeda.sormas.ui.externalmessage.physiciansreport;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -32,9 +32,9 @@ import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 
-public abstract class AbstractPhysicianReportProcessingFlow extends AbstractProcessingFlow {
+public abstract class AbstractPhysiciansReportProcessingFlow extends AbstractProcessingFlow {
 
-	public AbstractPhysicianReportProcessingFlow(UserDto user) {
+	public AbstractPhysiciansReportProcessingFlow(UserDto user) {
 		super(user);
 	}
 
