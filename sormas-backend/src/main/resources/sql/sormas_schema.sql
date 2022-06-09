@@ -11592,4 +11592,12 @@ ALTER TABLE aggregatereport_history ADD COLUMN agegroup varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (466, 'Addition of age categories to aggregate module (mSERS) [5] #8967');
 
+-- 2022-06-07 [DEMIS2SORMAS] Introduce processing for physician reports #8980
+ALTER TABLE externalmessage ADD COLUMN caze_id bigint;
+ALTER TABLE externalmessage ADD CONSTRAINT fk_externalmessage_caze_id FOREIGN KEY (caze_id) REFERENCES cases (id) ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+ALTER TABLE externalmessage_history ADD COLUMN caze_id bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (467, '[DEMIS2SORMAS] Introduce processing for physician reports #8980');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
