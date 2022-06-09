@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
@@ -58,7 +57,6 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import org.apache.commons.lang3.StringUtils;
 
 @Stateless(name = "AggregateReportFacade")
 @RolesAllowed(UserRight._AGGREGATE_REPORT_VIEW)
@@ -242,15 +240,6 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 			|| AggregateReportGroupingLevel.HEALTH_FACILITY.equals(groupingLevel)
 			|| AggregateReportGroupingLevel.POINT_OF_ENTRY.equals(groupingLevel);
 	}
-		List<AggregatedCaseCountDto> reportList = new ArrayList<>(reportSet);
-		Function<AggregatedCaseCountDto, String> diseaseComparator = r -> r.getDisease().toString();
-		Comparator<AggregatedCaseCountDto> comparator = Comparator.comparing(diseaseComparator)
-			.thenComparing(
-				r -> r.getAgeGroup() != null
-					? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
-					: StringUtils.EMPTY)
-			.thenComparing(
-				r -> r.getAgeGroup() != null ? Integer.parseInt(r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0);
 
 	private boolean shouldIncludeDistrict(AggregateReportGroupingLevel groupingLevel) {
 		return AggregateReportGroupingLevel.DISTRICT.equals(groupingLevel)
