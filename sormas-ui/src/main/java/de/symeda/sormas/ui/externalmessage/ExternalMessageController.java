@@ -14,11 +14,18 @@
  */
 package de.symeda.sormas.ui.externalmessage;
 
-import static de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingUIHelper.showAlreadyProcessedPopup;
+import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showAlreadyProcessedPopup;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
+import de.symeda.sormas.ui.externalmessage.physiciansreport.PhysiciansReportProcessingFlow;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import javax.naming.NamingException;
@@ -56,7 +63,6 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageSlider;
 import de.symeda.sormas.ui.externalmessage.labmessage.RelatedLabMessageHandler;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.flow.ProcessingResultStatus;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -104,20 +110,67 @@ public class ExternalMessageController {
 		ExternalMessageDto labMessage = FacadeProvider.getExternalMessageFacade().getByUuid(labMessageUuid);
 		LabMessageProcessingFlow flow = new LabMessageProcessingFlow();
 
-		flow.run(labMessage, relatedLabMessageHandler).thenAccept(result -> {
+		flow.run(labMessage, relatedLabMessageHandler)
+			.handle((BiFunction<? super ProcessingResult<SampleAndPathogenTests>, Throwable, Void>) (result, exception) -> {
+				if (exception != null) {
+					logger.error("Unexpected exception while processing lab message", exception);
+
+					Notification.show(
+						I18nProperties.getString(Strings.errorOccurred, I18nProperties.getString(Strings.errorOccurred)),
+						I18nProperties.getString(Strings.errorWasReported),
+						Notification.Type.ERROR_MESSAGE);
+
+					return null;
+				}
+
+				ProcessingResultStatus status = result.getStatus();
+
+				if (status == ProcessingResultStatus.CANCELED_WITH_CORRECTIONS) {
+					showCorrectionsSavedPopup();
+				} else if (status == ProcessingResultStatus.DONE) {
+					markExternalMessageAsProcessed(labMessage, result.getData().getSample().toReference());
+					SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
+				}
+
+				return null;
+			});
+	}
+
+	public void processPhysiciansReport(String uuid) {
+		ExternalMessageDto labMessage = FacadeProvider.getExternalMessageFacade().getByUuid(uuid);
+		PhysiciansReportProcessingFlow flow = new PhysiciansReportProcessingFlow();
+
+		flow.run(labMessage).handle((BiFunction<? super ProcessingResult<CaseDataDto>, Throwable, Void>) (result, exception) -> {
+			if (exception != null) {
+				logger.error("Unexpected exception while processing lab message", exception);
+
+				Notification.show(
+					I18nProperties.getString(Strings.errorOccurred, I18nProperties.getString(Strings.errorOccurred)),
+					I18nProperties.getString(Strings.errorWasReported),
+					Notification.Type.ERROR_MESSAGE);
+
+				return null;
+			}
+
 			ProcessingResultStatus status = result.getStatus();
 
-			if (status == ProcessingResultStatus.CANCELED_WITH_CORRECTIONS) {
-				showCorrectionsSavedPopup();
-			} else if (status == ProcessingResultStatus.DONE) {
-				markExternalMessageAsProcessed(labMessage, result.getData().getSample().toReference());
+			if (status == ProcessingResultStatus.DONE) {
+				markExternalMessageAsProcessed(labMessage, result.getData().toReference());
 				SormasUI.get().getNavigator().navigateTo(ExternalMessagesView.VIEW_NAME);
 			}
+
+			return null;
 		});
 	}
 
 	public void markExternalMessageAsProcessed(ExternalMessageDto externalMessage, SampleReferenceDto sample) {
 		externalMessage.setSample(sample);
+		externalMessage.setStatus(ExternalMessageStatus.PROCESSED);
+		FacadeProvider.getExternalMessageFacade().save(externalMessage);
+	}
+
+	public void markExternalMessageAsProcessed(ExternalMessageDto externalMessage, CaseReferenceDto caze) {
+		externalMessage.setCaze(caze);
 		externalMessage.setStatus(ExternalMessageStatus.PROCESSED);
 		FacadeProvider.getExternalMessageFacade().save(externalMessage);
 	}

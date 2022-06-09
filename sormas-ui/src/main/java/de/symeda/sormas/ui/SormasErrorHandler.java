@@ -67,6 +67,7 @@ public class SormasErrorHandler implements ErrorHandler {
 
 		Logger logger = LoggerFactory.getLogger(SormasErrorHandler.class);
 		final Throwable t = event.getThrowable();
+
 		if (t instanceof SocketException) {
 			// Most likely client browser closed socket
 			logger.info("SocketException in CommunicationManager." + " Most likely client (browser) closed socket.");
