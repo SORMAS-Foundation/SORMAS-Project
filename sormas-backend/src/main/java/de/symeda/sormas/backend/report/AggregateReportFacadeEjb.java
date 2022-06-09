@@ -85,7 +85,9 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	@RolesAllowed(UserRight._AGGREGATE_REPORT_EDIT)
 	public AggregateReportDto saveAggregateReport(@Valid AggregateReportDto dto) {
 
-		AgeGroupUtils.validateAgeGroup(dto.getAgeGroup());
+		if (dto.getAgeGroup() != null && dto.getAgeGroup().isEmpty()) {
+			AgeGroupUtils.validateAgeGroup(dto.getAgeGroup());
+		}
 		AggregateReport report = fromDto(dto, true);
 		service.ensurePersisted(report);
 		return toDto(report);
