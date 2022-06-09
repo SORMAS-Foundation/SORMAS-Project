@@ -2540,12 +2540,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
-	public void updateStatusInExternalSurveillanceTool(String entityUuid, ExternalShareStatus externalShareStatus) {
+	public void updateStatusInExternalSurveillanceTool(String entityUuid, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException{
 		Case caze = caseService.getByUuid(entityUuid);
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && caze.getExternalID() != null && !caze.getExternalID().isEmpty()) {
 			List<CaseDataDto> casesWithSameExternalId = getByExternalId(caze.getExternalID());
 			if (casesWithSameExternalId != null && casesWithSameExternalId.size() == 1) {
-				externalSurveillanceToolGatewayFacade.updateCasesStatuses(Collections.singletonList(entityUuid), externalShareStatus);
+                externalSurveillanceToolGatewayFacade.sendCases(Collections.singletonList(entityUuid), externalShareStatus);
 			}
 		}
 	}
