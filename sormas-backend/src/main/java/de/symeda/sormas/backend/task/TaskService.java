@@ -19,7 +19,9 @@ package de.symeda.sormas.backend.task;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
@@ -40,6 +42,9 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.RequestContextHolder;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskJurisdictionFlagsDto;
@@ -60,6 +65,7 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventQueryContext;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
@@ -85,6 +91,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 	private UserService userService;
 	@EJB
 	private TravelEntryService travelEntryService;
+	@EJB
+	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public TaskService() {
 		super(Task.class);
@@ -156,6 +164,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		From<?, Task> taskPath = taskQueryContext.getRoot();
 
 		TaskJoins joins = taskQueryContext.getJoins();
+
 		Predicate assigneeFilter = createAssigneeFilter(cb, joins.getAssignee());
 
 		Predicate contactRightsPredicate =
@@ -172,7 +181,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			travelEntryService.createDefaultFilter(cb, joins.getTravelEntry()));
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if (jurisdictionLevel == JurisdictionLevel.NATION && !currentUser.getUserRoles().stream().anyMatch(UserRole::isPortHealthUser)) {
+		if (jurisdictionLevel == JurisdictionLevel.NATION && currentUser.getUserRoles().stream().noneMatch(UserRole::isPortHealthUser)) {
 			return cb.and(assigneeFilter, relatedEntityNotDeletedFilter);
 		}
 
@@ -196,7 +205,37 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			filter = cb.or(filter, travelEntryFilter);
 		}
 
-		return CriteriaBuilderHelper.and(cb, filter, relatedEntityNotDeletedFilter, assigneeFilter);
+		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
+			&& RequestContextHolder.isMobileSync()) {
+
+			Predicate limitedCaseSyncPredicate = CriteriaBuilderHelper.and(
+				cb,
+				caseService.createLimitedSyncCasePredicate(cb, joins.getCaze(), currentUser),
+				caseService.createLimitedSyncCasePredicate(cb, joins.getContactCase(), currentUser));
+
+			return CriteriaBuilderHelper.and(cb, filter, relatedEntityNotDeletedFilter, limitedCaseSyncPredicate, assigneeFilter);
+		} else {
+			return CriteriaBuilderHelper.and(cb, filter, relatedEntityNotDeletedFilter, assigneeFilter);
+		}
+	}
+
+	@Override
+	protected List<Predicate> getAdditionalObsoleteUuidsPredicates(Date since, CriteriaBuilder cb, CriteriaQuery<String> cq, Root<Task> from) {
+
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
+			&& featureConfigurationFacade
+				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)) {
+
+			List<Predicate> predicates = new ArrayList<>();
+
+			TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, from);
+			predicates.add(caseService.createObsoleteLimitedSyncCasePredicate(cb, taskQueryContext.getJoins().getCaze(), since, getCurrentUser()));
+			predicates
+				.add(caseService.createObsoleteLimitedSyncCasePredicate(cb, taskQueryContext.getJoins().getContactCase(), since, getCurrentUser()));
+			return predicates;
+		} else {
+			return Collections.emptyList();
+		}
 	}
 
 	public Predicate createAssigneeFilter(CriteriaBuilder cb, Join<?, User> assigneeUserJoin) {

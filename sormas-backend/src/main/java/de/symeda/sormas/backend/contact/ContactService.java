@@ -52,7 +52,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
-import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.common.DeletionDetails;
@@ -482,11 +481,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)) {
 
 			ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, from);
-			Join<Contact, Case> sourceCaseJoin = contactQueryContext.getJoins().getCaze();
 			return Collections.singletonList(
-				cb.and(
-					cb.equal(sourceCaseJoin.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE),
-					cb.greaterThanOrEqualTo(sourceCaseJoin.get(Case.CLASSIFICATION_DATE), since)));
+				caseService.createObsoleteLimitedSyncCasePredicate(cb, contactQueryContext.getJoins().getCaze(), since, getCurrentUser()));
 		} else {
 			return Collections.emptyList();
 		}
@@ -1081,15 +1077,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
 			&& RequestContextHolder.isMobileSync()) {
-			Join<Contact, Case> sourceCaseJoin = qc.getJoins().getCaze();
-			final Predicate limitedCaseSyncPredicate = cb.not(
-				cb.and(
-					cb.equal(sourceCaseJoin.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE),
-					cb.or(
-						cb.notEqual(sourceCaseJoin.get(Case.REPORTING_USER), currentUser),
-						cb.and(
-							cb.equal(sourceCaseJoin.get(Case.REPORTING_USER), currentUser),
-							cb.isNull(sourceCaseJoin.get(Case.CREATION_VERSION))))));
+			final Predicate limitedCaseSyncPredicate = caseService.createLimitedSyncCasePredicate(cb, qc.getJoins().getCaze(), currentUser);
 			filter = CriteriaBuilderHelper.and(cb, filter, limitedCaseSyncPredicate);
 		}
 
