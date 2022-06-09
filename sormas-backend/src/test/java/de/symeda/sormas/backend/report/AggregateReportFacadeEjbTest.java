@@ -1,17 +1,16 @@
 /*
- *  SORMAS® - Surveillance Outbreak Response Management & Analysis System
- *  Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *  You should have received a copy of the GNU General Public License
- *  along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.backend.report;
@@ -34,7 +33,7 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
-public class AggregateReportFacadeEjbTest  extends AbstractBeanTest {
+public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 
 	TestDataCreator.RDCF rdcf;
 	private UserDto officer;
@@ -73,11 +72,10 @@ public class AggregateReportFacadeEjbTest  extends AbstractBeanTest {
 		informant2.setAssociatedOfficer(officer.toReference());
 		getUserFacade().saveUser(informant2);
 
-
 	}
 
 	@Test
-	public void testAggregateReportWithHospitalInformant(){
+	public void testAggregateReportWithHospitalInformant() {
 		loginWith(informant1);
 
 		EpiWeek epiWeek = DateHelper.getEpiWeek(new Date());
@@ -100,7 +98,7 @@ public class AggregateReportFacadeEjbTest  extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testAggregateReportsSorting(){
+	public void testAggregateReportsSorting() {
 		loginWith(informant1);
 
 		EpiWeek epiWeek = DateHelper.getEpiWeek(new Date());
@@ -108,21 +106,25 @@ public class AggregateReportFacadeEjbTest  extends AbstractBeanTest {
 		createAggregateReport(epiWeek, "61Y");
 		createAggregateReport(epiWeek, "41Y_60Y");
 		createAggregateReport(epiWeek, "21Y_30Y");
+		createAggregateReport(epiWeek, "5Y_15Y");
 		createAggregateReport(epiWeek, "31Y_40Y");
-		createAggregateReport(epiWeek, "60M_10Y");
+		createAggregateReport(epiWeek, "60M_4Y");
 		createAggregateReport(epiWeek, "0D_30D");
-		createAggregateReport(epiWeek, "0D_59M");
+		createAggregateReport(epiWeek, "1M_59M");
 
-		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(new AggregateReportCriteria().healthFacility(rdcf.facility));
-		Assert.assertEquals(30, indexList.size());
+		AggregateReportCriteria criteria = new AggregateReportCriteria().healthFacility(rdcf.facility);
+		criteria.setShowZeroRowsForGrouping(true);
+		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
+		Assert.assertEquals(31, indexList.size());
 
-		Assert.assertEquals("0D_59M", indexList.get(5).getAgeGroup());
-		Assert.assertEquals("0D_30D", indexList.get(6).getAgeGroup());
-		Assert.assertEquals("60M_10Y", indexList.get(7).getAgeGroup());
-		Assert.assertEquals("21Y_30Y", indexList.get(8).getAgeGroup());
-		Assert.assertEquals("31Y_40Y", indexList.get(9).getAgeGroup());
-		Assert.assertEquals("41Y_60Y", indexList.get(10).getAgeGroup());
-		Assert.assertEquals("61Y", indexList.get(11).getAgeGroup());
+		Assert.assertEquals("0D_30D", indexList.get(5).getAgeGroup());
+		Assert.assertEquals("1M_59M", indexList.get(6).getAgeGroup());
+		Assert.assertEquals("60M_4Y", indexList.get(7).getAgeGroup());
+		Assert.assertEquals("5Y_15Y", indexList.get(8).getAgeGroup());
+		Assert.assertEquals("21Y_30Y", indexList.get(9).getAgeGroup());
+		Assert.assertEquals("31Y_40Y", indexList.get(10).getAgeGroup());
+		Assert.assertEquals("41Y_60Y", indexList.get(11).getAgeGroup());
+		Assert.assertEquals("61Y", indexList.get(12).getAgeGroup());
 	}
 
 	private void createAggregateReport(EpiWeek epiWeek, String ageGroup) {

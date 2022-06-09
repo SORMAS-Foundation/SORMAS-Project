@@ -45,14 +45,14 @@ public class AggregatedCaseCountDto implements Serializable {
 	public AggregatedCaseCountDto() {
 	}
 
-	public AggregatedCaseCountDto(Disease disease, int newCases, int labConfirmations, int deaths, int epiWeek, String ageGroup) {
+	public AggregatedCaseCountDto(Disease disease, long newCases, long labConfirmations, long deaths, int epiWeek, String ageGroup) {
 
 		this.disease = disease;
 		this.newCases = newCases;
 		this.labConfirmations = labConfirmations;
 		this.deaths = deaths;
-		this.ageGroup = ageGroup;
 		this.epiWeek = epiWeek;
+		this.ageGroup = ageGroup;
 	}
 
 	public AggregatedCaseCountDto(
@@ -61,9 +61,10 @@ public class AggregatedCaseCountDto implements Serializable {
 		long labConfirmations,
 		long deaths,
 		Integer epiWeek,
+		String ageGroup,
 		String regionName,
 		Long regionId) {
-		this(disease, newCases, labConfirmations, deaths, epiWeek);
+		this(disease, newCases, labConfirmations, deaths, epiWeek, ageGroup);
 		this.regionName = regionName;
 		this.regionId = regionId;
 	}
@@ -74,15 +75,15 @@ public class AggregatedCaseCountDto implements Serializable {
 		long labConfirmations,
 		long deaths,
 		Integer epiWeek,
+		String ageGroup,
 		String regionName,
 		Long regionId,
 		String districtName,
 		Long districtId) {
-		this(disease, newCases, labConfirmations, deaths, epiWeek, regionName, regionId);
+		this(disease, newCases, labConfirmations, deaths, epiWeek, ageGroup, regionName, regionId);
 		this.districtName = districtName;
 		this.districtId = districtId;
 	}
-
 
 	public AggregatedCaseCountDto(
 		Disease disease,
@@ -90,13 +91,14 @@ public class AggregatedCaseCountDto implements Serializable {
 		long labConfirmations,
 		long deaths,
 		Integer epiWeek,
+		String ageGroup,
 		String regionName,
 		Long regionId,
 		String districtName,
 		Long districtId,
 		String healthFacilityName,
 		Long healthFacilityId) {
-		this(disease, newCases, labConfirmations, deaths, epiWeek, regionName, regionId, districtName, districtId);
+		this(disease, newCases, labConfirmations, deaths, epiWeek, ageGroup, regionName, regionId, districtName, districtId);
 		this.healthFacilityName = healthFacilityName;
 		this.healthFacilityId = healthFacilityId;
 	}
@@ -121,13 +123,14 @@ public class AggregatedCaseCountDto implements Serializable {
 		long labConfirmations,
 		long deaths,
 		Integer epiWeek,
+		String ageGroup,
 		String regionName,
 		Long regionId,
 		String districtName,
 		Long districtId,
 		Long pointOfEntryId,
 		String pointOfEntryName) {
-		this(disease, newCases, labConfirmations, deaths, epiWeek, regionName, regionId, districtName, districtId);
+		this(disease, newCases, labConfirmations, deaths, epiWeek, ageGroup, regionName, regionId, districtName, districtId);
 		this.pointOfEntryName = pointOfEntryName;
 		this.pointOfEntryId = pointOfEntryId;
 	}
@@ -195,9 +198,6 @@ public class AggregatedCaseCountDto implements Serializable {
 	public void setPointOfEntryId(Long pointOfEntryId) {
 		this.pointOfEntryId = pointOfEntryId;
 	}
-
-
-
 
 	public Disease getDisease() {
 		return disease;

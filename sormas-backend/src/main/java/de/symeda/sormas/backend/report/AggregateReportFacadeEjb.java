@@ -5,9 +5,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -29,9 +29,6 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.utils.AgeGroupUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
@@ -39,6 +36,7 @@ import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.AggregateReportGroupingLevel;
 import de.symeda.sormas.api.report.AggregatedCaseCountDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AgeGroupUtils;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -58,6 +56,7 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import org.apache.commons.lang3.StringUtils;
 
 @Stateless(name = "AggregateReportFacade")
 @RolesAllowed(UserRight._AGGREGATE_REPORT_VIEW)
@@ -138,13 +137,6 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 
 	@Override
-	public List<AggregateReportDto> getList(AggregateReportCriteria criteria) {
-
-		User user = userService.getCurrentUser();
-		return service.findBy(criteria, user).stream().map(c -> toDto(c)).collect(Collectors.toList());
-	}
-
-	@Override
 	public List<AggregatedCaseCountDto> getIndexList(AggregateReportCriteria criteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -167,9 +159,11 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 				cb.sum(root.get(AggregateReport.NEW_CASES)),
 				cb.sum(root.get(AggregateReport.LAB_CONFIRMATIONS)),
 				cb.sum(root.get(AggregateReport.DEATHS)),
-				root.get(AggregateReport.EPI_WEEK), root.get(AggregateReport.AGE_GROUP)));
+				root.get(AggregateReport.EPI_WEEK),
+				root.get(AggregateReport.AGE_GROUP)));
 
-		List<Expression<?>> expressions = new ArrayList<>(Arrays.asList(root.get(AggregateReport.DISEASE), root.get(AggregateReport.EPI_WEEK)));
+		List<Expression<?>> expressions = new ArrayList<>(
+			Arrays.asList(root.get(AggregateReport.DISEASE), root.get(AggregateReport.EPI_WEEK), root.get(AggregateReport.AGE_GROUP)));
 
 		AggregateReportGroupingLevel groupingLevel = null;
 
@@ -219,7 +213,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		if (criteria != null && criteria.getShowZeroRowsForGrouping()) {
 			for (Disease disease : diseaseConfigurationFacade.getAllDiseases(true, false, false)) {
 				if (!reportSet.containsKey(disease)) {
-					resultList.add(new AggregatedCaseCountDto(disease, 0L, 0L, 0L, 0));
+					resultList.add(new AggregatedCaseCountDto(disease, 0L, 0L, 0L, 0, ""));
 				}
 			}
 		}
@@ -230,7 +224,13 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 				.thenComparing(AggregatedCaseCountDto::getDistrictName, Comparator.nullsFirst(Comparator.naturalOrder()))
 				.thenComparing(AggregatedCaseCountDto::getHealthFacilityName, Comparator.nullsFirst(Comparator.naturalOrder()))
 				.thenComparing(AggregatedCaseCountDto::getPointOfEntryName, Comparator.nullsFirst(Comparator.naturalOrder()))
-				.thenComparing(AggregatedCaseCountDto::getEpiWeek, Comparator.nullsFirst(Comparator.naturalOrder())));
+				.thenComparing(AggregatedCaseCountDto::getEpiWeek, Comparator.nullsFirst(Comparator.naturalOrder()))
+				.thenComparing(
+					r -> r.getAgeGroup() != null
+						? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
+						: StringUtils.EMPTY)
+				.thenComparing(
+					r -> r.getAgeGroup() != null ? Integer.parseInt(r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0));
 		return resultList;
 	}
 
