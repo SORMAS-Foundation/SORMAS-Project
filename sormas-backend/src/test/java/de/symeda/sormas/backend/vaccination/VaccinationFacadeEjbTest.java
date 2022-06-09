@@ -366,5 +366,4 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 
 		assertNull(getEventParticipantFacade().getByUuid(ep111.getUuid()).getVaccinationStatus());
 	}
-
 }

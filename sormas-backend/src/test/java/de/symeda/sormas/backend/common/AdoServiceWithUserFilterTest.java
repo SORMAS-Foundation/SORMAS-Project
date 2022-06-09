@@ -15,6 +15,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
@@ -63,9 +64,11 @@ public class AdoServiceWithUserFilterTest extends AbstractBeanTest {
 		getCaseFacade().delete(caze2.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "Test"));
 		assertEquals(2, getCaseFacade().getObsoleteUuidsSince(startDate).size());
 
+		ContactDto contact = creator.createContact(user.toReference(), person.toReference(), caze3);
 		caze3.setCaseClassification(CaseClassification.NO_CASE);
 		getCaseFacade().save(caze3);
 		assertEquals(3, getCaseFacade().getObsoleteUuidsSince(startDate).size());
+		assertEquals(1, getContactFacade().getObsoleteUuidsSince(startDate).size());
 	}
 
 }

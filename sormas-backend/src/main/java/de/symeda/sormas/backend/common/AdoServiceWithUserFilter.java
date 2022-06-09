@@ -110,7 +110,7 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 			contentFilter = CriteriaBuilderHelper.or(cb, contentFilter, cb.equal(from.get(CoreAdo.ARCHIVED), true));
 		}
 
-		for (Predicate additionalPredicate : getAdditionalObsoleteUuidsPredicates(since, cb, from)) {
+		for (Predicate additionalPredicate : getAdditionalObsoleteUuidsPredicates(since, cb, cq, from)) {
 			contentFilter = CriteriaBuilderHelper.or(cb, contentFilter, additionalPredicate);
 		}
 
@@ -126,7 +126,7 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 		return createUserFilter(cb, cq, from);
 	}
 
-	protected List<Predicate> getAdditionalObsoleteUuidsPredicates(Date since, CriteriaBuilder cb, Root<ADO> from) {
+	protected List<Predicate> getAdditionalObsoleteUuidsPredicates(Date since, CriteriaBuilder cb, CriteriaQuery<String> cq, Root<ADO> from) {
 		return Collections.emptyList();
 	}
 

@@ -41,4 +41,5 @@ public class DocumentTemplatesPage {
   public static final By FILE_PICKER = By.cssSelector(".popupContent [class='gwt-FileUpload']");
   public static final By TEMPLATE_OVERWRITE_CONFIRM_BUTTON = By.cssSelector("div#actionConfirm");
   public static final By UPLOAD_SUCCESS_POPUP = By.cssSelector("div#actionOkay");
+  public static final By CLOSE_POPUP = By.cssSelector(".v-window-closebox");
 }
