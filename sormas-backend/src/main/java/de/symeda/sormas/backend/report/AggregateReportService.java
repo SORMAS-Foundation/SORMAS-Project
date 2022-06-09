@@ -103,10 +103,32 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 		Join<AggregateReport, User> reportingUser = from.join(AggregateReport.REPORTING_USER, JoinType.LEFT);
 		Predicate filter = cb.equal(reportingUser, currentUser);
 
-		// Allow access based on user role
-		if (jurisdictionLevel == JurisdictionLevel.REGION && currentUser.getRegion() != null) {
-			// Supervisors see all reports from their region
-			filter = cb.or(filter, cb.equal(from.get(AggregateReport.REGION), currentUser.getRegion()));
+		switch (jurisdictionLevel) {
+		case REGION:
+			final Region region = currentUser.getRegion();
+			if (region != null) {
+				filter = cb.or(filter, cb.equal(from.get(AggregateReport.REGION), region));
+			}
+			break;
+		case DISTRICT:
+			final District district = currentUser.getDistrict();
+			if (district != null) {
+				filter = cb.or(filter, cb.equal(from.get(AggregateReport.DISTRICT), district));
+			}
+			break;
+		case HEALTH_FACILITY:
+			final Facility healthFacility = currentUser.getHealthFacility();
+			if (healthFacility != null) {
+				filter = cb.or(filter, cb.equal(from.get(AggregateReport.HEALTH_FACILITY), healthFacility));
+			}
+			break;
+		case POINT_OF_ENTRY:
+			final PointOfEntry pointOfEntry = currentUser.getPointOfEntry();
+			if (pointOfEntry != null) {
+				filter = cb.or(filter, cb.equal(from.get(AggregateReport.POINT_OF_ENTRY), pointOfEntry));
+			}
+			break;
+		default:
 		}
 
 		return filter;

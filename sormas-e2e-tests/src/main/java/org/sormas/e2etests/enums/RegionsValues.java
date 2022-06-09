@@ -19,8 +19,10 @@ package org.sormas.e2etests.enums;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
+@Slf4j
 public enum RegionsValues {
   VoreingestellteBundeslander(
       "Voreingestellte Bundesl\u00E4nder",
@@ -39,6 +41,7 @@ public enum RegionsValues {
 
   @SneakyThrows
   public static String getNameValueForUuid(String option) {
+    log.warn("Please migrate to new implementation and take data from EnvironmentManager class");
     RegionsValues[] regionValuesOptions = RegionsValues.values();
     for (RegionsValues value : regionValuesOptions) {
       if (value.uuidMain.equalsIgnoreCase(option) || value.uuidDE.equalsIgnoreCase(option))
@@ -49,6 +52,7 @@ public enum RegionsValues {
 
   @SneakyThrows
   public static String getUuidValueForLocale(String regionName, String locale) {
+    log.warn("Please migrate to new implementation and take data from EnvironmentManager class");
     RegionsValues[] regionValuesOptions = RegionsValues.values();
     for (RegionsValues value : regionValuesOptions) {
       if (value.name.equalsIgnoreCase(regionName)) {

@@ -11578,4 +11578,18 @@ CREATE TRIGGER delete_history_trigger
 
 INSERT INTO schema_version (version_number, comment) VALUES (464, 'Fixed triggers on externalmessage table #8895');
 
+
+ALTER TABLE externalmessage ADD COLUMN personpresentcondition integer;
+ALTER TABLE externalmessage_history ADD COLUMN personpresentcondition integer;
+
+INSERT INTO schema_version (version_number, comment) VALUES (465, 'Add present condition mapping - #6692');
+
+-- 2022-05-20 Addition of age categories to aggregate module (mSERS) [5] #8967
+ALTER TABLE diseaseconfiguration ADD COLUMN agegroups text;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN agegroups text;
+ALTER TABLE aggregatereport ADD COLUMN agegroup varchar(255);
+ALTER TABLE aggregatereport_history ADD COLUMN agegroup varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (466, 'Addition of age categories to aggregate module (mSERS) [5] #8967');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

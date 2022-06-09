@@ -82,4 +82,16 @@ public class RegionResource extends EntityDtoResource {
 		return FacadeProvider.getRegionFacade()
 			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
+
+	@POST
+	@Path("/archive")
+	public List<String> archive(@RequestBody List<String> uuids) {
+		return FacadeProvider.getRegionFacade().archive(uuids);
+	}
+
+	@POST
+	@Path("/dearchive")
+	public List<String> dearchive(@RequestBody List<String> uuids) {
+		return FacadeProvider.getRegionFacade().dearchive(uuids);
+	}
 }

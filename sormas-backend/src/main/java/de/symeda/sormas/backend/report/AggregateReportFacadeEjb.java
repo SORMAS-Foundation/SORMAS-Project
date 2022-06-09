@@ -5,9 +5,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
@@ -27,6 +28,9 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import de.symeda.sormas.api.utils.AgeGroupUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
@@ -92,6 +96,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	@RolesAllowed(UserRight._AGGREGATE_REPORT_EDIT)
 	public AggregateReportDto saveAggregateReport(@Valid AggregateReportDto dto) {
 
+		AgeGroupUtils.validateAgeGroup(dto.getAgeGroup());
 		AggregateReport report = fromDto(dto, true);
 		service.ensurePersisted(report);
 		return toDto(report);
@@ -105,6 +110,38 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		}
 
 		return service.getAllUuids();
+	}
+
+	public static AggregateReportDto toDto(AggregateReport source) {
+
+		if (source == null) {
+			return null;
+		}
+
+		AggregateReportDto target = new AggregateReportDto();
+		DtoHelper.fillDto(target, source);
+
+		target.setDisease(source.getDisease());
+		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
+		target.setYear(source.getYear());
+		target.setEpiWeek(source.getEpiWeek());
+		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
+		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
+		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
+		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
+		target.setNewCases(source.getNewCases());
+		target.setLabConfirmations(source.getLabConfirmations());
+		target.setDeaths(source.getDeaths());
+		target.setAgeGroup(source.getAgeGroup());
+
+		return target;
+	}
+
+	@Override
+	public List<AggregateReportDto> getList(AggregateReportCriteria criteria) {
+
+		User user = userService.getCurrentUser();
+		return service.findBy(criteria, user).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -130,7 +167,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 				cb.sum(root.get(AggregateReport.NEW_CASES)),
 				cb.sum(root.get(AggregateReport.LAB_CONFIRMATIONS)),
 				cb.sum(root.get(AggregateReport.DEATHS)),
-				root.get(AggregateReport.EPI_WEEK)));
+				root.get(AggregateReport.EPI_WEEK), root.get(AggregateReport.AGE_GROUP)));
 
 		List<Expression<?>> expressions = new ArrayList<>(Arrays.asList(root.get(AggregateReport.DISEASE), root.get(AggregateReport.EPI_WEEK)));
 
@@ -240,30 +277,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		target.setNewCases(source.getNewCases());
 		target.setLabConfirmations(source.getLabConfirmations());
 		target.setDeaths(source.getDeaths());
-
-		return target;
-	}
-
-	public static AggregateReportDto toDto(AggregateReport source) {
-
-		if (source == null) {
-			return null;
-		}
-
-		AggregateReportDto target = new AggregateReportDto();
-		DtoHelper.fillDto(target, source);
-
-		target.setDisease(source.getDisease());
-		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
-		target.setYear(source.getYear());
-		target.setEpiWeek(source.getEpiWeek());
-		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
-		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
-		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
-		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
-		target.setNewCases(source.getNewCases());
-		target.setLabConfirmations(source.getLabConfirmations());
-		target.setDeaths(source.getDeaths());
+		target.setAgeGroup(source.getAgeGroup());
 
 		return target;
 	}

@@ -4,6 +4,7 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.utils.AgeGroupUtils;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportGroupingLevel;
@@ -35,6 +36,7 @@ public class AggregateReportsGrid extends FilteredGrid<AggregatedCaseCountDto, A
 			AggregatedCaseCountDto.HEALTH_FACILITY_NAME,
 			AggregatedCaseCountDto.POINT_OF_ENTRY_NAME,
 			AggregatedCaseCountDto.EPI_WEEK,
+			AggregatedCaseCountDto.AGE_GROUP,
 			AggregatedCaseCountDto.NEW_CASES,
 			AggregatedCaseCountDto.LAB_CONFIRMATIONS,
 			AggregatedCaseCountDto.DEATHS);
@@ -79,7 +81,12 @@ public class AggregateReportsGrid extends FilteredGrid<AggregatedCaseCountDto, A
 	public void reload() {
 
 		ListDataProvider<AggregatedCaseCountDto> dataProvider =
-			DataProvider.fromStream(FacadeProvider.getAggregateReportFacade().getIndexList(getCriteria()).stream());
+			DataProvider.fromStream(FacadeProvider.getAggregateReportFacade().getIndexList(getCriteria()).stream().map(aggregatedCaseCountDto -> {
+				if (aggregatedCaseCountDto.getAgeGroup() != null) {
+					aggregatedCaseCountDto.setAgeGroup(AgeGroupUtils.createCaption(aggregatedCaseCountDto.getAgeGroup()));
+				}
+				return aggregatedCaseCountDto;
+			}));
 		setDataProvider(dataProvider);
 		dataProvider.refreshAll();
 	}
