@@ -250,6 +250,7 @@ Feature: Create travel entries
     When I select Different Point Of Entry Jurisdiction checkbox
     Then I check if additional Point Of Entry fields appear
     When I create a new case with Point Of Entry for DE version
+    And I click on save button in the case popup
     And I check that Point Of Entry information is displayed as read-only on Edit case page
     And I refer case from Point Of Entry
     And I check that Point Of Entry and Place Of Stay information is correctly display on Edit case page

@@ -254,7 +254,7 @@ public class EditCasePage {
   public static final By POINT_OF_ENTRY_DETAILS = By.cssSelector("#pointOfEntryDetails");
   public static final By REFER_CASE_FROM_POINT_OF_ENTRY =
       By.cssSelector("#caseReferFromPointOfEntry");
-  public static final By REFER_CASE_FROM_POINT_OF_ENTRY_POPUP =
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY_POPUP_DE =
       By.xpath(
           "//div[contains(@class,'v-window-header') and text()='Fall vom Einreiseort weiterleiten']");
   public static final By REFER_CASE_FROM_POINT_OF_ENTRY_REGION =

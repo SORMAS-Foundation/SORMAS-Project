@@ -360,10 +360,6 @@ public class CreateNewCaseSteps implements En {
           fillFirstName(caze.getFirstName());
           fillLastName(caze.getLastName());
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAVE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
-          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
 
     When(

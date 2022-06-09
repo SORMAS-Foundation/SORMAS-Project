@@ -139,7 +139,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTIN
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE_DEFINITION_TEXT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY_DISTRICT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY_POPUP;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY_POPUP_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY_REGION;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REGION_COMBOBOX;
@@ -1648,7 +1648,7 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(REFER_CASE_FROM_POINT_OF_ENTRY);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(
-              REFER_CASE_FROM_POINT_OF_ENTRY_POPUP);
+              REFER_CASE_FROM_POINT_OF_ENTRY_POPUP_DE);
           webDriverHelpers.selectFromCombobox(REFER_CASE_FROM_POINT_OF_ENTRY_REGION, "Saarland");
           webDriverHelpers.selectFromCombobox(
               REFER_CASE_FROM_POINT_OF_ENTRY_DISTRICT, "LK Saarlouis");
