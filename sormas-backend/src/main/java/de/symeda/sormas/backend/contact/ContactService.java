@@ -488,6 +488,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		}
 	}
 
+	@Override
+	protected Predicate getUserFilterForObsoleteUuids(CriteriaBuilder cb, CriteriaQuery<String> cq, Root<Contact> from) {
+
+		return createUserFilter(new ContactQueryContext(cb, cq, from), new ContactCriteria().excludeLimitedSyncRestrictions(true));
+	}
+
 	public Long countContactsForMap(Region region, District district, Disease disease, Date from, Date to) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
@@ -986,13 +992,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		CriteriaQuery<?> cq = contactQueryContext.getQuery();
 		CriteriaBuilder cb = contactQueryContext.getCriteriaBuilder();
-		From<?, ?> contactPath = contactQueryContext.getRoot();
 
 		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, contactQueryContext.getJoins().getCaseJoins());
 		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
 			userFilter = caseService.createUserFilter(caseQueryContext);
 		} else {
-			CaseUserFilterCriteria userFilterCriteria = new CaseUserFilterCriteria();
+			CaseUserFilterCriteria userFilterCriteria =
+				new CaseUserFilterCriteria().excludeLimitedSyncRestrictions(contactCriteria.isExcludeLimitedSyncRestrictions());
 			userFilter = caseService.createUserFilter(caseQueryContext, userFilterCriteria);
 		}
 
@@ -1075,7 +1081,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb.or(cb.equal(contactPath.get(Contact.DISEASE), currentUser.getLimitedDisease()), cb.isNull(contactPath.get(Contact.DISEASE))));
 		}
 
-		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
+		if ((contactCriteria == null || !contactCriteria.isExcludeLimitedSyncRestrictions())
+			&& featureConfigurationFacade
+				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
 			&& RequestContextHolder.isMobileSync()) {
 			final Predicate limitedCaseSyncPredicate = caseService.createLimitedSyncCasePredicate(cb, qc.getJoins().getCaze(), currentUser);
 			filter = CriteriaBuilderHelper.and(cb, filter, limitedCaseSyncPredicate);

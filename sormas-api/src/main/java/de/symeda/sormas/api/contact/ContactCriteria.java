@@ -139,6 +139,8 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private String reportingUserLike;
 	private String personLike;
 
+	private boolean excludeLimitedSyncRestrictions;
+
 	public UserRoleReferenceDto getReportingUserRole() {
 		return reportingUserRole;
 	}
@@ -707,5 +709,15 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public void setPersonLike(String personLike) {
 		this.personLike = personLike;
+	}
+
+	@IgnoreForUrl
+	public boolean isExcludeLimitedSyncRestrictions() {
+		return excludeLimitedSyncRestrictions;
+	}
+
+	public ContactCriteria excludeLimitedSyncRestrictions(boolean excludeLimitedSyncRestrictions) {
+		this.excludeLimitedSyncRestrictions = excludeLimitedSyncRestrictions;
+		return this;
 	}
 }

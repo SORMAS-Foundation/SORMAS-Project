@@ -56,6 +56,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
@@ -153,6 +154,10 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 	}
 
 	public Predicate createUserFilter(TaskQueryContext taskQueryContext) {
+		return createUserFilter(taskQueryContext, null);
+	}
+
+	public Predicate createUserFilter(TaskQueryContext taskQueryContext, TaskCriteria taskCriteria) {
 
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
@@ -188,7 +193,11 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), currentUser);
 		filter = cb.or(filter, cb.equal(taskPath.get(Task.ASSIGNEE_USER), currentUser));
 
-		Predicate caseFilter = caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()));
+		Predicate caseFilter = caseService.createUserFilter(
+			new CaseQueryContext(cb, cq, joins.getCaseJoins()),
+			taskCriteria != null
+				? new CaseUserFilterCriteria().excludeLimitedSyncRestrictions(taskCriteria.isExcludeLimitedSyncRestrictions())
+				: null);
 		if (caseFilter != null) {
 			filter = cb.or(filter, caseFilter);
 		}
@@ -205,7 +214,9 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			filter = cb.or(filter, travelEntryFilter);
 		}
 
-		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
+		if ((taskCriteria == null || !taskCriteria.isExcludeLimitedSyncRestrictions())
+			&& featureConfigurationFacade
+				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
 			&& RequestContextHolder.isMobileSync()) {
 
 			Predicate limitedCaseSyncPredicate = CriteriaBuilderHelper.and(
@@ -236,6 +247,12 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		} else {
 			return Collections.emptyList();
 		}
+	}
+
+	@Override
+	protected Predicate getUserFilterForObsoleteUuids(CriteriaBuilder cb, CriteriaQuery<String> cq, Root<Task> from) {
+
+		return createUserFilter(new TaskQueryContext(cb, cq, from), new TaskCriteria().excludeLimitedSyncRestrictions(true));
 	}
 
 	public Predicate createAssigneeFilter(CriteriaBuilder cb, Join<?, User> assigneeUserJoin) {
