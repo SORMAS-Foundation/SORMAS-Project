@@ -660,7 +660,7 @@ Feature: Contacts end to end tests
     Then I open the first contact from contacts list
     And I check if Vaccination Status is set to "Vaccinated" on Edit Contact page
 
-  @env_main @issue=SORDEV-7460
+  @issue=SORDEV-7460 @env_main
   Scenario: Test Extend the exposure and event startDate and endDate to include a startTime and endTime
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -680,7 +680,7 @@ Feature: Contacts end to end tests
     And I collect the Date of Start and End Exposure from Exposure page
     Then I check that Date field displays start date and end date in table Exposure on Epidemiological data tab
 
-  @env_main @issue=SORDEV-5613
+  @issue=SORDEV-5613 @env_main
   Scenario: Option to attach document like pdf, word, jpeg to contacts
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -745,9 +745,8 @@ Feature: Contacts end to end tests
     Then I check that National Health ID is not visible in Person search popup
     And I check that Passport Number is not visible in Person search popup
     And I check that Nickname is not visible in Person search popup
-
-
-  @env_de @issue=SORDEV-9946
+    
+  @issue=SORDEV-9946 @env_de
   Scenario: Test Hide country specific fields in the 'Pick or create person' form of the duplicate detection pop-up, in German and French systems
     Given I log in as a Admin User
     Then I click on the Contacts button from navbar
@@ -759,3 +758,15 @@ Feature: Contacts end to end tests
     And I fill a new contact form with same person data for DE version
     And I click on SAVE new contact case button
     And I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
+
+  @issue=SORDEV-6434 @env_main
+  Scenario: Check if username shows up in visit origin
+    Given I log in with National User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click on SAVE new contact button
+    And I navigate to follow-up visits tab
+    When I click on new Visit button
+    And I create a new Visit with specific data
+    Then I check that username is displayed in the Visit Origin column

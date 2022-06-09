@@ -18,9 +18,9 @@ public class HospitalizationService {
   public Hospitalization generateHospitalization() {
     return Hospitalization.builder()
         .dateOfVisitOrAdmission(LocalDate.now().minusDays(3))
-        .dateOfDischargeOrTransfer(LocalDate.now().plusDays(2))
+        .dateOfDischargeOrTransfer(LocalDate.now().minusDays(1))
         .reasonForHospitalization("Other reason")
-        .specifyReason(faker.book().title() + " " + faker.dragonBall().character())
+        .specifyReason("Exotic disease")
         .stayInTheIntensiveCareUnit(YES.toString())
         .startOfStayDate(LocalDate.now().minusDays(2))
         .endOfStayDate(LocalDate.now().minusDays(1))
@@ -29,6 +29,7 @@ public class HospitalizationService {
         .wasThePatientHospitalizedPreviously(YES.toString())
         .wasPatientAdmittedAtTheFacilityAsAnInpatient(YES.toString())
         .leftAgainstMedicalAdvice(YES.toString())
+        .description("Additional description.")
         .build();
   }
 }

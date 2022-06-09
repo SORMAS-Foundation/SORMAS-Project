@@ -20,4 +20,5 @@ public class Hospitalization {
   String wasThePatientHospitalizedPreviously;
   String wasPatientAdmittedAtTheFacilityAsAnInpatient;
   String leftAgainstMedicalAdvice;
+  String description;
 }

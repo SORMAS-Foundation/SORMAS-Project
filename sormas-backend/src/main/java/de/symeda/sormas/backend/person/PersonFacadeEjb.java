@@ -116,6 +116,7 @@ import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -1701,6 +1702,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	@RolesAllowed(UserRight._PERSON_EDIT)
 	public void mergePerson(PersonDto leadPerson, PersonDto otherPerson) {
+
 		// Make sure the resulting person does not have multiple primary contact details
 		Set primaryContactDetailTypes = new HashSet<>();
 		for (PersonContactDetailDto contactDetailDto : leadPerson.getPersonContactDetails()) {
@@ -1714,8 +1716,14 @@ public class PersonFacadeEjb implements PersonFacade {
 			}
 		}
 		if (!leadPerson.getUuid().equals(otherPerson.getUuid())) {
+			List<ImmunizationDto> leadPersonImmunizations = immunizationFacade.getByPersonUuids(Collections.singletonList(leadPerson.getUuid()));
+			List<VaccinationDto> leadPersonVaccinations = null;
+			if (leadPersonImmunizations != null) {
+				leadPersonVaccinations = leadPersonImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList());
+			}
+
 			for (ImmunizationDto immunizationDto : immunizationFacade.getByPersonUuids(Collections.singletonList(otherPerson.getUuid()))) {
-				immunizationFacade.copyImmunizationsToLeadPerson(immunizationDto, leadPerson);
+				immunizationFacade.copyImmunizationToLeadPerson(immunizationDto, leadPerson, leadPersonVaccinations);
 			}
 		}
 

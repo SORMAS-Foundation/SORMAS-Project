@@ -18,6 +18,9 @@
 
 package org.sormas.e2etests.steps.web.application.persons;
 
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EDIT_TRAVEL_ENTRY_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.NEW_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_FIRST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_LAST_NAME_INPUT;
@@ -96,6 +99,7 @@ import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
 import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 public class EditPersonSteps implements En {
 
@@ -111,6 +115,7 @@ public class EditPersonSteps implements En {
       BaseSteps baseSteps,
       AssertHelpers assertHelpers,
       ApiState apiState,
+      SoftAssert softly,
       RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
 
@@ -340,6 +345,25 @@ public class EditPersonSteps implements En {
                       webDriverHelpers.isElementVisibleWithTimeout(ERROR_INDICATOR, 10),
                       "Facility highlight error message wasn't displayed"));
         });
+    Then(
+        "I click on new entry button on Edit Person Page for DE",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_ENTRY_POPUP);
+        });
+    When(
+        "I check if added travel Entry appeared on Edit Person Page",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          Boolean elementVisible = true;
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(EDIT_TRAVEL_ENTRY_BUTTON);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertTrue(elementVisible, "Travel Entry isn't visible");
+          softly.assertAll();
+        });
   }
 
   private void fillFirstName(String firstName) {
@@ -470,7 +494,6 @@ public class EditPersonSteps implements En {
         .dateOfBirth(contactInfo.getDateOfBirth())
         .uuid(contactInfo.getUuid())
         .presentConditionOfPerson(webDriverHelpers.getValueFromWebElement(PRESENT_CONDITION_INPUT))
-        .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
         .typeOfOccupation(webDriverHelpers.getValueFromWebElement(TYPE_OF_OCCUPATION_INPUT))
         .region(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
         .district(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
@@ -500,6 +523,7 @@ public class EditPersonSteps implements En {
                 .trim())
         .phoneNumber(webDriverHelpers.getTextFromWebElement(PHONE_FIELD))
         .emailAddress(webDriverHelpers.getTextFromWebElement(EMAIL_FIELD))
+        .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
         .build();
   }
 

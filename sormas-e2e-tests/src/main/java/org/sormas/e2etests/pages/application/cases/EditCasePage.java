@@ -89,6 +89,7 @@ public class EditCasePage {
   public static final By FACILITY_CATEGORY_COMBOBOX = By.cssSelector("#typeGroup div");
   public static final By FACILITY_TYPE_COMBOBOX = By.cssSelector("#facilityType div");
   public static final By FACILITY_HEALTH_COMBOBOX = By.cssSelector("#healthFacility div");
+  public static final By FACILITY_HEALTH_INPUT = By.cssSelector("#healthFacility input");
   public static final By FACILITY_ACTIVITY_COMBOBOX =
       By.cssSelector("[id='typeOfPlace'] [class='v-filterselect-button']");
   public static final By REGION_COMBOBOX = By.cssSelector("#responsibleRegion div");
@@ -223,6 +224,9 @@ public class EditCasePage {
   public static final By TOOLTIP_EYE_ICON_HOVER = By.xpath("//div[@class='v-tooltip-text']");
   public static final By REINFECTION_STATUS_LABEL = By.cssSelector("#reinfectionStatus input");
   public static final By CREATE_DOCUMENT_TEMPLATES = By.id("Create");
+  public static final By CREATE_DOCUMENT_TEMPLATES_DE = By.id("Erstellen");
+  public static final By CREATE_DOCUMENT_TEMPLATES_POPUP_DE =
+      By.cssSelector(".v-window #Erstellen");
   public static final By UPLOAD_DOCUMENT_CHECKBOX =
       By.xpath("//label[text()='Also upload the generated document to this entity']");
   public static final By POPUPS_INPUTS = By.cssSelector(".popupContent input");
@@ -233,6 +237,9 @@ public class EditCasePage {
   public static final By ARCHIVE_CASE_BUTTON = By.id("archiveDearchive");
   public static final By ARCHIVE_RELATED_CONTACTS_CHECKBOX =
       By.cssSelector(".popupContent span[class='v-checkbox v-widget']");
+  public static final By INFRASTRUCTURE_DATA_POPUP =
+      By.xpath("//*[contains(text(),'Infrastructure data has changed')]");
+  public static final By ACTION_CONFIRM = By.cssSelector("[id='actionConfirm']");
   public static final By SAMPLES_CARD_DATE_OF_COLLECTED_SAMPLE =
       By.xpath("(//div[@location='samples']//div[@class='v-label v-widget v-label-undef-w'])[1]");
   public static final By SAMPLES_CARD_LABORATORY =

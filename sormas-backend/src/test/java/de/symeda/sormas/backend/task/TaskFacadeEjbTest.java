@@ -508,7 +508,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testAllTaskAndDispalyCaseResponsibleRegion() {
+	public void testAllTaskAndDisplayCaseResponsibleRegion() {
 		RDCF rdcf1 = new RDCF(creator.createRDCFEntities("Region1", "District1", "Community1", "Facility1"));
 		RDCF rdcf2 = new RDCF(creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2"));
 
@@ -528,8 +528,8 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 
 		List<TaskIndexDto> taskIndexDtos = getTaskFacade().getIndexList(null, 0, 100, null);
 		assertEquals(1, taskIndexDtos.size());
-		assertEquals(rdcf2.region.getCaption(), taskIndexDtos.get(0).getRegion());
-		assertEquals(rdcf2.district.getCaption(), taskIndexDtos.get(0).getDistrict());
-		assertEquals(rdcf2.community.getCaption(), taskIndexDtos.get(0).getCommunity());
+		assertEquals(rdcf2.region, taskIndexDtos.get(0).getRegion());
+		assertEquals(rdcf2.district, taskIndexDtos.get(0).getDistrict());
+		assertEquals(rdcf2.community, taskIndexDtos.get(0).getCommunity());
 	}
 }
