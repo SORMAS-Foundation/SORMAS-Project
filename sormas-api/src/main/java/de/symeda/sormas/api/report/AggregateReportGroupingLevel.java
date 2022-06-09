@@ -27,6 +27,7 @@ public enum AggregateReportGroupingLevel {
 		}
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

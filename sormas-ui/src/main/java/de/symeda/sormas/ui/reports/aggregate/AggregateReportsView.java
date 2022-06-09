@@ -8,15 +8,12 @@ import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportGroupingLevel;
 import de.symeda.sormas.api.user.UserDto;
@@ -45,12 +42,6 @@ public class AggregateReportsView extends AbstractView {
 	private Button btnCreate;
 	private Button btnEdit;
 
-	// Filters
-	private HorizontalLayout hlSecondFilterRow;
-	private ComboBox<Integer> cbFromYearFilter;
-	private ComboBox<EpiWeek> cbFromEpiWeekFilter;
-	private ComboBox<Integer> cbToYearFilter;
-	private ComboBox<EpiWeek> cbToEpiWeekFilter;
 	private CheckBox showZeroRowsGrouping;
 
 	private AggregateReportsFilterForm aggregateReportsFilterForm;
@@ -71,7 +62,6 @@ public class AggregateReportsView extends AbstractView {
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createGroupingBar());
 		gridLayout.addComponent(createFilterBar(user));
-		gridLayout.addComponent(createEpiWeekFilterBar());
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -144,6 +134,11 @@ public class AggregateReportsView extends AbstractView {
 		filterLayout.setMargin(false);
 		filterLayout.setWidth(100, Unit.PERCENTAGE);
 
+		criteria.setRegion(user.getRegion());
+		criteria.setDistrict(user.getDistrict());
+		criteria.setHealthFacility(user.getHealthFacility());
+		criteria.setPointOfEntry(user.getPointOfEntry());
+
 		aggregateReportsFilterForm = new AggregateReportsFilterForm();
 		aggregateReportsFilterForm.setValue(criteria);
 
@@ -165,91 +160,6 @@ public class AggregateReportsView extends AbstractView {
 		filterLayout.addComponent(aggregateReportsFilterForm);
 
 		return filterLayout;
-	}
-
-	private HorizontalLayout createEpiWeekFilterBar() {
-		hlSecondFilterRow = new HorizontalLayout();
-		hlSecondFilterRow.setMargin(false);
-		hlSecondFilterRow.setSpacing(true);
-		hlSecondFilterRow.setWidthUndefined();
-		{
-			Label lblFrom = new Label(I18nProperties.getCaption(Captions.from));
-			CssStyles.style(lblFrom, CssStyles.LABEL_BOLD, CssStyles.VSPACE_TOP_4);
-			hlSecondFilterRow.addComponent(lblFrom);
-
-			cbFromYearFilter = new ComboBox<>();
-			cbFromYearFilter.setId("yearFrom");
-			cbFromYearFilter.addValueChangeListener(e -> clearFilterIfEmpty(cbFromYearFilter, cbFromEpiWeekFilter));
-			cbFromEpiWeekFilter = new ComboBox<>();
-			cbFromEpiWeekFilter.setId(AggregateReportCriteria.EPI_WEEK_FROM);
-			cbFromEpiWeekFilter.addValueChangeListener(e -> {
-				criteria.setEpiWeekFrom(e.getValue());
-			});
-			cbToYearFilter = new ComboBox<>();
-			cbToYearFilter.setId("yearTo");
-			cbToYearFilter.addValueChangeListener(e -> clearFilterIfEmpty(cbFromYearFilter, cbToEpiWeekFilter));
-			cbToEpiWeekFilter = new ComboBox<>();
-			cbToEpiWeekFilter.setId(AggregateReportCriteria.EPI_WEEK_TO);
-			cbToEpiWeekFilter.addValueChangeListener(e -> {
-				criteria.setEpiWeekTo(e.getValue());
-			});
-
-			cbFromYearFilter.setWidth(140, Unit.PIXELS);
-			cbFromYearFilter.setPlaceholder(I18nProperties.getString(Strings.year));
-			cbFromYearFilter.setItems(DateHelper.getYearsToNow(2000));
-			cbFromYearFilter.addValueChangeListener(e -> {
-				cbFromEpiWeekFilter.clear();
-				if (e.getValue() != null) {
-					cbFromEpiWeekFilter.setItems(DateHelper.createEpiWeekList(e.getValue()));
-				}
-			});
-			if (criteria.getEpiWeekFrom() != null) {
-				cbFromYearFilter.setValue(criteria.getEpiWeekFrom().getYear());
-			}
-			hlSecondFilterRow.addComponent(cbFromYearFilter);
-
-			cbFromEpiWeekFilter.setWidth(200, Unit.PIXELS);
-			cbFromEpiWeekFilter.setPlaceholder(I18nProperties.getString(Strings.epiWeek));
-			criteria.setEpiWeekFrom(cbFromEpiWeekFilter.getValue());
-
-			hlSecondFilterRow.addComponent(cbFromEpiWeekFilter);
-
-			Label lblTo = new Label(I18nProperties.getCaption(Captions.to));
-			CssStyles.style(lblTo, CssStyles.LABEL_BOLD, CssStyles.VSPACE_TOP_4);
-			hlSecondFilterRow.addComponent(lblTo);
-
-			cbToYearFilter.setWidth(140, Unit.PIXELS);
-			cbToYearFilter.setPlaceholder(I18nProperties.getString(Strings.year));
-			cbToYearFilter.setItems(DateHelper.getYearsToNow(2000));
-			cbToYearFilter.addValueChangeListener(e -> {
-				cbToEpiWeekFilter.clear();
-				if (e.getValue() != null) {
-					cbToEpiWeekFilter.setItems(DateHelper.createEpiWeekList(e.getValue()));
-				}
-			});
-			if (criteria.getEpiWeekTo() != null) {
-				cbToYearFilter.setValue(criteria.getEpiWeekTo().getYear());
-			}
-			hlSecondFilterRow.addComponent(cbToYearFilter);
-
-			cbToEpiWeekFilter.setWidth(200, Unit.PIXELS);
-			cbToEpiWeekFilter.setPlaceholder(I18nProperties.getString(Strings.epiWeek));
-			criteria.setEpiWeekTo(cbToEpiWeekFilter.getValue());
-			hlSecondFilterRow.addComponent(cbToEpiWeekFilter);
-		}
-		return hlSecondFilterRow;
-	}
-
-	private void clearFilterIfEmpty(ComboBox<?> filter1, ComboBox<?> filter2) {
-		if (filter1.getValue() == null) {
-			filter2.clear();
-		}
-	}
-
-	private void clearFilterIfNotEmpty(ComboBox<?> filter1, ComboBox<?> filter2) {
-		if (filter1.getValue() != null) {
-			filter2.clear();
-		}
 	}
 
 	@Override

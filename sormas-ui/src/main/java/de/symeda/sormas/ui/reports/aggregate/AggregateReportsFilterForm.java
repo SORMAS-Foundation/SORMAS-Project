@@ -4,7 +4,10 @@ import static com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory.CAPTIO
 
 import java.util.List;
 
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.Disease;
@@ -22,12 +25,18 @@ import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregatedCaseCountDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateReportCriteria> {
+
+	private static final String EPI_WEEK_LOC = "epiWeekLoc";
 
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
@@ -35,8 +44,18 @@ public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateRepo
 	private ComboBox pointOfEntryFilter;
 	private ComboBox diseaseFilter;
 
+	// Filters
+	private HorizontalLayout hlSecondFilterRow;
+	private com.vaadin.ui.ComboBox<Integer> cbFromYearFilter;
+	private com.vaadin.ui.ComboBox<EpiWeek> cbFromEpiWeekFilter;
+	private com.vaadin.ui.ComboBox<Integer> cbToYearFilter;
+	private com.vaadin.ui.ComboBox<EpiWeek> cbToEpiWeekFilter;
+
 	protected AggregateReportsFilterForm() {
-		super(AggregateReportCriteria.class, AggregatedCaseCountDto.I18N_PREFIX);
+		super(
+			AggregateReportCriteria.class,
+			AggregatedCaseCountDto.I18N_PREFIX,
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
 	}
 
 	@Override
@@ -47,7 +66,8 @@ public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateRepo
 			AggregateReportCriteria.DISTRICT,
 			AggregateReportCriteria.HEALTH_FACILITY,
 			AggregateReportCriteria.POINT_OF_ENTRY,
-			AggregateReportCriteria.DISEASE };
+			AggregateReportCriteria.DISEASE,
+			EPI_WEEK_LOC };
 	}
 
 	@Override
@@ -81,6 +101,8 @@ public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateRepo
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(userRegion.getUuid()));
 			if (userDistrict != null) {
 				districtFilter.setEnabled(false);
+				facilityFilter.addItems(FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(userDistrict, true));
+				pointOfEntryFilter.addItems(FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(userDistrict.getUuid(), true));
 			}
 		}
 
@@ -90,6 +112,8 @@ public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateRepo
 		for (Object r : aggregateDiseases) {
 			diseaseFilter.getItem(r).getItemProperty(CAPTION_PROPERTY_ID).setValue(r.toString());
 		}
+
+		getContent().addComponent(createEpiWeekFilterBar(), EPI_WEEK_LOC);
 	}
 
 	@Override
@@ -149,6 +173,98 @@ public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateRepo
 			}
 			break;
 		}
+		}
+	}
+
+	private HorizontalLayout createEpiWeekFilterBar() {
+		hlSecondFilterRow = new HorizontalLayout();
+		hlSecondFilterRow.setMargin(false);
+		hlSecondFilterRow.setSpacing(true);
+		hlSecondFilterRow.setWidthUndefined();
+
+		Label lblFrom = new Label(I18nProperties.getCaption(Captions.from));
+		CssStyles.style(lblFrom, CssStyles.LABEL_BOLD, CssStyles.VSPACE_TOP_4);
+		hlSecondFilterRow.addComponent(lblFrom);
+
+		cbFromYearFilter = new com.vaadin.ui.ComboBox<>();
+		cbFromYearFilter.setId("yearFrom");
+		cbFromYearFilter.addValueChangeListener(e -> clearFilterIfEmpty(cbFromYearFilter, cbFromEpiWeekFilter));
+		cbFromEpiWeekFilter = new com.vaadin.ui.ComboBox<>();
+		cbFromEpiWeekFilter.setId(AggregateReportCriteria.EPI_WEEK_FROM);
+		cbFromEpiWeekFilter.addValueChangeListener(e -> {
+			getValue().setEpiWeekFrom(e.getValue());
+		});
+		cbToYearFilter = new com.vaadin.ui.ComboBox<>();
+		cbToYearFilter.setId("yearTo");
+		cbToYearFilter.addValueChangeListener(e -> clearFilterIfEmpty(cbFromYearFilter, cbToEpiWeekFilter));
+		cbToEpiWeekFilter = new com.vaadin.ui.ComboBox<>();
+		cbToEpiWeekFilter.setId(AggregateReportCriteria.EPI_WEEK_TO);
+		cbToEpiWeekFilter.addValueChangeListener(e -> {
+			getValue().setEpiWeekTo(e.getValue());
+		});
+
+		cbFromYearFilter.setWidth(140, Unit.PIXELS);
+		cbFromYearFilter.setPlaceholder(I18nProperties.getString(Strings.year));
+		cbFromYearFilter.setItems(DateHelper.getYearsToNow(2000));
+		cbFromYearFilter.addValueChangeListener(e -> {
+			cbFromEpiWeekFilter.clear();
+			if (e.getValue() != null) {
+				cbFromEpiWeekFilter.setItems(DateHelper.createEpiWeekList(e.getValue()));
+			}
+		});
+		hlSecondFilterRow.addComponent(cbFromYearFilter);
+
+		cbFromEpiWeekFilter.setWidth(200, Unit.PIXELS);
+		cbFromEpiWeekFilter.setPlaceholder(I18nProperties.getString(Strings.epiWeek));
+
+		hlSecondFilterRow.addComponent(cbFromEpiWeekFilter);
+
+		Label lblTo = new Label(I18nProperties.getCaption(Captions.to));
+		CssStyles.style(lblTo, CssStyles.LABEL_BOLD, CssStyles.VSPACE_TOP_4);
+		hlSecondFilterRow.addComponent(lblTo);
+
+		cbToYearFilter.setWidth(140, Unit.PIXELS);
+		cbToYearFilter.setPlaceholder(I18nProperties.getString(Strings.year));
+		cbToYearFilter.setItems(DateHelper.getYearsToNow(2000));
+		cbToYearFilter.addValueChangeListener(e -> {
+			cbToEpiWeekFilter.clear();
+			if (e.getValue() != null) {
+				cbToEpiWeekFilter.setItems(DateHelper.createEpiWeekList(e.getValue()));
+			}
+		});
+		hlSecondFilterRow.addComponent(cbToYearFilter);
+
+		cbToEpiWeekFilter.setWidth(200, Unit.PIXELS);
+		cbToEpiWeekFilter.setPlaceholder(I18nProperties.getString(Strings.epiWeek));
+		hlSecondFilterRow.addComponent(cbToEpiWeekFilter);
+
+		return hlSecondFilterRow;
+	}
+
+	private void clearFilterIfEmpty(com.vaadin.ui.ComboBox<?> filter1, com.vaadin.ui.ComboBox<?> filter2) {
+		if (filter1.getValue() == null) {
+			filter2.clear();
+		}
+	}
+
+	private void clearFilterIfNotEmpty(com.vaadin.ui.ComboBox<?> filter1, com.vaadin.ui.ComboBox<?> filter2) {
+		if (filter1.getValue() != null) {
+			filter2.clear();
+		}
+	}
+
+	@Override
+	public void setValue(AggregateReportCriteria newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		super.setValue(newFieldValue);
+
+		if (newFieldValue.getEpiWeekFrom() != null) {
+			cbFromYearFilter.setValue(newFieldValue.getEpiWeekFrom().getYear());
+			cbFromEpiWeekFilter.setValue(newFieldValue.getEpiWeekFrom());
+		}
+
+		if (newFieldValue.getEpiWeekTo() != null) {
+			cbToYearFilter.setValue(newFieldValue.getEpiWeekTo().getYear());
+			cbToEpiWeekFilter.setValue(newFieldValue.getEpiWeekTo());
 		}
 	}
 }
