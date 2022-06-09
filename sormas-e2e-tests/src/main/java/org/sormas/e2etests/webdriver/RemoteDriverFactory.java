@@ -53,16 +53,16 @@ public class RemoteDriverFactory implements DriverFactory {
   @Override
   public ChromeDriver getRemoteWebDriver() {
     log.info("Setting Chrome Driver's path");
-    System.setProperty("webdriver.chrome.driver", "C:\\chromedriver_win32\\chromedriver.exe");
+    System.setProperty("webdriver.chrome.driver", "/usr/lib64/chromium-browser/chromedriver");
     log.info("Adding all chrome preferences");
     final ChromeOptions options = new ChromeOptions();
     final HashMap<String, Object> chromePreferences = new HashMap<>();
-    chromePreferences.put("download.default_directory", userDirectory + "\\downloads");
+    chromePreferences.put("download.default_directory", userDirectory + "/downloads");
     options.merge(desiredCapabilities);
     options.addArguments("--no-default-browser-check");
     options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.IGNORE);
     options.addArguments("disable-infobars");
-    //    options.addArguments("--headless");
+    options.addArguments("--headless");
     options.addArguments("enable-automation");
     options.addArguments("--no-sandbox");
     options.addArguments("--disable-browser-side-navigation");
