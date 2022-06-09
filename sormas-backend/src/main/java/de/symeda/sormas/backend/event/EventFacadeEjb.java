@@ -887,7 +887,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
     public void updateStatusInExternalSurveillanceTool(String eventUuid, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException{
-        //TODO: check if the externalId is also necessary to be checked - event.getExternalId = null
+        //TODO: do we need the following check too here?  -> event.getExternalId != null && !event.getExternalID().isEmpty()
         if (externalSurveillanceToolFacade.isFeatureEnabled()) {
                 externalSurveillanceToolFacade.sendEvents(Collections.singletonList(eventUuid), externalShareStatus);
         }

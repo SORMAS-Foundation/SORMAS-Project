@@ -2542,6 +2542,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	public void updateStatusInExternalSurveillanceTool(String entityUuid, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException{
 		Case caze = caseService.getByUuid(entityUuid);
+		//TODO: do we need the check for externalId too? -> caze.getExternalID() != null && !caze.getExternalID().isEmpty()
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && caze.getExternalID() != null && !caze.getExternalID().isEmpty()) {
 			List<CaseDataDto> casesWithSameExternalId = getByExternalId(caze.getExternalID());
 			if (casesWithSameExternalId != null && casesWithSameExternalId.size() == 1) {
@@ -2550,11 +2551,16 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
-/*	public void updateStatusInExternalSurveillanceToolForMultipleCases(List<String> entityUuids, ExternalShareStatus externalShareStatus) {
-		entityUuids.forEach(entityUuid -> {
-			updateStatusInExternalSurveillanceTool(entityUuid, externalShareStatus);
-		});
-	}*/
+	public void updateStatusInExternalSurveillanceToolForMultipleCases(List<String> entityUuids, ExternalShareStatus externalShareStatus) {
+	    //TODO: if the check for externalId != null and externalID not empty is needed the entityUuids list should be filtered
+        List<String> filteredEntityUuids = entityUuids.stream().filter(this::hasExternalId).collect(Collectors.toList());
+        externalSurveillanceToolGatewayFacade.sendCases(filteredEntityUuids, externalShareStatus);
+	}
+
+	public boolean hasExternalId(String entityUuid) {
+        Case caze = caseService.getByUuid(entityUuid);
+	    return caze.getExternalID() != null && !caze.getExternalID().isEmpty();
+    }
 
 	@Override
 	@RolesAllowed(UserRight._CASE_ARCHIVE)
@@ -2571,7 +2577,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@RolesAllowed(UserRight._CASE_ARCHIVE)
 	public void archive(List<String> entityUuids, boolean includeContacts) {
 		super.archive(entityUuids);
-		// updateStatusInExternalSurveillanceToolForMultipleCases(entityUuids, ExternalShareStatus.ARCHIVED);
+		updateStatusInExternalSurveillanceToolForMultipleCases(entityUuids, ExternalShareStatus.ARCHIVED);
 		if (includeContacts) {
 			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(entityUuids);
 			contactService.archive(caseContacts);
