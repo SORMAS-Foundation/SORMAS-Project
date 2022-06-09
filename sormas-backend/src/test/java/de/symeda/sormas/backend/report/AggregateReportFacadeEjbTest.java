@@ -93,7 +93,10 @@ public class AggregateReportFacadeEjbTest  extends AbstractBeanTest {
 		aggregateReportDto.setHealthFacility(rdcf.facility);
 		getAggregateReportFacade().saveAggregateReport(aggregateReportDto);
 
-		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(new AggregateReportCriteria().healthFacility(rdcf.facility));
+		AggregateReportCriteria criteria = new AggregateReportCriteria().healthFacility(rdcf.facility);
+		criteria.setShowZeroRowsForGrouping(true);
+
+		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
 		Assert.assertEquals(24, indexList.size());
 		Assert.assertEquals(1, indexList.stream().filter(aggregatedCaseCountDto -> aggregatedCaseCountDto.getDeaths() == 3).count());
 	}
