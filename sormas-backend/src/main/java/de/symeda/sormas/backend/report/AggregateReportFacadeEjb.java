@@ -29,6 +29,8 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
@@ -240,6 +242,15 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 			|| AggregateReportGroupingLevel.HEALTH_FACILITY.equals(groupingLevel)
 			|| AggregateReportGroupingLevel.POINT_OF_ENTRY.equals(groupingLevel);
 	}
+		List<AggregatedCaseCountDto> reportList = new ArrayList<>(reportSet);
+		Function<AggregatedCaseCountDto, String> diseaseComparator = r -> r.getDisease().toString();
+		Comparator<AggregatedCaseCountDto> comparator = Comparator.comparing(diseaseComparator)
+			.thenComparing(
+				r -> r.getAgeGroup() != null
+					? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
+					: StringUtils.EMPTY)
+			.thenComparing(
+				r -> r.getAgeGroup() != null ? Integer.parseInt(r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0);
 
 	private boolean shouldIncludeDistrict(AggregateReportGroupingLevel groupingLevel) {
 		return AggregateReportGroupingLevel.DISTRICT.equals(groupingLevel)

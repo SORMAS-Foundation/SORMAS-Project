@@ -62,7 +62,7 @@ public class AggregateReportDao extends AbstractAdoDao<AggregateReport> {
 						? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
 						: StringUtils.EMPTY)
 				.thenComparing(
-					r -> r.getAgeGroup() != null ? Integer.parseInt(r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0);
+						r -> r.getAgeGroup() != null ? Integer.parseInt(r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0);
 
 			Collections.sort(reports, comparator);
 
