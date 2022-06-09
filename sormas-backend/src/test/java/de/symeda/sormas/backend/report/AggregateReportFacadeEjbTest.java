@@ -108,21 +108,23 @@ public class AggregateReportFacadeEjbTest  extends AbstractBeanTest {
 		createAggregateReport(epiWeek, "61Y");
 		createAggregateReport(epiWeek, "41Y_60Y");
 		createAggregateReport(epiWeek, "21Y_30Y");
+		createAggregateReport(epiWeek, "5Y_15Y");
 		createAggregateReport(epiWeek, "31Y_40Y");
-		createAggregateReport(epiWeek, "60M_10Y");
+		createAggregateReport(epiWeek, "60M_4Y");
 		createAggregateReport(epiWeek, "0D_30D");
-		createAggregateReport(epiWeek, "0D_59M");
+		createAggregateReport(epiWeek, "1M_59M");
 
 		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(new AggregateReportCriteria().healthFacility(rdcf.facility));
-		Assert.assertEquals(30, indexList.size());
+		Assert.assertEquals(31, indexList.size());
 
-		Assert.assertEquals("0D_59M", indexList.get(5).getAgeGroup());
-		Assert.assertEquals("0D_30D", indexList.get(6).getAgeGroup());
-		Assert.assertEquals("60M_10Y", indexList.get(7).getAgeGroup());
-		Assert.assertEquals("21Y_30Y", indexList.get(8).getAgeGroup());
-		Assert.assertEquals("31Y_40Y", indexList.get(9).getAgeGroup());
-		Assert.assertEquals("41Y_60Y", indexList.get(10).getAgeGroup());
-		Assert.assertEquals("61Y", indexList.get(11).getAgeGroup());
+		Assert.assertEquals("0D_30D", indexList.get(5).getAgeGroup());
+		Assert.assertEquals("1M_59M", indexList.get(6).getAgeGroup());
+		Assert.assertEquals("60M_4Y", indexList.get(7).getAgeGroup());
+		Assert.assertEquals("5Y_15Y", indexList.get(8).getAgeGroup());
+		Assert.assertEquals("21Y_30Y", indexList.get(9).getAgeGroup());
+		Assert.assertEquals("31Y_40Y", indexList.get(10).getAgeGroup());
+		Assert.assertEquals("41Y_60Y", indexList.get(11).getAgeGroup());
+		Assert.assertEquals("61Y", indexList.get(12).getAgeGroup());
 	}
 
 	private void createAggregateReport(EpiWeek epiWeek, String ageGroup) {
