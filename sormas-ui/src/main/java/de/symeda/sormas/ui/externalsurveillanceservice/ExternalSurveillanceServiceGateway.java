@@ -67,7 +67,7 @@ public class ExternalSurveillanceServiceGateway {
 			I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendEvent),
 			I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmDeleteEvent),
 			() -> {
-				FacadeProvider.getExternalSurveillanceToolFacade().sendEvents(Collections.singletonList(event.getUuid()));
+				FacadeProvider.getExternalSurveillanceToolFacade().sendEvents(Collections.singletonList(event.getUuid()), null);
 			},
 			() -> {
 				FacadeProvider.getExternalSurveillanceToolFacade().deleteEvents(Collections.singletonList(event));
@@ -117,7 +117,7 @@ public class ExternalSurveillanceServiceGateway {
 
 	public static void sendEventsToExternalSurveillanceTool(List<String> uuids, Runnable callback, boolean shouldConfirm) {
 		sendToExternalSurveillanceTool(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendEvents), () -> {
-			FacadeProvider.getExternalSurveillanceToolFacade().sendEvents(uuids);
+			FacadeProvider.getExternalSurveillanceToolFacade().sendEvents(uuids, null);
 			new Notification(
 				I18nProperties.getString(Strings.headingEventsSentToExternalSurveillanceTool),
 				I18nProperties.getString(Strings.messageEventsSentToExternalSurveillanceTool),

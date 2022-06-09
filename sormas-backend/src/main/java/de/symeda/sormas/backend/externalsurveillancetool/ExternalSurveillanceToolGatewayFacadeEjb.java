@@ -77,9 +77,15 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	@Override
-	public void sendEvents(List<String> eventUuids) throws ExternalSurveillanceToolException {
+	public void sendEvents(List<String> eventUuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
 		ExportParameters params = new ExportParameters();
 		params.setEventUuids(eventUuids);
+
+        if (externalShareStatus.equals(ExternalShareStatus.ARCHIVED)) {
+            params.setArchived(true);
+        } else {
+            params.setArchived(false);
+        }
 
 		sendRequest(params);
 	}
@@ -134,10 +140,6 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	@Override
 	public void createEventShareInfo(List<String> eventUuids) {
 		eventService.getByUuids(eventUuids).forEach(event -> shareInfoService.createAndPersistShareInfo(event, ExternalShareStatus.SHARED));
-	}
-
-	public void updateCasesStatuses(List<String> entityUuids, ExternalShareStatus externalShareStatus) {
-		sendCases(entityUuids, externalShareStatus);
 	}
 
     // TODO: check if we need the shareInfoService

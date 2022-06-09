@@ -56,6 +56,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.share.ExternalShareStatus;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -885,10 +886,18 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		return service.getArchivedUuidsSince(since);
 	}
 
+    public void updateStatusInExternalSurveillanceTool(String eventUuid, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException{
+        //TODO: check if the externalId is also necessary to be checked - event.getExternalId = null
+        if (externalSurveillanceToolFacade.isFeatureEnabled()) {
+                externalSurveillanceToolFacade.sendEvents(Collections.singletonList(eventUuid), externalShareStatus);
+        }
+    }
+
 	@Override
 	@RolesAllowed(UserRight._EVENT_ARCHIVE)
 	public void archive(String eventUuid, Date endOfProcessingDate) {
 		super.archive(eventUuid, endOfProcessingDate);
+        updateStatusInExternalSurveillanceTool(eventUuid, ExternalShareStatus.ARCHIVED);
 		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(Collections.singletonList(eventUuid));
 		eventParticipantService.archive(eventParticipantList);
 	}
