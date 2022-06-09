@@ -1744,10 +1744,4 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	public void setExternalData(Map<String, String> externalData) {
 		this.externalData = externalData;
 	}
-
-	@Override
-	@Transient
-	public String caption() {
-		return CaseReferenceDto.buildCaption(getUuid(), person.getFirstName(), person.getLastName());
-	}
 }

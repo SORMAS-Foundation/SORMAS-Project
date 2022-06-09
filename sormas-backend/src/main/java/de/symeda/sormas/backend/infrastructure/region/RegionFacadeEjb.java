@@ -220,7 +220,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureFacadeEjb<Region, Reg
 		if (entity == null) {
 			return null;
 		}
-		return new RegionReferenceDto(entity.getUuid(), entity.caption(), entity.getExternalID());
+		return new RegionReferenceDto(entity.getUuid(), entity.getName(), entity.getExternalID());
 	}
 
 	public RegionDto toDto(Region entity) {

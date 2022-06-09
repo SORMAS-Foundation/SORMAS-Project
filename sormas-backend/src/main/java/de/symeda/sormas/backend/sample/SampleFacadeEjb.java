@@ -920,7 +920,13 @@ public class SampleFacadeEjb implements SampleFacade {
 			return null;
 		}
 
-		return new SampleReferenceDto(entity.getUuid(), entity.caption());
+		return new SampleReferenceDto(
+			entity.getUuid(),
+			SampleReferenceDto.buildCaption(
+				entity.getSampleMaterial(),
+				entity.getAssociatedCase() != null ? entity.getAssociatedCase().getUuid() : null,
+				entity.getAssociatedContact() != null ? entity.getAssociatedContact().getUuid() : null,
+				entity.getAssociatedEventParticipant() != null ? entity.getAssociatedEventParticipant().getUuid() : null));
 	}
 
 	private void onSampleChanged(SampleDto existingSample, Sample newSample, boolean syncShares) {

@@ -9,7 +9,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
-import javax.persistence.Transient;
 
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.continent.Continent;
@@ -63,11 +62,5 @@ public class Subcontinent extends InfrastructureAdo {
 
 	public void setCountries(List<Country> countries) {
 		this.countries = countries;
-	}
-
-	@Override
-	@Transient
-	public String caption() {
-		return getDefaultName();
 	}
 }

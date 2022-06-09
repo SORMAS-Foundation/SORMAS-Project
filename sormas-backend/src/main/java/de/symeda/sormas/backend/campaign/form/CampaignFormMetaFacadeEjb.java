@@ -313,7 +313,7 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 			return null;
 		}
 
-		return new CampaignFormMetaReferenceDto(entity.getUuid(), entity.caption());
+		return new CampaignFormMetaReferenceDto(entity.getUuid(), entity.getFormName());
 	}
 
 	@LocalBean

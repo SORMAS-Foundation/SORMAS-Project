@@ -4,7 +4,6 @@ import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAUL
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Transient;
 
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 
@@ -37,11 +36,5 @@ public class Area extends InfrastructureAdo {
 
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
-	}
-
-	@Override
-	@Transient
-	public String caption() {
-		return getName();
 	}
 }

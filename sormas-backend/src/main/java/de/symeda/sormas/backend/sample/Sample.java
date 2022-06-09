@@ -604,14 +604,4 @@ public class Sample extends DeletableAdo implements SormasToSormasShareable {
 	public void setSormasToSormasShares(List<SormasToSormasShareInfo> sormasToSormasShares) {
 		this.sormasToSormasShares = sormasToSormasShares;
 	}
-
-	@Override
-	@Transient
-	public String caption() {
-		return SampleReferenceDto.buildCaption(
-			getSampleMaterial(),
-			getAssociatedCase() != null ? getAssociatedCase().getUuid() : null,
-			getAssociatedContact() != null ? getAssociatedContact().getUuid() : null,
-			getAssociatedEventParticipant() != null ? getAssociatedEventParticipant().getUuid() : null);
-	}
 }

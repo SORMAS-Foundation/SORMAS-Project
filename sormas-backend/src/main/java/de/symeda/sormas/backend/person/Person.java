@@ -53,7 +53,6 @@ import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonContactDetailType;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
@@ -808,11 +807,5 @@ public class Person extends AbstractDomainObject implements HasExternalData {
 	@Transient
 	public boolean isEnrolledInExternalJournal() {
 		return SymptomJournalStatus.ACCEPTED.equals(symptomJournalStatus) || SymptomJournalStatus.REGISTERED.equals(symptomJournalStatus);
-	}
-
-	@Override
-	@Transient
-	public String caption() {
-		return PersonDto.buildCaption(firstName, lastName);
 	}
 }

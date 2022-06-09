@@ -27,7 +27,6 @@ import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
-import javax.persistence.Transient;
 
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.area.Area;
@@ -116,11 +115,5 @@ public class Region extends InfrastructureAdo {
 
 	public void setCountry(Country country) {
 		this.country = country;
-	}
-
-	@Override
-	@Transient
-	public String caption() {
-		return getName();
 	}
 }

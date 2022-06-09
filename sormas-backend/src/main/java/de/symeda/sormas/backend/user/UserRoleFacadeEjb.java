@@ -207,7 +207,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 			return null;
 		}
 
-		return new UserRoleReferenceDto(entity.getUuid(), entity.caption());
+		return new UserRoleReferenceDto(entity.getUuid(), entity.getCaption());
 	}
 
 	@Override

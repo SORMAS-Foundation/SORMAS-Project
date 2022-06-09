@@ -14,7 +14,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
@@ -119,11 +118,5 @@ public class Campaign extends CoreAdo {
 
 	public void setCampaignFormMetas(Set<CampaignFormMeta> campaignFormMetas) {
 		this.campaignFormMetas = campaignFormMetas;
-	}
-
-	@Override
-	@Transient
-	public String caption() {
-		return name;
 	}
 }

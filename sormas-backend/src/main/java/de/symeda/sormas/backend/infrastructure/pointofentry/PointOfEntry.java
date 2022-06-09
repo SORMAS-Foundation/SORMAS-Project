@@ -7,9 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
 
-import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -107,11 +105,5 @@ public class PointOfEntry extends InfrastructureAdo {
 
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
-	}
-
-	@Override
-	@Transient
-	public String caption() {
-		return InfrastructureHelper.buildPointOfEntryString(getUuid(), name);
 	}
 }

@@ -313,7 +313,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			return null;
 		}
 
-		WeeklyReportReferenceDto dto = new WeeklyReportReferenceDto(entity.getUuid(), entity.caption());
+		WeeklyReportReferenceDto dto = new WeeklyReportReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}
 

@@ -280,7 +280,7 @@ public class DistrictFacadeEjb
 			return null;
 		}
 
-		return new DistrictReferenceDto(entity.getUuid(), entity.caption(), entity.getExternalID());
+		return new DistrictReferenceDto(entity.getUuid(), entity.getName(), entity.getExternalID());
 	}
 
 	@Override

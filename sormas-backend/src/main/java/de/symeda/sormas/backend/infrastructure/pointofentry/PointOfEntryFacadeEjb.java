@@ -25,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryCriteria;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
@@ -73,7 +74,11 @@ public class PointOfEntryFacadeEjb
 			return null;
 		}
 
-		return new PointOfEntryReferenceDto(entity.getUuid(), entity.caption(), entity.getPointOfEntryType(), entity.getExternalID());
+		return new PointOfEntryReferenceDto(
+			entity.getUuid(),
+			InfrastructureHelper.buildPointOfEntryString(entity.getUuid(), entity.getName()),
+			entity.getPointOfEntryType(),
+			entity.getExternalID());
 	}
 
 	@Override

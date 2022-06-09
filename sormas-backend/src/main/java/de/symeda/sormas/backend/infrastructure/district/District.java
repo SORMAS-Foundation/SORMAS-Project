@@ -29,7 +29,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
-import javax.persistence.Transient;
 
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfiguration;
@@ -120,11 +119,5 @@ public class District extends InfrastructureAdo {
 
 	public void setFeatureConfigurations(List<FeatureConfiguration> featureConfigurations) {
 		this.featureConfigurations = featureConfigurations;
-	}
-
-	@Override
-	@Transient
-	public String caption() {
-		return getName();
 	}
 }

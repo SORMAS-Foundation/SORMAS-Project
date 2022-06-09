@@ -37,7 +37,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
@@ -50,7 +49,6 @@ import de.symeda.sormas.api.event.EpidemiologicalEvidenceDetail;
 import de.symeda.sormas.api.event.EventIdentificationSource;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventManagementStatus;
-import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventSourceType;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.HumanTransmissionMode;
@@ -684,12 +682,6 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 
 	public void setDiseaseTransmissionMode(DiseaseTransmissionMode diseaseTransmissionMode) {
 		this.diseaseTransmissionMode = diseaseTransmissionMode;
-	}
-
-	@Override
-	@Transient
-	public String caption() {
-		return EventReferenceDto.buildCaption(getDisease(), getDiseaseDetails(), getEventStatus(), getEventInvestigationStatus(), getStartDate());
 	}
 
 	public Float getReportLatLonAccuracy() {

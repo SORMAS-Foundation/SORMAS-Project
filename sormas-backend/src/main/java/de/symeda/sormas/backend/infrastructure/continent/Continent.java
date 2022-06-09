@@ -6,7 +6,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
-import javax.persistence.Transient;
 
 import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
@@ -52,11 +51,5 @@ public class Continent extends InfrastructureAdo {
 
 	public ContinentReferenceDto toReference() {
 		return new ContinentReferenceDto(getUuid(), getDefaultName(), externalId);
-	}
-
-	@Override
-	@Transient
-	public String caption() {
-		return getDefaultName();
 	}
 }

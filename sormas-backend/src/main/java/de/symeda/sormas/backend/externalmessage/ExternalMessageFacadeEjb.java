@@ -511,7 +511,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 			return null;
 		}
 
-		return new ExternalMessageReferenceDto(entity.getUuid(), entity.caption());
+		return new ExternalMessageReferenceDto(entity.getUuid(), entity.toString());
 	}
 
 	@LocalBean

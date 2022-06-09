@@ -182,10 +182,6 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 		return getUuid().hashCode();
 	}
 
-	public String caption() {
-		return toString();
-	}
-
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + StringUtils.SPACE + getUuid();

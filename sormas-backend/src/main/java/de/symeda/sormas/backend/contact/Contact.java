@@ -1081,16 +1081,4 @@ public class Contact extends CoreAdo implements SormasToSormasShareable, HasExte
 	public void setQuarantineChangeComment(String quarantineChangeComment) {
 		this.quarantineChangeComment = quarantineChangeComment;
 	}
-
-	@Override
-	@Transient
-	public String caption() {
-		Person contactPerson = getPerson();
-		return ContactReferenceDto.buildCaption(
-			contactPerson.getFirstName(),
-			contactPerson.getLastName(),
-			getCaze() != null ? getCaze().getPerson().getFirstName() : null,
-			getCaze() != null ? getCaze().getPerson().getLastName() : null,
-			getUuid());
-	}
 }

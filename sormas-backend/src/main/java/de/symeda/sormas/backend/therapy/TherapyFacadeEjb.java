@@ -33,7 +33,7 @@ public class TherapyFacadeEjb implements TherapyFacade {
 			return null;
 		}
 
-		TherapyReferenceDto dto = new TherapyReferenceDto(entity.getUuid(), entity.caption());
+		TherapyReferenceDto dto = new TherapyReferenceDto(entity.getUuid(), entity.toString());
 		return dto;
 	}
 

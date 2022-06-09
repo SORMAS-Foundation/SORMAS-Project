@@ -164,10 +164,4 @@ public class CampaignFormMeta extends AbstractDomainObject {
 	public CampaignFormMetaReferenceDto toReference() {
 		return new CampaignFormMetaReferenceDto(getUuid(), formName);
 	}
-
-	@Override
-	@Transient
-	public String caption() {
-		return formName;
-	}
 }

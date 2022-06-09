@@ -48,6 +48,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityExportDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.facility.FacilityIndexDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
@@ -348,7 +349,7 @@ public class FacilityFacadeEjb
 			return null;
 		}
 
-		return new FacilityReferenceDto(entity.getUuid(), entity.caption(), entity.getExternalID());
+		return new FacilityReferenceDto(entity.getUuid(), FacilityHelper.buildFacilityString(entity.getUuid(), entity.getName()), entity.getExternalID());
 	}
 
 	@Override

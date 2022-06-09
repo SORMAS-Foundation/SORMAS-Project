@@ -401,7 +401,7 @@ public class CampaignFacadeEjb
 		if (entity == null) {
 			return null;
 		}
-		CampaignReferenceDto dto = new CampaignReferenceDto(entity.getUuid(), entity.caption());
+		CampaignReferenceDto dto = new CampaignReferenceDto(entity.getUuid(), entity.getName());
 		return dto;
 	}
 
