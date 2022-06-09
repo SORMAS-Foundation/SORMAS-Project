@@ -69,6 +69,8 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 		params.setCaseUuids(caseUuids);
 		if (externalShareStatus.equals(ExternalShareStatus.ARCHIVED)) {
 			params.setArchived(true);
+		} else if (externalShareStatus.equals(ExternalShareStatus.DEARCHIVED)) {
+			params.setArchived(false);
 		} else {
 			params.setArchived(false);
 		}
@@ -83,6 +85,8 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
         if (externalShareStatus.equals(ExternalShareStatus.ARCHIVED)) {
             params.setArchived(true);
+        } else if (externalShareStatus.equals(ExternalShareStatus.DEARCHIVED)) {
+            params.setArchived(false);
         } else {
             params.setArchived(false);
         }
@@ -142,7 +146,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 		eventService.getByUuids(eventUuids).forEach(event -> shareInfoService.createAndPersistShareInfo(event, ExternalShareStatus.SHARED));
 	}
 
-    // TODO: check if we need the shareInfoService
+	// TODO: check if we need the shareInfoService
 	/*
 	 * public void updateCasesStatuses(List<String> entityUuids, ExternalShareStatus externalShareStatus) {
 	 * sendCases(entityUuids);

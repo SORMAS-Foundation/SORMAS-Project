@@ -893,6 +893,11 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
         }
     }
 
+    public void updateStatusInExternalSurveillanceToolForMultipleCases(List<String> entityUuids, ExternalShareStatus externalShareStatus) {
+        //TODO: if the check for externalId != null and externalID not empty is needed the entityUuids list should be filtered
+        externalSurveillanceToolFacade.sendEvents(entityUuids, externalShareStatus);
+    }
+
 	@Override
 	@RolesAllowed(UserRight._EVENT_ARCHIVE)
 	public void archive(String eventUuid, Date endOfProcessingDate) {
@@ -906,6 +911,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@RolesAllowed(UserRight._EVENT_ARCHIVE)
 	public void archive(List<String> eventUuids) {
 		super.archive(eventUuids);
+        updateStatusInExternalSurveillanceToolForMultipleCases(eventUuids, ExternalShareStatus.ARCHIVED);
 		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(eventUuids);
 		eventParticipantService.archive(eventParticipantList);
 	}
@@ -914,6 +920,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@RolesAllowed(UserRight._EVENT_ARCHIVE)
 	public void dearchive(List<String> eventUuids, String dearchiveReason) {
 		super.dearchive(eventUuids, dearchiveReason);
+        updateStatusInExternalSurveillanceToolForMultipleCases(eventUuids, ExternalShareStatus.DEARCHIVED);
 		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(eventUuids);
 		eventParticipantService.dearchive(eventParticipantList, dearchiveReason);
 	}

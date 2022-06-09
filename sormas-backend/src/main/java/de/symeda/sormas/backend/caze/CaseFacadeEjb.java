@@ -2588,7 +2588,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@RolesAllowed(UserRight._CASE_ARCHIVE)
 	public void dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts) {
 		super.dearchive(entityUuids, dearchiveReason);
-		// updateStatusInExternalSurveillanceToolForMultipleCases(entityUuids, ExternalShareStatus.DEARCHIVED);
+		updateStatusInExternalSurveillanceToolForMultipleCases(entityUuids, ExternalShareStatus.DEARCHIVED);
 		if (includeContacts) {
 			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(entityUuids);
 			contactService.dearchive(caseContacts, dearchiveReason);
