@@ -9,11 +9,13 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportGroupingLevel;
 import de.symeda.sormas.api.user.UserDto;
@@ -28,6 +30,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.NotificationHelper;
 
 @SuppressWarnings("serial")
 public class AggregateReportsView extends AbstractView {
@@ -150,16 +153,29 @@ public class AggregateReportsView extends AbstractView {
 
 		aggregateReportsFilterForm.addResetHandler(e -> {
 			ViewModelProviders.of(AggregateReportsView.class).remove(AggregateReportCriteria.class);
-			navigateTo(null, true);
+			criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
+			criteria.setDisease(null);
+			navigateTo(criteria, true);
 		});
 
 		aggregateReportsFilterForm.addApplyHandler(e -> {
-			grid.reload();
+			if (epiWeekFilterBarDataValidation()) {
+				grid.reload();
+			} else {
+				NotificationHelper.showNotification(
+					I18nProperties.getString(Strings.messageAggregatedReportEpiWeekFilterNotFilled),
+					Notification.Type.HUMANIZED_MESSAGE,
+					10000);
+			}
 		});
 
 		filterLayout.addComponent(aggregateReportsFilterForm);
 
 		return filterLayout;
+	}
+
+	private boolean epiWeekFilterBarDataValidation() {
+		return criteria.getEpiWeekTo() != null && criteria.getEpiWeekFrom() != null;
 	}
 
 	@Override

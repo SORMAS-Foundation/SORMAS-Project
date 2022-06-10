@@ -4,11 +4,11 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.utils.AgeGroupUtils;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportGroupingLevel;
 import de.symeda.sormas.api.report.AggregatedCaseCountDto;
+import de.symeda.sormas.api.utils.AgeGroupUtils;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 
 @SuppressWarnings("serial")
@@ -35,6 +35,7 @@ public class AggregateReportsGrid extends FilteredGrid<AggregatedCaseCountDto, A
 			AggregatedCaseCountDto.DISTRICT_NAME,
 			AggregatedCaseCountDto.HEALTH_FACILITY_NAME,
 			AggregatedCaseCountDto.POINT_OF_ENTRY_NAME,
+			AggregatedCaseCountDto.YEAR,
 			AggregatedCaseCountDto.EPI_WEEK,
 			AggregatedCaseCountDto.AGE_GROUP,
 			AggregatedCaseCountDto.NEW_CASES,
