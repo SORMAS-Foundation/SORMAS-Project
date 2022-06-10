@@ -87,6 +87,7 @@ public interface Captions {
 	String actionNewAction = "actionNewAction";
 	String actionNewEntry = "actionNewEntry";
 	String actionNewForm = "actionNewForm";
+	String actionNext = "actionNext";
 	String actionNo = "actionNo";
 	String actionNoActions = "actionNoActions";
 	String actionOkay = "actionOkay";
@@ -898,6 +899,7 @@ public interface Captions {
 	String dashboardYesterday = "dashboardYesterday";
 	String dataProtectionAllFieldsSheet = "dataProtectionAllFieldsSheet";
 	String date = "date";
+	String days = "days";
 	String dearchiveReason = "dearchiveReason";
 	String defaultCommunity = "defaultCommunity";
 	String defaultDistrict = "defaultDistrict";
@@ -1568,6 +1570,7 @@ public interface Captions {
 	String messagesSendSMS = "messagesSendSMS";
 	String messagesSentBy = "messagesSentBy";
 	String messagesSms = "messagesSms";
+	String months = "months";
 	String moreActions = "moreActions";
 	String name = "name";
 	String nationalHealthId = "nationalHealthId";
@@ -1725,6 +1728,8 @@ public interface Captions {
 	String personsReplaceGeoCoordinates = "personsReplaceGeoCoordinates";
 	String personsSetMissingGeoCoordinates = "personsSetMissingGeoCoordinates";
 	String personsUpdated = "personsUpdated";
+	String physiciansReportCaseAddVaccination = "physiciansReportCaseAddVaccination";
+	String physiciansReportCaseImmunizations = "physiciansReportCaseImmunizations";
 	String PointOfEntry = "PointOfEntry";
 	String PointOfEntry_active = "PointOfEntry.active";
 	String PointOfEntry_archived = "PointOfEntry.archived";
@@ -1949,9 +1954,10 @@ public interface Captions {
 	String sampleReferredTo = "sampleReferredTo";
 	String sampleReferredToInternal = "sampleReferredToInternal";
 	String sampleSamplesList = "sampleSamplesList";
-	String sampleSelect = "sampleSelect";
 	String sampleShipped = "sampleShipped";
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
+	String selectOtherSample = "selectOtherSample";
+	String selectSimilarSample = "selectSimilarSample";
 	String sex = "sex";
 	String showPlacesOnMap = "showPlacesOnMap";
 	String singleDayEventDate = "singleDayEventDate";
@@ -2572,4 +2578,5 @@ public interface Captions {
 	String WeeklyReportRegionSummary_officerZeroReports = "WeeklyReportRegionSummary.officerZeroReports";
 	String WeeklyReportRegionSummary_region = "WeeklyReportRegionSummary.region";
 	String weeklyReportsInDistrict = "weeklyReportsInDistrict";
+	String years = "years";
 }

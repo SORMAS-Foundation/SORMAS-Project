@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.externalmessage;
 
 import static java.util.stream.Collectors.toList;
 
+import de.symeda.sormas.backend.caze.CaseService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -104,6 +105,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@EJB
 	private SampleService sampleService;
 	@EJB
+	private CaseService caseService;
+	@EJB
 	private UserService userService;
 
 	ExternalMessage fromDto(@NotNull ExternalMessageDto source, ExternalMessage target, boolean checkChangeDate) {
@@ -124,6 +127,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonLastName(source.getPersonLastName());
 		target.setPersonPostalCode(source.getPersonPostalCode());
 		target.setPersonSex(source.getPersonSex());
+		target.setPersonPresentCondition(source.getPersonPresentCondition());
 		target.setPersonStreet(source.getPersonStreet());
 		target.setStatus(source.getStatus());
 		target.setSampleDateTime(source.getSampleDateTime());
@@ -154,6 +158,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		}
 		if (source.getSample() != null) {
 			target.setSample(sampleService.getByReferenceDto(source.getSample()));
+		}
+		if (source.getCaze() != null) {
+			target.setCaze(caseService.getByReferenceDto(source.getCaze()));
 		}
 		return target;
 	}
@@ -191,6 +198,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonLastName(source.getPersonLastName());
 		target.setPersonPostalCode(source.getPersonPostalCode());
 		target.setPersonSex(source.getPersonSex());
+		target.setPersonPresentCondition(source.getPersonPresentCondition());
 		target.setPersonStreet(source.getPersonStreet());
 		target.setPersonPhone(source.getPersonPhone());
 		target.setPersonEmail(source.getPersonEmail());
@@ -211,6 +219,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setSampleOverallTestResult(source.getSampleOverallTestResult());
 		if (source.getSample() != null) {
 			target.setSample(source.getSample().toReference());
+		}
+		if (source.getCaze() != null) {
+			target.setCaze(source.getCaze().toReference());
 		}
 		if (source.getAssignee() != null) {
 			target.setAssignee(source.getAssignee().toReference());

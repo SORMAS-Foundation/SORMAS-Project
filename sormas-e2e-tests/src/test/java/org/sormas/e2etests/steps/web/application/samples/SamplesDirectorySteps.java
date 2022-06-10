@@ -64,14 +64,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.entities.pojo.web.Sample;
 import org.sormas.e2etests.enums.CaseClassification;
 import org.sormas.e2etests.enums.DiseasesValues;
-import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.LaboratoryValues;
 import org.sormas.e2etests.enums.PathogenTestResults;
-import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.SpecimenConditions;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.environmentdata.manager.EnvironmentManager;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 import org.testng.Assert;
@@ -86,6 +86,7 @@ public class SamplesDirectorySteps implements En {
       RunningConfiguration runningConfiguration,
       ApiState apiState,
       AssertHelpers assertHelpers,
+      RestAssuredClient restAssuredClient,
       SoftAssert softly) {
 
     When(
@@ -242,9 +243,10 @@ public class SamplesDirectorySteps implements En {
     When(
         "I select Region filter value with the region value of the last created via API Case in Sample Directory",
         () -> {
-          String region = apiState.getCreatedCase().getRegion().getUuid();
-          webDriverHelpers.selectFromCombobox(
-              SAMPLE_REGION_SEARCH_COMBOBOX, RegionsValues.getNameValueForUuid(region));
+          String regionUUID = apiState.getCreatedCase().getRegion().getUuid();
+          EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
+          String regionName = environmentManager.getRegionName(regionUUID);
+          webDriverHelpers.selectFromCombobox(SAMPLE_REGION_SEARCH_COMBOBOX, regionName);
         });
 
     When(
@@ -256,9 +258,10 @@ public class SamplesDirectorySteps implements En {
     When(
         "I select District filter value with the district value of the last created via API Case in Sample Directory",
         () -> {
-          String district = apiState.getCreatedCase().getDistrict().getUuid();
-          webDriverHelpers.selectFromCombobox(
-              SAMPLE_DISTRICT_SEARCH_COMBOBOX, DistrictsValues.getNameValueForUuid(district));
+          String districtUUID = apiState.getCreatedCase().getDistrict().getUuid();
+          EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
+          String districtName = environmentManager.getDistrictName(districtUUID);
+          webDriverHelpers.selectFromCombobox(SAMPLE_DISTRICT_SEARCH_COMBOBOX, districtName);
         });
 
     When(

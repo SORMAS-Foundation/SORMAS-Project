@@ -759,6 +759,18 @@ Feature: Contacts end to end tests
     And I click on SAVE new contact case button
     And I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
 
+  @issue=SORDEV-6434 @env_main
+  Scenario: Check if username shows up in visit origin
+    Given I log in with National User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click on SAVE new contact button
+    And I navigate to follow-up visits tab
+    When I click on new Visit button
+    And I create a new Visit with specific data
+    Then I check that username is displayed in the Visit Origin column
+
   @env_main @#8565
   Scenario: Check an archived contact if its read only
     Given API: I create a new person

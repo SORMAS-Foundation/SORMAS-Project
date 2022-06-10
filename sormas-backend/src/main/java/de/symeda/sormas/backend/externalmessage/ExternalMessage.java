@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.externalmessage;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
+import de.symeda.sormas.backend.caze.Case;
 import java.util.Date;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -86,6 +88,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	private String personFirstName;
 	private String personLastName;
 	private Sex personSex;
+	private PresentCondition personPresentCondition;
 	private Integer personBirthDateDD;
 	private Integer personBirthDateMM;
 	private Integer personBirthDateYYYY;
@@ -101,6 +104,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	private String reportId;
 	private PathogenTestResultType sampleOverallTestResult;
 	private Sample sample;
+	private Case caze;
 
 	private ExternalMessageStatus status = ExternalMessageStatus.UNPROCESSED;
 	private User assignee;
@@ -249,6 +253,14 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.personSex = personSex;
 	}
 
+	public PresentCondition getPersonPresentCondition() {
+		return personPresentCondition;
+	}
+
+	public void setPersonPresentCondition(PresentCondition personPresentCondition) {
+		this.personPresentCondition = personPresentCondition;
+	}
+
 	@Column(name = "personbirthdatedd")
 	public Integer getPersonBirthDateDD() {
 		return personBirthDateDD;
@@ -395,4 +407,12 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.sample = sample;
 	}
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Case getCaze() {
+		return caze;
+	}
+
+	public void setCaze(Case caze) {
+		this.caze = caze;
+	}
 }

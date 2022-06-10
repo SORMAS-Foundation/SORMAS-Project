@@ -224,6 +224,9 @@ public class EditCasePage {
   public static final By TOOLTIP_EYE_ICON_HOVER = By.xpath("//div[@class='v-tooltip-text']");
   public static final By REINFECTION_STATUS_LABEL = By.cssSelector("#reinfectionStatus input");
   public static final By CREATE_DOCUMENT_TEMPLATES = By.id("Create");
+  public static final By CREATE_DOCUMENT_TEMPLATES_DE = By.id("Erstellen");
+  public static final By CREATE_DOCUMENT_TEMPLATES_POPUP_DE =
+      By.cssSelector(".v-window #Erstellen");
   public static final By UPLOAD_DOCUMENT_CHECKBOX =
       By.xpath("//label[text()='Also upload the generated document to this entity']");
   public static final By POPUPS_INPUTS = By.cssSelector(".popupContent input");
