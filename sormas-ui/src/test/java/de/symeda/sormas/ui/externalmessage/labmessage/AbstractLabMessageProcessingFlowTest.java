@@ -15,9 +15,9 @@
 
 package de.symeda.sormas.ui.externalmessage.labmessage;
 
-import static de.symeda.sormas.ui.externalmessage.labmessage.processing.flow.ProcessingResultStatus.CANCELED;
-import static de.symeda.sormas.ui.externalmessage.labmessage.processing.flow.ProcessingResultStatus.CANCELED_WITH_CORRECTIONS;
-import static de.symeda.sormas.ui.externalmessage.labmessage.processing.flow.ProcessingResultStatus.DONE;
+import static de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus.CANCELED;
+import static de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus.CANCELED_WITH_CORRECTIONS;
+import static de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus.DONE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -30,6 +30,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import de.symeda.sormas.ui.externalmessage.processing.AbstractProcessingFlow.HandlerCallback;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -79,15 +82,13 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractLabMessageProcessingFlow;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractLabMessageProcessingFlow.HandlerCallback;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelatedLabMessageHandler;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelatedLabMessageHandler.HandlerResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelatedLabMessageHandler.HandlerResultStatus;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateEntryResult;
+import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateEventResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateSampleResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.flow.ProcessingResult;
 
 public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
@@ -1714,7 +1715,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		ProcessingResult<SampleAndPathogenTests> result =
 			runFlow(createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED));
 
-		assertThat(result.getStatus(), is(CANCELED));
+		assertThat(result.getStatus(), is(ProcessingResultStatus.CANCELED));
 	}
 
 	private ProcessingResult<SampleAndPathogenTests> runFlow(ExternalMessageDto labMessage) throws ExecutionException, InterruptedException {

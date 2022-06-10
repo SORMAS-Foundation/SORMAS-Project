@@ -87,6 +87,7 @@ public interface Captions {
 	String actionNewAction = "actionNewAction";
 	String actionNewEntry = "actionNewEntry";
 	String actionNewForm = "actionNewForm";
+	String actionNext = "actionNext";
 	String actionNo = "actionNo";
 	String actionNoActions = "actionNoActions";
 	String actionOkay = "actionOkay";
@@ -1727,6 +1728,8 @@ public interface Captions {
 	String personsReplaceGeoCoordinates = "personsReplaceGeoCoordinates";
 	String personsSetMissingGeoCoordinates = "personsSetMissingGeoCoordinates";
 	String personsUpdated = "personsUpdated";
+	String physiciansReportCaseAddVaccination = "physiciansReportCaseAddVaccination";
+	String physiciansReportCaseImmunizations = "physiciansReportCaseImmunizations";
 	String PointOfEntry = "PointOfEntry";
 	String PointOfEntry_active = "PointOfEntry.active";
 	String PointOfEntry_archived = "PointOfEntry.archived";

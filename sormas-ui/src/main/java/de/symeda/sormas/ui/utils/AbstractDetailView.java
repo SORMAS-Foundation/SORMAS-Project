@@ -19,14 +19,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.ViewBeforeLeaveEvent;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 
 /**
  * A detail view shows specific details of an object identified by the URL parameter.
@@ -90,48 +85,7 @@ public abstract class AbstractDetailView<R extends ReferenceDto> extends Abstrac
 
 	public void showUnsavedChangesPopup(Runnable navigate) {
 		if (subComponent != null && subComponent.isDirty()) {
-			Window warningPopup = VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.unsavedChanges_warningTitle),
-				new Label(I18nProperties.getString(Strings.unsavedChanges_warningMessage)),
-				popupWindow -> {
-					ConfirmationComponent confirmationComponent = new ConfirmationComponent(false, null) {
-
-						private static final long serialVersionUID = 3664636750443474734L;
-
-						@Override
-						protected void onConfirm() {
-							boolean committedSuccessfully = subComponent.commitAndHandle();
-							popupWindow.close();
-
-							if (committedSuccessfully) {
-								navigate.run();
-							}
-						}
-
-						@Override
-						protected void onCancel() {
-							subComponent.discard();
-							popupWindow.close();
-							navigate.run();
-						}
-					};
-
-					confirmationComponent.getConfirmButton().setCaption(I18nProperties.getString(Strings.unsavedChanges_save));
-					confirmationComponent.getCancelButton().setCaption(I18nProperties.getString(Strings.unsavedChanges_discard));
-
-					confirmationComponent.addExtraButton(
-						ButtonHelper.createButton(
-							Strings.unsavedChanges_cancel,
-							I18nProperties.getString(Strings.unsavedChanges_cancel),
-							null,
-							ValoTheme.BUTTON_LINK),
-						buttonEvent -> popupWindow.close());
-
-					return confirmationComponent;
-				},
-				600);
-
-			warningPopup.setClosable(true);
+			DirtyCheckPopup.show(subComponent, navigate);
 		} else {
 			navigate.run();
 		}

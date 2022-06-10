@@ -270,7 +270,8 @@ public class TaskGridComponent extends VerticalLayout {
 			CssStyles.style(b, CssStyles.BUTTON_FILTER_LIGHT);
 			b.setCaption(statusButtons.get(b));
 			if ((OFFICER_TASKS.equals(b.getData()) && criteria.getExcludeAssigneeUser() != null)
-				|| (MY_TASKS.equals(b.getData()) && criteria.getAssigneeUser() != null)) {
+				|| (MY_TASKS.equals(b.getData()) && criteria.getAssigneeUser() != null)
+				|| (b.getData() == null && criteria.getExcludeAssigneeUser() == null && criteria.getAssigneeUser() == null)) {
 				activeStatusButton = b;
 			}
 		});
