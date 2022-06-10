@@ -843,10 +843,8 @@ public final class DateHelper {
 				epiWeekList.add(new EpiWeek(startYear, epiWeek));
 			}
 
-//			if (endYear - startYear > 1) {
-				for (int year = startYear + 1; year < endYear; year++) {
-					epiWeekList.addAll(createEpiWeekList(year));
-//				}
+			for (int year = startYear + 1; year < endYear; year++) {
+				epiWeekList.addAll(createEpiWeekList(year));
 			}
 
 			for (int epiWeek = 1; epiWeek <= endYearCalendar.get(Calendar.WEEK_OF_YEAR); epiWeek++) {
