@@ -1,6 +1,6 @@
 package de.symeda.sormas.api.infrastructure.continent;
 
-import org.apache.commons.lang3.StringUtils;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ContinentIndexDto extends ContinentDto {
 
@@ -21,8 +21,8 @@ public class ContinentIndexDto extends ContinentDto {
         return getDefaultName();
     }
 
-    @Override
-    public String toString() {
-        return I18N_PREFIX + StringUtils.SPACE + getUuid();
+    @JsonIgnore
+    public String getI18nPrefix() {
+        return I18N_PREFIX;
     }
 }

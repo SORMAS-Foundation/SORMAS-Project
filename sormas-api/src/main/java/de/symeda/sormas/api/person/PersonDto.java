@@ -15,8 +15,6 @@
 
 package de.symeda.sormas.api.person;
 
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +32,7 @@ import com.google.common.base.Strings;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
@@ -45,6 +44,7 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
@@ -1014,9 +1014,9 @@ public class PersonDto extends PseudonymizableDto {
 		return buildCaption(firstName, lastName);
 	}
 
-	@Override
-	public String toString() {
-		return I18N_PREFIX + StringUtils.SPACE + getUuid();
+	@JsonIgnore
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
 	}
 
 	public PersonReferenceDto toReference() {

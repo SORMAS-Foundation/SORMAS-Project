@@ -24,12 +24,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
-import org.apache.commons.lang3.StringUtils;
 
 public class UserRoleDto extends EntityDto {
 
@@ -169,8 +170,9 @@ public class UserRoleDto extends EntityDto {
 		return laboratoryJurisdictionPresent ? JurisdictionLevel.LABORATORY : JurisdictionLevel.NONE;
 	}
 
-	@Override public String toString() {
-		return I18N_PREFIX + StringUtils.SPACE + getUuid();
+	@JsonIgnore
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
 	}
 
 	@SuppressWarnings("serial") public static class UserRoleValidationException extends ValidationException {

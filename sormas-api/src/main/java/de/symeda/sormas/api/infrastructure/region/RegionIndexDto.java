@@ -17,11 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.api.infrastructure.region;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import org.apache.commons.lang3.StringUtils;
 
 public class RegionIndexDto extends EntityDto {
 
@@ -116,8 +117,8 @@ public class RegionIndexDto extends EntityDto {
 		return getName();
 	}
 
-	@Override
-	public String toString() {
-		return I18N_PREFIX + StringUtils.SPACE + getUuid();
+	@JsonIgnore
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
 	}
 }

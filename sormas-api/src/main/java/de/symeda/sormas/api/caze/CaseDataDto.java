@@ -29,6 +29,10 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
@@ -78,7 +82,6 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
-import org.apache.commons.lang3.StringUtils;
 
 @DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
 public class CaseDataDto extends SormasToSormasShareableDto {
@@ -1721,8 +1724,13 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		this.healthConditions = healthConditions;
 	}
 
+	@JsonIgnore
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
+	}
+
 	@Override
 	public String toString() {
-		return CaseDataDto.I18N_PREFIX + StringUtils.SPACE + this.getUuid() + " - " + this.getExternalID();
+		return super.toString() + (StringUtils.isNotBlank(this.getExternalID()) ? " - " + this.getExternalID() : StringUtils.EMPTY);
 	}
 }

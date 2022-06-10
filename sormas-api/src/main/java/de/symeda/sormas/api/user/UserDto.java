@@ -17,11 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
-import de.symeda.sormas.api.utils.FeatureIndependent;
 import java.util.Set;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
@@ -34,8 +35,8 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FeatureIndependent;
 import de.symeda.sormas.api.utils.FieldConstraints;
-import org.apache.commons.lang3.StringUtils;
 
 @FeatureIndependent
 public class UserDto extends EntityDto {
@@ -187,9 +188,9 @@ public class UserDto extends EntityDto {
 		return UserReferenceDto.buildCaption(firstName, lastName);
 	}
 
-	@Override
-	public String toString() {
-		return I18N_PREFIX + StringUtils.SPACE + getUuid();
+	@JsonIgnore
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
 	}
 
 	public UserReferenceDto getAssociatedOfficer() {

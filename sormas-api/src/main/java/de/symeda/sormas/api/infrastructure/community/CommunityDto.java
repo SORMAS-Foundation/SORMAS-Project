@@ -14,18 +14,19 @@
  */
 package de.symeda.sormas.api.infrastructure.community;
 
-import de.symeda.sormas.api.utils.FeatureIndependent;
 import java.util.Date;
 
 import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FeatureIndependent;
 import de.symeda.sormas.api.utils.FieldConstraints;
-import org.apache.commons.lang3.StringUtils;
 
 @FeatureIndependent
 public class CommunityDto extends InfrastructureDto {
@@ -134,11 +135,10 @@ public class CommunityDto extends InfrastructureDto {
 		return getName();
 	}
 
-	@Override
-	public String toString() {
-		return I18N_PREFIX + StringUtils.SPACE + getUuid();
+	@JsonIgnore
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
 	}
-
 
 	public static CommunityDto build() {
 		CommunityDto dto = new CommunityDto();

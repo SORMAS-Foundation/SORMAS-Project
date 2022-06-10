@@ -137,8 +137,13 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 		return toString();
 	}
 
+	@JsonIgnore
+	public String getI18nPrefix() {
+		return null;
+	}
+
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + StringUtils.SPACE + this.getUuid();
+		return (getI18nPrefix() != null ? getI18nPrefix() : getClass().getSimpleName()) + StringUtils.SPACE + this.getUuid();
 	}
 }

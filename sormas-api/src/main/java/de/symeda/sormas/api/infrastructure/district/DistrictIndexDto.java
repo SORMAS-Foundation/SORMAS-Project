@@ -17,11 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.api.infrastructure.district;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import org.apache.commons.lang3.StringUtils;
 
 public class DistrictIndexDto extends EntityDto {
 
@@ -77,9 +77,9 @@ public class DistrictIndexDto extends EntityDto {
 		return getName();
 	}
 
-	@Override
-	public String toString() {
-		return I18N_PREFIX + StringUtils.SPACE + getUuid();
+	@JsonIgnore
+	public String getI18nPrefix() {
+		return I18N_PREFIX;
 	}
 
 	public Integer getPopulation() {
