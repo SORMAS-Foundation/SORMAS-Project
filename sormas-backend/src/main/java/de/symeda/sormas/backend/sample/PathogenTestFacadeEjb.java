@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -36,6 +37,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.DeletionDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +52,6 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -71,7 +72,6 @@ import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -105,8 +105,6 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	private UserService userService;
 	@EJB
 	private NotificationService notificationService;
-	@EJB
-	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -273,18 +271,44 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		}
 	}
 
-	@Override
-	public void deletePathogenTest(String pathogenTestUuid) {
-		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
-			.contains(UserRight.PATHOGEN_TEST_DELETE)) {
-			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete pathogen " + "tests.");
+	public static PathogenTestDto toDto(PathogenTest source) {
+		if (source == null) {
+			return null;
 		}
 
-		PathogenTest pathogenTest = pathogenTestService.getByUuid(pathogenTestUuid);
-		pathogenTestService.delete(pathogenTest);
+		PathogenTestDto target = new PathogenTestDto();
+		DtoHelper.fillDto(target, source);
 
-		handleAssotiatedObjectChanges(pathogenTest, true);
+		target.setSample(SampleFacadeEjb.toReferenceDto(source.getSample()));
+		target.setTestedDisease(source.getTestedDisease());
+		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
+		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
+		target.setTestedDiseaseVariantDetails(source.getTestedDiseaseVariantDetails());
+		target.setTypingId(source.getTypingId());
+		target.setTestType(source.getTestType());
+		target.setPcrTestSpecification(source.getPcrTestSpecification());
+		target.setTestTypeText(source.getTestTypeText());
+		target.setTestDateTime(source.getTestDateTime());
+		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
+		target.setLabDetails(source.getLabDetails());
+		target.setLabUser(UserFacadeEjb.toReferenceDto(source.getLabUser()));
+		target.setTestResult(source.getTestResult());
+		target.setTestResultText(source.getTestResultText());
+		target.setTestResultVerified(source.getTestResultVerified());
+		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
+		target.setSerotype(source.getSerotype());
+		target.setCqValue(source.getCqValue());
+		target.setReportDate(source.getReportDate());
+		target.setViaLims(source.isViaLims());
+		target.setExternalId(source.getExternalId());
+		target.setExternalOrderId(source.getExternalOrderId());
+		target.setPreliminary(source.getPreliminary());
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
+		return target;
 	}
 
 	@Override
@@ -344,6 +368,16 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		return QueryHelper.getFirstResult(em, cq);
 	}
 
+	@Override
+	@RolesAllowed(UserRight._PATHOGEN_TEST_DELETE)
+	public void deletePathogenTest(String pathogenTestUuid, DeletionDetails deletionDetails) {
+
+		PathogenTest pathogenTest = pathogenTestService.getByUuid(pathogenTestUuid);
+		pathogenTestService.delete(pathogenTest, deletionDetails);
+
+		handleAssotiatedObjectChanges(pathogenTest, true);
+	}
+
 	public List<PathogenTestDto> getPositiveOrLatest(List<String> sampleUuids) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return pathogenTestService.getBySampleUuids(sampleUuids, true)
@@ -354,56 +388,20 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 					s -> s,
 					(s1, s2) -> {
 
-						// keep the positive one
-						if (s1.getTestResult() == PathogenTestResultType.POSITIVE) {
-							return s1;
-						} else if (s2.getTestResult() == PathogenTestResultType.POSITIVE) {
-							return s2;
-						}
+				// keep the positive one
+				if (s1.getTestResult() == PathogenTestResultType.POSITIVE) {
+					return s1;
+				} else if (s2.getTestResult() == PathogenTestResultType.POSITIVE) {
+					return s2;
+				}
 
-						// ordered by creation date by default, so always keep the first one
-						return s1;
-					}))
+				// ordered by creation date by default, so always keep the first one
+				return s1;
+			}))
 			.values()
 			.stream()
 			.map(s -> convertToDto(s, pseudonymizer))
 			.collect(Collectors.toList());
-	}
-
-	public static PathogenTestDto toDto(PathogenTest source) {
-		if (source == null) {
-			return null;
-		}
-
-		PathogenTestDto target = new PathogenTestDto();
-		DtoHelper.fillDto(target, source);
-
-		target.setSample(SampleFacadeEjb.toReferenceDto(source.getSample()));
-		target.setTestedDisease(source.getTestedDisease());
-		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
-		target.setTestedDiseaseDetails(source.getTestedDiseaseDetails());
-		target.setTestedDiseaseVariantDetails(source.getTestedDiseaseVariantDetails());
-		target.setTypingId(source.getTypingId());
-		target.setTestType(source.getTestType());
-		target.setPcrTestSpecification(source.getPcrTestSpecification());
-		target.setTestTypeText(source.getTestTypeText());
-		target.setTestDateTime(source.getTestDateTime());
-		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
-		target.setLabDetails(source.getLabDetails());
-		target.setLabUser(UserFacadeEjb.toReferenceDto(source.getLabUser()));
-		target.setTestResult(source.getTestResult());
-		target.setTestResultText(source.getTestResultText());
-		target.setTestResultVerified(source.getTestResultVerified());
-		target.setFourFoldIncreaseAntibodyTiter(source.isFourFoldIncreaseAntibodyTiter());
-		target.setSerotype(source.getSerotype());
-		target.setCqValue(source.getCqValue());
-		target.setReportDate(source.getReportDate());
-		target.setViaLims(source.isViaLims());
-		target.setExternalId(source.getExternalId());
-		target.setExternalOrderId(source.getExternalOrderId());
-		target.setPreliminary(source.getPreliminary());
-
-		return target;
 	}
 
 	public PathogenTestDto convertToDto(PathogenTest source, Pseudonymizer pseudonymizer) {
@@ -458,6 +456,10 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		target.setExternalId(source.getExternalId());
 		target.setExternalOrderId(source.getExternalOrderId());
 		target.setPreliminary(source.getPreliminary());
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
 	}

@@ -29,7 +29,7 @@ public class EditPersonPage {
   public static final By DATE_OF_BIRTH_YEAR_COMBOBOX = By.cssSelector("#birthdateYYYY input+div");
   public static final By DATE_OF_BIRTH_MONTH_COMBOBOX = By.cssSelector("#birthdateMM input+div");
   public static final By DATE_OF_BIRTH_DAY_COMBOBOX = By.cssSelector("#birthdateDD input+div");
-  public static final By SEX_INPUT = By.cssSelector("#sex input");
+  public static final By SEX_INPUT = By.cssSelector("[id='sex'] input");
   public static final By SEX_COMBOBOX = By.cssSelector("[location='sex'] div[role='combobox'] div");
   public static final By SALUTATION_INPUT = By.cssSelector("[location=salutation] input");
   public static final By SALUTATION_COMBOBOX = By.cssSelector("[location=salutation] input + div");
@@ -99,8 +99,7 @@ public class EditPersonPage {
   public static final By POPUP_RESPONSIBLE_DISTRICT_COMBOBOX = By.cssSelector("#district div");
   public static final By PERSON_DATA_SAVED = By.cssSelector(".v-Notification-caption");
   public static final By PERSON_DATA_ADDED_AS_A_PARTICIPANT_MESSAGE =
-      By.xpath(
-          "//*[contains(text(),'The case person was added as an event participant to the selected event.')]");
+      By.xpath("//*[contains(text(),'The new event participant was created.')]");
   public static final By SEE_EVENTS_FOR_PERSON =
       By.cssSelector("div#See\\ events\\ for\\ this\\ person");
   public static final By INVALID_DATA_ERROR =
@@ -114,6 +113,10 @@ public class EditPersonPage {
   public static final By CONFIRM_NAVIGATION_BUTTON = By.cssSelector(".popupContent #actionConfirm");
   public static final By PERSON_INFORMATION_TITLE =
       By.cssSelector("[location='personInformationHeadingLoc']");
+  public static final By EVENT_PARTICIPANTS_DATA_TAB =
+      By.cssSelector("#tab-events-eventparticipants");
+  public static final By NO_TRAVEL_ENTRY_LABEL_DE =
+      By.xpath("//div[text()=\"Es gibt keine Einreisen f\u00FCr diese Person\"]");
 
   public static By getByPersonUuid(String personUuid) {
     return By.cssSelector("a[title='" + personUuid + "']");
@@ -121,5 +124,9 @@ public class EditPersonPage {
 
   public static By getByImmunizationUuid(String immunizationUuid) {
     return By.id("edit-immunization-" + immunizationUuid);
+  }
+
+  public static By getByTravelEntryPersonUuid(String personUuid) {
+    return By.id(String.format("edit-travelEntry-%s", personUuid));
   }
 }

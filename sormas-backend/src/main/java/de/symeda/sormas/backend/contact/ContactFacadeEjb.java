@@ -63,7 +63,8 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.vaccination.VaccinationService;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,6 +193,7 @@ import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserReference;
+import de.symeda.sormas.backend.user.UserRoleFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -202,6 +204,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
@@ -271,6 +274,8 @@ public class ContactFacadeEjb
 	private VaccinationService vaccinationService;
 	@EJB
 	private ContactService contactService;
+	@EJB
+	private UserRoleFacadeEjb.UserRoleFacadeEjbLocal userRoleFacadeEjb;
 
 	@Resource
 	private ManagedScheduledExecutorService executorService;
@@ -526,35 +531,130 @@ public class ContactFacadeEjb
 		return new Page<>(contactIndexDetailedList, offset, size, totalElementCount);
 	}
 
-	@Override
-	@RolesAllowed(UserRight._CONTACT_DELETE)
-	public void delete(String contactUuid) {
-		Contact contact = service.getByUuid(contactUuid);
-		deleteContact(contact);
+	public static ContactDto toContactDto(Contact source) {
+
+		if (source == null) {
+			return null;
+		}
+		ContactDto target = new ContactDto();
+		DtoHelper.fillDto(target, source);
+
+		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
+		target.setDisease(source.getDisease());
+		target.setDiseaseDetails(source.getDiseaseDetails());
+		if (source.getCaze() != null) {
+			target.setDiseaseVariant(source.getCaze().getDiseaseVariant());
+		}
+		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
+
+		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
+		target.setReportDateTime(source.getReportDateTime());
+
+		target.setMultiDayContact(source.isMultiDayContact());
+		target.setFirstContactDate(source.getFirstContactDate());
+		target.setLastContactDate(source.getLastContactDate());
+		target.setContactIdentificationSource(source.getContactIdentificationSource());
+		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
+		target.setTracingApp(source.getTracingApp());
+		target.setTracingAppDetails(source.getTracingAppDetails());
+		target.setContactProximity(source.getContactProximity());
+		target.setContactClassification(source.getContactClassification());
+		target.setContactStatus(source.getContactStatus());
+		target.setFollowUpStatus(source.getFollowUpStatus());
+		target.setFollowUpComment(source.getFollowUpComment());
+		target.setFollowUpUntil(source.getFollowUpUntil());
+		target.setOverwriteFollowUpUntil(source.isOverwriteFollowUpUntil());
+		target.setContactOfficer(UserFacadeEjb.toReferenceDto(source.getContactOfficer()));
+		target.setDescription(source.getDescription());
+		target.setRelationToCase(source.getRelationToCase());
+		target.setRelationDescription(source.getRelationDescription());
+		target.setResultingCase(CaseFacadeEjb.toReferenceDto(source.getResultingCase()));
+
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+		target.setExternalID(source.getExternalID());
+		target.setExternalToken(source.getExternalToken());
+		target.setInternalToken(source.getInternalToken());
+
+		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
+		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
+		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
+
+		target.setHighPriority(source.isHighPriority());
+		target.setImmunosuppressiveTherapyBasicDisease(source.getImmunosuppressiveTherapyBasicDisease());
+		target.setImmunosuppressiveTherapyBasicDiseaseDetails(source.getImmunosuppressiveTherapyBasicDiseaseDetails());
+		target.setCareForPeopleOver60(source.getCareForPeopleOver60());
+
+		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTypeDetails(source.getquarantineTypeDetails());
+		target.setQuarantineFrom(source.getQuarantineFrom());
+		target.setQuarantineTo(source.getQuarantineTo());
+
+		target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
+		target.setCaseOrEventInformation(source.getCaseOrEventInformation());
+
+		target.setContactProximityDetails(source.getContactProximityDetails());
+		target.setContactCategory(source.getContactCategory());
+
+		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
+		target.setQuarantineOrderedVerbally(source.isQuarantineOrderedVerbally());
+		target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
+		target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
+		target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
+		target.setQuarantineHomePossible(source.getQuarantineHomePossible());
+		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
+		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
+		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
+		target.setQuarantineExtended(source.isQuarantineExtended());
+		target.setQuarantineReduced(source.isQuarantineReduced());
+		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
+		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
+		target.setAdditionalDetails(source.getAdditionalDetails());
+
+		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
+		target.setHealthConditions(HealthConditionsMapper.toDto(source.getHealthConditions()));
+		target.setReturningTraveler(source.getReturningTraveler());
+		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
+		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
+
+		target.setProhibitionToWork(source.getProhibitionToWork());
+		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
+		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
+
+		target.setReportingDistrict(DistrictFacadeEjb.toReferenceDto(source.getReportingDistrict()));
+
+		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
+		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
+
+		target.setVaccinationStatus(source.getVaccinationStatus());
+		target.setFollowUpStatusChangeDate(source.getFollowUpStatusChangeDate());
+		if (source.getFollowUpStatusChangeUser() != null) {
+			target.setFollowUpStatusChangeUser(source.getFollowUpStatusChangeUser().toReference());
+		}
+		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
+		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
+		return target;
 	}
 
-	private void deleteContact(Contact contact) {
+	@Override
+	@RolesAllowed(UserRight._CONTACT_DELETE)
+	public void delete(String contactUuid, DeletionDetails deletionDetails) {
+		Contact contact = service.getByUuid(contactUuid);
+		deleteContact(contact, deletionDetails);
+	}
+
+	private void deleteContact(Contact contact, DeletionDetails deletionDetails) {
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
-		service.delete(contact);
+		service.delete(contact, deletionDetails);
 		if (contact.getCaze() != null) {
 			caseFacade.onCaseChanged(caseFacade.toDto(contact.getCaze()), contact.getCaze());
 		}
-	}
-
-	@RolesAllowed(UserRight._CONTACT_DELETE)
-	public List<String> deleteContacts(List<String> contactUuids) {
-		List<String> deletedContactUuids = new ArrayList<>();
-		List<Contact> contactsToBeDeleted = service.getByUuids(contactUuids);
-		if (contactsToBeDeleted != null) {
-			contactsToBeDeleted.forEach(contactToBeDeleted -> {
-				if (!contactToBeDeleted.isDeleted()) {
-					deleteContact(contactToBeDeleted);
-					deletedContactUuids.add(contactToBeDeleted.getUuid());
-				}
-			});
-		}
-		return deletedContactUuids;
-
 	}
 
 	@Override
@@ -575,330 +675,20 @@ public class ContactFacadeEjb
 		super.dearchive(entityUuids, dearchiveReason);
 	}
 
-	@Override
-	@RolesAllowed(UserRight._CONTACT_EXPORT)
-	public List<ContactExportDto> getExportList(
-		ContactCriteria contactCriteria,
-		Collection<String> selectedRows,
-		int first,
-		int max,
-		ExportConfigurationDto exportConfiguration,
-		Language userLanguage) {
-
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<ContactExportDto> cq = cb.createQuery(ContactExportDto.class);
-		final Root<Contact> contact = cq.from(Contact.class);
-
-		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contact);
-		final ContactJoins joins = contactQueryContext.getJoins();
-
-		cq.multiselect(
-			contact.get(Contact.ID),
-			joins.getPerson().get(Person.ID),
-			contact.get(Contact.UUID),
-			joins.getCaze().get(Case.UUID),
-			joins.getCaze().get(Case.CASE_CLASSIFICATION),
-			contact.get(Contact.DISEASE),
-			contact.get(Contact.DISEASE_DETAILS),
-			contact.get(Contact.CONTACT_CLASSIFICATION),
-			contact.get(Contact.MULTI_DAY_CONTACT),
-			contact.get(Contact.FIRST_CONTACT_DATE),
-			contact.get(Contact.LAST_CONTACT_DATE),
-			contact.get(Contact.CREATION_DATE),
-			joins.getPerson().get(Person.UUID),
-			joins.getPerson().get(Person.FIRST_NAME),
-			joins.getPerson().get(Person.LAST_NAME),
-			joins.getPerson().get(Person.SALUTATION),
-			joins.getPerson().get(Person.OTHER_SALUTATION),
-			joins.getPerson().get(Person.SEX),
-			joins.getPerson().get(Person.BIRTHDATE_DD),
-			joins.getPerson().get(Person.BIRTHDATE_MM),
-			joins.getPerson().get(Person.BIRTHDATE_YYYY),
-			joins.getPerson().get(Person.APPROXIMATE_AGE),
-			joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
-			contact.get(Contact.REPORT_DATE_TIME),
-			contact.get(Contact.CONTACT_IDENTIFICATION_SOURCE),
-			contact.get(Contact.CONTACT_IDENTIFICATION_SOURCE_DETAILS),
-			contact.get(Contact.TRACING_APP),
-			contact.get(Contact.TRACING_APP_DETAILS),
-			contact.get(Contact.CONTACT_PROXIMITY),
-			contact.get(Contact.CONTACT_STATUS),
-			contact.get(Contact.COMPLETENESS),
-			contact.get(Contact.FOLLOW_UP_STATUS),
-			contact.get(Contact.FOLLOW_UP_UNTIL),
-			contact.get(Contact.QUARANTINE),
-			contact.get(Contact.QUARANTINE_TYPE_DETAILS),
-			contact.get(Contact.QUARANTINE_FROM),
-			contact.get(Contact.QUARANTINE_TO),
-			contact.get(Contact.QUARANTINE_HELP_NEEDED),
-			contact.get(Contact.QUARANTINE_ORDERED_VERBALLY),
-			contact.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
-			contact.get(Contact.QUARANTINE_ORDERED_VERBALLY_DATE),
-			contact.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE),
-			contact.get(Contact.QUARANTINE_EXTENDED),
-			contact.get(Contact.QUARANTINE_REDUCED),
-			contact.get(Contact.QUARANTINE_OFFICIAL_ORDER_SENT),
-			contact.get(Contact.QUARANTINE_OFFICIAL_ORDER_SENT_DATE),
-			contact.get(Contact.PROHIBITION_TO_WORK),
-			contact.get(Contact.PROHIBITION_TO_WORK_FROM),
-			contact.get(Contact.PROHIBITION_TO_WORK_UNTIL),
-			joins.getPerson().get(Person.PRESENT_CONDITION),
-			joins.getPerson().get(Person.DEATH_DATE),
-			joins.getAddressRegion().get(Region.NAME),
-			joins.getAddressDistrict().get(District.NAME),
-			joins.getAddressCommunity().get(Community.NAME),
-			joins.getAddress().get(Location.CITY),
-			joins.getAddress().get(Location.STREET),
-			joins.getAddress().get(Location.HOUSE_NUMBER),
-			joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
-			joins.getAddress().get(Location.POSTAL_CODE),
-			joins.getAddressFacility().get(Facility.NAME),
-			joins.getAddressFacility().get(Facility.UUID),
-			joins.getAddress().get(Location.FACILITY_DETAILS),
-			contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
-			contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_OWNER_SUBQUERY),
-			contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_EMAIL_SUBQUERY),
-			contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_OTHER_CONTACT_DETAILS_SUBQUERY),
-			joins.getPerson().get(Person.OCCUPATION_TYPE),
-			joins.getPerson().get(Person.OCCUPATION_DETAILS),
-			joins.getPerson().get(Person.ARMED_FORCES_RELATION_TYPE),
-			joins.getRegion().get(Region.NAME),
-			joins.getDistrict().get(District.NAME),
-			joins.getCommunity().get(Community.NAME),
-			joins.getEpiData().get(EpiData.ID),
-			joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN),
-			contact.get(Contact.RETURNING_TRAVELER),
-			contact.get(Contact.VACCINATION_STATUS),
-			contact.get(Contact.EXTERNAL_ID),
-			contact.get(Contact.EXTERNAL_TOKEN),
-			contact.get(Contact.INTERNAL_TOKEN),
-			joins.getPerson().get(Person.BIRTH_NAME),
-			joins.getPersonBirthCountry().get(Country.ISO_CODE),
-			joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
-			joins.getPersonCitizenship().get(Country.ISO_CODE),
-			joins.getPersonCitizenship().get(Country.DEFAULT_NAME),
-			joins.getReportingDistrict().get(District.NAME),
-			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
-			joins.getReportingUser().get(User.ID),
-			joins.getFollowUpStatusChangeUser().get(User.ID),
-			contact.get(Contact.PREVIOUS_QUARANTINE_TO),
-			contact.get(Contact.QUARANTINE_CHANGE_COMMENT),
-			jurisdictionSelector(contactQueryContext));
-
-		cq.distinct(true);
-
-		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, contactQueryContext);
-
-		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, contact.get(Contact.UUID));
-		if (filter != null) {
-			cq.where(filter);
+	@RolesAllowed(UserRight._CONTACT_DELETE)
+	public List<String> deleteContacts(List<String> contactUuids, DeletionDetails deletionDetails) {
+		List<String> deletedContactUuids = new ArrayList<>();
+		List<Contact> contactsToBeDeleted = service.getByUuids(contactUuids);
+		if (contactsToBeDeleted != null) {
+			contactsToBeDeleted.forEach(contactToBeDeleted -> {
+				if (!contactToBeDeleted.isDeleted()) {
+					deleteContact(contactToBeDeleted, deletionDetails);
+					deletedContactUuids.add(contactToBeDeleted.getUuid());
+				}
+			});
 		}
+		return deletedContactUuids;
 
-		cq.orderBy(cb.desc(contact.get(Contact.REPORT_DATE_TIME)), cb.desc(contact.get(Contact.ID)));
-
-		List<ContactExportDto> exportContacts = QueryHelper.getResultList(em, cq, first, max);
-		List<String> resultContactsUuids = exportContacts.stream().map(ContactExportDto::getUuid).collect(Collectors.toList());
-
-		if (!exportContacts.isEmpty()) {
-			List<Long> exportContactIds = exportContacts.stream().map(e -> e.getId()).collect(Collectors.toList());
-
-			List<VisitSummaryExportDetails> visitSummaries = null;
-			if (ExportHelper.shouldExportFields(
-				exportConfiguration,
-				ContactExportDto.NUMBER_OF_VISITS,
-				ContactExportDto.LAST_COOPERATIVE_VISIT_DATE,
-				ContactExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMATIC,
-				ContactExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMS)) {
-				CriteriaQuery<VisitSummaryExportDetails> visitsCq = cb.createQuery(VisitSummaryExportDetails.class);
-				Root<Contact> visitsCqRoot = visitsCq.from(Contact.class);
-				ContactJoins visitContactJoins = new ContactJoins(visitsCqRoot);
-
-				visitsCq.where(
-					CriteriaBuilderHelper
-						.and(cb, contact.get(AbstractDomainObject.ID).in(exportContactIds), cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS))));
-				visitsCq.multiselect(
-					visitsCqRoot.get(AbstractDomainObject.ID),
-					visitContactJoins.getVisits().get(Visit.VISIT_DATE_TIME),
-					visitContactJoins.getVisits().get(Visit.VISIT_STATUS),
-					visitContactJoins.getVisitSymptoms(),
-					jurisdictionSelector(new ContactQueryContext(cb, cq, visitsCqRoot)));
-
-				visitSummaries = em.createQuery(visitsCq).getResultList();
-			}
-
-			Map<Long, List<Exposure>> exposures = null;
-			if (ExportHelper.shouldExportFields(
-				exportConfiguration,
-				ContactExportDto.TRAVELED,
-				ContactExportDto.TRAVEL_HISTORY,
-				ContactExportDto.BURIAL_ATTENDED)) {
-				CriteriaQuery<Exposure> exposuresCq = cb.createQuery(Exposure.class);
-				Root<Exposure> exposuresRoot = exposuresCq.from(Exposure.class);
-				Join<Exposure, EpiData> exposuresEpiDataJoin = exposuresRoot.join(Exposure.EPI_DATA, JoinType.LEFT);
-				Expression<String> epiDataIdsExpr = exposuresEpiDataJoin.get(EpiData.ID);
-				Predicate exposuresPredicate = cb.and(
-					epiDataIdsExpr.in(exportContacts.stream().map(ContactExportDto::getEpiDataId).collect(Collectors.toList())),
-					cb.or(
-						cb.equal(exposuresRoot.get(Exposure.EXPOSURE_TYPE), ExposureType.TRAVEL),
-						cb.equal(exposuresRoot.get(Exposure.EXPOSURE_TYPE), ExposureType.BURIAL)));
-				exposuresCq.where(exposuresPredicate);
-				exposuresCq.orderBy(cb.asc(exposuresEpiDataJoin.get(EpiData.ID)));
-				List<Exposure> exposureList = em.createQuery(exposuresCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-				exposures = exposureList.stream().collect(Collectors.groupingBy(e -> e.getEpiData().getId()));
-			}
-
-			Map<Long, List<Immunization>> immunizations = null;
-			if (ExportHelper.shouldExportFields(exportConfiguration, ExportHelper.getVaccinationExportProperties())) {
-				List<Immunization> immunizationList;
-				CriteriaQuery<Immunization> immunizationsCq = cb.createQuery(Immunization.class);
-				Root<Immunization> immunizationsCqRoot = immunizationsCq.from(Immunization.class);
-				Join<Immunization, Person> personJoin = immunizationsCqRoot.join(Immunization.PERSON, JoinType.LEFT);
-				Expression<String> personIdsExpr = personJoin.get(Person.ID);
-				immunizationsCq.where(
-					CriteriaBuilderHelper.and(
-						cb,
-						cb.or(
-							cb.equal(immunizationsCqRoot.get(Immunization.MEANS_OF_IMMUNIZATION), MeansOfImmunization.VACCINATION),
-							cb.equal(immunizationsCqRoot.get(Immunization.MEANS_OF_IMMUNIZATION), MeansOfImmunization.VACCINATION_RECOVERY)),
-						personIdsExpr.in(exportContacts.stream().map(ContactExportDto::getPersonId).collect(Collectors.toList()))));
-				immunizationList = em.createQuery(immunizationsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-				immunizations = immunizationList.stream().collect(Collectors.groupingBy(i -> i.getPerson().getId()));
-			}
-
-			Map<String, List<ContactEventSummaryDetails>> eventSummaries = null;
-			if (ExportHelper.shouldExportFields(
-				exportConfiguration,
-				ContactExportDto.EVENT_COUNT,
-				ContactExportDto.LATEST_EVENT_ID,
-				ContactExportDto.LATEST_EVENT_TITLE)) {
-				// Load event count and latest events info per contact
-				eventSummaries = eventService.getEventSummaryDetailsByContacts(resultContactsUuids)
-					.stream()
-					.collect(Collectors.groupingBy(ContactEventSummaryDetails::getContactUuid, Collectors.toList()));
-			}
-
-			Map<Long, UserReference> contactUsers = getContactUsersForExport(exportContacts, exportConfiguration);
-
-			// Adding a second query here is not perfect, but selecting the last cooperative visit with a criteria query
-			// doesn't seem to be possible and using a native query is not an option because of user filters
-			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-			for (ContactExportDto exportContact : exportContacts) {
-				boolean inJurisdiction = exportContact.getInJurisdiction();
-
-				if (visitSummaries != null) {
-					List<VisitSummaryExportDetails> visits =
-						visitSummaries.stream().filter(v -> v.getContactId() == exportContact.getId()).collect(Collectors.toList());
-
-					VisitSummaryExportDetails lastCooperativeVisit = visits.stream()
-						.filter(v -> v.getVisitStatus() == VisitStatus.COOPERATIVE)
-						.max(Comparator.comparing(VisitSummaryExportDetails::getVisitDateTime))
-						.orElse(null);
-
-					exportContact.setNumberOfVisits(visits.size());
-
-					if (lastCooperativeVisit != null) {
-						SymptomsDto symptoms = SymptomsFacadeEjb.toDto(lastCooperativeVisit.getSymptoms());
-						pseudonymizer.pseudonymizeDto(SymptomsDto.class, symptoms, inJurisdiction, null);
-
-						exportContact.setLastCooperativeVisitDate(lastCooperativeVisit.getVisitDateTime());
-						exportContact.setLastCooperativeVisitSymptoms(SymptomsHelper.buildSymptomsHumanString(symptoms, true, userLanguage));
-						exportContact.setLastCooperativeVisitSymptomatic(
-							symptoms.getSymptomatic() == null
-								? YesNoUnknown.UNKNOWN
-								: (symptoms.getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO));
-					}
-				}
-
-				if (exposures != null) {
-					Optional.ofNullable(exposures.get(exportContact.getEpiDataId())).ifPresent(contactExposures -> {
-						StringBuilder travelHistoryBuilder = new StringBuilder();
-						if (contactExposures.stream().anyMatch(e -> ExposureType.BURIAL.equals(e.getExposureType()))) {
-							exportContact.setBurialAttended(true);
-						}
-						contactExposures.stream().filter(e -> ExposureType.TRAVEL.equals(e.getExposureType())).forEach(exposure -> {
-							travelHistoryBuilder.append(
-								EpiDataHelper.buildDetailedTravelString(
-									exposure.getLocation().toString(),
-									exposure.getDescription(),
-									exposure.getStartDate(),
-									exposure.getEndDate(),
-									userLanguage))
-								.append(", ");
-						});
-						if (travelHistoryBuilder.length() > 0) {
-							exportContact.setTraveled(true);
-							travelHistoryBuilder.delete(travelHistoryBuilder.lastIndexOf(", "), travelHistoryBuilder.length());
-						}
-						exportContact.setTravelHistory(travelHistoryBuilder.toString());
-					});
-				}
-
-				if (immunizations != null) {
-					Optional.ofNullable(immunizations.get(exportContact.getPersonId())).ifPresent(contactImmunizations -> {
-						List<Immunization> filteredImmunizations =
-							contactImmunizations.stream().filter(i -> i.getDisease() == exportContact.getDisease()).collect(Collectors.toList());
-						if (filteredImmunizations.size() > 0) {
-							filteredImmunizations.sort(Comparator.comparing(i -> ImmunizationEntityHelper.getDateForComparison(i, false)));
-							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
-							Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
-
-							List<Vaccination> relevantSortedVaccinations =
-								getRelevantSortedVaccinations(exportContact.getUuid(), mostRecentImmunization.getVaccinations());
-							Vaccination firstVaccination = null;
-							Vaccination lastVaccination = null;
-
-							if (CollectionUtils.isNotEmpty(relevantSortedVaccinations)) {
-								firstVaccination = relevantSortedVaccinations.get(0);
-								lastVaccination = relevantSortedVaccinations.get(relevantSortedVaccinations.size() - 1);
-								exportContact.setFirstVaccinationDate(firstVaccination.getVaccinationDate());
-								exportContact.setLastVaccinationDate(lastVaccination.getVaccinationDate());
-								exportContact.setVaccineName(lastVaccination.getVaccineName());
-								exportContact.setOtherVaccineName(lastVaccination.getOtherVaccineName());
-								exportContact.setVaccineManufacturer(lastVaccination.getVaccineManufacturer());
-								exportContact.setOtherVaccineManufacturer(lastVaccination.getOtherVaccineManufacturer());
-								exportContact.setVaccinationInfoSource(lastVaccination.getVaccinationInfoSource());
-								exportContact.setVaccineAtcCode(lastVaccination.getVaccineAtcCode());
-								exportContact.setVaccineBatchNumber(lastVaccination.getVaccineBatchNumber());
-								exportContact.setVaccineUniiCode(lastVaccination.getVaccineUniiCode());
-								exportContact.setVaccineInn(lastVaccination.getVaccineInn());
-							}
-
-							exportContact.setNumberOfDoses(
-								numberOfDoses != null ? String.valueOf(numberOfDoses) : getNumberOfDosesFromVaccinations(lastVaccination));
-						}
-					});
-				}
-
-				if (eventSummaries != null) {
-					List<ContactEventSummaryDetails> contactEvents = eventSummaries.getOrDefault(exportContact.getUuid(), Collections.emptyList());
-					exportContact.setEventCount((long) contactEvents.size());
-					contactEvents.stream().max(Comparator.comparing(ContactEventSummaryDetails::getEventDate)).ifPresent(eventSummary -> {
-						exportContact.setLatestEventId(eventSummary.getEventUuid());
-						exportContact.setLatestEventTitle(eventSummary.getEventTitle());
-					});
-				}
-
-				if (!contactUsers.isEmpty()) {
-					if (exportContact.getReportingUserId() != null) {
-						UserReference user = contactUsers.get(exportContact.getReportingUserId());
-
-						exportContact.setReportingUserName(user.getName());
-						exportContact.setReportingUserRoles(user.getUserRoles());
-					}
-
-					if (exportContact.getFollowUpStatusChangeUserId() != null) {
-						UserReference user = contactUsers.get(exportContact.getFollowUpStatusChangeUserId());
-
-						exportContact.setFollowUpStatusChangeUserName(user.getName());
-						exportContact.setFollowUpStatusChangeUserRoles(user.getUserRoles());
-					}
-				}
-
-				pseudonymizer.pseudonymizeDto(ContactExportDto.class, exportContact, inJurisdiction, null);
-			}
-		}
-
-		return exportContacts;
 	}
 
 	private Map<Long, UserReference> getContactUsersForExport(List<ContactExportDto> exportContacts, ExportConfigurationDto exportConfiguration) {
@@ -1307,6 +1097,383 @@ public class ContactFacadeEjb
 		return totalCount.get();
 	}
 
+	@Override
+	@RolesAllowed(UserRight._CONTACT_EXPORT)
+	public List<ContactExportDto> getExportList(
+		ContactCriteria contactCriteria,
+		Collection<String> selectedRows,
+		int first,
+		int max,
+		ExportConfigurationDto exportConfiguration,
+		Language userLanguage) {
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<ContactExportDto> cq = cb.createQuery(ContactExportDto.class);
+		final Root<Contact> contact = cq.from(Contact.class);
+
+		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contact);
+		final ContactJoins joins = contactQueryContext.getJoins();
+
+		cq.multiselect(
+			contact.get(Contact.ID),
+			joins.getPerson().get(Person.ID),
+			contact.get(Contact.UUID),
+			joins.getCaze().get(Case.UUID),
+			joins.getCaze().get(Case.CASE_CLASSIFICATION),
+			contact.get(Contact.DISEASE),
+			contact.get(Contact.DISEASE_DETAILS),
+			contact.get(Contact.CONTACT_CLASSIFICATION),
+			contact.get(Contact.MULTI_DAY_CONTACT),
+			contact.get(Contact.FIRST_CONTACT_DATE),
+			contact.get(Contact.LAST_CONTACT_DATE),
+			contact.get(Contact.CREATION_DATE),
+			joins.getPerson().get(Person.UUID),
+			joins.getPerson().get(Person.FIRST_NAME),
+			joins.getPerson().get(Person.LAST_NAME),
+			joins.getPerson().get(Person.SALUTATION),
+			joins.getPerson().get(Person.OTHER_SALUTATION),
+			joins.getPerson().get(Person.SEX),
+			joins.getPerson().get(Person.BIRTHDATE_DD),
+			joins.getPerson().get(Person.BIRTHDATE_MM),
+			joins.getPerson().get(Person.BIRTHDATE_YYYY),
+			joins.getPerson().get(Person.APPROXIMATE_AGE),
+			joins.getPerson().get(Person.APPROXIMATE_AGE_TYPE),
+			contact.get(Contact.REPORT_DATE_TIME),
+			contact.get(Contact.CONTACT_IDENTIFICATION_SOURCE),
+			contact.get(Contact.CONTACT_IDENTIFICATION_SOURCE_DETAILS),
+			contact.get(Contact.TRACING_APP),
+			contact.get(Contact.TRACING_APP_DETAILS),
+			contact.get(Contact.CONTACT_PROXIMITY),
+			contact.get(Contact.CONTACT_STATUS),
+			contact.get(Contact.COMPLETENESS),
+			contact.get(Contact.FOLLOW_UP_STATUS),
+			contact.get(Contact.FOLLOW_UP_UNTIL),
+			contact.get(Contact.QUARANTINE),
+			contact.get(Contact.QUARANTINE_TYPE_DETAILS),
+			contact.get(Contact.QUARANTINE_FROM),
+			contact.get(Contact.QUARANTINE_TO),
+			contact.get(Contact.QUARANTINE_HELP_NEEDED),
+			contact.get(Contact.QUARANTINE_ORDERED_VERBALLY),
+			contact.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT),
+			contact.get(Contact.QUARANTINE_ORDERED_VERBALLY_DATE),
+			contact.get(Contact.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE),
+			contact.get(Contact.QUARANTINE_EXTENDED),
+			contact.get(Contact.QUARANTINE_REDUCED),
+			contact.get(Contact.QUARANTINE_OFFICIAL_ORDER_SENT),
+			contact.get(Contact.QUARANTINE_OFFICIAL_ORDER_SENT_DATE),
+			contact.get(Contact.PROHIBITION_TO_WORK),
+			contact.get(Contact.PROHIBITION_TO_WORK_FROM),
+			contact.get(Contact.PROHIBITION_TO_WORK_UNTIL),
+			joins.getPerson().get(Person.PRESENT_CONDITION),
+			joins.getPerson().get(Person.DEATH_DATE),
+			joins.getAddressRegion().get(Region.NAME),
+			joins.getAddressDistrict().get(District.NAME),
+			joins.getAddressCommunity().get(Community.NAME),
+			joins.getAddress().get(Location.CITY),
+			joins.getAddress().get(Location.STREET),
+			joins.getAddress().get(Location.HOUSE_NUMBER),
+			joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
+			joins.getAddress().get(Location.POSTAL_CODE),
+			joins.getAddressFacility().get(Facility.NAME),
+			joins.getAddressFacility().get(Facility.UUID),
+			joins.getAddress().get(Location.FACILITY_DETAILS),
+			contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
+			contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_OWNER_SUBQUERY),
+			contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_EMAIL_SUBQUERY),
+			contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_OTHER_CONTACT_DETAILS_SUBQUERY),
+			joins.getPerson().get(Person.OCCUPATION_TYPE),
+			joins.getPerson().get(Person.OCCUPATION_DETAILS),
+			joins.getPerson().get(Person.ARMED_FORCES_RELATION_TYPE),
+			joins.getRegion().get(Region.NAME),
+			joins.getDistrict().get(District.NAME),
+			joins.getCommunity().get(Community.NAME),
+			joins.getEpiData().get(EpiData.ID),
+			joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN),
+			contact.get(Contact.RETURNING_TRAVELER),
+			contact.get(Contact.VACCINATION_STATUS),
+			contact.get(Contact.EXTERNAL_ID),
+			contact.get(Contact.EXTERNAL_TOKEN),
+			contact.get(Contact.INTERNAL_TOKEN),
+			joins.getPerson().get(Person.BIRTH_NAME),
+			joins.getPersonBirthCountry().get(Country.ISO_CODE),
+			joins.getPersonBirthCountry().get(Country.DEFAULT_NAME),
+			joins.getPersonCitizenship().get(Country.ISO_CODE),
+			joins.getPersonCitizenship().get(Country.DEFAULT_NAME),
+			joins.getReportingDistrict().get(District.NAME),
+			joins.getPerson().get(Person.SYMPTOM_JOURNAL_STATUS),
+			joins.getReportingUser().get(User.ID),
+			joins.getFollowUpStatusChangeUser().get(User.ID),
+			contact.get(Contact.PREVIOUS_QUARANTINE_TO),
+			contact.get(Contact.QUARANTINE_CHANGE_COMMENT),
+			jurisdictionSelector(contactQueryContext));
+
+		cq.distinct(true);
+
+		Predicate filter = listCriteriaBuilder.buildContactFilter(contactCriteria, contactQueryContext);
+
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, contact.get(Contact.UUID));
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.orderBy(cb.desc(contact.get(Contact.REPORT_DATE_TIME)), cb.desc(contact.get(Contact.ID)));
+
+		List<ContactExportDto> exportContacts = QueryHelper.getResultList(em, cq, first, max);
+		List<String> resultContactsUuids = exportContacts.stream().map(ContactExportDto::getUuid).collect(Collectors.toList());
+
+		if (!exportContacts.isEmpty()) {
+			List<Long> exportContactIds = exportContacts.stream().map(e -> e.getId()).collect(Collectors.toList());
+
+			List<VisitSummaryExportDetails> visitSummaries = null;
+			if (ExportHelper.shouldExportFields(
+				exportConfiguration,
+				ContactExportDto.NUMBER_OF_VISITS,
+				ContactExportDto.LAST_COOPERATIVE_VISIT_DATE,
+				ContactExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMATIC,
+				ContactExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMS)) {
+				CriteriaQuery<VisitSummaryExportDetails> visitsCq = cb.createQuery(VisitSummaryExportDetails.class);
+				Root<Contact> visitsCqRoot = visitsCq.from(Contact.class);
+				ContactJoins visitContactJoins = new ContactJoins(visitsCqRoot);
+
+				visitsCq.where(
+					CriteriaBuilderHelper
+						.and(cb, contact.get(AbstractDomainObject.ID).in(exportContactIds), cb.isNotEmpty(visitsCqRoot.get(Contact.VISITS))));
+				visitsCq.multiselect(
+					visitsCqRoot.get(AbstractDomainObject.ID),
+					visitContactJoins.getVisits().get(Visit.VISIT_DATE_TIME),
+					visitContactJoins.getVisits().get(Visit.VISIT_STATUS),
+					visitContactJoins.getVisitSymptoms(),
+					jurisdictionSelector(new ContactQueryContext(cb, cq, visitsCqRoot)));
+
+				visitSummaries = em.createQuery(visitsCq).getResultList();
+			}
+
+			Map<Long, List<Exposure>> exposures = null;
+			if (ExportHelper.shouldExportFields(
+				exportConfiguration,
+				ContactExportDto.TRAVELED,
+				ContactExportDto.TRAVEL_HISTORY,
+				ContactExportDto.BURIAL_ATTENDED)) {
+				CriteriaQuery<Exposure> exposuresCq = cb.createQuery(Exposure.class);
+				Root<Exposure> exposuresRoot = exposuresCq.from(Exposure.class);
+				Join<Exposure, EpiData> exposuresEpiDataJoin = exposuresRoot.join(Exposure.EPI_DATA, JoinType.LEFT);
+				Expression<String> epiDataIdsExpr = exposuresEpiDataJoin.get(EpiData.ID);
+				Predicate exposuresPredicate = cb.and(
+					epiDataIdsExpr.in(exportContacts.stream().map(ContactExportDto::getEpiDataId).collect(Collectors.toList())),
+					cb.or(
+						cb.equal(exposuresRoot.get(Exposure.EXPOSURE_TYPE), ExposureType.TRAVEL),
+						cb.equal(exposuresRoot.get(Exposure.EXPOSURE_TYPE), ExposureType.BURIAL)));
+				exposuresCq.where(exposuresPredicate);
+				exposuresCq.orderBy(cb.asc(exposuresEpiDataJoin.get(EpiData.ID)));
+				List<Exposure> exposureList = em.createQuery(exposuresCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				exposures = exposureList.stream().collect(Collectors.groupingBy(e -> e.getEpiData().getId()));
+			}
+
+			Map<Long, List<Immunization>> immunizations = null;
+			if (ExportHelper.shouldExportFields(exportConfiguration, ExportHelper.getVaccinationExportProperties())) {
+				List<Immunization> immunizationList;
+				CriteriaQuery<Immunization> immunizationsCq = cb.createQuery(Immunization.class);
+				Root<Immunization> immunizationsCqRoot = immunizationsCq.from(Immunization.class);
+				Join<Immunization, Person> personJoin = immunizationsCqRoot.join(Immunization.PERSON, JoinType.LEFT);
+				Expression<String> personIdsExpr = personJoin.get(Person.ID);
+				immunizationsCq.where(
+					CriteriaBuilderHelper.and(
+						cb,
+						cb.or(
+							cb.equal(immunizationsCqRoot.get(Immunization.MEANS_OF_IMMUNIZATION), MeansOfImmunization.VACCINATION),
+							cb.equal(immunizationsCqRoot.get(Immunization.MEANS_OF_IMMUNIZATION), MeansOfImmunization.VACCINATION_RECOVERY)),
+						personIdsExpr.in(exportContacts.stream().map(ContactExportDto::getPersonId).collect(Collectors.toList()))));
+				immunizationList = em.createQuery(immunizationsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+				immunizations = immunizationList.stream().collect(Collectors.groupingBy(i -> i.getPerson().getId()));
+			}
+
+			Map<String, List<ContactEventSummaryDetails>> eventSummaries = null;
+			if (ExportHelper.shouldExportFields(
+				exportConfiguration,
+				ContactExportDto.EVENT_COUNT,
+				ContactExportDto.LATEST_EVENT_ID,
+				ContactExportDto.LATEST_EVENT_TITLE)) {
+				// Load event count and latest events info per contact
+				eventSummaries = eventService.getEventSummaryDetailsByContacts(resultContactsUuids)
+					.stream()
+					.collect(Collectors.groupingBy(ContactEventSummaryDetails::getContactUuid, Collectors.toList()));
+			}
+
+			Map<Long, UserReference> contactUsers = getContactUsersForExport(exportContacts, exportConfiguration);
+
+			// Adding a second query here is not perfect, but selecting the last cooperative visit with a criteria query
+			// doesn't seem to be possible and using a native query is not an option because of user filters
+			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+			for (ContactExportDto exportContact : exportContacts) {
+				boolean inJurisdiction = exportContact.getInJurisdiction();
+
+				if (visitSummaries != null) {
+					List<VisitSummaryExportDetails> visits =
+						visitSummaries.stream().filter(v -> v.getContactId() == exportContact.getId()).collect(Collectors.toList());
+
+					VisitSummaryExportDetails lastCooperativeVisit = visits.stream()
+						.filter(v -> v.getVisitStatus() == VisitStatus.COOPERATIVE)
+						.max(Comparator.comparing(VisitSummaryExportDetails::getVisitDateTime))
+						.orElse(null);
+
+					exportContact.setNumberOfVisits(visits.size());
+
+					if (lastCooperativeVisit != null) {
+						SymptomsDto symptoms = SymptomsFacadeEjb.toDto(lastCooperativeVisit.getSymptoms());
+						pseudonymizer.pseudonymizeDto(SymptomsDto.class, symptoms, inJurisdiction, null);
+
+						exportContact.setLastCooperativeVisitDate(lastCooperativeVisit.getVisitDateTime());
+						exportContact.setLastCooperativeVisitSymptoms(SymptomsHelper.buildSymptomsHumanString(symptoms, true, userLanguage));
+						exportContact.setLastCooperativeVisitSymptomatic(
+							symptoms.getSymptomatic() == null
+								? YesNoUnknown.UNKNOWN
+								: (symptoms.getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO));
+					}
+				}
+
+				if (exposures != null) {
+					Optional.ofNullable(exposures.get(exportContact.getEpiDataId())).ifPresent(contactExposures -> {
+						StringBuilder travelHistoryBuilder = new StringBuilder();
+						if (contactExposures.stream().anyMatch(e -> ExposureType.BURIAL.equals(e.getExposureType()))) {
+							exportContact.setBurialAttended(true);
+						}
+						contactExposures.stream().filter(e -> ExposureType.TRAVEL.equals(e.getExposureType())).forEach(exposure -> {
+							travelHistoryBuilder.append(
+								EpiDataHelper.buildDetailedTravelString(
+									exposure.getLocation().toString(),
+									exposure.getDescription(),
+									exposure.getStartDate(),
+									exposure.getEndDate(),
+									userLanguage))
+								.append(", ");
+						});
+						if (travelHistoryBuilder.length() > 0) {
+							exportContact.setTraveled(true);
+							travelHistoryBuilder.delete(travelHistoryBuilder.lastIndexOf(", "), travelHistoryBuilder.length());
+						}
+						exportContact.setTravelHistory(travelHistoryBuilder.toString());
+					});
+				}
+
+				if (immunizations != null) {
+					Optional.ofNullable(immunizations.get(exportContact.getPersonId())).ifPresent(contactImmunizations -> {
+						List<Immunization> filteredImmunizations =
+							contactImmunizations.stream().filter(i -> i.getDisease() == exportContact.getDisease()).collect(Collectors.toList());
+						if (filteredImmunizations.size() > 0) {
+							filteredImmunizations.sort(Comparator.comparing(i -> ImmunizationEntityHelper.getDateForComparison(i, false)));
+							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
+							Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
+
+							List<Vaccination> relevantSortedVaccinations =
+								getRelevantSortedVaccinations(exportContact.getUuid(), mostRecentImmunization.getVaccinations());
+							Vaccination firstVaccination = null;
+							Vaccination lastVaccination = null;
+
+							if (CollectionUtils.isNotEmpty(relevantSortedVaccinations)) {
+								firstVaccination = relevantSortedVaccinations.get(0);
+								lastVaccination = relevantSortedVaccinations.get(relevantSortedVaccinations.size() - 1);
+								exportContact.setFirstVaccinationDate(firstVaccination.getVaccinationDate());
+								exportContact.setLastVaccinationDate(lastVaccination.getVaccinationDate());
+								exportContact.setVaccineName(lastVaccination.getVaccineName());
+								exportContact.setOtherVaccineName(lastVaccination.getOtherVaccineName());
+								exportContact.setVaccineManufacturer(lastVaccination.getVaccineManufacturer());
+								exportContact.setOtherVaccineManufacturer(lastVaccination.getOtherVaccineManufacturer());
+								exportContact.setVaccinationInfoSource(lastVaccination.getVaccinationInfoSource());
+								exportContact.setVaccineAtcCode(lastVaccination.getVaccineAtcCode());
+								exportContact.setVaccineBatchNumber(lastVaccination.getVaccineBatchNumber());
+								exportContact.setVaccineUniiCode(lastVaccination.getVaccineUniiCode());
+								exportContact.setVaccineInn(lastVaccination.getVaccineInn());
+							}
+
+							exportContact.setNumberOfDoses(
+								numberOfDoses != null ? String.valueOf(numberOfDoses) : getNumberOfDosesFromVaccinations(lastVaccination));
+						}
+					});
+				}
+
+				if (eventSummaries != null) {
+					List<ContactEventSummaryDetails> contactEvents = eventSummaries.getOrDefault(exportContact.getUuid(), Collections.emptyList());
+					exportContact.setEventCount((long) contactEvents.size());
+					contactEvents.stream().max(Comparator.comparing(ContactEventSummaryDetails::getEventDate)).ifPresent(eventSummary -> {
+						exportContact.setLatestEventId(eventSummary.getEventUuid());
+						exportContact.setLatestEventTitle(eventSummary.getEventTitle());
+					});
+				}
+
+				if (!contactUsers.isEmpty()) {
+					if (exportContact.getReportingUserId() != null) {
+						UserReference user = contactUsers.get(exportContact.getReportingUserId());
+
+						exportContact.setReportingUserName(user.getName());
+						exportContact.setReportingUserRoles(
+							user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toReferenceDto(userRole)).collect(Collectors.toSet()));
+					}
+
+					if (exportContact.getFollowUpStatusChangeUserId() != null) {
+						UserReference user = contactUsers.get(exportContact.getFollowUpStatusChangeUserId());
+
+						exportContact.setFollowUpStatusChangeUserName(user.getName());
+						exportContact.setFollowUpStatusChangeUserRoles(
+							user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toReferenceDto(userRole)).collect(Collectors.toSet()));
+					}
+				}
+
+				pseudonymizer.pseudonymizeDto(ContactExportDto.class, exportContact, inJurisdiction, null);
+			}
+		}
+
+		return exportContacts;
+	}
+
+	@Override
+	public boolean isDeleted(String contactUuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<Contact> from = cq.from(Contact.class);
+
+		cq.where(cb.and(cb.isTrue(from.get(Contact.DELETED)), cb.equal(from.get(AbstractDomainObject.UUID), contactUuid)));
+		cq.select(cb.count(from));
+		long count = em.createQuery(cq).getSingleResult();
+		return count > 0;
+	}
+
+	@Override
+	public List<String> getArchivedUuidsSince(Date since) {
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+
+		return service.getArchivedUuidsSince(since);
+	}
+
+	@Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@RolesAllowed(UserRight._SYSTEM)
+	public void archiveAllArchivableContacts(int daysAfterContactsGetsArchived) {
+		archiveAllArchivableContacts(daysAfterContactsGetsArchived, LocalDate.now());
+	}
+
+	private void archiveAllArchivableContacts(int daysAfterEventGetsArchived, @NotNull LocalDate referenceDate) {
+		LocalDate notChangedSince = referenceDate.minusDays(daysAfterEventGetsArchived);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Contact> from = cq.from(Contact.class);
+
+		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
+		cq.where(
+			cb.equal(from.get(Contact.ARCHIVED), false),
+			cb.equal(from.get(Contact.DELETED), false),
+			cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.select(from.get(Contact.UUID)).distinct(true);
+		List<String> contactUuids = em.createQuery(cq).getResultList();
+
+		if (!contactUuids.isEmpty()) {
+			archive(contactUuids);
+		}
+	}
+
 	public Contact fillOrBuildEntity(@NotNull ContactDto source, Contact target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, Contact::new, checkChangeDate);
@@ -1413,71 +1580,11 @@ public class ContactFacadeEjb
 		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
 		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
 
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
-	}
-
-	@Override
-	public boolean isDeleted(String contactUuid) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Contact> from = cq.from(Contact.class);
-
-		cq.where(cb.and(cb.isTrue(from.get(Contact.DELETED)), cb.equal(from.get(AbstractDomainObject.UUID), contactUuid)));
-		cq.select(cb.count(from));
-		long count = em.createQuery(cq).getSingleResult();
-		return count > 0;
-	}
-
-	@Override
-	public List<String> getArchivedUuidsSince(Date since) {
-		if (userService.getCurrentUser() == null) {
-			return Collections.emptyList();
-		}
-
-		return service.getArchivedUuidsSince(since);
-	}
-
-	@Override
-	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	@RolesAllowed(UserRight._SYSTEM)
-	public void archiveAllArchivableContacts(int daysAfterContactsGetsArchived) {
-		archiveAllArchivableContacts(daysAfterContactsGetsArchived, LocalDate.now());
-	}
-
-	private void archiveAllArchivableContacts(int daysAfterEventGetsArchived, @NotNull LocalDate referenceDate) {
-		LocalDate notChangedSince = referenceDate.minusDays(daysAfterEventGetsArchived);
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<String> cq = cb.createQuery(String.class);
-		Root<Contact> from = cq.from(Contact.class);
-
-		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
-		cq.where(
-			cb.equal(from.get(Contact.ARCHIVED), false),
-			cb.equal(from.get(Contact.DELETED), false),
-			cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
-		cq.select(from.get(Contact.UUID)).distinct(true);
-		List<String> contactUuids = em.createQuery(cq).getResultList();
-
-		if (!contactUuids.isEmpty()) {
-			archive(contactUuids);
-		}
-	}
-
-	@Override
-	public List<DashboardContactDto> getContactsForDashboard(
-		RegionReferenceDto regionRef,
-		DistrictReferenceDto districtRef,
-		Disease disease,
-		Date from,
-		Date to) {
-
-		Region region = regionService.getByReferenceDto(regionRef);
-		District district = districtService.getByReferenceDto(districtRef);
-		User user = userService.getCurrentUser();
-
-		return service.getContactsForDashboard(region, district, disease, from, to, user);
 	}
 
 	@Override
@@ -1493,17 +1600,23 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	public Map<ContactClassification, Long> getNewContactCountPerClassification(ContactCriteria contactCriteria) {
+	public List<DashboardContactDto> getContactsForDashboard(
+		RegionReferenceDto regionRef,
+		DistrictReferenceDto districtRef,
+		Disease disease,
+		Date from,
+		Date to) {
 
-		User user = userService.getCurrentUser();
-		return service.getNewContactCountPerClassification(contactCriteria, user);
+		Region region = regionService.getByReferenceDto(regionRef);
+		District district = districtService.getByReferenceDto(districtRef);
+
+		return service.getContactsForDashboard(region, district, disease, from, to);
 	}
 
 	@Override
-	public Map<FollowUpStatus, Long> getNewContactCountPerFollowUpStatus(ContactCriteria contactCriteria) {
+	public Map<ContactClassification, Long> getNewContactCountPerClassification(ContactCriteria contactCriteria) {
 
-		User user = userService.getCurrentUser();
-		return service.getNewContactCountPerFollowUpStatus(contactCriteria, user);
+		return service.getNewContactCountPerClassification(contactCriteria);
 	}
 
 	@Override
@@ -1607,111 +1720,10 @@ public class ContactFacadeEjb
 		return toContactDto(source);
 	}
 
-	public static ContactDto toContactDto(Contact source) {
+	@Override
+	public Map<FollowUpStatus, Long> getNewContactCountPerFollowUpStatus(ContactCriteria contactCriteria) {
 
-		if (source == null) {
-			return null;
-		}
-		ContactDto target = new ContactDto();
-		DtoHelper.fillDto(target, source);
-
-		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
-		target.setDisease(source.getDisease());
-		target.setDiseaseDetails(source.getDiseaseDetails());
-		if (source.getCaze() != null) {
-			target.setDiseaseVariant(source.getCaze().getDiseaseVariant());
-		}
-		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
-
-		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
-		target.setReportDateTime(source.getReportDateTime());
-
-		target.setMultiDayContact(source.isMultiDayContact());
-		target.setFirstContactDate(source.getFirstContactDate());
-		target.setLastContactDate(source.getLastContactDate());
-		target.setContactIdentificationSource(source.getContactIdentificationSource());
-		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
-		target.setTracingApp(source.getTracingApp());
-		target.setTracingAppDetails(source.getTracingAppDetails());
-		target.setContactProximity(source.getContactProximity());
-		target.setContactClassification(source.getContactClassification());
-		target.setContactStatus(source.getContactStatus());
-		target.setFollowUpStatus(source.getFollowUpStatus());
-		target.setFollowUpComment(source.getFollowUpComment());
-		target.setFollowUpUntil(source.getFollowUpUntil());
-		target.setOverwriteFollowUpUntil(source.isOverwriteFollowUpUntil());
-		target.setContactOfficer(UserFacadeEjb.toReferenceDto(source.getContactOfficer()));
-		target.setDescription(source.getDescription());
-		target.setRelationToCase(source.getRelationToCase());
-		target.setRelationDescription(source.getRelationDescription());
-		target.setResultingCase(CaseFacadeEjb.toReferenceDto(source.getResultingCase()));
-
-		target.setReportLat(source.getReportLat());
-		target.setReportLon(source.getReportLon());
-		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
-		target.setExternalID(source.getExternalID());
-		target.setExternalToken(source.getExternalToken());
-		target.setInternalToken(source.getInternalToken());
-
-		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
-		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
-		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
-
-		target.setHighPriority(source.isHighPriority());
-		target.setImmunosuppressiveTherapyBasicDisease(source.getImmunosuppressiveTherapyBasicDisease());
-		target.setImmunosuppressiveTherapyBasicDiseaseDetails(source.getImmunosuppressiveTherapyBasicDiseaseDetails());
-		target.setCareForPeopleOver60(source.getCareForPeopleOver60());
-
-		target.setQuarantine(source.getQuarantine());
-		target.setQuarantineTypeDetails(source.getquarantineTypeDetails());
-		target.setQuarantineFrom(source.getQuarantineFrom());
-		target.setQuarantineTo(source.getQuarantineTo());
-
-		target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
-		target.setCaseOrEventInformation(source.getCaseOrEventInformation());
-
-		target.setContactProximityDetails(source.getContactProximityDetails());
-		target.setContactCategory(source.getContactCategory());
-
-		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
-		target.setQuarantineOrderedVerbally(source.isQuarantineOrderedVerbally());
-		target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
-		target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
-		target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
-		target.setQuarantineHomePossible(source.getQuarantineHomePossible());
-		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
-		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
-		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
-		target.setQuarantineExtended(source.isQuarantineExtended());
-		target.setQuarantineReduced(source.isQuarantineReduced());
-		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
-		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
-		target.setAdditionalDetails(source.getAdditionalDetails());
-
-		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
-		target.setHealthConditions(HealthConditionsMapper.toDto(source.getHealthConditions()));
-		target.setReturningTraveler(source.getReturningTraveler());
-		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
-		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
-
-		target.setProhibitionToWork(source.getProhibitionToWork());
-		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
-		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
-
-		target.setReportingDistrict(DistrictFacadeEjb.toReferenceDto(source.getReportingDistrict()));
-
-		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
-		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
-
-		target.setVaccinationStatus(source.getVaccinationStatus());
-		target.setFollowUpStatusChangeDate(source.getFollowUpStatusChangeDate());
-		if (source.getFollowUpStatusChangeUser() != null) {
-			target.setFollowUpStatusChangeUser(source.getFollowUpStatusChangeUser().toReference());
-		}
-		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
-		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
-
-		return target;
+		return service.getNewContactCountPerFollowUpStatus(contactCriteria);
 	}
 
 	@Override
@@ -1852,7 +1864,7 @@ public class ContactFacadeEjb
 		cq.multiselect(selections);
 
 		final Predicate defaultFilter = service.createDefaultFilter(cb, contactRoot);
-		final Predicate userFilter = service.createUserFilter(cb, cq, contactRoot);
+		final Predicate userFilter = service.createUserFilter(contactQueryContext);
 
 		final PersonReferenceDto person = criteria.getPerson();
 		final Predicate samePersonFilter = person != null ? cb.equal(joins.getPerson().get(Person.UUID), person.getUuid()) : null;
@@ -2011,7 +2023,7 @@ public class ContactFacadeEjb
 		contact.setDuplicateOf(duplicateOfContact);
 		service.ensurePersisted(contact);
 
-		this.delete(uuid);
+		this.delete(uuid, new DeletionDetails(DeletionReason.DUPLICATE_ENTRIES, null));
 	}
 
 	@Override
@@ -2021,7 +2033,7 @@ public class ContactFacadeEjb
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Contact> root = cq.from(Contact.class);
 		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, root);
-		ContactJoins joins = (ContactJoins) contactQueryContext.getJoins();
+		ContactJoins joins = contactQueryContext.getJoins();
 		Root<Contact> root2 = cq.from(Contact.class);
 		Join<Contact, Person> person = joins.getPerson();
 		Join<Contact, Person> person2 = root2.join(Contact.PERSON, JoinType.LEFT);
@@ -2043,7 +2055,7 @@ public class ContactFacadeEjb
 		// * same birth date (when fully defined)
 
 		Predicate sourceCaseFilter = cb.equal(sourceCase, sourceCase2);
-		Predicate userFilter = service.createUserFilter(cb, cq, root);
+		Predicate userFilter = service.createUserFilter(contactQueryContext);
 		Predicate criteriaFilter = criteria != null ? service.buildCriteriaFilter(criteria, contactQueryContext) : null;
 		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));

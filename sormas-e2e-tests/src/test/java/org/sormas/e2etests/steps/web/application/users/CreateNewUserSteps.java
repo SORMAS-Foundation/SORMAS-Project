@@ -381,7 +381,6 @@ public class CreateNewUserSteps implements En {
   }
 
   private void selectAreaType(String areaType) {
-    webDriverHelpers.waitForPageLoaded();
     webDriverHelpers.selectFromCombobox(AREA_TYPE_COMBOBOX, areaType);
   }
 
@@ -411,10 +410,12 @@ public class CreateNewUserSteps implements En {
   }
 
   private void fillUserName(String userName) {
+    webDriverHelpers.scrollToElement(USER_NAME_INPUT);
     webDriverHelpers.fillInWebElement(USER_NAME_INPUT, userName);
   }
 
   private void selectUserRole(String role) {
+    webDriverHelpers.scrollToElement(USER_ROLE_CHECKBOX);
     webDriverHelpers.clickWebElementByText(USER_ROLE_CHECKBOX, role);
   }
 

@@ -20,6 +20,8 @@
 
 package de.symeda.sormas.ui.events.eventLink;
 
+import java.util.function.Consumer;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -48,11 +50,12 @@ public class EventListComponent extends VerticalLayout {
 
 	private EventList list;
 	private Button createButton;
+	private final Consumer<Runnable> actionCallback;
 
-	public EventListComponent(CaseReferenceDto caseRef) {
+	public EventListComponent(CaseReferenceDto caseRef, Consumer<Runnable> actionCallback) {
 
-		createEventListComponent(new EventList(caseRef), I18nProperties.getString(Strings.entityEvents), false, e -> {
-
+		this.actionCallback = actionCallback;
+		createEventListComponent(new EventList(caseRef, actionCallback), I18nProperties.getString(Strings.entityEvents), false, () -> {
 			EventCriteria eventCriteria = new EventCriteria();
 
 			//check if there are active events in the database
@@ -66,14 +69,13 @@ public class EventListComponent extends VerticalLayout {
 
 	}
 
-	public EventListComponent(ContactReferenceDto contactRef) {
+	public EventListComponent(ContactReferenceDto contactRef, Consumer<Runnable> actionCallback) {
 
+		this.actionCallback = actionCallback;
 		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
+		EventList eventList = new EventList(contact.getPerson(), actionCallback);
 
-		EventList eventList = new EventList(contact.getPerson());
-
-		createEventListComponent(eventList, I18nProperties.getString(Strings.entityEvents), false, e -> {
-
+		createEventListComponent(eventList, I18nProperties.getString(Strings.entityEvents), false, () -> {
 			EventCriteria eventCriteria = new EventCriteria();
 
 			//check if there are active events in the database
@@ -101,10 +103,11 @@ public class EventListComponent extends VerticalLayout {
 		}
 	}
 
-	public EventListComponent(EventReferenceDto superordinateEvent) {
+	public EventListComponent(EventReferenceDto superordinateEvent, Consumer<Runnable> actionCallback) {
 
-		EventList eventList = new EventList(superordinateEvent);
-		createEventListComponent(eventList, I18nProperties.getCaption(Captions.eventSubordinateEvents), true, e -> {
+		this.actionCallback = actionCallback;
+		EventList eventList = new EventList(superordinateEvent, actionCallback);
+		createEventListComponent(eventList, I18nProperties.getCaption(Captions.eventSubordinateEvents), true, () -> {
 			EventCriteria eventCriteria = new EventCriteria();
 			long events = FacadeProvider.getEventFacade().count(eventCriteria);
 			if (events > 0) {
@@ -115,7 +118,8 @@ public class EventListComponent extends VerticalLayout {
 		});
 	}
 
-	private void createEventListComponent(EventList eventList, String heading, boolean bottomCreateButton, Button.ClickListener clickListener) {
+	private void createEventListComponent(EventList eventList, String heading, boolean bottomCreateButton, Runnable linkEventCallback) {
+
 		setWidth(100, Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
@@ -138,7 +142,7 @@ public class EventListComponent extends VerticalLayout {
 			createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.linkEvent));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(clickListener);
+			createButton.addClickListener(e -> actionCallback.accept(linkEventCallback));
 			if (bottomCreateButton) {
 				HorizontalLayout buttonLayout = new HorizontalLayout();
 				buttonLayout.setMargin(false);

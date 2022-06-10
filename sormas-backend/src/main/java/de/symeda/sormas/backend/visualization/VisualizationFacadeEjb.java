@@ -72,6 +72,8 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJoins;
+import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -170,7 +172,7 @@ public class VisualizationFacadeEjb implements VisualizationFacade {
 
 		return CriteriaBuilderHelper.and(
 			cb,
-			contactService.createUserFilter(cb, cq, root),
+			contactService.createUserFilter(new ContactQueryContext(cb, cq, new ContactJoins(root))),
 			contactService.createActiveContactsFilter(cb, root),
 			contactService.createDefaultFilter(cb, root),
 			cb.notEqual(root.get(Contact.CONTACT_CLASSIFICATION), ContactClassification.NO_CONTACT),

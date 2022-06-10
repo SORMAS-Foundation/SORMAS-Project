@@ -36,7 +36,7 @@
 		<class>de.symeda.sormas.backend.task.Task</class>
 		<class>de.symeda.sormas.backend.user.User</class>
 		<class>de.symeda.sormas.backend.user.UserReference</class>
-		<class>de.symeda.sormas.backend.user.UserRoleConfig</class>
+		<class>de.symeda.sormas.backend.user.UserRole</class>
 		<class>de.symeda.sormas.backend.visit.Visit</class>
 		<class>de.symeda.sormas.backend.therapy.Therapy</class>
 		<class>de.symeda.sormas.backend.therapy.Treatment</class>
@@ -65,7 +65,7 @@
 		<class>de.symeda.sormas.backend.exposure.Exposure</class>
 		<class>de.symeda.sormas.backend.common.messaging.ManualMessageLog</class>
 		<class>de.symeda.sormas.backend.systemevent.SystemEvent</class>
-		<class>de.symeda.sormas.backend.labmessage.LabMessage</class>
+		<class>de.symeda.sormas.backend.externalmessage.ExternalMessage</class>
 		<class>de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport</class>
 		<class>de.symeda.sormas.backend.activityascase.ActivityAsCase</class>
 		<class>de.symeda.sormas.backend.share.ExternalShareInfo</class>
@@ -82,7 +82,7 @@
 		<class>de.symeda.sormas.backend.vaccination.LastVaccineType</class>
 		<class>de.symeda.sormas.backend.vaccination.LastVaccinationDate</class>
 		<class>de.symeda.sormas.backend.vaccination.FirstVaccinationDate</class>
-		<class>de.symeda.sormas.backend.labmessage.TestReport</class>
+		<class>de.symeda.sormas.backend.externalmessage.labmessage.TestReport</class>
 		<class>de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration</class>
 
 

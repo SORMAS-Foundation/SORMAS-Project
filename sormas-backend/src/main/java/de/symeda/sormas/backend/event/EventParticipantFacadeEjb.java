@@ -51,7 +51,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.vaccination.VaccinationService;
+import de.symeda.sormas.api.common.DeletionDetails;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -138,6 +138,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 
 @Stateless(name = "EventParticipantFacade")
 @RolesAllowed(UserRight._EVENTPARTICIPANT_VIEW)
@@ -454,11 +455,31 @@ public class EventParticipantFacadeEjb
 		}
 	}
 
-	@Override
-	@RolesAllowed(UserRight._EVENTPARTICIPANT_DELETE)
-	public void delete(String uuid) throws ExternalSurveillanceToolException {
-		EventParticipant eventParticipant = service.getByUuid(uuid);
-		service.delete(eventParticipant);
+	public static EventParticipantDto toEventParticipantDto(EventParticipant source) {
+
+		if (source == null) {
+			return null;
+		}
+		EventParticipantDto target = new EventParticipantDto();
+		DtoHelper.fillDto(target, source);
+
+		target.setReportingUser(source.getReportingUser().toReference());
+		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
+		target.setPerson(PersonFacadeEjb.toDto(source.getPerson()));
+		target.setInvolvementDescription(source.getInvolvementDescription());
+		target.setResultingCase(CaseFacadeEjb.toReferenceDto(source.getResultingCase()));
+		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
+		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
+		target.setVaccinationStatus(source.getVaccinationStatus());
+
+		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
+		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
+		return target;
 	}
 
 	@Override
@@ -621,6 +642,112 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
+	@RolesAllowed(UserRight._EVENTPARTICIPANT_DELETE)
+	public void delete(String uuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
+		EventParticipant eventParticipant = service.getByUuid(uuid);
+		service.delete(eventParticipant, deletionDetails);
+	}
+
+	@Override
+	public long count(EventParticipantCriteria eventParticipantCriteria) {
+		if (eventParticipantCriteria == null || eventParticipantCriteria.getEvent() == null) {
+			return 0L; // Retrieving a count independent of an event is not possible
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<EventParticipant> root = cq.from(EventParticipant.class);
+		Predicate filter = service.buildCriteriaFilter(eventParticipantCriteria, new EventParticipantQueryContext(cb, cq, root));
+		cq.where(filter);
+		cq.select(cb.count(root));
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	@Override
+	public Map<String, Long> getContactCountPerEventParticipant(
+		List<String> eventParticipantUuids,
+		EventParticipantCriteria eventParticipantCriteria) {
+
+		Map<String, Long> contactCountMap = new HashMap<>();
+
+		IterableHelper.executeBatched(eventParticipantUuids, ModelConstants.PARAMETER_LIMIT, batchedEventParticipantUuids -> {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Object[]> contactCount = cb.createQuery(Object[].class);
+
+			Root<EventParticipant> epRoot = contactCount.from(EventParticipant.class);
+			Root<Contact> contactRoot = contactCount.from(Contact.class);
+
+			Predicate participantPersonEqualsContactPerson = cb.equal(epRoot.get(EventParticipant.PERSON), contactRoot.get(Contact.PERSON));
+			Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
+			Predicate contactNotDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
+			Predicate isInEvent = epRoot.get(EventParticipant.UUID).in(batchedEventParticipantUuids);
+
+			if (Boolean.TRUE.equals(eventParticipantCriteria.getOnlyCountContactsWithSourceCaseInEvent())) {
+				Subquery<EventParticipant> sourceCaseSubquery = contactCount.subquery(EventParticipant.class);
+				Root<EventParticipant> epr2 = sourceCaseSubquery.from(EventParticipant.class);
+				sourceCaseSubquery.select(epr2);
+				sourceCaseSubquery.where(
+					cb.equal(epr2.get(EventParticipant.RESULTING_CASE), contactRoot.get(Contact.CAZE)),
+					cb.equal(epr2.get(EventParticipant.EVENT), epRoot.get(EventParticipant.EVENT)));
+
+				contactCount.multiselect(
+					epRoot.get(EventParticipant.UUID),
+					cb.sum(cb.selectCase().when(cb.exists(sourceCaseSubquery), 1).otherwise(0).as(Long.class)));
+			} else {
+				contactCount.multiselect(epRoot.get(EventParticipant.UUID), cb.count(epRoot));
+			}
+			contactCount.where(participantPersonEqualsContactPerson, notDeleted, contactNotDeleted, isInEvent);
+			contactCount.groupBy(epRoot.get(EventParticipant.UUID));
+
+			List<Object[]> resultList = em.createQuery(contactCount).getResultList();
+			resultList.forEach(r -> contactCountMap.put((String) r[0], (Long) r[1]));
+		});
+
+		return contactCountMap;
+	}
+
+	@Override
+	public boolean exists(String personUuid, String eventUuid) {
+		return service.exists(
+			(cb, root, cq) -> cb.and(
+				cb.isFalse(root.get(EventParticipant.DELETED)),
+				cb.equal(root.get(EventParticipant.PERSON).get(AbstractDomainObject.UUID), personUuid),
+				cb.equal(root.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID), eventUuid)));
+	}
+
+	@Override
+	public EventParticipantReferenceDto getReferenceByUuid(String uuid) {
+		EventParticipant eventParticipant = service.getByUuid(uuid);
+		return new EventParticipantReferenceDto(eventParticipant.getUuid());
+	}
+
+	@Override
+	public EventParticipantReferenceDto getReferenceByEventAndPerson(String eventUuid, String personUuid) {
+		return Optional.ofNullable(service.getByEventAndPerson(eventUuid, personUuid))
+			.map(eventParticipant -> new EventParticipantReferenceDto(eventParticipant.getUuid()))
+			.orElse(null);
+	}
+
+	@Override
+	public EditPermissionType isEventParticipantEditAllowed(String uuid) {
+		EventParticipant eventParticipant = service.getByUuid(uuid);
+
+		return service.isEventParticipantEditAllowed(eventParticipant);
+	}
+
+	@Override
+	public EventParticipantDto getFirst(EventParticipantCriteria criteria) {
+
+		if (criteria.getEvent() == null) {
+			return null;
+		}
+
+		return service.getFirst(criteria)
+			.map(e -> convertToDto(e, Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue))))
+			.orElse(null);
+	}
+
+	@Override
 	public List<EventParticipantExportDto> getExportList(
 		EventParticipantCriteria eventParticipantCriteria,
 		Collection<String> selectedRows,
@@ -637,7 +764,7 @@ public class EventParticipantFacadeEjb
 
 		Join<EventParticipant, Person> person = joins.getPerson();
 
-		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, joins.getPersonJoins());
 
 		Join<Person, Location> address = joins.getAddress();
 		Join<Person, Country> birthCountry = person.join(Person.BIRTH_COUNTRY, JoinType.LEFT);
@@ -844,126 +971,6 @@ public class EventParticipantFacadeEjb
 		return eventParticipantResultList;
 	}
 
-	@Override
-	public long count(EventParticipantCriteria eventParticipantCriteria) {
-		if (eventParticipantCriteria == null || eventParticipantCriteria.getEvent() == null) {
-			return 0L; // Retrieving a count independent of an event is not possible
-		}
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<EventParticipant> root = cq.from(EventParticipant.class);
-		Predicate filter = service.buildCriteriaFilter(eventParticipantCriteria, new EventParticipantQueryContext(cb, cq, root));
-		cq.where(filter);
-		cq.select(cb.count(root));
-		return em.createQuery(cq).getSingleResult();
-	}
-
-	@Override
-	public Map<String, Long> getContactCountPerEventParticipant(
-		List<String> eventParticipantUuids,
-		EventParticipantCriteria eventParticipantCriteria) {
-
-		Map<String, Long> contactCountMap = new HashMap<>();
-
-		IterableHelper.executeBatched(eventParticipantUuids, ModelConstants.PARAMETER_LIMIT, batchedEventParticipantUuids -> {
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<Object[]> contactCount = cb.createQuery(Object[].class);
-
-			Root<EventParticipant> epRoot = contactCount.from(EventParticipant.class);
-			Root<Contact> contactRoot = contactCount.from(Contact.class);
-
-			Predicate participantPersonEqualsContactPerson = cb.equal(epRoot.get(EventParticipant.PERSON), contactRoot.get(Contact.PERSON));
-			Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
-			Predicate contactNotDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
-			Predicate isInEvent = epRoot.get(EventParticipant.UUID).in(batchedEventParticipantUuids);
-
-			if (Boolean.TRUE.equals(eventParticipantCriteria.getOnlyCountContactsWithSourceCaseInEvent())) {
-				Subquery<EventParticipant> sourceCaseSubquery = contactCount.subquery(EventParticipant.class);
-				Root<EventParticipant> epr2 = sourceCaseSubquery.from(EventParticipant.class);
-				sourceCaseSubquery.select(epr2);
-				sourceCaseSubquery.where(
-					cb.equal(epr2.get(EventParticipant.RESULTING_CASE), contactRoot.get(Contact.CAZE)),
-					cb.equal(epr2.get(EventParticipant.EVENT), epRoot.get(EventParticipant.EVENT)));
-
-				contactCount.multiselect(
-					epRoot.get(EventParticipant.UUID),
-					cb.sum(cb.selectCase().when(cb.exists(sourceCaseSubquery), 1).otherwise(0).as(Long.class)));
-			} else {
-				contactCount.multiselect(epRoot.get(EventParticipant.UUID), cb.count(epRoot));
-			}
-			contactCount.where(participantPersonEqualsContactPerson, notDeleted, contactNotDeleted, isInEvent);
-			contactCount.groupBy(epRoot.get(EventParticipant.UUID));
-
-			List<Object[]> resultList = em.createQuery(contactCount).getResultList();
-			resultList.forEach(r -> contactCountMap.put((String) r[0], (Long) r[1]));
-		});
-
-		return contactCountMap;
-	}
-
-	@Override
-	public boolean exists(String personUuid, String eventUuid) {
-		return service.exists(
-			(cb, root, cq) -> cb.and(
-				cb.isFalse(root.get(EventParticipant.DELETED)),
-				cb.equal(root.get(EventParticipant.PERSON).get(AbstractDomainObject.UUID), personUuid),
-				cb.equal(root.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID), eventUuid)));
-	}
-
-	@Override
-	public EventParticipantReferenceDto getReferenceByUuid(String uuid) {
-		EventParticipant eventParticipant = service.getByUuid(uuid);
-		return new EventParticipantReferenceDto(eventParticipant.getUuid());
-	}
-
-	@Override
-	public EventParticipantReferenceDto getReferenceByEventAndPerson(String eventUuid, String personUuid) {
-		return Optional.ofNullable(service.getByEventAndPerson(eventUuid, personUuid))
-			.map(eventParticipant -> new EventParticipantReferenceDto(eventParticipant.getUuid()))
-			.orElse(null);
-	}
-
-	@Override
-	public EditPermissionType isEventParticipantEditAllowed(String uuid) {
-		EventParticipant eventParticipant = service.getByUuid(uuid);
-
-		return service.isEventParticipantEditAllowed(eventParticipant);
-	}
-
-	@Override
-	public EventParticipantDto getFirst(EventParticipantCriteria criteria) {
-
-		if (criteria.getEvent() == null) {
-			return null;
-		}
-
-		return service.getFirst(criteria)
-			.map(e -> convertToDto(e, Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue))))
-			.orElse(null);
-	}
-
-	public EventParticipant fillOrBuildEntity(@NotNull EventParticipantDto source, EventParticipant target, boolean checkChangeDate) {
-
-		target = DtoHelper.fillOrBuildEntity(source, target, EventParticipant::new, checkChangeDate);
-
-		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
-		target.setEvent(eventService.getByReferenceDto(source.getEvent()));
-		target.setPerson(personService.getByUuid(source.getPerson().getUuid()));
-		target.setInvolvementDescription(source.getInvolvementDescription());
-		target.setResultingCase(caseService.getByReferenceDto(source.getResultingCase()));
-		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
-		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
-
-		target.setVaccinationStatus(source.getVaccinationStatus());
-
-		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
-		}
-
-		return target;
-	}
-
 	protected void pseudonymizeDto(EventParticipant source, EventParticipantDto dto, Pseudonymizer pseudonymizer) {
 
 		if (source != null) {
@@ -992,25 +999,27 @@ public class EventParticipantFacadeEjb
 		return toEventParticipantDto(source);
 	}
 
-	public static EventParticipantDto toEventParticipantDto(EventParticipant source) {
+	public EventParticipant fillOrBuildEntity(@NotNull EventParticipantDto source, EventParticipant target, boolean checkChangeDate) {
 
-		if (source == null) {
-			return null;
-		}
-		EventParticipantDto target = new EventParticipantDto();
-		DtoHelper.fillDto(target, source);
+		target = DtoHelper.fillOrBuildEntity(source, target, EventParticipant::new, checkChangeDate);
 
-		target.setReportingUser(source.getReportingUser().toReference());
-		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
-		target.setPerson(PersonFacadeEjb.toDto(source.getPerson()));
+		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
+		target.setEvent(eventService.getByReferenceDto(source.getEvent()));
+		target.setPerson(personService.getByUuid(source.getPerson().getUuid()));
 		target.setInvolvementDescription(source.getInvolvementDescription());
-		target.setResultingCase(CaseFacadeEjb.toReferenceDto(source.getResultingCase()));
-		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
-		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
+		target.setResultingCase(caseService.getByReferenceDto(source.getResultingCase()));
+		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
+		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
+
 		target.setVaccinationStatus(source.getVaccinationStatus());
 
-		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
-		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
+		if (source.getSormasToSormasOriginInfo() != null) {
+			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
+		}
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
 	}
@@ -1049,13 +1058,13 @@ public class EventParticipantFacadeEjb
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<SimilarEventParticipantDto> cq = cb.createQuery(SimilarEventParticipantDto.class);
 		final Root<EventParticipant> eventParticipantRoot = cq.from(EventParticipant.class);
-		cq.distinct(true);
 
-		Join<Object, Object> personJoin = eventParticipantRoot.join(EventParticipant.PERSON, JoinType.LEFT);
-		Join<Object, Object> eventJoin = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT);
+		EventParticipantQueryContext eventParticipantQueryContext = new EventParticipantQueryContext(cb, cq, eventParticipantRoot);
+		Join<EventParticipant, Person> personJoin = eventParticipantQueryContext.getJoins().getPerson();
+		Join<EventParticipant, Event> eventJoin = eventParticipantQueryContext.getJoins().getEvent();
 
 		Expression<Object> jurisdictionSelector =
-			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(new EventParticipantQueryContext(cb, cq, eventParticipantRoot)));
+			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(eventParticipantQueryContext));
 		cq.multiselect(
 			eventParticipantRoot.get(EventParticipant.UUID),
 			personJoin.get(Person.FIRST_NAME),
@@ -1066,19 +1075,10 @@ public class EventParticipantFacadeEjb
 			eventJoin.get(Event.EVENT_TITLE),
 			eventJoin.get(Event.START_DATE),
 			jurisdictionSelector);
-		cq.groupBy(
-			eventParticipantRoot.get(EventParticipant.UUID),
-			personJoin.get(Person.FIRST_NAME),
-			personJoin.get(Person.LAST_NAME),
-			eventParticipantRoot.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
-			eventJoin.get(Event.UUID),
-			eventJoin.get(Event.EVENT_STATUS),
-			eventJoin.get(Event.EVENT_TITLE),
-			eventJoin.get(Event.START_DATE),
-			jurisdictionSelector);
+		cq.distinct(true);
 
 		final Predicate defaultFilter = service.createDefaultFilter(cb, eventParticipantRoot);
-		final Predicate userFilter = service.createUserFilter(cb, cq, eventParticipantRoot);
+		final Predicate userFilter = service.createUserFilter(eventParticipantQueryContext);
 
 		final PersonReferenceDto person = criteria.getPerson();
 		final Predicate samePersonFilter = person != null ? cb.equal(personJoin.get(Person.UUID), person.getUuid()) : null;

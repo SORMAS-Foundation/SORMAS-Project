@@ -1,6 +1,6 @@
 package customreport.chartbuilder;
 
-import customreport.data.TableRowObject;
+import customreport.data.TablePageRowObject;
 import java.awt.*;
 import java.io.File;
 import java.util.List;
@@ -16,12 +16,13 @@ public abstract class ReportChartBuilder {
 
   public static final int width = 1300;
   public static final int height = 800;
-  public static final String generateChartPath = "customReports/images/BarChart.jpeg";
+  public static final String generateChartPath =
+      "customReports/pagesMeasurements/images/BarChart.jpeg";
 
-  public static void buildChartForData(List<TableRowObject> data) {
+  public static void buildChartForData(List<TablePageRowObject> data) {
     try {
       DefaultCategoryDataset dataSet = new DefaultCategoryDataset();
-      for (TableRowObject entry : data) {
+      for (TablePageRowObject entry : data) {
         String page = entry.getTestName();
         dataSet.addValue(Double.valueOf(entry.getCurrentTime()), page, page);
       }
@@ -39,7 +40,7 @@ public abstract class ReportChartBuilder {
       File BarChart = new File(generateChartPath);
       ChartUtils.saveChartAsJPEG(BarChart, barChart, width, height);
     } catch (Exception e) {
-      log.warn("Unable to generate results chart: " + e.getStackTrace());
+      log.warn("Unable to generate results chart: {} ", e.getMessage());
     }
   }
 }

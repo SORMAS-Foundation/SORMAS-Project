@@ -1,5 +1,7 @@
 package de.symeda.sormas.api.sample;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 
 import javax.validation.constraints.Size;
@@ -11,6 +13,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Order;
 
+@DependingOnFeatureType(featureType = FeatureType.ADDITIONAL_TESTS)
 public class AdditionalTestDto extends EntityDto {
 
 	private static final long serialVersionUID = -7306267901413644171L;

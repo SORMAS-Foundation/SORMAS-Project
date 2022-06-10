@@ -44,16 +44,18 @@ import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
+import org.sormas.e2etests.entities.pojo.api.Case;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.services.ContactService;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
@@ -76,20 +78,47 @@ public class EditContactsSteps implements En {
       ApiState apiState,
       ContactService contactService,
       SoftAssert softly,
-      EnvironmentManager environmentManager) {
+      RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
+    List<String> contactsUUIDList = new ArrayList<>();
 
     When(
         "I open the Case Contacts tab of the created case via api",
         () -> {
           LAST_CREATED_CASE_CONTACTS_TAB_URL =
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!cases/contacts/"
                   + apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_CONTACTS_TAB_URL);
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_CONTACT_BUTTON);
         });
+
+    When(
+        "I open the Case Contacts tab of the first created case via api",
+        () -> {
+          List<Case> casesList;
+          casesList = apiState.getCreatedCases();
+          LAST_CREATED_CASE_CONTACTS_TAB_URL =
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
+                  + "/sormas-webdriver/#!cases/contacts/"
+                  + casesList.get(0).getUuid();
+          webDriverHelpers.accessWebSite(LAST_CREATED_CASE_CONTACTS_TAB_URL);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_CONTACT_BUTTON);
+        });
+
+    When(
+        "I open the Case Contacts tab of the second created case via api",
+        () -> {
+          List<Case> casesList;
+          casesList = apiState.getCreatedCases();
+          LAST_CREATED_CASE_CONTACTS_TAB_URL =
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
+                  + "/sormas-webdriver/#!cases/contacts/"
+                  + casesList.get(1).getUuid();
+          webDriverHelpers.accessWebSite(LAST_CREATED_CASE_CONTACTS_TAB_URL);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_CONTACT_BUTTON);
+        });
+
     When(
         "I open the Case Contacts tab",
         () -> {
@@ -120,7 +149,7 @@ public class EditContactsSteps implements En {
         () -> {
           TimeUnit.SECONDS.sleep(3);
           webDriverHelpers.sendFile(
-              FILE_PICKER, userDirPath + "/downloads/sormas_kontakte_" + LocalDate.now() + "_.csv");
+              FILE_PICKER, userDirPath + "/downloads/sormas_contacts_" + LocalDate.now() + "_.csv");
         });
     When(
         "I click on the Import button from Case Contacts directory",
@@ -132,6 +161,7 @@ public class EditContactsSteps implements En {
         "I click on the {string} button from the Import Case Contacts popup",
         (String buttonName) -> {
           webDriverHelpers.clickWebElementByText(IMPORT_POPUP_BUTTON, buttonName);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(COMMIT_BUTTON);
         });
     When(
@@ -168,9 +198,10 @@ public class EditContactsSteps implements En {
         "I delete exported file from Case Contact Directory",
         () -> {
           File toDelete =
-              new File(userDirPath + "/downloads/sormas_kontakte_" + LocalDate.now() + "_.csv");
+              new File(userDirPath + "/downloads/sormas_contacts_" + LocalDate.now() + "_.csv");
           toDelete.deleteOnExit();
         });
+
     When(
         "^I create a new contact from Cases Contacts tab$",
         () -> {
@@ -188,14 +219,21 @@ public class EditContactsSteps implements En {
           selectResponsibleDistrict(contact.getResponsibleDistrict());
           selectResponsibleCommunity(contact.getResponsibleCommunity());
           selectTypeOfContact(contact.getTypeOfContact());
-          fillAdditionalInformationOnTheTypeOfContact(
-              contact.getAdditionalInformationOnContactType());
-          selectContactCategory(contact.getContactCategory().toUpperCase());
+          // field no longer available
+          //          fillAdditionalInformationOnTheTypeOfContact(
+          //              contact.getAdditionalInformationOnContactType());
+          // field no longer available
+          //          selectContactCategory(contact.getContactCategory().toUpperCase());
           fillRelationshipWithCase(contact.getRelationshipWithCase());
           fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP, 15)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_RADIO_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
+          }
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_CREATED_POPUP);
           contactUUID = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
+          contactsUUIDList.add(contactUUID);
         });
     When(
         "^I create a new basic contact to export from Cases Contacts tab$",
@@ -229,9 +267,11 @@ public class EditContactsSteps implements En {
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
-                  "additionalInformationOnContactType",
+                  // field no longer available
+                  //                  "additionalInformationOnContactType",
                   "typeOfContact",
-                  "contactCategory",
+                  // field no longer available
+                  //                  "contactCategory",
                   "relationshipWithCase",
                   "descriptionOfHowContactTookPlace"));
         });
@@ -239,6 +279,7 @@ public class EditContactsSteps implements En {
     Then(
         "I check the linked contact information is correctly displayed",
         () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               By.cssSelector(
                   String.format(
@@ -247,20 +288,20 @@ public class EditContactsSteps implements En {
               webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[2]/a"));
           String contactDisease =
               (webDriverHelpers
-                      .getTextFromWebElement(By.xpath("//tbody/tr[1]//td[6]"))
+                      .getTextFromWebElement(By.xpath("//tbody/tr[1]//td[4]"))
                       .equals("COVID-19"))
                   ? "CORONAVIRUS"
                   : "Not expected string!";
           String contactClassification =
               (webDriverHelpers
-                      .getTextFromWebElement(By.xpath("//tbody/tr[1]//td[7]"))
+                      .getTextFromWebElement(By.xpath("//tbody/tr[1]//td[5]"))
                       .equals("Unconfirmed contact"))
                   ? "UNCONFIRMED"
                   : "Not expected string!";
           String firstName =
-              webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[10]"));
+              webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[8]"));
           String lastName =
-              webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[11]"));
+              webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[9]"));
 
           softly.assertTrue(
               apiState.getCreatedContact().getUuid().substring(0, 6).equalsIgnoreCase(contactId),
@@ -281,6 +322,18 @@ public class EditContactsSteps implements En {
               apiState.getCreatedContact().getPerson().getLastName().equalsIgnoreCase(lastName),
               "Last name doesn't match");
           softly.assertAll();
+        });
+
+    When(
+        "I click on first created contact in Contact directory page by UUID",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(getContactByUUID(contactsUUIDList.get(0)));
+        });
+
+    When(
+        "I click on second created contact in Contact directory page by UUID",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(getContactByUUID(contactsUUIDList.get(1)));
         });
   }
 
@@ -383,13 +436,16 @@ public class EditContactsSteps implements En {
         .responsibleRegion(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_REGION_INPUT))
         .responsibleDistrict(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_DISTRICT_INPUT))
         .responsibleCommunity(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_COMMUNITY_INPUT))
-        .additionalInformationOnContactType(
-            webDriverHelpers.getValueFromWebElement(
-                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
+        // field no longer available
+        //        .additionalInformationOnContactType(
+        //            webDriverHelpers.getValueFromWebElement(
+        //                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
         .typeOfContact(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(TYPE_OF_CONTACT_OPTIONS))
-        .contactCategory(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
+        // field no longer available
+        //        .contactCategory(
+        //
+        // webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
         .relationshipWithCase(webDriverHelpers.getValueFromWebElement(RELATIONSHIP_WITH_CASE_INPUT))
         .descriptionOfHowContactTookPlace(
             webDriverHelpers.getValueFromWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT))

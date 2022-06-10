@@ -43,6 +43,8 @@ import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
 import javax.transaction.UserTransaction;
 
+import de.symeda.sormas.api.RequestContextHolder;
+import de.symeda.sormas.api.RequestContextTO;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.central.EtcdCentralClient;
 import de.symeda.sormas.backend.central.EtcdCentralClientProducer;
@@ -60,14 +62,7 @@ import de.symeda.sormas.backend.user.CurrentUserService;
  */
 public class MockProducer implements InitialContextFactory {
 
-	@Override
-	public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
-		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
-		CurrentUserService currentUserService = mock(CurrentUserService.class);
-		InitialContext mockCtx = mock(InitialContext.class);
-		when(mockCtx.lookup("java:global/sormas-ear/sormas-backend/CurrentUserService")).thenReturn(currentUserService);
-		return mockCtx;
-	}
+	private static RequestContextTO requestContextTO = new RequestContextTO(false);
 
 	private static final String TMP_PATH = "target/tmp";
 
@@ -78,6 +73,14 @@ public class MockProducer implements InitialContextFactory {
 	private static TimerService timerService = mock(TimerService.class);
 	private static Properties properties = new Properties();
 	private static UserTransaction userTransaction = mock(UserTransaction.class);
+
+	public static void resetMocks() {
+
+		reset(sessionContext, principal, topic, connectionFactory, timerService, userTransaction, s2sRestClient, managedScheduledExecutorService);
+		wireMocks();
+		resetProperties();
+		requestContextTO.setMobileSync(false);
+	}
 	private static SormasToSormasRestClient s2sRestClient = mock(SormasToSormasRestClient.class);
 	private static final EtcdCentralClient etcdCentralClient = mock(EtcdCentralClient.class);
 	private static ManagedScheduledExecutorService managedScheduledExecutorService = mock(ManagedScheduledExecutorService.class);
@@ -111,11 +114,10 @@ public class MockProducer implements InitialContextFactory {
 		wireMocks();
 	}
 
-	public static void resetMocks() {
+	public static void wireMocks() {
 
-		reset(sessionContext, principal, topic, connectionFactory, timerService, userTransaction, s2sRestClient, managedScheduledExecutorService);
-		wireMocks();
-		resetProperties();
+		when(sessionContext.getCallerPrincipal()).thenReturn(getPrincipal());
+		RequestContextHolder.setRequestContext(requestContextTO);
 	}
 
 	private static void resetProperties() {
@@ -126,9 +128,12 @@ public class MockProducer implements InitialContextFactory {
 		properties.setProperty(ConfigFacadeEjb.TEMP_FILES_PATH, TMP_PATH);
 	}
 
-	public static void wireMocks() {
-
-		when(sessionContext.getCallerPrincipal()).thenReturn(getPrincipal());
+	/**
+	 * @param mobileSync
+	 *            {@code true} simulates mobile call.
+	 */
+	public static void setMobileSync(boolean mobileSync) {
+		requestContextTO.setMobileSync(mobileSync);
 	}
 
 	@Produces
@@ -210,5 +215,16 @@ public class MockProducer implements InitialContextFactory {
 
 	public static void mockProperty(String property, String value) {
 		properties.setProperty(property, value);
+	}
+
+	@Override
+	public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
+
+		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
+		CurrentUserService currentUserService = mock(CurrentUserService.class);
+		InitialContext mockCtx = mock(InitialContext.class);
+		when(mockCtx.lookup("java:global/sormas-ear/sormas-backend/CurrentUserService")).thenReturn(currentUserService);
+
+		return mockCtx;
 	}
 }

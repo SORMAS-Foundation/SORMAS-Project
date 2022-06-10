@@ -36,21 +36,18 @@ public class WeeklyReportsSteps implements En {
     When(
         "I choose {string} as year for weekly reports",
         (String year) -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(WeeklyReportsPage.YEAR_FILTER, year);
         });
 
     When(
         "I choose {string} as epi week for weekly reports",
         (String epiWeek) -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(WeeklyReportsPage.EPI_WEEK_FILTER, epiWeek);
         });
 
     When(
         "I click on the last epi week button for weekly reports",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(WeeklyReportsPage.LAST_EPI_WEEK_BUTTON);
         });
 

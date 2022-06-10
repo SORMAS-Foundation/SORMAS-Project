@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -152,12 +153,15 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 					loc(EventDto.MEANS_OF_TRANSPORT_DETAILS) +
 					fluidRowLocs(4, EventDto.CONNECTION_NUMBER, 4, EventDto.TRAVEL_DATE) +
 					fluidRowLocs(EventDto.EVENT_LOCATION) +
-					fluidRowLocs("", EventDto.RESPONSIBLE_USER);
+					fluidRowLocs("", EventDto.RESPONSIBLE_USER) +
+					fluidRowLocs(CaseDataDto.DELETION_REASON) +
+					fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
 	//@formatter:on
 
 	private final Boolean isCreateForm;
 	private final boolean isPseudonymized;
-	private List<UserReferenceDto> regionEventResponsibles;
+	private List<UserReferenceDto> regionEventResponsibles = new ArrayList<>();
+	private List<UserReferenceDto> districtEventResponsibles = new ArrayList<>();
 	private EpidemiologicalEvidenceCheckBoxTree epidemiologicalEvidenceCheckBoxTree;
 	private LaboratoryDiagnosticEvidenceCheckBoxTree laboratoryDiagnosticEvidenceCheckBoxTree;
 	private LocationEditForm locationForm;
@@ -388,6 +392,10 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		ComboBox responsibleUserField = addField(EventDto.RESPONSIBLE_USER, ComboBox.class);
 		responsibleUserField.setNullSelectionAllowed(true);
 
+		addField(EventDto.DELETION_REASON);
+		addField(EventDto.OTHER_DELETION_REASON, TextArea.class).setRows(3);
+		setVisible(false, EventDto.DELETION_REASON, EventDto.OTHER_DELETION_REASON);
+
 		if (isCreateForm) {
 			locationForm.hideValidationUntilNextCommit();
 		}
@@ -563,22 +571,18 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			} else {
 				regionEventResponsibles.clear();
 			}
+			addRegionAndDistrict(responsibleUserField);
 		});
 
 		districtField.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) districtField.getValue();
 			if (district != null) {
-				List<UserReferenceDto> districtEventResponsibles =
+				districtEventResponsibles =
 					FacadeProvider.getUserFacade().getUserRefsByDistrict(district, getValue().getDisease(), UserRight.EVENT_RESPONSIBLE);
-
-				List<UserReferenceDto> responsibleUsers = new ArrayList<>();
-				responsibleUsers.addAll(districtEventResponsibles);
-				responsibleUsers.addAll(regionEventResponsibles);
-
-				FieldHelper.updateItems(responsibleUserField, responsibleUsers);
 			} else {
-				responsibleUserField.removeAllItems();
+				districtEventResponsibles.clear();
 			}
+			addRegionAndDistrict(responsibleUserField);
 		});
 
 		FieldHelper.addSoftRequiredStyle(
@@ -624,6 +628,14 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 				specificRiskField.setVisible(isVisibleAllowed(EventDto.SPECIFIC_RISK) && CollectionUtils.isNotEmpty(specificRiskValues));
 			}
 		});
+	}
+
+	private void addRegionAndDistrict(ComboBox responsibleUserField) {
+		List<UserReferenceDto> responsibleUsers = new ArrayList<>();
+		responsibleUsers.addAll(regionEventResponsibles);
+		responsibleUsers.addAll(districtEventResponsibles);
+
+		FieldHelper.updateItems(responsibleUserField, responsibleUsers);
 	}
 
 	private CheckBoxTree.CheckBoxElement<EpidemiologicalEvidenceDetail> epidemiologicalEvidenceDetailToCheckBoxElement(

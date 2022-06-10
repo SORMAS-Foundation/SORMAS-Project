@@ -58,7 +58,7 @@ It is possible to adjust the following properties that define how the diseases a
 * **`extendedClassificationMulti`:** Whether the three confirmation properties used for extended classification can be specified individually, i.e. users can enter multiple sources of confirmation.
 
 ## Deletion Configuration
-SORMAS can be set up to automatically delete entities after a specific time period. There are seven core entities for which automatic deletion can be enabled and configured: *Case, Contact, Event, Event Participant, Immunization, Travel Entry, and Campaign.* This configuration is currently only possible directly in the database via the `deleteconfiguration` table, which already contains a row for each of these entities. The table consists of the following columns:
+SORMAS can be set up to automatically delete entities after a specific time period. There are seven core entities for which automatic deletion can be enabled and configured: *Case, Contact, Event, Event Participant, Immunization, Travel Entry, and Campaign.* This configuration is currently only possible directly in the database via the `deleteconfiguration` table, which already contains rows for each of these entities. The table consists of the following columns:
 
 * **`entityType`:** The name of the entity that supports automatic deletion.
 * **`deletionReference`:** The reference date for the calculation of the date on which deletion takes place (see below).
@@ -67,11 +67,12 @@ SORMAS can be set up to automatically delete entities after a specific time peri
 Both `deletionReference` and `deletionPeriod` need to be filled in order for the automatic deletion to take place. Entities for which at least one of these fields is left empty will not be automatically deleted. Deletion is executed via a nightly cron job and might therefore not happen immediately when the deletion date has been reached.
 
 ### Deletion Reference
-The `deletionReference` field has three possible values which define the date that is used to calculate whether an entity needs to be deleted (i.e., when the date calculated by subtracting the deletion period from the current date is before the deletion reference date, the entity is deleted).
+The `deletionReference` field has four possible values which define the date that is used to calculate whether an entity needs to be deleted (i.e., when the date calculated by subtracting the deletion period from the current date is before the deletion reference date, the entity is deleted). A `MANUAL_DELETION` entry can exist in parallel to one of the other entries, and if both entries are configured, deletion is executed as soon as the threshold of one of these entries is met.
 
 * **`CREATION`**: The creation date of the entity will be used.
 * **`END`**: The latest change date of the entity itself and any of its depending entities will be used. E.g. for cases, this includes but is not limited to its epi data, symptoms, or hospitalization.
 * **`ORIGIN`**: This is currently only implemented for travel entries and means that the report date of the entity will be used. If this is specified for any other entity, the deletion job will be stopped and throw an error.
+* **`MANUAL_DELETION`**: The date on which the entity was manually deleted by a user.
 
 ## Infrastructure Data
 When you start a SORMAS server for the first time and the `createDefaultEntities` property is enabled, some default infrastructure data is generated to ensure that the server is usable and the default users can be created.

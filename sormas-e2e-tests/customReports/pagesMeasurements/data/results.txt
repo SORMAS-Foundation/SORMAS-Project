@@ -1,0 +1,8 @@
+Samples page=8.254/
+Cases page=8.622/
+Tasks page=19.590/
+Immunizations page=28.422/
+Surveillance Dashboard page=34.630/
+Contacts page=53.367/
+Events page=53.829/
+Contacts Dashboard page=0.298/

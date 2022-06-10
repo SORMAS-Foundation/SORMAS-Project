@@ -36,7 +36,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.share.ExternalShareCriteria;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
@@ -85,7 +85,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	public static final String ONLY_SHOW_CASES_WITH_FULFILLED_REFERENCE_DEFINITION = "onlyShowCasesWithFulfilledReferenceDefinition";
 	public static final String PERSON_LIKE = "personLike";
 
-	private UserRole reportingUserRole;
+	private UserRoleReferenceDto reportingUserRole;
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
 	private CaseOutcome outcome;
@@ -162,12 +162,12 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 		}
 	}
 
-	public void setReportingUserRole(UserRole reportingUserRole) {
-		this.reportingUserRole = reportingUserRole;
+	public UserRoleReferenceDto getReportingUserRole() {
+		return reportingUserRole;
 	}
 
-	public UserRole getReportingUserRole() {
-		return reportingUserRole;
+	public void setReportingUserRole(UserRoleReferenceDto reportingUserRole) {
+		this.reportingUserRole = reportingUserRole;
 	}
 
 	public void setOutcome(CaseOutcome outcome) {

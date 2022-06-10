@@ -53,6 +53,7 @@ import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.RichTextArea;
 import com.vaadin.v7.ui.TextArea;
 
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -94,11 +95,36 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		void onDelete();
 	}
 
+	private transient List<DeleteWithDetailsListener> deleteWithDetailsListeners = new ArrayList<>();
+
 	private transient PreCommitListener preCommitListener;
 	private transient List<CommitListener> commitListeners = new ArrayList<>();
 	private transient List<DiscardListener> discardListeners = new ArrayList<>();
 	private transient List<DoneListener> doneListeners = new ArrayList<>();
 	private transient List<DeleteListener> deleteListeners = new ArrayList<>();
+
+	public Button getDeleteButton(String entityName) {
+		if (deleteButton == null) {
+			deleteButton = ButtonHelper.createButton("delete", I18nProperties.getCaption(Captions.actionDelete), new ClickListener() {
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					VaadinUiUtil.showDeleteConfirmationWindow(
+						String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
+						new Runnable() {
+
+							public void run() {
+								onDelete();
+							}
+						});
+				}
+			}, ValoTheme.BUTTON_DANGER, CssStyles.BUTTON_BORDER_NEUTRAL);
+		}
+
+		return deleteButton;
+	}
 	// only to check if it's set
 	private transient CommitListener primaryCommitListener;
 
@@ -400,27 +426,27 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		return discardButton;
 	}
 
-	public Button getDeleteButton(String entityName) {
+	public Button getDeleteWithReasonButton(String entityName) {
 		if (deleteButton == null) {
-			deleteButton = ButtonHelper.createButton("delete", I18nProperties.getCaption(Captions.actionDelete), new ClickListener() {
-
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-					VaadinUiUtil.showDeleteConfirmationWindow(
-						String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
-						new Runnable() {
-
-							public void run() {
-								onDelete();
-							}
-						});
-				}
+			deleteButton = ButtonHelper.createButton("delete", I18nProperties.getCaption(Captions.actionDelete), (ClickListener) event -> {
+				DeletableUtils.showDeleteWithReasonPopup(
+					String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
+					this::onDeleteWithReason);
 			}, ValoTheme.BUTTON_DANGER, CssStyles.BUTTON_BORDER_NEUTRAL);
 		}
 
 		return deleteButton;
+	}
+
+	@Override
+	public void commit() throws InvalidValueException, SourceException, CommitRuntimeException {
+
+		if (preCommitListener != null) {
+			preCommitListener.onPreCommit(this::doCommit);
+		} else {
+			doCommit();
+		}
+
 	}
 
 	@Override
@@ -441,15 +467,15 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		return commited;
 	}
 
-	@Override
-	public void commit() {
+	protected void onCommit() {
 
-		if (preCommitListener != null) {
-			preCommitListener.onPreCommit(this::doCommit);
-		} else {
-			doCommit();
+		for (CommitListener listener : commitListeners) {
+			try {
+				listener.onCommit();
+			} catch (CannotProceedException e) {
+				break;
+			}
 		}
-
 	}
 
 	private void doCommit() throws InvalidValueException, SourceException, CommitRuntimeException {
@@ -665,14 +691,13 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			primaryCommitListener = null;
 	}
 
-	private void onCommit() {
+	public void addDeleteWithReasonListener(DeleteWithDetailsListener listener, String entityName) {
 
-		for (CommitListener listener : commitListeners) {
-			try {
-				listener.onCommit();
-			} catch (CannotProceedException e) {
-				break;
-			}
+		if (deleteWithDetailsListeners.isEmpty()) {
+			buttonsPanel.addComponent(getDeleteWithReasonButton(entityName), 0);
+		}
+		if (!deleteWithDetailsListeners.contains(listener)) {
+			deleteWithDetailsListeners.add(listener);
 		}
 	}
 
@@ -717,6 +742,12 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			deleteListeners.add(listener);
 	}
 
+	private void onDeleteWithReason(DeletionDetails deletionDetails) {
+		for (DeleteWithDetailsListener listener : deleteWithDetailsListeners) {
+			listener.onDelete(deletionDetails);
+		}
+	}
+
 	public boolean hasDeleteListener() {
 		return !deleteListeners.isEmpty();
 	}
@@ -724,6 +755,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	private void onDelete() {
 		for (DeleteListener listener : deleteListeners)
 			listener.onDelete();
+	}
+
+	public void setButtonsVisible(boolean visible) {
+		buttonsPanel.setVisible(visible);
 	}
 
 	@Override
@@ -844,5 +879,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 				button.setEnabled(editable);
 			}
 		}
+	}
+
+	public static interface DeleteWithDetailsListener {
+
+		void onDelete(DeletionDetails deletionDetails);
 	}
 }

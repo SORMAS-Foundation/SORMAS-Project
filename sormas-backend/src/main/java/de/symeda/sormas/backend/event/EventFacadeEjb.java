@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
-import static de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
-
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -57,6 +55,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.DeletionDetails;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -112,6 +111,7 @@ import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLoca
 import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
@@ -288,32 +288,113 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		}, 5, TimeUnit.SECONDS);
 	}
 
-	@Override
-	@RolesAllowed(UserRight._EVENT_DELETE)
-	public void delete(String eventUuid) throws ExternalSurveillanceToolException {
-		Event event = service.getByUuid(eventUuid);
-		deleteEvent(event);
+	public static EventDto toEventDto(Event source) {
+
+		if (source == null) {
+			return null;
+		}
+		EventDto target = new EventDto();
+		DtoHelper.fillDto(target, source);
+
+		target.setEventStatus(source.getEventStatus());
+		target.setRiskLevel(source.getRiskLevel());
+		target.setSpecificRisk(source.getSpecificRisk());
+		target.setEventInvestigationStatus(source.getEventInvestigationStatus());
+		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
+		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
+		target.setExternalId(source.getExternalId());
+		target.setExternalToken(source.getExternalToken());
+		target.setEventTitle(source.getEventTitle());
+		target.setEventDesc(source.getEventDesc());
+		target.setNosocomial(source.getNosocomial());
+		target.setStartDate(source.getStartDate());
+		target.setEndDate(source.getEndDate());
+		target.setReportDateTime(source.getReportDateTime());
+		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
+		target.setEvolutionDate(source.getEvolutionDate());
+		target.setEvolutionComment(source.getEvolutionComment());
+		target.setEventLocation(LocationFacadeEjb.toDto(source.getEventLocation()));
+		target.setTypeOfPlace(source.getTypeOfPlace());
+		target.setMeansOfTransport(source.getMeansOfTransport());
+		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
+		target.setConnectionNumber(source.getConnectionNumber());
+		target.setTravelDate(source.getTravelDate());
+		target.setWorkEnvironment(source.getWorkEnvironment());
+		target.setSrcType(source.getSrcType());
+		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
+		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
+		target.setSrcFirstName(source.getSrcFirstName());
+		target.setSrcLastName(source.getSrcLastName());
+		target.setSrcTelNo(source.getSrcTelNo());
+		target.setSrcEmail(source.getSrcEmail());
+		target.setSrcMediaWebsite(source.getSrcMediaWebsite());
+		target.setSrcMediaName(source.getSrcMediaName());
+		target.setSrcMediaDetails(source.getSrcMediaDetails());
+		target.setDisease(source.getDisease());
+		target.setDiseaseVariant(source.getDiseaseVariant());
+		target.setDiseaseDetails(source.getDiseaseDetails());
+		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
+		target.setResponsibleUser(UserFacadeEjb.toReferenceDto(source.getResponsibleUser()));
+		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
+		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
+		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
+		target.setSuperordinateEvent(EventFacadeEjb.toReferenceDto(source.getSuperordinateEvent()));
+		target.setEventManagementStatus(source.getEventManagementStatus());
+
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
+		target.setInfectionPathCertainty(source.getInfectionPathCertainty());
+		target.setHumanTransmissionMode(source.getHumanTransmissionMode());
+		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
+		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
+
+		target.setEpidemiologicalEvidence(source.getEpidemiologicalEvidence());
+		target.setEpidemiologicalEvidenceDetails(source.getEpidemiologicalEvidenceDetails());
+		target.setLaboratoryDiagnosticEvidence(source.getLaboratoryDiagnosticEvidence());
+		target.setLaboratoryDiagnosticEvidenceDetails(source.getLaboratoryDiagnosticEvidenceDetails());
+
+		target.setInternalToken(source.getInternalToken());
+
+		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
+		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
+
+		target.setEventIdentificationSource(source.getEventIdentificationSource());
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
+		return target;
 	}
 
-	private void deleteEvent(Event event) throws ExternalSurveillanceToolException {
+	@Override
+	@RolesAllowed(UserRight._EVENT_DELETE)
+	public void delete(String eventUuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
+		Event event = service.getByUuid(eventUuid);
+		deleteEvent(event, deletionDetails);
+	}
+
+	private void deleteEvent(Event event, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
 		if (event.getEventStatus() == EventStatus.CLUSTER
 			&& externalSurveillanceToolFacade.isFeatureEnabled()
 			&& externalShareInfoService.isEventShared(event.getId())) {
 			externalSurveillanceToolFacade.deleteEvents(Collections.singletonList(toDto(event)));
 		}
 
-		service.delete(event);
+		service.delete(event, deletionDetails);
 	}
 
 	@RolesAllowed(UserRight._EVENT_DELETE)
-	public List<String> deleteEvents(List<String> eventUuids) {
+	public List<String> deleteEvents(List<String> eventUuids, DeletionDetails deletionDetails) {
 		List<String> deletedEventUuids = new ArrayList<>();
 		List<Event> eventsToBeDeleted = service.getByUuids(eventUuids);
 		if (eventsToBeDeleted != null) {
 			eventsToBeDeleted.forEach(eventToBeDeleted -> {
 				if (!eventToBeDeleted.isDeleted()) {
 					try {
-						deleteEvent(eventToBeDeleted);
+						deleteEvent(eventToBeDeleted, deletionDetails);
 						deletedEventUuids.add(eventToBeDeleted.getUuid());
 					} catch (ExternalSurveillanceToolException e) {
 						logger.error("The event with uuid:" + eventToBeDeleted.getUuid() + "could not be deleted");
@@ -330,15 +411,18 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Event> event = cq.from(Event.class);
+		EventQueryContext queryContext = new EventQueryContext(cb, cq, event);
 
 		Predicate filter = null;
 
 		if (eventCriteria != null) {
 			if (eventCriteria.getUserFilterIncluded()) {
-				filter = service.createUserFilter(cb, cq, event);
+				EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
+				eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
+				filter = service.createUserFilter(queryContext, eventUserFilterCriteria);
 			}
 
-			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
+			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, queryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -348,6 +432,18 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		cq.select(cb.countDistinct(event));
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	@Override
+	protected void selectDtoFields(CriteriaQuery<EventDto> cq, Root<Event> root) {
+
+	}
+
+	@Override
+	public Page<EventIndexDto> getIndexPage(EventCriteria eventCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<EventIndexDto> eventIndexList = getIndexList(eventCriteria, offset, size, sortProperties);
+		long totalElementCount = count(eventCriteria);
+		return new Page<>(eventIndexList, offset, size, totalElementCount);
 	}
 
 	@Override
@@ -419,7 +515,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			if (eventCriteria.getUserFilterIncluded()) {
 				EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
 				eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
-				filter = service.createUserFilter(cb, cq, event, eventUserFilterCriteria);
+				filter = service.createUserFilter(eventQueryContext, eventUserFilterCriteria);
 			}
 
 			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, eventQueryContext);
@@ -640,224 +736,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
-	protected void selectDtoFields(CriteriaQuery<EventDto> cq, Root<Event> root) {
-
-	}
-
-	@Override
-	public Page<EventIndexDto> getIndexPage(EventCriteria eventCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
-		List<EventIndexDto> eventIndexList = getIndexList(eventCriteria, offset, size, sortProperties);
-		long totalElementCount = count(eventCriteria);
-		return new Page<>(eventIndexList, offset, size, totalElementCount);
-	}
-
-	@Override
-	@RolesAllowed(UserRight._EVENT_EXPORT)
-	public List<EventExportDto> getExportList(EventCriteria eventCriteria, Collection<String> selectedRows, Integer first, Integer max) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<EventExportDto> cq = cb.createQuery(EventExportDto.class);
-		Root<Event> event = cq.from(Event.class);
-		EventQueryContext eventQueryContext = new EventQueryContext(cb, cq, event);
-		EventJoins eventJoins = eventQueryContext.getJoins();
-		Join<Event, Location> location = eventJoins.getLocation();
-		Join<Location, Region> region = eventJoins.getRegion();
-		Join<Location, District> district = eventJoins.getDistrict();
-		Join<Location, Community> community = eventJoins.getCommunity();
-		Join<Event, User> reportingUser = eventJoins.getReportingUser();
-		Join<Event, User> responsibleUser = eventJoins.getResponsibleUser();
-
-		cq.multiselect(
-			event.get(Event.UUID),
-			event.get(Event.EXTERNAL_ID),
-			event.get(Event.EXTERNAL_TOKEN),
-			event.get(Event.INTERNAL_TOKEN),
-			event.get(Event.EVENT_STATUS),
-			event.get(Event.RISK_LEVEL),
-			event.get(Event.SPECIFIC_RISK),
-			event.get(Event.EVENT_INVESTIGATION_STATUS),
-			event.get(Event.EVENT_INVESTIGATION_START_DATE),
-			event.get(Event.EVENT_INVESTIGATION_END_DATE),
-			event.get(Event.DISEASE),
-			event.get(Event.DISEASE_VARIANT),
-			event.get(Event.DISEASE_DETAILS),
-			event.get(Event.DISEASE_VARIANT_DETAILS),
-			event.get(Event.START_DATE),
-			event.get(Event.END_DATE),
-			event.get(Event.EVOLUTION_DATE),
-			event.get(Event.EVOLUTION_COMMENT),
-			event.get(Event.EVENT_TITLE),
-			event.get(Event.EVENT_DESC),
-			event.get(Event.DISEASE_TRANSMISSION_MODE),
-			event.get(Event.NOSOCOMIAL),
-			event.get(Event.TRANSREGIONAL_OUTBREAK),
-			event.get(Event.MEANS_OF_TRANSPORT),
-			event.get(Event.MEANS_OF_TRANSPORT_DETAILS),
-			region.get(Region.UUID),
-			region.get(Region.NAME),
-			district.get(District.UUID),
-			district.get(District.NAME),
-			community.get(Community.UUID),
-			community.get(Community.NAME),
-			location.get(Location.CITY),
-			location.get(Location.STREET),
-			location.get(Location.HOUSE_NUMBER),
-			location.get(Location.ADDITIONAL_INFORMATION),
-			event.get(Event.SRC_TYPE),
-			event.get(Event.SRC_INSTITUTIONAL_PARTNER_TYPE),
-			event.get(Event.SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS),
-			event.get(Event.SRC_FIRST_NAME),
-			event.get(Event.SRC_LAST_NAME),
-			event.get(Event.SRC_TEL_NO),
-			event.get(Event.SRC_EMAIL),
-			event.get(Event.SRC_MEDIA_WEBSITE),
-			event.get(Event.SRC_MEDIA_NAME),
-			event.get(Event.SRC_MEDIA_DETAILS),
-			event.get(Event.REPORT_DATE_TIME),
-			reportingUser.get(User.UUID),
-			reportingUser.get(User.FIRST_NAME),
-			reportingUser.get(User.LAST_NAME),
-			responsibleUser.get(User.UUID),
-			responsibleUser.get(User.FIRST_NAME),
-			responsibleUser.get(User.LAST_NAME),
-			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(eventQueryContext)),
-			event.get(Event.EVENT_MANAGEMENT_STATUS),
-			event.get(Event.EVENT_IDENTIFICATION_SOURCE));
-
-		cq.distinct(true);
-
-		Predicate filter = service.createUserFilter(cb, cq, event);
-
-		if (eventCriteria != null) {
-			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, eventQueryContext);
-			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-		}
-
-		if (CollectionUtils.isNotEmpty(selectedRows)) {
-			filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, event.get(Event.UUID));
-		}
-
-		cq.where(filter);
-		cq.orderBy(cb.desc(event.get(Event.REPORT_DATE_TIME)));
-
-		List<EventExportDto> exportList = QueryHelper.getResultList(em, cq, first, max);
-
-		Map<String, Long> participantCounts = new HashMap<>();
-		Map<String, Long> caseCounts = new HashMap<>();
-		Map<String, Long> deathCounts = new HashMap<>();
-		Map<String, Long> contactCounts = new HashMap<>();
-		Map<String, Long> contactCountsSourceInEvent = new HashMap<>();
-		Map<String, EventGroupReferenceDto> latestEventGroupByEventId = new HashMap<>();
-		Map<String, Long> eventGroupCountByEventId = new HashMap<>();
-		if (exportList != null && !exportList.isEmpty()) {
-			List<Object[]> objectQueryList = null;
-			List<String> eventUuids = exportList.stream().map(EventExportDto::getUuid).collect(Collectors.toList());
-
-			// Participant, Case and Death Count
-			CriteriaQuery<Object[]> participantCQ = cb.createQuery(Object[].class);
-			Root<EventParticipant> epRoot = participantCQ.from(EventParticipant.class);
-			Join<EventParticipant, Case> caseJoin = epRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
-			Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
-			Predicate isInExportlist =
-				CriteriaBuilderHelper.andInValues(eventUuids, null, cb, epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
-			participantCQ.multiselect(
-				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
-				cb.count(epRoot),
-				cb.sum(cb.selectCase().when(cb.isNotNull(epRoot.get(EventParticipant.RESULTING_CASE)), 1).otherwise(0).as(Long.class)),
-				cb.sum(cb.selectCase().when(cb.equal(caseJoin.get(Case.OUTCOME), CaseOutcome.DECEASED), 1).otherwise(0).as(Long.class)));
-			participantCQ.where(notDeleted, isInExportlist);
-			participantCQ.groupBy(epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
-
-			objectQueryList = em.createQuery(participantCQ).getResultList();
-
-			if (objectQueryList != null) {
-				objectQueryList.forEach(r -> {
-					participantCounts.put((String) r[0], (Long) r[1]);
-					caseCounts.put((String) r[0], (Long) r[2]);
-					deathCounts.put((String) r[0], (Long) r[3]);
-				});
-			}
-
-			// Contact Count (with and without sourcecase in event) using theta join
-			CriteriaQuery<Object[]> contactCQ = cb.createQuery(Object[].class);
-			epRoot = contactCQ.from(EventParticipant.class);
-			Root<Contact> contactRoot = contactCQ.from(Contact.class);
-			Predicate participantPersonEqualsContactPerson = cb.equal(epRoot.get(EventParticipant.PERSON), contactRoot.get(Contact.PERSON));
-			notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
-			Predicate contactNotDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
-			isInExportlist =
-				CriteriaBuilderHelper.andInValues(eventUuids, null, cb, epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
-
-			Subquery<EventParticipant> sourceCaseSubquery = contactCQ.subquery(EventParticipant.class);
-			Root<EventParticipant> epr2 = sourceCaseSubquery.from(EventParticipant.class);
-			sourceCaseSubquery.select(epr2);
-			sourceCaseSubquery.where(
-				cb.equal(epr2.get(EventParticipant.RESULTING_CASE), contactRoot.get(Contact.CAZE)),
-				cb.equal(epr2.get(EventParticipant.EVENT), epRoot.get(EventParticipant.EVENT)));
-
-			contactCQ.multiselect(
-				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
-				cb.count(epRoot),
-				cb.sum(cb.selectCase().when(cb.exists(sourceCaseSubquery), 1).otherwise(0).as(Long.class)));
-			contactCQ.where(participantPersonEqualsContactPerson, notDeleted, contactNotDeleted, isInExportlist);
-			contactCQ.groupBy(epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
-
-			objectQueryList = em.createQuery(contactCQ).getResultList();
-			if (objectQueryList != null) {
-				objectQueryList.forEach(r -> {
-					contactCounts.put((String) r[0], ((Long) r[1]));
-					contactCountsSourceInEvent.put((String) r[0], ((Long) r[2]));
-				});
-			}
-
-			if (featureConfigurationFacade.isFeatureEnabled(FeatureType.EVENT_GROUPS)) {
-				// Get latest EventGroup with EventGroup count
-				CriteriaQuery<Object[]> latestEventCQ = cb.createQuery(Object[].class);
-				Root<Event> eventRoot = latestEventCQ.from(Event.class);
-				Join<Event, EventGroup> eventGroupJoin = eventRoot.join(Event.EVENT_GROUPS, JoinType.INNER);
-				isInExportlist = CriteriaBuilderHelper.andInValues(eventUuids, null, cb, eventRoot.get(Event.UUID));
-				latestEventCQ.where(notDeleted, isInExportlist);
-				latestEventCQ.multiselect(
-					eventRoot.get(Event.UUID),
-					CriteriaBuilderHelper.windowFirstValueDesc(
-						cb,
-						eventGroupJoin.get(EventGroup.UUID),
-						eventRoot.get(Event.UUID),
-						eventGroupJoin.get(EventGroup.CREATION_DATE)),
-					CriteriaBuilderHelper.windowFirstValueDesc(
-						cb,
-						eventGroupJoin.get(EventGroup.NAME),
-						eventRoot.get(Event.UUID),
-						eventGroupJoin.get(EventGroup.CREATION_DATE)),
-					CriteriaBuilderHelper.windowCount(cb, eventGroupJoin.get(EventGroup.ID), eventRoot.get(Event.UUID)));
-
-				objectQueryList = em.createQuery(latestEventCQ).getResultList();
-
-				if (objectQueryList != null) {
-					objectQueryList.forEach(r -> {
-						EventGroupReferenceDto eventGroupReference = new EventGroupReferenceDto((String) r[1], (String) r[2]);
-						latestEventGroupByEventId.put((String) r[0], eventGroupReference);
-						eventGroupCountByEventId.put((String) r[0], ((Number) r[3]).longValue());
-					});
-				}
-			}
-		}
-
-		if (exportList != null) {
-			for (EventExportDto exportDto : exportList) {
-				Optional.ofNullable(participantCounts.get(exportDto.getUuid())).ifPresent(exportDto::setParticipantCount);
-				Optional.ofNullable(caseCounts.get(exportDto.getUuid())).ifPresent(exportDto::setCaseCount);
-				Optional.ofNullable(deathCounts.get(exportDto.getUuid())).ifPresent(exportDto::setDeathCount);
-				Optional.ofNullable(contactCounts.get(exportDto.getUuid())).ifPresent(exportDto::setContactCount);
-				Optional.ofNullable(contactCountsSourceInEvent.get(exportDto.getUuid())).ifPresent(exportDto::setContactCountSourceInEvent);
-				Optional.ofNullable(latestEventGroupByEventId.get(exportDto.getUuid())).ifPresent(exportDto::setLatestEventGroup);
-				Optional.ofNullable(eventGroupCountByEventId.get(exportDto.getUuid())).ifPresent(exportDto::setEventGroupCount);
-			}
-		}
-
-		return exportList;
-	}
-
-	@Override
 	public boolean isDeleted(String eventUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -1022,81 +900,210 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		return toEventDto(source);
 	}
 
-	public static EventDto toEventDto(Event source) {
+	@Override
+	@RolesAllowed(UserRight._EVENT_EXPORT)
+	public List<EventExportDto> getExportList(EventCriteria eventCriteria, Collection<String> selectedRows, Integer first, Integer max) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<EventExportDto> cq = cb.createQuery(EventExportDto.class);
+		Root<Event> event = cq.from(Event.class);
+		EventQueryContext eventQueryContext = new EventQueryContext(cb, cq, event);
+		EventJoins eventJoins = eventQueryContext.getJoins();
+		Join<Event, Location> location = eventJoins.getLocation();
+		Join<Location, Region> region = eventJoins.getRegion();
+		Join<Location, District> district = eventJoins.getDistrict();
+		Join<Location, Community> community = eventJoins.getCommunity();
+		Join<Event, User> reportingUser = eventJoins.getReportingUser();
+		Join<Event, User> responsibleUser = eventJoins.getResponsibleUser();
 
-		if (source == null) {
-			return null;
+		cq.multiselect(
+			event.get(Event.UUID),
+			event.get(Event.EXTERNAL_ID),
+			event.get(Event.EXTERNAL_TOKEN),
+			event.get(Event.INTERNAL_TOKEN),
+			event.get(Event.EVENT_STATUS),
+			event.get(Event.RISK_LEVEL),
+			event.get(Event.SPECIFIC_RISK),
+			event.get(Event.EVENT_INVESTIGATION_STATUS),
+			event.get(Event.EVENT_INVESTIGATION_START_DATE),
+			event.get(Event.EVENT_INVESTIGATION_END_DATE),
+			event.get(Event.DISEASE),
+			event.get(Event.DISEASE_VARIANT),
+			event.get(Event.DISEASE_DETAILS),
+			event.get(Event.DISEASE_VARIANT_DETAILS),
+			event.get(Event.START_DATE),
+			event.get(Event.END_DATE),
+			event.get(Event.EVOLUTION_DATE),
+			event.get(Event.EVOLUTION_COMMENT),
+			event.get(Event.EVENT_TITLE),
+			event.get(Event.EVENT_DESC),
+			event.get(Event.DISEASE_TRANSMISSION_MODE),
+			event.get(Event.NOSOCOMIAL),
+			event.get(Event.TRANSREGIONAL_OUTBREAK),
+			event.get(Event.MEANS_OF_TRANSPORT),
+			event.get(Event.MEANS_OF_TRANSPORT_DETAILS),
+			region.get(Region.UUID),
+			region.get(Region.NAME),
+			district.get(District.UUID),
+			district.get(District.NAME),
+			community.get(Community.UUID),
+			community.get(Community.NAME),
+			location.get(Location.CITY),
+			location.get(Location.STREET),
+			location.get(Location.HOUSE_NUMBER),
+			location.get(Location.ADDITIONAL_INFORMATION),
+			event.get(Event.SRC_TYPE),
+			event.get(Event.SRC_INSTITUTIONAL_PARTNER_TYPE),
+			event.get(Event.SRC_INSTITUTIONAL_PARTNER_TYPE_DETAILS),
+			event.get(Event.SRC_FIRST_NAME),
+			event.get(Event.SRC_LAST_NAME),
+			event.get(Event.SRC_TEL_NO),
+			event.get(Event.SRC_EMAIL),
+			event.get(Event.SRC_MEDIA_WEBSITE),
+			event.get(Event.SRC_MEDIA_NAME),
+			event.get(Event.SRC_MEDIA_DETAILS),
+			event.get(Event.REPORT_DATE_TIME),
+			reportingUser.get(User.UUID),
+			reportingUser.get(User.FIRST_NAME),
+			reportingUser.get(User.LAST_NAME),
+			responsibleUser.get(User.UUID),
+			responsibleUser.get(User.FIRST_NAME),
+			responsibleUser.get(User.LAST_NAME),
+			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(eventQueryContext)),
+			event.get(Event.EVENT_MANAGEMENT_STATUS),
+			event.get(Event.EVENT_IDENTIFICATION_SOURCE));
+
+		cq.distinct(true);
+
+		Predicate filter = service.createUserFilter(eventQueryContext);
+
+		if (eventCriteria != null) {
+			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, eventQueryContext);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
-		EventDto target = new EventDto();
-		DtoHelper.fillDto(target, source);
 
-		target.setEventStatus(source.getEventStatus());
-		target.setRiskLevel(source.getRiskLevel());
-		target.setSpecificRisk(source.getSpecificRisk());
-		target.setEventInvestigationStatus(source.getEventInvestigationStatus());
-		target.setEventInvestigationStartDate(source.getEventInvestigationStartDate());
-		target.setEventInvestigationEndDate(source.getEventInvestigationEndDate());
-		target.setExternalId(source.getExternalId());
-		target.setExternalToken(source.getExternalToken());
-		target.setEventTitle(source.getEventTitle());
-		target.setEventDesc(source.getEventDesc());
-		target.setNosocomial(source.getNosocomial());
-		target.setStartDate(source.getStartDate());
-		target.setEndDate(source.getEndDate());
-		target.setReportDateTime(source.getReportDateTime());
-		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
-		target.setEvolutionDate(source.getEvolutionDate());
-		target.setEvolutionComment(source.getEvolutionComment());
-		target.setEventLocation(LocationFacadeEjb.toDto(source.getEventLocation()));
-		target.setTypeOfPlace(source.getTypeOfPlace());
-		target.setMeansOfTransport(source.getMeansOfTransport());
-		target.setMeansOfTransportDetails(source.getMeansOfTransportDetails());
-		target.setConnectionNumber(source.getConnectionNumber());
-		target.setTravelDate(source.getTravelDate());
-		target.setWorkEnvironment(source.getWorkEnvironment());
-		target.setSrcType(source.getSrcType());
-		target.setSrcInstitutionalPartnerType(source.getSrcInstitutionalPartnerType());
-		target.setSrcInstitutionalPartnerTypeDetails(source.getSrcInstitutionalPartnerTypeDetails());
-		target.setSrcFirstName(source.getSrcFirstName());
-		target.setSrcLastName(source.getSrcLastName());
-		target.setSrcTelNo(source.getSrcTelNo());
-		target.setSrcEmail(source.getSrcEmail());
-		target.setSrcMediaWebsite(source.getSrcMediaWebsite());
-		target.setSrcMediaName(source.getSrcMediaName());
-		target.setSrcMediaDetails(source.getSrcMediaDetails());
-		target.setDisease(source.getDisease());
-		target.setDiseaseVariant(source.getDiseaseVariant());
-		target.setDiseaseDetails(source.getDiseaseDetails());
-		target.setDiseaseVariantDetails(source.getDiseaseVariantDetails());
-		target.setResponsibleUser(UserFacadeEjb.toReferenceDto(source.getResponsibleUser()));
-		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
-		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
-		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
-		target.setSuperordinateEvent(EventFacadeEjb.toReferenceDto(source.getSuperordinateEvent()));
-		target.setEventManagementStatus(source.getEventManagementStatus());
+		if (CollectionUtils.isNotEmpty(selectedRows)) {
+			filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, event.get(Event.UUID));
+		}
 
-		target.setReportLat(source.getReportLat());
-		target.setReportLon(source.getReportLon());
-		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+		cq.where(filter);
+		cq.orderBy(cb.desc(event.get(Event.REPORT_DATE_TIME)));
 
-		target.setInfectionPathCertainty(source.getInfectionPathCertainty());
-		target.setHumanTransmissionMode(source.getHumanTransmissionMode());
-		target.setParenteralTransmissionMode(source.getParenteralTransmissionMode());
-		target.setMedicallyAssociatedTransmissionMode(source.getMedicallyAssociatedTransmissionMode());
+		List<EventExportDto> exportList = QueryHelper.getResultList(em, cq, first, max);
 
-		target.setEpidemiologicalEvidence(source.getEpidemiologicalEvidence());
-		target.setEpidemiologicalEvidenceDetails(source.getEpidemiologicalEvidenceDetails());
-		target.setLaboratoryDiagnosticEvidence(source.getLaboratoryDiagnosticEvidence());
-		target.setLaboratoryDiagnosticEvidenceDetails(source.getLaboratoryDiagnosticEvidenceDetails());
+		Map<String, Long> participantCounts = new HashMap<>();
+		Map<String, Long> caseCounts = new HashMap<>();
+		Map<String, Long> deathCounts = new HashMap<>();
+		Map<String, Long> contactCounts = new HashMap<>();
+		Map<String, Long> contactCountsSourceInEvent = new HashMap<>();
+		Map<String, EventGroupReferenceDto> latestEventGroupByEventId = new HashMap<>();
+		Map<String, Long> eventGroupCountByEventId = new HashMap<>();
+		if (exportList != null && !exportList.isEmpty()) {
+			List<Object[]> objectQueryList = null;
+			List<String> eventUuids = exportList.stream().map(EventExportDto::getUuid).collect(Collectors.toList());
 
-		target.setInternalToken(source.getInternalToken());
+			// Participant, Case and Death Count
+			CriteriaQuery<Object[]> participantCQ = cb.createQuery(Object[].class);
+			Root<EventParticipant> epRoot = participantCQ.from(EventParticipant.class);
+			Join<EventParticipant, Case> caseJoin = epRoot.join(EventParticipant.RESULTING_CASE, JoinType.LEFT);
+			Predicate notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
+			Predicate isInExportlist =
+				CriteriaBuilderHelper.andInValues(eventUuids, null, cb, epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
+			participantCQ.multiselect(
+				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
+				cb.count(epRoot),
+				cb.sum(cb.selectCase().when(cb.isNotNull(epRoot.get(EventParticipant.RESULTING_CASE)), 1).otherwise(0).as(Long.class)),
+				cb.sum(cb.selectCase().when(cb.equal(caseJoin.get(Case.OUTCOME), CaseOutcome.DECEASED), 1).otherwise(0).as(Long.class)));
+			participantCQ.where(notDeleted, isInExportlist);
+			participantCQ.groupBy(epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
 
-		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
-		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
+			objectQueryList = em.createQuery(participantCQ).getResultList();
 
-		target.setEventIdentificationSource(source.getEventIdentificationSource());
+			if (objectQueryList != null) {
+				objectQueryList.forEach(r -> {
+					participantCounts.put((String) r[0], (Long) r[1]);
+					caseCounts.put((String) r[0], (Long) r[2]);
+					deathCounts.put((String) r[0], (Long) r[3]);
+				});
+			}
 
-		return target;
+			// Contact Count (with and without sourcecase in event) using theta join
+			CriteriaQuery<Object[]> contactCQ = cb.createQuery(Object[].class);
+			epRoot = contactCQ.from(EventParticipant.class);
+			Root<Contact> contactRoot = contactCQ.from(Contact.class);
+			Predicate participantPersonEqualsContactPerson = cb.equal(epRoot.get(EventParticipant.PERSON), contactRoot.get(Contact.PERSON));
+			notDeleted = cb.isFalse(epRoot.get(EventParticipant.DELETED));
+			Predicate contactNotDeleted = cb.isFalse(contactRoot.get(Contact.DELETED));
+			isInExportlist =
+				CriteriaBuilderHelper.andInValues(eventUuids, null, cb, epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
+
+			Subquery<EventParticipant> sourceCaseSubquery = contactCQ.subquery(EventParticipant.class);
+			Root<EventParticipant> epr2 = sourceCaseSubquery.from(EventParticipant.class);
+			sourceCaseSubquery.select(epr2);
+			sourceCaseSubquery.where(
+				cb.equal(epr2.get(EventParticipant.RESULTING_CASE), contactRoot.get(Contact.CAZE)),
+				cb.equal(epr2.get(EventParticipant.EVENT), epRoot.get(EventParticipant.EVENT)));
+
+			contactCQ.multiselect(
+				epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID),
+				cb.count(epRoot),
+				cb.sum(cb.selectCase().when(cb.exists(sourceCaseSubquery), 1).otherwise(0).as(Long.class)));
+			contactCQ.where(participantPersonEqualsContactPerson, notDeleted, contactNotDeleted, isInExportlist);
+			contactCQ.groupBy(epRoot.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID));
+
+			objectQueryList = em.createQuery(contactCQ).getResultList();
+			if (objectQueryList != null) {
+				objectQueryList.forEach(r -> {
+					contactCounts.put((String) r[0], ((Long) r[1]));
+					contactCountsSourceInEvent.put((String) r[0], ((Long) r[2]));
+				});
+			}
+
+			if (featureConfigurationFacade.isFeatureEnabled(FeatureType.EVENT_GROUPS)) {
+				// Get latest EventGroup with EventGroup count
+				CriteriaQuery<Object[]> latestEventCQ = cb.createQuery(Object[].class);
+				Root<Event> eventRoot = latestEventCQ.from(Event.class);
+				Join<Event, EventGroup> eventGroupJoin = eventRoot.join(Event.EVENT_GROUPS, JoinType.INNER);
+				isInExportlist = CriteriaBuilderHelper.andInValues(eventUuids, null, cb, eventRoot.get(Event.UUID));
+				latestEventCQ.where(notDeleted, isInExportlist);
+				latestEventCQ.multiselect(
+					eventRoot.get(Event.UUID),
+					CriteriaBuilderHelper.windowFirstValueDesc(
+						cb,
+						eventGroupJoin.get(EventGroup.UUID),
+						eventRoot.get(Event.UUID),
+						eventGroupJoin.get(EventGroup.CREATION_DATE)),
+					CriteriaBuilderHelper.windowFirstValueDesc(
+						cb,
+						eventGroupJoin.get(EventGroup.NAME),
+						eventRoot.get(Event.UUID),
+						eventGroupJoin.get(EventGroup.CREATION_DATE)),
+					CriteriaBuilderHelper.windowCount(cb, eventGroupJoin.get(EventGroup.ID), eventRoot.get(Event.UUID)));
+
+				objectQueryList = em.createQuery(latestEventCQ).getResultList();
+
+				if (objectQueryList != null) {
+					objectQueryList.forEach(r -> {
+						EventGroupReferenceDto eventGroupReference = new EventGroupReferenceDto((String) r[1], (String) r[2]);
+						latestEventGroupByEventId.put((String) r[0], eventGroupReference);
+						eventGroupCountByEventId.put((String) r[0], ((Number) r[3]).longValue());
+					});
+				}
+			}
+		}
+
+		if (exportList != null) {
+			for (EventExportDto exportDto : exportList) {
+				Optional.ofNullable(participantCounts.get(exportDto.getUuid())).ifPresent(exportDto::setParticipantCount);
+				Optional.ofNullable(caseCounts.get(exportDto.getUuid())).ifPresent(exportDto::setCaseCount);
+				Optional.ofNullable(deathCounts.get(exportDto.getUuid())).ifPresent(exportDto::setDeathCount);
+				Optional.ofNullable(contactCounts.get(exportDto.getUuid())).ifPresent(exportDto::setContactCount);
+				Optional.ofNullable(contactCountsSourceInEvent.get(exportDto.getUuid())).ifPresent(exportDto::setContactCountSourceInEvent);
+				Optional.ofNullable(latestEventGroupByEventId.get(exportDto.getUuid())).ifPresent(exportDto::setLatestEventGroup);
+				Optional.ofNullable(eventGroupCountByEventId.get(exportDto.getUuid())).ifPresent(exportDto::setEventGroupCount);
+			}
+		}
+
+		return exportList;
 	}
 
 	@Override
@@ -1200,6 +1207,10 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
 		}
 
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -1286,14 +1297,13 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<String> cq = cb.createQuery(String.class);
 			Root<Event> from = cq.from(Event.class);
-
-			EventJoins eventJoins = new EventJoins(from);
+			EventQueryContext queryContext = new EventQueryContext(cb, cq, from);
 
 			Predicate filters = CriteriaBuilderHelper.and(
 				cb,
-				service.createUserFilter(cb, cq, from),
+				service.createUserFilter(queryContext),
 				service.createActiveEventsFilter(cb, from),
-				eventJoins.getSuperordinateEvent().get(Event.UUID).in(batchedUuids));
+				queryContext.getJoins().getSuperordinateEvent().get(Event.UUID).in(batchedUuids));
 
 			cq.where(filters);
 			cq.select(from.get(Event.UUID));

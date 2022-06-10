@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.RolesAllowed;
@@ -22,25 +23,27 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.AggregatedCaseCountDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AgeGroupUtils;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
-import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -66,8 +69,6 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	private PointOfEntryService pointOfEntryService;
 	@EJB
 	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
-	@EJB
-	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 
 	@Override
 	public List<AggregateReportDto> getAllAggregateReportsAfter(Date date) {
@@ -80,13 +81,29 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		return service.getByUuids(uuids).stream().map(r -> toDto(r)).collect(Collectors.toList());
 	}
 
-	@Override
-	@RolesAllowed(UserRight._AGGREGATE_REPORT_EDIT)
-	public AggregateReportDto saveAggregateReport(@Valid AggregateReportDto dto) {
+	public static AggregateReportDto toDto(AggregateReport source) {
 
-		AggregateReport report = fromDto(dto, true);
-		service.ensurePersisted(report);
-		return toDto(report);
+		if (source == null) {
+			return null;
+		}
+
+		AggregateReportDto target = new AggregateReportDto();
+		DtoHelper.fillDto(target, source);
+
+		target.setDisease(source.getDisease());
+		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
+		target.setYear(source.getYear());
+		target.setEpiWeek(source.getEpiWeek());
+		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
+		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
+		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
+		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
+		target.setNewCases(source.getNewCases());
+		target.setLabConfirmations(source.getLabConfirmations());
+		target.setDeaths(source.getDeaths());
+		target.setAgeGroup(source.getAgeGroup());
+
+		return target;
 	}
 
 	@Override
@@ -97,6 +114,25 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		}
 
 		return service.getAllUuids();
+	}
+
+	@Override
+	@RolesAllowed(UserRight._AGGREGATE_REPORT_EDIT)
+	public AggregateReportDto saveAggregateReport(@Valid AggregateReportDto dto) {
+
+		if (dto.getAgeGroup() != null && dto.getAgeGroup().isEmpty()) {
+			AgeGroupUtils.validateAgeGroup(dto.getAgeGroup());
+		}
+		AggregateReport report = fromDto(dto, true);
+		service.ensurePersisted(report);
+		return toDto(report);
+	}
+
+	@Override
+	public List<AggregateReportDto> getList(AggregateReportCriteria criteria) {
+
+		User user = userService.getCurrentUser();
+		return service.findBy(criteria, user).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -120,38 +156,45 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 			root.get(AggregateReport.DISEASE),
 			cb.sum(root.get(AggregateReport.NEW_CASES)),
 			cb.sum(root.get(AggregateReport.LAB_CONFIRMATIONS)),
-			cb.sum(root.get(AggregateReport.DEATHS)));
-		cq.groupBy(root.get(AggregateReport.DISEASE));
+			cb.sum(root.get(AggregateReport.DEATHS)),
+			root.get(AggregateReport.AGE_GROUP));
+		cq.groupBy(root.get(AggregateReport.DISEASE), root.get(AggregateReport.AGE_GROUP));
 
 		List<Object[]> resultList = em.createQuery(cq).getResultList();
-		Map<Disease, AggregatedCaseCountDto> reportSet = new HashMap<>();
+
+		Set<AggregatedCaseCountDto> reportSet = new HashSet<>();
+		Set<Disease> diseases = new HashSet<>();
 
 		for (Object[] result : resultList) {
-			reportSet.put(
-				(Disease) result[0],
+			final Disease disease = (Disease) result[0];
+			reportSet.add(
 				new AggregatedCaseCountDto(
-					(Disease) result[0],
+					disease,
 					((Long) result[1]).intValue(),
 					((Long) result[2]).intValue(),
-					((Long) result[3]).intValue()));
+					((Long) result[3]).intValue(),
+					(String) result[4]));
+			diseases.add(disease);
 		}
 
 		for (Disease disease : diseaseConfigurationFacade.getAllDiseases(true, false, false)) {
-			if (!reportSet.containsKey(disease)) {
-				reportSet.put(disease, new AggregatedCaseCountDto(disease, 0, 0, 0));
+			if (!diseases.contains(disease)) {
+				reportSet.add(new AggregatedCaseCountDto(disease, 0, 0, 0, null));
 			}
 		}
 
-		List<AggregatedCaseCountDto> reportList = new ArrayList<>(reportSet.values());
-		reportList.sort(Comparator.comparing(r -> r.getDisease().toString()));
+		List<AggregatedCaseCountDto> reportList = new ArrayList<>(reportSet);
+		Function<AggregatedCaseCountDto, String> diseaseComparator = r -> r.getDisease().toString();
+		Comparator<AggregatedCaseCountDto> comparator = Comparator.comparing(diseaseComparator)
+			.thenComparing(
+				r -> r.getAgeGroup() != null
+					? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
+					: StringUtils.EMPTY)
+			.thenComparing(
+				r -> r.getAgeGroup() != null ? Integer.parseInt(r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0);
+
+		reportList.sort(comparator);
 		return reportList;
-	}
-
-	@Override
-	public List<AggregateReportDto> getList(AggregateReportCriteria criteria) {
-
-		User user = userService.getCurrentUser();
-		return service.findBy(criteria, user).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
 
 	public AggregateReport fromDto(@NotNull AggregateReportDto source, boolean checkChangeDate) {
@@ -169,30 +212,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		target.setNewCases(source.getNewCases());
 		target.setLabConfirmations(source.getLabConfirmations());
 		target.setDeaths(source.getDeaths());
-
-		return target;
-	}
-
-	public static AggregateReportDto toDto(AggregateReport source) {
-
-		if (source == null) {
-			return null;
-		}
-
-		AggregateReportDto target = new AggregateReportDto();
-		DtoHelper.fillDto(target, source);
-
-		target.setDisease(source.getDisease());
-		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
-		target.setYear(source.getYear());
-		target.setEpiWeek(source.getEpiWeek());
-		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
-		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
-		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
-		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
-		target.setNewCases(source.getNewCases());
-		target.setLabConfirmations(source.getLabConfirmations());
-		target.setDeaths(source.getDeaths());
+		target.setAgeGroup(source.getAgeGroup());
 
 		return target;
 	}

@@ -34,6 +34,10 @@ public class EpidemiologicalDataCasePage {
       By.cssSelector("[id='activityAsCaseDetailsKnown'] [class='v-checkbox v-select-option']");
   public static final By NEW_ENTRY_POPUP = By.cssSelector(".v-window  .popupContent");
   public static final By ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON = By.id("actionNewEntry");
+  public static final By ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE = By.id("Neue Einreise");
+  public static final By EDIT_TRAVEL_ENTRY_BUTTON =
+      By.xpath(
+          "//div[@location='travelEntries']//div[@class='v-button v-widget link v-button-link compact v-button-compact']");
   public static final By RISK_AREA_OPTIONS = By.cssSelector(".v-window #riskArea .v-select-option");
   public static final By INDOORS_OPTIONS = By.cssSelector(".v-window #indoors .v-select-option");
   public static final By OUTDOORS_OPTIONS = By.cssSelector(".v-window #outdoors .v-select-option");
@@ -118,6 +122,8 @@ public class EpidemiologicalDataCasePage {
       By.cssSelector("[location='sourceContacts']");
   public static final By TYPE_OF_ACTIVITY_EXPOSURES =
       By.xpath("//table[@class='v-table-table']//td[2]/div/div");
+  public static final By DATE_EXPOSURE_TABLE =
+      By.xpath("//table/tbody/tr[@class='v-table-row']/td[5]");
 
   public static By getExposureTableData(Integer tdNr) {
     return By.xpath(String.format("//table[@class='v-table-table']//td[%s]", tdNr));

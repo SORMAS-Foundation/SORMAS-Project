@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.71.0-SNAPSHOT</version>
+	<version>1.73.0-SNAPSHOT</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -794,7 +794,7 @@
 			<dependency>
 				<groupId>org.testcontainers</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>1.16.3</version>
+				<version>1.17.1</version>
 				<scope>test</scope>
 			</dependency>
 
@@ -912,7 +912,7 @@
 			<dependency>
 				<groupId>com.google.oauth-client</groupId>
 				<artifactId>google-oauth-client</artifactId>
-				<version>1.33.1</version>
+				<version>1.33.3</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.http-client</groupId>

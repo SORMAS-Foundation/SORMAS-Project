@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.hospitalization;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +34,7 @@ import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
+@DependingOnFeatureType(featureType = FeatureType.CASE_SURVEILANCE)
 public class HospitalizationDto extends EntityDto {
 
 	private static final long serialVersionUID = 4846215199480684369L;

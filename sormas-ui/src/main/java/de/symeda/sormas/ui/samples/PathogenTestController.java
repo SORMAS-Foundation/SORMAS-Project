@@ -35,6 +35,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.contact.ContactStatus;
@@ -69,22 +70,38 @@ public class PathogenTestController {
 		return facade.getAllBySample(sampleRef);
 	}
 
-	public void create(
-		SampleReferenceDto sampleRef,
-		int caseSampleCount,
-		Runnable callback,
-		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
-		SampleDto sampleDto = FacadeProvider.getSampleFacade().getSampleByUuid(sampleRef.getUuid());
-		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
-			getPathogenTestCreateComponent(sampleDto, caseSampleCount, callback, onSavedPathogenTest, false);
+	public static void showCaseCloningWithNewDiseaseDialog(
+		CaseDataDto existingCaseDto,
+		Disease disease,
+		String diseaseDetails,
+		DiseaseVariant diseaseVariant,
+		String diseaseVariantDetails) {
 
-		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreatePathogenTestResult));
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getCaption(Captions.caseCloneCaseWithNewDisease) + " " + I18nProperties.getEnumCaption(disease) + "?",
+			new Label(I18nProperties.getString(Strings.messageCloneCaseWithNewDisease)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			800,
+			confirmed -> {
+				if (confirmed) {
+					existingCaseDto.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
+					existingCaseDto.setClassificationUser(null);
+					existingCaseDto.setDisease(disease);
+					existingCaseDto.setDiseaseDetails(diseaseDetails);
+					existingCaseDto.setDiseaseVariant(diseaseVariant);
+					existingCaseDto.setDiseaseVariantDetails(diseaseVariantDetails);
+					existingCaseDto.setEpidNumber(null);
+					existingCaseDto.setReportDate(new Date());
+					CaseDataDto clonedCase = FacadeProvider.getCaseFacade().cloneCase(existingCaseDto);
+					ControllerProvider.getCaseController().navigateToCase(clonedCase.getUuid());
+				}
+			});
 	}
 
 	public CommitDiscardWrapperComponent<PathogenTestForm> getPathogenTestCreateComponent(
 		SampleDto sampleDto,
 		int caseSampleCount,
-		Runnable callback,
 		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest,
 		boolean suppressNavigateToCase) {
 		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, caseSampleCount, false);
@@ -97,11 +114,18 @@ public class PathogenTestController {
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
 				savePathogenTest(createForm.getValue(), onSavedPathogenTest, false, suppressNavigateToCase);
-				callback.run();
 				SormasUI.refreshView();
 			}
 		});
 		return editView;
+	}
+
+	public void create(SampleReferenceDto sampleRef, int caseSampleCount, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
+		SampleDto sampleDto = FacadeProvider.getSampleFacade().getSampleByUuid(sampleRef.getUuid());
+		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
+			getPathogenTestCreateComponent(sampleDto, caseSampleCount, onSavedPathogenTest, false);
+
+		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreatePathogenTestResult));
 	}
 
 	public void edit(String pathogenTestUuid, Runnable doneCallback, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
@@ -111,8 +135,8 @@ public class PathogenTestController {
 		Window popupWindow = VaadinUiUtil.createPopupWindow();
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_DELETE)) {
-			editView.addDeleteListener(() -> {
-				FacadeProvider.getPathogenTestFacade().deletePathogenTest(pathogenTestUuid);
+			editView.addDeleteWithReasonListener((deleteDetails) -> {
+				FacadeProvider.getPathogenTestFacade().deletePathogenTest(pathogenTestUuid, deleteDetails);
 				UI.getCurrent().removeWindow(popupWindow);
 				doneCallback.run();
 			}, I18nProperties.getCaption(PathogenTestDto.I18N_PREFIX));
@@ -123,31 +147,6 @@ public class PathogenTestController {
 		popupWindow.setContent(editView);
 		popupWindow.setCaption(I18nProperties.getString(Strings.headingEditPathogenTestResult));
 		UI.getCurrent().addWindow(popupWindow);
-	}
-
-	public CommitDiscardWrapperComponent<PathogenTestForm> getPathogenTestEditComponent(
-		String pathogenTestUuid,
-		Runnable doneCallback,
-		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
-
-		// get fresh data
-		PathogenTestDto pathogenTest = facade.getByUuid(pathogenTestUuid);
-		SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(pathogenTest.getSample().getUuid());
-		PathogenTestForm form = new PathogenTestForm(sample, false, 0, pathogenTest.isPseudonymized());
-		form.setValue(pathogenTest);
-
-		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_EDIT), form.getFieldGroup());
-
-		editView.addCommitListener(() -> {
-			if (!form.getFieldGroup().isModified()) {
-				savePathogenTest(form.getValue(), onSavedPathogenTest, false, false);
-				doneCallback.run();
-				SormasUI.refreshView();
-			}
-		});
-
-		return editView;
 	}
 
 	public static void showCaseUpdateWithNewDiseaseVariantDialog(
@@ -458,34 +457,36 @@ public class PathogenTestController {
 			});
 	}
 
-	public static void showCaseCloningWithNewDiseaseDialog(
-		CaseDataDto existingCaseDto,
-		Disease disease,
-		String diseaseDetails,
-		DiseaseVariant diseaseVariant,
-		String diseaseVariantDetails) {
+	public CommitDiscardWrapperComponent<PathogenTestForm> getPathogenTestEditComponent(
+		String pathogenTestUuid,
+		Runnable doneCallback,
+		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
 
-		VaadinUiUtil.showConfirmationPopup(
-			I18nProperties.getCaption(Captions.caseCloneCaseWithNewDisease) + " " + I18nProperties.getEnumCaption(disease) + "?",
-			new Label(I18nProperties.getString(Strings.messageCloneCaseWithNewDisease)),
-			I18nProperties.getString(Strings.yes),
-			I18nProperties.getString(Strings.no),
-			800,
-			confirmed -> {
-				if (confirmed) {
-					CaseDataDto clonedCase = FacadeProvider.getCaseFacade().cloneCase(existingCaseDto);
-					clonedCase.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
-					clonedCase.setClassificationUser(null);
-					clonedCase.setDisease(disease);
-					clonedCase.setDiseaseDetails(diseaseDetails);
-					clonedCase.setDiseaseVariant(diseaseVariant);
-					clonedCase.setDiseaseVariantDetails(diseaseVariantDetails);
-					clonedCase.setEpidNumber(null);
-					clonedCase.setReportDate(new Date());
-					FacadeProvider.getCaseFacade().save(clonedCase);
-					ControllerProvider.getCaseController().navigateToCase(clonedCase.getUuid());
-				}
-			});
+		// get fresh data
+		PathogenTestDto pathogenTest = facade.getByUuid(pathogenTestUuid);
+		SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(pathogenTest.getSample().getUuid());
+		PathogenTestForm form = new PathogenTestForm(sample, false, 0, pathogenTest.isPseudonymized());
+		form.setValue(pathogenTest);
+
+		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
+			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_EDIT), form.getFieldGroup());
+
+		editView.addCommitListener(() -> {
+			if (!form.getFieldGroup().isModified()) {
+				savePathogenTest(form.getValue(), onSavedPathogenTest, false, false);
+				doneCallback.run();
+				SormasUI.refreshView();
+			}
+		});
+
+		if (pathogenTest.isDeleted()) {
+			editView.getWrappedComponent().getField(PathogenTestDto.DELETION_REASON).setVisible(true);
+			if (editView.getWrappedComponent().getField(PathogenTestDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
+				editView.getWrappedComponent().getField(PathogenTestDto.OTHER_DELETION_REASON).setVisible(true);
+			}
+		}
+
+		return editView;
 	}
 
 	public void showConfirmCaseDialog(CaseDataDto caze) {

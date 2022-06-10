@@ -120,7 +120,9 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 			&& currentUser != null
 			&& currentUser.hasUserRight(UserRight.TRAVEL_ENTRY_VIEW)) {
 			TravelEntryListCriteria travelEntryListCriteria = new TravelEntryListCriteria.Builder().withPerson(getReference()).build();
-			layout.addComponent(new SideComponentLayout(new TravelEntryListComponent(travelEntryListCriteria)), TRAVEL_ENTRIES_LOC);
+			layout.addComponent(
+				new SideComponentLayout(new TravelEntryListComponent(travelEntryListCriteria, this::showUnsavedChangesPopup)),
+				TRAVEL_ENTRIES_LOC);
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
@@ -129,10 +131,12 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 			if (!FacadeProvider.getFeatureConfigurationFacade()
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 				final ImmunizationListCriteria immunizationListCriteria = new ImmunizationListCriteria.Builder(getReference()).build();
-				layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
+				layout.addComponent(
+					new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria, this::showUnsavedChangesPopup)),
+					IMMUNIZATION_LOC);
 			} else {
 				VaccinationListCriteria criteria = new VaccinationListCriteria.Builder(getReference()).build();
-				layout.addComponent(new SideComponentLayout(new VaccinationListComponent(criteria, this)), VACCINATIONS_LOC);
+				layout.addComponent(new SideComponentLayout(new VaccinationListComponent(criteria)), VACCINATIONS_LOC);
 			}
 		}
 	}

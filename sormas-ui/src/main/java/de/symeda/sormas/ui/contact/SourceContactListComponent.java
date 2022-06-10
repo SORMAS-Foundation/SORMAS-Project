@@ -76,8 +76,7 @@ public class SourceContactListComponent extends VerticalLayout {
 			Button createButton = ButtonHelper.createIconButton(
 				Captions.contactNewContact,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> view.showNavigationConfirmPopupIfDirty(
-					() -> ControllerProvider.getContactController().create(caseReference, true, SormasUI::refreshView)),
+				e -> view.showUnsavedChangesPopup(() -> ControllerProvider.getContactController().create(caseReference, true, SormasUI::refreshView)),
 				ValoTheme.BUTTON_PRIMARY);
 			componentHeader.addComponent(createButton);
 			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);

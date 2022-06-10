@@ -109,7 +109,6 @@ public class CaseListCriteriaBuilder {
 				cb.and(
 					cb.equal(resultingCase.get(Case.ID), caze.get(Case.ID)),
 					cb.isFalse(event.get(Event.DELETED)),
-					cb.isFalse(event.get(Event.ARCHIVED)),
 					cb.isFalse(eventCountRoot.get(EventParticipant.DELETED))));
 			eventCountSq.select(cb.countDistinct(event.get(Event.ID)));
 			selectionList.add(eventCountSq);
@@ -160,7 +159,7 @@ public class CaseListCriteriaBuilder {
 		if (caseCriteria != null) {
 			caseUserFilterCriteria.setIncludeCasesFromOtherJurisdictions(caseCriteria.getIncludeCasesFromOtherJurisdictions());
 		}
-		Predicate filter = caseService.createUserFilter(cb, cq, caze, caseUserFilterCriteria);
+		Predicate filter = caseService.createUserFilter(caseQueryContext, caseUserFilterCriteria);
 
 		if (caseCriteria != null) {
 			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, caseQueryContext);

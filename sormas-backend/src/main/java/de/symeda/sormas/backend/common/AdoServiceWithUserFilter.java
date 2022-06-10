@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.common;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -86,6 +87,47 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 
 		cq.select(from.get(AbstractDomainObject.ID));
 		return em.createQuery(cq).getResultList();
+	}
+
+	public List<String> getObsoleteUuidsSince(Date since) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<ADO> from = cq.from(getElementClass());
+
+		Predicate filter = getUserFilterForObsoleteUuids(cb, cq, from);
+		if (since != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(AbstractDomainObject.CHANGE_DATE), since));
+		}
+
+		Predicate contentFilter = null;
+
+		if (DeletableAdo.class.isAssignableFrom(getElementClass())) {
+			contentFilter = CriteriaBuilderHelper.or(cb, contentFilter, cb.equal(from.get(DeletableAdo.DELETED), true));
+		}
+
+		if (CoreAdo.class.isAssignableFrom(getElementClass())) {
+			contentFilter = CriteriaBuilderHelper.or(cb, contentFilter, cb.equal(from.get(CoreAdo.ARCHIVED), true));
+		}
+
+		for (Predicate additionalPredicate : getAdditionalObsoleteUuidsPredicates(since, cb, cq, from)) {
+			contentFilter = CriteriaBuilderHelper.or(cb, contentFilter, additionalPredicate);
+		}
+
+		filter = CriteriaBuilderHelper.and(cb, filter, contentFilter);
+
+		cq.where(filter);
+		cq.select(from.get(AbstractDomainObject.UUID));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	protected Predicate getUserFilterForObsoleteUuids(CriteriaBuilder cb, CriteriaQuery<String> cq, Root<ADO> from) {
+		return createUserFilter(cb, cq, from);
+	}
+
+	protected List<Predicate> getAdditionalObsoleteUuidsPredicates(Date since, CriteriaBuilder cb, CriteriaQuery<String> cq, Root<ADO> from) {
+		return Collections.emptyList();
 	}
 
 	protected String formatForLike(String textFilter) {

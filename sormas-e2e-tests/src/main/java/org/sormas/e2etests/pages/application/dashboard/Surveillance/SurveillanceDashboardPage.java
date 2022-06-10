@@ -25,8 +25,7 @@ public class SurveillanceDashboardPage {
       By.xpath("(//div[contains(@class,'v-select-optiongroup')]//span)[1]");
   public static final By CONTACTS_BUTTON =
       By.xpath("(//div[contains(@class,'v-select-optiongroup')]//span)[2]");
-  public static final By LOGOUT_BUTTON =
-      By.cssSelector("#actionLogout span.v-menubar-menuitem-caption");
+  public static final By LOGOUT_BUTTON = By.cssSelector("#actionLogout");
   public static final By COVID19_DISEASE_COUNTER =
       By.cssSelector("div.v-verticallayout-background-disease-coronavirus > div > div > div");
   public static final By CASE_COUNTER =
@@ -332,7 +331,7 @@ public class SurveillanceDashboardPage {
       By.xpath("//label[contains(text(),'Always show at least 7 entries')]");
   public static final By LEGEND_CHART_CASE_STATUS_CONFIRMED =
       By.cssSelector(
-          "g.highcharts-legend-item.highcharts-column-series.highcharts-color-undefined.highcharts-series-5 > text > tspan");
+          "g.highcharts-legend-item.highcharts-column-series.highcharts-color-undefined.highcharts-series-3 > text > tspan");
   public static final By LEGEND_CHART_CASE_STATUS_CONFIRMED_UNKNOWN_SYMPTOMS =
       By.cssSelector(
           "g.highcharts-legend-item.highcharts-column-series.highcharts-color-undefined.highcharts-series-3 > text > tspan");

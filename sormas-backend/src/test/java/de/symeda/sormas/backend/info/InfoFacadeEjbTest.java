@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.info;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import de.symeda.sormas.backend.feature.FeatureConfigurationService;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -31,8 +32,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.After;
 import org.junit.Test;
 
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -65,7 +66,7 @@ public class InfoFacadeEjbTest extends AbstractBeanTest {
 			throw new RuntimeException("Could not set custom files path", e);
 		}
 
-		UserDto admin = creator.createUser(creator.createRDCF(), UserRole.ADMIN);
+		UserDto admin = creator.createUser(creator.createRDCF(), creator.getUserRoleReference(DefaultUserRole.ADMIN));
 		loginWith(admin);
 	}
 
@@ -76,12 +77,15 @@ public class InfoFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testDataDictionaryAllowed() {
+	public void testDataProtectionDictionaryAllowed() {
 		assertThat(getInfoFacade().isGenerateDataProtectionDictionaryAllowed(), is(true));
 	}
 
 	@Test
 	public void testFieldsAddedBasedOnServerCountryForDataProtectionDictionary() throws IOException, InvalidFormatException {
+		FeatureConfigurationService featureConfigurationService = getBean(FeatureConfigurationService.class);
+		featureConfigurationService.createMissingFeatureConfigurations();
+
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "en");
 		XSSFWorkbook workbook = new XSSFWorkbook(new File(getInfoFacade().generateDataProtectionDictionary()));
 

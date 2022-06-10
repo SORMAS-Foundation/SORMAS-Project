@@ -49,4 +49,10 @@ public class PersonDirectoryPage {
       By.cssSelector("#presentCondition div");
   public static final By PERSON_DETAILED_COLUMN_HEADERS =
       By.cssSelector("thead .v-grid-column-default-header-content");
+  public static final By PERSON_RESULTS_UUID_LOCATOR_FROM_GRID =
+      By.xpath("//table/tbody/tr[1]/td[1]");
+
+  public static final By getPersonResultsUuidLocator(String uuid) {
+    return By.cssSelector(String.format("[title = '%s']", uuid));
+  }
 }

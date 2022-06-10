@@ -19,7 +19,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -44,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.DiseaseHelper;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -110,6 +110,7 @@ import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFa
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
+import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -215,6 +216,62 @@ public class SampleFacadeEjb implements SampleFacade {
 		return sampleService.getByContactUuids(contactUuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
+	public static SampleDto toDto(Sample source) {
+
+		if (source == null) {
+			return null;
+		}
+
+		SampleDto target = new SampleDto();
+		DtoHelper.fillDto(target, source);
+
+		target.setAssociatedCase(CaseFacadeEjb.toReferenceDto(source.getAssociatedCase()));
+		target.setAssociatedContact(ContactFacadeEjb.toReferenceDto(source.getAssociatedContact()));
+		target.setAssociatedEventParticipant(EventParticipantFacadeEjb.toReferenceDto(source.getAssociatedEventParticipant()));
+		target.setLabSampleID(source.getLabSampleID());
+		target.setFieldSampleID(source.getFieldSampleID());
+		target.setSampleDateTime(source.getSampleDateTime());
+		target.setReportDateTime(source.getReportDateTime());
+		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
+		target.setSampleMaterial(source.getSampleMaterial());
+		target.setSampleMaterialText(source.getSampleMaterialText());
+		target.setSamplePurpose(source.getSamplePurpose());
+		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
+		target.setLabDetails(source.getLabDetails());
+		target.setShipmentDate(source.getShipmentDate());
+		target.setShipmentDetails(source.getShipmentDetails());
+		target.setReceivedDate(source.getReceivedDate());
+		target.setSpecimenCondition(source.getSpecimenCondition());
+		target.setNoTestPossibleReason(source.getNoTestPossibleReason());
+		target.setComment(source.getComment());
+		target.setSampleSource(source.getSampleSource());
+		target.setReferredTo(SampleFacadeEjb.toReferenceDto(source.getReferredTo()));
+		target.setShipped(source.isShipped());
+		target.setReceived(source.isReceived());
+		target.setPathogenTestingRequested(source.getPathogenTestingRequested());
+		target.setAdditionalTestingRequested(source.getAdditionalTestingRequested());
+		target.setRequestedPathogenTests(source.getRequestedPathogenTests());
+		target.setRequestedAdditionalTests(source.getRequestedAdditionalTests());
+		target.setPathogenTestResult(source.getPathogenTestResult());
+		target.setRequestedOtherPathogenTests(source.getRequestedOtherPathogenTests());
+		target.setRequestedOtherAdditionalTests(source.getRequestedOtherAdditionalTests());
+		target.setSamplingReason(source.getSamplingReason());
+		target.setSamplingReasonDetails(source.getSamplingReasonDetails());
+
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+
+		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
+		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
+		return target;
+	}
+
 	@Override
 	public List<SampleDto> getSimilarSamples(SampleSimilarityCriteria criteria) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -222,13 +279,10 @@ public class SampleFacadeEjb implements SampleFacade {
 		final Root<Sample> root = cq.from(Sample.class);
 		cq.distinct(true);
 
-		SampleJoins joins = new SampleJoins(root);
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, root);
 
-		SampleCriteria sampleCriteria = new SampleCriteria();
-		sampleCriteria.caze(criteria.getCaze()).contact(criteria.getContact()).eventParticipant(criteria.getEventParticipant());
-
-		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
-		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(sampleCriteria, cb, joins));
+		Predicate filter = sampleService.createUserFilter(sampleQueryContext, criteria.getSampleCriteria());
+		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(criteria.getSampleCriteria(), sampleQueryContext));
 
 		Predicate similarityFilter = null;
 		if (criteria.getLabSampleId() != null) {
@@ -257,30 +311,6 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		List<Sample> samples = em.createQuery(cq).getResultList();
 
-		if (samples.size() == 0 && (sampleDateTime == null || sampleMaterial == null)) {
-			return getByCriteria(sampleCriteria);
-		}
-
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return samples.stream().map(s -> convertToDto(s, pseudonymizer)).collect(Collectors.toList());
-	}
-
-	private List<SampleDto> getByCriteria(SampleCriteria criteria) {
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
-		final Root<Sample> root = cq.from(Sample.class);
-
-		SampleJoins joins = new SampleJoins(root);
-
-		Predicate filter = sampleService.createUserFilter(cq, cb, joins, criteria);
-		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(criteria, cb, joins));
-
-		if (filter != null) {
-			cq.where(filter);
-		}
-
-		List<Sample> samples = em.createQuery(cq).getResultList();
-
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return samples.stream().map(s -> convertToDto(s, pseudonymizer)).collect(Collectors.toList());
 	}
@@ -299,6 +329,26 @@ public class SampleFacadeEjb implements SampleFacade {
 			.collect(Collectors.toList());
 	}
 
+	public List<SampleDto> getSamplesByCriteria(SampleCriteria criteria) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
+		final Root<Sample> root = cq.from(Sample.class);
+
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, root);
+
+		Predicate filter = sampleService.createUserFilter(sampleQueryContext, criteria);
+		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(criteria, sampleQueryContext));
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		List<Sample> samples = em.createQuery(cq).getResultList();
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return samples.stream().map(s -> convertToDto(s, pseudonymizer)).collect(Collectors.toList());
+	}
+
 	@Override
 	public List<SampleDto> getByLabSampleId(String labSampleId) {
 		if (labSampleId == null) {
@@ -308,10 +358,11 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
 		final Root<Sample> sampleRoot = cq.from(Sample.class);
+		final SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sampleRoot);
 
 		Predicate filter = CriteriaBuilderHelper.and(
 			cb,
-			sampleService.createUserFilter(cb, cq, sampleRoot),
+			sampleService.createUserFilter(sampleQueryContext, null),
 			sampleService.createDefaultFilter(cb, sampleRoot),
 			cb.equal(sampleRoot.get(Sample.LAB_SAMPLE_ID), labSampleId));
 		cq.where(filter);
@@ -321,6 +372,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
+
 		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
@@ -452,6 +504,29 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 	}
 
+	@Override
+	public List<String> getObsoleteUuidsSince(Date since) {
+
+		User user = userService.getCurrentUser();
+		if (user == null) {
+			return Collections.emptyList();
+		}
+
+		return sampleService.getObsoleteUuidsSince(since);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._SAMPLE_EXPORT)
+	public List<SampleExportDto> getExportList(SampleCriteria criteria, Collection<String> selectedRows, int first, int max) {
+		return getExportList(criteria, null, selectedRows, first, max);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._SAMPLE_EXPORT)
+	public List<SampleExportDto> getExportList(CaseCriteria criteria, Collection<String> selectedRows, int first, int max) {
+		return getExportList(null, criteria, selectedRows, first, max);
+	}
+
 	private List<SampleExportDto> getExportList(
 		SampleCriteria sampleCriteria,
 		CaseCriteria caseCriteria,
@@ -569,10 +644,10 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		cq.multiselect(selections);
 
-		Predicate filter = sampleService.createUserFilter(cb, cq, sampleRoot);
+		Predicate filter = sampleService.createUserFilter(sampleQueryContext, sampleCriteria);
 
 		if (sampleCriteria != null) {
-			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
+			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, sampleQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 			filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, sampleRoot.get(AbstractDomainObject.UUID));
 		} else if (caseCriteria != null) {
@@ -655,15 +730,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._SAMPLE_EXPORT)
-	public List<SampleExportDto> getExportList(SampleCriteria criteria, Collection<String> selectedRows, int first, int max) {
-		return getExportList(criteria, null, selectedRows, first, max);
-	}
-
-	@Override
-	@RolesAllowed(UserRight._SAMPLE_EXPORT)
-	public List<SampleExportDto> getExportList(CaseCriteria criteria, Collection<String> selectedRows, int first, int max) {
-		return getExportList(null, criteria, selectedRows, first, max);
+	public SampleReferenceDto getReferredFrom(String sampleUuid) {
+		return toReferenceDto(sampleService.getReferredFrom(sampleUuid));
 	}
 
 	@Override
@@ -673,11 +741,10 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		final Root<Sample> root = cq.from(Sample.class);
 
-		SampleJoins joins = new SampleJoins(root);
-
-		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, root);
+		Predicate filter = sampleService.createUserFilter(sampleQueryContext, sampleCriteria);
 		if (sampleCriteria != null) {
-			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
+			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, sampleQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -690,94 +757,37 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public SampleReferenceDto getReferredFrom(String sampleUuid) {
-		return toReferenceDto(sampleService.getReferredFrom(sampleUuid));
-	}
-
-	@Override
 	@RolesAllowed(UserRight._SAMPLE_DELETE)
-	public void deleteSample(SampleReferenceDto sampleRef) {
+	public void deleteSample(SampleReferenceDto sampleRef, DeletionDetails deletionDetails) {
 		Sample sample = sampleService.getByReferenceDto(sampleRef);
-		sampleService.delete(sample);
+		sampleService.delete(sample, deletionDetails);
 
 		handleAssotiatedObjectChanges(sample, true);
 	}
 
 	@Override
 	@RolesAllowed(UserRight._SAMPLE_DELETE)
-	public void deleteAllSamples(List<String> sampleUuids) {
+	public void deleteAllSamples(List<String> sampleUuids, DeletionDetails deletionDetails) {
 		long startTime = DateHelper.startTime();
 
-		IterableHelper.executeBatched(sampleUuids, DELETED_BATCH_SIZE, batchedSampleUuids -> sampleService.deleteAll(batchedSampleUuids));
+		IterableHelper
+			.executeBatched(sampleUuids, DELETED_BATCH_SIZE, batchedSampleUuids -> sampleService.deleteAll(batchedSampleUuids, deletionDetails));
 		logger.debug("deleteAllSamples(sampleUuids) finished. samplesCount = {}, {}ms", sampleUuids.size(), DateHelper.durationMillies(startTime));
 	}
 
 	@RolesAllowed(UserRight._SAMPLE_DELETE)
-	public List<String> deleteSamples(List<String> sampleUuids) {
+	public List<String> deleteSamples(List<String> sampleUuids, DeletionDetails deletionDetails) {
 		List<String> deletedSampleUuids = new ArrayList<>();
 		List<Sample> samplesToBeDeleted = sampleService.getByUuids(sampleUuids);
 		if (samplesToBeDeleted != null) {
 			samplesToBeDeleted.forEach(sampleToBeDeleted -> {
 				if (!sampleToBeDeleted.isDeleted()) {
-					sampleService.delete(sampleToBeDeleted);
+					sampleService.delete(sampleToBeDeleted, deletionDetails);
 					deletedSampleUuids.add(sampleToBeDeleted.getUuid());
 				}
 			});
 		}
 		return deletedSampleUuids;
-	}
-
-	@Override
-	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds) {
-		return sampleService.getNewTestResultCountByResultType(caseIds);
-	}
-
-	public Sample fromDto(@NotNull SampleDto source, boolean checkChangeDate) {
-
-		Sample target = DtoHelper.fillOrBuildEntity(source, sampleService.getByUuid(source.getUuid()), Sample::new, checkChangeDate);
-
-		target.setAssociatedCase(caseService.getByReferenceDto(source.getAssociatedCase()));
-		target.setAssociatedContact(contactService.getByReferenceDto(source.getAssociatedContact()));
-		target.setAssociatedEventParticipant(eventParticipantService.getByReferenceDto(source.getAssociatedEventParticipant()));
-		target.setLabSampleID(source.getLabSampleID());
-		target.setFieldSampleID(source.getFieldSampleID());
-		target.setSampleDateTime(source.getSampleDateTime());
-		target.setReportDateTime(source.getReportDateTime());
-		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
-		target.setSampleMaterial(source.getSampleMaterial());
-		target.setSampleMaterialText(source.getSampleMaterialText());
-		target.setSamplePurpose(source.getSamplePurpose());
-		target.setLab(facilityService.getByReferenceDto(source.getLab()));
-		target.setLabDetails(source.getLabDetails());
-		target.setShipmentDate(source.getShipmentDate());
-		target.setShipmentDetails(source.getShipmentDetails());
-		target.setReceivedDate(source.getReceivedDate());
-		target.setSpecimenCondition(source.getSpecimenCondition());
-		target.setNoTestPossibleReason(source.getNoTestPossibleReason());
-		target.setComment(source.getComment());
-		target.setSampleSource(source.getSampleSource());
-		target.setReferredTo(sampleService.getByReferenceDto(source.getReferredTo()));
-		target.setShipped(source.isShipped());
-		target.setReceived(source.isReceived());
-		target.setPathogenTestingRequested(source.getPathogenTestingRequested());
-		target.setAdditionalTestingRequested(source.getAdditionalTestingRequested());
-		target.setRequestedPathogenTests(source.getRequestedPathogenTests());
-		target.setRequestedAdditionalTests(source.getRequestedAdditionalTests());
-		target.setPathogenTestResult(source.getPathogenTestResult());
-		target.setRequestedOtherPathogenTests(source.getRequestedOtherPathogenTests());
-		target.setRequestedOtherAdditionalTests(source.getRequestedOtherAdditionalTests());
-		target.setSamplingReason(source.getSamplingReason());
-		target.setSamplingReasonDetails(source.getSamplingReasonDetails());
-
-		target.setReportLat(source.getReportLat());
-		target.setReportLon(source.getReportLon());
-		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
-
-		if (source.getSormasToSormasOriginInfo() != null) {
-			target.setSormasToSormasOriginInfo(originInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
-		}
-
-		return target;
 	}
 
 	public SampleDto convertToDto(Sample source, Pseudonymizer pseudonymizer) {
@@ -853,27 +863,22 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 	}
 
-	public static SampleDto toDto(Sample source) {
+	public Sample fromDto(@NotNull SampleDto source, boolean checkChangeDate) {
 
-		if (source == null) {
-			return null;
-		}
+		Sample target = DtoHelper.fillOrBuildEntity(source, sampleService.getByUuid(source.getUuid()), Sample::new, checkChangeDate);
 
-		SampleDto target = new SampleDto();
-		DtoHelper.fillDto(target, source);
-
-		target.setAssociatedCase(CaseFacadeEjb.toReferenceDto(source.getAssociatedCase()));
-		target.setAssociatedContact(ContactFacadeEjb.toReferenceDto(source.getAssociatedContact()));
-		target.setAssociatedEventParticipant(EventParticipantFacadeEjb.toReferenceDto(source.getAssociatedEventParticipant()));
+		target.setAssociatedCase(caseService.getByReferenceDto(source.getAssociatedCase()));
+		target.setAssociatedContact(contactService.getByReferenceDto(source.getAssociatedContact()));
+		target.setAssociatedEventParticipant(eventParticipantService.getByReferenceDto(source.getAssociatedEventParticipant()));
 		target.setLabSampleID(source.getLabSampleID());
 		target.setFieldSampleID(source.getFieldSampleID());
 		target.setSampleDateTime(source.getSampleDateTime());
 		target.setReportDateTime(source.getReportDateTime());
-		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
+		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setSampleMaterial(source.getSampleMaterial());
 		target.setSampleMaterialText(source.getSampleMaterialText());
 		target.setSamplePurpose(source.getSamplePurpose());
-		target.setLab(FacilityFacadeEjb.toReferenceDto(source.getLab()));
+		target.setLab(facilityService.getByReferenceDto(source.getLab()));
 		target.setLabDetails(source.getLabDetails());
 		target.setShipmentDate(source.getShipmentDate());
 		target.setShipmentDetails(source.getShipmentDetails());
@@ -882,7 +887,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setNoTestPossibleReason(source.getNoTestPossibleReason());
 		target.setComment(source.getComment());
 		target.setSampleSource(source.getSampleSource());
-		target.setReferredTo(SampleFacadeEjb.toReferenceDto(source.getReferredTo()));
+		target.setReferredTo(sampleService.getByReferenceDto(source.getReferredTo()));
 		target.setShipped(source.isShipped());
 		target.setReceived(source.isReceived());
 		target.setPathogenTestingRequested(source.getPathogenTestingRequested());
@@ -899,8 +904,13 @@ public class SampleFacadeEjb implements SampleFacade {
 		target.setReportLon(source.getReportLon());
 		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
 
-		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
-		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
+		if (source.getSormasToSormasOriginInfo() != null) {
+			target.setSormasToSormasOriginInfo(originInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
+		}
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
 	}
@@ -1005,7 +1015,9 @@ public class SampleFacadeEjb implements SampleFacade {
 		return sampleService.isSampleEditAllowed(sample);
 	}
 
-	@RolesAllowed(UserRight._SAMPLE_CREATE)
+	@RolesAllowed({
+		UserRight._SAMPLE_CREATE,
+		UserRight._CASE_CREATE })
 	public void cloneSampleForCase(Sample sample, Case caze) {
 		SampleDto newSample = SampleDto.build(sample.getReportingUser().toReference(), caze.toReference());
 		DtoHelper.copyDtoValues(newSample, SampleFacadeEjb.toDto(sample), true);

@@ -29,6 +29,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.ui.utils.DeletableUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -69,7 +71,6 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.HtmlHelper;
@@ -755,6 +756,13 @@ public class EventController {
 			editView.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel(automaticDeletionInfoDto));
 		}
 
+		if (event.isDeleted()) {
+			editView.getWrappedComponent().getField(EventDto.DELETION_REASON).setVisible(true);
+			if (editView.getWrappedComponent().getField(EventDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
+				editView.getWrappedComponent().getField(EventDto.OTHER_DELETION_REASON).setVisible(true);
+			}
+		}
+
 		editView.addCommitListener(() -> {
 			if (!eventEditForm.getFieldGroup().isModified()) {
 				EventDto eventDto = eventEditForm.getValue();
@@ -786,10 +794,10 @@ public class EventController {
 		});
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
-			editView.addDeleteListener(() -> {
+			editView.addDeleteWithReasonListener((deleteDetails) -> {
 				if (!existEventParticipantsLinkedToEvent(event)) {
 					try {
-						FacadeProvider.getEventFacade().delete(event.getUuid());
+						FacadeProvider.getEventFacade().delete(event.getUuid(), deleteDetails);
 					} catch (ExternalSurveillanceToolException e) {
 						Notification.show(
 							String.format(
@@ -905,15 +913,7 @@ public class EventController {
 	}
 
 	public EventDto createNewEvent(Disease disease) {
-		EventDto event = EventDto.build();
-
-		event.getEventLocation().setCountry(FacadeProvider.getCountryFacade().getServerCountry());
-		event.getEventLocation().setRegion(UserProvider.getCurrent().getUser().getRegion());
-		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
-		event.setReportingUser(userReference);
-		event.setDisease(disease);
-
-		return event;
+		return EventDto.build(FacadeProvider.getCountryFacade().getServerCountry(), UserProvider.getCurrent().getUser(), disease);
 	}
 
 	public void deleteAllSelectedItems(Collection<EventIndexDto> selectedRows, Runnable callback) {
@@ -925,8 +925,9 @@ public class EventController {
 				Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil
-				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEvents), selectedRows.size()), () -> {
+			DeletableUtils.showDeleteWithReasonPopup(
+				String.format(I18nProperties.getString(Strings.confirmationDeleteEvents), selectedRows.size()),
+				(deleteDetails) -> {
 					StringBuilder nonDeletableEventsWithParticipants = new StringBuilder();
 					int countNotDeletedEventsWithParticipants = 0;
 					StringBuilder nonDeletableEventsFromExternalTool = new StringBuilder();
@@ -938,7 +939,7 @@ public class EventController {
 							nonDeletableEventsWithParticipants.append(selectedRow.getUuid(), 0, 6).append(", ");
 						} else {
 							try {
-								FacadeProvider.getEventFacade().delete(eventDto.getUuid());
+							FacadeProvider.getEventFacade().delete(eventDto.getUuid(), deleteDetails);
 							} catch (ExternalSurveillanceToolException e) {
 								countNotDeletedEventsFromExternalTool = countNotDeletedEventsFromExternalTool + 1;
 								nonDeletableEventsFromExternalTool.append(selectedRow.getUuid(), 0, 6).append(", ");

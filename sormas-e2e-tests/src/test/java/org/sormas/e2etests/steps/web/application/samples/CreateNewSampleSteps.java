@@ -18,6 +18,14 @@
 
 package org.sormas.e2etests.steps.web.application.samples;
 
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_DATE_AND_TIME_OF_RESULT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_DATE_OF_COLLECTED_SAMPLE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_LABORATORY;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_NUMBER_OF_TESTS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_TEST_TYPE;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_COLUMN_HEADERS;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_TABLE_DATA;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_TABLE_ROW;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.*;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.*;
 
@@ -26,11 +34,17 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Sample;
 import org.sormas.e2etests.entities.pojo.web.SampleAdditionalTest;
@@ -38,6 +52,8 @@ import org.sormas.e2etests.entities.services.SampleAdditionalTestService;
 import org.sormas.e2etests.entities.services.SampleService;
 import org.sormas.e2etests.enums.PathogenTestResults;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.asserts.SoftAssert;
 
 public class CreateNewSampleSteps implements En {
@@ -50,6 +66,7 @@ public class CreateNewSampleSteps implements En {
   public static String sampleId;
   private final WebDriverHelpers webDriverHelpers;
   private final Faker faker;
+  private final BaseSteps baseSteps;
 
   @Inject
   public CreateNewSampleSteps(
@@ -57,9 +74,12 @@ public class CreateNewSampleSteps implements En {
       SampleService sampleService,
       SampleAdditionalTestService sampleAdditionalTestService,
       Faker faker,
-      SoftAssert softly) {
+      SoftAssert softly,
+      BaseSteps baseSteps,
+      ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
     this.faker = faker;
+    this.baseSteps = baseSteps;
 
     When(
         "^I create a new Sample with specific data and save$",
@@ -111,6 +131,15 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
+        "I check if value {string} is unavailable in Type of Sample combobox on Create new Sample page",
+        (String sampleMaterial) -> {
+          softly.assertFalse(
+              webDriverHelpers.checkIfElementExistsInCombobox(
+                  SAMPLE_TYPE_COMBOBOX, sampleMaterial));
+          softly.assertAll();
+        });
+
+    When(
         "I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup",
         () -> {
           selectTypeOfTest("Antigen-Nachweistest");
@@ -159,7 +188,7 @@ public class CreateNewSampleSteps implements En {
         "I fill all fields from Pathogen test for COVID-19 disease result popup and save",
         () -> {
           sampleTestResult = sampleService.buildGeneratedSampleTestResultForCovid();
-          fillReportDate(sampleTestResult.getReportDate(), Locale.ENGLISH);
+          //    fillReportDate(sampleTestResult.getReportDate(), Locale.ENGLISH);
           selectTypeOfTest(sampleTestResult.getTypeOfTest());
           selectTestedDisease(sampleTestResult.getTestedDisease());
           selectPathogenLaboratory(sampleTestResult.getLaboratory());
@@ -197,7 +226,7 @@ public class CreateNewSampleSteps implements En {
         "^I complete all fields from Pathogen test result popup and save$",
         () -> {
           sampleTestResult = sampleService.buildPathogenTestResult();
-          fillReportDate(sampleTestResult.getReportDate(), Locale.ENGLISH);
+          //    fillReportDate(sampleTestResult.getReportDate(), Locale.ENGLISH);
           selectTypeOfTest(sampleTestResult.getTypeOfTest());
           selectTestedDisease(sampleTestResult.getTestedDisease());
           selectPathogenLaboratory(sampleTestResult.getLaboratory());
@@ -249,7 +278,6 @@ public class CreateNewSampleSteps implements En {
     When(
         "I check if Pathogen test result in Samples is displayed correctly and save",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(EDIT_PATHOGEN_TEST_BUTTON);
           final Sample actualSampleTestResult = collectPathogenTestResultsData();
           ComparisonHelper.compareEqualFieldsOfEntities(
@@ -258,7 +286,6 @@ public class CreateNewSampleSteps implements En {
               List.of(
                   "laboratory",
                   "sampleTestResults",
-                  "reportDate",
                   "typeOfTest",
                   "testedDisease",
                   "dateOfResult",
@@ -293,6 +320,13 @@ public class CreateNewSampleSteps implements En {
         "I complete all fields from Pathogen test result popup for PCR RT PCR Value Detection test type and save",
         () -> {
           simplePathogenBuilderResult("PCR / RT-PCR");
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I complete all fields from Pathogen test result popup for PCR RT PCR Value Detection test type for DE version and save",
+        () -> {
+          buildPathogenTestDE("Nukleins\u00E4ure-Nachweis (z.B. PCR)");
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
         });
 
@@ -333,7 +367,77 @@ public class CreateNewSampleSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EDIT_TEST_RESULTS_BUTTON);
           final Sample actualSampleTestResult = collectPathogenTestResultsData();
-          ComparisonHelper.compareEqualEntities(sampleTestResult, actualSampleTestResult);
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              sampleTestResult,
+              actualSampleTestResult,
+              List.of(
+                  "typeOfTest",
+                  "testedDisease",
+                  "laboratory",
+                  "sampleTestResults",
+                  "dateOfResult",
+                  "timeOfResult",
+                  "resultVerified",
+                  "testResultsComment"));
+        });
+
+    When(
+        "^I check if sample card is correctly displayed in case edit tab for DE version$",
+        () -> {
+          final Sample actualSampleTestResult = collectCaseCardSampleDataDE();
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              sampleTestResult,
+              actualSampleTestResult,
+              List.of("typeOfTest", "dateOfResult", "timeOfResult"));
+          softly.assertEquals(
+              apiState.getCreatedSample().getLab().getCaption(),
+              actualSampleTestResult.getLaboratory(),
+              "Labs are not equal");
+          softly.assertEquals(getNumberOfTests(), "1", "Number of tests are not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "^I check if pathogen test card is correctly displayed for DE version$",
+        () -> {
+          final Sample actualSampleTestResult = collectPathogenCardDataDE();
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              sampleTestResult,
+              actualSampleTestResult,
+              List.of("typeOfTest", "dateOfResult", "commentsOnSample", "sampleTestResults"));
+        });
+
+    When(
+        "I check if created sample is correctly displayed in samples list",
+        () -> {
+          Map<String, String> detailedSampleTableRow = getTableRowsData().get(0);
+          softly.assertEquals(
+              detailedSampleTableRow.get(SampleTableColumnsHeaders.LABORATORY.toStringDE()),
+              apiState.getCreatedSample().getLab().getCaption(),
+              "Laboratories are not equal");
+          softly.assertEquals(
+              detailedSampleTableRow.get(SampleTableColumnsHeaders.DISEASE.toStringDE()),
+              sampleTestResult.getTestedDisease(),
+              "Diseases are not equal");
+          softly.assertEquals(
+              detailedSampleTableRow.get(SampleTableColumnsHeaders.ASSOCIATED_CASE.toStringDE()),
+              apiState.getCreatedCase().getPerson().getFirstName()
+                  + " "
+                  + apiState.getCreatedCase().getPerson().getLastName().toUpperCase()
+                  + " ("
+                  + apiState.getCreatedCase().getUuid().substring(0, 6).toUpperCase()
+                  + ")",
+              "Persons data are not equal");
+          softly.assertEquals(
+              detailedSampleTableRow.get(
+                  SampleTableColumnsHeaders.LATEST_PATHOGEN_TEST.toStringDE()),
+              sampleTestResult.getTypeOfTest(),
+              "Type of tests are not equal");
+          softly.assertEquals(
+              detailedSampleTableRow.get(SampleTableColumnsHeaders.NUMBER_OF_TESTS.toStringDE()),
+              "1",
+              "Number of tests are not equal");
+          softly.assertAll();
         });
 
     When(
@@ -356,7 +460,6 @@ public class CreateNewSampleSteps implements En {
     When(
         "I confirm the Create case from contact with positive test result",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });
@@ -375,6 +478,14 @@ public class CreateNewSampleSteps implements En {
               "Case creation confirmation popup message is not correct");
           softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
+        });
+
+    When(
+        "I check if default disease value for new Pathogen test is set for ([^\"]*)",
+        (String disease) -> {
+          String testedDisease = webDriverHelpers.getValueFromCombobox(TESTED_DISEASE_COMBOBOX);
+          softly.assertEquals(disease, testedDisease, "Diseases are not equal");
+          softly.assertAll();
         });
   }
 
@@ -455,13 +566,13 @@ public class CreateNewSampleSteps implements En {
   }
 
   private void fillReportDate(LocalDate dateOfCollection, Locale locale) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.M.yyyy");
-    if (locale.equals(Locale.GERMAN))
-      webDriverHelpers.clearAndFillInWebElement(
-          DATE_TEST_REPORT, formatter.format(dateOfCollection));
-    else
-      webDriverHelpers.clearAndFillInWebElement(
-          DATE_TEST_REPORT, DATE_FORMATTER.format(dateOfCollection));
+    //    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.M.yyyy");
+    //    if (locale.equals(Locale.GERMAN))
+    //      webDriverHelpers.clearAndFillInWebElement(
+    //          DATE_TEST_REPORT, formatter.format(dateOfCollection));
+    //    else
+    //      webDriverHelpers.clearAndFillInWebElement(
+    //          DATE_TEST_REPORT, DATE_FORMATTER.format(dateOfCollection));
   }
 
   private void selectTypeOfTest(String typeOfTest) {
@@ -795,10 +906,65 @@ public class CreateNewSampleSteps implements En {
     return webDriverHelpers.getValueFromWebElement(OTHER_TESTS_INPUT);
   }
 
+  private String getTypeOfTestCard() {
+    return webDriverHelpers.getTextFromWebElement(PATHOGEN_CARD_TYPE_OF_TEST);
+  }
+
+  private String getTestResultsCommentsCard() {
+    return webDriverHelpers.getTextFromWebElement(PATHOGEN_CARD_TEST_RESULT_COMMENT);
+  }
+
+  private String getTestedDiseaseCard() {
+    return webDriverHelpers.getTextFromWebElement(PATHOGEN_CARD_DISEASE);
+  }
+
+  private LocalDate getDateOfResultCardDE() {
+    String[] spl =
+        webDriverHelpers.getTextFromWebElement(PATHOGEN_CARD_DATE_OF_RESULT).split("\\s+");
+    LocalDate data = LocalDate.parse(spl[0], DATE_FORMATTER_DE);
+    return data;
+  }
+
+  private String getSampleTestResultCard() {
+    return webDriverHelpers.getTextFromWebElement(PATHOGEN_CARD_TEST_RESULT);
+  }
+
+  private LocalDate getDateOfCollectionCaseCardDE() {
+    String[] spl =
+        webDriverHelpers.getTextFromWebElement(SAMPLES_CARD_DATE_OF_COLLECTED_SAMPLE).split("\\s+");
+    LocalDate data = LocalDate.parse(spl[1], DATE_FORMATTER_DE);
+    return data;
+  }
+
+  private String getLaboratoryCaseCard() {
+    return webDriverHelpers.getTextFromWebElement(SAMPLES_CARD_LABORATORY);
+  }
+
+  private String getNumberOfTests() {
+    String spl[] =
+        webDriverHelpers.getTextFromWebElement(SAMPLES_CARD_NUMBER_OF_TESTS).split("\\s+");
+    return spl[3];
+  }
+
+  private LocalDate getDateOfResultCaseCardDE() {
+    String spl[] =
+        webDriverHelpers.getTextFromWebElement(SAMPLES_CARD_DATE_AND_TIME_OF_RESULT).split("\\s+");
+    return LocalDate.parse(spl[5], DATE_FORMATTER_DE);
+  }
+
+  private LocalTime getTimeOfResultCaseCardDE() {
+    String spl[] =
+        webDriverHelpers.getTextFromWebElement(SAMPLES_CARD_DATE_AND_TIME_OF_RESULT).split("\\s+");
+    return LocalTime.parse(spl[6], DateTimeFormatter.ofPattern("HH:mm").localizedBy(Locale.GERMAN));
+  }
+
+  private String getTypeOfTestCaseCard() {
+    return webDriverHelpers.getTextFromWebElement(SAMPLES_CARD_TEST_TYPE);
+  }
+
   private Sample collectPathogenTestResultsData() {
     return Sample.builder()
         .sampleTestResults(getPathogenPopupTestResult())
-        .reportDate(getReportDate(Locale.ENGLISH))
         .typeOfTest(getTypeOfTest())
         .testedDisease(getTestedDisease())
         .dateOfResult(getDateOfResult(Locale.ENGLISH))
@@ -806,6 +972,26 @@ public class CreateNewSampleSteps implements En {
         .laboratory(getPathogenPopupLaboratory())
         .resultVerifiedByLabSupervisor(getResultVerifiedByLabSupervisor())
         .testResultsComment(getTestResultComment())
+        .build();
+  }
+
+  private Sample collectPathogenCardDataDE() {
+    return Sample.builder()
+        .typeOfTest(getTypeOfTestCard())
+        .testResultsComment(getTestResultsCommentsCard())
+        .testedDisease(getTestedDiseaseCard())
+        .dateOfResult(getDateOfResultCardDE())
+        .sampleTestResults(getSampleTestResultCard())
+        .build();
+  }
+
+  private Sample collectCaseCardSampleDataDE() {
+    return Sample.builder()
+        .dateOfCollection(getDateOfCollectionCaseCardDE())
+        .laboratory(getLaboratoryCaseCard())
+        .dateOfResult(getDateOfResultCaseCardDE())
+        .timeOfResult(getTimeOfResultCaseCardDE())
+        .typeOfTest(getTypeOfTestCaseCard())
         .build();
   }
 
@@ -854,7 +1040,7 @@ public class CreateNewSampleSteps implements En {
   private Sample simplePathogenBuilderResult(String testType) {
     SampleService sampleService = new SampleService(faker);
     sampleTestResult = sampleService.buildPathogenTestResultType(testType);
-    fillReportDate(sampleTestResult.getReportDate(), Locale.ENGLISH);
+    // fillReportDate(sampleTestResult.getReportDate(), Locale.ENGLISH);
     selectTypeOfTest(sampleTestResult.getTypeOfTest());
     selectTestedDisease(sampleTestResult.getTestedDisease());
     selectPathogenLaboratory(sampleTestResult.getLaboratory());
@@ -871,7 +1057,7 @@ public class CreateNewSampleSteps implements En {
   private Sample simplePathogenBuilderVerifiedResult(String testType) {
     SampleService sampleService = new SampleService(faker);
     sampleTestResult = sampleService.buildPathogenTestResultTypeVerified(testType);
-    fillReportDate(sampleTestResult.getReportDate(), Locale.ENGLISH);
+    // fillReportDate(sampleTestResult.getReportDate(), Locale.ENGLISH);
     selectTypeOfTest(sampleTestResult.getTypeOfTest());
     selectTestedDisease(sampleTestResult.getTestedDisease());
     selectPathogenLaboratory(sampleTestResult.getLaboratory());
@@ -902,5 +1088,53 @@ public class CreateNewSampleSteps implements En {
         RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
     fillTestResultsComment(sampleTestResult.getTestResultsComment());
     return sampleTestResult;
+  }
+
+  private List<Map<String, String>> getTableRowsData() {
+    Map<String, Integer> headers = extractColumnHeadersHashMap();
+    List<WebElement> tableRows = getTableRows();
+    List<HashMap<Integer, String>> tableDataList = new ArrayList<>();
+    tableRows.forEach(
+        table -> {
+          HashMap<Integer, String> indexWithData = new HashMap<>();
+          AtomicInteger atomicInt = new AtomicInteger();
+          List<WebElement> tableData = table.findElements(EVENT_ACTIONS_TABLE_DATA);
+          tableData.forEach(
+              dataText -> {
+                webDriverHelpers.scrollToElementUntilIsVisible(dataText);
+                indexWithData.put(atomicInt.getAndIncrement(), dataText.getText());
+              });
+          tableDataList.add(indexWithData);
+        });
+    List<Map<String, String>> tableObjects = new ArrayList<>();
+    tableDataList.forEach(
+        row -> {
+          ConcurrentHashMap<String, String> objects = new ConcurrentHashMap<>();
+          headers.forEach((headerText, index) -> objects.put(headerText, row.get(index)));
+          tableObjects.add(objects);
+        });
+    return tableObjects;
+  }
+
+  private List<WebElement> getTableRows() {
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EVENT_ACTIONS_COLUMN_HEADERS);
+    return baseSteps.getDriver().findElements(EVENT_ACTIONS_TABLE_ROW);
+  }
+
+  private Map<String, Integer> extractColumnHeadersHashMap() {
+    AtomicInteger atomicInt = new AtomicInteger();
+    HashMap<String, Integer> headerHashmap = new HashMap<>();
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EVENT_ACTIONS_COLUMN_HEADERS);
+    webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(EVENT_ACTIONS_COLUMN_HEADERS);
+    webDriverHelpers.scrollToElementUntilIsVisible(EVENT_ACTIONS_COLUMN_HEADERS);
+    baseSteps
+        .getDriver()
+        .findElements(EVENT_ACTIONS_COLUMN_HEADERS)
+        .forEach(
+            webElement -> {
+              webDriverHelpers.scrollToElementUntilIsVisible(webElement);
+              headerHashmap.put(webElement.getText(), atomicInt.getAndIncrement());
+            });
+    return headerHashmap;
   }
 }
