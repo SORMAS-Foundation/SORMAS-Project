@@ -65,7 +65,6 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 	private String assigneeUserLike;
 	private String creatorUserLike;
 	private TravelEntryReferenceDto travelEntry;
-
 	private boolean excludeLimitedSyncRestrictions;
 
 	public TaskStatus getTaskStatus() {
@@ -326,6 +325,11 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 		return this;
 	}
 
+	/**
+	 * Ignore user filter restrictions that would otherwise be applied by the limited synchronization feature.
+	 * Necessary e.g. when retrieving UUIDs of tasks related to cases that are supposed to be removed from the
+	 * mobile app, because otherwise the user filter would exclude those tasks.
+	 */
 	@IgnoreForUrl
 	public boolean isExcludeLimitedSyncRestrictions() {
 		return excludeLimitedSyncRestrictions;
