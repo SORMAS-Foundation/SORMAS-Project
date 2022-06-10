@@ -20,7 +20,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -87,7 +86,7 @@ public class EventServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetEventSummaryDetailsByContactsEventArchivingAndDeletion() {
+	public void testGetEventSummaryDetailsByContactsEventDeletion() {
 		TestDataCreator.RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		TestDataCreator.RDCF rdcf = new TestDataCreator.RDCF(rdcfEntities);
 		UserDto user = useSurveillanceOfficerLogin(rdcf);
@@ -99,14 +98,10 @@ public class EventServiceTest extends AbstractBeanTest {
 		creator.createEventParticipant(event.toReference(), contactPerson, user.toReference());
 
 		EventService sut = getEventService();
-
 		List<ContactEventSummaryDetails> result = sut.getEventSummaryDetailsByContacts(Arrays.asList(contact.getUuid()));
 		assertEquals(1, result.size());
 		assertEquals(event.getUuid(), result.get(0).getEventUuid());
 		assertEquals(event.getEventTitle(), result.get(0).getEventTitle());
-
-		// archiving should not have any effect on the export list
-		getEventFacade().archive(Collections.singletonList(event.getUuid()));
 
 		result = sut.getEventSummaryDetailsByContacts(Arrays.asList(contact.getUuid()));
 		assertEquals(1, result.size());
@@ -114,7 +109,7 @@ public class EventServiceTest extends AbstractBeanTest {
 		assertEquals(event.getEventTitle(), result.get(0).getEventTitle());
 
 		// deletion should have an effect on the export list
-		getEventFacade().delete(event.getUuid(), new DeletionDetails());
+        getEventFacade().delete(event.getUuid(), new DeletionDetails());
 
 		result = sut.getEventSummaryDetailsByContacts(Arrays.asList(contact.getUuid()));
 		assertTrue(result.isEmpty());
@@ -141,9 +136,6 @@ public class EventServiceTest extends AbstractBeanTest {
 		assertEquals(1, result.size());
 		assertEquals(event.getUuid(), result.get(0).getEventUuid());
 		assertEquals(event.getEventTitle(), result.get(0).getEventTitle());
-
-		// archiving should not have any effect on the export list
-		getEventFacade().archive(Collections.singletonList(event.getUuid()));
 
 		result = sut.getEventSummaryDetailsByCases(Arrays.asList(cazeId));
 		assertEquals(1, result.size());
