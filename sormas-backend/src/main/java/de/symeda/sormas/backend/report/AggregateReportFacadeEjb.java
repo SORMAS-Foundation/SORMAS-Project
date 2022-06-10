@@ -23,7 +23,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.utils.AgeGroupUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -32,6 +31,7 @@ import de.symeda.sormas.api.report.AggregateReportDto;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.AggregatedCaseCountDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AgeGroupUtils;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
@@ -85,7 +85,9 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	@RolesAllowed(UserRight._AGGREGATE_REPORT_EDIT)
 	public AggregateReportDto saveAggregateReport(@Valid AggregateReportDto dto) {
 
-		AgeGroupUtils.validateAgeGroup(dto.getAgeGroup());
+		if (dto.getAgeGroup() != null && dto.getAgeGroup().isEmpty()) {
+			AgeGroupUtils.validateAgeGroup(dto.getAgeGroup());
+		}
 		AggregateReport report = fromDto(dto, true);
 		service.ensurePersisted(report);
 		return toDto(report);
@@ -188,7 +190,8 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 				r -> r.getAgeGroup() != null
 					? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
 					: StringUtils.EMPTY)
-			.thenComparing(r -> r.getAgeGroup() != null ? r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY) : StringUtils.EMPTY);
+			.thenComparing(
+				r -> r.getAgeGroup() != null ? Integer.parseInt(r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0);
 
 		reportList.sort(comparator);
 		return reportList;

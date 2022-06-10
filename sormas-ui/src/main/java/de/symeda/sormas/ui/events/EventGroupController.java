@@ -62,11 +62,12 @@ public class EventGroupController {
 
 		EventDto eventByUuid = FacadeProvider.getEventFacade().getEventByUuid(eventReference.getUuid(), false);
 		UserProvider user = UserProvider.getCurrent();
-		if (!user.hasNationJurisdictionLevel() && !user.hasRegion(eventByUuid.getEventLocation().getRegion())) {
+		if ((!user.hasNationJurisdictionLevel() && !user.hasRegion(eventByUuid.getEventLocation().getRegion()))
+				&& !user.isAdmin()) {
 			new Notification(
 				I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
 				I18nProperties.getString(Strings.errorEventFromAnotherJurisdiction),
-				Notification.Type.ERROR_MESSAGE,
+				Type.ERROR_MESSAGE,
 				false).show(Page.getCurrent());
 			return;
 		}
@@ -95,7 +96,7 @@ public class EventGroupController {
 				new Notification(
 					I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
 					I18nProperties.getString(Strings.errorNotRequiredRights),
-					Notification.Type.ERROR_MESSAGE,
+					Type.ERROR_MESSAGE,
 					false).show(Page.getCurrent());
 			}
 		}
@@ -238,7 +239,7 @@ public class EventGroupController {
 				if (!eventGroupEditForm.getFieldGroup().isModified()) {
 					EventGroupDto updatedEventGroup = eventGroupEditForm.getValue();
 					FacadeProvider.getEventGroupFacade().saveEventGroup(updatedEventGroup);
-					Notification.show(I18nProperties.getString(Strings.messageEventGroupSaved), Notification.Type.WARNING_MESSAGE);
+					Notification.show(I18nProperties.getString(Strings.messageEventGroupSaved), Type.WARNING_MESSAGE);
 					SormasUI.refreshView();
 				}
 			});
@@ -356,7 +357,7 @@ public class EventGroupController {
 			new Notification(
 				I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
 				I18nProperties.getString(Strings.errorNotRequiredRights),
-				Notification.Type.ERROR_MESSAGE,
+				Type.ERROR_MESSAGE,
 				false).show(Page.getCurrent());
 		}
 
@@ -370,7 +371,7 @@ public class EventGroupController {
 					new Notification(
 						I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
 						I18nProperties.getString(Strings.errorEventFromAnotherJurisdiction),
-						Notification.Type.ERROR_MESSAGE,
+						Type.ERROR_MESSAGE,
 						false).show(Page.getCurrent());
 					return;
 				}
@@ -401,7 +402,7 @@ public class EventGroupController {
 				new Notification(
 					I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
 					I18nProperties.getString(Strings.errorNotRequiredRights),
-					Notification.Type.ERROR_MESSAGE,
+					Type.ERROR_MESSAGE,
 					false).show(Page.getCurrent());
 			}
 		}
