@@ -1693,6 +1693,7 @@ public class EditCaseSteps implements En {
               getExpectedFollowUpUntilDateDE(),
               calculatedExpectedFollowUpDate,
               "Expected follow-up until date is invalid!");
+          softly.assertAll();
         });
 
     When(
@@ -1714,6 +1715,7 @@ public class EditCaseSteps implements En {
               getFollowUpUntilDateDE(),
               dateExceedingExpectedDate,
               "Follow-up until date is invalid!");
+          softly.assertAll();
         });
   }
 
