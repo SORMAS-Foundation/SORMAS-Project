@@ -3,6 +3,7 @@ package org.sormas.e2etests.steps.web.application.immunizations;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.*;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DISEASE_INPUT;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.FACILITY_NAME_DESCRIPTION_VALUE;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.UUID_INPUT;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -63,6 +64,10 @@ public class EditImmunizationSteps implements En {
         .facilityCategory(webDriverHelpers.getValueFromWebElement(FACILITY_CATEGORY_INPUT))
         .facilityType(webDriverHelpers.getValueFromWebElement(FACILITY_TYPE_INPUT))
         .facility(webDriverHelpers.getValueFromWebElement(FACILITY_COMBOBOX_IMMUNIZATION_INPUT))
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .managementStatus(
+            webDriverHelpers.getValueFromWebElement(IMMUNIZATION_MANAGEMENT_STATUS_INPUT))
+        .immunizationStatus(webDriverHelpers.getValueFromWebElement(IMMUNIZATION_STATUS_INPUT))
         .build();
   }
 
