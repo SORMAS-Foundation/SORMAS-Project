@@ -771,7 +771,7 @@ Feature: Contacts end to end tests
     And I create a new Visit with specific data
     Then I check that username is displayed in the Visit Origin column
 
-  @issue=SORDEV-5563 @env_de @testIt
+  @issue=SORDEV-5563 @env_de
   Scenario: Add contact person details to facilities contacts
     Given I log in as a Admin User
     Then I click on the Configuration button from navbar
