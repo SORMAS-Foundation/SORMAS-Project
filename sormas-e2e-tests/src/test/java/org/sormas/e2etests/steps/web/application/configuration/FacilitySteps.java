@@ -114,8 +114,6 @@ public class FacilitySteps implements En {
     When(
         "I set name, region and district in Facilities tab in Configuration",
         () -> {
-          // String timestamp = String.valueOf(System.currentTimeMillis());
-          // fillFacilityNameAndDescription("Facility" + timestamp);
           fillFacilityNameAndDescription(facilityName);
           selectRegion(RegionsValues.VoreingestellteBundeslander.getName());
           selectDistrict(DistrictsValues.VoreingestellterLandkreis.getName());
