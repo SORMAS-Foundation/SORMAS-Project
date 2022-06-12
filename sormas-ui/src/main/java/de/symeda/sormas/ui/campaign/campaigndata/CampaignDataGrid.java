@@ -76,9 +76,13 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 			CampaignFormDataIndexDto.CAMPAIGN,
 			CampaignFormDataIndexDto.FORM,
 			CampaignFormDataIndexDto.AREA,
+			CampaignFormDataIndexDto.RCODE,
 			CampaignFormDataIndexDto.REGION,
+			CampaignFormDataIndexDto.PCODE,
 			CampaignFormDataIndexDto.DISTRICT,
+			CampaignFormDataIndexDto.DCODE,
 			CampaignFormDataIndexDto.COMMUNITY,
+			CampaignFormDataIndexDto.CCODE,
 			CampaignFormDataIndexDto.FORM_DATE,
 			CampaignFormDataIndexDto.FORM_TYPE);
 		//getColumn(EDIT_BTN_ID).setWidth(40).setStyleGenerator(item -> CssStyles.GRID_CELL_LINK);
@@ -113,57 +117,24 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
-	
-	private CampaignFormDataEntry formatDate(CampaignFormDataEntry campaignFormDataEntry) {
-		DateFormat df = new SimpleDateFormat("dd/MM/YYYY");
-		
-		System.out.println("____33333333333333333333333333333333333______ "+campaignFormDataEntry);
-		DateFormat dfx = new SimpleDateFormat("dd/MM/yyyy");
-		if(campaignFormDataEntry != null) {
-		if(NumberUtils.isDigits(campaignFormDataEntry.getValue().toString()) && !NumberUtils.isParsable(campaignFormDataEntry.getValue().toString())) {
-			System.out.println("____33333333333");
-			//ret  = (CampaignFormDataEntry) dfx.format(campaignFormDataEntry.getValue());
-		} else {
-			System.out.println("____4444444444444444");
-			//ret = campaignFormDataEntry.getValue();
-		}
-		}
-		
-		
-		
-		
-		return campaignFormDataEntry;
-	}
+
 
 	public void addCustomColumn(String property, String caption) {
-		if(!property.toString().contains("readonly")){
-			//((Column<CampaignFormDataIndexDto, Date>) getColumn(CampaignFormDataIndexDto.FORM_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(I18nProperties.getUserLanguage())));
-			if(property.length() > 12){
-				System.out.println(caption+" --+_____________________DATE VALUE___________________++-- "+property);
+		if (!property.toString().contains("readonly")) {
+	
+				Column<CampaignFormDataIndexDto, Object> newColumn = addColumn(e -> e.getFormValues().stream()
+						.filter(v -> v.getId().equals(property)).findFirst().orElse(null));
+				newColumn.setSortable(false);
+				newColumn.setCaption(caption);
+				newColumn.setId(property);
+				newColumn.setWidth(240.0);
+				newColumn.setDescriptionGenerator(CampaignFormDataIndexDto -> newColumn.getCaption());// set the
+																										// description
+																										// of default
+																										// columns
+																										// #94-iyanuu
 
-				System.out.println(">>>>><><>SSSD><<><> "+NumberUtils.isDigits("16348300000000000000"));
-				
-				Column<CampaignFormDataIndexDto, Object> newColumn =
-						addColumn(e -> formatDate(e.getFormValues().stream().filter(v -> v.getId().equals(property)).findFirst().orElse(null)));
-					newColumn.setSortable(false);
-					newColumn.setCaption(caption);
-					newColumn.setId(property);
-					newColumn.setWidth(240.0);
-					newColumn.setDescriptionGenerator(CampaignFormDataIndexDto -> newColumn.getCaption());//set the description of default columns #94-iyanuu
-					
-				
-			}else {
 			
-			System.out.println(caption+" --+_____________________STRING___________________++-- "+property);
-		Column<CampaignFormDataIndexDto, Object> newColumn =
-			addColumn(e -> e.getFormValues().stream().filter(v -> v.getId().equals(property)).findFirst().orElse(null));
-		newColumn.setSortable(false);
-		newColumn.setCaption(caption);
-		newColumn.setId(property);
-		newColumn.setWidth(240.0);
-		newColumn.setDescriptionGenerator(CampaignFormDataIndexDto -> newColumn.getCaption());//set the description of default columns #94-iyanuu
-		
-		}
 	}
 
 }

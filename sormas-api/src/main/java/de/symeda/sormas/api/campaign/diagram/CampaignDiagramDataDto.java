@@ -93,6 +93,27 @@ public class CampaignDiagramDataDto implements Serializable {
 		this.stack = stack;
 	}
 
+	
+	public CampaignDiagramDataDto(
+			String formMetaUuid,
+			String formId,
+			String fieldId,
+			String fieldCaption,
+			Number valueSum,
+			//Object groupingKey,
+			//String groupingCaption,
+			String stack) {
+			this.formMetaUuid = formMetaUuid;
+			this.formId = formId;
+			this.fieldId = fieldId;
+			this.fieldCaption = fieldCaption;
+			this.valueSum = valueSum;
+		//	this.groupingKey = groupingKey;
+			this.groupingCaption = "working";
+			this.stack = stack;
+		}
+	
+	
 	public String getFormMetaUuid() {
 		return formMetaUuid;
 	}

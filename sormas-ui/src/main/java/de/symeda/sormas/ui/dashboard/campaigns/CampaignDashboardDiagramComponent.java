@@ -175,7 +175,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 		hcjs.append(" buttons:{ contextButton:{ theme:{ fill: 'transparent' }, ")
 			.append(
-				"menuItems: ['viewFullscreen', 'printChart', 'separator', 'downloadPNG', 'downloadJPEG', 'downloadPDF', 'downloadSVG', 'separator', 'downloadCSV', 'downloadXLS'");
+				"menuItems: ['viewFullscreen', 'printChart', 'separator', 'downloadPNG', 'downloadJPEG', 'downloadPDF', 'downloadSVG', 'separator', 'downloadCSV', 'downloadXLS', 'View data table'");
 
 		hcjs.append(", 'separator', 'toggleLabels'");
 		if (totalValuesMap != null) {
@@ -235,7 +235,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 				hcjs.append("title: {" + "text:'" + campaignJurisdictionLevelGroupBy.toString() + "' },");
 			}
 		} else {
-			hcjs.append("title: {" + "text:'" + campaignJurisdictionLevelGroupBy.toString() + "' },");
+			hcjs.append("title: {" + "text:'"+ campaignJurisdictionLevelGroupBy.toString() + "' },");
 		}
 		if (stackMap.size() > 1) {
 			hcjs.append("opposite: true,");
@@ -275,8 +275,10 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		}
 		for (CampaignDiagramSeries series : diagramDefinition.getCampaignDiagramSeries()) {
 			String seriesKey = series.getFormId() + series.getFieldId();
+			
+			
 			if (!diagramDataBySeriesAndXAxis.containsKey(seriesKey))
-				continue;
+				continue; 
 
 			Map<Object, CampaignDiagramDataDto> seriesData = diagramDataBySeriesAndXAxis.get(seriesKey);
 			Collection<CampaignDiagramDataDto> values = seriesData.values();
@@ -290,7 +292,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			if(chartType.equalsIgnoreCase(DiagramType.PIE.toString())) {
 				//hcjs.append("data: [{");
 				appendPieData(campaignJurisdictionLevelGroupBy == CampaignJurisdictionLevel.COMMUNITY, hcjs, series, seriesData, fieldName);
-				hcjs.append("]},");
+				//hcjs.append("]},");
 			}else {
 
 			hcjs.append("{ name:'").append(StringEscapeUtils.escapeEcmaScript(fieldName)).append("', data: [");
@@ -312,6 +314,10 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 				hcjs.append("]},");
 			}
 		}
+		}
+		
+		if(chartType.equalsIgnoreCase(DiagramType.PIE.toString())) {
+			hcjs.append("]},");
 		}
 		hcjs.append("]");
 	}
@@ -369,7 +375,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		CampaignDiagramSeries series,
 		Map<Object, CampaignDiagramDataDto> seriesData) {
 		for (Object axisKey : xAxisInfo.keySet()) {
-			System.out.println("+++++++++++++++++++++++++++++++++++++ "+axisKey);
+		//	System.out.println("+++++++++++++++++++++++++++++++++++++ "+axisKey);
 			if (seriesData.containsKey(axisKey)) {
 				if (showPercentages && totalValuesMap != null) {
 					Double totalValue = totalValuesMap.get(
@@ -398,6 +404,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 				hcjs.append("0,");
 			}
 		}
+		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ "+hcjs);
 	}
 	
 	private void appendPieData(
@@ -407,11 +414,12 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			Map<Object, CampaignDiagramDataDto> seriesData,
 			String fieldName) {
 		
+		//System.out.println(isCommunityGrouping+""+hcjs+""+
 		
 		int iii = 0;
-			for (Object axisKey : xAxisInfo.keySet()) {
+			for (Object axisKey : xAxisInfo.keySet()) { 
 				
-			//	System.out.println(mapSeries.get(iii++) +" ==== "+iii+" +++++++++++++++++++++++++++++++++++++ "+axisKey);
+				//System.out.println(mapSeries.get(iii++) +" ==== "+iii+" +++++++++++++++++++++++++++++++++++++ "+axisKey);
 				if (seriesData.containsKey(axisKey)) {
 					/*if (showPercentages && totalValuesMap != null) {
 						Double totalValue = totalValuesMap.get(
@@ -435,7 +443,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 						}
 					}*/// else {
 					
-						hcjs.append("{name: '"+mapSeries.get(iii++)+"', y: "+seriesData.get(axisKey).getValueSum().toString()).append("},");
+						hcjs.append("{name: '"+seriesData.get(axisKey).getFieldCaption() +"', y: "+seriesData.get(axisKey).getValueSum().toString()).append("},");
 				//	}
 				} else {
 					hcjs.append("0,");  

@@ -255,7 +255,7 @@ public class MainScreen extends HorizontalLayout {
 		
 		menu.createViewButtonx(Captions.actionSettings, I18nProperties.getCaption(Captions.language), VaadinIcons.GLOBE_WIRE);
 		
-		menu.addView(LanguageView.class, LanguageView.VIEW_NAME, "DashboardTest", VaadinIcons.GLOBE_WIRE);
+		//menu.addView(LanguageView.class, LanguageView.VIEW_NAME, "DashboardTest", VaadinIcons.GLOBE_WIRE);
 		
 		menu.addView(AboutView.class, AboutView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAbout), VaadinIcons.INFO_CIRCLE_O);
 		

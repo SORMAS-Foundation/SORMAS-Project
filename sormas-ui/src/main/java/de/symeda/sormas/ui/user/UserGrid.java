@@ -66,7 +66,7 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 
 		//addEditColumn(e -> ControllerProvider.getUserController().edit(e));
 		
-		addItemClickListener(new ShowDetailsListener<>(UserDto.UUID, e -> ControllerProvider.getUserController().edit(e)));
+	//	addItemClickListener(new ShowDetailsListener<>(UserDto.UUID, e -> ControllerProvider.getUserController().edit(e)));
 		addItemClickListener(new ShowDetailsListener<>(UserDto.ACTIVE, e -> ControllerProvider.getUserController().edit(e)));
 		addItemClickListener(new ShowDetailsListener<>(UserDto.USER_ROLES, e -> ControllerProvider.getUserController().edit(e)));
 		addItemClickListener(new ShowDetailsListener<>(UserDto.USER_NAME, e -> ControllerProvider.getUserController().edit(e)));
@@ -84,7 +84,7 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 
 		setColumns(
 		//	EDIT_BTN_ID,
-			UserDto.UUID,
+		//	UserDto.UUID,
 			UserDto.ACTIVE,
 			UserDto.USER_ROLES,
 			UserDto.USER_NAME,
@@ -96,7 +96,7 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 			UserDto.DISTRICT,
 			UserDto.USER_POSITION);
 
-		((Column<UserDto, String>) getColumn(UserDto.UUID)).setRenderer(new UuidRenderer());
+	//	((Column<UserDto, String>) getColumn(UserDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.USER_ROLES))
 			.setRenderer(new CollectionValueProvider<Set<UserRole>>(), new HtmlRenderer());
 		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.USER_ROLES)).setSortable(false);

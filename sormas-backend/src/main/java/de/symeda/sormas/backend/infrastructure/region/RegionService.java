@@ -69,11 +69,11 @@ public class RegionService extends AbstractInfrastructureAdoService<Region> {
 	}
 	
 	public List<Region> getByExternalID(Long ext_id, boolean includeArchivedEntities) {
-System.out.println("####################################3 "+ext_id);
+//System.out.println("####################################3 "+ext_id);
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Region> cq = cb.createQuery(getElementClass());
 		Root<Region> from = cq.from(getElementClass());
-		System.out.println("SSSSSSDDDDDSSSSS45 - "+SQLExtractor.from(em.createQuery(cq)));
+		//System.out.println("SSSSSSDDDDDSSSSS45 - "+SQLExtractor.from(em.createQuery(cq)));
 		Predicate filter = cb.equal(from.get("externalID"), ext_id);
 		
 		if (!includeArchivedEntities) {
@@ -81,7 +81,7 @@ System.out.println("####################################3 "+ext_id);
 		}
 
 		cq.where(filter);
-		System.out.println("SSSSSSDDDDD56754345 - "+SQLExtractor.from(em.createQuery(cq)));
+		//System.out.println("SSSSSSDDDDD56754345 - "+SQLExtractor.from(em.createQuery(cq)));
 		return em.createQuery(cq).getResultList();
 	}
 

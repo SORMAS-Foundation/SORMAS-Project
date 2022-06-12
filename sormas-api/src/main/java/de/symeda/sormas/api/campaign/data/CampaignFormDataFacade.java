@@ -59,6 +59,7 @@ public interface CampaignFormDataFacade {
 	long count(CampaignFormDataCriteria criteria);
 
 	List<CampaignDiagramDataDto> getDiagramData(List<CampaignDiagramSeries> diagramSeries, CampaignDiagramCriteria campaignDiagramCriteria);
+	List<CampaignDiagramDataDto> getDiagramDataByGroups(List<CampaignDiagramSeries> diagramSeries, CampaignDiagramCriteria campaignDiagramCriteria);
 
 	List<CampaignDiagramDataDto> getDiagramDataByAgeGroup(
 		CampaignDiagramSeries diagramSeriesTotal,

@@ -597,13 +597,13 @@ if(value != null) {
 			Field<?> field = fields.get(id);
 			if (field instanceof NullableOptionGroup) {
 				return new CampaignFormDataEntry(id, ((NullableOptionGroup) field).getNullableValue());
-			} else if (field instanceof DateField) {
+			} /*else if (field instanceof DateField) {
 				
 				System.out.println("----xx: "+field.getValue());
 				
-			//	System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ field is date"+ dateFormat.format(((DateField) field).getDateFormat().format(field.getValue()+"", null)));
+			//	Sys The number you entered is not valid.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ field is date"+ dateFormat.format(((DateField) field).getDateFormat().format(field.getValue()+"", null)));
 				return new CampaignFormDataEntry(id, ((DateField) field).getDateFormat().format(field.getValue()+"", null));
-			}else {
+			}*/else {
 				return new CampaignFormDataEntry(id, field.getValue());
 			}
 		}).collect(Collectors.toList());

@@ -17,36 +17,135 @@
  *******************************************************************************/
 package de.symeda.sormas.ui;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Optional;
+
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.navigator.View;
 import com.vaadin.server.Page;
-import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.UI;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.ui.user.UserSettingsForm;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.dashboard.DashboardCssStyles;
+import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
+import de.symeda.sormas.ui.dashboard.map.DashboardMapComponent;
 
 
-
+/*
 @SuppressWarnings("serial")
 @JavaScript("https://cdn.amcharts.com/lib/5/index.js")
 @JavaScript("https://cdn.amcharts.com/lib/5/xy.js")
 @JavaScript("https://cdn.amcharts.com/lib/5/themes/Animated.js")
-
+*/
 public class LanguageView extends VerticalLayout implements View {
 
 	public static final String VIEW_NAME = "language";
-
+	private Optional<VerticalLayout> mapLayout;
+	protected DashboardMapComponent mapComponent;
+	private static final int ROW_HEIGHT = 555;
+	protected DashboardDataProvider dashboardDataProvider;
+	
+	
 	public LanguageView() throws IOException {
+			
+		//final Page page = Page.getCurrent();
 		
-		final Page page = Page.getCurrent();
+		mapComponent = new DashboardMapComponent(dashboardDataProvider);
+		
+		
+		createEpiCurveAndMapLayout();
+		}
+	
+	protected HorizontalLayout createEpiCurveAndMapLayout() {
+		HorizontalLayout layout = new HorizontalLayout();
+		layout.addStyleName(DashboardCssStyles.CURVE_AND_MAP_LAYOUT);
+		layout.setWidth(100, Unit.PERCENTAGE);
+		layout.setMargin(false);
+		layout.setSpacing(false);
 
+		// Map layout
+		mapLayout = createMapLayout();
+		mapLayout.ifPresent(layout::addComponent);
+
+		return layout;
+	}
+	
+	
+	protected Optional<VerticalLayout> createMapLayout() {
+		if (mapComponent == null) {
+			throw new UnsupportedOperationException("MapComponent needs to be initialized before calling createMapLayout");
+		}
+		VerticalLayout layout = new VerticalLayout();
+		layout.setMargin(false);
+		layout.setSpacing(false);
+		layout.setHeight(ROW_HEIGHT, Unit.PIXELS);
+
+		mapComponent.setSizeFull();
+
+		layout.addComponent(mapComponent);
+		layout.setExpandRatio(mapComponent, 1);
+
+		mapComponent.setExpandListener(expanded -> {
+
+		/*	if (expanded) {
+				rowsLayout.removeComponent(statisticsComponent);
+				epiCurveAndMapLayout.removeComponent(epiCurveLayout);
+				ContactsDashboardView.this.setHeight(100, Unit.PERCENTAGE);
+				epiCurveAndMapLayout.setHeight(100, Unit.PERCENTAGE);
+				layout.setSizeFull();
+				rowsLayout.setSizeFull();
+			} else {
+				rowsLayout.addComponent(statisticsComponent, 0);
+				epiCurveAndMapLayout.addComponent(epiCurveLayout, 0);
+				layout.setHeight(ROW_HEIGHT, Unit.PIXELS);
+				ContactsDashboardView.this.setHeightUndefined();
+				epiCurveAndMapLayout.setHeightUndefined();
+				rowsLayout.setHeightUndefined();
+			}
+			caseStatisticsLayout.setVisible(!expanded);
+			if (networkDiagramRowLayout != null) {
+				networkDiagramRowLayout.setVisible(!expanded);
+			}
+			contactsStatisticsLayout.setVisible(!expanded);
+			*/
+			
+			layout.setSizeFull();
+			
+		});
+
+		return Optional.of(layout);
+	}
+
+	
+	public void refreshDashboard() {
+
+		dashboardDataProvider.refreshData();
+/*
+		// Updates statistics
+		statisticsComponent.updateStatistics(dashboardDataProvider.getDisease());
+		updateCaseCountsAndSourceCasesLabels();
+
+		updateContactsInQuarantineData();
+*/
+		// Update cases and contacts shown on the map
+		if (mapComponent != null) {
+			mapComponent.refreshMap();
+		}
+
+		// Update cases and contacts shown on the map
+		if (UserProvider.getCurrent().hasUserRight(UserRight.DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS)) {
+		boolean diseaseSelected = dashboardDataProvider.getDisease() != null;
+		}
+
+	//		networkDiagramLayout.get().setVisible(diseaseSelected);
+	//		noNetworkDiagramLayout.setVisible(!diseaseSelected);
+	//		networkDiagramComponent.filter(c -> c.getParent().isVisible()).ifPresent(DashboardNetworkComponent::refreshDiagram);
+		}
+	/*	
+	
+	public LanguageView() throws IOException {
+			
+		final Page page = Page.getCurrent();
 		String allstr = "var root = am5.Root.new(\"chartdiv\");\n"
 				+ "root.setThemes([\n"
 				+ "  am5themes_Animated.new(root)\n"
@@ -232,7 +331,7 @@ public class LanguageView extends VerticalLayout implements View {
 				+ "makeSeries(\"Africa\", \"africa\");\n"
 				+ "chart.appear(1000, 100);";
 		
-		
+	
 		
 		page.getJavaScript().execute(allstr);
 		
@@ -251,11 +350,11 @@ public class LanguageView extends VerticalLayout implements View {
 		setSizeFull();
 		//setStyleName("about-view");
 		addComponent(cds);
-		
+		*/
 		//addComponent(cdsx);
 	//	setComponentAlignment(aboutLayout, Alignment.MIDDLE_CENTER);
 	}
-
+/*
 	private void showSettingsPopup() {
 
 		Window window = VaadinUiUtil.createPopupWindow();
@@ -270,3 +369,4 @@ public class LanguageView extends VerticalLayout implements View {
 		UI.getCurrent().addWindow(window);
 	}
 }
+*/

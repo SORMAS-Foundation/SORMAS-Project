@@ -397,7 +397,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 			return null;
 		}
 
-		DistrictReferenceDto dto = new DistrictReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
+		DistrictReferenceDto dto = new DistrictReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalId());
 		return dto;
 	}
 
@@ -417,7 +417,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
 		dto.setArchived(entity.isArchived());
 		System.out.println("ddddddddddddddddddddddddd=============dddddddddddddddd");
-		dto.setExternalID(entity.getExternalID());
+		dto.setExternalID(entity.getExternalId());
 
 		return dto;
 	}
@@ -437,7 +437,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setPopulation(populationDataFacade.getDistrictPopulation(dto.getUuid()));
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
-		dto.setExternalID(entity.getExternalID());
+		dto.setExternalID(entity.getExternalId());
 
 		return dto;
 	}
@@ -452,7 +452,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 		target.setGrowthRate(source.getGrowthRate());
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setArchived(source.isArchived());
-		target.setExternalID(source.getExternalID());
+		target.setExternalId(source.getExternalID());
 
 		return target;
 	}

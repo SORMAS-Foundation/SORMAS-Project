@@ -1346,9 +1346,9 @@ public class TestDataCreator {
 
 		return new RDCF(
 			//new AreaReferenceDto(area.getUuid(), area.getName(), area.getExternalID()),
-			new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalID()),
-			new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalID()),
-			new CommunityReferenceDto(community.getUuid(), community.getName(), community.getExternalID()),
+			new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalId()),
+			new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalId()),
+			new CommunityReferenceDto(community.getUuid(), community.getName(), community.getExternalId()),
 			new FacilityReferenceDto(facility.getUuid(), facility.getName(), facility.getExternalID()),
 			pointOfEntry != null
 				? new PointOfEntryReferenceDto(
@@ -1402,7 +1402,7 @@ public class TestDataCreator {
 		region.setUuid(DataHelper.createUuid());
 		region.setName(regionName);
 		region.setEpidCode("COU-REG");
-		region.setExternalID(externalId);
+		region.setExternalId(externalId);
 
 		beanTest.getRegionService().persist(region);
 
@@ -1420,7 +1420,7 @@ public class TestDataCreator {
 		district.setName(districtName);
 		district.setRegion(region);
 		district.setEpidCode("DIS");
-		district.setExternalID(externalId);
+		district.setExternalId(externalId);
 		beanTest.getDistrictService().persist(district);
 
 		return district;
@@ -1436,7 +1436,7 @@ public class TestDataCreator {
 		community.setUuid(DataHelper.createUuid());
 		community.setName(communityName);
 		community.setDistrict(district);
-		community.setExternalID(externalId);
+		community.setExternalId(externalId);
 		beanTest.getCommunityService().persist(community);
 
 		return community;
@@ -1733,11 +1733,11 @@ public class TestDataCreator {
 		}
 
 		public RDCF(RDCFEntities rdcfEntities) {
-			this.region = new RegionReferenceDto(rdcfEntities.region.getUuid(), rdcfEntities.region.getName(), rdcfEntities.region.getExternalID());
+			this.region = new RegionReferenceDto(rdcfEntities.region.getUuid(), rdcfEntities.region.getName(), rdcfEntities.region.getExternalId());
 			this.district =
-				new DistrictReferenceDto(rdcfEntities.district.getUuid(), rdcfEntities.district.getName(), rdcfEntities.district.getExternalID());
+				new DistrictReferenceDto(rdcfEntities.district.getUuid(), rdcfEntities.district.getName(), rdcfEntities.district.getExternalId());
 			this.community =
-				new CommunityReferenceDto(rdcfEntities.community.getUuid(), rdcfEntities.community.getName(), rdcfEntities.community.getExternalID());
+				new CommunityReferenceDto(rdcfEntities.community.getUuid(), rdcfEntities.community.getName(), rdcfEntities.community.getExternalId());
 			this.facility =
 				new FacilityReferenceDto(rdcfEntities.facility.getUuid(), rdcfEntities.facility.getName(), rdcfEntities.facility.getExternalID());
 		}

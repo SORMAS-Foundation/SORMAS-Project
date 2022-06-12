@@ -55,6 +55,7 @@ import com.vaadin.ui.AbstractJavaScriptComponent;
 	"highcharts-connector.js",
 	"highcharts-exporting.js",
 	"highcharts-export-data.js",
+	"accessibility.js",
 	"highcharts-no-data.js" })
 public class HighChart extends AbstractJavaScriptComponent {
 

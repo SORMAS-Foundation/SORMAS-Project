@@ -76,21 +76,13 @@ public class CampaignFormDataEntry implements Serializable, JsonDataEntry {
 			return "";
 		}
 
-		if (value instanceof Date) {
-			System.out.println("#############################################################################");
-			DateFormat dfx = new SimpleDateFormat("dd/MM/yyyy");
-			return NumberUtils.isDigits(value.toString()) ? dfx.format(new Date((Long) value)) : value.toString();
-		}
 		
 		if (value instanceof Boolean) {
 			return value.equals(Boolean.TRUE) ? I18nProperties.getString(Strings.yes) : I18nProperties.getString(Strings.no);
 		}
-		
-		
-		System.out.println("##########################rrrrrrrrrrrrrrr###############################");
 		DateFormat dfx = new SimpleDateFormat("dd/MM/yyyy");
-		return NumberUtils.isDigits(value.toString()) ? dfx.format(new Date((Long) value)) : value.toString();
-		//return value.toString();
+		return (NumberUtils.isDigits(value.toString()) && (value.toString().length() > 11)) ? dfx.format(new Date((Long) value)) : value.toString();
+		
 	}
 
 	public static void removeNullValueEntries(Collection<CampaignFormDataEntry> entries) {

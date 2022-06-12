@@ -336,6 +336,8 @@ public class CampaignDataView extends AbstractCampaignView {
 			System.out.println(campaignFormPhaseSelector.getValue().toString()+"    sssssssssssssssyyyyyyyyyy!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!sssssssssssssssssssss"+campaignSelector.getValue());
 			grid.reload();
 		});
+		
+		//hide/show button action
 		campaignSelector.addValueChangeListener(e -> {
 			System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			criteria.setCampaign(campaignSelector.getValue());

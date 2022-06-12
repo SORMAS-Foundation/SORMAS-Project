@@ -27,9 +27,13 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	public static final String CAMPAIGN = "campaign";
 	public static final String FORM = "form";
 	public static final String AREA = "area";
+	public static final String RCODE = "rcode";
 	public static final String REGION = "region";
+	public static final String PCODE = "pcode";
 	public static final String DISTRICT = "district";
+	public static final String DCODE = "dcode";
 	public static final String COMMUNITY = "community";
+	public static final String CCODE = "ccode";
 	public static final String FORM_DATE = "formDate";
 	public static final String FORM_TYPE = "formType";
 
@@ -40,9 +44,13 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	private String form;
 	private List<CampaignFormDataEntry> formValues;
 	private String area;
+	private Long rcode;
 	private String region;
+	private Long pcode;
 	private String district;
+	private Long dcode;
 	private String community;
+	private Long ccode;
 	private Date formDate;
 	private String formType;
 
@@ -52,9 +60,13 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 		String form,
 		Object formValues,
 		String area,
+		Long rcode,
 		String region,
+		Long pcode,
 		String district,
+		Long dcode,
 		String community,
+		Long ccode,
 		Date formDate,
 		String formType) {
 		this.uuid = uuid;
@@ -62,9 +74,13 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 		this.form = form;
 		this.formValues = (List<CampaignFormDataEntry>) formValues;
 		this.area = area;
+		this.rcode = rcode;
 		this.region = region;
+		this.pcode = pcode;
 		this.district = district;
+		this.dcode = dcode;
 		this.community = community;
+		this.ccode = ccode;
 		this.formDate = formDate;
 		this.formType = formType;
 	}
@@ -170,6 +186,40 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	public void setFormType(String formType) {
 		this.formType = formType;
 	}
+
+	public Long getRcode() {
+		return rcode;
+	}
+
+	public void setRcode(Long rcode) {
+		this.rcode = rcode;
+	}
+
+	public Long getPcode() {
+		return pcode;
+	}
+
+	public void setPcode(Long pcode) {
+		this.pcode = pcode;
+	}
+
+	public Long getDcode() {
+		return dcode;
+	}
+
+	public void setDcode(Long dcode) {
+		this.dcode = dcode;
+	}
+
+	public Long getCcode() {
+		return ccode;
+	}
+
+	public void setCcode(Long ccode) {
+		this.ccode = ccode;
+	}
+	
+	
 	
 	
 }
