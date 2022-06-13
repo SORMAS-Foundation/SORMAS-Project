@@ -230,30 +230,34 @@ public class EditPersonSteps implements En {
           String[] values;
           softly.assertEquals(
               webDriverHelpers.getTextFromWebElement(IMMUNIZATION_ID_LABEL),
-              EditImmunizationSteps.collectedImmunization.getUuid().substring(0, 6).toUpperCase());
+              EditImmunizationSteps.collectedImmunization.getUuid().substring(0, 6).toUpperCase(), "Immunization Id label is different than expected");
           softly.assertEquals(
               webDriverHelpers.getTextFromWebElement(IMMUNIZATION_DISEASE_LABEL),
-              EditImmunizationSteps.collectedImmunization.getDisease().toUpperCase());
+              EditImmunizationSteps.collectedImmunization.getDisease().toUpperCase(),
+                   "Immunization Disease label is different than expected");
           textFromLabel = webDriverHelpers.getTextFromWebElement(MEANS_OF_IMMUNIZATION_LABEL);
           values = textFromLabel.split(":");
-          softly.assertEquals(values[0], "Means of immunization");
+          softly.assertEquals(values[0], "Means of immunization",
+                   "Means of immunization label is different than expected");
           softly.assertEquals(
               values[1].trim(),
-              EditImmunizationSteps.collectedImmunization.getMeansOfImmunization());
+              EditImmunizationSteps.collectedImmunization.getMeansOfImmunization(),
+                  "Means of immunization value is different than expected");
           textFromLabel = webDriverHelpers.getTextFromWebElement(IMMUNIZATION_STATUS_LABEL);
           values = textFromLabel.split(":");
-          softly.assertEquals(values[0], "Immunization status");
+          softly.assertEquals(values[0], "Immunization status", "Immunization status label is different than expected");
           softly.assertEquals(
               values[1].trim(),
-              EditImmunizationSteps.collectedImmunization.getImmunizationStatus());
+              EditImmunizationSteps.collectedImmunization.getImmunizationStatus(), "Immunization status value is different than expected");
           textFromLabel = webDriverHelpers.getTextFromWebElement(MANAGEMENT_STATUS_LABEL);
           values = textFromLabel.split(":");
-          softly.assertEquals(values[0], "Management status");
+          softly.assertEquals(values[0], "Management status", "Management status label is different than expected");
           softly.assertEquals(
-              values[1].trim(), EditImmunizationSteps.collectedImmunization.getManagementStatus());
+              values[1].trim(), EditImmunizationSteps.collectedImmunization.getManagementStatus()
+          , "Management status value is different than expected");
           textFromLabel = webDriverHelpers.getTextFromWebElement(IMMUNIZATION_PERIOD_LABEL);
           values = textFromLabel.split(":");
-          softly.assertEquals(values[0], "Immunization period");
+          softly.assertEquals(values[0], "Immunization period", "Immunization period label is different than expected");
           softly.assertAll();
         });
 
