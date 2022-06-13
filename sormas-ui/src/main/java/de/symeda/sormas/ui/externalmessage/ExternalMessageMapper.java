@@ -18,6 +18,7 @@ package de.symeda.sormas.ui.externalmessage;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -337,7 +338,9 @@ public class ExternalMessageMapper {
 		List<FacilityReferenceDto> labs;
 
 		if (labExternalIds != null && !labExternalIds.isEmpty()) {
+
 			labs = labExternalIds.stream()
+				.filter(Objects::nonNull)
 				.map(id -> facilityFacade.getByExternalIdAndType(id, FacilityType.LABORATORY, false))
 				.flatMap(List::stream)
 				.collect(Collectors.toList());
