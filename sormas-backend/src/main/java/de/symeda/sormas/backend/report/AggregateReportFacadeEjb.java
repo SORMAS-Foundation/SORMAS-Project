@@ -94,6 +94,28 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		return service.getByUuids(uuids).stream().map(r -> toDto(r)).collect(Collectors.toList());
 	}
 
+	@Override
+	@RolesAllowed(UserRight._AGGREGATE_REPORT_EDIT)
+	public AggregateReportDto saveAggregateReport(@Valid AggregateReportDto dto) {
+
+		if (dto.getAgeGroup() != null && dto.getAgeGroup().isEmpty()) {
+			AgeGroupUtils.validateAgeGroup(dto.getAgeGroup());
+		}
+		AggregateReport report = fromDto(dto, true);
+		service.ensurePersisted(report);
+		return toDto(report);
+	}
+
+	@Override
+	public List<String> getAllUuids() {
+
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+
+		return service.getAllUuids();
+	}
+
 	public static AggregateReportDto toDto(AggregateReport source) {
 
 		if (source == null) {
