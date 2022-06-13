@@ -18,8 +18,11 @@
 
 package org.sormas.e2etests.steps.web.application.entries;
 
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DIFFERENT_POINT_OF_ENTRY_JURISDICTION;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CLOSE_FORM_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.POINT_OF_ENTRY_DISTRICT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.POINT_OF_ENTRY_REGION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISTRICT_INPUT;
@@ -86,6 +89,7 @@ import org.sormas.e2etests.entities.services.TravelEntryService;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.cases.CreateNewCasePage;
 import org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage;
 import org.sormas.e2etests.pages.application.entries.EditTravelEntryPage;
 import org.sormas.e2etests.state.ApiState;
@@ -631,6 +635,61 @@ public class CreateNewTravelEntrySteps implements En {
           else softly.fail("There is no valid uuid");
           softly.assertAll();
         });
+
+    And(
+        "^I check if Different Point Of Entry Jurisdiction checkbox appears in New Travel Entry popup$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              DIFFERENT_POINT_OF_ENTRY_JURISDICTION);
+        });
+
+    When(
+        "^I create new travel entry with Different Point Of Entry Jurisdiction for DE$",
+        () -> {
+          travelEntry = travelEntryService.buildGeneratedEntryWithDifferentPointOfEntryDE();
+          fillDateOfArrival(travelEntry.getDateOfArrival(), Locale.GERMAN);
+          selectResponsibleRegion(travelEntry.getResponsibleRegion());
+          selectResponsibleDistrict(travelEntry.getResponsibleDistrict());
+          selectPointOfEntryRegion(travelEntry.getPointOfEntryRegion());
+          selectPointOfEntryDistrict(travelEntry.getPointOfEntryDistrict());
+          fillPointOfEntry(travelEntry.getPointOfEntry());
+          fillPointOfEntryDetails(travelEntry.getPointOfEntryDetails());
+          fillFirstName(travelEntry.getFirstName());
+          firstName = travelEntry.getFirstName();
+          fillLastName(travelEntry.getLastName());
+          lastName = travelEntry.getLastName();
+          selectSex(travelEntry.getSex());
+          sex = travelEntry.getSex();
+          fillDisease(travelEntry.getDisease());
+          disease = travelEntry.getDisease();
+        });
+
+    And(
+        "^I check the created Different Point Of Entry data is correctly displayed on Edit travel entry page for DE$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          aTravelEntry = collectTravelEntryDifferentPointOfEntryJurisdictionData();
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              aTravelEntry, travelEntry, List.of("pointOfEntryRegion", "pointOfEntryDistrict"));
+        });
+
+    And(
+        "^I convert the Travel Entry into a case$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_FROM_TRAVEL_ENTRY);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              CreateNewCasePage.DATE_OF_REPORT_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+  }
+
+  private void selectPointOfEntryDistrict(String pointOfEntryDistrict) {
+    webDriverHelpers.selectFromCombobox(POINT_OF_ENTRY_DISTRICT_BUTTON, pointOfEntryDistrict);
+  }
+
+  private void selectPointOfEntryRegion(String pointOfEntryRegion) {
+    webDriverHelpers.selectFromCombobox(POINT_OF_ENTRY_REGION_BUTTON, pointOfEntryRegion);
   }
 
   private void fillFirstName(String firstName) {
@@ -708,6 +767,15 @@ public class CreateNewTravelEntrySteps implements En {
             webDriverHelpers.getValueFromWebElement(
                 EditTravelEntryPage.POINT_OF_ENTRY_DETAILS_INPUT))
         .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .build();
+  }
+
+  private TravelEntry collectTravelEntryDifferentPointOfEntryJurisdictionData() {
+    return TravelEntry.builder()
+        .pointOfEntryRegion(
+            webDriverHelpers.getValueFromCombobox(EditTravelEntryPage.POINT_OF_ENTRY_REGION))
+        .pointOfEntryDistrict(
+            webDriverHelpers.getValueFromCombobox(EditTravelEntryPage.POINT_OF_ENTRY_DISTRICT))
         .build();
   }
 

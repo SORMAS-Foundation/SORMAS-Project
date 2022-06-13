@@ -33,6 +33,8 @@ public class EditTravelEntryPage {
   public static final By REPORT_DATE_INPUT = By.cssSelector("#reportDate input");
   public static final By DISEASE_COMBOBOX = By.cssSelector("#disease div");
   public static final By POINT_OF_ENTRY_COMBOBOX = By.cssSelector("#pointOfEntry div");
+  public static final By POINT_OF_ENTRY_REGION = By.cssSelector("#pointOfEntryRegion div");
+  public static final By POINT_OF_ENTRY_DISTRICT = By.cssSelector("#pointOfEntryDistrict div");
   public static final By POINT_OF_ENTRY_DETAILS_INPUT = By.cssSelector("#pointOfEntryDetails");
   public static final By TRAVEL_ENTRY_PERSON_TAB = By.id("tab-travelEntries-person");
   public static final By TRAVEL_ENTRY_TAB = By.id("tab-travelEntries-data");

@@ -51,7 +51,7 @@ public class CreateNewVaccinationSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
-        "I fill new vaccination data in new Vaccination form",
+        "I fill new vaccination data in new Vaccination form for DE",
         () -> {
           vaccination = vaccinationService.buildGeneratedVaccinationDE();
           fillVaccinationDate(vaccination.getVaccinationDate(), Locale.GERMAN);
@@ -65,7 +65,21 @@ public class CreateNewVaccinationSteps implements En {
           fillBatchNumber(vaccination.getBatchNumber());
           fillAtcCode(vaccination.getAtcCode());
         });
-
+    When(
+        "I fill new vaccination data in new Vaccination form",
+        () -> {
+          vaccination = vaccinationService.buildGeneratedVaccination();
+          fillVaccinationDate(vaccination.getVaccinationDate(), Locale.ENGLISH);
+          selectVaccineName(vaccination.getVaccineName());
+          selectVaccineManufacturer(vaccination.getVaccineManufacturer());
+          fillVaccineType(vaccination.getVaccineType());
+          selectVaccinationInfoSource(vaccination.getVaccinationInfoSource());
+          fillVaccineDose(vaccination.getVaccineDose());
+          fillInn(vaccination.getInn());
+          fillUniiCode(vaccination.getUniiCode());
+          fillBatchNumber(vaccination.getBatchNumber());
+          fillAtcCode(vaccination.getAtcCode());
+        });
     When(
         "I click SAVE button in new Vaccination form",
         () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_VACCINATION_FORM_BUTTON));

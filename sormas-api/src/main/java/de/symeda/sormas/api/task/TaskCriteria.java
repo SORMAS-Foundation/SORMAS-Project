@@ -24,9 +24,9 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
@@ -65,6 +65,7 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 	private String assigneeUserLike;
 	private String creatorUserLike;
 	private TravelEntryReferenceDto travelEntry;
+	private boolean excludeLimitedSyncRestrictions;
 
 	public TaskStatus getTaskStatus() {
 		return taskStatus;
@@ -321,6 +322,21 @@ public class TaskCriteria extends BaseCriteria implements Serializable {
 
 	public TaskCriteria travelEntry(TravelEntryReferenceDto travelEntry) {
 		this.travelEntry = travelEntry;
+		return this;
+	}
+
+	/**
+	 * Ignore user filter restrictions that would otherwise be applied by the limited synchronization feature.
+	 * Necessary e.g. when retrieving UUIDs of tasks related to cases that are supposed to be removed from the
+	 * mobile app, because otherwise the user filter would exclude those tasks.
+	 */
+	@IgnoreForUrl
+	public boolean isExcludeLimitedSyncRestrictions() {
+		return excludeLimitedSyncRestrictions;
+	}
+
+	public TaskCriteria excludeLimitedSyncRestrictions(boolean excludeLimitedSyncRestrictions) {
+		this.excludeLimitedSyncRestrictions = excludeLimitedSyncRestrictions;
 		return this;
 	}
 }
