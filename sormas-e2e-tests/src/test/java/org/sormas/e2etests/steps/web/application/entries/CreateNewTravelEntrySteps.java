@@ -33,7 +33,10 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUI
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.ARRIVAL_DATE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DATE_OF_ARRIVAL_LABEL_DE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DATE_OF_ARRIVAL_POPUP_CLOSE;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DIFFERENT_POINT_OF_ENTRY_CHECKBOX;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DISEASE_COMBOBOX_DISABLED;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DISEASE_VARIANT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_TRAVEL_ENTRY_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_UUID_TABLE_TRAVEL_ENTRIES;
@@ -42,7 +45,13 @@ import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntry
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_CASE_LABEL_DE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_PERSON_LABEL_DE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_OR_CREATE_PERSON_TITLE_DE;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.POINT_OF_ENTRY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.POINT_OF_ENTRY_DISTRICT_INPUT;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.POINT_OF_ENTRY_REGION_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.REPORT_DATE;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.RESPONSIBLE_COMMUNITY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.RESPONSIBLE_DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.RESPONSIBLE_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SEX_COMBOBOX;
@@ -621,6 +630,27 @@ public class CreateNewTravelEntrySteps implements En {
 
   private void selectPointOfEntryRegion(String pointOfEntryRegion) {
     webDriverHelpers.selectFromCombobox(POINT_OF_ENTRY_REGION_BUTTON, pointOfEntryRegion);
+
+    And(
+        "^I check that New Travel Entry popup contains all the necessary fields$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(REPORT_DATE);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              CreateNewTravelEntryPage.EXTERNAL_ID_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DISEASE_COMBOBOX);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DISEASE_VARIANT_COMBOBOX);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(RESPONSIBLE_REGION_COMBOBOX);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(RESPONSIBLE_DISTRICT_COMBOBOX);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(RESPONSIBLE_COMMUNITY_COMBOBOX);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DIFFERENT_POINT_OF_ENTRY_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(DIFFERENT_POINT_OF_ENTRY_CHECKBOX);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(POINT_OF_ENTRY_REGION_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(POINT_OF_ENTRY_DISTRICT_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(POINT_OF_ENTRY_COMBOBOX);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(FIRST_NAME_OF_CONTACT_PERSON_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(LAST_NAME_OF_CONTACT_PERSON_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEX_COMBOBOX);
+        });
   }
 
   private void fillFirstName(String firstName) {

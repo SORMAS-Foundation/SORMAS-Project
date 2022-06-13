@@ -38,6 +38,7 @@ public class CreateNewTravelEntryPage {
       By.xpath(
           "//div[@class='popupContent']//div[contains(@class,'v-disabled') and @id='disease']");
   public static final By DISEASE_COMBOBOX = By.cssSelector(" #disease div");
+  public static final By DISEASE_VARIANT_COMBOBOX = By.cssSelector("#diseaseVariant div");
   public static final By POINT_OF_ENTRY_COMBOBOX = By.cssSelector(".v-window #pointOfEntry div");
   public static final By POINT_OF_ENTRY_DETAILS_INPUT =
       By.cssSelector(".v-window #pointOfEntryDetails");
@@ -62,4 +63,10 @@ public class CreateNewTravelEntryPage {
       By.xpath(
           "//div[@location='case']//span[contains(text(),'Fall zu dieser Einreise \u00F6ffnen')]");
   public static final By FIRST_UUID_TABLE_TRAVEL_ENTRIES = By.xpath("//table//td[1]");
+  public static final By EXTERNAL_ID_INPUT = By.cssSelector("#externalId");
+  public static final By DIFFERENT_POINT_OF_ENTRY_CHECKBOX =
+      By.cssSelector("#differentPointOfEntryJurisdiction");
+  public static final By POINT_OF_ENTRY_REGION_INPUT = By.cssSelector("#pointOfEntryRegion input");
+  public static final By POINT_OF_ENTRY_DISTRICT_INPUT =
+      By.cssSelector("#pointOfEntryDistrict input");
 }

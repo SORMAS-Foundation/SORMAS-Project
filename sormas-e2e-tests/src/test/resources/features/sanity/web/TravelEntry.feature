@@ -265,3 +265,10 @@ Feature: Create travel entries
     And I convert the Travel Entry into a case
     Then I check that differing Point Of Entry is correctly displayed on Edit case page
     And I check that Case Origin is set to Point Of Entry
+
+  @issue=SORDEV-7167 @env_de
+  Scenario: Test DEA TravelEntry form
+    Given I log in as a Admin User
+    And I click on the Entries button from navbar
+    And I click on the New Travel Entry button from Travel Entries directory
+    And I check that New Travel Entry popup contains all the necessary fields
