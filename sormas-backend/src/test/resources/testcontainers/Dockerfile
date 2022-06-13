@@ -1,5 +1,6 @@
 FROM postgres:10.18-alpine
 
+# hadolint ignore=DL3018,DL3013
 RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.13/main/ musl musl-dev && \
     apk add --no-cache openssl curl tzdata py-pip python3-dev  \
     postgresql-dev postgresql-contrib make gcc py3-psutil  && \
