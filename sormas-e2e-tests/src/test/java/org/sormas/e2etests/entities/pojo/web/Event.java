@@ -43,4 +43,7 @@ public class Event {
   String community;
   String sourceType;
   String responsibleUser;
+  String facility;
+  String facilityCategory;
+  String facilityType;
 }

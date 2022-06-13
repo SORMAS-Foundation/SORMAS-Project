@@ -21,7 +21,7 @@ Feature: Vaccination tests
     When I click on the Contacts button from navbar
     Then I search after last created contact via API by UUID and open
     And I click NEW VACCINATION button for DE
-    And I fill new vaccination data in new Vaccination form
+    And I fill new vaccination data in new Vaccination form for DE
     And I click SAVE button in new Vaccination form
     Then I click on Create button in Document Templates box for DE
     And I select "VaccinationGenerationTest_Contacts.docx" template in Document Template form
@@ -50,7 +50,7 @@ Feature: Vaccination tests
     And I click on the Cases button from navbar
     And I open the last created Case via API
     And I click NEW VACCINATION button for DE
-    And I fill new vaccination data in new Vaccination form
+    And I fill new vaccination data in new Vaccination form for DE
     And I click SAVE button in new Vaccination form
     Then I click on Create button in Document Templates box for DE
     And I select "VaccinationGenerationTest_Cases.docx" template in Document Template form
@@ -78,7 +78,7 @@ Feature: Vaccination tests
     And I navigate to EVENT PARTICIPANT from edit event page
     Then I add only required data for event participant creation for DE
     And I click NEW VACCINATION button for DE
-    And I fill new vaccination data in new Vaccination form
+    And I fill new vaccination data in new Vaccination form for DE
     And I click SAVE button in new Vaccination form
     Then I click on Create button in Document Templates box for DE
     And I select "VaccinationGenerationTest_EventParticipants.docx" template in Document Template form
