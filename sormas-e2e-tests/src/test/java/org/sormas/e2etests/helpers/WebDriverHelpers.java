@@ -945,8 +945,11 @@ public class WebDriverHelpers {
       baseSteps.getDriver().close();
       baseSteps.getDriver().switchTo().window(tabs.get(0));
     } else {
+
       throw new NotFoundException(
-          "Cannot close active window and switch to parent window because only one is available!");
+          "Cannot close active window and switch to parent window because only "
+              + baseSteps.getDriver().getWindowHandles().size()
+              + " is available!");
     }
   }
 }

@@ -38,6 +38,10 @@ public class StepsLogger implements StepLifecycleListener {
   public static final String PROCESS_ID_STRING = String.format("[PROCESS_ID:%s] ->", PROCESS_ID);
   private static RemoteWebDriver driver;
   private static boolean isScreenshotEnabled = true;
+  private static boolean attachLogs = false;
+  private static String logsPath = "logs/file.log";
+  private static final String logsType = "text/json";
+  public static final String imageType = "image/png";
 
   public static void setRemoteWebDriver(RemoteWebDriver remoteWebDriver) {
     driver = remoteWebDriver;
@@ -64,27 +68,24 @@ public class StepsLogger implements StepLifecycleListener {
     log.info("{} -> Finished step -> {}", PROCESS_ID_STRING, result.getName());
   }
 
-  @Attachment(value = "After step screenshot", type = "image/png")
+  @Attachment(value = "After step screenshot", type = imageType)
   public void takeScreenshotAfter() {
     byte[] screenShot = driver.getScreenshotAs(OutputType.BYTES);
     Allure.getLifecycle()
         .addAttachment(
             "Screenshot at :"
                 + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MMM-yy hh:mm:ss")),
-            "image/png",
+            imageType,
             "png",
             screenShot);
   }
 
   @SneakyThrows
-  @Attachment(value = "Browser console log", type = "text/json")
+  @Attachment(value = "Browser console log", type = logsType)
   private void attachConsoleLog() {
-    try {
+    if (attachLogs) {
       Allure.getLifecycle()
-          .addAttachment(
-              "Execution logs", "text/json", "txt", new FileInputStream("logs/file.log"));
-    } catch (Exception any) {
-      log.error("Failed to attach logs to Allure report due to: {}", any.getCause());
+          .addAttachment("Execution logs", logsType, "txt", new FileInputStream(logsPath));
     }
   }
 }
