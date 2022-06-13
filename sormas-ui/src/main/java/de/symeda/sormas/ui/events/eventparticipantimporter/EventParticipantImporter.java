@@ -134,7 +134,8 @@ public class EventParticipantImporter extends DataImporter {
 
 		ImportRelatedObjectsMapper.Builder relatedObjectsMapperBuilder = new ImportRelatedObjectsMapper.Builder();
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED) && event.getDisease() != null) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)
+			&& event.getDisease() != null) {
 			relatedObjectsMapperBuilder.addMapper(
 				VaccinationDto.class,
 				vaccinations,
@@ -144,26 +145,8 @@ public class EventParticipantImporter extends DataImporter {
 
 		ImportRelatedObjectsMapper relatedMapper = relatedObjectsMapperBuilder.build();
 
-		boolean eventParticipantHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, true, importColumnInformation -> {
-			try {
-				if (!relatedMapper.map(importColumnInformation)) {
-					// If the cell entry is not empty, try to insert it into the current contact or person object
-					if (!StringUtils.isEmpty(importColumnInformation.getValue())) {
-
-						insertColumnEntryIntoData(
-							newEventParticipantTemp,
-							newPersonTemp,
-							importColumnInformation.getValue(),
-							importColumnInformation.getEntityPropertyPath());
-
-					}
-				}
-			} catch (ImportErrorException | InvalidColumnException e) {
-				return e;
-			}
-
-			return null;
-		});
+		boolean eventParticipantHasImportError =
+			insertRowDataIntoEventParticipant(values, entityClasses, entityPropertyPaths, newPersonTemp, newEventParticipantTemp, relatedMapper);
 
 		// If the row does not have any import errors, call the backend validation of all associated entities
 		if (!eventParticipantHasImportError) {
@@ -229,7 +212,6 @@ public class EventParticipantImporter extends DataImporter {
 
 					boolean skipPersonValidation = ImportSimilarityResultOption.PICK.equals(resultOption);
 
-
 					PersonDto importPerson = newPersonTemp;
 
 					if (selectedPersonUuid != null) {
@@ -238,39 +220,28 @@ public class EventParticipantImporter extends DataImporter {
 
 					// get first eventparticipant for event and person
 					EventParticipantCriteria eventParticipantCriteria =
-							new EventParticipantCriteria().withPerson(importPerson.toReference()).withEvent(event.toReference());
+						new EventParticipantCriteria().withPerson(importPerson.toReference()).withEvent(event.toReference());
 					EventParticipantDto pickedEventParticipant = eventParticipantFacade.getFirst(eventParticipantCriteria);
 
-					if (pickedEventParticipant != null) {
-						// re-apply import on pickedEventParticipant
-						insertRowIntoData(values, entityClasses, entityPropertyPaths, true, importColumnInformation -> {
-							// If the cell entry is not empty, try to insert it into the current contact or person object
-							if (!StringUtils.isEmpty(importColumnInformation.getValue())) {
-								try {
-									insertColumnEntryIntoData(
-											pickedEventParticipant,
-											newPersonTemp,
-											importColumnInformation.getValue(),
-											importColumnInformation.getEntityPropertyPath());
-								} catch (ImportErrorException | InvalidColumnException e) {
-									return e;
-								}
-							}
-							return null;
-						});
-						newEventParticipant = pickedEventParticipant;
+					// re-apply import on selectedPerson and pickedEventParticipant
+					if (selectedPersonUuid != null || pickedEventParticipant != null) {
+						newEventParticipant = pickedEventParticipant != null ? pickedEventParticipant : newEventParticipant;
+
+						insertRowDataIntoEventParticipant(
+							values,
+							entityClasses,
+							entityPropertyPaths,
+							importPerson,
+							newEventParticipant,
+							relatedMapper);
 					}
 
-					PersonDto savedPersonDto;
 					if (selectedPersonUuid != null) {
 						// Workaround: Reset the change date to avoid OutdatedEntityExceptions
 						importPerson.setChangeDate(new Date());
-						FacadeProvider.getPersonFacade().mergePerson(importPerson, newPersonTemp, true, skipPersonValidation);
-						savedPersonDto = importPerson;
-					} else {
-						savedPersonDto = FacadeProvider.getPersonFacade().savePerson(newPersonTemp, skipPersonValidation);
 					}
 
+					PersonDto savedPersonDto = FacadeProvider.getPersonFacade().savePerson(importPerson, skipPersonValidation);
 					newEventParticipant.setPerson(savedPersonDto);
 					newEventParticipant.setChangeDate(new Date());
 					eventParticipantFacade.saveEventParticipant(newEventParticipant);
@@ -295,6 +266,36 @@ public class EventParticipantImporter extends DataImporter {
 		} else {
 			return ImportLineResult.ERROR;
 		}
+	}
+
+	private boolean insertRowDataIntoEventParticipant(
+		String[] values,
+		String[] entityClasses,
+		String[][] entityPropertyPaths,
+		PersonDto newPersonTemp,
+		EventParticipantDto newEventParticipantTemp,
+		ImportRelatedObjectsMapper relatedMapper)
+		throws IOException {
+		return insertRowIntoData(values, entityClasses, entityPropertyPaths, true, importColumnInformation -> {
+			try {
+				if (!relatedMapper.map(importColumnInformation)) {
+					// If the cell entry is not empty, try to insert it into the current contact or person object
+					if (!StringUtils.isEmpty(importColumnInformation.getValue())) {
+
+						insertColumnEntryIntoData(
+							newEventParticipantTemp,
+							newPersonTemp,
+							importColumnInformation.getValue(),
+							importColumnInformation.getEntityPropertyPath());
+
+					}
+				}
+			} catch (ImportErrorException | InvalidColumnException e) {
+				return e;
+			}
+
+			return null;
+		});
 	}
 
 	/**

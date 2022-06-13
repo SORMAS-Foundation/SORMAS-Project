@@ -100,7 +100,5 @@ public interface PersonFacade {
 
 	void mergePerson(PersonDto leadPerson, PersonDto otherPerson);
 
-	void mergePerson(PersonDto leadPerson, PersonDto otherPerson, boolean overrideValues, boolean skipValidation);
-
 	PersonDto getByContext(PersonContext context, String contextUuid);
 }

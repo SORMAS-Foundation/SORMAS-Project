@@ -6,9 +6,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import de.symeda.sormas.api.caze.Vaccine;
-import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.vaccination.VaccinationDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -334,7 +332,10 @@ public class ContactImporterTest extends AbstractBeanTest {
 		}
 
 		@Override
-		protected void handleContactSimilarity(ContactDto newContact, PersonDto newPerson, Consumer<ContactImportSimilarityResult> resultConsumer) {
+		protected void handleContactSimilarity(
+			ContactDto newContact,
+			PersonReferenceDto newPerson,
+			Consumer<ContactImportSimilarityResult> resultConsumer) {
 			resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.CREATE));
 		}
 

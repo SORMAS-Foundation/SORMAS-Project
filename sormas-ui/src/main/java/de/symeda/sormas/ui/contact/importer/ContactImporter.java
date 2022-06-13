@@ -138,24 +138,8 @@ public class ContactImporter extends DataImporter {
 
 		ImportRelatedObjectsMapper relatedMapper = relatedObjectsMapperBuilder.build();
 
-		boolean contactHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, true, importColumnInformation -> {
-			try {
-				if (!relatedMapper.map(importColumnInformation)) {
-					// If the cell entry is not empty, try to insert it into the current contact or person object
-					if (!StringUtils.isEmpty(importColumnInformation.getValue())) {
-						insertColumnEntryIntoData(
-							newContactTemp,
-							newPersonTemp,
-							importColumnInformation.getValue(),
-							importColumnInformation.getEntityPropertyPath());
-					}
-				}
-			} catch (ImportErrorException | InvalidColumnException e) {
-				return e;
-			}
-
-			return null;
-		});
+		boolean contactHasImportError =
+			insertRowDataIntoContactAndPerson(values, entityClasses, entityPropertyPaths, newPersonTemp, newContactTemp, relatedMapper);
 
 		// try to assign the contact to an existing case
 		if (caze == null && newContactTemp.getCaseIdExternalSystem() != null) {
@@ -237,7 +221,10 @@ public class ContactImporter extends DataImporter {
 							importPerson = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPersonUuid);
 						}
 
-						handleContactSimilarity(newContactTemp, importPerson, result -> consumer.onImportResult(result, contactSelectLock));
+						handleContactSimilarity(
+							newContactTemp,
+							importPerson.toReference(),
+							result -> consumer.onImportResult(result, contactSelectLock));
 
 						try {
 							if (!contactSelectLock.wasNotified) {
@@ -259,11 +246,12 @@ public class ContactImporter extends DataImporter {
 
 					PersonReferenceDto personReferenceDto;
 					if (selectedPersonUuid != null) {
-						FacadeProvider.getPersonFacade().mergePerson(importPerson, newPersonTemp, true, skipPersonValidation);
-						personReferenceDto = importPerson.toReference();
-					} else {
-						personReferenceDto = FacadeProvider.getPersonFacade().savePerson(newPersonTemp, skipPersonValidation).toReference();
+						// update selected person with data from the csv line
+						insertRowDataIntoContactAndPerson(values, entityClasses, entityPropertyPaths, importPerson, newContactTemp, relatedMapper);
 					}
+
+					personReferenceDto = FacadeProvider.getPersonFacade().savePerson(importPerson, skipPersonValidation).toReference();
+
 					// Workaround: Reset the change date to avoid OutdatedEntityExceptions
 					newContact.setChangeDate(new Date());
 					newContact.setPerson(personReferenceDto);
@@ -285,7 +273,35 @@ public class ContactImporter extends DataImporter {
 		}
 	}
 
-	protected void handleContactSimilarity(ContactDto newContact, PersonDto person, Consumer<ContactImportSimilarityResult> resultConsumer) {
+	private boolean insertRowDataIntoContactAndPerson(
+		String[] values,
+		String[] entityClasses,
+		String[][] entityPropertyPaths,
+		PersonDto newPersonTemp,
+		ContactDto newContactTemp,
+		ImportRelatedObjectsMapper relatedMapper)
+		throws IOException {
+		return insertRowIntoData(values, entityClasses, entityPropertyPaths, true, importColumnInformation -> {
+			try {
+				if (!relatedMapper.map(importColumnInformation)) {
+					// If the cell entry is not empty, try to insert it into the current contact or person object
+					if (!StringUtils.isEmpty(importColumnInformation.getValue())) {
+						insertColumnEntryIntoData(
+							newContactTemp,
+							newPersonTemp,
+							importColumnInformation.getValue(),
+							importColumnInformation.getEntityPropertyPath());
+					}
+				}
+			} catch (ImportErrorException | InvalidColumnException e) {
+				return e;
+			}
+
+			return null;
+		});
+	}
+
+	protected void handleContactSimilarity(ContactDto newContact, PersonReferenceDto person, Consumer<ContactImportSimilarityResult> resultConsumer) {
 
 		currentUI.accessSynchronously(() -> {
 			ContactSelectionField contactSelection =
