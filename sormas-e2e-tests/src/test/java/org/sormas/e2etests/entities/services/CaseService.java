@@ -170,6 +170,31 @@ public class CaseService {
         .build();
   }
 
+  public Case buildGeneratedCaseWithPointOfEntryDE() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
+    return Case.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .caseOrigin("EINREISEORT")
+        .dateOfReport(LocalDate.now().minusDays(1))
+        .disease("COVID-19")
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .pointOfEntryRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .pointOfEntryDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .pointOfEntry("Anderer Flughafen")
+        .pointOfEntryDetails("Narita")
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .sex(GenderValues.getRandomGenderDE())
+        .build();
+  }
+
   public Case buildGeneratedCaseDE() {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();

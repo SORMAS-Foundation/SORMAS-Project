@@ -115,4 +115,14 @@ public class CreateNewCasePage {
       By.xpath("//span[@class=\"v-captiontext\" and text()=\"Reisepassnummer\"]");
   public static final By NATIONAL_HEALTH_ID_ATTRIBUTE =
       By.xpath("//span[@class=\"v-captiontext\" and text()=\"Krankenversicherungsnummer\"]");
+  public static final By DIFFERENT_POINT_OF_ENTRY_JURISDICTION =
+      By.cssSelector(".popupContent #differentPointOfEntryJurisdiction");
+  public static final By POINT_OF_ENTRY_REGION_BUTTON =
+      By.cssSelector(".popupContent #pointOfEntryRegion div[role='button']");
+  public static final By POINT_OF_ENTRY_DISTRICT_BUTTON =
+      By.cssSelector(".popupContent #pointOfEntryDistrict div[role='button']");
+  public static final By POINT_OF_ENTRY_COMBOBOX =
+      By.cssSelector(".popupContent #pointOfEntry div[role='button'");
+  public static final By POINT_OF_ENTRY_DETAILS =
+      By.cssSelector(".popupContent #pointOfEntryDetails");
 }

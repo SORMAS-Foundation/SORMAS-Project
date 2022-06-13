@@ -86,13 +86,18 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		aggregateReportDto.setNewCases(1);
 		aggregateReportDto.setDeaths(3);
 		aggregateReportDto.setLabConfirmations(2);
+		aggregateReportDto.setYear(epiWeek.getYear());
 		aggregateReportDto.setEpiWeek(epiWeek.getWeek());
 		aggregateReportDto.setRegion(rdcf.region);
 		aggregateReportDto.setDistrict(rdcf.district);
 		aggregateReportDto.setHealthFacility(rdcf.facility);
 		getAggregateReportFacade().saveAggregateReport(aggregateReportDto);
 
-		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(new AggregateReportCriteria().healthFacility(rdcf.facility));
+		AggregateReportCriteria criteria = new AggregateReportCriteria().healthFacility(rdcf.facility);
+		criteria.setShowZeroRowsForGrouping(true);
+		criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
+
+		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
 		Assert.assertEquals(24, indexList.size());
 		Assert.assertEquals(1, indexList.stream().filter(aggregatedCaseCountDto -> aggregatedCaseCountDto.getDeaths() == 3).count());
 	}
@@ -112,7 +117,11 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		createAggregateReport(epiWeek, "0D_30D");
 		createAggregateReport(epiWeek, "1M_59M");
 
-		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(new AggregateReportCriteria().healthFacility(rdcf.facility));
+		AggregateReportCriteria criteria = new AggregateReportCriteria().healthFacility(rdcf.facility);
+		criteria.setShowZeroRowsForGrouping(true);
+		criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
+
+		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
 		Assert.assertEquals(31, indexList.size());
 
 		Assert.assertEquals("0D_30D", indexList.get(5).getAgeGroup());
@@ -132,6 +141,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		aggregateReportDto.setNewCases(1);
 		aggregateReportDto.setDeaths(3);
 		aggregateReportDto.setLabConfirmations(2);
+		aggregateReportDto.setYear(epiWeek.getYear());
 		aggregateReportDto.setEpiWeek(epiWeek.getWeek());
 		aggregateReportDto.setRegion(rdcf.region);
 		aggregateReportDto.setDistrict(rdcf.district);
