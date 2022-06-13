@@ -219,6 +219,13 @@ public class EditCasePersonSteps implements En {
         });
 
     When(
+        "I set Region to {string} and District to {string}",
+        (String aRegion, String aDistrict) -> {
+          selectRegion(aRegion);
+          selectDistrict(aDistrict);
+        });
+
+    When(
         "^I set case person's sex as ([^\"]*)$",
         (String sex) -> {
           webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);

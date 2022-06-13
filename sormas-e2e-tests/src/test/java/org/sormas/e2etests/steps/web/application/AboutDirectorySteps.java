@@ -253,9 +253,9 @@ public class AboutDirectorySteps implements En {
         while (cellIterator.hasNext()) {
 
           Cell currentCell = cellIterator.next();
-          if (currentCell.getCellTypeEnum() == CellType.STRING) {
+          if (currentCell.getCellType() == CellType.STRING) {
             xlsxFileContentList.add(currentCell.getStringCellValue() + ",");
-          } else if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
+          } else if (currentCell.getCellType() == CellType.NUMERIC) {
             xlsxFileContentList.add(currentCell.getNumericCellValue() + ",");
           }
         }
