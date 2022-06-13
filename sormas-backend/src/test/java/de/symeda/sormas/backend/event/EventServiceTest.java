@@ -109,7 +109,7 @@ public class EventServiceTest extends AbstractBeanTest {
 		assertEquals(event.getEventTitle(), result.get(0).getEventTitle());
 
 		// deletion should have an effect on the export list
-        getEventFacade().delete(event.getUuid(), new DeletionDetails());
+		getEventFacade().delete(event.getUuid(), new DeletionDetails());
 
 		result = sut.getEventSummaryDetailsByContacts(Arrays.asList(contact.getUuid()));
 		assertTrue(result.isEmpty());
