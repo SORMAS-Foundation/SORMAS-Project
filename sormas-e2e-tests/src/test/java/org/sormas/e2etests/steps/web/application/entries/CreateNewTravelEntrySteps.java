@@ -49,9 +49,11 @@ import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntry
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CASE_PERSON_NAME;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CREATE_CASE_FROM_TRAVEL_ENTRY;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISEASE_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.EDIT_TASK_DE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.FIRST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.INFO_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.LAST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.NEW_TASK_DE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.PERSON_ID_LABEL;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.POINT_OF_ENTRY_CASE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.SAVE_EDIT_TRAVEL_PAGE;
@@ -388,7 +390,23 @@ public class CreateNewTravelEntrySteps implements En {
                   "pointOfEntry",
                   "pointOfEntryDetails"));
         });
-
+    When(
+        "I click NEW TASK in Edit Travel Entry page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(NEW_TASK_DE);
+        });
+    When(
+        "I check if new task is displayed in Task tab on Edit Travel Entry page",
+        () -> {
+          boolean elementVisible = true;
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(EDIT_TASK_DE);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertTrue(elementVisible, "Task is not visible!");
+          softly.assertAll();
+        });
     When(
         "I collect travel UUID from travel entry",
         () -> {

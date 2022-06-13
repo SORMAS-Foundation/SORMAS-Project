@@ -49,4 +49,6 @@ public class EditTravelEntryPage {
   public static final By TRAVEL_ENTRY_CASE_UUID = By.cssSelector("#caseIdLabel");
   public static final By CASE_PERSON_NAME = By.xpath("//div[@class='v-slot'][4]//div//div[2]");
   public static final By INFO_BUTTON = By.id("info");
+  public static final By NEW_TASK_DE = By.id("taskNewTask");
+  public static final By EDIT_TASK_DE = By.id("edit-task-0");
 }

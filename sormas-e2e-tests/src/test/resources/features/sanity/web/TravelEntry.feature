@@ -240,6 +240,19 @@ Feature: Create travel entries
     And I check that Passport Number is not visible in Person search popup
     And I check that Nickname is not visible in Person search popup
 
+  @issue=SORDEV-8043 @env_de
+  Scenario: Test Add TravelEntries to tasks
+    Given I log in as a National User
+    And I click on the Entries button from navbar
+    And I click on the New Travel Entry button from Travel Entries directory
+    When I fill the required fields in a new travel entry form
+    And I click on Save button from the new travel entry form
+    Then I check the created data is correctly displayed on Edit travel entry page for DE version
+    And I click NEW TASK in Edit Travel Entry page
+    Then I fill a new task form with specific data for DE version
+    And I click on Save button in New Task form
+    Then I check if new task is displayed in Task tab on Edit Travel Entry page
+
   @issue=SORDEV-8411 @env_de
   Scenario: Test Travel Entry conversion to case
     Given I log in with National User
