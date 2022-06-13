@@ -268,4 +268,18 @@ public class EditCasePage {
   public static final By OVERWRITE_FOLLOW_UP_UNTIL_DATE_LABEL =
       By.cssSelector("#overwriteFollowUpUntil label");
   public static final By FOLLOW_UP_UNTIL_DATE_INPUT = By.cssSelector("#followUpUntil input");
+  public static final By POINT_OF_ENTRY_TEXT = By.cssSelector("#pointOfEntry input");
+  public static final By POINT_OF_ENTRY_DETAILS = By.cssSelector("#pointOfEntryDetails");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY =
+      By.cssSelector("#caseReferFromPointOfEntry");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY_POPUP_DE =
+      By.xpath(
+          "//div[contains(@class,'v-window-header') and text()='Fall vom Einreiseort weiterleiten']");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY_REGION =
+      By.cssSelector(".popupContent #region div[role='button'");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY_DISTRICT =
+      By.cssSelector(".popupContent #district div[role='button'");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY_SAVE_BUTTON =
+      By.cssSelector(".popupContent #commit");
+  public static final By CASE_ORIGIN = By.cssSelector("#caseOrigin input");
 }

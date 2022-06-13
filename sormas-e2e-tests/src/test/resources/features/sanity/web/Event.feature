@@ -844,3 +844,35 @@ Feature: Create events
     Then I check if error popup is displayed with message Please check the input data
     And I check if error popup contains Date of report has to be after or on the same day as Start date
     And I check if error popup contains Start date has to be before or on the same day as Date of report
+
+  @issue=SORDEV-5563 @env_de
+  Scenario: Add contact person details to facilities event participant
+    Given I log in as a Admin User
+    Then I click on the Configuration button from navbar
+    And I navigate to facilities tab in Configuration
+    And I click on New Entry button in Facilities tab in Configuration
+    Then I set name, region and district in Facilities tab in Configuration
+    And I set Facility Category to "Medizinische Einrichtung" and Facility Type to "Krankenhaus" in Facilities tab in Configuration
+    And I set Facility Contact person first and last name with email address and phone number
+    Then I click on Save Button in new Facility form
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    When I create a new event with specific data for DE version with created facility
+    And I check if data for created facility is automatically imported to the correct fields
+    Then I click on save button on Create New Event Page
+    And I click on the Events button from navbar
+    And I search for specific event with created facility in event directory
+    And I click on the searched event with created facility
+    And I check if data for created facility is automatically imported to the correct fields in Case Person tab
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I add only required data for event participant creation for DE
+    And I set Region to "Voreingestellte Bundesländer" and District to "Voreingestellter Landkreis" in Event Participant edit page
+    Then I set Facility Category to "Medizinische Einrichtung" and  Facility Type to "Krankenhaus"
+    And I set facility name to created facility
+    And I check if data for created facility is automatically imported to the correct fields in Case Person tab
+    Then I click on save button on Create New Event Page
+    Then I click on the Configuration button from navbar
+    And I navigate to facilities tab in Configuration
+    Then I search last created facility
+    Then I click on edit button for the last searched facility
+    And I archive facility
