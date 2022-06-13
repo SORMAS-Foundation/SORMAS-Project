@@ -11607,11 +11607,11 @@ ALTER TABLE externalmessage_history ALTER COLUMN labexternalid TYPE VARCHAR(255)
 ALTER TABLE externalmessage RENAME COLUMN labexternalid TO labexternalids;
 ALTER TABLE externalmessage_history RENAME COLUMN labexternalid TO labexternalids;
 
-ALTER TABLE externalmessage ALTER COLUMN testlabexternalid TYPE VARCHAR(255)[] USING ARRAY[testlabexternalid];
-ALTER TABLE externalmessage_history ALTER COLUMN testlabexternalid TYPE VARCHAR(255)[] USING ARRAY[testlabexternalid];
+ALTER TABLE testreport ALTER COLUMN testlabexternalid TYPE VARCHAR(255)[] USING ARRAY[testlabexternalid];
+ALTER TABLE testreport_history ALTER COLUMN testlabexternalid TYPE VARCHAR(255)[] USING ARRAY[testlabexternalid];
 
-ALTER TABLE externalmessage RENAME COLUMN testlabexternalid TO testlabexternalids;
-ALTER TABLE externalmessage_history RENAME COLUMN testlabexternalid TO testlabexternalids;
+ALTER TABLE testreport RENAME COLUMN testlabexternalid TO testlabexternalids;
+ALTER TABLE testreport_history RENAME COLUMN testlabexternalid TO testlabexternalids;
 
 INSERT INTO schema_version (version_number, comment) VALUES (468, 'Compare the list of Organization Ids with facilities in SORMAS #8949');
 
