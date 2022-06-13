@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import de.symeda.sormas.api.person.PresentCondition;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
@@ -149,6 +150,9 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		EventReferenceDto eventRef = event.toReference();
 		final String EXISTING_PERSON_LAST_NAME = "Heinz";
 		PersonDto person = creator.createPerson("Günther", EXISTING_PERSON_LAST_NAME);
+		person.setPresentCondition(PresentCondition.UNKNOWN);
+		getPersonFacade().savePerson(person);
+
 		creator.createCase(
 			user.toReference(),
 			person.toReference(),
@@ -192,7 +196,9 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		assertEquals(1, eventParticipantFacade.count(new EventParticipantCriteria().withEvent(eventRef)));
 		assertEquals(person.getUuid(), importedEventParticipant.getPersonUuid());
 		assertEquals(person.getFirstName(), importedPerson.getFirstName());
+		// person data changed
 		assertNotEquals(EXISTING_PERSON_LAST_NAME, importedPerson.getLastName());
+		assertNotEquals(PresentCondition.UNKNOWN, importedPerson.getPresentCondition());
 
 		assertEquals(1, getPersonFacade().getAllUuids().size());
 	}

@@ -56,7 +56,6 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonHelper;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -312,7 +311,7 @@ public class EventParticipantImporter extends DataImporter {
 				if (i != entryHeaderPath.length - 1) {
 					currentElement = new PropertyDescriptor(headerPathElementName, currentElement.getClass()).getReadMethod().invoke(currentElement);
 					// Set the current element to the created person
-					if (currentElement instanceof PersonReferenceDto) {
+					if (currentElement instanceof PersonDto) {
 						currentElement = person;
 					}
 				} else if (EventParticipantExportDto.BIRTH_DATE.equals(headerPathElementName)) {
