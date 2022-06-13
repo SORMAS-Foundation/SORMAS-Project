@@ -126,7 +126,7 @@ public class ExternalMessageMapper {
 					sample.getSpecimenCondition(),
 					externalMessage.getSpecimenCondition(),
 					SampleDto.SPECIMEN_CONDITION),
-				Mapping.of(sample::setLab, sample.getLab(), getLabReference(externalMessage.getLabExternalIds()), SampleDto.LAB),
+				Mapping.of(sample::setLab, sample.getLab(), getLabReference(externalMessage.getReporterExternalIds()), SampleDto.LAB),
 				Mapping.of(sample::setLabDetails, sample.getLabDetails(), externalMessage.getReporterName(), SampleDto.LAB_DETAILS)));
 
 		if (externalMessage.getSampleReceivedDate() != null) {

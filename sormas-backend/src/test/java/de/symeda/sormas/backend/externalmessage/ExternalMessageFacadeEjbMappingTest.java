@@ -76,7 +76,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		source.setSampleMaterial(SampleMaterial.NASAL_SWAB);
 		source.setSampleMaterialText("Sample material text");
 		source.setReporterName("Test Lab Name");
-		source.setLabExternalIds(Arrays.asList("Test Lab External Id 1", "Test Lab External Id 2"));
+		source.setReporterExternalIds(Arrays.asList("Test Lab External Id 1", "Test Lab External Id 2"));
 		source.setReporterPostalCode("Test Lab Postal Code");
 		source.setReporterCity("Test Lab City");
 		source.setSpecimenCondition(SpecimenCondition.ADEQUATE);
@@ -113,7 +113,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getSampleMaterial(), result.getSampleMaterial());
 		assertEquals(source.getSampleMaterialText(), result.getSampleMaterialText());
 		assertEquals(source.getReporterName(), result.getReporterName());
-		assertEquals(source.getLabExternalIds(), result.getLabExternalIds());
+		assertEquals(source.getReporterExternalIds(), result.getReporterExternalIds());
 		assertEquals(source.getReporterPostalCode(), result.getReporterPostalCode());
 		assertEquals(source.getReporterCity(), result.getReporterCity());
 		assertEquals(source.getSpecimenCondition(), result.getSpecimenCondition());
@@ -165,7 +165,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		source.setSampleMaterial(SampleMaterial.NASAL_SWAB);
 		source.setSampleMaterialText("Sample material text");
 		source.setReporterName("Test Lab Name");
-		source.setLabExternalIds(Arrays.asList("Test Lab External Id 1", "Test Lab External Id 2"));
+		source.setReporterExternalIds(Arrays.asList("Test Lab External Id 1", "Test Lab External Id 2"));
 		source.setReporterPostalCode("Test Lab Postal Code");
 		source.setReporterCity("Test Lab City");
 		source.setSpecimenCondition(SpecimenCondition.ADEQUATE);
@@ -203,7 +203,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getSampleMaterial(), result.getSampleMaterial());
 		assertEquals(source.getSampleMaterialText(), result.getSampleMaterialText());
 		assertEquals(source.getReporterName(), result.getReporterName());
-		assertEquals(source.getLabExternalIds(), result.getLabExternalIds());
+		assertEquals(source.getReporterExternalIds(), result.getReporterExternalIds());
 		assertEquals(source.getReporterPostalCode(), result.getReporterPostalCode());
 		assertEquals(source.getReporterCity(), result.getReporterCity());
 		assertEquals(source.getSpecimenCondition(), result.getSpecimenCondition());

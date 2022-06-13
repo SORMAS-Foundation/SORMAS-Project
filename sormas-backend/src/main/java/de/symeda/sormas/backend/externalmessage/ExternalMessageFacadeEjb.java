@@ -138,7 +138,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonPhone(source.getPersonPhone());
 		target.setPersonEmail(source.getPersonEmail());
 		target.setReporterCity(source.getReporterCity());
-		target.setLabExternalIds(source.getLabExternalIds());
+		target.setReporterExternalIds(source.getReporterExternalIds());
 		target.setReporterName(source.getReporterName());
 		target.setReporterPostalCode(source.getReporterPostalCode());
 		if (source.getTestReports() != null) {
@@ -203,7 +203,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonPhone(source.getPersonPhone());
 		target.setPersonEmail(source.getPersonEmail());
 		target.setReporterCity(source.getReporterCity());
-		target.setLabExternalIds(source.getLabExternalIds());
+		target.setReporterExternalIds(source.getReporterExternalIds());
 		target.setReporterName(source.getReporterName());
 		target.setReporterPostalCode(source.getReporterPostalCode());
 		target.setStatus(source.getStatus());

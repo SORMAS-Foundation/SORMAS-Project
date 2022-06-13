@@ -54,7 +54,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String SAMPLE_MATERIAL_TEXT = "sampleMaterialText";
 	public static final String SPECIMEN_CONDITION = "specimenCondition";
 	public static final String REPORTER_NAME = "reporterName";
-	public static final String LAB_EXTERNAL_IDS = "labExternalIds";
+	public static final String REPORTER_EXTERNAL_IDS = "reporterExternalIds";
 	public static final String REPORTER_POSTAL_CODE = "reporterPostalCode";
 	public static final String REPORTER_CITY = "reporterCity";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
@@ -87,7 +87,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	private SpecimenCondition specimenCondition;
 
 	private String reporterName;
-	private List<String> labExternalIds;
+	private List<String> reporterExternalIds;
 	private String reporterPostalCode;
 	private String reporterCity;
 
@@ -207,15 +207,15 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	@Type(type = "list-array")
 	@Column(
-			name = "labexternalids",
+			name = "reporterexternalids",
 			columnDefinition = "VARCHAR(255) ARRAY"
 	)
-	public List<String> getLabExternalIds() {
-		return labExternalIds;
+	public List<String> getReporterExternalIds() {
+		return reporterExternalIds;
 	}
 
-	public void setLabExternalIds(List<String> labExternalIds) {
-		this.labExternalIds = labExternalIds;
+	public void setReporterExternalIds(List<String> reporterExternalIds) {
+		this.reporterExternalIds = reporterExternalIds;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
