@@ -765,7 +765,7 @@ public final class DateHelper {
 		EpiWeek result = null;
 		if (epiWeek != null && CollectionUtils.isNotEmpty(options)) {
 			for (EpiWeek option : options) {
-				if (epiWeek.getWeek() == option.getWeek()) {
+				if (epiWeek.getWeek().equals(option.getWeek())) {
 					result = option;
 					break;
 				}
