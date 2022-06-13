@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -134,7 +133,6 @@ public class DataHelperTest {
 	}
 
 	@Test
-	@Ignore
 	public void testParseDateTimeWithExceptionForEnFormat() throws ParseException {
 		Date date = DateHelper.parseDate("4/21/2021 13:30", new SimpleDateFormat("M/dd/yyy HH:mm"));
 
@@ -155,7 +153,6 @@ public class DataHelperTest {
 	}
 
 	@Test
-	@Ignore
 	public void testParseDateTimeWithExceptionForDeFormat() throws ParseException {
 		Date date = DateHelper.parseDate("4/21/2021 13:30", new SimpleDateFormat("M/dd/yyy HH:mm"));
 
