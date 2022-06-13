@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.contact;
 
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import java.util.function.Consumer;
 
 import com.vaadin.ui.Component;
@@ -28,7 +29,7 @@ public class ContactSelectionField extends CustomField<SimilarContactDto> {
 	public static final String SELECT_CONTACT = "selectContact";
 
 	private final ContactDto referenceContact;
-	private final PersonDto referencePerson;
+	private final PersonReferenceDto referencePerson;
 	private final String infoText;
 	private final String referenceFirstName;
 	private final String referenceLastName;
@@ -38,7 +39,7 @@ public class ContactSelectionField extends CustomField<SimilarContactDto> {
 	private RadioButtonGroup<String> rbCreateContact;
 	private Consumer<Boolean> selectionChangeCallback;
 
-	public ContactSelectionField(ContactDto referenceContact, PersonDto referencePerson, String infoText) {
+	public ContactSelectionField(ContactDto referenceContact, PersonReferenceDto referencePerson, String infoText) {
 		this.referenceContact = referenceContact;
 		this.referencePerson = referencePerson;
 		this.infoText = infoText;
@@ -51,7 +52,7 @@ public class ContactSelectionField extends CustomField<SimilarContactDto> {
 	private void initializeGrid() {
 
 		final ContactSimilarityCriteria criteria = new ContactSimilarityCriteria(
-			referencePerson.toReference(),
+			referencePerson,
 			referenceContact.getCaze(),
 			referenceContact.getDisease(),
 			referenceContact.getLastContactDate(),

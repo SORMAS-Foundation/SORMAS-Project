@@ -520,7 +520,7 @@ public class ContactController {
 
 	public void selectOrCreateContact(final ContactDto contact, final PersonDto personDto, Consumer<String> resultConsumer) {
 		ContactSelectionField contactSelect =
-			new ContactSelectionField(contact, personDto, I18nProperties.getString(Strings.infoSelectOrCreateContact));
+			new ContactSelectionField(contact, personDto.toReference(), I18nProperties.getString(Strings.infoSelectOrCreateContact));
 		contactSelect.setWidth(1024, Unit.PIXELS);
 
 		if (contactSelect.hasMatches()) {
