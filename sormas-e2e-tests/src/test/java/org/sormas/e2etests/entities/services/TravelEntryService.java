@@ -101,4 +101,26 @@ public class TravelEntryService {
         .pointOfEntryDetails(pointOfEntry)
         .build();
   }
+
+  public TravelEntry buildGeneratedEntryWithDifferentPointOfEntryDE() {
+    firstName = faker.name().firstName() + "a";
+    lastName = faker.name().lastName() + "b";
+
+    return TravelEntry.builder()
+        .reportDate(LocalDate.now())
+        .dateOfArrival(LocalDate.now())
+        .firstName(firstName)
+        .lastName(lastName)
+        .sex(GenderValues.getRandomGenderDE())
+        .reportDate(LocalDate.now())
+        .pointOfEntryRegion("Berlin")
+        .pointOfEntryDistrict("SK Berlin Mitte")
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .disease("COVID-19")
+        .pointOfEntry("Anderer Einreiseort")
+        .pointOfEntryDetails("Automated test dummy description")
+        .build();
+  }
 }

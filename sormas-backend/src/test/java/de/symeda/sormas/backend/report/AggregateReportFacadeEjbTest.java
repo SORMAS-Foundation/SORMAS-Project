@@ -1,17 +1,16 @@
 /*
- *  SORMAS® - Surveillance Outbreak Response Management & Analysis System
- *  Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *  You should have received a copy of the GNU General Public License
- *  along with this program. If not, see <https://www.gnu.org/licenses/>.
- *
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.backend.report;
@@ -34,7 +33,7 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
-public class AggregateReportFacadeEjbTest  extends AbstractBeanTest {
+public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 
 	TestDataCreator.RDCF rdcf;
 	private UserDto officer;
@@ -73,11 +72,10 @@ public class AggregateReportFacadeEjbTest  extends AbstractBeanTest {
 		informant2.setAssociatedOfficer(officer.toReference());
 		getUserFacade().saveUser(informant2);
 
-
 	}
 
 	@Test
-	public void testAggregateReportWithHospitalInformant(){
+	public void testAggregateReportWithHospitalInformant() {
 		loginWith(informant1);
 
 		EpiWeek epiWeek = DateHelper.getEpiWeek(new Date());
@@ -88,19 +86,24 @@ public class AggregateReportFacadeEjbTest  extends AbstractBeanTest {
 		aggregateReportDto.setNewCases(1);
 		aggregateReportDto.setDeaths(3);
 		aggregateReportDto.setLabConfirmations(2);
+		aggregateReportDto.setYear(epiWeek.getYear());
 		aggregateReportDto.setEpiWeek(epiWeek.getWeek());
 		aggregateReportDto.setRegion(rdcf.region);
 		aggregateReportDto.setDistrict(rdcf.district);
 		aggregateReportDto.setHealthFacility(rdcf.facility);
 		getAggregateReportFacade().saveAggregateReport(aggregateReportDto);
 
-		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(new AggregateReportCriteria().healthFacility(rdcf.facility));
+		AggregateReportCriteria criteria = new AggregateReportCriteria().healthFacility(rdcf.facility);
+		criteria.setShowZeroRowsForGrouping(true);
+		criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
+
+		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
 		Assert.assertEquals(24, indexList.size());
 		Assert.assertEquals(1, indexList.stream().filter(aggregatedCaseCountDto -> aggregatedCaseCountDto.getDeaths() == 3).count());
 	}
 
 	@Test
-	public void testAggregateReportsSorting(){
+	public void testAggregateReportsSorting() {
 		loginWith(informant1);
 
 		EpiWeek epiWeek = DateHelper.getEpiWeek(new Date());
@@ -114,7 +117,11 @@ public class AggregateReportFacadeEjbTest  extends AbstractBeanTest {
 		createAggregateReport(epiWeek, "0D_30D");
 		createAggregateReport(epiWeek, "1M_59M");
 
-		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(new AggregateReportCriteria().healthFacility(rdcf.facility));
+		AggregateReportCriteria criteria = new AggregateReportCriteria().healthFacility(rdcf.facility);
+		criteria.setShowZeroRowsForGrouping(true);
+		criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
+
+		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
 		Assert.assertEquals(31, indexList.size());
 
 		Assert.assertEquals("0D_30D", indexList.get(5).getAgeGroup());
@@ -134,6 +141,7 @@ public class AggregateReportFacadeEjbTest  extends AbstractBeanTest {
 		aggregateReportDto.setNewCases(1);
 		aggregateReportDto.setDeaths(3);
 		aggregateReportDto.setLabConfirmations(2);
+		aggregateReportDto.setYear(epiWeek.getYear());
 		aggregateReportDto.setEpiWeek(epiWeek.getWeek());
 		aggregateReportDto.setRegion(rdcf.region);
 		aggregateReportDto.setDistrict(rdcf.district);
