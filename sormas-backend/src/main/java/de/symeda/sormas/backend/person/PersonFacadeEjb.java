@@ -1658,11 +1658,6 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public void mergePerson(PersonDto leadPerson, PersonDto otherPerson) {
-		mergePerson(leadPerson, otherPerson, false, false);
-	}
-
-	@Override
-	public void mergePerson(PersonDto leadPerson, PersonDto otherPerson, boolean overrideValues, boolean skipValidation) {
 		// Make sure the resulting person does not have multiple primary contact details
 		Set<PersonContactDetailType> primaryContactDetailTypes = new HashSet<>();
 		for (PersonContactDetailDto contactDetailDto : leadPerson.getPersonContactDetails()) {
@@ -1681,8 +1676,8 @@ public class PersonFacadeEjb implements PersonFacade {
 			}
 		}
 
-		DtoHelper.copyDtoValues(leadPerson, otherPerson, overrideValues);
-		savePerson(leadPerson, skipValidation);
+		DtoHelper.copyDtoValues(leadPerson, otherPerson, false);
+		savePerson(leadPerson);
 	}
 
 	@Override
