@@ -265,6 +265,7 @@ Feature: Create travel entries
     And I convert the Travel Entry into a case
     Then I check that differing Point Of Entry is correctly displayed on Edit case page
     And I check that Case Origin is set to Point Of Entry
+
   @issue=SORDEV-8037 @env_de
   Scenario: Test Add documents and document templates to TravelEntries
     Given I log in as a National User
