@@ -11601,8 +11601,8 @@ ALTER TABLE externalmessage_history ADD COLUMN caze_id bigint;
 INSERT INTO schema_version (version_number, comment) VALUES (467, '[DEMIS2SORMAS] Introduce processing for physician reports #8980');
 
 -- 2022-06-13 lab organization ids #8949
-ALTER TABLE externalmessage ALTER COLUMN labexternalid TYPE VARCHAR(255)[] USING ARRAY[reporterexternalid];
-ALTER TABLE externalmessage_history ALTER COLUMN labexternalid TYPE VARCHAR(255)[] USING ARRAY[reporterexternalid];
+ALTER TABLE externalmessage ALTER COLUMN labexternalid TYPE VARCHAR(255)[] USING ARRAY[labexternalid];
+ALTER TABLE externalmessage_history ALTER COLUMN labexternalid TYPE VARCHAR(255)[] USING ARRAY[labexternalid];
 
 ALTER TABLE externalmessage RENAME COLUMN labexternalid TO reporterexternalids;
 ALTER TABLE externalmessage_history RENAME COLUMN labexternalid TO reporterexternalids;
