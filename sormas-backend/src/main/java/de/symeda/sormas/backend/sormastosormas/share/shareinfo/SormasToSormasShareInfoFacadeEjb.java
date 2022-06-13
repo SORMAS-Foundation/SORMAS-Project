@@ -97,6 +97,15 @@ public class SormasToSormasShareInfoFacadeEjb implements SormasToSormasShareInfo
 		return target;
 	}
 
+	public boolean hasAnyEntityReference(SormasToSormasShareInfo entity) {
+		return entity.getCaze() != null
+			|| entity.getContact() != null
+			|| entity.getEvent() != null
+			|| entity.getEventParticipant() != null
+			|| entity.getImmunization() != null
+			|| entity.getSample() != null;
+	}
+
 	@LocalBean
 	@Stateless
 	public static class SormasToSormasShareInfoFacadeEjbLocal extends SormasToSormasShareInfoFacadeEjb {

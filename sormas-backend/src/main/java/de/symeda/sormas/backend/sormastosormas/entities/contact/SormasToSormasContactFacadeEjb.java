@@ -32,6 +32,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Strings;
@@ -101,7 +102,7 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 	protected void validateEntitiesBeforeShare(List<Contact> entities, boolean handOverOwnership) throws SormasToSormasException {
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 		for (Contact contact : entities) {
-			if (!contactService.isContactEditAllowed(contact)) {
+			if (!contactService.isContactEditAllowed(contact).equals(EditPermissionType.ALLOWED)) {
 				validationErrors.add(
 					new ValidationErrors(
 						buildContactValidationGroupName(contact),

@@ -36,6 +36,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -55,9 +57,9 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolExc
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.share.ExternalShareStatus;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
@@ -75,9 +77,14 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		Date since = new Date();
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto admin = getUserFacade().getByUserName("admin");
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
@@ -102,21 +109,28 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid()));
 		assertNotNull(getActionFacade().getByUuid(action.getUuid()));
 
-		getEventFacade().deleteEvent(event.getUuid());
+		getEventFacade().delete(event.getUuid(), new DeletionDetails(DeletionReason.OTHER_REASON, "test reason"));
 
 		// Event should be marked as deleted; Event participant should be deleted
 		assertTrue(getEventFacade().getDeletedUuidsSince(since).contains(event.getUuid()));
 		assertTrue(getEventParticipantFacade().getDeletedUuidsSince(since).contains(eventParticipant.getUuid()));
 		assertNull(getActionFacade().getByUuid(action.getUuid()));
+		assertEquals(DeletionReason.OTHER_REASON, getEventFacade().getByUuid(event.getUuid()).getDeletionReason());
+		assertEquals("test reason", getEventFacade().getByUuid(event.getUuid()).getOtherDeletionReason());
 	}
 
 	@Test
 	public void testEventUpdate() {
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto admin = getUserFacade().getByUserName("admin");
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
@@ -138,7 +152,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		event.setEventDesc(testDescription);
 		event.setStartDate(startDate);
 
-		final EventDto updatedEvent = getEventFacade().saveEvent(event);
+		final EventDto updatedEvent = getEventFacade().save(event);
 		Assert.assertEquals(testDescription, updatedEvent.getEventDesc());
 		Assert.assertEquals(startDate, updatedEvent.getStartDate());
 	}
@@ -147,8 +161,13 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	public void testGetIndexList() {
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		creator.createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
@@ -201,7 +220,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	public void testGetExportList() {
 
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		creator.createEvent(
 			EventStatus.SIGNAL,
@@ -230,8 +249,13 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testArchiveOrDearchiveEvent() {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
@@ -252,15 +276,15 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		Date testStartDate = new Date();
 
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 1
-		assertEquals(1, getEventFacade().getAllActiveEventsAfter(null).size());
+		assertEquals(1, getEventFacade().getAllAfter(null).size());
 		assertEquals(1, getEventFacade().getAllActiveUuids().size());
 		assertEquals(1, getEventParticipantFacade().getAllActiveEventParticipantsAfter(null).size());
 		assertEquals(1, getEventParticipantFacade().getAllActiveUuids().size());
 
-		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), true);
+		getEventFacade().archive(event.getUuid(), null);
 
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 0
-		assertEquals(0, getEventFacade().getAllActiveEventsAfter(null).size());
+		assertEquals(0, getEventFacade().getAllAfter(null).size());
 		assertEquals(0, getEventFacade().getAllActiveUuids().size());
 		assertEquals(0, getEventParticipantFacade().getAllActiveEventParticipantsAfter(null).size());
 		assertEquals(0, getEventParticipantFacade().getAllActiveUuids().size());
@@ -268,10 +292,10 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		// getArchivedUuidsSince should return length 1
 		assertEquals(1, getEventFacade().getArchivedUuidsSince(testStartDate).size());
 
-		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), false);
+		getEventFacade().dearchive(Collections.singletonList(event.getUuid()), null);
 
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 1
-		assertEquals(1, getEventFacade().getAllActiveEventsAfter(null).size());
+		assertEquals(1, getEventFacade().getAllAfter(null).size());
 		assertEquals(1, getEventFacade().getAllActiveUuids().size());
 		assertEquals(1, getEventParticipantFacade().getAllActiveEventParticipantsAfter(null).size());
 		assertEquals(1, getEventParticipantFacade().getAllActiveUuids().size());
@@ -304,7 +328,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			Disease.ANTHRAX,
 			rdcf.district);
 		EventFacadeEjbLocal cut = getBean(EventFacadeEjbLocal.class);
-		cut.archiveOrDearchiveEvent(event1.getUuid(), true);
+		cut.archive(event1.getUuid(), null);
 
 		// One other event
 		EventDto event2 = creator.createEvent(
@@ -343,11 +367,12 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		EventDto event = new EventDto();
 		event.setEventStatus(EventStatus.EVENT);
 		event.setReportDateTime(new Date());
-		event.setReportingUser(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference());
+		event
+			.setReportingUser(creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference());
 		event.setEventTitle("Test event");
 		event.setEventLocation(new LocationDto());
 
-		EventDto savedEvent = getEventFacade().saveEvent(event);
+		EventDto savedEvent = getEventFacade().save(event);
 
 		MatcherAssert.assertThat(savedEvent.getUuid(), not(isEmptyOrNullString()));
 		MatcherAssert.assertThat(savedEvent.getEventLocation().getUuid(), not(isEmptyOrNullString()));
@@ -356,7 +381,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testEventCriteriaSharedWithReportingTool() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		EventDto sharedEvent = creator.createEvent(user.toReference());
 		ExternalShareInfo shareInfo = new ExternalShareInfo();
@@ -385,7 +410,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testEventCriteriaChangedSinceLastShareWithReportingTool() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		EventDto sharedEvent = creator.createEvent(user.toReference());
 		ExternalShareInfo shareInfo = new ExternalShareInfo();
@@ -396,7 +421,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		getExternalShareInfoService().ensurePersisted(shareInfo);
 
 		sharedEvent.setEventDesc("Dummy description");
-		getEventFacade().saveEvent(sharedEvent);
+		getEventFacade().save(sharedEvent);
 
 		creator.createEvent(user.toReference());
 		creator.createEvent(user.toReference());
@@ -412,7 +437,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testEventCriteriaLastShareWithReportingToolBetweenDates() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		EventDto sharedEvent = creator.createEvent(user.toReference());
 		ExternalShareInfo shareInfoMarch = new ExternalShareInfo();
@@ -468,7 +493,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetSubordinateEventUuids() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto reportingUser = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER);
+		UserDto reportingUser = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		EventDto event1 = creator.createEvent(reportingUser.toReference());
 		EventDto event2 = creator.createEvent(reportingUser.toReference());
@@ -494,5 +519,32 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		MatcherAssert.assertThat(
 			subordinateEventUuids.toArray(new String[] {}),
 			Matchers.arrayContainingInAnyOrder(subordinateEvent_1_1.getUuid(), subordinateEvent_1_2.getUuid(), subordinateEvent_2_1.getUuid()));
+	}
+
+	@Test
+	public void testGetEventUsersWithoutUsesLimitedToOthersDiseses() {
+		RDCF rdcf = creator.createRDCF();
+		useNationalUserLogin();
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		EventDto event = creator.createEvent(userDto.toReference(), Disease.CORONAVIRUS);
+
+		UserDto limitedCovidNationalUser = creator.createUser(
+			rdcf,
+			"Limited Disease Covid",
+			"National User",
+			Disease.CORONAVIRUS,
+			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto limitedDengueNationalUser = creator.createUser(
+			rdcf,
+			"Limited Disease Dengue",
+			"National User",
+			Disease.DENGUE,
+			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+
+		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUsersHavingEventInJurisdiction(event.toReference());
+		Assert.assertNotNull(userReferenceDtos);
+		Assert.assertTrue(userReferenceDtos.contains(userDto));
+		Assert.assertTrue(userReferenceDtos.contains(limitedCovidNationalUser));
+		Assert.assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
 	}
 }

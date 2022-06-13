@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,4 +62,14 @@ public class ContactsLineListingPage {
       By.cssSelector("[id='lineListingContactLineField_1'] [id='sex'] div");
   public static final By ADD_LINE = By.cssSelector("[id='lineListingAddLine']");
   public static final By LINE_LISTING_ACTION_SAVE = By.cssSelector("[id='actionSave']");
+  public static final By CONTACT_CHOOSE_CASE = By.id("contactChooseCase");
+  public static final By LINE_LISTING_SELECTED_SOURCE_CASE_NAME_AND_ID_TEXT =
+      By.cssSelector("div[class='v-slot'] div[class='v-label v-widget v-label-undef-w']");
+  public static final By LINE_LISTING_DISEASE_OF_SOURCE_CASE =
+      By.cssSelector(
+          "div#lineListingSharedInfoField > .v-has-width.v-layout.v-vertical.v-verticallayout.v-widget div#disease > .v-filterselect-input");
+
+  public static By getLineListingDateReportInputByIndex(String dateOfReportNumber) {
+    return By.xpath(String.format("(//div[@id='dateOfReport']//input)[%s]", dateOfReportNumber));
+  }
 }

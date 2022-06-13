@@ -28,14 +28,12 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
-import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.caze.edit.CaseNewActivity;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.databinding.FragmentEventParticipantEditLayoutBinding;
-import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
 
@@ -84,7 +82,7 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
 
 			@Override
 			public void onClick(View v) {
-				CaseNewActivity.startActivityFromEventPerson(getContext(), record.getUuid());
+				CaseNewActivity.startActivityFromEventPerson(getContext(), record);
 			}
 		});
 	}
@@ -134,10 +132,6 @@ public class EventParticipantEditFragment extends BaseEditFragment<FragmentEvent
 	@Override
 	public void onAfterLayoutBinding(FragmentEventParticipantEditLayoutBinding contentBinding) {
 		setUpFieldVisibilities(contentBinding);
-
-		if (contentBinding.eventParticipantPersonLayout != null) {
-			PersonEditFragment.setUpLayoutBinding(this, record.getPerson(), contentBinding.eventParticipantPersonLayout, record.getEvent());
-		}
 	}
 
 	@Override

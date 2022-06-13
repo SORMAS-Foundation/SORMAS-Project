@@ -19,17 +19,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.annotation.security.RunAs;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
 
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.user.UserService;
 
 @Singleton(name = "EnumService")
-@RunAs(UserRole._SYSTEM)
 public class EnumService {
 
 	private final Map<Class<Enum>, Map<Language, EnumCaption>> enumCaptions = new HashMap<>();

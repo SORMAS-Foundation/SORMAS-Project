@@ -30,6 +30,7 @@ import javax.persistence.criteria.Predicate;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.activityascase.ActivityAsCase;
 import de.symeda.sormas.backend.common.BaseAdoService;
+import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.exposure.Exposure;
 
@@ -58,6 +59,18 @@ public class EpiDataService extends BaseAdoService<EpiData> {
 		Join<EpiData, ActivityAsCase> activitiesAsCaseJoin = epiData.join(EpiData.ACTIVITIES_AS_CASE, JoinType.LEFT);
 
 		return filterBuilder.add(epiData)
+			.add(exposures)
+			.add(exposures, Exposure.LOCATION)
+			.add(activitiesAsCaseJoin)
+			.add(activitiesAsCaseJoin, ActivityAsCase.LOCATION);
+	}
+
+	public <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, From<?, EpiData> epiData) {
+
+		Join<EpiData, Exposure> exposures = epiData.join(EpiData.EXPOSURES, JoinType.LEFT);
+		Join<EpiData, ActivityAsCase> activitiesAsCaseJoin = epiData.join(EpiData.ACTIVITIES_AS_CASE, JoinType.LEFT);
+
+		return builder.add(epiData)
 			.add(exposures)
 			.add(exposures, Exposure.LOCATION)
 			.add(activitiesAsCaseJoin)

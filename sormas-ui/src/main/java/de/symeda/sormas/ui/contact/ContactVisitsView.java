@@ -156,7 +156,7 @@ public class ContactVisitsView extends AbstractContactView {
 			topLayout.addComponent(newButton);
 			topLayout.setComponentAlignment(newButton, Alignment.MIDDLE_RIGHT);
 
-			final ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(this.getContactRef().getUuid());
+			final ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(this.getContactRef().getUuid());
 			if (contactDto.getResultingCase() != null) {
 				newButton.setEnabled(false);
 				final Label label = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
@@ -190,7 +190,7 @@ public class ContactVisitsView extends AbstractContactView {
 
 		// Hide the "New visit" button for converted contacts
 		if (newButton != null
-			&& FacadeProvider.getContactFacade().getContactByUuid(getContactRef().getUuid()).getContactStatus() == ContactStatus.CONVERTED) {
+			&& FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid()).getContactStatus() == ContactStatus.CONVERTED) {
 			newButton.setVisible(false);
 		}
 

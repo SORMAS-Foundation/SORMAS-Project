@@ -18,6 +18,7 @@
 
 package de.symeda.sormas.ui;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.BufferedReader;
@@ -40,9 +41,7 @@ import com.opencsv.CSVReader;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
-import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -57,8 +56,9 @@ import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.caseimport.CaseImportFacadeEjb.CaseImportFacadeEjbLocal;
@@ -78,9 +78,7 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
-import de.symeda.sormas.backend.user.CurrentUser;
 import de.symeda.sormas.backend.user.CurrentUserService;
-import de.symeda.sormas.backend.user.UserService;
 import info.novatec.beantest.api.BaseBeanTest;
 
 public abstract class AbstractBeanTest extends BaseBeanTest {
@@ -95,18 +93,37 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 	public void init() {
 		MockProducer.resetMocks();
 		initH2Functions();
-
+		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
+		System.setProperty("java.naming.factory.initial", MockProducer.class.getCanonicalName());
 		I18nProperties.setUserLanguage(Language.EN);
-		UserDto user = creator.createUser(null, null, null, null, "ad", "min", Language.EN, UserRole.ADMIN, UserRole.NATIONAL_USER);
+		UserDto user = creator.createUser(
+			null,
+			null,
+			null,
+			null,
+			"ad",
+			"min",
+			Language.EN,
+			creator.getUserRoleReference(DefaultUserRole.ADMIN),
+			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
+
+		// see CurrentUserService.hasRight
+//		when(MockProducer.getSessionContext().isCallerInRole(any(String.class))).thenAnswer(invocationOnMock -> {
+//			String role = invocationOnMock.getArgument(0);
+//			UserRight userRight = UserRight.valueOf(role);
+//			return getCurrentUserService().getCurrentUser()
+//				.getUserRoles()
+//				.stream()
+//				.anyMatch(userRole -> userRole.getUserRights().contains(userRight));
+//		});
 	}
 
 	private void initH2Functions() {
 		EntityManager em = getEntityManager();
 		em.getTransaction().begin();
 		Query nativeQuery = em.createNativeQuery("CREATE ALIAS similarity FOR \"de.symeda.sormas.ui.H2Function.similarity\"");
-		nativeQuery.executeUpdate();
-		nativeQuery = em.createNativeQuery("CREATE ALIAS array_to_string FOR \"de.symeda.sormas.ui.H2Function.array_to_string\"");
 		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS similarity_operator FOR \"de.symeda.sormas.ui.H2Function.similarity_operator\"");
 		nativeQuery.executeUpdate();
@@ -131,15 +148,11 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(CurrentUserService.class);
 	}
 
-	public UserService getUserService() {
-		return getBean(UserService.class);
-	}
-
 	public PersonFacade getPersonFacade() {
 		return getBean(PersonFacadeEjbLocal.class);
 	}
 
-	public CaseFacade getCaseFacade() {
+	public CaseFacadeEjbLocal getCaseFacade() {
 		return getBean(CaseFacadeEjbLocal.class);
 	}
 
@@ -151,7 +164,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal.class);
 	}
 
-	public ContactFacade getContactFacade() {
+	public ContactFacadeEjbLocal getContactFacade() {
 		return getBean(ContactFacadeEjbLocal.class);
 	}
 
@@ -217,7 +230,5 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	protected void loginWith(UserDto user) {
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
-		final CurrentUser currentUser = getCurrentUserService().getCurrentUser();
-		getUserService().setCurrentUser(currentUser.getUser());
 	}
 }

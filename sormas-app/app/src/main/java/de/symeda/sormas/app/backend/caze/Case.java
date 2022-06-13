@@ -18,6 +18,12 @@ package de.symeda.sormas.app.backend.caze;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -25,12 +31,6 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -58,6 +58,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.app.backend.caze.porthealthinfo.PortHealthInfo;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
+import de.symeda.sormas.app.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.epidata.EpiData;
@@ -101,6 +102,7 @@ public class Case extends PseudonymizableAdo {
 	public static final String REGION = "region";
 	public static final String COMPLETENESS = "completeness";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
+	public static final String HEALTH_CONDITIONS = "healthConditions";
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
 	private Person person;
@@ -216,6 +218,9 @@ public class Case extends PseudonymizableAdo {
 
 	@Enumerated(EnumType.STRING)
 	private YesNoUnknown pregnant;
+
+	@DatabaseField(foreign = true, foreignAutoRefresh = true)
+	private HealthConditions healthConditions;
 
 	@Enumerated(EnumType.STRING)
 	@DatabaseField(columnName = "vaccination")
@@ -652,6 +657,14 @@ public class Case extends PseudonymizableAdo {
 
 	public void setInvestigationStatus(InvestigationStatus investigationStatus) {
 		this.investigationStatus = investigationStatus;
+	}
+
+	public HealthConditions getHealthConditions() {
+		return healthConditions;
+	}
+
+	public void setHealthConditions(HealthConditions healthConditions) {
+		this.healthConditions = healthConditions;
 	}
 
 	public YesNoUnknown getPregnant() {

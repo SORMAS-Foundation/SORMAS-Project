@@ -20,7 +20,6 @@ package de.symeda.sormas.rest;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -34,10 +33,14 @@ import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.caze.CoreAndPersonDto;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
@@ -54,21 +57,21 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Path("/contacts")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-@RolesAllowed({
-	"USER",
-	"REST_USER" })
 public class ContactResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
 	public List<ContactDto> getAllContacts(@PathParam("since") long since) {
-		return FacadeProvider.getContactFacade().getAllActiveContactsAfter(new Date(since));
+		return FacadeProvider.getContactFacade().getAllAfter(new Date(since));
 	}
 
 	@GET
 	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
-	public List<ContactDto> getAllContacts(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
-		return FacadeProvider.getContactFacade().getAllActiveContactsAfter(new Date(since), size, lastSynchronizedUuid);
+	public List<ContactDto> getAllContacts(
+		@PathParam("since") long since,
+		@PathParam("size") int size,
+		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+		return FacadeProvider.getContactFacade().getAllAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
 	@POST
@@ -88,9 +91,15 @@ public class ContactResource extends EntityDtoResource {
 	@POST
 	@Path("/push")
 	public List<PushResult> postContacts(@Valid List<ContactDto> dtos) {
-
-		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getContactFacade()::saveContact);
+		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getContactFacade()::save);
 		return result;
+	}
+
+	@POST
+	@Path("/pushWithPerson")
+	public CoreAndPersonDto<ContactDto> postContact(@Valid CoreAndPersonDto<ContactDto> dto) {
+		return FacadeProvider.getContactFacade().save(dto);
+
 	}
 
 	@GET
@@ -100,9 +109,21 @@ public class ContactResource extends EntityDtoResource {
 	}
 
 	@GET
+	@Path("/archived/{since}")
+	public List<String> getArchivedUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getContactFacade().getArchivedUuidsSince(new Date(since));
+	}
+
+	@GET
 	@Path("/deleted/{since}")
 	public List<String> getDeletedUuidsSince(@PathParam("since") long since) {
 		return FacadeProvider.getContactFacade().getDeletedUuidsSince(new Date(since));
+	}
+
+	@GET
+	@Path("/obsolete/{since}")
+	public List<String> getObsoleteUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getContactFacade().getObsoleteUuidsSince(new Date(since));
 	}
 
 	@POST
@@ -113,6 +134,16 @@ public class ContactResource extends EntityDtoResource {
 		@QueryParam("size") int size) {
 		return FacadeProvider.getContactFacade()
 			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
+	}
+
+	@POST
+	@Path("/detailedIndexList")
+	public Page<ContactIndexDetailedDto> getIndexDetailedList(
+		@RequestBody CriteriaWithSorting<ContactCriteria> criteriaWithSorting,
+		@QueryParam("offset") int offset,
+		@QueryParam("size") int size) {
+		return FacadeProvider.getContactFacade()
+			.getIndexDetailedPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
 	@POST
@@ -129,13 +160,13 @@ public class ContactResource extends EntityDtoResource {
 	@POST
 	@Path("/delete")
 	public List<String> delete(List<String> uuids) {
-		return FacadeProvider.getContactFacade().deleteContacts(uuids);
+		return FacadeProvider.getContactFacade().deleteContacts(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
 	}
 
 	@GET
 	@Path("/{uuid}")
 	public ContactDto getByUuid(@PathParam("uuid") String uuid) {
-		return FacadeProvider.getContactFacade().getContactByUuid(uuid);
+		return FacadeProvider.getContactFacade().getByUuid(uuid);
 	}
 
 }

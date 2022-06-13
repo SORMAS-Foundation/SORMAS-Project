@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.ui.task;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
@@ -45,6 +43,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -55,7 +54,6 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -216,7 +214,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			// For facility users, this checks where the facility is located and considers the district & community of the faciliy the "higher level"
 			// For national users, there is no higher level
 			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ASSIGN_TASKS_TO_HIGHER_LEVEL)
-				&& UserRole.getJurisdictionLevel(userDto.getUserRoles()) != JurisdictionLevel.NATION) {
+				&& UserProvider.getCurrent().getJurisdictionLevel() != JurisdictionLevel.NATION) {
 
 				List<UserReferenceDto> superordinateUsers = FacadeProvider.getUserFacade().getUsersWithSuperiorJurisdiction(userDto);
 				if (superordinateUsers != null) {
@@ -330,22 +328,24 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			boolean creating = value.getCreationDate() == null;
 
 			UserDto user = UserProvider.getCurrent().getUser();
-			JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(user.getUserRoles());
+			JurisdictionLevel jurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
 			boolean creator = value.getCreatorUser() != null && user.getUuid().equals(value.getCreatorUser().getUuid());
 			boolean nationalOrAdmin = jurisdictionLevel == null || jurisdictionLevel == JurisdictionLevel.NATION;
-			boolean supervisor = UserRole.isSupervisor(user.getUserRoles());
+			boolean regional = jurisdictionLevel == JurisdictionLevel.REGION;
 			boolean assignee = user.equals(getFieldGroup().getField(TaskDto.ASSIGNEE_USER).getValue());
+			boolean freeEditingAllowed = FacadeProvider.getFeatureConfigurationFacade()
+				.isPropertyValueTrue(FeatureType.TASK_MANAGEMENT, FeatureTypeProperty.ALLOW_FREE_EDITING);
 
-			setVisible(!creating || assignee || nationalOrAdmin, TaskDto.ASSIGNEE_REPLY, TaskDto.TASK_STATUS);
-			if (creating && !assignee && !nationalOrAdmin) {
+			setVisible(freeEditingAllowed || !creating || assignee || nationalOrAdmin, TaskDto.ASSIGNEE_REPLY, TaskDto.TASK_STATUS);
+			if (freeEditingAllowed || creating && !assignee && !nationalOrAdmin) {
 				discard(TaskDto.ASSIGNEE_REPLY, TaskDto.TASK_STATUS);
 			}
 
 			if (UserProvider.getCurrent().hasUserRight(editOrCreateUserRight)) {
-				setReadOnly(!(assignee || creator || nationalOrAdmin), TaskDto.TASK_STATUS);
-				setReadOnly(!(assignee || nationalOrAdmin), TaskDto.ASSIGNEE_REPLY);
+				setReadOnly(!(freeEditingAllowed || assignee || creator || nationalOrAdmin), TaskDto.TASK_STATUS);
+				setReadOnly(!(freeEditingAllowed || assignee || nationalOrAdmin), TaskDto.ASSIGNEE_REPLY);
 				setReadOnly(
-					!(creator || nationalOrAdmin),
+					!(freeEditingAllowed || creator || nationalOrAdmin),
 					TaskDto.TASK_TYPE,
 					TaskDto.PRIORITY,
 					TaskDto.SUGGESTED_START,
@@ -354,7 +354,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 					TaskDto.CREATOR_COMMENT,
 					TaskDto.OBSERVER_USERS);
 				setReadOnly(
-					!(creator || supervisor || nationalOrAdmin),
+					!(freeEditingAllowed || creator || regional || nationalOrAdmin),
 					TaskDto.PRIORITY,
 					TaskDto.SUGGESTED_START,
 					TaskDto.DUE_DATE,

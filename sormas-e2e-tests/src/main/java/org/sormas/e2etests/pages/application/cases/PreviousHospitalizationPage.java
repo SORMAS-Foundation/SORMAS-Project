@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,4 +48,10 @@ public class PreviousHospitalizationPage {
   public static final By END_OF_STAY_DATE_INPUT =
       By.cssSelector(".v-window #intensiveCareUnitEnd input");
   public static final By DONE_BUTTON = By.cssSelector(".v-window #commit");
+  public static final By ADMITTED_AS_INPATIENT =
+      By.xpath("//*[contains(text(), 'Was patient admitted at the facility as an inpatient?'");
+  public static final By DATE_OF_ISOLATION = By.cssSelector(".popupContent #isolationDate input");
+  public static final By DISCARD_BUTTON = By.cssSelector(".v-window #discard");
+  public static final By WAS_THE_PATIENT_ADMITTED_AS_INPATIENT_OPTIONS =
+      By.cssSelector(".popupContent #admittedToHealthFacility label");
 }

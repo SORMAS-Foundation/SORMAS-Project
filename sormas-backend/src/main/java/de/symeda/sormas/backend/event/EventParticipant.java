@@ -30,6 +30,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
@@ -158,7 +159,11 @@ public class EventParticipant extends CoreAdo implements SormasToSormasShareable
 	}
 
 	@Override
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = {
+			CascadeType.PERSIST,
+			CascadeType.MERGE,
+			CascadeType.DETACH,
+			CascadeType.REFRESH })
 	@AuditedIgnore
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;

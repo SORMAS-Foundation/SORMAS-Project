@@ -22,6 +22,7 @@ package de.symeda.sormas.ui.events.eventLink;
 
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
@@ -48,9 +49,12 @@ public class EventList extends PaginationList<EventIndexDto> {
 	private final EventCriteria eventCriteria = new EventCriteria();
 	private final Label noEventLabel;
 	private BiConsumer<Integer, EventListEntry> addUnlinkEventListener;
+	private final Consumer<Runnable> actionCallback;
 
-	public EventList(CaseReferenceDto caseReferenceDto) {
+	public EventList(CaseReferenceDto caseReferenceDto, Consumer<Runnable> actionCallback) {
+
 		super(5);
+		this.actionCallback = actionCallback;
 		eventCriteria.caze(caseReferenceDto);
 		eventCriteria.setUserFilterIncluded(false);
 		noEventLabel = new Label(I18nProperties.getCaption(Captions.eventNoEventLinkedToCase));
@@ -81,8 +85,10 @@ public class EventList extends PaginationList<EventIndexDto> {
 		};
 	}
 
-	public EventList(PersonReferenceDto personRef) {
+	public EventList(PersonReferenceDto personRef, Consumer<Runnable> actionCallback) {
+
 		super(5);
+		this.actionCallback = actionCallback;
 		eventCriteria.setPerson(personRef);
 		eventCriteria.setUserFilterIncluded(false);
 		noEventLabel = new Label(I18nProperties.getCaption(Captions.eventNoEventLinkedToCase));
@@ -97,8 +103,10 @@ public class EventList extends PaginationList<EventIndexDto> {
 		};
 	}
 
-	public EventList(EventReferenceDto superordinateEvent) {
+	public EventList(EventReferenceDto superordinateEvent, Consumer<Runnable> actionCallback) {
+
 		super(5);
+		this.actionCallback = actionCallback;
 		eventCriteria.superordinateEvent(superordinateEvent);
 		eventCriteria.setUserFilterIncluded(false);
 		noEventLabel = new Label(I18nProperties.getString(Strings.infoNoSubordinateEvents));
@@ -116,6 +124,7 @@ public class EventList extends PaginationList<EventIndexDto> {
 
 	@Override
 	public void reload() {
+
 		List<EventIndexDto> events = FacadeProvider.getEventFacade().getIndexList(eventCriteria, 0, maxDisplayedEntries * 20, null);
 
 		setEntries(events);
@@ -130,6 +139,7 @@ public class EventList extends PaginationList<EventIndexDto> {
 
 	@Override
 	protected void drawDisplayedEntries() {
+
 		List<EventIndexDto> displayedEntries = getDisplayedEntries();
 		for (int i = 0, displayedEntriesSize = displayedEntries.size(); i < displayedEntriesSize; i++) {
 			EventIndexDto event = displayedEntries.get(i);
@@ -142,7 +152,8 @@ public class EventList extends PaginationList<EventIndexDto> {
 				}
 				listEntry.addEditListener(
 					i,
-					(ClickListener) clickEvent -> ControllerProvider.getEventController().navigateToData(listEntry.getEvent().getUuid()));
+					(ClickListener) clickEvent -> actionCallback
+						.accept(() -> ControllerProvider.getEventController().navigateToData(listEntry.getEvent().getUuid())));
 			}
 			listLayout.addComponent(listEntry);
 		}

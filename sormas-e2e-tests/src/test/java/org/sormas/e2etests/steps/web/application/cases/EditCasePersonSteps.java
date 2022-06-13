@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,25 +26,71 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Case;
+import org.sormas.e2etests.entities.services.CaseService;
 import org.sormas.e2etests.enums.CaseClassification;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.Case;
-import org.sormas.e2etests.services.CaseService;
 import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 public class EditCasePersonSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   protected Case collectedCase;
-  protected Case createdCase;
+  public static Case createdCase;
   private static Case addressData;
 
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMMM/d/yyyy");
+  public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
 
   @Inject
-  public EditCasePersonSteps(final WebDriverHelpers webDriverHelpers, CaseService caseService) {
+  public EditCasePersonSteps(
+      final WebDriverHelpers webDriverHelpers, CaseService caseService, SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
+
+    When(
+        "I set death date for person ([^\"]*) month ago",
+        (String dateOfDeath) -> {
+          LocalDate date = LocalDate.now().minusMonths(Long.parseLong(dateOfDeath));
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          webDriverHelpers.fillInWebElement(DATE_OF_DEATH_INPUT, formatter.format(date));
+        });
+
+    When(
+        "I set death date for person ([^\"]*) days ago",
+        (String dateOfDeath) -> {
+          LocalDate date = LocalDate.now().minusDays(Long.parseLong(dateOfDeath));
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          webDriverHelpers.clearWebElement(DATE_OF_DEATH_INPUT);
+          webDriverHelpers.fillInWebElement(DATE_OF_DEATH_INPUT, formatter.format(date));
+        });
+
+    When(
+        "I change Cause of death to ([^\"]*)",
+        (String causeOfDeath) ->
+            webDriverHelpers.selectFromCombobox(CASE_OF_DEATH_COMBOBOX, causeOfDeath));
+
+    When(
+        "I check if date of outcome is updated for ([^\"]*) month ago",
+        (String dateOfDeath) -> {
+          String date = webDriverHelpers.getValueFromWebElement(DATE_OF_OUTCOME_INPUT);
+          LocalDate deathDate = LocalDate.now().minusMonths(Long.parseLong(dateOfDeath));
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          softly.assertEquals(formatter.format(deathDate), date, "Date is not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if date of outcome is updated for ([^\"]*) days ago",
+        (String dateOfDeath) -> {
+          String date = webDriverHelpers.getValueFromWebElement(DATE_OF_OUTCOME_INPUT);
+          LocalDate deathDate = LocalDate.now().minusDays(Long.parseLong(dateOfDeath));
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          softly.assertEquals(formatter.format(deathDate), date, "Date is not equal");
+          softly.assertAll();
+        });
 
     When(
         "I check the created data is correctly displayed on Edit case person page",
@@ -74,17 +120,25 @@ public class EditCasePersonSteps implements En {
         (String expectedCaseClassification) -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 30);
           String caseClassificationValue =
-              webDriverHelpers.getValueFromWebElement(CASE_CLASSIFICATION_INPUT);
+              webDriverHelpers.getTextFromWebElement(CASE_CLASSIFICATION_SPAN);
           Assert.assertEquals(
               caseClassificationValue,
-              CaseClassification.getUIValueFor(expectedCaseClassification),
+              CaseClassification.getUIValueFor(expectedCaseClassification).toUpperCase(),
               "Case classification value is wrong");
         });
 
     When(
         "I set Present condition of Person to ([^\"]*) in Case Person tab",
-        (String condition) ->
-            webDriverHelpers.selectFromCombobox(PRESENT_CONDITION_COMBOBOX, condition));
+        (String condition) -> {
+          webDriverHelpers.selectFromCombobox(PRESENT_CONDITION_COMBOBOX, condition);
+        });
+
+    When(
+        "I set Present condition of Person to ([^\"]*) in Person tab",
+        (String condition) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEE_CASES_FOR_THIS_PERSON_BUTTON);
+          webDriverHelpers.selectFromCombobox(PRESENT_CONDITION_COMBOBOX, condition);
+        });
 
     When(
         "I check if death data fields are available in Case Person tab",
@@ -139,7 +193,6 @@ public class EditCasePersonSteps implements En {
         () -> {
           collectedCase =
               collectSpecificCasePersonData(); // TODO: Get and check GPS coordinates for DE
-          // specific version
           ComparisonHelper.compareEqualFieldsOfEntities(
               addressData,
               collectedCase,
@@ -156,6 +209,67 @@ public class EditCasePersonSteps implements En {
                   "postalCode",
                   "city",
                   "areaType"));
+        });
+
+    When(
+        "I set Facility Category to {string} and  Facility Type to {string}",
+        (String facilityCategory, String facilityType) -> {
+          selectFacilityCategory(facilityCategory);
+          selectFacilityType(facilityType);
+        });
+
+    When(
+        "I set Region to {string} and District to {string}",
+        (String aRegion, String aDistrict) -> {
+          selectRegion(aRegion);
+          selectDistrict(aDistrict);
+        });
+
+    When(
+        "^I set case person's sex as ([^\"]*)$",
+        (String sex) -> {
+          webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);
+        });
+
+    When(
+        "I check that ([^\"]*) is not visible",
+        (String option) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          By selector = null;
+          Boolean elementVisible = true;
+          switch (option) {
+            case "Passport Number":
+              selector = PASSPORT_NUMBER_INPUT;
+              break;
+            case "National Health ID":
+              selector = NATIONAL_HEALTH_ID_INPUT;
+              break;
+            case "Education":
+              selector = EDUCATION_COMBOBOX;
+              break;
+            case "Community Contact Person":
+              selector = COMMUNITY_CONTACT_PERSON_INPUT;
+              break;
+            case "Nickname":
+              selector = NICKNAME_INPUT;
+              break;
+            case "Mother's Maiden Name":
+              selector = MOTHERS_MAIDEN_NAME_INPUT;
+              break;
+            case "Mother's Name":
+              selector = MOTHERS_NAME_INPUT;
+              break;
+            case "Father's Name":
+              selector = FATHERS_NAME_INPUT;
+              break;
+          }
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(selector);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertFalse(elementVisible, option + " is visible!");
+          softly.assertAll();
         });
   }
 

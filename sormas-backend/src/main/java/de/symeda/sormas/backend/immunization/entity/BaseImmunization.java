@@ -48,7 +48,6 @@ public class BaseImmunization extends CoreAdo implements SormasToSormasShareable
 	private Person person;
 	private Date reportDate;
 	private User reportingUser;
-	private boolean archived;
 	private ImmunizationStatus immunizationStatus;
 	private MeansOfImmunization meansOfImmunization;
 	private String meansOfImmunizationDetails;
@@ -144,15 +143,6 @@ public class BaseImmunization extends CoreAdo implements SormasToSormasShareable
 
 	public void setReportingUser(User reportingUser) {
 		this.reportingUser = reportingUser;
-	}
-
-	@Column
-	public boolean isArchived() {
-		return archived;
-	}
-
-	public void setArchived(boolean archived) {
-		this.archived = archived;
 	}
 
 	@Enumerated(EnumType.STRING)
@@ -381,7 +371,11 @@ public class BaseImmunization extends CoreAdo implements SormasToSormasShareable
 	}
 
 	@Override
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = {
+			CascadeType.PERSIST,
+			CascadeType.MERGE,
+			CascadeType.DETACH,
+			CascadeType.REFRESH })
 	@AuditedIgnore
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;

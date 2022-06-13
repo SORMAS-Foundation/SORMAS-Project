@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,18 +20,19 @@ package org.sormas.e2etests.steps.web.application.samples;
 
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.*;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.*;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
-import javax.inject.Named;
 import org.openqa.selenium.By;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Sample;
+import org.sormas.e2etests.entities.services.SampleService;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.Sample;
-import org.sormas.e2etests.services.SampleService;
 import org.sormas.e2etests.state.ApiState;
 
 public class EditSampleSteps implements En {
@@ -44,7 +45,7 @@ public class EditSampleSteps implements En {
   @Inject
   public EditSampleSteps(
       WebDriverHelpers webDriverHelpers,
-      @Named("ENVIRONMENT_URL") String environmentUrl,
+      RunningConfiguration runningConfiguration,
       SampleService sampleService,
       ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
@@ -53,7 +54,7 @@ public class EditSampleSteps implements En {
         "I open the last created sample via API",
         () -> {
           String LAST_CREATED_SAMPLE_URL =
-              environmentUrl
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!samples/data/"
                   + apiState.getCreatedSample().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_SAMPLE_URL);
@@ -64,17 +65,33 @@ public class EditSampleSteps implements En {
         () -> {
           webDriverHelpers.scrollToElement(DELETE_SAMPLE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_SAMPLE_BUTTON);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SAMPLE_DELETION_POPUP);
+          webDriverHelpers.selectFromCombobox(
+              DELETE_SAMPLE_REASON_POPUP, "Entity created without legal reason");
           webDriverHelpers.clickOnWebElementBySelector(SAMPLE_DELETION_POPUP_YES_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(SAMPLE_SEARCH_INPUT);
         });
 
     When(
-        "I click on the new pathogen test from the Edit Sample page",
+        "^I click on the new pathogen test from the Edit Sample page for DE version$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_TEST_RESULT_DE);
+          webDriverHelpers.scrollToElement(NEW_TEST_RESULT_DE);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_TEST_RESULT_DE);
+        });
+
+    When(
+        "^I click on the new pathogen test from the Edit Sample page$",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(PATHOGEN_NEW_TEST_RESULT_BUTTON);
           webDriverHelpers.scrollToElement(PATHOGEN_NEW_TEST_RESULT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(PATHOGEN_NEW_TEST_RESULT_BUTTON);
+        });
+    When(
+        "^I click on the new additional test from the Edit Sample page$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ADDIITONAL_NEW_TEST_RESULT_BUTTON);
+          webDriverHelpers.scrollToElement(ADDIITONAL_NEW_TEST_RESULT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ADDIITONAL_NEW_TEST_RESULT_BUTTON);
         });
 
     When(
@@ -145,6 +162,8 @@ public class EditSampleSteps implements En {
         "I delete the Pathogen test",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(DELETE_PATHOGEN_TEST_RESULT);
+          webDriverHelpers.selectFromCombobox(
+              DELETE_SAMPLE_REASON_POPUP, "Entity created without legal reason");
           webDriverHelpers.clickOnWebElementBySelector(SAMPLE_DELETION_POPUP_YES_BUTTON);
         });
   }

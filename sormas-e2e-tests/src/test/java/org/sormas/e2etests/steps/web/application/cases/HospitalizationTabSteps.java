@@ -1,20 +1,27 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_HEALTH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_SELECTED_VALUE;
 import static org.sormas.e2etests.pages.application.cases.HospitalizationTabPage.*;
+import static org.sormas.e2etests.pages.application.cases.SymptomsTabPage.CASE_TAB;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import javax.inject.Named;
 import lombok.SneakyThrows;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Case;
+import org.sormas.e2etests.entities.pojo.web.Hospitalization;
+import org.sormas.e2etests.entities.services.HospitalizationService;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.Hospitalization;
-import org.sormas.e2etests.services.HospitalizationService;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.asserts.SoftAssert;
 
 public class HospitalizationTabSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
@@ -26,7 +33,8 @@ public class HospitalizationTabSteps implements En {
       WebDriverHelpers webDriverHelpers,
       HospitalizationService hospitalizationService,
       ApiState apiState,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+      SoftAssert softly,
+      RunningConfiguration runningConfiguration) {
 
     this.webDriverHelpers = webDriverHelpers;
 
@@ -37,7 +45,10 @@ public class HospitalizationTabSteps implements En {
               NavBarPage.SAMPLE_BUTTON);
           String caseHospitalizationPath = "/sormas-webdriver/#!cases/hospitalization/";
           String uuid = apiState.getCreatedCase().getUuid();
-          webDriverHelpers.accessWebSite(environmentUrl + caseHospitalizationPath + uuid);
+          webDriverHelpers.accessWebSite(
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
+                  + caseHospitalizationPath
+                  + uuid);
         });
 
     When(
@@ -58,6 +69,7 @@ public class HospitalizationTabSteps implements En {
           selectWasThePatientHospitalizedPreviously(
               hospitalization.getWasThePatientHospitalizedPreviously());
           selectLeftAgainstMedicalAdvice(hospitalization.getLeftAgainstMedicalAdvice());
+          fillDescription(hospitalization.getDescription());
 
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SUCCESSFUL_SAVE_POPUP);
@@ -69,6 +81,92 @@ public class HospitalizationTabSteps implements En {
           Hospitalization actualHospitalization = collectHospitalizationData();
           ComparisonHelper.compareEqualEntities(actualHospitalization, hospitalization);
         });
+
+    When(
+        "I set Patient Admitted at the facility as an inpatient as ([^\"]*)",
+        (String option) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              PATIENT_ADMITTED_AT_FACILITY_OPTIONS);
+          webDriverHelpers.clickWebElementByText(PATIENT_ADMITTED_AT_FACILITY_OPTIONS, option);
+        });
+
+    When(
+        "I set specific Date of visit or admission",
+        () -> {
+          fillDateOfVisitOrAdmission(LocalDate.now().minusDays(1));
+        });
+
+    When(
+        "I save data in Hospitalization",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    When(
+        "I check if error in Hospitalization data is available",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(BLUE_ERROR_EXCLAMATION_MARK);
+        });
+
+    When(
+        "I check if Place of stay in hospital popup is displayed",
+        () -> {
+          webDriverHelpers.isElementVisibleWithTimeout(PLACE_OF_STAY_IN_HOSPITAL_POPUP, 10);
+        });
+
+    When(
+        "I choose Facility in Place of stay in hospital popup in Case Hospitalization as ([^\"]*)",
+        (String facility) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY_POPUP_CHECKBOX);
+          webDriverHelpers.selectFromCombobox(FACILITY_POPUP_CHECKBOX, facility);
+        });
+
+    When(
+        "I save the data in Place of stay in hospital popup",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(
+                PLACE_OF_STAY_IN_HOSPITAL_POPUP_SAVE_BUTTON));
+
+    When(
+        "From hospitalization tab I click on the Case tab button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CASE_TAB));
+
+    When(
+        "I check if place of stay data was updated in the Case edit tab with ([^\"]*)",
+        (String facility) -> {
+          Case collectedData = collectPlaceOfStayData();
+          softly.assertEquals(
+              collectedData.getPlaceOfStay().toLowerCase(Locale.ROOT),
+              "facility",
+              "facility types are not equal");
+          softly.assertEquals(collectedData.getFacility(), facility, "facilities are not equal");
+          softly.assertAll();
+        });
+
+    And(
+        "I set Reason for hospitalization as {string}",
+        (String reasonForHospitalization) -> {
+          webDriverHelpers.selectFromCombobox(
+              REASON_FOR_HOSPITALIZATION_COMBOBOX, reasonForHospitalization);
+        });
+
+    Then(
+        "^I check if description text field is available in Current Hospitalization tab$",
+        () -> webDriverHelpers.waitUntilIdentifiedElementIsPresent(DESCRIPTION_INPUT));
+
+    When(
+        "I set Was the patient hospitalized previously option to {string}",
+        (String option) ->
+            webDriverHelpers.clickWebElementByText(
+                WAS_THE_PATIENT_HOSPITALIZED_PREVIOUSLY_OPTIONS, option));
+
+    And(
+        "^I click on New entry to add a previous hospitalization$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(NEW_ENTRY_LINK));
+
+    And(
+        "^I check if Previous Hospitalization Popup is displayed$",
+        () -> webDriverHelpers.isElementVisibleWithTimeout(PREVIOUS_HOSPITALIZATION_POPUP, 10));
   }
 
   @SneakyThrows
@@ -124,6 +222,10 @@ public class HospitalizationTabSteps implements En {
     webDriverHelpers.clickWebElementByText(LEFT_AGAINST_MEDICAL_ADVICE_OPTIONS, option);
   }
 
+  private void fillDescription(String option) {
+    webDriverHelpers.fillInWebElement(DESCRIPTION_INPUT, option);
+  }
+
   private Hospitalization collectHospitalizationData() {
     return Hospitalization.builder()
         .dateOfVisitOrAdmission(
@@ -159,6 +261,14 @@ public class HospitalizationTabSteps implements En {
         .leftAgainstMedicalAdvice(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
                 LEFT_AGAINST_MEDICAL_ADVICE_OPTIONS))
+        .description(webDriverHelpers.getValueFromWebElement(DESCRIPTION_INPUT))
+        .build();
+  }
+
+  private Case collectPlaceOfStayData() {
+    return Case.builder()
+        .placeOfStay(webDriverHelpers.getTextFromWebElement(PLACE_OF_STAY_SELECTED_VALUE))
+        .facility(webDriverHelpers.getValueFromCombobox(FACILITY_HEALTH_COMBOBOX))
         .build();
   }
 }

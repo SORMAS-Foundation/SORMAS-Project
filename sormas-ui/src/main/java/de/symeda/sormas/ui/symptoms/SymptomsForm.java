@@ -32,6 +32,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.locsCss;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1026,7 +1027,14 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 					onsetDateField.setEnabled(true);
 				} else {
 					onsetSymptom.removeItem(sourceField.getCaption());
-					onsetDateField.setEnabled(isAnySymptomSetToYes(getFieldGroup(), allPropertyIds, Arrays.asList(SymptomState.YES)));
+					boolean isOnsetDateFieldEnabled = isAnySymptomSetToYes(getFieldGroup(), allPropertyIds, Arrays.asList(SymptomState.YES));
+					onsetDateField.setEnabled(isOnsetDateFieldEnabled);
+					Date onsetDate = getValue().getOnsetDate();
+					if (onsetDate != null) {
+						onsetDateField.setValue(onsetDate);
+					} else if (!isOnsetDateFieldEnabled) {
+						onsetDateField.setValue(null);
+					}
 				}
 				onsetSymptom.setEnabled(!onsetSymptom.getItemIds().isEmpty());
 			});

@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.utils.components.sidecomponent;
 
+import java.util.Arrays;
 import java.util.function.Consumer;
 
 import com.vaadin.icons.VaadinIcons;
@@ -19,8 +20,13 @@ import de.symeda.sormas.ui.utils.CssStyles;
 public class SideComponent extends VerticalLayout {
 
 	private final HorizontalLayout componentHeader;
+	private final Consumer<Runnable> actionCallback;
 
 	public SideComponent(String heading) {
+		this(heading, null);
+	}
+
+	public SideComponent(String heading, Consumer<Runnable> actionCallback) {
 		setWidth(100, Sizeable.Unit.PERCENTAGE);
 		setMargin(false);
 		setSpacing(false);
@@ -34,6 +40,8 @@ public class SideComponent extends VerticalLayout {
 		Label headingLabel = new Label(heading);
 		headingLabel.addStyleName(CssStyles.H3);
 		componentHeader.addComponent(headingLabel);
+
+		this.actionCallback = actionCallback;
 	}
 
 	protected void addCreateButton(Button button) {
@@ -41,14 +49,18 @@ public class SideComponent extends VerticalLayout {
 		componentHeader.setComponentAlignment(button, Alignment.MIDDLE_RIGHT);
 	}
 
-	protected void addCreateButton(String caption, UserRight userRight, Consumer<Button.ClickEvent> clickListener) {
-		UserProvider currentUser = UserProvider.getCurrent();
-		if (currentUser != null && currentUser.hasUserRight(userRight) && clickListener != null) {
+	protected void addCreateButton(String caption, Runnable callback, UserRight... userRights) {
+		if (userHasRight(userRights)) {
 			Button createButton = ButtonHelper.createButton(caption);
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(clickListener::accept);
+			createButton.addClickListener(e -> actionCallback.accept(callback));
 			addCreateButton(createButton);
 		}
+	}
+
+	private boolean userHasRight(UserRight... userRights) {
+		UserProvider currentUser = UserProvider.getCurrent();
+		return Arrays.stream(userRights).anyMatch(currentUser::hasUserRight);
 	}
 }

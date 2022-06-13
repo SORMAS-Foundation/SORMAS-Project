@@ -44,7 +44,6 @@ public class TravelEntry extends CoreAdo {
 	public static final String PERSON_ID = "personId";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String REPORTING_USER = "reportingUser";
-	public static final String ARCHIVED = "archived";
 	public static final String DELETED = "deleted";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_VARIANT = "diseaseVariant";
@@ -62,11 +61,11 @@ public class TravelEntry extends CoreAdo {
 	public static final String VACCINATED = "vaccinated";
 	public static final String TESTED_NEGATIVE = "testedNegative";
 	public static final String QUARANTINE_TO = "quarantineTo";
+	public static final String DATE_OF_ARRIVAL = "dateOfArrival";
 
 	private Person person;
 	private Date reportDate;
 	private User reportingUser;
-	private boolean archived;
 	private boolean deleted;
 	private Disease disease;
 	private String diseaseDetails;
@@ -103,6 +102,7 @@ public class TravelEntry extends CoreAdo {
 	private boolean quarantineReduced;
 	private boolean quarantineOfficialOrderSent;
 	private Date quarantineOfficialOrderSentDate;
+	private Date dateOfArrival;
 
 	private Long personId;
 	private Long resultingCaseId;
@@ -144,15 +144,6 @@ public class TravelEntry extends CoreAdo {
 
 	public void setReportingUser(User reportingUser) {
 		this.reportingUser = reportingUser;
-	}
-
-	@Column
-	public boolean isArchived() {
-		return archived;
-	}
-
-	public void setArchived(boolean archived) {
-		this.archived = archived;
 	}
 
 	@Override
@@ -483,4 +474,12 @@ public class TravelEntry extends CoreAdo {
 		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getDateOfArrival() {
+		return dateOfArrival;
+	}
+
+	public void setDateOfArrival(Date dateOfArrival) {
+		this.dateOfArrival = dateOfArrival;
+	}
 }

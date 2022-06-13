@@ -28,6 +28,7 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UserProvider.HasUserProvider;
 import de.symeda.sormas.ui.ViewModelProviders.HasViewModelProviders;
 import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;
@@ -90,7 +91,7 @@ public class SormasUI extends UI implements HasUserProvider, HasViewModelProvide
 	@WebServlet(urlPatterns = {
 		"/*" }, name = "SormasUIServlet", asyncSupported = true)
 	@VaadinServletConfiguration(ui = SormasUI.class, productionMode = false)
-	@ServletSecurity(@HttpConstraint(rolesAllowed = "USER"))
+	@ServletSecurity(@HttpConstraint(rolesAllowed = UserRight._SORMAS_UI))
 	public static class SormasUIServlet extends VaadinServlet {
 
 	}

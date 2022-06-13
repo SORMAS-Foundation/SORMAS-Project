@@ -39,31 +39,31 @@ issues that might block successful web development.
     ```
 
 * Install Gradle
-* Install Allure(To check this run `allure serve` from IntelliJ command line)
+
+* Setup Allure 2.13.6
+  ```text
+    1. Download allure from: https://github.com/allure-framework/allure2/releases/tag/2.13.6
+    2. Run bat file from bin directory
+    3. Set ALLURE environment variables
+    ```
+  ![config](./images/sc9.png)
+
+  ![config](./images/sc10.png)
 * Install IntelliJ IDEA please follow the steps [here](https://www.jetbrains.com/idea/)
 * Launch IntelliJ IDEA and click on `Import project`
-
   ![config](./images/sc1.png)
-
 * As a new window is opened select `build.gradle`  in the project directory and
   click `Open`
   Alternatively go to IDea Preferences and search for `gradle`
-
   ![config](./images/sc2.png)
-  
 * Open `Preferences` -> `Plugins` and install `Cucumber for Java` plugin
-
    ![config](./images/sc4.png)
-   
 * Open `Preferences` -> `Compiler` and enable checkbox `Annotation processing`
-
   ![config](./images/sc6.png)
-  
 * Open `Preferences` -> `Plugins` and install `Lombok` plugin
-
    ![config](./images/sc7.png)
-   
-##Enable tests execution from local machine   
+
+## Enable tests execution from local machine
 
 * Navigate to: resources/configuration/properties/common.properties
 The default setup is set for remote execution:
@@ -77,8 +77,14 @@ LOG_RESTASSURED=false
 
 * Change REMOTE_DRIVER value to false to run the tests from your local machine (optional HEADLESS to false to enable UI execution, and LOG_RESTASSURED to true to enable json logging)
 
-* To change testing environment, open: resources/configuration/properties/environment/test-performance.properties
-And update ENVIRONMENT_URL value (can be a local dev environments as well)
+* Pass Environment data json file as argument in order to provide all available environments and users. This can be set in IDE VM options or directly in CLI.
+
+Argument = envConfig
+
+Value = ./path/envData.json
+
+![config](./images/configFIle.JPG)
+
 ## Test case design
 
 A design pattern is implemented based on a behavior-driven development style.
@@ -115,7 +121,7 @@ This file a build configuration script defines a project and its tasks.
 
 ````gradle
 
-gradlew clean startTests -Dcucumber.tags="@Login" -Denvironment=performance
+gradlew clean startTests -Dcucumber.tags="@Login" -Dheadless=true -Dcourgette.threads=9 -DenvConfig=C:/Users/MyUser/Desktop/envData.json
 
 ````
 

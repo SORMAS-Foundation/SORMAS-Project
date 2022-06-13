@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.sormastosormas.entities.contact;
 
 import java.util.Optional;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -25,6 +26,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
@@ -34,6 +36,7 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntitiesHelper;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
@@ -41,6 +44,11 @@ import de.symeda.sormas.backend.user.UserService;
 public class ReceivedContactProcessor
 	extends
 	ReceivedDataProcessor<Contact, ContactDto, SormasToSormasContactDto, SormasToSormasContactPreview, Contact, ContactService, SormasToSormasContactDtoValidator> {
+
+	@EJB
+	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
+	@EJB
+	private SormasToSormasEntitiesHelper sormasToSormasEntitiesHelper;
 
 	public ReceivedContactProcessor() {
 	}
@@ -55,8 +63,8 @@ public class ReceivedContactProcessor
 	}
 
 	@Override
-	public void handleReceivedData(SormasToSormasContactDto sharedData, Contact existingData) {
-		handleIgnoredProperties(sharedData.getEntity(), ContactFacadeEjb.toDto(existingData));
+	public void handleReceivedData(SormasToSormasContactDto sharedData, Contact existingData, SormasToSormasOriginInfoDto originInfo) {
+		handleIgnoredProperties(sharedData.getEntity(), contactFacade.toDto(existingData));
 		handleIgnoredProperties(
 			sharedData.getPerson(),
 			Optional.ofNullable(existingData).map(c -> PersonFacadeEjb.toDto(c.getPerson())).orElse(null));
@@ -66,6 +74,10 @@ public class ReceivedContactProcessor
 
 		contact.setPerson(person.toReference());
 		updateReportingUser(contact, existingData);
+
+		if (originInfo.isOwnershipHandedOver()) {
+			sormasToSormasEntitiesHelper.updateContactResponsibleDistrict(contact, configFacade.getS2SConfig().getDistrictExternalId());
+		}
 	}
 
 	@Override

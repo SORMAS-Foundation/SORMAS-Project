@@ -39,4 +39,16 @@ public class ManualMessageLogService extends BaseAdoService<ManualMessageLog> {
 
 		return em.createQuery(cq).setMaxResults(MANUAL_MESSAGE_LOG_LIMIT).getResultList();
 	}
+	
+	public List<ManualMessageLog> getByPersonUuid(@NotNull String personUuid) {
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<ManualMessageLog> cq = cb.createQuery(ManualMessageLog.class);
+		final Root<ManualMessageLog> manualMessageLogRoot = cq.from(ManualMessageLog.class);
+
+		cq.where(cb.equal(manualMessageLogRoot.get(ManualMessageLog.RECIPIENT_PERSON).get(Person.UUID), personUuid));
+		cq.orderBy(cb.desc(manualMessageLogRoot.get(ManualMessageLog.SENT_DATE)));
+
+		return em.createQuery(cq).setMaxResults(MANUAL_MESSAGE_LOG_LIMIT).getResultList();
+	}
 }

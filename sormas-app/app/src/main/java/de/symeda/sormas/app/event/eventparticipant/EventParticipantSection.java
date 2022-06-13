@@ -24,7 +24,8 @@ public enum EventParticipantSection
 	implements
 	StatusElaborator {
 
-	EVENT_PARTICIPANT_INFO(R.string.caption_event_participants, R.drawable.ic_alert_24dp),
+	EVENT_PARTICIPANT_INFO(R.string.heading_person_involved, R.drawable.ic_alert_24dp),
+	PERSON_INFO(R.string.caption_person_information, R.drawable.ic_person_black_24dp),
 	IMMUNIZATIONS(R.string.caption_event_participant_immunizations, R.drawable.ic_drawer_immunization_24dp),
 	VACCINATIONS(R.string.caption_event_participant_vaccinations, R.drawable.ic_drawer_vaccines_24);
 

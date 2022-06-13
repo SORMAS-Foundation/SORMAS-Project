@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,19 +18,40 @@
 package org.sormas.e2etests.enums;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
+@Slf4j
 public enum SubcontinentUUIDs {
-  WesternEurope("VMRXWX-EAGV7L-JFKP26-F3DBSBFU");
+  WesternEurope("Western Europe", "VMRXWX-EAGV7L-JFKP26-F3DBSBFU", "ST63QN-LZAE3C-L5QMQJ-LCTEKGIA");
 
-  private final String option;
+  private final String name;
+  private final String uuidMain;
+  private final String uuidDe;
 
-  SubcontinentUUIDs(String option) {
-    this.option = option;
+  SubcontinentUUIDs(String name, String uuidMain, String uuidDe) {
+    this.name = name;
+    this.uuidMain = uuidMain;
+    this.uuidDe = uuidDe;
   }
 
-  @Override
-  public String toString() {
-    return this.option;
+  @SneakyThrows
+  public static String getUuidValueForLocale(String subContinent, String locale) {
+    log.warn("Please migrate to new implementation and take data from EnvironmentManager class");
+    SubcontinentUUIDs[] subContinentUUIDs = SubcontinentUUIDs.values();
+    for (SubcontinentUUIDs value : subContinentUUIDs) {
+      if (value.name().equalsIgnoreCase(subContinent)) {
+        if (locale.equalsIgnoreCase("main") || locale.equalsIgnoreCase("performance")) {
+          return value.getUuidMain();
+        }
+        if (locale.equalsIgnoreCase("DE")) {
+          return value.getUuidDe();
+        }
+      }
+    }
+    throw new Exception(
+        String.format(
+            "Unable to find uuid for subcontinent: %s and locale: %s", subContinent, locale));
   }
 }

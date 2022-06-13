@@ -244,7 +244,7 @@ public class EventParticipantImporter extends DataImporter {
 					PersonDto savedPersonDto = FacadeProvider.getPersonFacade().savePerson(importPerson, skipPersonValidation);
 					newEventParticipant.setPerson(savedPersonDto);
 					newEventParticipant.setChangeDate(new Date());
-					eventParticipantFacade.saveEventParticipant(newEventParticipant);
+					eventParticipantFacade.save(newEventParticipant);
 
 					for (VaccinationDto vaccination : vaccinations) {
 						FacadeProvider.getVaccinationFacade()

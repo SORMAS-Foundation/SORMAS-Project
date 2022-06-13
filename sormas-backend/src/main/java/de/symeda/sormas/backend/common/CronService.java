@@ -25,30 +25,34 @@ import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityDeletionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.task.TaskType;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
+import de.symeda.sormas.backend.deletionconfiguration.CoreEntityDeletionService;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
+import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.central.CentralInfraSyncFacade;
-import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb.LabMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb.SystemEventFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
+import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 
 @Singleton
-@RunAs(UserRole._SYSTEM)
+@RunAs(UserRight._SYSTEM)
 public class CronService {
 
 	public static final int TASK_UPDATE_INTERVAL = 10;
@@ -70,13 +74,17 @@ public class CronService {
 	@EJB
 	private EventFacadeEjbLocal eventFacade;
 	@EJB
+	private EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal eventParticipantFacade;
+	@EJB
 	private DocumentFacadeEjbLocal documentFacade;
 	@EJB
 	private SystemEventFacadeEjbLocal systemEventFacade;
 	@EJB
-	private LabMessageFacadeEjbLocal labMessageFacade;
+	private ExternalMessageFacadeEjbLocal externalMessageFacade;
 	@EJB
 	private ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacade;
+	@EJB
+	private TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal travelEntryFacade;
 	@EJB
 	private CentralInfraSyncFacade centralInfraSyncFacade;
 	@EJB
@@ -142,7 +150,17 @@ public class CronService {
 	@Schedule(hour = "1", minute = "15", second = "0", persistent = false)
 	public void archiveCases() {
 
-		int daysAfterCaseGetsArchived = configFacade.getDaysAfterCaseGetsArchived();
+		final int daysAfterCaseGetsArchived = featureConfigurationFacade
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+		final int daysAfterContactsGetsArchived = featureConfigurationFacade
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CONTACT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+		if (daysAfterCaseGetsArchived < daysAfterContactsGetsArchived) {
+			logger.warn(
+				FeatureTypeProperty.THRESHOLD_IN_DAYS + " for " + CoreEntityType.CONTACT + " [{}] should be <= the one for " + CoreEntityType.CASE
+					+ " [{}]",
+				daysAfterContactsGetsArchived,
+				daysAfterCaseGetsArchived);
+		}
 		if (daysAfterCaseGetsArchived >= 1) {
 			caseFacade.archiveAllArchivableCases(daysAfterCaseGetsArchived);
 		}
@@ -151,7 +169,17 @@ public class CronService {
 	@Schedule(hour = "1", minute = "20", second = "0", persistent = false)
 	public void archiveEvents() {
 
-		int daysAfterEventsGetsArchived = configFacade.getDaysAfterEventGetsArchived();
+		final int daysAfterEventsGetsArchived = featureConfigurationFacade
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+		final int daysAfterEventParticipantsGetsArchived = featureConfigurationFacade
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT_PARTICIPANT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+		if (daysAfterEventsGetsArchived < daysAfterEventParticipantsGetsArchived) {
+			logger.warn(
+				FeatureTypeProperty.THRESHOLD_IN_DAYS + " for " + CoreEntityType.EVENT_PARTICIPANT + " [{}] should be <= the one for "
+					+ CoreEntityType.EVENT + " [{}]",
+				daysAfterEventParticipantsGetsArchived,
+				daysAfterEventsGetsArchived);
+		}
 		if (daysAfterEventsGetsArchived >= 1) {
 			eventFacade.archiveAllArchivableEvents(daysAfterEventsGetsArchived);
 		}
@@ -171,9 +199,9 @@ public class CronService {
 	}
 
 	@Schedule(hour = "1", minute = "35", second = "0", persistent = false)
-	public void fetchLabMessages() {
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LAB_MESSAGES)) {
-			labMessageFacade.fetchAndSaveExternalLabMessages(null);
+	public void fetchExternalMessages() {
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.EXTERNAL_MESSAGES)) {
+			externalMessageFacade.fetchAndSaveExternalMessages(null);
 		}
 	}
 
@@ -189,8 +217,49 @@ public class CronService {
 		centralInfraSyncFacade.syncAll();
 	}
 
-	@Schedule(hour = "1", minute =  "55", persistent = false)
-	public void deleteExpiredEntities(){
+	@Schedule(hour = "1", minute = "55", persistent = false)
+	public void deleteExpiredEntities() {
 		coreEntityDeletionService.executeAutomaticDeletion();
 	}
+
+	@Schedule(hour = "2", minute = "15", persistent = false)
+	public void archiveContacts() {
+		final int daysAfterContactsGetsArchived = featureConfigurationFacade
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CONTACT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+
+		if (daysAfterContactsGetsArchived >= 1) {
+			contactFacade.archiveAllArchivableContacts(daysAfterContactsGetsArchived);
+		}
+	}
+
+	@Schedule(hour = "2", minute = "20", persistent = false)
+	public void archiveEventParticipants() {
+		final int daysAfterEventParticipantGetsArchived = featureConfigurationFacade
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT_PARTICIPANT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+
+		if (daysAfterEventParticipantGetsArchived >= 1) {
+			eventParticipantFacade.archiveAllArchivableEventParticipants(daysAfterEventParticipantGetsArchived);
+		}
+	}
+
+	@Schedule(hour = "2", minute = "25", persistent = false)
+	public void archiveImmunizations() {
+		final int daysAfterImmunizationsGetsArchived = featureConfigurationFacade
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.IMMUNIZATION, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+
+		if (daysAfterImmunizationsGetsArchived >= 1) {
+			immunizationFacade.archiveAllArchivableImmunizations(daysAfterImmunizationsGetsArchived);
+		}
+	}
+
+	@Schedule(hour = "2", minute = "30", persistent = false)
+	public void archiveTravelEntry() {
+		final int daysAfterTravelEntryGetsArchived = featureConfigurationFacade
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.TRAVEL_ENTRY, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+
+		if (daysAfterTravelEntryGetsArchived >= 1) {
+			travelEntryFacade.archiveAllArchivableTravelEntries(daysAfterTravelEntryGetsArchived);
+		}
+	}
+
 }

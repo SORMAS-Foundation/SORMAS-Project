@@ -1,7 +1,7 @@
 @UI @Sanity @DocumentTemplates
 Feature: Upload document template
 
-  @issue=SORDEV-5497
+  @issue=SORDEV-5497 @env_main
   Scenario: Upload Case Document Template
     Given I log in as a Admin User
     And I click on the Configuration button from navbar
@@ -12,7 +12,7 @@ Feature: Upload document template
     And I confirm the document template overwrite popup
     Then I check that an upload success notification appears
 
-  @issue=SORDEV-5497
+  @issue=SORDEV-5497 @env_main
   Scenario: Upload Contact Document Template
     Given I log in as a Admin User
     And I click on the Configuration button from navbar
@@ -23,7 +23,7 @@ Feature: Upload document template
     And I confirm the document template overwrite popup
     Then I check that an upload success notification appears
 
-  @issue=SORDEV-5497
+  @issue=SORDEV-5497 @env_main
   Scenario: Upload Event Participant Document Template
     Given I log in as a Admin User
     And I click on the Configuration button from navbar
@@ -34,7 +34,7 @@ Feature: Upload document template
     And I confirm the document template overwrite popup
     Then I check that an upload success notification appears
 
-  @issue=SORDEV-5497
+  @issue=SORDEV-5497 @env_main
   Scenario: Upload Travel Entry Document Template
     Given I log in as a Admin User
     And I click on the Configuration button from navbar
@@ -45,7 +45,7 @@ Feature: Upload document template
     And I confirm the document template overwrite popup
     Then I check that an upload success notification appears
 
-  @issue=SORDEV-5497
+  @issue=SORDEV-5497 @env_main
   Scenario: Upload Event Document Template
     Given I log in as a Admin User
     And I click on the Configuration button from navbar

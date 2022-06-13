@@ -19,6 +19,7 @@ package de.symeda.sormas.ui;
 
 import static de.symeda.sormas.ui.UiUtil.enabled;
 import static de.symeda.sormas.ui.UiUtil.permitted;
+import static java.util.Objects.nonNull;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,7 +50,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
@@ -75,8 +75,8 @@ import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.events.EventGroupDataView;
 import de.symeda.sormas.ui.events.EventParticipantDataView;
 import de.symeda.sormas.ui.events.EventsView;
+import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
 import de.symeda.sormas.ui.immunization.ImmunizationsView;
-import de.symeda.sormas.ui.labmessage.LabMessagesView;
 import de.symeda.sormas.ui.person.PersonsView;
 import de.symeda.sormas.ui.reports.ReportsView;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportsView;
@@ -134,30 +134,40 @@ public class MainScreen extends HorizontalLayout {
 		menu = new Menu(navigator);
 		if (enabled(FeatureType.DASHBOARD)) {
 			ControllerProvider.getDashboardController().registerViews(navigator);
-			if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
+			if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_VIEW)) {
 				menu.addView(
-						SurveillanceDashboardView.class,
-						AbstractDashboardView.ROOT_VIEW_NAME,
-						I18nProperties.getCaption(Captions.mainMenuDashboard),
-						VaadinIcons.DASHBOARD);
-			} else if (permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_ACCESS)) {
+					SurveillanceDashboardView.class,
+					AbstractDashboardView.ROOT_VIEW_NAME,
+					I18nProperties.getCaption(Captions.mainMenuDashboard),
+					VaadinIcons.DASHBOARD);
+			} else if (permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_VIEW)) {
 				menu.addView(
-						ContactsDashboardView.class,
-						AbstractDashboardView.ROOT_VIEW_NAME,
-						I18nProperties.getCaption(Captions.mainMenuDashboard),
-						VaadinIcons.DASHBOARD);
-			} else if (permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_ACCESS)) {
+					ContactsDashboardView.class,
+					AbstractDashboardView.ROOT_VIEW_NAME,
+					I18nProperties.getCaption(Captions.mainMenuDashboard),
+					VaadinIcons.DASHBOARD);
+			} else if (permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_VIEW)) {
 				menu.addView(
-						CampaignDashboardView.class,
-						AbstractDashboardView.ROOT_VIEW_NAME,
-						I18nProperties.getCaption(Captions.mainMenuDashboard),
-						VaadinIcons.DASHBOARD);
+					CampaignDashboardView.class,
+					AbstractDashboardView.ROOT_VIEW_NAME,
+					I18nProperties.getCaption(Captions.mainMenuDashboard),
+					VaadinIcons.DASHBOARD);
 			}
 		}
 
 		if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 			menu.addView(TasksView.class, TasksView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuTasks), VaadinIcons.TASKS);
 		}
+
+		if (permitted(FeatureType.EXTERNAL_MESSAGES, UserRight.EXTERNAL_MESSAGE_VIEW)) {
+			ControllerProvider.getExternalMessageController().registerViews(navigator);
+			menu.addView(
+				ExternalMessagesView.class,
+				ExternalMessagesView.VIEW_NAME,
+				I18nProperties.getCaption(Captions.mainMenuExternalMessages),
+				VaadinIcons.NOTEBOOK);
+		}
+
 		if (permitted(FeatureType.PERSON_MANAGEMENT, UserRight.PERSON_VIEW)) {
 			ControllerProvider.getPersonController().registerViews(navigator);
 			menu.addView(PersonsView.class, PersonsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuPersons), VaadinIcons.USER_CARD);
@@ -242,7 +252,7 @@ public class MainScreen extends HorizontalLayout {
 		if (permitted(UserRight.USER_VIEW)) {
 			menu.addView(UsersView.class, UsersView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers), VaadinIcons.USERS);
 		}
-		if (permitted(UserRight.CONFIGURATION_ACCESS)) {
+		if (UserProvider.getCurrent().hasConfigurationAccess()) {
 			AbstractConfigurationView.registerViews(navigator);
 			menu.addView(
 				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS) ? OutbreaksView.class : RegionsView.class,
@@ -335,18 +345,18 @@ public class MainScreen extends HorizontalLayout {
 				ContinentsView.VIEW_NAME,
 				SubcontinentsView.VIEW_NAME,
 				CountriesView.VIEW_NAME,
-				LabMessagesView.VIEW_NAME,
+				ExternalMessagesView.VIEW_NAME,
 				TravelEntriesView.VIEW_NAME,
 				ImmunizationsView.VIEW_NAME));
 
 		if (enabled(FeatureType.DASHBOARD)) {
-			if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
+			if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_VIEW)) {
 				views.add(SurveillanceDashboardView.VIEW_NAME);
 			}
-			if (permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_ACCESS)) {
+			if (permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_VIEW)) {
 				views.add(ContactsDashboardView.VIEW_NAME);
 			}
-			if (permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_ACCESS)) {
+			if (permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_VIEW)) {
 				views.add(CampaignDashboardView.VIEW_NAME);
 			}
 		}
@@ -391,13 +401,13 @@ public class MainScreen extends HorizontalLayout {
 			if (event.getViewName().isEmpty()) {
 				// redirect to default view
 				String defaultView;
-				if (enabled(FeatureType.DASHBOARD) && permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
+				if (enabled(FeatureType.DASHBOARD) && permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_VIEW)) {
 					defaultView = SurveillanceDashboardView.VIEW_NAME;
-				} else if (enabled(FeatureType.DASHBOARD) && permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_ACCESS)) {
+				} else if (enabled(FeatureType.DASHBOARD) && permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_VIEW)) {
 					defaultView = ContactsDashboardView.VIEW_NAME;
-				} else if (enabled(FeatureType.DASHBOARD) && permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_ACCESS)) {
+				} else if (enabled(FeatureType.DASHBOARD) && permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_VIEW)) {
 					defaultView = CampaignDashboardView.VIEW_NAME;
-				} else if (UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
+				} else if (nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasExternalLaboratoryJurisdictionLevel()) {
 					defaultView = SamplesView.VIEW_NAME;
 				} else if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 					defaultView = TasksView.VIEW_NAME;

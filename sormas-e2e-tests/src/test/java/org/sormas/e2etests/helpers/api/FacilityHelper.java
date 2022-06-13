@@ -4,8 +4,8 @@ import static org.sormas.e2etests.constants.api.Endpoints.FACILITIES_PATH;
 
 import io.restassured.http.Method;
 import javax.inject.Inject;
+import org.sormas.e2etests.entities.pojo.api.Request;
 import org.sormas.e2etests.helpers.RestAssuredClient;
-import org.sormas.e2etests.pojo.api.Request;
 
 public class FacilityHelper {
 

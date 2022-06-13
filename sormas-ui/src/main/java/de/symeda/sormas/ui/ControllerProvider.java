@@ -19,6 +19,7 @@ package de.symeda.sormas.ui;
 
 import de.symeda.sormas.ui.action.ActionController;
 import de.symeda.sormas.ui.campaign.CampaignController;
+import de.symeda.sormas.ui.caze.CaseArchivingController;
 import de.symeda.sormas.ui.caze.CaseController;
 import de.symeda.sormas.ui.caze.surveillancereport.SurveillanceReportController;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseController;
@@ -31,8 +32,8 @@ import de.symeda.sormas.ui.docgeneration.DocGenerationController;
 import de.symeda.sormas.ui.events.EventController;
 import de.symeda.sormas.ui.events.EventGroupController;
 import de.symeda.sormas.ui.events.EventParticipantsController;
+import de.symeda.sormas.ui.externalmessage.ExternalMessageController;
 import de.symeda.sormas.ui.immunization.ImmunizationController;
-import de.symeda.sormas.ui.labmessage.LabMessageController;
 import de.symeda.sormas.ui.person.PersonController;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportController;
 import de.symeda.sormas.ui.samples.AdditionalTestController;
@@ -44,6 +45,7 @@ import de.symeda.sormas.ui.task.TaskController;
 import de.symeda.sormas.ui.therapy.TherapyController;
 import de.symeda.sormas.ui.travelentry.TravelEntryController;
 import de.symeda.sormas.ui.user.UserController;
+import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.BaseControllerProvider;
 import de.symeda.sormas.ui.vaccination.VaccinationController;
 import de.symeda.sormas.ui.visit.VisitController;
@@ -73,12 +75,14 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final CampaignController campaignController;
 	private final SormasToSormasController sormasToSormasController;
 	private final CustomExportController customExportController;
-	private final LabMessageController labMessageController;
+	private final ExternalMessageController externalMessageController;
 	private final SurveillanceReportController surveillanceReportController;
 	private final DocGenerationController docGenerationController;
 	private final TravelEntryController travelEntryController;
 	private final ImmunizationController immunizationController;
 	private final VaccinationController vaccinationController;
+	private final ArchivingController archivingController;
+	private final CaseArchivingController caseArchivingController;
 
 	public ControllerProvider() {
 		super();
@@ -106,12 +110,14 @@ public class ControllerProvider extends BaseControllerProvider {
 		campaignController = new CampaignController();
 		sormasToSormasController = new SormasToSormasController();
 		customExportController = new CustomExportController();
-		labMessageController = new LabMessageController();
+		externalMessageController = new ExternalMessageController();
 		surveillanceReportController = new SurveillanceReportController();
 		docGenerationController = new DocGenerationController();
 		travelEntryController = new TravelEntryController();
 		immunizationController = new ImmunizationController();
 		vaccinationController = new VaccinationController();
+		archivingController = new ArchivingController();
+		caseArchivingController = new CaseArchivingController();
 	}
 
 	protected static ControllerProvider get() {
@@ -210,8 +216,8 @@ public class ControllerProvider extends BaseControllerProvider {
 		return get().customExportController;
 	}
 
-	public static LabMessageController getLabMessageController() {
-		return get().labMessageController;
+	public static ExternalMessageController getExternalMessageController() {
+		return get().externalMessageController;
 	}
 
 	public static SurveillanceReportController getSurveillanceReportController() {
@@ -232,5 +238,13 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static VaccinationController getVaccinationController() {
 		return get().vaccinationController;
+	}
+
+	public static ArchivingController getArchiveController() {
+		return get().archivingController;
+	}
+
+	public static CaseArchivingController getCaseArchivingController() {
+		return get().caseArchivingController;
 	}
 }

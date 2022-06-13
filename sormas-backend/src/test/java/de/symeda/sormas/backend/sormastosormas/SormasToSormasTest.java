@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.backend.sormastosormas;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 
 import java.io.File;
@@ -24,7 +26,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.function.Consumer;
 
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -238,7 +239,7 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 	}
 
 	protected void mockS2Snetwork() throws SormasToSormasException {
-		Mockito.when(MockProducer.getSormasToSormasClient().get(Matchers.anyString(), eq("/sormasToSormas/cert"), Matchers.any()))
+		Mockito.when(MockProducer.getSormasToSormasClient().get(anyString(), eq("/sormasToSormas/cert"), any()))
 			.thenAnswer(invocation -> {
 				if (invocation.getArgument(0, String.class).equals(DEFAULT_SERVER_ID)) {
 					mockDefaultServerAccess();

@@ -86,17 +86,7 @@
 
                     </LinearLayout>
 
-                    <ImageView style="@style/FullHorizontalDividerStyle"/>
-
                 </LinearLayout>
-
-                <include
-                    android:id="@+id/eventParticipant_person_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="-64dp"
-                    layout="@layout/fragment_person_read_layout"
-                    app:data="@{data.person}"/>
 
             </LinearLayout>
 

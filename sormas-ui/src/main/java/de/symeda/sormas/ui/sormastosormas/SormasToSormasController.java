@@ -36,10 +36,10 @@ import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
@@ -106,9 +106,10 @@ public class SormasToSormasController {
 			SormasToSormasOptionsForm.forEvent(currentShares));
 	}
 
-	public void shareLabMessage(LabMessageDto labMessage, Runnable callback) {
+	public void shareLabMessage(ExternalMessageDto labMessage, Runnable callback) {
 		handleShareWithOptions(
-			options -> FacadeProvider.getSormasToSormasLabMessageFacade().sendLabMessages(Collections.singletonList(labMessage.getUuid()), options),
+			options -> FacadeProvider.getSormasToSormasLabMessageFacade()
+				.sendExternalMessages(Collections.singletonList(labMessage.getUuid()), options),
 			callback,
 			SormasToSormasOptionsForm.withoutOptions(),
 			new SormasToSormasOptionsDto());
@@ -196,12 +197,13 @@ public class SormasToSormasController {
 				VaadinUiUtil.showWarningPopup(ex.getMessage());
 				callback.run();
 			} else {
-				Component messageComponent = buildShareErrorMessage(ex.getHumanMessage(), ex.getErrors());
+				Component messageComponent =
+					buildShareErrorMessage(ex.getHumanMessage() + " " + I18nProperties.getString(Strings.reloadPageToSeeChanges), ex.getErrors());
 				messageComponent.setWidth(100, Sizeable.Unit.PERCENTAGE);
 				VaadinUiUtil.showPopupWindowWithWidth(
 					new VerticalLayout(messageComponent),
 					I18nProperties.getCaption(Captions.sormasToSormasErrorDialogTitle),
-					38);
+					48);
 			}
 		} catch (SormasToSormasValidationException ex) {
 			Component messageComponent = buildShareErrorMessage(ex.getMessage(), ex.getErrors());
@@ -209,12 +211,13 @@ public class SormasToSormasController {
 			VaadinUiUtil.showPopupWindowWithWidth(
 				new VerticalLayout(messageComponent),
 				I18nProperties.getCaption(Captions.sormasToSormasErrorDialogTitle),
-				38);
+				48);
 		}
 	}
 
 	private Component buildShareErrorMessage(String message, List<ValidationErrors> errors) {
 		Label errorMessageLabel = new Label(message, ContentMode.HTML);
+		errorMessageLabel.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
 
 		if (errors == null || errors.isEmpty()) {
 			return errorMessageLabel;
@@ -228,6 +231,7 @@ public class SormasToSormasController {
 			groupErrorsLayout.setMargin(false);
 			groupErrorsLayout.setSpacing(false);
 			groupErrorsLayout.setStyleName(CssStyles.HSPACE_LEFT_3);
+			groupErrorsLayout.setWidth(92, Sizeable.Unit.PERCENTAGE);
 
 			VerticalLayout layout = new VerticalLayout(groupLabel, groupErrorsLayout);
 			layout.setMargin(false);
@@ -248,11 +252,10 @@ public class SormasToSormasController {
 		return errors.getSubGroups().stream().map(e -> {
 			Label groupLabel = new Label(e.getHumanMessage() + ":");
 			groupLabel.addStyleName(CssStyles.LABEL_BOLD);
-			HorizontalLayout layout = new HorizontalLayout(
-				groupLabel,
-				new Label(
-					String
-						.join(", ", e.getMessages().stream().map(ValidationErrorMessage::getHumanMessage).collect(Collectors.toList()).toString())));
+			Label label = new Label(
+				String.join(", ", e.getMessages().stream().map(ValidationErrorMessage::getHumanMessage).collect(Collectors.toList()).toString()));
+			HorizontalLayout layout = new HorizontalLayout(groupLabel, label);
+			label.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
 			layout.setMargin(false);
 
 			return layout;

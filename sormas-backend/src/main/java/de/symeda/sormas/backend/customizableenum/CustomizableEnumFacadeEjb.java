@@ -33,6 +33,7 @@ import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
 
+import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -83,7 +84,7 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 	@Lock(LockType.READ)
 	@Override
 	public List<CustomizableEnumValueDto> getAllAfter(Date date) {
-		return service.getAllAfter(date, null).stream().map(this::toDto).collect(Collectors.toList());
+		return service.getAllAfter(date).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Lock(LockType.READ)
@@ -119,6 +120,18 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 		return buildCustomizableEnum(type, value, language, enumClass);
 	}
 
+	@Lock(LockType.READ)
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T extends CustomizableEnum> T getEnumValue(CustomizableEnumType type, String value, Disease disease) throws CustomEnumNotFoundException {
+		return (T) getEnumValues(type, disease).stream()
+			.filter((e) -> e.getValue().equals(value))
+			.findFirst()
+			.orElseThrow(
+				() -> new CustomEnumNotFoundException(
+					"Invalid enum value " + value + " for customizable enum type " + type.toString() + "and disease " + disease.toString()));
+	}
+
 	/**
 	 * @return Entries are currently not returned in any specific order
 	 */
@@ -142,15 +155,13 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 		if (innerDisease.isPresent()) {
 			// combine specific and unspecific values
 			diseaseValuesStream = Stream.concat(
-					enumValuesByDisease.get(enumClass).get(innerDisease).stream(),
-					enumValuesByDisease.get(enumClass).get(Optional.empty()).stream());
+				enumValuesByDisease.get(enumClass).get(innerDisease).stream(),
+				enumValuesByDisease.get(enumClass).get(Optional.empty()).stream());
 		} else {
 			diseaseValuesStream = enumValuesByDisease.get(enumClass).get(Optional.empty()).stream();
 		}
 
-		return diseaseValuesStream
-				.map(value -> buildCustomizableEnum(type, value, language, enumClass))
-				.collect(Collectors.toList());
+		return diseaseValuesStream.map(value -> buildCustomizableEnum(type, value, language, enumClass)).collect(Collectors.toList());
 	}
 
 	@Lock(LockType.READ)

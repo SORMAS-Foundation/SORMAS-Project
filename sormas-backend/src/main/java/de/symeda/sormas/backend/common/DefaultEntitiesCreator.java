@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.xml.crypto.Data;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -28,7 +27,7 @@ public class DefaultEntitiesCreator {
 	public Continent createDefaultContinent(boolean randomUuid) {
 		Continent continent = new Continent();
 		continent.setUuid(createUuid(randomUuid, DefaultEntityHelper.DefaultInfrastructureUuidSeed.CONTINENT));
-		continent.setDefaultName(I18nProperties.getCaption(Captions.continent, "Default Continent"));
+		continent.setDefaultName(I18nProperties.getCaption(Captions.Continent, "Default Continent"));
 		continent.setExternalId("CONT");
 		return continent;
 	}
@@ -44,7 +43,7 @@ public class DefaultEntitiesCreator {
 	public Subcontinent createDefaultSubcontinent(Continent continent, boolean randomUuid) {
 		Subcontinent subcontinent = new Subcontinent();
 		subcontinent.setUuid(createUuid(randomUuid, DefaultEntityHelper.DefaultInfrastructureUuidSeed.SUBCONTINENT));
-		subcontinent.setDefaultName(I18nProperties.getCaption(Captions.subcontinent, "Default Subcontinent"));
+		subcontinent.setDefaultName(I18nProperties.getCaption(Captions.Subcontinent, "Default Subcontinent"));
 		subcontinent.setExternalId("SUB-CNT");
 		subcontinent.setContinent(continent);
 		return subcontinent;
@@ -53,7 +52,7 @@ public class DefaultEntitiesCreator {
 	public Country createDefaultCountry(Subcontinent subcontinent, boolean randomUuid) {
 		Country country = new Country();
 		country.setUuid(createUuid(randomUuid, DefaultEntityHelper.DefaultInfrastructureUuidSeed.COUNTRY));
-		country.setDefaultName(I18nProperties.getCaption(Captions.country, "Default Country"));
+		country.setDefaultName(I18nProperties.getCaption(Captions.Country, "Default Country"));
 		country.setExternalId("CNT");
 		country.setSubcontinent(subcontinent);
 		return country;

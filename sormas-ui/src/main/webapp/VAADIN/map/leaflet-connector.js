@@ -74,6 +74,15 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 		attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors. Tiles courtesy of Humanitarian OpenStreetMap Team'
 	});
 
+	this.setTileLayer = function(layerUri, attribution){
+		openStreetMapsLayer.remove();
+		openStreetMapsLayer = L.tileLayer(layerUri, {
+			attribution: attribution
+		});
+
+		this.onStateChange();
+	}
+
 	this.onStateChange = function () {
 
 		map.setView([this.getState().centerLatitude, this.getState().centerLongitude], this.getState().zoom);

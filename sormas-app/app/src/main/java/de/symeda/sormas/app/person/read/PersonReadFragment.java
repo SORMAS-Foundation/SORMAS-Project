@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.person.read;
 
+import static android.view.View.GONE;
+
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +38,7 @@ import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
@@ -47,8 +50,6 @@ import de.symeda.sormas.app.databinding.FragmentPersonReadLayoutBinding;
 import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.util.FieldVisibilityAndAccessHelper;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
-
-import static android.view.View.GONE;
 
 public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayoutBinding, Person, AbstractDomainObject> {
 
@@ -87,6 +88,15 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(activityRootData.getDisease()),
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
+	}
+
+	public static PersonReadFragment newInstance(EventParticipant activityRootData) {
+		return newInstanceWithFieldCheckers(
+			PersonReadFragment.class,
+			null,
+			activityRootData,
+			FieldVisibilityCheckers.withDisease(activityRootData.getEvent().getDisease()),
 			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
 	}
 
@@ -140,6 +150,9 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 		} else if (ado instanceof Contact) {
 			record = ((Contact) ado).getPerson();
 			rootData = ado;
+		} else if (ado instanceof EventParticipant) {
+			record = ((EventParticipant) ado).getPerson();
+			rootData = ado;
 		} else if (ado instanceof Immunization) {
 			record = ((Immunization) ado).getPerson();
 			rootData = ado;
@@ -180,10 +193,10 @@ public class PersonReadFragment extends BaseReadFragment<FragmentPersonReadLayou
 		});
 	}
 
-	public static void initCountryTranslations(FragmentPersonReadLayoutBinding contentBinding, Person personData){
+	public static void initCountryTranslations(FragmentPersonReadLayoutBinding contentBinding, Person personData) {
 		Country birthCountry = personData.getBirthCountry();
 		contentBinding
-				.setBirthCountry(birthCountry != null ? I18nProperties.getCountryName(birthCountry.getIsoCode(), birthCountry.getName()) : null);
+			.setBirthCountry(birthCountry != null ? I18nProperties.getCountryName(birthCountry.getIsoCode(), birthCountry.getName()) : null);
 
 		Country citizenship = personData.getCitizenship();
 		contentBinding.setCitizenship(citizenship != null ? I18nProperties.getCountryName(citizenship.getIsoCode(), citizenship.getName()) : null);

@@ -20,55 +20,14 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
 import de.symeda.sormas.backend.immunization.entity.Immunization;
-import de.symeda.sormas.backend.infrastructure.community.Community;
-import de.symeda.sormas.backend.infrastructure.district.District;
-import de.symeda.sormas.backend.infrastructure.region.Region;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
-public class ImmunizationJoins<T> extends AbstractDomainObjectJoins<T, Immunization> {
+public class ImmunizationJoins extends BaseImmunizationJoins<Immunization> {
 
-	private Join<Immunization, Person> person;
-	private Join<Immunization, Region> responsibleRegion;
-	private Join<Immunization, District> responsibleDistrict;
-	private Join<Immunization, Community> responsibleCommunity;
 	private Join<Immunization, User> reportingUser;
 
-	public ImmunizationJoins(From<T, Immunization> root) {
+	public ImmunizationJoins(From<?, Immunization> root) {
 		super(root);
-	}
-
-	public Join<Immunization, Person> getPerson() {
-		return getOrCreate(person, Immunization.PERSON, JoinType.LEFT, this::setPerson);
-	}
-
-	private void setPerson(Join<Immunization, Person> person) {
-		this.person = person;
-	}
-
-	public Join<Immunization, Region> getResponsibleRegion() {
-		return getOrCreate(responsibleRegion, Immunization.RESPONSIBLE_REGION, JoinType.LEFT, this::setResponsibleRegion);
-	}
-
-	private void setResponsibleRegion(Join<Immunization, Region> responsibleRegion) {
-		this.responsibleRegion = responsibleRegion;
-	}
-
-	public Join<Immunization, District> getResponsibleDistrict() {
-		return getOrCreate(responsibleDistrict, Immunization.RESPONSIBLE_DISTRICT, JoinType.LEFT, this::setResponsibleDistrict);
-	}
-
-	private void setResponsibleDistrict(Join<Immunization, District> responsibleDistrict) {
-		this.responsibleDistrict = responsibleDistrict;
-	}
-
-	public Join<Immunization, Community> getResponsibleCommunity() {
-		return getOrCreate(responsibleCommunity, Immunization.RESPONSIBLE_COMMUNITY, JoinType.LEFT, this::setResponsibleCommunity);
-	}
-
-	private void setResponsibleCommunity(Join<Immunization, Community> responsibleCommunity) {
-		this.responsibleCommunity = responsibleCommunity;
 	}
 
 	public Join<Immunization, User> getReportingUser() {

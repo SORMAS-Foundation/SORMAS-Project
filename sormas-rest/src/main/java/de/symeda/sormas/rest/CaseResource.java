@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -39,10 +38,15 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseFollowUpCriteria;
+import de.symeda.sormas.api.caze.CaseFollowUpDto;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CasePersonDto;
+import de.symeda.sormas.api.caze.CoreAndPersonDto;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
@@ -52,9 +56,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Path("/cases")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-@RolesAllowed({
-	"USER",
-	"REST_USER" })
 public class CaseResource extends EntityDtoResource {
 
 	@GET
@@ -87,13 +88,19 @@ public class CaseResource extends EntityDtoResource {
 	@POST
 	@Path("/push")
 	public List<PushResult> postCases(@Valid List<CaseDataDto> dtos) {
-		return savePushedDto(dtos, FacadeProvider.getCaseFacade()::saveCase);
+		return savePushedDto(dtos, FacadeProvider.getCaseFacade()::save);
+	}
+
+	@POST
+	@Path("/pushWithPerson")
+	public CoreAndPersonDto<CaseDataDto> postCase(@Valid CoreAndPersonDto<CaseDataDto> dto) {
+		return FacadeProvider.getCaseFacade().save(dto);
 	}
 
 	@POST
 	@Path("/push-detailed")
 	public Map<String, Map<PushResult, String>> postCasesDetailed(@Valid List<CaseDataDto> dtos) {
-		return savePushedDetailedDto(dtos, FacadeProvider.getCaseFacade()::saveCase);
+		return savePushedDetailedDto(dtos, FacadeProvider.getCaseFacade()::save);
 	}
 
 	@GET
@@ -112,6 +119,12 @@ public class CaseResource extends EntityDtoResource {
 	@Path("/deleted/{since}")
 	public List<String> getDeletedUuidsSince(@PathParam("since") long since) {
 		return FacadeProvider.getCaseFacade().getDeletedUuidsSince(new Date(since));
+	}
+
+	@GET
+	@Path("/obsolete/{since}")
+	public List<String> getObsoleteUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getCaseFacade().getObsoleteUuidsSince(new Date(since));
 	}
 
 	@POST
@@ -153,6 +166,16 @@ public class CaseResource extends EntityDtoResource {
 			.getIndexDetailedPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
+	@POST
+	@Path("/caseFollowUpIndexList")
+	public Page<CaseFollowUpDto> getCaseFollowUpIndexList(
+		@RequestBody CriteriaWithSorting<CaseFollowUpCriteria> criteriaWithSorting,
+		@QueryParam("offset") int offset,
+		@QueryParam("size") int size) {
+		return FacadeProvider.getCaseFacade()
+			.getCaseFollowUpIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
+	}
+
 	@GET
 	@Path("/{uuid}")
 	public CaseDataDto getByUuid(@PathParam("uuid") String uuid) {
@@ -191,7 +214,13 @@ public class CaseResource extends EntityDtoResource {
 	@POST
 	@Path("/delete")
 	public List<String> delete(List<String> uuids) {
-		return FacadeProvider.getCaseFacade().deleteCases(uuids);
+		return FacadeProvider.getCaseFacade().deleteCases(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
+	}
+
+	@POST
+	@Path("/specificCase/{searchTerm}")
+	public String getSpecificCase(@RequestBody CaseCriteria caseCriteria, @PathParam("searchTerm") String searchTerm) {
+		return FacadeProvider.getCaseFacade().getUuidByUuidEpidNumberOrExternalId(searchTerm, caseCriteria);
 	}
 
 }

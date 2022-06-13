@@ -25,7 +25,8 @@ import java.util.List;
 import android.view.View;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.R;
@@ -81,7 +82,8 @@ public class ReportOverviewFragment extends ReportFragment {
 		EpiWeek epiWeek = getEpiWeek();
 		if (epiWeek == null
 			|| DateHelper.isEpiWeekAfter(DateHelper.getEpiWeek(new Date()), epiWeek)
-			|| !ConfigProvider.getUser().hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+			|| !(ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_CREATE)
+				&& ConfigProvider.getUser().hasJurisdictionLevel(JurisdictionLevel.DISTRICT))) {
 			setVisibilityForNoData();
 		} else {
 			showWeeklyReportOverview();
@@ -96,7 +98,8 @@ public class ReportOverviewFragment extends ReportFragment {
 			return;
 		}
 
-		if (!ConfigProvider.getUser().hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+		if (!(ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_CREATE)
+			&& ConfigProvider.getUser().hasJurisdictionLevel(JurisdictionLevel.DISTRICT))) {
 			return;
 		}
 
@@ -116,7 +119,8 @@ public class ReportOverviewFragment extends ReportFragment {
 				Disease disease = (Disease) getContentBinding().weeklyReportEntryDisease.getValue();
 
 				// confirmed reports
-				List<User> informants = DatabaseHelper.getUserDao().getInformantsByAssociatedOfficer(ConfigProvider.getUser());
+				List<User> informants =
+					DatabaseHelper.getUserDao().getUsersByAssociatedOfficer(ConfigProvider.getUser(), UserRight.WEEKLYREPORT_CREATE);
 				for (User informant : informants) {
 					WeeklyReport report = DatabaseHelper.getWeeklyReportDao().queryByEpiWeekAndUser(getEpiWeek(), informant);
 					if (report != null) {

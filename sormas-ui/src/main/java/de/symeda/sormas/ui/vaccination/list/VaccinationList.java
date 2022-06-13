@@ -16,30 +16,37 @@
 package de.symeda.sormas.ui.vaccination.list;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
-import com.vaadin.shared.Registration;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
+import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.PaginationList;
-import de.symeda.sormas.ui.utils.components.sidecomponent.event.EditSideComponentFieldEvent;
-import de.symeda.sormas.ui.utils.components.sidecomponent.event.EditSideComponentFieldEventListener;
 
 public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 
 	private static final int MAX_DISPLAYED_ENTRIES = 5;
+
 	private Disease disease;
-
 	private final Function<Integer, List<VaccinationListEntryDto>> vaccinationListSupplier;
+	private final Consumer<Runnable> actionCallback;
 
-	public VaccinationList(Disease disease, Function<Integer, List<VaccinationListEntryDto>> vaccinationListSupplier) {
+	public VaccinationList(
+		Disease disease,
+		Function<Integer, List<VaccinationListEntryDto>> vaccinationListSupplier,
+		Consumer<Runnable> actionCallback) {
 		super(MAX_DISPLAYED_ENTRIES);
 		this.vaccinationListSupplier = vaccinationListSupplier;
 		this.disease = disease;
+		this.actionCallback = actionCallback;
 	}
 
 	@Override
@@ -63,15 +70,16 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 			VaccinationListEntry listEntry = new VaccinationListEntry(entryDto, disease == null);
 			listEntry.addEditButton(
 				"edit-vaccination-" + listEntry.getVaccination().getUuid(),
-				e -> fireEvent(new EditSideComponentFieldEvent(listEntry)));
+				e -> actionCallback.accept(
+					() -> ControllerProvider.getVaccinationController()
+						.edit(
+							FacadeProvider.getVaccinationFacade().getByUuid(listEntry.getVaccination().getUuid()),
+							listEntry.getVaccination().getDisease(),
+							UiFieldAccessCheckers.getDefault(listEntry.getVaccination().isPseudonymized()),
+							true,
+							v -> SormasUI.refreshView(),
+							deleteCallback())));
 			listLayout.addComponent(listEntry);
 		}
-	}
-
-	public Registration addSideComponentFieldEditEventListener(EditSideComponentFieldEventListener editSideComponentFieldEventListener) {
-		return addListener(
-			EditSideComponentFieldEvent.class,
-			editSideComponentFieldEventListener,
-			EditSideComponentFieldEventListener.ON_EDIT_SIDE_COMPONENT_FIELD_METHOD);
 	}
 }

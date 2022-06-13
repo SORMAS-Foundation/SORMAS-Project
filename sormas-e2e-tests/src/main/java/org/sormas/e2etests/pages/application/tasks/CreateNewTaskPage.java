@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@ public class CreateNewTaskPage {
   public static final By DUE_DATE_TIME_COMBOBOX =
       By.cssSelector(".v-window #dueDate_time input+div");
   public static final By ASSIGNED_TO_COMBOBOX = By.cssSelector(".v-window #assigneeUser input+div");
+  public static final By OBSERVED_BY_COMBOBOX = By.cssSelector(".v-window #observerUsers input");
   public static final By ASSIGNED_TO_INPUT = By.cssSelector(".v-window #assigneeUser input");
   public static final By PRIORITY_COMBOBOX = By.cssSelector(".v-window #priority input+div");
   public static final By PRIORITY_INPUT = By.cssSelector(".v-window #priority input");
@@ -44,6 +45,16 @@ public class CreateNewTaskPage {
   public static final By TASK_STATUS_OPTIONS =
       By.cssSelector(".v-window #taskStatus .v-radiobutton label");
   public static final By SAVE_BUTTON = By.cssSelector(".v-window #commit");
-  public static final By SELECTED_TASK_CONTEXT =
-      By.cssSelector(".v-window #taskContext input:checked");
+  public static final By SELECTED_TASK_CONTEXT = By.cssSelector(".v-window [id='taskContext']");
+  public static final By OBSERVER_USER_INPUT =
+      By.xpath("//*[@id='observerUsers']//div[@role='combobox']//input");
+  public static final By SELECTED_OBSERVER_USER =
+      By.xpath("//*[@id='observerUsers']//div[@class='v-label v-widget v-has-width']");
+
+  public static By getDeleteIconByUser(String user) {
+    return By.xpath(
+        String.format(
+            "//div[@class='popupContent']//div[contains(@class, 'v-label') and text()=\"%s\"]/../..//div[contains(@class,'v-button')]",
+            user));
+  }
 }

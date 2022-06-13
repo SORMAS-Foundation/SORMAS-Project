@@ -118,6 +118,7 @@ public class EventActionsView extends AbstractEventView {
 			listLayout.addComponent(list);
 			listLayout.setExpandRatio(list, 1);
 			setSubComponent(listLayout);
+			listLayout.setEnabled(isEventEditAllowed());
 		}
 
 		updateFilterComponents();

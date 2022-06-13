@@ -24,7 +24,7 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
+import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
@@ -131,7 +131,7 @@ public class InfrastructureValidator {
 		} else {
 
 			Optional<PointOfEntryReferenceDto> localPointOfEntry = pointOfEntry.getExternalId() != null
-				? pointOfEntryFacade.getByExternalId(pointOfEntry.getExternalId(), false).stream().findFirst()
+				? pointOfEntryFacade.getReferencesByExternalId(pointOfEntry.getExternalId(), false).stream().findFirst()
 				: Optional.empty();
 
 			if (!localPointOfEntry.isPresent()) {
@@ -155,7 +155,7 @@ public class InfrastructureValidator {
 		InfrastructureDataReferenceDto dto,
 		String groupNameTag,
 		ValidationErrors validationErrors,
-		InfrastructureBaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> facade,
+		InfrastructureFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> facade,
 		String i18property,
 		Consumer<REF_DTO> onNoErrors,
 		ValidationDirection validationDirection) {

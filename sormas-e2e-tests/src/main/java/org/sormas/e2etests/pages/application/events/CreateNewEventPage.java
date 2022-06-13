@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,9 @@ public class CreateNewEventPage {
   public static final By EVENT_MANAGEMENT_STATUS_OPTIONS =
       By.cssSelector(".popupContent #eventManagementStatus .v-select-option label");
   public static final By START_DATA_INPUT = By.cssSelector(".popupContent #startDate input");
+  public static final By START_DATA_TIME = By.xpath(".//div[@id='startDate_time']/div");
+  public static final By END_DATA_INPUT = By.cssSelector(".popupContent #endDate input");
+  public static final By END_DATA_TIME = By.xpath(".//div[@id='endDate_time']/div");
   public static final By EVENT_INVESTIGATION_STATUS_OPTIONS =
       By.cssSelector(".popupContent #eventInvestigationStatus label");
   public static final By DISEASE_COMBOBOX = By.cssSelector(".popupContent #disease div");
@@ -72,7 +75,12 @@ public class CreateNewEventPage {
   public static final By REPORT_DATE_INPUT = By.cssSelector(".popupContent #reportDateTime input");
   public static final By NEW_EVENT_CREATED_MESSAGE =
       By.xpath("//*[contains(text(),'New event created')]");
+  public static final By NEW_EVENT_CREATED_DE_MESSAGE =
+      By.xpath("//*[contains(text(),'Neues Ereignis erstellt')]");
   public static final By EVENT_REGION = By.cssSelector(".v-window #region div");
   public static final By EVENT_DISTRICT = By.cssSelector(".v-window #district div");
   public static final By EVENT_COMMUNITY = By.cssSelector(".v-window #community div");
+  public static final By MULTI_DAY_EVENT_CHECKBOX = By.cssSelector("[id='multiDayEvent'] label");
+  public static final By START_DATA_EVENT = By.xpath("//div[@id='startDate_date']/input");
+  public static final By END_DATA_EVENT = By.xpath("//div[@id='endDate_date']/input");
 }

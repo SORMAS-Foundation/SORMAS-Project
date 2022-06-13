@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # SORMAS® - Surveillance Outbreak Response Management & Analysis System
-# Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+# Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ rm -rf ./allureReports
 echo "Executing gradle clean..."
 ./gradlew clean goJF
 echo "Starting all BDD tests under @$1 tag..."
-./gradlew startTests -Dcucumber.tags=\"@$1\" -Dheadless=true -Dcourgette.threads=9
+./gradlew startTests -Dcucumber.tags=\"@$1\" -Dheadless=true -Dcourgette.threads=9 -DenvConfig=
 echo "Deleting test downloads folder..."
 rm -rf ./downloads
 

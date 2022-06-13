@@ -16,11 +16,12 @@
 package de.symeda.sormas.backend.docgeneration;
 
 import org.apache.velocity.app.event.IncludeEventHandler;
+import org.apache.velocity.context.Context;
 
 public class NoIncludesEventHandler implements IncludeEventHandler {
 
 	@Override
-	public String includeEvent(String s, String s1, String s2) {
+	public String includeEvent(Context context, String includeResourcePath, String currentResourcePath, String directiveName) {
 		return null;
 	}
 }

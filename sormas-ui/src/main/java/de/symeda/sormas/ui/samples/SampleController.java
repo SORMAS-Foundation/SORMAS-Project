@@ -18,6 +18,8 @@
 package de.symeda.sormas.ui.samples;
 
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 import java.util.Collection;
 import java.util.List;
@@ -43,13 +45,14 @@ import com.vaadin.v7.data.Buffered.SourceException;
 import com.vaadin.v7.data.Validator.InvalidValueException;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
-
 import com.vaadin.v7.ui.Field;
+
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -75,13 +78,13 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.labmessage.LabMessagesView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
+import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
@@ -94,9 +97,6 @@ public class SampleController {
 	public void registerViews(Navigator navigator) {
 		navigator.addView(SamplesView.VIEW_NAME, SamplesView.class);
 		navigator.addView(SampleDataView.VIEW_NAME, SampleDataView.class);
-		if (UserProvider.getCurrent().hasUserRight(UserRight.LAB_MESSAGES)) {
-			navigator.addView(LabMessagesView.VIEW_NAME, LabMessagesView.class);
-		}
 	}
 
 	public void navigateToData(String sampleUuid) {
@@ -104,20 +104,20 @@ public class SampleController {
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
-	public void create(CaseReferenceDto caseRef, Disease disease) {
-		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef), disease);
+	public void create(CaseReferenceDto caseRef, Disease disease, Runnable callback) {
+		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef), disease, callback);
 	}
 
-	public void create(ContactReferenceDto contactRef, Disease disease) {
-		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef), disease);
+	public void create(ContactReferenceDto contactRef, Disease disease, Runnable callback) {
+		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef), disease, callback);
 	}
 
-	public void create(EventParticipantReferenceDto eventParticipantRef, Disease disease) {
-		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), eventParticipantRef), disease);
+	public void create(EventParticipantReferenceDto eventParticipantRef, Disease disease, Runnable callback) {
+		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), eventParticipantRef), disease, callback);
 	}
 
-	private void createSample(SampleDto sampleDto, Disease disease) {
-		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, disease, SormasUI::refreshView);
+	private void createSample(SampleDto sampleDto, Disease disease, Runnable callback) {
+		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, disease, callback);
 		// add option to create additional pathogen tests
 		addPathogenTestButton(editView, false);
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewSample));
@@ -136,14 +136,15 @@ public class SampleController {
 	public PathogenTestForm addPathogenTestComponent(CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent) {
 
 		int caseSampleCount = caseSampleCountOf(sampleComponent.getWrappedComponent().getValue());
-		return addPathogenTestComponent(sampleComponent, null, caseSampleCount, SormasUI::refreshView);
+		return addPathogenTestComponent(sampleComponent, null, caseSampleCount, SormasUI::refreshView, true);
 	}
 
 	public PathogenTestForm addPathogenTestComponent(
 		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
 		PathogenTestDto pathogenTest,
-		int caseSampleCount) {
-		return addPathogenTestComponent(sampleComponent, pathogenTest, caseSampleCount, null);
+		int caseSampleCount,
+		boolean isNew) {
+		return addPathogenTestComponent(sampleComponent, pathogenTest, caseSampleCount, null, isNew);
 	}
 
 	/**
@@ -157,13 +158,16 @@ public class SampleController {
 	 *            is valid).
 	 * @param callback
 	 *            use it to define additional actions that need to be taken after the pathogen test is saved (e.g. refresh the UI)
+	 * @param isNew
+	 *            for existing pathogen tests, the 'remove this pathogen test' button is hidden for users without UserRight.PATHOGEN_TEST_DELETE permission.
 	 * @return the pathogen test create component added.
 	 */
 	public PathogenTestForm addPathogenTestComponent(
 		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
 		PathogenTestDto pathogenTest,
 		int caseSampleCount,
-		Runnable callback) {
+		Runnable callback,
+		boolean isNew) {
 		// add horizontal rule to clearly distinguish the component
 		Label horizontalRule = new Label("<br><hr /><br>", ContentMode.HTML);
 		horizontalRule.setWidth(100f, Unit.PERCENTAGE);
@@ -196,26 +200,29 @@ public class SampleController {
 		// validate pathogen test create component before saving the sample
 		sampleComponent.addFieldGroups(pathogenTestForm.getFieldGroup());
 		CommitDiscardWrapperComponent.CommitListener savePathogenTest = () -> {
-			ControllerProvider.getPathogenTestController().savePathogenTest(pathogenTestForm.getValue(), null, true);
+			ControllerProvider.getPathogenTestController().savePathogenTest(pathogenTestForm.getValue(), null, true, true);
 			if (callback != null) {
 				callback.run();
 			}
 		};
 		sampleComponent.addCommitListener(savePathogenTest);
 		// Discard button configuration
-		Button discardButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.pathogenTestRemove));
-		VerticalLayout buttonLayout = new VerticalLayout(discardButton);
-		buttonLayout.setComponentAlignment(discardButton, Alignment.TOP_LEFT);
-		// add the discard button above the overall discard and commit buttons
-		sampleComponent.addComponent(buttonLayout, sampleComponent.getComponentCount() - 1);
-		discardButton.addClickListener(o -> {
-			sampleComponent.removeComponent(horizontalRule);
-			sampleComponent.removeComponent(buttonLayout);
-			sampleComponent.removeComponent(pathogenTestForm);
-			sampleComponent.removeFieldGroups(pathogenTestForm.getFieldGroup());
-			sampleComponent.removeCommitListener(savePathogenTest);
-			pathogenTestForm.discard();
-		});
+		if (isNew || isNull(pathogenTest) ||
+				UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_DELETE)) {
+			Button discardButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.pathogenTestRemove));
+			VerticalLayout buttonLayout = new VerticalLayout(discardButton);
+			buttonLayout.setComponentAlignment(discardButton, Alignment.TOP_LEFT);
+			// add the discard button above the overall discard and commit buttons
+			sampleComponent.addComponent(buttonLayout, sampleComponent.getComponentCount() - 1);
+			discardButton.addClickListener(o -> {
+				sampleComponent.removeComponent(horizontalRule);
+				sampleComponent.removeComponent(buttonLayout);
+				sampleComponent.removeComponent(pathogenTestForm);
+				sampleComponent.removeFieldGroups(pathogenTestForm.getFieldGroup());
+				sampleComponent.removeCommitListener(savePathogenTest);
+				pathogenTestForm.discard();
+			});
+		}
 		// Country specific configuration
 		boolean germanInstance = FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY);
 		pathogenTestForm.getField(PathogenTestDto.REPORT_DATE).setVisible(germanInstance);
@@ -249,7 +256,9 @@ public class SampleController {
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
 				FacadeProvider.getSampleFacade().saveSample(sampleDto);
-				callback.run();
+				if (callback != null) {
+					callback.run();
+				}
 			}
 		});
 
@@ -257,6 +266,11 @@ public class SampleController {
 	}
 
 	public void addPathogenTestButton(CommitDiscardWrapperComponent<? extends AbstractSampleForm> editView, boolean viaLims) {
+
+		if (!UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_CREATE)) {
+			return;
+		}
+
 		Button addPathogenTestButton = new Button(I18nProperties.getCaption(Captions.pathogenTestAdd));
 		addPathogenTestButton.addClickListener((e) -> {
 			PathogenTestForm pathogenTestForm = addPathogenTestComponent(editView);
@@ -283,8 +297,7 @@ public class SampleController {
 	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleReferralCreateComponent(SampleDto existingSample, Disease disease) {
 		final SampleDto referralSample = SampleDto.buildReferralDto(UserProvider.getCurrent().getUserReference(), existingSample);
 
-		final CommitDiscardWrapperComponent<SampleCreateForm> createView = getSampleCreateComponent(referralSample, disease, () -> {
-		});
+		final CommitDiscardWrapperComponent<SampleCreateForm> createView = getSampleCreateComponent(referralSample, disease, null);
 
 		createView.addCommitListener(() -> {
 			if (!createView.getWrappedComponent().getFieldGroup().isModified()) {
@@ -319,6 +332,8 @@ public class SampleController {
 				FacadeProvider.getSampleFacade().saveSample(changedDto);
 				SormasUI.refreshView();
 
+				updateAssociationsForSample(changedDto);
+
 				if (changedDto.getSpecimenCondition() != originalDto.getSpecimenCondition()
 					&& changedDto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE
 					&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
@@ -330,8 +345,9 @@ public class SampleController {
 		});
 
 		if (showDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)) {
-			editView.addDeleteListener(() -> {
-				FacadeProvider.getSampleFacade().deleteSample(dto.toReference());
+			editView.addDeleteWithReasonListener((deleteDetails) -> {
+				FacadeProvider.getSampleFacade().deleteSample(dto.toReference(), deleteDetails);
+				updateAssociationsForSample(dto);
 				UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entitySample));
 		}
@@ -340,7 +356,28 @@ public class SampleController {
 			editView.getWrappedComponent().getField(SampleDto.SAMPLE_PURPOSE).setEnabled(false);
 		}
 
+		if (dto.isDeleted()) {
+			editView.getWrappedComponent().getField(SampleDto.DELETION_REASON).setVisible(true);
+			if (editView.getWrappedComponent().getField(SampleDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
+				editView.getWrappedComponent().getField(SampleDto.OTHER_DELETION_REASON).setVisible(true);
+			}
+		}
+
 		return editView;
+	}
+
+	private void updateAssociationsForSample(SampleDto sampleDto) {
+		final CaseReferenceDto associatedCase = sampleDto.getAssociatedCase();
+		if (associatedCase != null) {
+			final CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
+			FacadeProvider.getCaseFacade().save(caseDataByUuid);
+		}
+
+		final ContactReferenceDto associatedContact = sampleDto.getAssociatedContact();
+		if (associatedContact != null) {
+			final ContactDto contactDataByUuid = FacadeProvider.getContactFacade().getByUuid(associatedContact.getUuid());
+			FacadeProvider.getContactFacade().save(contactDataByUuid);
+		}
 	}
 
 	/**
@@ -459,7 +496,7 @@ public class SampleController {
 					final CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
 					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CASE, associatedCase, dto, caseDto.getDisease());
 				} else if (associatedContact != null) {
-					final ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(associatedContact.getUuid());
+					final ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(associatedContact.getUuid());
 					ControllerProvider.getTaskController()
 						.createSampleCollectionTask(TaskContext.CONTACT, associatedContact, dto, contactDto.getDisease());
 				} else if (associatedEventParticipant != null) {
@@ -538,10 +575,11 @@ public class SampleController {
 				Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil
-				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteSamples), selectedRows.size()), () -> {
+			DeletableUtils.showDeleteWithReasonPopup(
+				String.format(I18nProperties.getString(Strings.confirmationDeleteSamples), selectedRows.size()),
+				(deletionDetails) -> {
 					List<String> sampleIndexDtoList = selectedRows.stream().map(SampleIndexDto::getUuid).collect(Collectors.toList());
-					FacadeProvider.getSampleFacade().deleteAllSamples(sampleIndexDtoList);
+					FacadeProvider.getSampleFacade().deleteAllSamples(sampleIndexDtoList, deletionDetails);
 					callback.run();
 					new Notification(
 						I18nProperties.getString(Strings.headingSamplesDeleted),
@@ -587,7 +625,7 @@ public class SampleController {
 		}
 		ContactReferenceDto contactRef = sample.getAssociatedContact();
 		if (contactRef != null) {
-			return FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid()).getDisease();
+			return FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid()).getDisease();
 		}
 		EventParticipantReferenceDto eventPartRef = sample.getAssociatedEventParticipant();
 		if (eventPartRef != null) {

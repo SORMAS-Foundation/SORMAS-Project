@@ -32,8 +32,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.joda.time.LocalDate;
-
 import com.google.common.collect.Sets;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.shared.ui.ErrorLevel;
@@ -42,10 +40,10 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
-import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.validator.DateRangeValidator;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
+import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
@@ -82,7 +80,6 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.utils.ExtendedReduced;
@@ -109,7 +106,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 	private static final String CONTACT_DATA_HEADING_LOC = "contactDataHeadingLoc";
 	private static final String FOLLOW_UP_STATUS_HEADING_LOC = "followUpStatusHeadingLoc";
-	private static final String TO_CASE_BTN_LOC = "toCaseBtnLoc";
+	protected static final String TO_CASE_BTN_LOC = "toCaseBtnLoc";
 	private static final String CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC = "cancelOrResumeFollowUpBtnLoc";
 	private static final String LOST_FOLLOW_UP_BTN_LOC = "lostFollowUpBtnLoc";
 	private static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
@@ -166,7 +163,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
                     fluidRowLocs(ContactDto.FOLLOW_UP_UNTIL, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC, ContactDto.OVERWRITE_FOLLOW_UP_UTIL) +
                     fluidRowLocs(ContactDto.FOLLOW_UP_COMMENT) +
                     fluidRowLocs(ContactDto.CONTACT_OFFICER, "") + loc(GENERAL_COMMENT_LOC)
-                    + fluidRowLocs(ContactDto.ADDITIONAL_DETAILS);
+                    + fluidRowLocs(ContactDto.ADDITIONAL_DETAILS) +
+					fluidRowLocs(CaseDataDto.DELETION_REASON) +
+					fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);;
     //@formatter:on
 
 	private final ViewMode viewMode;
@@ -187,6 +186,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private TextField tfExpectedFollowUpUntilDate;
 	private CheckBox cbOverwriteFollowUpUntil;
 	private DateField dfFollowUpUntil;
+	private CheckBox multiDayContact;
+	private DateField firstContactDate;
+	private DateField lastContactDate;
+	private DateField reportDate;
+	private Button toCaseButton;
 
 	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isPseudonymized) {
 		super(
@@ -199,6 +203,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		this.viewMode = viewMode;
 		this.disease = disease;
 		addFields();
+	}
+
+	public Button getToCaseButton() {
+		return toCaseButton;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -229,15 +237,22 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		addField(ContactDto.INTERNAL_TOKEN, TextField.class);
 		addField(ContactDto.REPORTING_USER, ComboBox.class);
-		CheckBox multiDayContact = addField(ContactDto.MULTI_DAY_CONTACT, CheckBox.class);
-		DateField firstContactDate = addDateField(ContactDto.FIRST_CONTACT_DATE, DateField.class, 0);
-		DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
+		multiDayContact = addField(ContactDto.MULTI_DAY_CONTACT, CheckBox.class);
+		firstContactDate = addDateField(ContactDto.FIRST_CONTACT_DATE, DateField.class, 0);
+		lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
+		reportDate = addField(ContactDto.REPORT_DATE_TIME, DateField.class);
+
+		List<AbstractField<Date>> validatedFields = Arrays.asList(firstContactDate, lastContactDate, reportDate);
+		validatedFields.forEach(field -> field.addValueChangeListener(r -> {
+			validatedFields.forEach(otherField -> {
+				otherField.setValidationVisible(!otherField.isValid());
+			});
+		}));
 
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), ContactDto.FIRST_CONTACT_DATE, ContactDto.MULTI_DAY_CONTACT, Collections.singletonList(true), true);
-		initContactDateValidation(firstContactDate, lastContactDate, multiDayContact);
+		initContactDateValidation();
 
-		DateField reportDate = addField(ContactDto.REPORT_DATE_TIME, DateField.class);
 		addInfrastructureField(ContactDto.REPORTING_DISTRICT).addItems(FacadeProvider.getDistrictFacade().getAllActiveAsReference());
 		addField(ContactDto.CONTACT_IDENTIFICATION_SOURCE, ComboBox.class);
 		TextField contactIdentificationSourceDetails = addField(ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS, TextField.class);
@@ -478,11 +493,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			if (districtDto == null && getValue().getCaze() != null) {
 				CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(getValue().getCaze().getUuid());
 
-				FieldHelper.updateOfficersField(contactOfficerField, caseDto, UserRole.CONTACT_OFFICER);
+				FieldHelper.updateOfficersField(contactOfficerField, caseDto, UserRight.CONTACT_RESPONSIBLE);
 			} else {
 				FieldHelper.updateItems(
 					contactOfficerField,
-					districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.CONTACT_OFFICER) : null);
+					districtDto != null
+						? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, getSelectedDisease(), UserRight.CONTACT_RESPONSIBLE)
+						: null);
 			}
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
@@ -512,6 +529,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			I18nProperties.getPrefixDescription(ContactDto.I18N_PREFIX, ContactDto.ADDITIONAL_DETAILS, "") + "\n"
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
+
+		addField(ContactDto.DELETION_REASON);
+		addField(ContactDto.OTHER_DELETION_REASON, TextArea.class).setRows(3);
+		setVisible(false, ContactDto.DELETION_REASON, ContactDto.OTHER_DELETION_REASON);
 
 		addFields(ContactDto.END_OF_QUARANTINE_REASON, ContactDto.END_OF_QUARANTINE_REASON_DETAILS);
 		FieldHelper.setVisibleWhen(
@@ -589,15 +610,15 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					setRequired(true, ContactDto.DISEASE, ContactDto.REGION, ContactDto.DISTRICT);
 				}
 
-				updateLastContactDateValidator();
+				updateDateComparison();
 				updateDiseaseConfiguration(getValue().getDisease());
 				updateFollowUpStatusComponents();
 
 				DistrictReferenceDto referenceDistrict =
 					getValue().getDistrict() != null ? getValue().getDistrict() : caseDto != null ? caseDto.getDistrict() : null;
 				if (referenceDistrict != null) {
-					contactOfficerField
-						.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(referenceDistrict, false, UserRole.CONTACT_OFFICER));
+					contactOfficerField.addItems(
+						FacadeProvider.getUserFacade().getUserRefsByDistrict(referenceDistrict, getSelectedDisease(), UserRight.CONTACT_RESPONSIBLE));
 				}
 
 				getContent().removeComponent(TO_CASE_BTN_LOC);
@@ -608,16 +629,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					getContent().addComponent(linkToData, TO_CASE_BTN_LOC);
 				} else if (!ContactClassification.NO_CONTACT.equals(getValue().getContactClassification())) {
 					if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CONVERT)) {
-						Button toCaseButton = ButtonHelper.createButton(Captions.contactCreateContactCase, event -> {
-							if (!ContactClassification.CONFIRMED.equals(getValue().getContactClassification())) {
-								VaadinUiUtil.showSimplePopupWindow(
-									I18nProperties.getString(Strings.headingContactConfirmationRequired),
-									I18nProperties.getString(Strings.messageContactToCaseConfirmationRequired));
-							} else {
-								ControllerProvider.getCaseController().createFromContact(getValue());
-							}
-						}, ValoTheme.BUTTON_LINK);
-
+						toCaseButton = ButtonHelper.createButton(Captions.contactCreateContactCase);
+						toCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
 						getContent().addComponent(toCaseButton, TO_CASE_BTN_LOC);
 					}
 				}
@@ -782,25 +795,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		statusField.setReadOnly(true);
 
 		updateFollowUpStatusComponents();
-	}
-
-	protected void updateLastContactDateValidator() {
-
-		Field<?> dateField = getField(ContactDto.LAST_CONTACT_DATE);
-		for (Validator validator : dateField.getValidators()) {
-			if (validator instanceof DateRangeValidator) {
-				dateField.removeValidator(validator);
-			}
-		}
-		if (getValue() != null) {
-			dateField.addValidator(
-				new DateRangeValidator(
-					I18nProperties
-						.getValidationError(Validations.beforeDate, dateField.getCaption(), getField(ContactDto.REPORT_DATE_TIME).getCaption()),
-					null,
-					new LocalDate(getValue().getReportDateTime()).plusDays(1).toDate(),
-					Resolution.SECOND));
-		}
 	}
 
 	private void updateDiseaseConfiguration(Disease disease) {
@@ -1013,39 +1007,28 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		}
 	}
 
-	private void initContactDateValidation(DateField startDate, DateField endDate, CheckBox multiDayCheckbox) {
-		DateComparisonValidator startDateValidator = new DateComparisonValidator(
-			startDate,
-			endDate,
-			true,
-			false,
-			I18nProperties.getValidationError(Validations.beforeDate, startDate.getCaption(), endDate.getCaption()));
+	private void initContactDateValidation() {
+		multiDayContact.addValueChangeListener(e -> updateDateComparison());
+	}
 
-		DateComparisonValidator endDateValidator = new DateComparisonValidator(
-			endDate,
-			startDate,
-			false,
-			false,
-			I18nProperties.getValidationError(Validations.afterDate, endDate.getCaption(), startDate.getCaption()));
+	private void updateDateComparison() {
+		DateComparisonValidator.removeDateComparisonValidators(firstContactDate);
+		DateComparisonValidator.removeDateComparisonValidators(lastContactDate);
+		DateComparisonValidator.removeDateComparisonValidators(reportDate);
 
-		startDate.addValueChangeListener(event -> endDate.setRequired(event.getProperty().getValue() != null));
+		DateComparisonValidator.addStartEndValidators(lastContactDate, reportDate);
 
-		multiDayCheckbox.addValueChangeListener(e -> {
-			if ((Boolean) e.getProperty().getValue()) {
-				startDate.addValidator(startDateValidator);
-				endDate.addValidator(endDateValidator);
-			} else {
-				startDate.removeValidator(startDateValidator);
-				endDate.removeValidator(endDateValidator);
-			}
-		});
+		if (firstContactDate.isVisible() || multiDayContact.getValue() == Boolean.TRUE) {
+			DateComparisonValidator.addStartEndValidators(firstContactDate, lastContactDate);
+			DateComparisonValidator.addStartEndValidators(firstContactDate, reportDate);
+		}
 	}
 
 	@Override
 	public void setValue(ContactDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
 
-		FollowUpPeriodDto followUpPeriodDto = FacadeProvider.getContactFacade().calculateFollowUpUntilDate(newFieldValue, true);
+		FollowUpPeriodDto followUpPeriodDto = FacadeProvider.getContactFacade().getCalculatedFollowUpUntilDate(newFieldValue, true);
 		tfExpectedFollowUpUntilDate.setValue(DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpEndDate(), I18nProperties.getUserLanguage()));
 		tfExpectedFollowUpUntilDate.setReadOnly(true);
 		tfExpectedFollowUpUntilDate.setDescription(

@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.immunization;
 
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -40,6 +42,9 @@ public class ReceivedImmunizationProcessor
 	extends
 	ReceivedDataProcessor<Immunization, ImmunizationDto, SormasToSormasImmunizationDto, PreviewNotImplementedDto, Immunization, ImmunizationService, SormasToSormasImmunizationDtoValidator> {
 
+	@EJB
+	private ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacadeEjb;
+
 	public ReceivedImmunizationProcessor() {
 	}
 
@@ -53,9 +58,9 @@ public class ReceivedImmunizationProcessor
 	}
 
 	@Override
-	public void handleReceivedData(SormasToSormasImmunizationDto sharedData, Immunization existingData) {
+	public void handleReceivedData(SormasToSormasImmunizationDto sharedData, Immunization existingData, SormasToSormasOriginInfoDto originInfo) {
 		updateReportingUser(sharedData.getEntity(), existingData);
-		handleIgnoredProperties(sharedData.getEntity(), ImmunizationFacadeEjb.toDto(existingData));
+		handleIgnoredProperties(sharedData.getEntity(), immunizationFacadeEjb.toDto(existingData));
 
 		ImmunizationDto im = sharedData.getEntity();
 		im.getVaccinations().forEach(vaccination -> {

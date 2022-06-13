@@ -47,6 +47,8 @@ public enum SampleMaterial {
 		Disease.CORONAVIRUS }, hide = true)
 	CORNEA_PM,
 	SALIVA,
+	@Diseases(value = {
+		Disease.CORONAVIRUS }, hide = true)
 	URINE_PM,
 	@Diseases(value = {
 		Disease.CORONAVIRUS }, hide = true)

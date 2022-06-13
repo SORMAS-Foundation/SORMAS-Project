@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 
 import cucumber.api.java8.En;
@@ -45,6 +46,14 @@ public class ChooseSourceCaseSteps implements En {
         });
 
     When(
+        "^I search for the last case uuid in the CHOOSE SOURCE popup of Create Contact window$",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              SOURCE_CASE_WINDOW_CASE_INPUT_NESTED, apiState.getCreatedCase().getUuid());
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
+        });
+
+    When(
         "^I open the first found result in the CHOOSE SOURCE window$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
@@ -58,6 +67,31 @@ public class ChooseSourceCaseSteps implements En {
         });
 
     When(
+        "^I open the first found result in the CHOOSE SOURCE popup of Create Contact window$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION);
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION);
+          webDriverHelpers.waitForRowToBeSelected(SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON);
+        });
+
+    When(
+        "^I open the first found result in the CHOOSE SOURCE window for DE version$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION);
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION);
+          webDriverHelpers.waitForRowToBeSelected(SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_CASE_WINDOW_CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_CONFIRM_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              CASE_CHANGE_POPUP_SUCCESS_MESSAGE_DE);
+        });
+
+    When(
         "I click on the CHOOSE SOURCE CASE button from CONTACT page",
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
@@ -68,6 +102,14 @@ public class ChooseSourceCaseSteps implements En {
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 POPUP_YES_BUTTON, SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON));
+
+    When(
+        "I click yes on the DISCARD UNSAVED CHANGES popup if it appears",
+        () -> {
+          if (webDriverHelpers.isElementVisibleWithTimeout(POPUP_YES_BUTTON, 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(POPUP_YES_BUTTON);
+          }
+        });
 
     Then(
         "I check the linked case information is correctly displayed",

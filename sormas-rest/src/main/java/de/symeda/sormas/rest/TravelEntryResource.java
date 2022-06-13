@@ -2,7 +2,6 @@ package de.symeda.sormas.rest;
 
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -18,6 +17,8 @@ import javax.ws.rs.core.Response;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
@@ -27,9 +28,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Path("/travelentries")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-@RolesAllowed({
-	"USER",
-	"REST_USER" })
 public class TravelEntryResource extends EntityDtoResource {
 
 	@POST
@@ -58,7 +56,7 @@ public class TravelEntryResource extends EntityDtoResource {
 	@DELETE
 	@Path("/{uuid}")
 	public Response delete(@PathParam("uuid") String uuid) {
-		FacadeProvider.getTravelEntryFacade().deleteTravelEntry(uuid);
+		FacadeProvider.getTravelEntryFacade().delete(uuid, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
 		return Response.ok("OK").build();
 	}
 

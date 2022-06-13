@@ -21,10 +21,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 import java.io.File;
 import java.lang.reflect.Field;
 import java.security.Principal;
+import java.util.Hashtable;
 import java.util.Properties;
 
 import javax.ejb.SessionContext;
@@ -35,8 +37,14 @@ import javax.enterprise.inject.Specializes;
 import javax.jms.ConnectionFactory;
 import javax.jms.Topic;
 import javax.mail.Session;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.naming.spi.InitialContextFactory;
 import javax.transaction.UserTransaction;
 
+import de.symeda.sormas.api.RequestContextHolder;
+import de.symeda.sormas.api.RequestContextTO;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.central.EtcdCentralClient;
 import de.symeda.sormas.backend.central.EtcdCentralClientProducer;
@@ -45,23 +53,36 @@ import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoverySer
 import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClientProducer;
+import de.symeda.sormas.backend.user.CurrentUserService;
 
 /**
  * Creates mocks for resources needed in bean test / external services.
  * 
  * @author Stefan Kock
  */
-public class MockProducer {
+public class MockProducer implements InitialContextFactory {
+
+	@Override
+	public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
+
+		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
+		CurrentUserService currentUserService = mock(CurrentUserService.class);
+		InitialContext mockCtx = mock(InitialContext.class);
+		when(mockCtx.lookup("java:global/sormas-ear/sormas-backend/CurrentUserService")).thenReturn(currentUserService);
+
+		return mockCtx;
+	}
 
 	private static final String TMP_PATH = "target/tmp";
 
-	private static SessionContext sessionContext = mock(SessionContext.class);
-	private static Principal principal = mock(Principal.class);
+	private static SessionContext sessionContext = mock(SessionContext.class, withSettings().lenient());
+	private static Principal principal = mock(Principal.class, withSettings().lenient());
 	private static Topic topic = mock(Topic.class);
 	private static ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 	private static TimerService timerService = mock(TimerService.class);
 	private static Properties properties = new Properties();
 	private static UserTransaction userTransaction = mock(UserTransaction.class);
+	private static RequestContextTO requestContextTO = new RequestContextTO(false);
 	private static SormasToSormasRestClient s2sRestClient = mock(SormasToSormasRestClient.class);
 	private static final EtcdCentralClient etcdCentralClient = mock(EtcdCentralClient.class);
 	private static ManagedScheduledExecutorService managedScheduledExecutorService = mock(ManagedScheduledExecutorService.class);
@@ -100,6 +121,7 @@ public class MockProducer {
 		reset(sessionContext, principal, topic, connectionFactory, timerService, userTransaction, s2sRestClient, managedScheduledExecutorService);
 		wireMocks();
 		resetProperties();
+		requestContextTO.setMobileSync(false);
 	}
 
 	private static void resetProperties() {
@@ -113,6 +135,7 @@ public class MockProducer {
 	public static void wireMocks() {
 
 		when(sessionContext.getCallerPrincipal()).thenReturn(getPrincipal());
+		RequestContextHolder.setRequestContext(requestContextTO);
 	}
 
 	@Produces
@@ -194,5 +217,13 @@ public class MockProducer {
 
 	public static void mockProperty(String property, String value) {
 		properties.setProperty(property, value);
+	}
+
+	/**
+	 * @param mobileSync
+	 *            {@code true} simulates mobile call.
+	 */
+	public static void setMobileSync(boolean mobileSync) {
+		requestContextTO.setMobileSync(mobileSync);
 	}
 }

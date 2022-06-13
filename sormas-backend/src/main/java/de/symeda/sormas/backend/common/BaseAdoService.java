@@ -18,14 +18,18 @@
 package de.symeda.sormas.backend.common;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-import javax.enterprise.inject.Instance;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
@@ -48,10 +52,11 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.user.CurrentUser;
-import de.symeda.sormas.backend.user.CurrentUserQualifier;
+import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
@@ -63,8 +68,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	private final Class<ADO> elementClass;
 
 	@Inject
-	@CurrentUserQualifier
-	private Instance<CurrentUser> currentUser;
+	private CurrentUserService currentUserService;
 
 	// protected to be used by implementations
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -74,18 +78,12 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		this.elementClass = elementClass;
 	}
 
-	protected User getCurrentUser() {
-		return currentUser.get().getUser();
+	public User getCurrentUser() {
+		return currentUserService.getCurrentUser();
 	}
 
-	/**
-	 * Should only be used for testing scenarios of user rights & jurisdiction!
-	 * 
-	 * @param user
-	 */
-	@Deprecated
-	public void setCurrentUser(User user) {
-		currentUser.get().setUser(user);
+	public boolean hasRight(UserRight right) {
+		return currentUserService.hasUserRight(right);
 	}
 
 	protected Class<ADO> getElementClass() {
@@ -169,11 +167,38 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		return em.createQuery(cq).getResultList();
 	}
 
+	public List<String> getAllUuids(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<ADO> from = cq.from(getElementClass());
+		Predicate filter = filterBuilder.apply(cb, from);
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.select(from.get(ADO.UUID));
+
+		return em.createQuery(cq).getResultList();
+	}
+
 	public List<ADO> getBatchedQueryResults(CriteriaBuilder cb, CriteriaQuery<ADO> cq, From<?, ADO> from, Integer batchSize) {
 
 		// Ordering by UUID is relevant if a batch includes some, but not all objects with the same timestamp.
 		// the next batch can then resume with the same timestamp and the next UUID in lexicographical order.y
 		cq.orderBy(cb.asc(from.get(AbstractDomainObject.CHANGE_DATE)), cb.asc(from.get(AbstractDomainObject.UUID)));
+
+		return createQuery(cq, 0, batchSize).getResultList();
+	}
+
+	public List<AdoAttributes> getBatchedAttributesQueryResults(
+		CriteriaBuilder cb,
+		CriteriaQuery<AdoAttributes> cq,
+		From<?, ADO> from,
+		Integer batchSize) {
+
+		// Ordering by UUID is relevant if a batch includes some, but not all objects with the same timestamp.
+		// the next batch can then resume with the same timestamp and the next UUID in lexicographical order.y
+		cq.orderBy(cb.asc(from.get(AdoAttributes.CHANGE_DATE)), cb.asc(from.get(AdoAttributes.UUID)));
 
 		return createQuery(cq, 0, batchSize).getResultList();
 	}
@@ -191,6 +216,37 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		cq.select(cb.count(root));
 
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	/**
+	 * @return List of <strong>read-only</strong> entities. Sorts also by {@value AbstractDomainObject#CHANGE_DATE},
+	 *         {@value AbstractDomainObject#UUID}, {@value AbstractDomainObject#ID} ASC
+	 *         to match sorting for {@code getAllAfter} pattern (to be in sync with
+	 *         {@link #getBatchedQueryResults(CriteriaBuilder, CriteriaQuery, From, Integer)} and
+	 *         {@link #getBatchedAttributesQueryResults(CriteriaBuilder, CriteriaQuery, From, Integer)}).
+	 */
+	public List<ADO> getByIds(List<Long> ids) {
+
+		/*
+		 * Use Set here to avoid possible duplicates over several batches or within one batch.
+		 * This also avoids costly DISTINCT argument.
+		 */
+		Set<ADO> result = new LinkedHashSet<>();
+		IterableHelper.executeBatched(ids, ModelConstants.PARAMETER_LIMIT, batchedIds -> {
+
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
+			Root<ADO> from = cq.from(getElementClass());
+			cq.where(from.get(AbstractDomainObject.ID).in(batchedIds));
+			cq.orderBy(
+				cb.asc(from.get(AbstractDomainObject.CHANGE_DATE)),
+				cb.asc(from.get(AbstractDomainObject.UUID)),
+				cb.asc(from.get(AbstractDomainObject.ID)));
+			List<ADO> batchResult = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+			result.addAll(batchResult);
+		});
+
+		return new ArrayList<>(result);
 	}
 
 	public List<ADO> getByUuids(List<String> uuids) {
@@ -302,9 +358,14 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	}
 
 	@Override
-	public void delete(ADO deleteme) {
-		em.remove(em.contains(deleteme) ? deleteme : em.merge(deleteme)); // todo: investigate why the entity might be detached (example: AdditionalTest)
+	public void deletePermanent(ADO ado) {
+		em.remove(em.contains(ado) ? ado : em.merge(ado)); // todo: investigate why the entity might be detached (example: AdditionalTest)
 		em.flush();
+	}
+
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void deletePermanentByUuids(List<String> uuids) {
+		uuids.forEach(uuid -> deletePermanent(getByUuid(uuid)));
 	}
 
 	@Override

@@ -103,11 +103,8 @@ public class MergeCasesView extends AbstractView {
 			e -> {
 				if (e) {
 					grid.calculateCompletenessValues();
-					new Notification(
-						I18nProperties.getString(Strings.headingCasesArchived),
-						I18nProperties.getString(Strings.messageCompletenessValuesUpdated),
-						Type.HUMANIZED_MESSAGE,
-						false).show(Page.getCurrent());
+					new Notification("", I18nProperties.getString(Strings.messageCompletenessValuesUpdated), Type.HUMANIZED_MESSAGE, false)
+						.show(Page.getCurrent());
 				}
 			});
 	}

@@ -17,7 +17,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
@@ -27,16 +26,21 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		super(Campaign.class);
 	}
 
-	/**
-	 * a user who has access to @CamnpaignView can read all campaigns
-	 */
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Campaign> from) {
+	@SuppressWarnings("rawtypes")
+	protected Predicate createUserFilterInternal(CriteriaBuilder cb, CriteriaQuery cq, From<?, Campaign> from) {
+		return createUserFilter(new CampaignQueryContext(cb, cq, from));
+	}
+
+	public Predicate createUserFilter(CampaignQueryContext queryContext) {
+		// A user who has access to CampaignView can read all campaigns
 		return null;
 	}
 
-	public Predicate buildCriteriaFilter(CampaignCriteria campaignCriteria, CriteriaBuilder cb, Root<Campaign> from) {
+	public Predicate buildCriteriaFilter(CampaignQueryContext queryContext, CampaignCriteria campaignCriteria) {
+
+		CriteriaBuilder cb = queryContext.getCriteriaBuilder();
+		From<?, Campaign> from = queryContext.getRoot();
 
 		Predicate filter = null;
 		if (campaignCriteria.getDeleted() != null) {
@@ -49,7 +53,8 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 				cb.between(from.get(Campaign.START_DATE), campaignCriteria.getStartDateAfter(), campaignCriteria.getStartDateBefore()));
 		}
 		if (campaignCriteria.getEndDateAfter() != null || campaignCriteria.getEndDateBefore() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.between(from.get(Campaign.END_DATE), campaignCriteria.getEndDateAfter(), campaignCriteria.getEndDateAfter()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.between(from.get(Campaign.END_DATE), campaignCriteria.getEndDateAfter(), campaignCriteria.getEndDateAfter()));
 		}
 		if (campaignCriteria.getFreeText() != null) {
 			String[] textFilters = campaignCriteria.getFreeText().split("\\s+");
@@ -59,14 +64,15 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 				}
 
 				Predicate likeFilters = cb.or(
-						CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Campaign.NAME), textFilter),
-						CriteriaBuilderHelper.ilike(cb, from.get(Campaign.UUID), textFilter));
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Campaign.NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(Campaign.UUID), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (campaignCriteria.getRelevanceStatus() != null) {
 			if (campaignCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(from.get(Campaign.ARCHIVED), false), cb.isNull(from.get(Campaign.ARCHIVED))));
+				filter = CriteriaBuilderHelper
+					.and(cb, filter, cb.or(cb.equal(from.get(Campaign.ARCHIVED), false), cb.isNull(from.get(Campaign.ARCHIVED))));
 			} else if (campaignCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Campaign.ARCHIVED), true));
 			}
@@ -92,8 +98,23 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Campaign> getAllAfter(Date since, User user) {
+	public List<Campaign> getAllActive() {
 
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Campaign> cq = cb.createQuery(getElementClass());
+		Root<Campaign> from = cq.from(getElementClass());
+		cq.where(createActiveCampaignsFilter(cb, from));
+		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public Predicate createActiveCampaignsFilter(CriteriaBuilder cb, Root<Campaign> root) {
+		return cb.and(cb.isFalse(root.get(Campaign.ARCHIVED)), cb.isFalse(root.get(Campaign.DELETED)));
+	}
+
+	@Override
+	public List<Campaign> getAllAfter(Date since) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Campaign> cq = cb.createQuery(getElementClass());
 		Root<Campaign> root = cq.from(getElementClass());
@@ -115,18 +136,4 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Campaign> getAllActive() {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Campaign> cq = cb.createQuery(getElementClass());
-		Root<Campaign> from = cq.from(getElementClass());
-		cq.where(createActiveCampaignsFilter(cb, from));
-		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
-
-		return em.createQuery(cq).getResultList();
-	}
-
-	public Predicate createActiveCampaignsFilter(CriteriaBuilder cb, Root<Campaign> root) {
-		return cb.and(cb.isFalse(root.get(Campaign.ARCHIVED)), cb.isFalse(root.get(Campaign.DELETED)));
-	}
 }

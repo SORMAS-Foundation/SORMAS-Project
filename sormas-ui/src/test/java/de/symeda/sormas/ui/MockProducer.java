@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
 import java.security.Principal;
+import java.util.Hashtable;
 import java.util.Properties;
 
 import javax.ejb.SessionContext;
@@ -34,8 +35,13 @@ import javax.enterprise.inject.Produces;
 import javax.jms.ConnectionFactory;
 import javax.jms.Topic;
 import javax.mail.Session;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.naming.spi.InitialContextFactory;
 import javax.transaction.UserTransaction;
 
+import de.symeda.sormas.backend.user.CurrentUserService;
 import org.apache.james.mime4j.field.address.Mailbox;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -49,7 +55,16 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
  * 
  * @author Stefan Kock
  */
-public class MockProducer {
+public class MockProducer implements InitialContextFactory {
+
+	@Override
+	public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
+		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
+		CurrentUserService currentUserService = mock(CurrentUserService.class);
+		InitialContext mockCtx = mock(InitialContext.class);
+		when(mockCtx.lookup("java:global/sormas-ear/sormas-backend/CurrentUserService")).thenReturn(currentUserService);
+		return mockCtx;
+	}
 
 	private static SessionContext sessionContext = mock(SessionContext.class);
 	private static Principal principal = mock(Principal.class);

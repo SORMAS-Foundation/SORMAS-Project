@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,15 +24,17 @@ import lombok.SneakyThrows;
 
 @Getter
 public enum FacilityCategory {
-  ACCOMMODATION("Accommodation"),
-  CARE_FACILITY("Care facility"),
-  MEDICAL_FACILITY("Medical facility"),
-  RESIDENCE("Residence");
+  ACCOMMODATION("Accommodation", "Beherbergungsst\u00E4tten"),
+  CARE_FACILITY("Care facility", "Pflegeeinrichtung"),
+  MEDICAL_FACILITY("Medical facility", "Medizinische Einrichtung"),
+  RESIDENCE("Residence", "Wohnst\u00E4tte");
 
   private final String facility;
+  private final String facilityDE;
 
-  FacilityCategory(String aFacilityCategory) {
+  FacilityCategory(String aFacilityCategory, String aFacilityCategoryDE) {
     facility = aFacilityCategory;
+    facilityDE = aFacilityCategoryDE;
   }
 
   public static String getRandomFacility() {

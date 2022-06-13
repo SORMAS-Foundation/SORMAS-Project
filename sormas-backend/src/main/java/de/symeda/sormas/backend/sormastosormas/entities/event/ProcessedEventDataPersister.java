@@ -51,7 +51,7 @@ public class ProcessedEventDataPersister extends ProcessedDataPersister<EventDto
 	public void persistSharedData(SormasToSormasEventDto processedData, Event existingEvent) throws SormasToSormasValidationException {
 		EventDto event = processedData.getEntity();
 
-		handleValidationError(() -> eventFacade.saveEvent(event, false, false), Captions.CaseData, buildCaseValidationGroupName(event));
+		handleValidationError(() -> eventFacade.save(event, false, false), Captions.CaseData, buildCaseValidationGroupName(event));
 	}
 
 	@Override

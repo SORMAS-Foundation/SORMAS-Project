@@ -28,8 +28,8 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.TestDataCreator;
 
 public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
@@ -44,8 +44,13 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 		reset();
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		loginWith(user);
 
@@ -76,7 +81,7 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 		EventParticipantDto eventParticipantDto1 = EventParticipantDto.build(eventDto.toReference(), user.toReference());
 		eventParticipantDto1.setPerson(personDto1);
 		eventParticipantDto1.setInvolvementDescription("involved");
-		getEventParticipantFacade().saveEventParticipant(eventParticipantDto1);
+		getEventParticipantFacade().save(eventParticipantDto1);
 
 		PersonDto personDto2 = PersonDto.build();
 		personDto2.setFirstName("Guy");
@@ -89,7 +94,7 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 		EventParticipantDto eventParticipantDto2 = EventParticipantDto.build(eventDto.toReference(), user.toReference());
 		eventParticipantDto2.setPerson(personDto2);
 		eventParticipantDto2.setInvolvementDescription("involved");
-		getEventParticipantFacade().saveEventParticipant(eventParticipantDto2);
+		getEventParticipantFacade().save(eventParticipantDto2);
 
 		PersonDto personDto3 = PersonDto.build();
 		personDto3.setFirstName("Georges");
@@ -102,7 +107,7 @@ public class EventDocumentFacadeEjbTest extends AbstractDocGenerationTest {
 		EventParticipantDto eventParticipantDto3 = EventParticipantDto.build(eventDto.toReference(), user.toReference());
 		eventParticipantDto3.setPerson(personDto3);
 		eventParticipantDto3.setInvolvementDescription("involved");
-		getEventParticipantFacade().saveEventParticipant(eventParticipantDto3);
+		getEventParticipantFacade().save(eventParticipantDto3);
 
 		ActionDto actionDto1 = new ActionDto();
 		actionDto1.setTitle("An action");

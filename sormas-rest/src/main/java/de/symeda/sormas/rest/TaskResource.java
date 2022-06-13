@@ -20,7 +20,6 @@ package de.symeda.sormas.rest;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -51,9 +50,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Path("/tasks")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-@RolesAllowed({
-	"USER",
-	"REST_USER" })
 public class TaskResource extends EntityDtoResource {
 
 	@GET
@@ -64,7 +60,10 @@ public class TaskResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
-	public List<TaskDto> getAll(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+	public List<TaskDto> getAll(
+		@PathParam("since") long since,
+		@PathParam("size") int size,
+		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
 		return FacadeProvider.getTaskFacade().getAllActiveTasksAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
@@ -109,6 +108,12 @@ public class TaskResource extends EntityDtoResource {
 	@Path("/archived/{since}")
 	public List<String> getArchivedUuidsSince(@PathParam("since") long since) {
 		return FacadeProvider.getTaskFacade().getArchivedUuidsSince(new Date(since));
+	}
+
+	@GET
+	@Path("/obsolete/{since}")
+	public List<String> getObsoleteUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getTaskFacade().getObsoleteUuidsSince(new Date(since));
 	}
 
 	@POST

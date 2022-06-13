@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -36,21 +36,18 @@ public class WeeklyReportsSteps implements En {
     When(
         "I choose {string} as year for weekly reports",
         (String year) -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(WeeklyReportsPage.YEAR_FILTER, year);
         });
 
     When(
         "I choose {string} as epi week for weekly reports",
         (String epiWeek) -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(WeeklyReportsPage.EPI_WEEK_FILTER, epiWeek);
         });
 
     When(
         "I click on the last epi week button for weekly reports",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(WeeklyReportsPage.LAST_EPI_WEEK_BUTTON);
         });
 

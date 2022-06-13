@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.api.infrastructure.district;
 
+import de.symeda.sormas.api.utils.FeatureIndependent;
 import java.util.Date;
 
 import javax.validation.constraints.Size;
@@ -24,6 +25,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
+@FeatureIndependent
 public class DistrictDto extends InfrastructureDto {
 
 	private static final long serialVersionUID = 8990957700033431836L;

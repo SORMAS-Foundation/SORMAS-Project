@@ -1,2 +1,2 @@
-Nachname,Vorname,Geschlecht,Geburtsdatum,Tel. persönlich,Tel. weitere,E-Mail Adresse,disease,responsibleRegion,responsibleDistrict,responsibleCommunity,pointOfEntryRegion,pointOfEntryDistrict,pointOfEntry,pointOfEntryDetails
-Lastname,Firstname,male,01.04.1980,1234567890,12341234,firstname@example.com,CORONAVIRUS,Region,District,,,,,
+Nachname,Vorname,Geschlecht,Geburtsdatum,Tel. persönlich,Tel. weitere,E-Mail Adresse,disease,responsibleRegion,responsibleDistrict,responsibleCommunity,pointOfEntryRegion,pointOfEntryDistrict,pointOfEntry,pointOfEntryDetails,Einreisedatum
+Lastname,Firstname,male,01.04.1980,1234567890,12341234,firstname@example.com,CORONAVIRUS,Region,District,,,,,,01.04.2021

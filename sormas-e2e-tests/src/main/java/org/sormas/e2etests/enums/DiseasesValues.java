@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,36 +24,56 @@ import lombok.SneakyThrows;
 
 @Getter
 public enum DiseasesValues {
-  AFP("AFP", "Acute Flaccid Paralysis"),
-  ANTHRAX("ANTHRAX", "Anthrax"),
-  CORONAVIRUS("CORONAVIRUS", "COVID-19"),
-  CHOLERA("CHOLERA", "Cholera"),
-  DENGUE("DENGUE", "Dengue Fever"),
-  EVD("EVD", "Ebola Virus Disease"),
-  GUINEA_WORM("GUINEA_WORM", "Guinea Worm"),
-  RABIES("RABIES", "Human Rabies"),
-  NEW_INFLUENZA("NEW_INFLUENZA", "Influenza (New subtype)"),
-  LASSA("LASSA", "Lassa"),
-  MEASLES("MEASLES", "Measles"),
-  CSM("CSM", "Meningitis (CSM)"),
-  MONKEYPOX("MONKEYPOX", "Monkeypox"),
-  UNSPECIFIED_VHF("UNSPECIFIED_VHF", "Unspecified VHF"),
-  POLIO("POLIO", "Poliomyelitis"),
-  OTHER("OTHER", "Other Epidemic Disease"),
-  YELLOW_FEVER("YELLOW_FEVER", "Yellow Fever");
+  AFP("AFP", "Acute Flaccid Paralysis", "Akute schlaffe L\u00E4hmung"),
+  ANTHRAX("ANTHRAX", "Anthrax", "Milzbrand"),
+  CORONAVIRUS("CORONAVIRUS", "COVID-19", "COVID-19"),
+  CHOLERA("CHOLERA", "Cholera", "Cholera"),
+  DENGUE("DENGUE", "Dengue Fever", "Dengue-Fieber"),
+  EVD("EVD", "Ebola Virus Disease", "Ebola"),
+  GUINEA_WORM("GUINEA_WORM", "Guinea Worm", "Medinawurm"),
+  RABIES("RABIES", "Human Rabies", "Tollwut"),
+  NEW_INFLUENZA("NEW_INFLUENZA", "Influenza (New subtype)", "Influenza (neuer Subtyp)"),
+  LASSA("LASSA", "Lassa", "Lassa"),
+  MEASLES("MEASLES", "Measles", "Masern"),
+  CSM("CSM", "Meningitis (CSM)", "Meningitis (CSM)"),
+  MONKEYPOX("MONKEYPOX", "Monkeypox", "Affenpocken"),
+  UNSPECIFIED_VHF(
+      "UNSPECIFIED_VHF",
+      "Unspecified VHF",
+      "Nicht n\u00E4her bezeichnete h\u00E4morrhagische Viruskrankheit"),
+  POLIO("POLIO", "Poliomyelitis", "Poliomyelitis"),
+  YELLOW_FEVER("YELLOW_FEVER", "Yellow Fever", "Gelbfieber");
 
   private final String diseaseName;
   private final String diseaseCaption;
+  private final String diseaseCaptionDE;
   private static Random random = new Random();
 
-  DiseasesValues(String diseaseName, String diseaseCaption) {
+  DiseasesValues(String diseaseName, String diseaseCaption, String diseaseCaptionDE) {
     this.diseaseName = diseaseName;
     this.diseaseCaption = diseaseCaption;
+    this.diseaseCaptionDE = diseaseCaptionDE;
   }
 
   /** Returns values used for UI tests */
   public static String getRandomDiseaseCaption() {
     return String.valueOf(DiseasesValues.values()[random.nextInt(values().length)].diseaseCaption);
+  }
+
+  @SneakyThrows
+  public static String getRandomDiseaseCaptionDifferentThan(String excludedOption) {
+    DiseasesValues[] diseasesValues = DiseasesValues.values();
+    for (DiseasesValues value : diseasesValues) {
+      if (!value.getDiseaseCaption().equalsIgnoreCase(excludedOption))
+        return value.getDiseaseCaption();
+    }
+    throw new Exception("Unable to provide option different than: " + excludedOption);
+  }
+
+  /** Returns values used for German UI tests */
+  public static String getRandomDiseaseCaptionDE() {
+    return String.valueOf(
+        DiseasesValues.values()[random.nextInt(values().length)].diseaseCaptionDE);
   }
 
   @SneakyThrows
@@ -71,7 +91,7 @@ public enum DiseasesValues {
     for (DiseasesValues value : diseasesOptions) {
       if (value.getDiseaseName().equalsIgnoreCase(option)) return value.getDiseaseCaption();
     }
-    throw new Exception("Unable to find " + option + " value in SourceTypeValues Enum");
+    throw new Exception("Unable to find " + option + " value in DiseasesValues Enum");
   }
 
   /** Returns values used for API tests */

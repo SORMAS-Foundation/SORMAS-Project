@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.caze.caseimport;
 
+import de.symeda.sormas.api.user.UserRight;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -90,6 +92,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb.VaccinationFacadeEjbLocal;
 
 @Stateless(name = "CaseImportFacade")
+@RolesAllowed(UserRight._CASE_IMPORT)
 public class CaseImportFacadeEjb implements CaseImportFacade {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(CaseImportFacadeEjb.class);
@@ -218,7 +221,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 			// Workaround: Reset the change date to avoid OutdatedEntityExceptions
 			// Should be changed when doing #2265
 			caze.setChangeDate(new Date());
-			caseFacade.saveCase(caze);
+			caseFacade.save(caze);
 			for (SampleDto sample : samples) {
 				sampleFacade.saveSample(sample);
 			}

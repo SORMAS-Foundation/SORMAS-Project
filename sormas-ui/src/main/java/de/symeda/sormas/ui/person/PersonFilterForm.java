@@ -6,7 +6,6 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -17,7 +16,6 @@ import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
@@ -71,7 +69,7 @@ public class PersonFilterForm extends AbstractFilterForm<PersonCriteria> {
 		UserDto user = currentUserDto();
 		ComboBox regionField = null;
 		if (user.getRegion() == null) {
-			regionField = addField(getContent(), FieldConfiguration.pixelSized(CaseDataDto.REGION, 140));
+			regionField = addField(getContent(), FieldConfiguration.pixelSized(PersonCriteria.REGION, 140));
 			regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		}
 
@@ -112,6 +110,7 @@ public class PersonFilterForm extends AbstractFilterForm<PersonCriteria> {
 				districtFilter.removeAllItems();
 				districtFilter.clear();
 			}
+			clearAndDisableFields(communityFilter);
 			break;
 		case PersonCriteria.DISTRICT:
 			DistrictReferenceDto district = (DistrictReferenceDto) event.getProperty().getValue();
@@ -132,7 +131,7 @@ public class PersonFilterForm extends AbstractFilterForm<PersonCriteria> {
 	protected void applyDependenciesOnNewValue(PersonCriteria criteria) {
 
 		final UserDto user = currentUserDto();
-		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
+		final JurisdictionLevel userJurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
 
 		final ComboBox districtFilter = getField(PersonCriteria.DISTRICT);
 		final ComboBox communityFilter = getField(PersonCriteria.COMMUNITY);

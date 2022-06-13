@@ -26,6 +26,8 @@ import de.symeda.sormas.app.backend.caze.maternalhistory.MaternalHistoryDtoHelpe
 import de.symeda.sormas.app.backend.caze.porthealthinfo.PortHealthInfoDtoHelper;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalCourseDtoHelper;
+import de.symeda.sormas.app.backend.clinicalcourse.HealthConditions;
+import de.symeda.sormas.app.backend.clinicalcourse.HealthConditionsDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.epidata.EpiData;
 import de.symeda.sormas.app.backend.epidata.EpiDataDtoHelper;
@@ -65,6 +67,7 @@ public class CaseDtoHelper extends PersonDependentDtoHelper<Case, CaseDataDto> {
 	private MaternalHistoryDtoHelper maternalHistoryDtoHelper = new MaternalHistoryDtoHelper();
 	private PortHealthInfoDtoHelper portHealthInfoDtoHelper = new PortHealthInfoDtoHelper();
 	private SormasToSormasOriginInfoDtoHelper sormasToSormasOriginInfoDtoHelper = new SormasToSormasOriginInfoDtoHelper();
+	private HealthConditionsDtoHelper healthConditionsDtoHelper = new HealthConditionsDtoHelper();
 
 	@Override
 	protected Class<Case> getAdoClass() {
@@ -146,6 +149,9 @@ public class CaseDtoHelper extends PersonDependentDtoHelper<Case, CaseDataDto> {
 		target.setClinicianPhone(source.getClinicianPhone());
 		target.setClinicianEmail(source.getClinicianEmail());
 		target.setPregnant(source.getPregnant());
+
+		target.setHealthConditions(healthConditionsDtoHelper.fillOrCreateFromDto(target.getHealthConditions(), source.getHealthConditions()));
+
 		target.setVaccinationStatus(source.getVaccinationStatus());
 		target.setSmallpoxVaccinationScar(source.getSmallpoxVaccinationScar());
 		target.setSmallpoxVaccinationReceived(source.getSmallpoxVaccinationReceived());
@@ -476,6 +482,14 @@ public class CaseDtoHelper extends PersonDependentDtoHelper<Case, CaseDataDto> {
 		target.setNotACaseReasonDetails(source.getNotACaseReasonDetails());
 		target.setFollowUpStatusChangeDate(source.getFollowUpStatusChangeDate());
 		target.setFollowUpStatusChangeUser(UserDtoHelper.toReferenceDto(source.getFollowUpStatusChangeUser()));
+
+		if (source.getHealthConditions() != null) {
+			HealthConditions healthConditions = DatabaseHelper.getHealthConditionsDao().queryForId(source.getHealthConditions().getId());
+			target.setHealthConditions(healthConditionsDtoHelper.adoToDto(healthConditions));
+		} else {
+			target.setHealthConditions(null);
+		}
+
 	}
 
 	@Override

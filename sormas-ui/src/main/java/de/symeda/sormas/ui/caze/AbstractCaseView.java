@@ -25,6 +25,7 @@ import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -35,7 +36,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
@@ -44,8 +44,8 @@ import de.symeda.sormas.ui.caze.maternalhistory.MaternalHistoryView;
 import de.symeda.sormas.ui.caze.porthealthinfo.PortHealthInfoView;
 import de.symeda.sormas.ui.clinicalcourse.ClinicalCourseView;
 import de.symeda.sormas.ui.epidata.CaseEpiDataView;
+import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
 import de.symeda.sormas.ui.hospitalization.HospitalizationView;
-import de.symeda.sormas.ui.labmessage.LabMessagesView;
 import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -75,9 +75,10 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 
 		if (!ViewModelProviders.of(AbstractCaseView.class).has(ViewConfiguration.class)) {
 			// init default view mode
-			ViewConfiguration initViewConfiguration = UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)
-				? new ViewConfiguration(ViewMode.NORMAL)
-				: new ViewConfiguration(ViewMode.SIMPLE);
+			ViewConfiguration initViewConfiguration = UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW)
+				|| UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW)
+					? new ViewConfiguration(ViewMode.NORMAL)
+					: new ViewConfiguration(ViewMode.SIMPLE);
 			ViewModelProviders.of(AbstractCaseView.class).get(ViewConfiguration.class, initViewConfiguration);
 		}
 
@@ -139,10 +140,10 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 		menu.removeAllViews();
 		menu.addView(CasesView.VIEW_NAME, I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, Captions.caseCasesList));
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.LAB_MESSAGES)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.LAB_MESSAGES)
-			&& FacadeProvider.getLabMessageFacade().existsLabMessageForEntity(getReference())) {
-			menu.addView(LabMessagesView.VIEW_NAME, I18nProperties.getCaption(Captions.labMessageLabMessagesList));
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EXTERNAL_MESSAGES)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_MESSAGE_VIEW)
+			&& FacadeProvider.getExternalMessageFacade().existsExternalMessageForEntity(getReference())) {
+			menu.addView(ExternalMessagesView.VIEW_NAME, I18nProperties.getCaption(Captions.externalMessagesList));
 		}
 
 		menu.addView(CaseDataView.VIEW_NAME, I18nProperties.getCaption(CaseDataDto.I18N_PREFIX), params);
@@ -161,7 +162,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 			}
 			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.VIEW_TAB_CASES_HOSPITALIZATION)
 				&& !caze.checkIsUnreferredPortHealthCase()
-				&& !UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+				&& !UserProvider.getCurrent().isPortHealthUser()) {
 				menu.addView(
 					HospitalizationView.VIEW_NAME,
 					I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HOSPITALIZATION),
@@ -267,7 +268,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 	}
 
 	public CaseReferenceDto getCaseRef() {
-		return getReference();
+		return (CaseReferenceDto) getReference();
 	}
 
 	public boolean isHasOutbreak() {
@@ -291,6 +292,6 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 	}
 
 	protected boolean isCaseEditAllowed() {
-		return FacadeProvider.getCaseFacade().isCaseEditAllowed(getReference().getUuid());
+		return FacadeProvider.getCaseFacade().isCaseEditAllowed(getReference().getUuid()).equals(EditPermissionType.ALLOWED);
 	}
 }

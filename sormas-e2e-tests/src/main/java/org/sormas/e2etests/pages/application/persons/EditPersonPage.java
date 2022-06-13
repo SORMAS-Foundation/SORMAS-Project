@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ public class EditPersonPage {
   public static final By DATE_OF_BIRTH_YEAR_COMBOBOX = By.cssSelector("#birthdateYYYY input+div");
   public static final By DATE_OF_BIRTH_MONTH_COMBOBOX = By.cssSelector("#birthdateMM input+div");
   public static final By DATE_OF_BIRTH_DAY_COMBOBOX = By.cssSelector("#birthdateDD input+div");
-  public static final By SEX_INPUT = By.cssSelector("#sex input");
+  public static final By SEX_INPUT = By.cssSelector("[id='sex'] input");
   public static final By SEX_COMBOBOX = By.cssSelector("[location='sex'] div[role='combobox'] div");
   public static final By SALUTATION_INPUT = By.cssSelector("[location=salutation] input");
   public static final By SALUTATION_COMBOBOX = By.cssSelector("[location=salutation] input + div");
@@ -47,8 +47,10 @@ public class EditPersonPage {
   public static final By STAFF_OF_ARMED_FORCES_INPUT =
       By.cssSelector("[location=armedForcesRelationType] input");
   public static final By REGION_COMBOBOX = By.cssSelector("#region > div");
+  public static final By SECOND_REGION_COMBOBOX = By.xpath("(//div[@id='region']//div)[2]");
   public static final By REGION_INPUT = By.cssSelector("#region > input");
   public static final By DISTRICT_COMBOBOX = By.cssSelector("#district > div");
+  public static final By SECOND_DISTRICT_COMBOBOX = By.xpath("(//div[@id='district']//div)[2]");
   public static final By DISTRICT_INPUT = By.cssSelector("#district > input");
   public static final By COMMUNITY_COMBOBOX = By.cssSelector("#community > div");
   public static final By COMMUNITY_INPUT = By.cssSelector("#community > input");
@@ -99,12 +101,42 @@ public class EditPersonPage {
   public static final By POPUP_RESPONSIBLE_DISTRICT_COMBOBOX = By.cssSelector("#district div");
   public static final By PERSON_DATA_SAVED = By.cssSelector(".v-Notification-caption");
   public static final By PERSON_DATA_ADDED_AS_A_PARTICIPANT_MESSAGE =
-      By.xpath(
-          "//*[contains(text(),'The case person was added as an event participant to the selected event.')]");
+      By.xpath("//*[contains(text(),'The new event participant was created.')]");
   public static final By SEE_EVENTS_FOR_PERSON =
       By.cssSelector("div#See\\ events\\ for\\ this\\ person");
+  public static final By INVALID_DATA_ERROR =
+      By.cssSelector(".v-Notification.error.v-Notification-error");
+  public static final By ERROR_INDICATOR =
+      By.cssSelector(".v-errorindicator.v-errorindicator-info");
+  public static final By SEE_CASES_FOR_PERSON_BUTTON = By.id("See cases for this person");
+  public static final By SEE_CONTACTS_FOR_PERSON_BUTTON = By.id("See contacts for this person");
+  public static final By EDIT_CASES_BUTTON = By.id("edit-case-0");
+  public static final By EDIT_CONTACTS_BUTTON = By.id("edit-contact-0");
+  public static final By CONFIRM_NAVIGATION_BUTTON = By.cssSelector(".popupContent #actionConfirm");
+  public static final By PERSON_INFORMATION_TITLE =
+      By.cssSelector("[location='personInformationHeadingLoc']");
+  public static final By EVENT_PARTICIPANTS_DATA_TAB =
+      By.cssSelector("#tab-events-eventparticipants");
+  public static final By NO_TRAVEL_ENTRY_LABEL_DE =
+      By.xpath("//div[text()=\"Es gibt keine Einreisen f\u00FCr diese Person\"]");
+  public static final By FACILITY_CONTACT_PERSON_FIRST_NAME_CASE_PERSON_INPUT =
+      By.cssSelector("#contactPersonFirstName");
+  public static final By FACILITY_CONTACT_PERSON_LAST_NAME_CASE_PERSON_INPUT =
+      By.cssSelector("#contactPersonLastName");
+  public static final By FACILITY_CONTACT_PERSON_PHONE_CASE_PERSON_INPUT =
+      By.cssSelector("#contactPersonPhone");
+  public static final By FACILITY_CONTACT_PERSON_EMAIL_CASE_PERSON_INPUT =
+      By.cssSelector("#contactPersonEmail");
 
   public static By getByPersonUuid(String personUuid) {
     return By.cssSelector("a[title='" + personUuid + "']");
+  }
+
+  public static By getByImmunizationUuid(String immunizationUuid) {
+    return By.id("edit-immunization-" + immunizationUuid);
+  }
+
+  public static By getByTravelEntryPersonUuid(String personUuid) {
+    return By.id(String.format("edit-travelEntry-%s", personUuid));
   }
 }

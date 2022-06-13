@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,9 +19,9 @@ package org.sormas.e2etests.steps.api;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
+import org.sormas.e2etests.entities.pojo.api.Event;
+import org.sormas.e2etests.entities.services.api.EventApiService;
 import org.sormas.e2etests.helpers.api.EventHelper;
-import org.sormas.e2etests.pojo.api.Event;
-import org.sormas.e2etests.services.api.EventApiService;
 import org.sormas.e2etests.state.ApiState;
 
 public class EventSteps implements En {

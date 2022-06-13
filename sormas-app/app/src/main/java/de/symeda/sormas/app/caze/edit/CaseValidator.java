@@ -15,11 +15,11 @@
 
 package de.symeda.sormas.app.caze.edit;
 
-import android.view.View;
+import java.util.Date;
 
 import org.joda.time.DateTimeComparator;
 
-import java.util.Date;
+import android.view.View;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -151,7 +151,9 @@ final class CaseValidator {
 			if (contentBinding.caseHospitalizationAdmissionDate.getValue() != null
 				&& contentBinding.caseHospitalizationIntensiveCareUnitStart.getValue() != null) {
 				if (DateTimeComparator.getInstance()
-					.compare(contentBinding.caseHospitalizationAdmissionDate.getValue(), contentBinding.caseHospitalizationIntensiveCareUnitStart.getValue())
+					.compare(
+						contentBinding.caseHospitalizationAdmissionDate.getValue(),
+						contentBinding.caseHospitalizationIntensiveCareUnitStart.getValue())
 					> 0) {
 					contentBinding.caseHospitalizationAdmissionDate.enableErrorState(
 						I18nProperties.getValidationError(
@@ -180,15 +182,17 @@ final class CaseValidator {
 				}
 			}
 			if (contentBinding.caseHospitalizationDischargeDate.getValue() != null
-					&& contentBinding.caseHospitalizationIntensiveCareUnitEnd.getValue() != null) {
+				&& contentBinding.caseHospitalizationIntensiveCareUnitEnd.getValue() != null) {
 				if (DateTimeComparator.getDateOnlyInstance()
-						.compare(contentBinding.caseHospitalizationDischargeDate.getValue(), contentBinding.caseHospitalizationIntensiveCareUnitEnd.getValue())
-						< 0) {
+					.compare(
+						contentBinding.caseHospitalizationDischargeDate.getValue(),
+						contentBinding.caseHospitalizationIntensiveCareUnitEnd.getValue())
+					< 0) {
 					contentBinding.caseHospitalizationDischargeDate.enableErrorState(
-							I18nProperties.getValidationError(
-									Validations.afterDate,
-									contentBinding.caseHospitalizationDischargeDate.getCaption(),
-									contentBinding.caseHospitalizationIntensiveCareUnitEnd.getCaption()));
+						I18nProperties.getValidationError(
+							Validations.afterDate,
+							contentBinding.caseHospitalizationDischargeDate.getCaption(),
+							contentBinding.caseHospitalizationIntensiveCareUnitEnd.getCaption()));
 					return true;
 				}
 			}
@@ -200,11 +204,13 @@ final class CaseValidator {
 			if (contentBinding.caseHospitalizationIntensiveCareUnitStart.getValue() != null
 				&& contentBinding.caseHospitalizationIntensiveCareUnitEnd.getValue() != null) {
 				if (DateTimeComparator.getDateOnlyInstance()
-					.compare(contentBinding.caseHospitalizationIntensiveCareUnitStart.getValue(), contentBinding.caseHospitalizationIntensiveCareUnitEnd.getValue())
-					< 0) {
+					.compare(
+						contentBinding.caseHospitalizationIntensiveCareUnitStart.getValue(),
+						contentBinding.caseHospitalizationIntensiveCareUnitEnd.getValue())
+					> 0) {
 					contentBinding.caseHospitalizationIntensiveCareUnitStart.enableErrorState(
 						I18nProperties.getValidationError(
-							Validations.afterDate,
+							Validations.beforeDate,
 							contentBinding.caseHospitalizationIntensiveCareUnitStart.getCaption(),
 							contentBinding.caseHospitalizationIntensiveCareUnitEnd.getCaption()));
 					return true;
@@ -213,11 +219,13 @@ final class CaseValidator {
 			if (contentBinding.caseHospitalizationIntensiveCareUnitStart.getValue() != null
 				&& contentBinding.caseHospitalizationDischargeDate.getValue() != null) {
 				if (DateTimeComparator.getDateOnlyInstance()
-					.compare(contentBinding.caseHospitalizationIntensiveCareUnitStart.getValue(), contentBinding.caseHospitalizationDischargeDate.getValue())
-					< 0) {
+					.compare(
+						contentBinding.caseHospitalizationIntensiveCareUnitStart.getValue(),
+						contentBinding.caseHospitalizationDischargeDate.getValue())
+					> 0) {
 					contentBinding.caseHospitalizationIntensiveCareUnitStart.enableErrorState(
 						I18nProperties.getValidationError(
-							Validations.afterDate,
+							Validations.beforeDate,
 							contentBinding.caseHospitalizationIntensiveCareUnitStart.getCaption(),
 							contentBinding.caseHospitalizationDischargeDate.getCaption()));
 					return true;
@@ -233,10 +241,25 @@ final class CaseValidator {
 	}
 
 	static void initializePreviousHospitalizationValidation(final DialogPreviousHospitalizationLayoutBinding contentBinding) {
-		ValidationHelper.initDateIntervalValidator(contentBinding.casePreviousHospitalizationAdmissionDate, contentBinding.casePreviousHospitalizationDischargeDate, false);
-		ValidationHelper.initDateIntervalValidator(contentBinding.casePreviousHospitalizationAdmissionDate, contentBinding.casePreviousHospitalizationIntensiveCareUnitStart, false);
-		ValidationHelper.initDateIntervalValidator(contentBinding.casePreviousHospitalizationIntensiveCareUnitStart, contentBinding.casePreviousHospitalizationIntensiveCareUnitEnd, false);
-		ValidationHelper.initDateIntervalValidator(contentBinding.casePreviousHospitalizationIntensiveCareUnitStart, contentBinding.casePreviousHospitalizationDischargeDate, false);
-		ValidationHelper.initDateIntervalValidator(contentBinding.casePreviousHospitalizationIntensiveCareUnitEnd, contentBinding.casePreviousHospitalizationDischargeDate, false);
+		ValidationHelper.initDateIntervalValidator(
+			contentBinding.casePreviousHospitalizationAdmissionDate,
+			contentBinding.casePreviousHospitalizationDischargeDate,
+			false);
+		ValidationHelper.initDateIntervalValidator(
+			contentBinding.casePreviousHospitalizationAdmissionDate,
+			contentBinding.casePreviousHospitalizationIntensiveCareUnitStart,
+			false);
+		ValidationHelper.initDateIntervalValidator(
+			contentBinding.casePreviousHospitalizationIntensiveCareUnitStart,
+			contentBinding.casePreviousHospitalizationIntensiveCareUnitEnd,
+			false);
+		ValidationHelper.initDateIntervalValidator(
+			contentBinding.casePreviousHospitalizationIntensiveCareUnitStart,
+			contentBinding.casePreviousHospitalizationDischargeDate,
+			false);
+		ValidationHelper.initDateIntervalValidator(
+			contentBinding.casePreviousHospitalizationIntensiveCareUnitEnd,
+			contentBinding.casePreviousHospitalizationDischargeDate,
+			false);
 	}
 }

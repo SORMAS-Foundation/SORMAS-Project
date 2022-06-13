@@ -17,12 +17,18 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -127,17 +133,50 @@ public final class VaadinUiUtil {
 			window.setWidth(width, Unit.PERCENTAGE);
 		}
 
-
 		UI.getCurrent().addWindow(window);
 		return window;
 	}
 
 	public static Window showModalPopupWindow(CommitDiscardWrapperComponent<?> content, String caption) {
+		return showModalPopupWindow(content, caption, false);
+	}
+
+	public static Window showModalPopupWindow(CommitDiscardWrapperComponent<?> content, String caption, boolean discardOnClose) {
+		return showModalPopupWindow(content, caption, discardOnClose, null);
+	}
+
+	public static Window showModalPopupWindow(CommitDiscardWrapperComponent<?> content, String caption, Consumer<Boolean> callback) {
+		return showModalPopupWindow(content, caption, false, callback);
+	}
+
+	public static Window showModalPopupWindow(
+		CommitDiscardWrapperComponent<?> content,
+		String caption,
+		boolean discardOnClose,
+		Consumer<Boolean> callback) {
 		final Window popupWindow = VaadinUiUtil.showPopupWindow(content);
 		popupWindow.setCaption(caption);
 		content.setMargin(true);
 
-		content.addDoneListener(popupWindow::close);
+		final Registration closeListener;
+		if (discardOnClose) {
+			closeListener = popupWindow.addCloseListener(e -> content.discard());
+		} else {
+			closeListener = null;
+		}
+
+		content.addDoneListener(() -> {
+			if (closeListener != null) {
+				closeListener.remove();
+			}
+
+			popupWindow.close();
+		});
+
+		if (callback != null) {
+			content.addCommitListener(() -> callback.accept(true));
+			content.addDiscardListener(() -> callback.accept(false));
+		}
 
 		return popupWindow;
 	}
@@ -171,6 +210,22 @@ public final class VaadinUiUtil {
 		Component content,
 		String confirmCaption,
 		String cancelCaption,
+		Consumer<Boolean> resultConsumer) {
+
+		return showConfirmationPopup(caption, content, confirmCaption, cancelCaption, getEstimatedWidth(caption.length()), resultConsumer);
+	}
+
+	public static Integer getEstimatedWidth(int length) {
+		BigDecimal width = new BigDecimal(length).multiply(BigDecimal.valueOf(13.6));
+		width = width.setScale(0, RoundingMode.HALF_UP);
+		return width.intValue();
+	}
+
+	public static Window showConfirmationPopup(
+		String caption,
+		Component content,
+		String confirmCaption,
+		String cancelCaption,
 		Integer width,
 		Consumer<Boolean> resultConsumer) {
 
@@ -189,6 +244,70 @@ public final class VaadinUiUtil {
 				protected void onCancel() {
 					resultConsumer.accept(false);
 					popupWindow.close();
+				}
+			};
+
+			confirmationComponent.getConfirmButton().setCaption(confirmCaption);
+			confirmationComponent.getCancelButton().setCaption(cancelCaption);
+
+			return confirmationComponent;
+		}, width);
+	}
+
+	public static CompletionStage<Boolean> showConfirmationPopup(String caption, Component content, String confirmCaption, String cancelCaption) {
+
+		CompletableFuture<Boolean> ret = new CompletableFuture<>();
+
+		VaadinUiUtil.showConfirmationPopup(caption, content, confirmCaption, cancelCaption, null, ret::complete, true);
+
+		return ret;
+	}
+
+	public static Window showConfirmationPopup(
+		String caption,
+		Component content,
+		String confirmCaption,
+		String cancelCaption,
+		Integer width,
+		UnaryOperator<Boolean> resultConsumer) {
+		return showConfirmationPopup(caption, content, confirmCaption, cancelCaption, width, resultConsumer, false);
+	}
+
+	public static Window showConfirmationPopup(
+		String caption,
+		Component content,
+		String confirmCaption,
+		String cancelCaption,
+		Integer width,
+		UnaryOperator<Boolean> resultConsumer,
+		boolean cancelOnClose) {
+
+		return showConfirmationPopup(caption, content, popupWindow -> {
+
+			Registration closeListener = popupWindow.addCloseListener(e -> {
+				if (cancelOnClose) {
+					resultConsumer.apply(false);
+				}
+			});
+
+			ConfirmationComponent confirmationComponent = new ConfirmationComponent(false) {
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				protected void onConfirm() {
+					if (Boolean.TRUE.equals(resultConsumer.apply(true))) {
+						closeListener.remove();
+						popupWindow.close();
+					}
+				}
+
+				@Override
+				protected void onCancel() {
+					if (Boolean.TRUE.equals(resultConsumer.apply(false))) {
+						closeListener.remove();
+						popupWindow.close();
+					}
 				}
 			};
 
@@ -238,12 +357,27 @@ public final class VaadinUiUtil {
 	 *            TRUE: Option A, FALSE: Option B
 	 */
 	public static Window showChooseOptionPopup(
+			String caption,
+			Component content,
+			String optionACaption,
+			String optionBCaption,
+			Integer width,
+			Consumer<Boolean> resultConsumer) {
+		return showChooseOptionPopup(caption, content, optionACaption, optionBCaption, width, resultConsumer, false);
+	}
+
+	/**
+	 * @param resultConsumer
+	 *            TRUE: Option A, FALSE: Option B
+	 */
+	public static Window showChooseOptionPopup(
 		String caption,
 		Component content,
 		String optionACaption,
 		String optionBCaption,
 		Integer width,
-		Consumer<Boolean> resultConsumer) {
+		Consumer<Boolean> resultConsumer,
+		boolean closable) {
 
 		Window popupWindow = VaadinUiUtil.createPopupWindow();
 		if (width != null) {
@@ -285,7 +419,7 @@ public final class VaadinUiUtil {
 		layout.setWidth(100, Unit.PERCENTAGE);
 		layout.setSpacing(true);
 		popupWindow.setContent(layout);
-		popupWindow.setClosable(false);
+		popupWindow.setClosable(closable);
 
 		UI.getCurrent().addWindow(popupWindow);
 		return popupWindow;

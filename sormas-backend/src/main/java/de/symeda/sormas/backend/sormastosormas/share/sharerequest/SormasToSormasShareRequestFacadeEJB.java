@@ -36,6 +36,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestCriteria;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
@@ -173,6 +174,16 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		cq.select(cb.count(requestRoot));
 
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	public Page<SormasToSormasShareRequestIndexDto> getIndexPage(
+		ShareRequestCriteria criteria,
+		Integer first,
+		Integer max,
+		List<SortProperty> sortProperties) {
+		List<SormasToSormasShareRequestIndexDto> shareRequestIndexList = getIndexList(criteria, first, max, sortProperties);
+		long totalElementCount = count(criteria);
+		return new Page<>(shareRequestIndexList, first, max, totalElementCount);
 	}
 
 	public SormasToSormasShareRequest fromDto(@NotNull SormasToSormasShareRequestDto source, boolean checkChangeDate) {

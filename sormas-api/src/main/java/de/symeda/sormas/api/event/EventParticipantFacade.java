@@ -24,15 +24,18 @@ import java.util.Map;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.CoreFacade;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
-public interface EventParticipantFacade {
+public interface EventParticipantFacade
+	extends CoreFacade<EventParticipantDto, EventParticipantIndexDto, EventParticipantReferenceDto, EventParticipantCriteria> {
 
 	List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid);
 
@@ -42,19 +45,9 @@ public interface EventParticipantFacade {
 
 	EventParticipantDto getEventParticipantByUuid(String uuid);
 
-	EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto);
+	EventParticipantDto save(@Valid @NotNull EventParticipantDto dto);
 
 	List<String> getAllActiveUuids();
-
-	List<EventParticipantDto> getByUuids(List<String> uuids);
-
-	void deleteEventParticipant(EventParticipantReferenceDto eventParticipantRef);
-
-	List<EventParticipantIndexDto> getIndexList(
-		EventParticipantCriteria eventParticipantCriteria,
-		Integer first,
-		Integer max,
-		List<SortProperty> sortProperties);
 
 	Page<EventParticipantIndexDto> getIndexPage(
 		EventParticipantCriteria eventParticipantCriteria,
@@ -64,27 +57,21 @@ public interface EventParticipantFacade {
 
 	List<EventParticipantListEntryDto> getListEntries(EventParticipantCriteria eventParticipantCriteria, Integer first, Integer max);
 
-	EventParticipantDto getByUuid(String uuid);
-
 	void validate(EventParticipantDto eventParticipant);
-
-	long count(EventParticipantCriteria eventParticipantCriteria);
 
 	Map<String, Long> getContactCountPerEventParticipant(List<String> eventParticipantUuids, EventParticipantCriteria eventParticipantCriteria);
 
-	boolean exists(String uuid);
-
 	boolean exists(String personUuid, String eventUUID);
-
-	EventParticipantReferenceDto getReferenceByUuid(String uuid);
 
 	EventParticipantReferenceDto getReferenceByEventAndPerson(String eventUuid, String personUuid);
 
 	List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
 
+	List<String> getArchivedUuidsSince(Date since);
+
 	List<String> getDeletedUuidsSince(Date date);
 
-	boolean isEventParticipantEditAllowed(String uuid);
+	EditPermissionType isEventParticipantEditAllowed(String uuid);
 
 	EventParticipantDto getFirst(EventParticipantCriteria eventParticipantCriteria);
 
@@ -103,6 +90,4 @@ public interface EventParticipantFacade {
 	List<EventParticipantDto> getByPersonUuids(List<String> personUuids);
 
 	List<EventParticipantDto> getByEventAndPersons(String eventUuid, List<String> personUuids);
-
-	AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid);
 }

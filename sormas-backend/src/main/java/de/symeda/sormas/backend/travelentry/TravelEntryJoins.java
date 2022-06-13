@@ -5,15 +5,15 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
-public class TravelEntryJoins<T> extends AbstractDomainObjectJoins<T, TravelEntry> {
+public class TravelEntryJoins extends QueryJoins<TravelEntry> {
 
 	private Join<TravelEntry, Person> person;
 	private Join<TravelEntry, Region> responsibleRegion;
@@ -25,7 +25,7 @@ public class TravelEntryJoins<T> extends AbstractDomainObjectJoins<T, TravelEntr
 	private Join<TravelEntry, PointOfEntry> pointOfEntry;
 	private Join<TravelEntry, Case> resultingCase;
 
-	public TravelEntryJoins(From<T, TravelEntry> root) {
+	public TravelEntryJoins(From<?, TravelEntry> root) {
 		super(root);
 	}
 

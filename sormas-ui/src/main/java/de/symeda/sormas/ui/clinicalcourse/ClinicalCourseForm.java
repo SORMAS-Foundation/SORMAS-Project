@@ -12,7 +12,7 @@ public class ClinicalCourseForm extends AbstractEditForm<ClinicalCourseDto> {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final String HTML_LAYOUT = fluidRowLocs(ClinicalCourseDto.HEALTH_CONDITIONS);
+	private static final String HTML_LAYOUT = "";
 
 	public ClinicalCourseForm(boolean isPseudonymized) {
 		super(
@@ -25,8 +25,6 @@ public class ClinicalCourseForm extends AbstractEditForm<ClinicalCourseDto> {
 
 	@Override
 	protected void addFields() {
-		addField(ClinicalCourseDto.HEALTH_CONDITIONS, HealthConditionsForm.class).setCaption(null);
-
 		initializeVisibilitiesAndAllowedVisibilities();
 		initializeAccessAndAllowedAccesses();
 	}

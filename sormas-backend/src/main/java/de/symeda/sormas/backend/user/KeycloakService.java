@@ -27,11 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -44,16 +40,12 @@ import javax.json.JsonObjectBuilder;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
-import org.keycloak.admin.client.resource.RealmResource;
-import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
-import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +54,6 @@ import com.jayway.jsonpath.JsonPath;
 
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
@@ -89,8 +80,6 @@ public class KeycloakService {
 
     private static final String ACTION_UPDATE_PASSWORD = "UPDATE_PASSWORD";
     private static final String ACTION_VERIFY_EMAIL = "VERIFY_EMAIL";
-
-    private static final String DEFAULT_USER_ROLE = UserRole._USER;
 
     private Keycloak keycloak = null;
 
@@ -261,6 +250,10 @@ public class KeycloakService {
         setLanguage(userRepresentation, user.getLanguage());
     }
 
+    /**
+     * Creates a {@link UserRepresentation} from the SORMAS user and send the request to create the user to Keycloak.
+     * @return keycloak user identifier, which is extracted from the location of the response `https://keycloak-url/auth/admin/realms/realm-name/users/user-identifier
+     */
     private String createUser(Keycloak keycloak, User user) {
         UserRepresentation userRepresentation = createUserRepresentation(user, user.getPassword());
         Response response = keycloak.realm(REALM_NAME).users().create(userRepresentation);
@@ -269,17 +262,8 @@ public class KeycloakService {
         }
 
         String[] pathSegments = response.getLocation().getPath().split("/");
-        String userId = pathSegments[pathSegments.length - 1];
 
-        try {
-            ensureRoles(keycloak, userId, user.getUserRoles());
-        } catch (Exception e) {
-            logger.warn("Cannot set the user roles property, will remove the user");
-            keycloak.realm(REALM_NAME).users().delete(userId);
-            throw e;
-        }
-
-        return userId;
+        return pathSegments[pathSegments.length - 1];
     }
 
     private Optional<UserRepresentation> updateUser(Keycloak keycloak, String existingUsername, User newUser) {
@@ -291,37 +275,11 @@ public class KeycloakService {
         }
 
         UserRepresentation newUserRepresentation = userRepresentation.get();
-        ensureRoles(keycloak, newUserRepresentation.getId(), newUser.getUserRoles());
 
         updateUserRepresentation(newUserRepresentation, newUser);
         keycloak.realm(REALM_NAME).users().get(newUserRepresentation.getId()).update(newUserRepresentation);
 
         return Optional.of(newUserRepresentation);
-    }
-
-    private void ensureRoles(Keycloak keycloak, String userRepresentationId, Set<UserRole> userRoles) {
-        RealmResource realm = keycloak.realm(REALM_NAME);
-
-        Map<String, RoleRepresentation> keycloakRoles = getRealmRoles(keycloak);
-        UserResource userResource = realm.users().get(userRepresentationId);
-        Set<String> sormasRoles = Arrays.stream(UserRole.values()).map(Enum::name).collect(Collectors.toSet());
-
-        List<RoleRepresentation> oldUserRoles = userResource.roles().realmLevel().listAll()
-                .stream().filter(role -> sormasRoles.contains(role.getName())).collect(Collectors.toList());
-
-        List<RoleRepresentation> newUserRoles = userRoles
-                .stream()
-                .map(userRole -> keycloakRoles.get(userRole.name()))
-                .filter(Objects::nonNull).collect(Collectors.toList());
-
-        if (keycloakRoles.containsKey(DEFAULT_USER_ROLE)) {
-            newUserRoles.add(keycloakRoles.get(DEFAULT_USER_ROLE));
-        }
-
-        if (CollectionUtils.isNotEmpty(oldUserRoles)) {
-            userResource.roles().realmLevel().remove(oldUserRoles);
-        }
-        userResource.roles().realmLevel().add(newUserRoles);
     }
 
     private Optional<UserRepresentation> getUserByUsername(Keycloak keycloak, String username) {
@@ -364,10 +322,6 @@ public class KeycloakService {
         credential.setSecretData(secretData.build().toString());
         credential.setCredentialData(credentialData.build().toString());
         userRepresentation.setCredentials(singletonList(credential));
-    }
-
-    private Map<String, RoleRepresentation> getRealmRoles(Keycloak keycloak) {
-        return keycloak.realm(REALM_NAME).roles().list().stream().collect(Collectors.toMap(RoleRepresentation::getName, Function.identity()));
     }
 
     private Optional<Keycloak> getKeycloak() {

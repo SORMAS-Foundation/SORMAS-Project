@@ -15,10 +15,9 @@
 
 package de.symeda.sormas.app.backend.clinicalcourse;
 
-import javax.persistence.Entity;
-
-import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+
+import javax.persistence.Entity;
 
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.EmbeddedAdo;
@@ -32,19 +31,6 @@ public class ClinicalCourse extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "clinicalCourse";
 	public static final String I18N_PREFIX = "ClinicalCourse";
-
-	public static final String HEALTH_CONDITIONS = "healthConditions";
-
-	@DatabaseField(foreign = true, foreignAutoRefresh = true)
-	private HealthConditions healthConditions;
-
-	public HealthConditions getHealthConditions() {
-		return healthConditions;
-	}
-
-	public void setHealthConditions(HealthConditions healthConditions) {
-		this.healthConditions = healthConditions;
-	}
 
 	@Override
 	public String getI18nPrefix() {

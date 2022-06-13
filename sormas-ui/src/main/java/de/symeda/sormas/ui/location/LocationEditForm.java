@@ -43,6 +43,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -131,6 +132,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private boolean districtRequiredOnDefaultCountry;
 	private boolean skipCountryValueChange;
 	private boolean skipFacilityTypeUpdate;
+	private boolean disableFacilityAddressCheck;
 
 	public LocationEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(LocationDto.class, LocationDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
@@ -479,7 +481,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			// We use isAttached() to avoid the fuss when initializing the form, it may seems a bit hacky, but it is
 			// necessary because isModified() will still return true for a short duration even if we keep the very same
 			// value because of this field dependencies to other fields and the way updateEnumValues works
-			if (facility.isAttached()) {
+			if (facility.isAttached() && !disableFacilityAddressCheck) {
 				if (facility.getValue() != null) {
 					FacilityDto facilityDto =
 						FacadeProvider.getFacilityFacade().getByUuid(((FacilityReferenceDto) getField(LocationDto.FACILITY).getValue()).getUuid());
@@ -556,6 +558,31 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 		// Set initial visiblity of facility-contactperson-details (should only be visible if at least a facilityType has been selected)
 		setFacilityContactPersonFieldsVisible(facilityType.getValue() != null, true);
+	}
+
+	@Override
+	public void setValue(LocationDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		super.setValue(newFieldValue);
+
+		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
+		// this hopefully resets everything to its correct value
+		discard();
+	}
+
+	@Override
+	public void discard() throws SourceException {
+		super.discard();
+		LocationDto locationDto = getValue();
+		if (locationDto != null) {
+			FacilityType facilityType = locationDto.getFacilityType();
+			if (facilityType != null) {
+				facilityTypeGroup.setValue(facilityType.getFacilityTypeGroup());
+			} else {
+				facilityTypeGroup.setValue(null);
+			}
+			facility.setValue(locationDto.getFacility());
+			facility.setComponentError(null);
+		}
 	}
 
 	private void updateRegionCombo(ComboBox region, ComboBox country) {
@@ -714,6 +741,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			facilityDetails.clear();
 			facilityType.clear();
 			facilityTypeGroup.clear();
+			facility.setComponentError(null);
 		}
 	}
 
@@ -763,6 +791,10 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 	private boolean areFacilityDetailsRequired() {
 		return facility.getValue() != null && ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+	}
+
+	public void setDisableFacilityAddressCheck(boolean disableFacilityAddressCheck) {
+		this.disableFacilityAddressCheck = disableFacilityAddressCheck;
 	}
 
 	private static class MapPopupView extends PopupView {
@@ -816,4 +848,5 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			this.coordinates = coordinates;
 		}
 	}
+
 }

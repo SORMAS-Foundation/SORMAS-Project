@@ -20,6 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseJoins;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -61,7 +63,7 @@ public class PrescriptionService extends AdoServiceWithUserFilter<Prescription> 
 		Join<Prescription, Therapy> therapy = from.join(Prescription.THERAPY, JoinType.LEFT);
 		Join<Therapy, Case> caze = therapy.join(Therapy.CASE, JoinType.LEFT);
 
-		Predicate filter = cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED)));
+		Predicate filter = caseService.createActiveCasesFilter(cb, caze);
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
@@ -79,24 +81,6 @@ public class PrescriptionService extends AdoServiceWithUserFilter<Prescription> 
 		return getBatchedQueryResults(cb, cq, from, batchSize);
 	}
 
-	public List<Object[]> getPrescriptionCountByCases(List<Long> caseIds) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<Prescription> prescriptionRoot = cq.from(getElementClass());
-		Join<Prescription, Therapy> therapyJoin = prescriptionRoot.join(Prescription.THERAPY, JoinType.LEFT);
-		Root<Case> caseRoot = cq.from(Case.class);
-		Join<Case, Therapy> caseTherapyJoin = caseRoot.join(Case.THERAPY, JoinType.LEFT);
-
-		cq.multiselect(caseRoot.get(Case.ID), cb.count(prescriptionRoot));
-
-		Expression<String> caseIdsExpression = caseRoot.get(Case.ID);
-		cq.where(cb.and(caseIdsExpression.in(caseIds), cb.equal(therapyJoin.get(Therapy.ID), caseTherapyJoin.get(Therapy.ID))));
-		cq.groupBy(caseRoot.get(Case.ID));
-
-		return em.createQuery(cq).getResultList();
-	}
-
 	public List<String> getAllActiveUuids(User user) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -105,7 +89,7 @@ public class PrescriptionService extends AdoServiceWithUserFilter<Prescription> 
 		Join<Prescription, Therapy> therapy = from.join(Prescription.THERAPY, JoinType.LEFT);
 		Join<Therapy, Case> caze = therapy.join(Therapy.CASE, JoinType.LEFT);
 
-		Predicate filter = cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED)));
+		Predicate filter = caseService.createActiveCasesFilter(cb, caze);
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
@@ -153,6 +137,6 @@ public class PrescriptionService extends AdoServiceWithUserFilter<Prescription> 
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Prescription> from) {
 
 		Join<Prescription, Therapy> therapy = from.join(Prescription.THERAPY, JoinType.LEFT);
-		return caseService.createUserFilter(cb, cq, therapy.join(Therapy.CASE, JoinType.LEFT));
+		return caseService.createUserFilter(new CaseQueryContext(cb, cq, new CaseJoins(therapy.join(Therapy.CASE, JoinType.LEFT))));
 	}
 }

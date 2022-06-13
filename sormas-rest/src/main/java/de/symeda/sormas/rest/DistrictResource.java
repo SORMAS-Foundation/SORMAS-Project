@@ -20,7 +20,6 @@ package de.symeda.sormas.rest;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -46,9 +45,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
  */
 @Path("/districts")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-@RolesAllowed({
-	"USER",
-	"REST_USER" })
 public class DistrictResource extends EntityDtoResource {
 
 	@GET
@@ -86,4 +82,17 @@ public class DistrictResource extends EntityDtoResource {
 		return FacadeProvider.getDistrictFacade()
 			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
+
+	@POST
+	@Path("/archive")
+	public List<String> archive(@RequestBody List<String> uuids) {
+		return FacadeProvider.getDistrictFacade().archive(uuids);
+	}
+
+	@POST
+	@Path("/dearchive")
+	public List<String> dearchive(@RequestBody List<String> uuids) {
+		return FacadeProvider.getDistrictFacade().dearchive(uuids);
+	}
+
 }

@@ -38,6 +38,6 @@ public class CaseEditHealthConditionsFragment extends BaseEditHealthConditionsFr
 
 	@Override
 	protected void prepareFragmentData() {
-		record = getActivityRootData().getClinicalCourse().getHealthConditions();
+		record = getActivityRootData().getHealthConditions();
 	}
 }

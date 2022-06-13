@@ -50,7 +50,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
+import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.continent.Continent;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentService;
@@ -63,7 +63,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 @Stateless(name = "SubcontinentFacade")
 public class SubcontinentFacadeEjb
 	extends
-	AbstractInfrastructureEjb<Subcontinent, SubcontinentDto, SubcontinentIndexDto, SubcontinentReferenceDto, SubcontinentService, SubcontinentCriteria>
+	AbstractInfrastructureFacadeEjb<Subcontinent, SubcontinentDto, SubcontinentIndexDto, SubcontinentReferenceDto, SubcontinentService, SubcontinentCriteria>
 	implements SubcontinentFacade {
 
 	@EJB
@@ -247,7 +247,7 @@ public class SubcontinentFacadeEjb
 	}
 
 	@Override
-	public List<SubcontinentReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
+	public List<SubcontinentReferenceDto> getReferencesByExternalId(String externalId, boolean includeArchived) {
 		return service.getByExternalId(externalId, includeArchived).stream().map(SubcontinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 

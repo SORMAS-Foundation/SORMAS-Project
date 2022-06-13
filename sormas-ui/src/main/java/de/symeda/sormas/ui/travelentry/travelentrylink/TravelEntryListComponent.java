@@ -15,9 +15,13 @@
 
 package de.symeda.sormas.ui.travelentry.travelentrylink;
 
+import java.util.function.Consumer;
+
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -25,13 +29,15 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class TravelEntryListComponent extends SideComponent {
 
-	public TravelEntryListComponent(TravelEntryListCriteria travelEntryListCriteria) {
-		super(I18nProperties.getString(Strings.entityTravelEntries));
+	public TravelEntryListComponent(TravelEntryListCriteria travelEntryListCriteria, Consumer<Runnable> actionCallback) {
+		super(I18nProperties.getString(Strings.entityTravelEntries), actionCallback);
 
-		addCreateButton(
-			I18nProperties.getCaption(Captions.travelEntryNewTravelEntry),
-			UserRight.TRAVEL_ENTRY_CREATE,
-			e -> ControllerProvider.getTravelEntryController().create(travelEntryListCriteria.getCaseReferenceDto()));
+		if (FacadeProvider.getTravelEntryFacade().count(new TravelEntryCriteria(), true) > 0) {
+			addCreateButton(
+				I18nProperties.getCaption(Captions.travelEntryNewTravelEntry),
+				() -> ControllerProvider.getTravelEntryController().create(travelEntryListCriteria),
+				UserRight.TRAVEL_ENTRY_CREATE);
+		}
 
 		TravelEntryList travelEntryList = new TravelEntryList(travelEntryListCriteria);
 		addComponent(travelEntryList);

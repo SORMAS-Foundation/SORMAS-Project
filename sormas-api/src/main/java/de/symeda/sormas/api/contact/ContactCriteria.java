@@ -34,7 +34,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.YesNoUnknown;
@@ -76,7 +76,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	private static final long serialVersionUID = 5114202107622217837L;
 
-	private UserRole reportingUserRole;
+	private UserRoleReferenceDto reportingUserRole;
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
 	private CaseReferenceDto caze;
@@ -138,12 +138,13 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private Date creationDateTo;
 	private String reportingUserLike;
 	private String personLike;
+	private boolean excludeLimitedSyncRestrictions;
 
-	public UserRole getReportingUserRole() {
+	public UserRoleReferenceDto getReportingUserRole() {
 		return reportingUserRole;
 	}
 
-	public void setReportingUserRole(UserRole reportingUserRole) {
+	public void setReportingUserRole(UserRoleReferenceDto reportingUserRole) {
 		this.reportingUserRole = reportingUserRole;
 	}
 
@@ -707,5 +708,20 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public void setPersonLike(String personLike) {
 		this.personLike = personLike;
+	}
+
+	/**
+	 * Ignore user filter restrictions that would otherwise be applied by the limited synchronization feature.
+	 * Necessary e.g. when retrieving UUIDs of contacts related to cases that are supposed to be removed from the
+	 * mobile app, because otherwise the user filter would exclude those contacts.
+	 */
+	@IgnoreForUrl
+	public boolean isExcludeLimitedSyncRestrictions() {
+		return excludeLimitedSyncRestrictions;
+	}
+
+	public ContactCriteria excludeLimitedSyncRestrictions(boolean excludeLimitedSyncRestrictions) {
+		this.excludeLimitedSyncRestrictions = excludeLimitedSyncRestrictions;
+		return this;
 	}
 }

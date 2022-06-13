@@ -17,16 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples.pathogentestlink;
 
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
-
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
+import java.util.function.Consumer;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -35,24 +30,18 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 @SuppressWarnings("serial")
 public class PathogenTestListComponent extends SideComponent {
 
-	private PathogenTestList list;
+	public PathogenTestListComponent(SampleReferenceDto sampleRef, Consumer<Runnable> actionCallback) {
 
-	public PathogenTestListComponent(
-		SampleReferenceDto sampleRef,
-		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest,
-		Supplier<Boolean> createOrEditAllowedCallback) {
-		super(I18nProperties.getString(Strings.headingTests));
+		super(I18nProperties.getString(Strings.headingTests), actionCallback);
 
-		addCreateButton(I18nProperties.getCaption(Captions.pathogenTestNewTest), UserRight.PATHOGEN_TEST_CREATE, e -> {
-			if (createOrEditAllowedCallback.get()) {
-				ControllerProvider.getPathogenTestController().create(sampleRef, 0, list::reload, onSavedPathogenTest);
-			} else {
-				Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Type.ERROR_MESSAGE);
-			}
-		});
+		addCreateButton(
+			I18nProperties.getCaption(Captions.pathogenTestNewTest),
+			() -> ControllerProvider.getPathogenTestController().create(sampleRef, 0, (pathogenTest, callback) -> callback.run()),
+			UserRight.PATHOGEN_TEST_CREATE);
 
-		list = new PathogenTestList(sampleRef, onSavedPathogenTest, createOrEditAllowedCallback);
-		addComponent(list);
-		list.reload();
+		PathogenTestList pathogenTestList = new PathogenTestList(sampleRef, actionCallback);
+		addComponent(pathogenTestList);
+		pathogenTestList.reload();
 	}
+
 }

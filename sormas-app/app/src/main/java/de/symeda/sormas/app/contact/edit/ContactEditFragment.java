@@ -204,7 +204,7 @@ public class ContactEditFragment extends BaseEditFragment<FragmentContactEditLay
 		contentBinding.contactDisease.initializeSpinner(diseaseList);
 		contentBinding.contactDisease.addValueChangedListener(e -> {
 			contentBinding.contactContactProximity.setVisibility(e.getValue() == null ? GONE : VISIBLE);
-			contentBinding.contactContactProximity.clear();
+			contentBinding.contactContactProximity.clear(true);
 			contentBinding.contactContactProximity
 				.setItems(DataUtils.toItems(Arrays.asList(ContactProximity.getValues((Disease) e.getValue(), ConfigProvider.getServerLocale()))));
 		});

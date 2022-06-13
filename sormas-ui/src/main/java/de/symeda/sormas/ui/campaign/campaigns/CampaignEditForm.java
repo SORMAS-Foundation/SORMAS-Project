@@ -26,8 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -70,7 +69,9 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 		+ fluidRowLocs(USAGE_INFO)
 		+ fluidRowLocs(CAMPAIGN_DATA_LOC)
 		+ fluidRowLocs(CAMPAIGN_DASHBOARD_LOC)
-		+ fluidRowLocs(SPACE_LOC);
+		+ fluidRowLocs(SPACE_LOC)
+		+ fluidRowLocs(CampaignDto.DELETION_REASON)
+		+ fluidRowLocs(CampaignDto.OTHER_DELETION_REASON);
 
 	private final VerticalLayout statusChangeLayout;
 	private Boolean isCreateForm = null;
@@ -167,6 +168,10 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 
 		final Label spacer = new Label();
 		getContent().addComponent(spacer, SPACE_LOC);
+
+		addField(CampaignDto.DELETION_REASON);
+		addField(CampaignDto.OTHER_DELETION_REASON, TextArea.class).setRows(3);
+		setVisible(false, CampaignDto.DELETION_REASON, CampaignDto.OTHER_DELETION_REASON);
 	}
 
 	@Override

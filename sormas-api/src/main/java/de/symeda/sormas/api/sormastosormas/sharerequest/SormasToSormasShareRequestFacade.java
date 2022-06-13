@@ -20,6 +20,7 @@ import java.util.List;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -36,4 +37,10 @@ public interface SormasToSormasShareRequestFacade {
 		List<SortProperty> sortProperties);
 
 	long count(ShareRequestCriteria criteria);
+
+	Page<SormasToSormasShareRequestIndexDto> getIndexPage(
+		ShareRequestCriteria criteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties);
 }

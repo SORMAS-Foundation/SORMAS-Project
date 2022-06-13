@@ -15,10 +15,13 @@
 
 package de.symeda.sormas.app.rest;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.util.Log;
+
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -27,13 +30,10 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
-import android.util.Log;
-
-import androidx.fragment.app.FragmentActivity;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import de.symeda.sormas.api.caze.classification.ClassificationAllOfCriteriaDto;
 import de.symeda.sormas.api.caze.classification.ClassificationAllSymptomsCriteriaDto;
@@ -114,7 +114,7 @@ public final class RetroProvider {
 	private WeeklyReportFacadeRetro weeklyReportFacadeRetro;
 	private OutbreakFacadeRetro outbreakFacadeRetro;
 	private ClassificationFacadeRetro classificationFacadeRetro;
-	private UserRoleConfigFacadeRetro userRoleConfigFacadeRetro;
+	private UserRoleFacadeRetro userRoleFacadeRetro;
 	private PrescriptionFacadeRetro prescriptionFacadeRetro;
 	private TreatmentFacadeRetro treatmentFacadeRetro;
 	private AdditionalTestFacadeRetro additionalTestFacadeRetro;
@@ -162,6 +162,17 @@ public final class RetroProvider {
 
 		// adds "Accept-Encoding: gzip" by default
 		httpClient.addInterceptor(interceptor);
+
+		// adds "mobile-sync: true" by default
+		httpClient.addInterceptor(chain -> {
+
+			Request original = chain.request();
+
+			Request.Builder builder = original.newBuilder().header("mobile-sync", String.valueOf(true));
+
+			Request request = builder.build();
+			return chain.proceed(request);
+		});
 
 		// header for logging purposes
 		httpClient.addInterceptor(chain -> {
@@ -797,17 +808,17 @@ public final class RetroProvider {
 		return instance.classificationFacadeRetro;
 	}
 
-	public static UserRoleConfigFacadeRetro getUserRoleConfigFacade() throws NoConnectionException {
+	public static UserRoleFacadeRetro getUserRoleFacade() throws NoConnectionException {
 		if (instance == null)
 			throw new NoConnectionException();
-		if (instance.userRoleConfigFacadeRetro == null) {
+		if (instance.userRoleFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
-				if (instance.userRoleConfigFacadeRetro == null) {
-					instance.userRoleConfigFacadeRetro = instance.retrofit.create(UserRoleConfigFacadeRetro.class);
+				if (instance.userRoleFacadeRetro == null) {
+					instance.userRoleFacadeRetro = instance.retrofit.create(UserRoleFacadeRetro.class);
 				}
 			}
 		}
-		return instance.userRoleConfigFacadeRetro;
+		return instance.userRoleFacadeRetro;
 	}
 
 	public static PrescriptionFacadeRetro getPrescriptionFacade() throws NoConnectionException {

@@ -15,13 +15,6 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.caze;
 
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
@@ -32,6 +25,12 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
 
 @Stateless
 @LocalBean
@@ -69,11 +68,11 @@ public class ProcessedCaseDataPersister extends ProcessedDataPersister<CaseDataD
 				Captions.Person,
 				buildCaseValidationGroupName(caze));
 
-			handleValidationError(() -> caseFacade.saveCase(caze, true, false, false, false), Captions.CaseData, buildCaseValidationGroupName(caze));
+			handleValidationError(() -> caseFacade.save(caze, true, false, false, false), Captions.CaseData, buildCaseValidationGroupName(caze));
 		} else {
 			//save case first during update
 
-			handleValidationError(() -> caseFacade.saveCase(caze, true, false, false, false), Captions.CaseData, buildCaseValidationGroupName(caze));
+			handleValidationError(() -> caseFacade.save(caze, true, false, false, false), Captions.CaseData, buildCaseValidationGroupName(caze));
 			handleValidationError(
 				() -> personFacade.savePerson(caseData.getPerson(), false, false, false),
 				Captions.Person,

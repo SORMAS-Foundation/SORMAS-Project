@@ -55,10 +55,10 @@
 
 <table>
     <tbody><tr><th>First Name</th><th>Last Name</th><th>Phone</th><th>Contacted</th></tr>
-        <tr><td>Georges</td><td>Bataille</td><td>+49 681 8901</td><td>[ ]</td></tr>
-        <tr><td>Guy</td><td>Debord</td><td>+49 681 4567</td><td>[ ]</td></tr>
-        <tr><td>Isidore</td><td>Isou</td><td>+49 681 1234</td><td>[ ]</td></tr>
-    </tbody></table>
+    <tr><td>Georges</td><td>Bataille</td><td>+49 681 8901</td><td>[ ]</td></tr>
+    <tr><td>Guy</td><td>Debord</td><td>+49 681 4567</td><td>[ ]</td></tr>
+    <tr><td>Isidore</td><td>Isou</td><td>+49 681 1234</td><td>[ ]</td></tr>
+</tbody></table>
 
 
 <div class="actions">

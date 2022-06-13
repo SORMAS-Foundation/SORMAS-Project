@@ -26,6 +26,8 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class PersonContactDetailsField extends AbstractTableField<PersonContactDetailDto> {
 
+	private static final long serialVersionUID = -2379638496494122L;
+
 	private static final String COLUMN_PRIMARY = PersonContactDetailDto.PRIMARY_CONTACT;
 	private static final String COLUMN_OWNER = Captions.personContactDetailOwner;
 	private static final String COLUMN_OWNER_NAME = Captions.personContactDetailOwnerName;
@@ -35,13 +37,9 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 	private PersonDto thisPerson;
 	private boolean isPseudonymized;
 
-	public PersonContactDetailsField(
-		PersonDto thisPerson,
-		FieldVisibilityCheckers fieldVisibilityCheckers,
-		UiFieldAccessCheckers fieldAccessCheckers) {
+	public PersonContactDetailsField(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
 		super(fieldAccessCheckers);
 		this.fieldVisibilityCheckers = fieldVisibilityCheckers;
-		this.thisPerson = thisPerson;
 	}
 
 	@Override
@@ -177,24 +175,14 @@ public class PersonContactDetailsField extends AbstractTableField<PersonContactD
 
 	@Override
 	protected boolean isModified(PersonContactDetailDto oldEntry, PersonContactDetailDto newEntry) {
-		if (isModifiedObject(oldEntry.getPerson(), newEntry.getPerson()))
-			return true;
-		if (isModifiedObject(oldEntry.getPersonContactDetailType(), newEntry.getPersonContactDetailType()))
-			return true;
-		if (isModifiedObject(oldEntry.getPhoneNumberType(), newEntry.getPhoneNumberType()))
-			return true;
-		if (isModifiedObject(oldEntry.getContactInformation(), newEntry.getContactInformation()))
-			return true;
-		if (isModifiedObject(oldEntry.getAdditionalInformation(), newEntry.getAdditionalInformation()))
-			return true;
-		if (isModifiedObject(oldEntry.isThirdParty(), newEntry.isThirdParty()))
-			return true;
-		if (isModifiedObject(oldEntry.getThirdPartyName(), newEntry.getThirdPartyName()))
-			return true;
-		if (isModifiedObject(oldEntry.getThirdPartyRole(), newEntry.getThirdPartyRole()))
-			return true;
-
-		return false;
+		return isModifiedObject(oldEntry.getPerson(), newEntry.getPerson())
+			|| isModifiedObject(oldEntry.getPersonContactDetailType(), newEntry.getPersonContactDetailType())
+			|| isModifiedObject(oldEntry.getPhoneNumberType(), newEntry.getPhoneNumberType())
+			|| isModifiedObject(oldEntry.getContactInformation(), newEntry.getContactInformation())
+			|| isModifiedObject(oldEntry.getAdditionalInformation(), newEntry.getAdditionalInformation())
+			|| isModifiedObject(oldEntry.isThirdParty(), newEntry.isThirdParty())
+			|| isModifiedObject(oldEntry.getThirdPartyName(), newEntry.getThirdPartyName())
+			|| isModifiedObject(oldEntry.getThirdPartyRole(), newEntry.getThirdPartyRole());
 	}
 
 	public void setPseudonymized(boolean isPseudonymized) {

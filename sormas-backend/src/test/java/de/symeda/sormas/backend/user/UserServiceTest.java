@@ -14,7 +14,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -28,8 +27,11 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import de.symeda.sormas.api.AuthProvider;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
@@ -44,7 +46,6 @@ public class UserServiceTest extends AbstractBeanTest {
 		mockAuthProvider = mockStatic(AuthProvider.class);
 		assertNotNull(mockAuthProvider);
 		Mockito.when(AuthProvider.getProvider(any())).thenReturn(authProvider);
-		when(authProvider.isUsernameCaseSensitive()).thenReturn(true);
 	}
 
 	@AfterClass
@@ -55,74 +56,64 @@ public class UserServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetReferenceList() {
+	public void testGetUserReferencesByJurisdictions() {
 
 		List<String> regionUuids = null;
 		List<String> districtUuids = null;
 		List<String> communityUuids = null;
-		boolean includeSupervisors = false;
-		boolean filterByJurisdiction = false;
-		boolean activeOnly = false;
-		List<UserRole> userRoles = null;
+		List<JurisdictionLevel> jurisdictionLevels = null;
 
 		// 0. No conditions, test signature with userRoles varArg parameter
-		List<UserReference> result =
-			getUserService().getReferenceList(regionUuids, districtUuids, includeSupervisors, filterByJurisdiction, activeOnly);
+		List<UserReference> result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, null, null, null);
 		assertThat(result, hasSize(1));
 		UserReference admin = result.get(0);
-		assertThat(admin.getUserRoles(), containsInAnyOrder(UserRole.ADMIN, UserRole.NATIONAL_USER));
+		assertThat(
+			admin.getUserRoles(),
+			containsInAnyOrder(creator.getUserRole(DefaultUserRole.ADMIN), creator.getUserRole(DefaultUserRole.NATIONAL_USER)));
 
 		// 1a. Find admin with several conditions
-		activeOnly = true;
-		userRoles = Arrays.asList(UserRole.ADMIN);
-		result = getUserService().getReferenceList(regionUuids, districtUuids, communityUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
+		jurisdictionLevels = Arrays.asList(JurisdictionLevel.NATION);
+		result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, communityUuids, jurisdictionLevels, null);
 		assertThat(result, contains(admin));
-		userRoles = Arrays.asList(UserRole.NATIONAL_USER);
-		result = getUserService().getReferenceList(regionUuids, districtUuids, communityUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
-		assertThat(result, contains(admin));
-		userRoles = Arrays.asList(UserRole.ADMIN, UserRole.CASE_OFFICER);
-		result = getUserService().getReferenceList(regionUuids, districtUuids, communityUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
+		jurisdictionLevels = Arrays.asList(JurisdictionLevel.NATION, JurisdictionLevel.DISTRICT);
+		result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, communityUuids, jurisdictionLevels, null);
 		assertThat(result, contains(admin));
 
 		// 1b. Exclude admin by role
-		userRoles = Arrays.asList(UserRole.CASE_OFFICER);
-		result = getUserService().getReferenceList(regionUuids, districtUuids, communityUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
+		jurisdictionLevels = Arrays.asList(JurisdictionLevel.DISTRICT);
+		result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, communityUuids, jurisdictionLevels, null);
 		assertThat(result, is(empty()));
 
-		// 2. Include supervisors
-		userRoles = Arrays.asList(UserRole.CONTACT_OFFICER);
+		// 2. Exclude inactive user as overall condition
 		RDCF rdcf = creator.createRDCF();
-		UserDto supervisor = creator.createUser(rdcf, UserRole.CONTACT_SUPERVISOR);
-		result = getUserService().getReferenceList(regionUuids, districtUuids, communityUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
-		assertThat(result, is(empty()));
-		includeSupervisors = true;
-		result = getUserService().getReferenceList(regionUuids, districtUuids, communityUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
-		assertThat(result, hasSize(1));
+		UserDto supervisor = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.CONTACT_SUPERVISOR));
+		jurisdictionLevels = Arrays.asList(JurisdictionLevel.REGION);
+		result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, communityUuids, jurisdictionLevels, null);
 		assertThat(result.get(0).getUuid(), equalTo(supervisor.getUuid()));
-
-		// 3. Exclude inactive user as overall condition
 		getUserFacade().disableUsers(Arrays.asList(supervisor.getUuid()));
-		result = getUserService().getReferenceList(regionUuids, districtUuids, communityUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
+		result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, communityUuids, jurisdictionLevels, null);
 		assertThat(result, is(empty()));
 
-		// 4. filterByJurisdiction to test that the invocation works and filters correctly concerning activeOnly
-		filterByJurisdiction = true;
-		result = getUserService().getReferenceList(regionUuids, districtUuids, communityUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
-		assertThat(result, is(empty()));
-		activeOnly = false;
-		result = getUserService().getReferenceList(regionUuids, districtUuids, communityUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
+		// 3. regions filter
+		getUserFacade().enableUsers(Arrays.asList(supervisor.getUuid()));
+		result = getUserService().getUserReferencesByJurisdictions(Arrays.asList(rdcf.region.getUuid()), null, null, null, null);
 		assertThat(result, hasSize(1));
 		assertThat(result.get(0).getUuid(), equalTo(supervisor.getUuid()));
 
-		// 5. regions filter
-		result = getUserService().getReferenceList(Arrays.asList(rdcf.region.getUuid()), null, false, false, false);
-		assertThat(result, hasSize(1));
+		UserDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.CONTACT_OFFICER));
+		result = getUserService().getUserReferencesByJurisdictions(Arrays.asList(rdcf.region.getUuid()), null, null, null, null);
+		assertThat(result, hasSize(2));
+
+		// 4. districts filter
+		result = getUserService().getUserReferencesByJurisdictions(null, Arrays.asList(rdcf.district.getUuid()), null, null, null);
+		assertThat(result, hasSize(2));
 		assertThat(result.get(0).getUuid(), equalTo(supervisor.getUuid()));
 
-		// 6. districts filter
-		result = getUserService().getReferenceList(null, Arrays.asList(rdcf.district.getUuid()), false, false, false);
+		// 5. user rights
+		result = getUserService()
+			.getUserReferencesByJurisdictions(null, Arrays.asList(rdcf.district.getUuid()), null, null, Arrays.asList(UserRight.CONTACT_RESPONSIBLE));
 		assertThat(result, hasSize(1));
-		assertThat(result.get(0).getUuid(), equalTo(supervisor.getUuid()));
+		assertThat(result.get(0).getUuid(), equalTo(officer.getUuid()));
 	}
 
 	@Test
@@ -142,8 +133,8 @@ public class UserServiceTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetAllDefaultUsersWithExistingUsers() {
-		Set<User> defaultUsers = UserTestHelper.generateDefaultUsers(false);
-		Set<User> randomUsers = UserTestHelper.generateRandomUsers(10);
+		Set<User> defaultUsers = UserTestHelper.generateDefaultUsers(false, creator);
+		Set<User> randomUsers = UserTestHelper.generateRandomUsers(10, creator);
 		Set<User> testUsers = new HashSet<>();
 		testUsers.addAll(defaultUsers);
 		testUsers.addAll(randomUsers);
@@ -161,5 +152,96 @@ public class UserServiceTest extends AbstractBeanTest {
 		for (User randomUser : randomUsers) {
 			assertFalse(result.contains(randomUser));
 		}
+	}
+
+	@Test
+	public void testGetUserRefsByInfrastructure() {
+
+		RDCF rdcf1 = creator.createRDCF("R1", "D1", "C1", "F1", "P1");
+		RDCF rdcf2 = creator.createRDCF("R2", "D2", "C2", "F2", "P2");
+
+		UserDto hospInf1 = creator.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "HI", "1");
+		UserDto hospInf2 = creator.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "HI", "2");
+		UserDto survOff11 = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			null,
+			"SO",
+			"11",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto surfOff12 = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			null,
+			"SO",
+			"12",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto survOff21 = creator.createUser(
+			rdcf2.region.getUuid(),
+			rdcf2.district.getUuid(),
+			null,
+			"SO",
+			"21",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto survSup1 =
+			creator.createUser(rdcf1.region.getUuid(), null, null, "SS", "1", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto survSup2 =
+			creator.createUser(rdcf2.region.getUuid(), null, null, "SS", "2", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto commOff1 = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			null,
+			"CO",
+			"1",
+			creator.getUserRoleReference(DefaultUserRole.COMMUNITY_OFFICER));
+		commOff1.setCommunity(rdcf1.community);
+		getUserFacade().saveUser(commOff1);
+		UserDto poeSup1 = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			null,
+			"PS",
+			"1",
+			creator.getUserRoleReference(DefaultUserRole.POE_SUPERVISOR));
+		poeSup1.setPointOfEntry(rdcf1.pointOfEntry);
+		getUserFacade().saveUser(poeSup1);
+
+		assertThat(
+			getUserService().getUserRefsByInfrastructure(rdcf1.district.getUuid(), JurisdictionLevel.DISTRICT, JurisdictionLevel.DISTRICT, null),
+			hasSize(2));
+		assertThat(
+			getUserService().getUserRefsByInfrastructure(rdcf1.region.getUuid(), JurisdictionLevel.REGION, JurisdictionLevel.REGION, null),
+			hasSize(1));
+		assertThat(
+			getUserService()
+				.getUserRefsByInfrastructure(rdcf1.facility.getUuid(), JurisdictionLevel.HEALTH_FACILITY, JurisdictionLevel.DISTRICT, null),
+			hasSize(4));
+		assertThat(
+			getUserService().getUserRefsByInfrastructure(rdcf2.district.getUuid(), JurisdictionLevel.DISTRICT, JurisdictionLevel.DISTRICT, null),
+			hasSize(1));
+		assertThat(
+			getUserService().getUserRefsByInfrastructure(rdcf2.district.getUuid(), JurisdictionLevel.DISTRICT, JurisdictionLevel.REGION, null),
+			hasSize(2));
+		assertThat(
+			getUserService()
+				.getUserRefsByInfrastructure(rdcf1.pointOfEntry.getUuid(), JurisdictionLevel.POINT_OF_ENTRY, JurisdictionLevel.POINT_OF_ENTRY, null),
+			hasSize(1));
+		assertThat(
+			getUserService().getUserRefsByInfrastructure(rdcf1.community.getUuid(), JurisdictionLevel.COMMUNITY, JurisdictionLevel.REGION, null),
+			hasSize(4));
+		assertThat(getUserService().getUserRefsByInfrastructure(null, JurisdictionLevel.NATION, JurisdictionLevel.NATION, null), hasSize(1));
+		assertThat(
+			getUserService().getUserRefsByInfrastructure(rdcf1.region.getUuid(), JurisdictionLevel.REGION, JurisdictionLevel.NATION, null),
+			hasSize(2));
+
+		commOff1.setLimitedDisease(Disease.EVD);
+		getUserFacade().saveUser(commOff1);
+		survOff11.setLimitedDisease(Disease.CHOLERA);
+		getUserFacade().saveUser(survOff11);
+		assertThat(
+			getUserService()
+				.getUserRefsByInfrastructure(rdcf1.community.getUuid(), JurisdictionLevel.COMMUNITY, JurisdictionLevel.REGION, Disease.CHOLERA),
+			hasSize(3));
+
 	}
 }

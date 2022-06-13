@@ -32,6 +32,7 @@ import android.util.Log;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.ServerCommunicationException;
@@ -73,6 +74,17 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 	protected abstract long getApproximateJsonSizeInBytes();
 
 	/**
+	 * Override if access to viewing /editing is restricted
+	 */
+	protected UserRight getUserRightView() {
+		return null;
+	}
+
+	protected UserRight getUserRightEdit() {
+		return null;
+	}
+
+	/**
 	 * @return another pull needed?
 	 * @param context
 	 */
@@ -86,6 +98,11 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
 	public void pullEntities(final boolean markAsRead, Context context)
 		throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
+
+		if (!isViewAllowed()) {
+			return;
+		}
+
 		try {
 			final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
 
@@ -124,6 +141,11 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 	}
 
 	public void repullEntities(Context context) throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
+
+		if (!isViewAllowed()) {
+			return;
+		}
+
 		try {
 			final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
 
@@ -175,8 +197,17 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 		return 0;
 	}
 
+	/**
+	 * Calls handlePulledDto for each DTO that has been pulled from the server, and returns the
+	 * number of pulled DTOs.
+	 */
 	public int handlePulledList(AbstractAdoDao<ADO> dao, List<DTO> result)
 		throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
+
+		if (result == null) {
+			return 0;
+		}
+
 		preparePulledResult(result);
 		dao.callBatchTasks((Callable<Void>) () -> {
 // 		boolean empty = dao.countOf() == 0;
@@ -215,6 +246,11 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 	 */
 	public boolean pushEntities(boolean onlyNewEntities)
 		throws DaoException, ServerConnectionException, ServerCommunicationException, NoConnectionException {
+
+		if (!isEditAllowed()) {
+			return false;
+		}
+
 		final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
 
 		final List<ADO> modifiedAdos = onlyNewEntities ? dao.queryForNew() : dao.queryForModified();
@@ -354,5 +390,21 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 		dto.setChangeDate(ado.getChangeDate());
 		dto.setCreationDate(ado.getCreationDate());
 		dto.setUuid(ado.getUuid());
+	}
+
+	public boolean isViewAllowed() {
+		try {
+			return DtoUserRightsHelper.isViewAllowed(getDtoClass());
+		} catch (UnsupportedOperationException e) {
+			return true;
+		}
+	}
+
+	public boolean isEditAllowed() {
+		try {
+			return DtoUserRightsHelper.isEditAllowed(getDtoClass());
+		} catch (UnsupportedOperationException e) {
+			return true;
+		}
 	}
 }

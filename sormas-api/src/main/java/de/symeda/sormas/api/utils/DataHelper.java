@@ -215,22 +215,6 @@ public final class DataHelper {
 		}
 	}
 
-	public static String convertStreamToString(InputStream is) throws IOException {
-
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-		StringBuilder sb = new StringBuilder();
-
-		String line = null;
-		try {
-			while ((line = reader.readLine()) != null) {
-				sb.append(line).append('\n');
-			}
-		} finally {
-			is.close();
-		}
-		return sb.toString();
-	}
-
 	public static String capitalize(String input) {
 		return input.substring(0, 1).toUpperCase() + input.substring(1);
 	}

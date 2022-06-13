@@ -23,12 +23,12 @@ import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
@@ -191,7 +191,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		if (reports != null) {
 			for (AggregateReportDto report : reports.values()) {
 				String disease = report.getDisease().toString();
-				AggregateReportEditForm editForm = new AggregateReportEditForm(disease);
+				AggregateReportEditForm editForm = new AggregateReportEditForm(disease, null, false);
 				editForm.setNewCases(report.getNewCases());
 				editForm.setLabConfirmations(report.getLabConfirmations());
 				editForm.setDeaths(report.getDeaths());
@@ -202,8 +202,16 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 
 		for (String disease : diseasesWithoutReport.keySet()) {
 
-			AggregateReportEditForm editForm = new AggregateReportEditForm(disease);
-			editForms.add(editForm);
+			List<String> ageGroups = FacadeProvider.getDiseaseConfigurationFacade().getAgeGroups(diseasesWithoutReport.get(disease));
+			if (ageGroups == null || ageGroups.isEmpty()) {
+				editForms.add(new AggregateReportEditForm(disease, null, false));
+			} else {
+				int i = 0;
+				for (String ageGroup : ageGroups) {
+					editForms.add(new AggregateReportEditForm(disease, ageGroup, i == 0));
+					i++;
+				}
+			}
 		}
 
 		Label legend = new Label(
@@ -368,6 +376,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 					AggregateReportDto newReport = AggregateReportDto.build();
 					newReport.setDeaths(deaths);
 					newReport.setDisease(diseaseMap.get(editForm.getDisease()));
+					newReport.setAgeGroup(editForm.getAgeGroup());
 					newReport.setDistrict(comboBoxDistrict.getValue());
 					newReport.setEpiWeek(comboBoxEpiweek.getValue().getWeek());
 					newReport.setHealthFacility(comboBoxFacility.getValue());
@@ -428,7 +437,13 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		Integer year = comboBoxYear.getValue();
 
 		if (year != null) {
-			comboBoxEpiweek.setItems(DateHelper.createEpiWeekList(year));
+			EpiWeek selectedEpiWeek = comboBoxEpiweek.getValue();
+			List<EpiWeek> epiWeekOptions = DateHelper.createEpiWeekList(year);
+			comboBoxEpiweek.setItems(epiWeekOptions);
+			if (selectedEpiWeek != null) {
+				EpiWeek adjustedEpiWeek = DateHelper.getSameEpiWeek(selectedEpiWeek, epiWeekOptions);
+				comboBoxEpiweek.setValue(adjustedEpiWeek);
+			}
 		} else {
 			comboBoxEpiweek.clear();
 		}

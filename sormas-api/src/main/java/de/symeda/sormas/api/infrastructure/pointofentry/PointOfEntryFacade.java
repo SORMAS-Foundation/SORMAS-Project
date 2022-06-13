@@ -6,14 +6,14 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
+import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
 public interface PointOfEntryFacade
-	extends InfrastructureBaseFacade<PointOfEntryDto, PointOfEntryDto, PointOfEntryReferenceDto, PointOfEntryCriteria> {
+	extends InfrastructureFacade<PointOfEntryDto, PointOfEntryDto, PointOfEntryReferenceDto, PointOfEntryCriteria> {
 
 	/**
 	 * @param includeOthers

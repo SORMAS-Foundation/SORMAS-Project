@@ -41,6 +41,8 @@ public class SormasToSormasConfig implements Serializable {
 
 	private String keyPrefix;
 
+	private String districtExternalId;
+
 	public String getId() {
 		return id;
 	}
@@ -213,5 +215,13 @@ public class SormasToSormasConfig implements Serializable {
 
 	public void setRootCaAlias(String rootCaAlias) {
 		this.rootCaAlias = rootCaAlias;
+	}
+
+	public String getDistrictExternalId() {
+		return districtExternalId;
+	}
+
+	public void setDistrictExternalId(String districtExternalId) {
+		this.districtExternalId = districtExternalId;
 	}
 }

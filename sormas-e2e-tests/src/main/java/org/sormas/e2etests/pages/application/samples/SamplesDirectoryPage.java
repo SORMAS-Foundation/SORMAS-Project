@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,4 +41,26 @@ public class SamplesDirectoryPage {
       By.cssSelector(("tbody>tr:first-child>td:last-child"));
   public static final By EDIT_TEST_RESULTS_BUTTON =
       By.cssSelector("[location='pathogenTests'] [class='v-slot v-slot-s-list'] [role='button']");
+  public static final By EDIT_ADDITIONAL_TEST_RESULTS_BUTTON =
+      By.cssSelector("[location='additionalTests'] [class='v-slot v-slot-s-list'] [role='button']");
+  public static final By SAMPLE_CLASIFICATION_SEARCH_COMBOBOX =
+      By.cssSelector("[id='caseClassification'] [class='v-filterselect-button']");
+  public static final By SAMPLE_DISEASE_SEARCH_COMBOBOX =
+      By.cssSelector("[id='disease'] [class='v-filterselect-button']");
+  public static final By SAMPLE_REGION_SEARCH_COMBOBOX =
+      By.cssSelector("[id='region'] [class='v-filterselect-button']");
+  public static final By SAMPLE_DISTRICT_SEARCH_COMBOBOX =
+      By.cssSelector("[id='district'] [class='v-filterselect-button']");
+  public static final By SAMPLE_NOT_SHIPPED = By.id("sampleNotShipped");
+  public static final By SAMPLE_SHIPPED = By.id("sampleShipped");
+  public static final By SAMPLE_RECEIVED = By.id("sampleReceived");
+  public static final By SAMPLE_REFFERED_TO_OTHER_LAB = By.id("sampleReferred");
+  public static final By CREATE_CASE_POSITIVE_TEST_RESULT_LABEL =
+      By.cssSelector(".popupContent [class='v-window-header']");
+  public static final By CONFIRM_BUTTON = By.cssSelector(".popupContent [id='actionConfirm']");
+  public static final By EDIT_PATHOGEN_TEST_BUTTON =
+      By.xpath("//div[@class='v-button v-widget link v-button-link compact v-button-compact']");
+  public static final By EXPORT_SAMPLE_BUTTON = By.id("export");
+  public static final By BASIC_EXPORT_SAMPLE_BUTTON = By.id("exportBasic");
+  public static final By DETAILED_EXPORT_SAMPLE_BUTTON = By.id("exportDetailed");
 }

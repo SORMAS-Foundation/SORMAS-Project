@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,14 +15,14 @@
 
 package de.symeda.sormas.backend.user;
 
-import java.awt.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -47,25 +47,25 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRightsFacade;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.util.XssfHelper;
 
 @Stateless(name = "UserRightsFacade")
 public class UserRightsFacadeEjb implements UserRightsFacade {
 
 	@EJB
-	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	private UserRoleFacadeEjb.UserRoleFacadeEjbLocal userRoleFacade;
 
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	@Override
-	public String generateUserRightsDocument(boolean withDbOverrides) throws IOException {
+	public String generateUserRightsDocument() throws IOException {
 		Path documentPath = generateUserRightsDocumentTempPath();
 
 		if (Files.exists(documentPath)) {
@@ -73,7 +73,7 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 		}
 
 		try (OutputStream fos = Files.newOutputStream(documentPath)) {
-			generateUserRightsDocument(withDbOverrides ? userRoleConfigFacade.getAllAsMap() : new HashMap<>(0), fos);
+			generateUserRightsDocument(userRoleFacade.getUserRoleRights(), fos);
 		} catch (IOException e) {
 			Files.deleteIfExists(documentPath);
 			throw e;
@@ -82,38 +82,43 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 		return documentPath.toString();
 	}
 
-	private void generateUserRightsDocument(Map<UserRole, Set<UserRight>> userRoleRights, OutputStream outStream) throws IOException {
+	private void generateUserRightsDocument(Map<UserRoleDto, Set<UserRight>> userRoleRights, OutputStream outStream) throws IOException {
 		XSSFWorkbook workbook = new XSSFWorkbook();
 
 		// Create User Rights sheet
 		String safeName = WorkbookUtil.createSafeSheetName(I18nProperties.getCaption(Captions.userRights));
 		XSSFSheet sheet = workbook.createSheet(safeName);
 
+		// Define colors
+		final XSSFColor green = XssfHelper.createColor(0, 153, 0);
+		final XSSFColor red = XssfHelper.createColor(255, 0, 0);
+		final XSSFColor black = XssfHelper.createColor(0, 0, 0);
+
 		// Initialize cell styles
 		// Authorized style
 		XSSFCellStyle authorizedStyle = workbook.createCellStyle();
 		authorizedStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-		authorizedStyle.setFillForegroundColor(new XSSFColor(new Color(0, 153, 0)));
+		authorizedStyle.setFillForegroundColor(green);
 		authorizedStyle.setBorderBottom(BorderStyle.THIN);
 		authorizedStyle.setBorderLeft(BorderStyle.THIN);
 		authorizedStyle.setBorderTop(BorderStyle.THIN);
 		authorizedStyle.setBorderRight(BorderStyle.THIN);
-		authorizedStyle.setBorderColor(BorderSide.BOTTOM, new XSSFColor(Color.BLACK));
-		authorizedStyle.setBorderColor(BorderSide.LEFT, new XSSFColor(Color.BLACK));
-		authorizedStyle.setBorderColor(BorderSide.TOP, new XSSFColor(Color.BLACK));
-		authorizedStyle.setBorderColor(BorderSide.RIGHT, new XSSFColor(Color.BLACK));
+		authorizedStyle.setBorderColor(BorderSide.BOTTOM, black);
+		authorizedStyle.setBorderColor(BorderSide.LEFT, black);
+		authorizedStyle.setBorderColor(BorderSide.TOP, black);
+		authorizedStyle.setBorderColor(BorderSide.RIGHT, black);
 		// Unauthorized style
 		XSSFCellStyle unauthorizedStyle = workbook.createCellStyle();
 		unauthorizedStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-		unauthorizedStyle.setFillForegroundColor(new XSSFColor(Color.RED));
+		unauthorizedStyle.setFillForegroundColor(red);
 		unauthorizedStyle.setBorderBottom(BorderStyle.THIN);
 		unauthorizedStyle.setBorderLeft(BorderStyle.THIN);
 		unauthorizedStyle.setBorderTop(BorderStyle.THIN);
 		unauthorizedStyle.setBorderRight(BorderStyle.THIN);
-		unauthorizedStyle.setBorderColor(BorderSide.BOTTOM, new XSSFColor(Color.BLACK));
-		unauthorizedStyle.setBorderColor(BorderSide.LEFT, new XSSFColor(Color.BLACK));
-		unauthorizedStyle.setBorderColor(BorderSide.TOP, new XSSFColor(Color.BLACK));
-		unauthorizedStyle.setBorderColor(BorderSide.RIGHT, new XSSFColor(Color.BLACK));
+		unauthorizedStyle.setBorderColor(BorderSide.BOTTOM, black);
+		unauthorizedStyle.setBorderColor(BorderSide.LEFT, black);
+		unauthorizedStyle.setBorderColor(BorderSide.TOP, black);
+		unauthorizedStyle.setBorderColor(BorderSide.RIGHT, black);
 		// Bold style
 		XSSFFont boldFont = workbook.createFont();
 		boldFont.setBold(true);
@@ -127,17 +132,24 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 		Cell userRightHeadlineCell = headerRow.createCell(0);
 		userRightHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.userRight));
 		userRightHeadlineCell.setCellStyle(boldStyle);
-		Cell descHeadlineCell = headerRow.createCell(1);
+		Cell captionHeadlineCell = headerRow.createCell(1);
+		captionHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRight_caption));
+		captionHeadlineCell.setCellStyle(boldStyle);
+		Cell descHeadlineCell = headerRow.createCell(2);
 		descHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRight_description));
 		descHeadlineCell.setCellStyle(boldStyle);
 		sheet.setColumnWidth(0, 256 * 35);
 		sheet.setColumnWidth(1, 256 * 50);
-		for (UserRole userRole : UserRole.values()) {
+		sheet.setColumnWidth(2, 256 * 75);
+		sheet.createFreezePane(2, 2, 2, 2);
+		int columnIndex = 3;
+		for (UserRoleDto userRole : userRoleRights.keySet()) {
 			String columnCaption = userRole.toString();
-			Cell headerCell = headerRow.createCell(userRole.ordinal() + 2);
+			Cell headerCell = headerRow.createCell(columnIndex);
 			headerCell.setCellValue(columnCaption);
 			headerCell.setCellStyle(boldStyle);
-			sheet.setColumnWidth(userRole.ordinal() + 2, 256 * 14);
+			sheet.setColumnWidth(columnIndex, 256 * 14);
+			columnIndex++;
 		}
 
 		// Jurisdiction row (header)
@@ -148,11 +160,14 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 		final Cell jurDescHeadlineCell = jurisdictionRow.createCell(1);
 		jurDescHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRight_jurisdictionOfRole));
 		jurDescHeadlineCell.setCellStyle(boldStyle);
-		for (UserRole userRole : UserRole.values()) {
+
+		columnIndex = 3;
+		for (UserRoleDto userRole : userRoleRights.keySet()) {
 			final String columnCaption = userRole.getJurisdictionLevel().toString();
-			final Cell headerCell = jurisdictionRow.createCell(userRole.ordinal() + 2);
+			final Cell headerCell = jurisdictionRow.createCell(columnIndex);
 			headerCell.setCellValue(columnCaption);
 			headerCell.setCellStyle(boldStyle);
+			columnIndex++;
 		}
 
 		// User right rows
@@ -164,20 +179,27 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 			nameCell.setCellValue(userRight.name());
 			nameCell.setCellStyle(boldStyle);
 
+			// User right caption
+			Cell captionCell = row.createCell(1);
+			captionCell.setCellValue(userRight.toString());
+
 			// User right description
-			Cell descCell = row.createCell(1);
-			descCell.setCellValue(userRight.toString());
+			Cell descCell = row.createCell(2);
+			descCell.setCellValue(userRight.getDescription());
 
 			// Add styled cells for all user roles
-			for (UserRole userRole : UserRole.values()) {
-				Cell roleRightCell = row.createCell(userRole.ordinal() + 2);
-				if (userRoleRights.containsKey(userRole) && userRoleRights.get(userRole).contains(userRight) || userRole.hasDefaultRight(userRight)) {
+			columnIndex = 3;
+			for (UserRoleDto userRole : userRoleRights.keySet()) {
+				Cell roleRightCell = row.createCell(columnIndex);
+				if (userRoleRights.containsKey(userRole) && userRoleRights.get(userRole).contains(userRight)
+					|| userRoleFacade.hasUserRight(Collections.singletonList(userRole), userRight)) {
 					roleRightCell.setCellStyle(authorizedStyle);
 					roleRightCell.setCellValue(I18nProperties.getString(Strings.yes));
 				} else {
 					roleRightCell.setCellStyle(unauthorizedStyle);
 					roleRightCell.setCellValue(I18nProperties.getString(Strings.no));
 				}
+				columnIndex++;
 			}
 		}
 

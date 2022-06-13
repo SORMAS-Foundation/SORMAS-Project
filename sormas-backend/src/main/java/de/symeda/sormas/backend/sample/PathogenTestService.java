@@ -40,15 +40,16 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.sample.PathogenTestCriteria;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.user.User;
@@ -56,7 +57,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
-public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
+public class PathogenTestService extends AbstractDeletableAdoService<PathogenTest> {
 
 	@EJB
 	private SampleService sampleService;
@@ -71,7 +72,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		CriteriaQuery<PathogenTest> cq = cb.createQuery(getElementClass());
 		Root<PathogenTest> from = cq.from(getElementClass());
 
-		Predicate filter = createActiveTestsFilter(cb, from);
+		Predicate filter = createActiveTestsFilter(cb, cq, from);
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
@@ -95,7 +96,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<PathogenTest> from = cq.from(getElementClass());
 
-		Predicate filter = createActiveTestsFilter(cb, from);
+		Predicate filter = createActiveTestsFilter(cb, cq, from);
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
@@ -114,7 +115,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		Root<PathogenTest> from = cq.from(getElementClass());
 		Predicate filter = null;
 		if (pathogenTestCriteria != null) {
-			filter = buildCriteriaFilter(pathogenTestCriteria, cb, from);
+			filter = buildCriteriaFilter(pathogenTestCriteria, cb, cq, from);
 		}
 		if (filter != null) {
 			cq.where(filter);
@@ -218,7 +219,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		Predicate filter = createDefaultFilter(cb, pathogenTestRoot);
 
 		if (pathogenTestCriteria != null) {
-			Predicate criteriaFilter = buildCriteriaFilter(pathogenTestCriteria, cb, pathogenTestRoot);
+			Predicate criteriaFilter = buildCriteriaFilter(pathogenTestCriteria, cb, cq, pathogenTestRoot);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -252,8 +253,8 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		return getBySampleUuids(Collections.singletonList(sampleUuid), ordered);
 	}
 
-	public Predicate buildCriteriaFilter(PathogenTestCriteria pathogenTestCriteria, CriteriaBuilder cb, Root<PathogenTest> from) {
-		Predicate filter = createActiveTestsFilter(cb, from);
+	public Predicate buildCriteriaFilter(PathogenTestCriteria pathogenTestCriteria, CriteriaBuilder cb, CriteriaQuery cq, Root<PathogenTest> from) {
+		Predicate filter = createActiveTestsFilter(cb, cq, from);
 
 		if (pathogenTestCriteria.getSample() != null) {
 			filter = CriteriaBuilderHelper
@@ -313,30 +314,30 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 		// whoever created the sample the sample test is associated with is allowed to
 		// access it
 		Join<Sample, Sample> samplePath = sampleTestPath.join(PathogenTest.SAMPLE);
-		Predicate filter = sampleService.createUserFilter(cb, cq, samplePath);
+		Predicate filter = sampleService.createUserFilter(new SampleQueryContext(cb, cq, samplePath), null);
 
 		return filter;
 	}
 
 	@Override
-	public void delete(PathogenTest pathogenTest) {
-		super.delete(pathogenTest);
+	public void delete(PathogenTest pathogenTest, DeletionDetails deletionDetails) {
+		super.delete(pathogenTest, deletionDetails);
 	}
 
 	/**
-	 * Creates a filter that excludes all pathogen tests that are {@link CoreAdo#deleted} or associated with
+	 * Creates a filter that excludes all pathogen tests that are {@link DeletableAdo#deleted} or associated with
 	 * cases that are {@link Case#archived}, contacts that are {@link Contact#deleted}. or event participants that are
 	 * {@link EventParticipant#deleted}
 	 */
-	public Predicate createActiveTestsFilter(CriteriaBuilder cb, Root<PathogenTest> root) {
+	public Predicate createActiveTestsFilter(CriteriaBuilder cb, CriteriaQuery cq, Root<PathogenTest> root) {
 
 		Join<PathogenTest, Sample> sample = root.join(PathogenTest.SAMPLE, JoinType.LEFT);
-		return sampleService.createActiveSamplesFilter(cb, sample);
+		return sampleService.createActiveSamplesFilter(new SampleQueryContext(cb, cq, sample));
 	}
 
 	/**
 	 * Creates a default filter that should be used as the basis of queries in this service..
-	 * This essentially removes {@link CoreAdo#deleted} pathogen tests from the queries.
+	 * This essentially removes {@link DeletableAdo#deleted} pathogen tests from the queries.
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<PathogenTest> root) {
 		return cb.isFalse(root.get(PathogenTest.DELETED));

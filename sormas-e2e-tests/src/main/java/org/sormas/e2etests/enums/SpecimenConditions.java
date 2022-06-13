@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,20 +20,37 @@ package org.sormas.e2etests.enums;
 
 import java.util.Random;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Getter
 public enum SpecimenConditions {
-  ADEQUATE("Adequate"),
-  NOT_ADEQUATE("Not adequate");
+  ADEQUATE("Adequate", "Ausreichend"),
+  NOT_ADEQUATE("Not adequate", "Nicht ausreichend");
 
   private final String condition;
+  private final String conditionDE;
 
-  SpecimenConditions(String aSpecimen) {
+  SpecimenConditions(String aSpecimen, String aSpecimenDE) {
     condition = aSpecimen;
+    conditionDE = aSpecimenDE;
+  }
+
+  @SneakyThrows
+  public static String getForName(String option) {
+    SpecimenConditions[] specimenConditionOptions = SpecimenConditions.values();
+    for (SpecimenConditions value : specimenConditionOptions) {
+      if (value.condition.equalsIgnoreCase(option)) return value.condition;
+    }
+    throw new Exception("Unable to find " + option + " value in SpecimenConditions Enum");
   }
 
   public static String getRandomCondition() {
     Random random = new Random();
     return String.valueOf(SpecimenConditions.values()[random.nextInt(values().length)]);
+  }
+
+  public static String getRandomConditionName() {
+    Random random = new Random();
+    return String.valueOf(SpecimenConditions.values()[random.nextInt(values().length)].condition);
   }
 }

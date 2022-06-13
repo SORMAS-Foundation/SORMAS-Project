@@ -1,9 +1,12 @@
 package de.symeda.sormas.backend.dashboard;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -15,18 +18,25 @@ import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
+import de.symeda.sormas.api.dashboard.DashboardFacade;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 
 public class DashboardFacadeEjbTest extends AbstractBeanTest {
 
@@ -35,8 +45,13 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 
 		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		TestDataCreator.RDCFEntities rdcf2 = creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -55,7 +70,7 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf2);
 		caze2.setSharedToCountry(true);
-		getCaseFacade().saveCase(caze2);
+		getCaseFacade().save(caze2);
 
 		DashboardCriteria dashboardCriteria = new DashboardCriteria().region(caze.getResponsibleRegion())
 			.district(caze.getDistrict())
@@ -70,11 +85,77 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testGetTestResultCountByResultType() {
+
+		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		PersonReferenceDto person1 = creator.createPerson("Heinz", "First").toReference();
+		PersonReferenceDto person2 = creator.createPerson("Heinz", "Second").toReference();
+		CaseDataDto case1 = creator.createCase(user, person1, rdcf);
+		CaseDataDto case2 = creator.createCase(user, person2, rdcf);
+
+		Date date = new Date();
+		DashboardCriteria dashboardCriteria = new DashboardCriteria().region(case1.getResponsibleRegion())
+				.district(case1.getDistrict())
+				.disease(case1.getDisease())
+				.newCaseDateType(NewCaseDateType.REPORT)
+				.dateBetween(DateHelper.subtractDays(date, 1), DateHelper.addDays(date, 1));
+
+		DashboardFacade dashboardFacade = getDashboardFacade();
+		// no existing samples
+		Map<PathogenTestResultType, Long> resultMap = dashboardFacade.getTestResultCountByResultType(dashboardCriteria);
+		assertEquals(new Long(0), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.PENDING, null));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.POSITIVE, null));
+
+		// one pending sample with in one case
+		Facility lab = creator.createFacility("facility", rdcf.region, rdcf.district, rdcf.community);
+		creator.createSample(case1.toReference(), user, lab);
+
+		resultMap = dashboardFacade.getTestResultCountByResultType(dashboardCriteria);
+		assertEquals(new Long(1), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
+		assertEquals(new Long(1), resultMap.getOrDefault(PathogenTestResultType.PENDING, null));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.POSITIVE, null));
+
+		// one pending sample in each of two cases
+		creator.createSample(case2.toReference(), user, lab);
+
+		resultMap = dashboardFacade.getTestResultCountByResultType(dashboardCriteria);
+		assertEquals(new Long(2), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
+		assertEquals(new Long(2), resultMap.getOrDefault(PathogenTestResultType.PENDING, null));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.POSITIVE, null));
+
+		// one pending sample in each of two cases
+		// and one positive sample in one of the two cases
+		SampleDto sample = creator.createSample(case1.toReference(), user, lab);
+		sample.setPathogenTestResult(PathogenTestResultType.POSITIVE);
+		getSampleFacade().saveSample(sample);
+
+		resultMap = dashboardFacade.getTestResultCountByResultType(dashboardCriteria);
+		assertEquals(new Long(2), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
+		assertEquals(new Long(1), resultMap.getOrDefault(PathogenTestResultType.PENDING, null));
+		assertEquals(new Long(1), resultMap.getOrDefault(PathogenTestResultType.POSITIVE, null));
+	}
+
+	@Test
 	public void testDashboardEventListCreation() {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
@@ -114,8 +195,13 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 			community2.toReference(),
 			creator.createFacility("Facility2", rdcf.region, rdcf.district, community2.toReference()).toReference());
 
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
@@ -170,5 +256,69 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(new Long(3), evdBurden.getCaseCount());
 		assertEquals(new Long(1), evdBurden.getPreviousCaseCount());
 		assertEquals(rdcf.district.getCaption(), evdBurden.getLastReportedDistrictName());
+	}
+
+	@Test
+	public void testGetCasesForDashboardPerPerson() {
+
+		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+
+		PersonDto undefinedPerson = creator.createPerson();
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			undefinedPerson.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		creator.createCase(
+			user.toReference(),
+			undefinedPerson.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.SUSPECT,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		createCasesForPersonWithCondition(PresentCondition.ALIVE, user.toReference(), rdcf, 2);
+		createCasesForPersonWithCondition(PresentCondition.DEAD, user.toReference(), rdcf, 3);
+		createCasesForPersonWithCondition(PresentCondition.BURIED, user.toReference(), rdcf, 2);
+		createCasesForPersonWithCondition(PresentCondition.UNKNOWN, user.toReference(), rdcf, 4);
+
+		DashboardCriteria dashboardCriteria = new DashboardCriteria().region(caze.getResponsibleRegion())
+			.district(caze.getDistrict())
+			.disease(caze.getDisease())
+			.newCaseDateType(NewCaseDateType.MOST_RELEVANT)
+			.dateBetween(DateHelper.subtractDays(new Date(), 1), DateHelper.addDays(new Date(), 1));
+
+		Map<PresentCondition, Integer> dashboardCaseDtos = getDashboardFacade().getCasesCountPerPersonCondition(dashboardCriteria);
+		assertEquals(4, dashboardCaseDtos.size());
+		assertEquals(2, dashboardCaseDtos.get(PresentCondition.ALIVE).intValue());
+		assertEquals(3, dashboardCaseDtos.get(PresentCondition.DEAD).intValue());
+		assertEquals(2, dashboardCaseDtos.get(PresentCondition.BURIED).intValue());
+		assertEquals(6, dashboardCaseDtos.get(PresentCondition.UNKNOWN).intValue());
+	}
+
+	private void createCasesForPersonWithCondition(
+		PresentCondition presentCondition,
+		UserReferenceDto userReferenceDto,
+		TestDataCreator.RDCFEntities rdcf,
+		int nrOfCases) {
+		PersonDto personDto = creator.createPerson("James Smith", presentCondition.name(), p -> {
+			p.setPresentCondition(presentCondition);
+		});
+
+		for (int i = 0; i < nrOfCases; i++) {
+			creator.createCase(
+				userReferenceDto,
+				personDto.toReference(),
+				Disease.CORONAVIRUS,
+				CaseClassification.NOT_CLASSIFIED,
+				InvestigationStatus.PENDING,
+				new Date(),
+				rdcf);
+		}
 	}
 }

@@ -33,7 +33,7 @@ public interface SormasToSormasEntityInterface {
 
 	SormasToSormasEncryptedDataDto getDataForShareRequest(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException;
 
-	void saveSharedEntities(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException;
+	SormasToSormasEncryptedDataDto saveSharedEntities(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException;
 
 	void syncShares(ShareTreeCriteria criteria);
 

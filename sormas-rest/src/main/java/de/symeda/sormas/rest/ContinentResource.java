@@ -3,7 +3,6 @@ package de.symeda.sormas.rest;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -24,9 +23,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Path("/continents")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-@RolesAllowed({
-	"USER",
-	"REST_USER" })
 public class ContinentResource extends EntityDtoResource {
 
 	@GET
@@ -62,5 +58,17 @@ public class ContinentResource extends EntityDtoResource {
 	public List<PushResult> postContinents(@Valid List<ContinentDto> dtos) {
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getContinentFacade()::save);
 		return result;
+	}
+
+	@POST
+	@Path("/archive")
+	public List<String> archive(@RequestBody List<String> uuids) {
+		return FacadeProvider.getContinentFacade().archive(uuids);
+	}
+
+	@POST
+	@Path("/dearchive")
+	public List<String> dearchive(@RequestBody List<String> uuids) {
+		return FacadeProvider.getContinentFacade().dearchive(uuids);
 	}
 }

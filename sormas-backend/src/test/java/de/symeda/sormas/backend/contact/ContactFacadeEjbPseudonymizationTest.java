@@ -33,7 +33,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
@@ -50,8 +50,8 @@ import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -71,14 +71,25 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		super.init();
 
 		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
-		user1 = creator
-			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off1", UserRole.SURVEILLANCE_OFFICER);
+		user1 = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			rdcf1.facility.getUuid(),
+			"Surv",
+			"Off1",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
-		user2 = creator
-			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
+		user2 = creator.createUser(
+			rdcf2.region.getUuid(),
+			rdcf2.district.getUuid(),
+			rdcf2.facility.getUuid(),
+			"Surv",
+			"Off2",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
-		observerUser = creator.createUser(null, null, null, null, "National", "Observer", UserRole.NATIONAL_OBSERVER);
+		observerUser = creator
+			.createUser(null, null, null, null, "National", "Observer", creator.getUserRoleReference(DefaultUserRole.NATIONAL_OBSERVER));
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}
@@ -88,7 +99,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		CaseDataDto caze = createCase(user2, rdcf2);
 		ContactDto contact = createContact(user2, caze, rdcf2);
-		assertNotPseudonymized(getContactFacade().getContactByUuid(contact.getUuid()), true);
+		assertNotPseudonymized(getContactFacade().getByUuid(contact.getUuid()), true);
 	}
 
 	@Test
@@ -106,7 +117,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			new Date(),
 			Disease.CORONAVIRUS,
 			rdcf2);
-		assertPseudonymized(getContactFacade().getContactByUuid(contact.getUuid()));
+		assertPseudonymized(getContactFacade().getByUuid(contact.getUuid()));
 	}
 
 	@Test
@@ -133,7 +144,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.YEAR, 2019);
-		List<ContactDto> contacts = getContactFacade().getAllActiveContactsAfter(calendar.getTime());
+		List<ContactDto> contacts = getContactFacade().getAllAfter(calendar.getTime());
 
 		assertNotPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact1.getUuid())).findFirst().get(), true);
 		assertPseudonymized(contacts.stream().filter(c -> c.getUuid().equals(contact2.getUuid())).findFirst().get());
@@ -296,7 +307,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		contact.setReportLon(null);
 		contact.setReportLatLonAccuracy(20F);
 
-		getContactFacade().saveContact(contact);
+		getContactFacade().save(contact);
 
 		Contact updatedContact = getContactService().getByUuid(contact.getUuid());
 
@@ -323,7 +334,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		contact.setReportLon(null);
 		contact.setReportLatLonAccuracy(20F);
 
-		getContactFacade().saveContact(contact);
+		getContactFacade().save(contact);
 
 		Contact updatedContact = getContactService().getByUuid(contact.getUuid());
 

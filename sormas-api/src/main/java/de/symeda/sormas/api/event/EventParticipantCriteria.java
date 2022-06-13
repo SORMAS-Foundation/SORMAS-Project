@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -36,6 +37,7 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 	private Date relevantDate;
 	private Boolean excludePseudonymized;
 	private Boolean noResultingCase;
+	private EntityRelevanceStatus relevanceStatus;
 
 	@IgnoreForUrl
 	public EventReferenceDto getEvent() {
@@ -207,5 +209,15 @@ public class EventParticipantCriteria extends BaseCriteria implements Serializab
 
 	public void setNoResultingCase(Boolean noResultingCase) {
 		this.noResultingCase = noResultingCase;
+	}
+
+	@IgnoreForUrl
+	public EntityRelevanceStatus getRelevanceStatus() {
+		return relevanceStatus;
+	}
+
+	public EventParticipantCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
+		this.relevanceStatus = relevanceStatus;
+		return this;
 	}
 }

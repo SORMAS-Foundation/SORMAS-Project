@@ -81,7 +81,7 @@ public class ReceivedEntitiesProcessor {
 		List<SormasToSormasCaseDto> cases = receivedData.getCases();
 		if (CollectionUtils.isNotEmpty(cases)) {
 			cases.forEach(c -> {
-				ValidationErrors caseErrors = caseProcessor.processReceivedData(c, existingEntities.getCases().get(c.getEntity().getUuid()));
+				ValidationErrors caseErrors = caseProcessor.processReceivedData(c, existingEntities.getCases().get(c.getEntity().getUuid()), originInfo);
 
 				if (caseErrors.hasError()) {
 					validationErrors.add(new ValidationErrors(ValidationHelper.buildCaseValidationGroupName(c.getEntity()), caseErrors));
@@ -92,7 +92,7 @@ public class ReceivedEntitiesProcessor {
 		List<SormasToSormasContactDto> contacts = receivedData.getContacts();
 		if (CollectionUtils.isNotEmpty(contacts)) {
 			contacts.forEach(c -> {
-				ValidationErrors contactErrors = contactProcessor.processReceivedData(c, existingEntities.getContacts().get(c.getEntity().getUuid()));
+				ValidationErrors contactErrors = contactProcessor.processReceivedData(c, existingEntities.getContacts().get(c.getEntity().getUuid()), originInfo);
 
 				if (contactErrors.hasError()) {
 					validationErrors.add(new ValidationErrors(ValidationHelper.buildContactValidationGroupName(c.getEntity()), contactErrors));
@@ -103,7 +103,7 @@ public class ReceivedEntitiesProcessor {
 		List<SormasToSormasEventDto> events = receivedData.getEvents();
 		if (CollectionUtils.isNotEmpty(events)) {
 			events.forEach(e -> {
-				ValidationErrors eventErrors = eventProcessor.processReceivedData(e, existingEntities.getEvents().get(e.getEntity().getUuid()));
+				ValidationErrors eventErrors = eventProcessor.processReceivedData(e, existingEntities.getEvents().get(e.getEntity().getUuid()), originInfo);
 
 				if (eventErrors.hasError()) {
 					validationErrors.add(new ValidationErrors(ValidationHelper.buildEventValidationGroupName(e.getEntity()), eventErrors));
@@ -115,7 +115,7 @@ public class ReceivedEntitiesProcessor {
 		if (CollectionUtils.isNotEmpty(eventParticipants)) {
 			eventParticipants.forEach(ep -> {
 				ValidationErrors eventParticipantErrors =
-					eventParticipantProcessor.processReceivedData(ep, existingEntities.getEventParticipants().get(ep.getEntity().getUuid()));
+					eventParticipantProcessor.processReceivedData(ep, existingEntities.getEventParticipants().get(ep.getEntity().getUuid()), originInfo);
 
 				if (eventParticipantErrors.hasError()) {
 					validationErrors
@@ -127,7 +127,7 @@ public class ReceivedEntitiesProcessor {
 		List<SormasToSormasSampleDto> samples = receivedData.getSamples();
 		if (CollectionUtils.isNotEmpty(samples)) {
 			samples.forEach(s -> {
-				ValidationErrors contactErrors = sampleProcessor.processReceivedData(s, existingEntities.getSamples().get(s.getEntity().getUuid()));
+				ValidationErrors contactErrors = sampleProcessor.processReceivedData(s, existingEntities.getSamples().get(s.getEntity().getUuid()), originInfo);
 
 				if (contactErrors.hasError()) {
 					validationErrors.add(new ValidationErrors(ValidationHelper.buildSampleValidationGroupName(s.getEntity()), contactErrors));
@@ -139,7 +139,7 @@ public class ReceivedEntitiesProcessor {
 		if (CollectionUtils.isNotEmpty(immunizations)) {
 			immunizations.forEach(s -> {
 				ValidationErrors immunizationErrors =
-					immunizationProcessor.processReceivedData(s, existingEntities.getImmunizations().get(s.getEntity().getUuid()));
+					immunizationProcessor.processReceivedData(s, existingEntities.getImmunizations().get(s.getEntity().getUuid()), originInfo);
 
 				if (immunizationErrors.hasError()) {
 					validationErrors

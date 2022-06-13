@@ -22,12 +22,12 @@ import java.util.function.Consumer;
 import com.vaadin.ui.Window;
 import com.vaadin.v7.ui.Table;
 
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
@@ -44,8 +44,8 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 public class PreviousHospitalizationsField extends AbstractTableField<PreviousHospitalizationDto> {
 
 	private static final String PERIOD = Captions.CasePreviousHospitalization_prevHospPeriod;
-	private static final String COMMUNITY = Captions.community;
-	private static final String DISTRICT = Captions.district;
+	private static final String COMMUNITY = Captions.Community;
+	private static final String DISTRICT = Captions.District;
 
 	private FieldVisibilityCheckers fieldVisibilityCheckers;
 

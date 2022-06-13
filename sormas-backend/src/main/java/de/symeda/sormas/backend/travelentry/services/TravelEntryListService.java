@@ -31,7 +31,7 @@ public class TravelEntryListService extends BaseTravelEntryService {
 
 		final TravelEntryQueryContext travelEntryQueryContext = new TravelEntryQueryContext(cb, cq, travelEntry);
 
-		final TravelEntryJoins<TravelEntry> joins = (TravelEntryJoins<TravelEntry>) travelEntryQueryContext.getJoins();
+		final TravelEntryJoins joins = travelEntryQueryContext.getJoins();
 		final Join<TravelEntry, PointOfEntry> pointOfEntry = joins.getPointOfEntry();
 
 		cq.multiselect(

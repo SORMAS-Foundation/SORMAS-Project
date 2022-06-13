@@ -25,13 +25,13 @@ import java.util.Map;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
+import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
-public interface FacilityFacade extends InfrastructureBaseFacade<FacilityDto, FacilityIndexDto, FacilityReferenceDto, FacilityCriteria> {
+public interface FacilityFacade extends InfrastructureFacade<FacilityDto, FacilityIndexDto, FacilityReferenceDto, FacilityCriteria> {
 
 	List<FacilityReferenceDto> getActiveFacilitiesByCommunityAndType(
 		CommunityReferenceDto community,

@@ -51,6 +51,7 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.event.eventparticipant.EventParticipantSection;
 import de.symeda.sormas.app.immunization.edit.ImmunizationNewActivity;
 import de.symeda.sormas.app.immunization.vaccination.VaccinationNewActivity;
+import de.symeda.sormas.app.person.edit.PersonEditFragment;
 import de.symeda.sormas.app.util.Bundler;
 
 public class EventParticipantEditActivity extends BaseEditActivity<EventParticipant> {
@@ -126,6 +127,9 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 		case EVENT_PARTICIPANT_INFO:
 			fragment = EventParticipantEditFragment.newInstance(activityRootData);
 			break;
+		case PERSON_INFO:
+			fragment = PersonEditFragment.newInstance(activityRootData);
+			break;
 		case IMMUNIZATIONS:
 			fragment = EventParticipantEditImmunizationListFragment.newInstance(activityRootData);
 			break;
@@ -163,11 +167,10 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 			return;
 		}
 
-		final EventParticipant eventParticipant = (EventParticipant) getActiveFragment().getPrimaryData();
-		EventParticipantEditFragment fragment = (EventParticipantEditFragment) getActiveFragment();
+		final EventParticipant eventParticipant = getStoredRootEntity();
 
 		try {
-			FragmentValidator.validate(getContext(), fragment.getContentBinding());
+			FragmentValidator.validate(getContext(), getActiveFragment().getContentBinding());
 		} catch (ValidationException e) {
 			NotificationHelper.showNotification(this, ERROR, e.getMessage());
 			return;
@@ -192,7 +195,7 @@ public class EventParticipantEditActivity extends BaseEditActivity<EventParticip
 				super.onPostExecute(taskResult);
 
 				if (taskResult.getResultStatus().isSuccess()) {
-					finish();
+					goToNextPage();
 				} else {
 					// reload data
 					onResume();

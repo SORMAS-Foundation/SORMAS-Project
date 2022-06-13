@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # SORMAS® - Surveillance Outbreak Response Management & Analysis System
-# Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+# Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,12 +25,12 @@ date +"%T"
 echo "Deleting allure report folder..."
 rm -rf ./allureReports
 echo "Deleting custom report"
-rm -rf ./customReports/customReport.html
+rm -rf ./customReports/pagesMeasurements/customReport.html
 eho "Deleting BarChart image"
-rm -rf ./customReports/images/BarChart.jpeg
+rm -rf ./customReports/pagesMeasurements/images/BarChart.jpeg
 echo "Cleaning old results from results.txt file"
-cat /dev/null > ./customReports/data/results.txt
+cat /dev/null > ./customReports/pagesMeasurements/data/results.txt
 echo "Executing gradle clean..."
 ./gradlew clean goJF
 echo "Starting all BDD tests under @PagesMeasurements tag..."
-./gradlew startTests -Dcucumber.tags="@PagesMeasurements" -Dheadless=true -Dcourgette.threads=9
+./gradlew startTests -Dcucumber.tags="@PagesMeasurements" -Dheadless=true -Dcourgette.threads=9 -DenvConfig=/srv/dockerdata/jenkins_new/sormas-files/envData.json --stacktrace --debug --scan

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,4 +26,5 @@ public class FollowUpVisitsTabPage {
   public static final By CONTACTS_LIST_BUTTON = By.id("tab-contacts");
   public static final By FIRST_VISIT_BUTTON =
       By.cssSelector(".v-grid-body tr:nth-child(1) .v-icon.v-icon-edit");
+  public static final By LATEST_VISIT_ORIGIN = By.xpath("//tbody//tr[1]//td[8]");
 }

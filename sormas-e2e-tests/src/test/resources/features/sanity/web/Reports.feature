@@ -1,6 +1,7 @@
 @UI @Sanity @WeeklyReports
 Feature: Reports
 
+  @env_main
   Scenario: Reports directory layout
     Given I log in with National User
     When I click on the Reports button from navbar
@@ -9,6 +10,7 @@ Feature: Reports
     Then I check that grid for weekly reports is shown
     Then I check that header names of grid for weekly reports are shown
 
+  @env_main
   Scenario: Reports filter work
     Given I log in with National User
     When I click on the Reports button from navbar

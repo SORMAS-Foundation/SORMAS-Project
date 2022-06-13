@@ -15,7 +15,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.opencsv.exceptions.CsvValidationException;
@@ -25,8 +24,8 @@ import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.importexport.ValueSeparator;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 import de.symeda.sormas.ui.campaign.importer.CampaignFormDataImporter;
@@ -35,13 +34,17 @@ import de.symeda.sormas.ui.importer.ImportResultStatus;
 public class CampaignFormDataImporterTest extends AbstractBeanTest {
 
 	@Test
-	@Ignore("Remove ignore once we have replaced H2 - #2526")
 	public void testImportCampaignFormData()
 		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user =
-			creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Nat", "User", UserRole.NATIONAL_USER);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Nat",
+			"User",
+			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		final CampaignDto campaign = creator.createCampaign(user);
 
@@ -61,8 +64,13 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user =
-			creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Nat", "User", UserRole.NATIONAL_USER);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Nat",
+			"User",
+			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		final CampaignDto campaign = creator.createCampaign(user);
 
@@ -78,13 +86,17 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	@Ignore("Remove ignore once we have replaced H2 - #2526")
 	public void testImportCampaignFormDataIgnoringNonExistingColumn()
 		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user =
-			creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Nat", "User", UserRole.NATIONAL_USER);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Nat",
+			"User",
+			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		final CampaignDto campaign = creator.createCampaign(user);
 

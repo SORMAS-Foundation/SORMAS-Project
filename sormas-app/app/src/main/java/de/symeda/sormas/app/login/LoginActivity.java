@@ -31,8 +31,8 @@ import androidx.databinding.DataBindingUtil;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseLocalizedActivity;
 import de.symeda.sormas.app.LocaleManager;
@@ -277,13 +277,10 @@ public class LoginActivity extends BaseLocalizedActivity implements ActivityComp
 
 		if (caseSuveillance) {
 			if (ConfigProvider.hasUserRight(UserRight.CASE_VIEW)
-				&& (user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)
-					|| user.hasUserRole(UserRole.CASE_OFFICER)
-					|| user.hasUserRole(UserRole.POE_INFORMANT)
-					|| user.hasUserRole(UserRole.COMMUNITY_INFORMANT)
-					|| user.hasUserRole(UserRole.HOSPITAL_INFORMANT))) {
+				&& (ConfigProvider.hasUserRight(UserRight.CASE_RESPONSIBLE)
+					|| user.hasJurisdictionLevel(JurisdictionLevel.HEALTH_FACILITY, JurisdictionLevel.COMMUNITY, JurisdictionLevel.POINT_OF_ENTRY))) {
 				NavigationHelper.goToCases(LoginActivity.this);
-			} else if (ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW) && user.hasUserRole(UserRole.CONTACT_OFFICER)) {
+			} else if (ConfigProvider.hasUserRight(UserRight.CONTACT_VIEW) && ConfigProvider.hasUserRight(UserRight.CONTACT_RESPONSIBLE)) {
 				NavigationHelper.goToContacts(LoginActivity.this);
 			} else if (ConfigProvider.hasUserRight(UserRight.CASE_VIEW)) {
 				NavigationHelper.goToCases(LoginActivity.this);

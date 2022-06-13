@@ -49,13 +49,16 @@ public final class ImportExportUtils {
 	public static List<ExportPropertyMetaInfo> getCaseExportProperties(
 		PropertyCaptionProvider propertyCaptionProvider,
 		final boolean withFollowUp,
-		final boolean withCaseManagement,
+		final boolean withClinicalCourse,
+		final boolean withTherapy,
 		String countryLocale) {
 		return getExportProperties(CaseExportDto.class, new PropertyTypeFilter() {
 
 			@Override
 			public boolean accept(ExportGroupType groupType) {
-				if (ExportGroupType.CASE_MANAGEMENT == groupType && !withCaseManagement) {
+				if (ExportGroupType.CLINICAL_COURSE == groupType && !withClinicalCourse) {
+					return false;
+				} else if (ExportGroupType.THERAPY == groupType && !withTherapy) {
 					return false;
 				}
 

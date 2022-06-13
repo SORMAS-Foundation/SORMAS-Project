@@ -150,7 +150,7 @@ public class DocumentFacadeEjb implements DocumentFacade {
 		List<Document> deleted = documentService.getDocumentsMarkedForDeletion();
 		for (Document document : deleted) {
 			documentStorageService.delete(document.getStorageReference());
-			documentService.delete(document);
+			documentService.deletePermanent(document);
 		}
 	}
 

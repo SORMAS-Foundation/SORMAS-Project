@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import com.opencsv.exceptions.CsvValidationException;
 
@@ -30,8 +30,8 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 import de.symeda.sormas.ui.events.importer.EventImporter;
@@ -48,8 +48,13 @@ public class EventImporterTest extends AbstractBeanTest {
 		TestDataCreator creator = new TestDataCreator();
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Bourgogne-Franche-Comté", "Côte d'Or", "Dijon", "CHU Dijon Bourgogne");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		// Successful import of 5 cases
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_event_import_test_success.csv").toURI());
@@ -60,7 +65,7 @@ public class EventImporterTest extends AbstractBeanTest {
 		assertEquals(4, getEventFacade().count(null));
 		assertEquals(3, getPersonFacade().count(null));
 
-		List<EventDto> events = getEventFacade().getAllActiveEventsAfter(null);
+		List<EventDto> events = getEventFacade().getAllAfter(null);
 		Optional<EventDto> optionalEventWith2Participants =
 			events.stream().filter(event -> "Event title with 2 participants".equals(event.getEventTitle())).findFirst();
 		assertTrue(optionalEventWith2Participants.isPresent());
@@ -85,7 +90,7 @@ public class EventImporterTest extends AbstractBeanTest {
 		assertEquals(3, getPersonFacade().count(null));
 
 		// Similarity: pick
-		List<SimilarPersonDto> persons = FacadeProvider.getPersonFacade().getSimilarPersonDtos(user.toReference(), new PersonSimilarityCriteria());
+		List<SimilarPersonDto> persons = FacadeProvider.getPersonFacade().getSimilarPersonDtos(new PersonSimilarityCriteria());
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_event_import_test_similarities.csv").toURI());
 		eventImporter = new EventImporterExtension(csvFile, true, user) {
 

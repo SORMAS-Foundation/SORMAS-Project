@@ -20,10 +20,13 @@ public class IterableHelperTest {
 
 		int batchSize = 3;
 
-		// 0. No execution on empty collection
+		// 0a. No execution on null
+		assertExecuteCount(batchSize, 0, (Integer[]) null);
+
+		// 0b. No execution on empty collection
 		assertExecuteCount(batchSize, 0);
 
-		// 1. No execution on empty collection
+		// 1. Testing with one batch
 		assertExecuteCount(batchSize, 1, 1);
 		assertExecuteCount(batchSize, 1, 1, 2);
 		assertExecuteCount(batchSize, 1, 1, 2, 3);
@@ -41,7 +44,7 @@ public class IterableHelperTest {
 		// Workaround instead of mocking because the mocked instance resulted in an NPE on Github CI.
 		CountCalls<Integer> batchFunction = new CountCalls<>();
 
-		IterableHelper.executeBatched(Arrays.asList(entries), batchSize, batchFunction);
+		IterableHelper.executeBatched(entries == null ? null : Arrays.asList(entries), batchSize, batchFunction);
 		assertThat(batchFunction.counter, equalTo(executions));
 	}
 

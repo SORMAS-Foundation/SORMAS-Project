@@ -58,7 +58,6 @@ import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -133,10 +132,19 @@ public class AboutView extends VerticalLayout implements View {
 		CssStyles.style(versionLabel, CssStyles.VSPACE_3);
 		infoLayout.addComponent(versionLabel);
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.LAB_MESSAGES)) {
+		if (InfoProvider.get().isSnapshotVersion()) {
+			Link commitLink = new Link(
+				String.format("%s (%s)", versionLabel.getValue(), InfoProvider.get().getLastCommitShortId()),
+				new ExternalResource(InfoProvider.get().getLastCommitHistoryUrl()));
+			commitLink.setTargetName("_blank");
+			CssStyles.style(commitLink, CssStyles.VSPACE_3);
+			infoLayout.replaceComponent(versionLabel, commitLink);
+		}
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EXTERNAL_MESSAGES)) {
 			addExternalServiceVersion(
-				Captions.aboutLabMessageAdapter,
-				() -> FacadeProvider.getLabMessageFacade().getLabMessagesAdapterVersion(),
+				Captions.aboutExternalMessageAdapter,
+				() -> FacadeProvider.getExternalMessageFacade().getExternalMessagesAdapterVersion(),
 				infoLayout);
 		}
 
@@ -254,8 +262,7 @@ public class AboutView extends VerticalLayout implements View {
 			DownloadUtil.attachDataDictionaryDownloader(dataDictionaryButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EXPORT_DATA_PROTECTION_DATA)
-			&& FacadeProvider.getInfoFacade().isGenerateDataProtectionDictionaryAllowed()) {
+		if (FacadeProvider.getInfoFacade().isGenerateDataProtectionDictionaryAllowed()) {
 			Button dataProtectionButton =
 				ButtonHelper.createButton(Captions.aboutDataProtectionDictionary, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 			documentsLayout.addComponent(dataProtectionButton);
