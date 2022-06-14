@@ -69,4 +69,7 @@ public class CreateNewTravelEntryPage {
   public static final By POINT_OF_ENTRY_REGION_INPUT = By.cssSelector("#pointOfEntryRegion input");
   public static final By POINT_OF_ENTRY_DISTRICT_INPUT =
       By.cssSelector("#pointOfEntryDistrict input");
+  public static final By INPUT_DATA_ERROR_POPUP =
+      By.xpath(
+          "//div[@class='v-Notification error v-Notification-error']//div[contains(@class,'popupContent')]");
 }

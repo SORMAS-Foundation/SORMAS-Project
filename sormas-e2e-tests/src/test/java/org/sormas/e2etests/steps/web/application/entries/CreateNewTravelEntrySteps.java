@@ -40,6 +40,7 @@ import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntry
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_TRAVEL_ENTRY_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_UUID_TABLE_TRAVEL_ENTRIES;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.INPUT_DATA_ERROR_POPUP;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.LAST_NAME_OF_CONTACT_PERSON_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.OPEN_CASE_OF_THIS_TRAVEL_ENTRY_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_CASE_LABEL_DE;
@@ -622,17 +623,26 @@ public class CreateNewTravelEntrySteps implements En {
               CreateNewCasePage.DATE_OF_REPORT_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
-  }
 
-  private void selectPointOfEntryDistrict(String pointOfEntryDistrict) {
-    webDriverHelpers.selectFromCombobox(POINT_OF_ENTRY_DISTRICT_BUTTON, pointOfEntryDistrict);
-  }
-
-  private void selectPointOfEntryRegion(String pointOfEntryRegion) {
-    webDriverHelpers.selectFromCombobox(POINT_OF_ENTRY_REGION_BUTTON, pointOfEntryRegion);
+    Then(
+        "^I check that all required fields except person fields are mandatory in the new travel entry form$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(INPUT_DATA_ERROR_POPUP);
+          webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Einreisedatum");
+          webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Bundesland");
+          webDriverHelpers.checkWebElementContainsText(
+              INPUT_DATA_ERROR_POPUP, "Landkreis/Kreisfreie Stadt");
+          webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Einreiseort");
+          webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Meldedatum");
+          webDriverHelpers.checkWebElementContainsText(
+              INPUT_DATA_ERROR_POPUP, "Zust\u00E4ndige/r Landkreis/Kreisfreie Stadt");
+          webDriverHelpers.checkWebElementContainsText(
+              INPUT_DATA_ERROR_POPUP, "Zust\u00E4ndiges Bundesland");
+          webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Krankheit");
+        });
 
     And(
-        "^I check that New Travel Entry popup contains all the necessary fields$",
+        "^I check that new travel entry form contains all the necessary fields$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(REPORT_DATE);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(
@@ -651,6 +661,64 @@ public class CreateNewTravelEntrySteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(LAST_NAME_OF_CONTACT_PERSON_INPUT);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEX_COMBOBOX);
         });
+
+    And(
+        "^I clear report date and disease fields in the new travel entry form$",
+        () -> {
+          webDriverHelpers.clearWebElement(REPORT_DATE);
+          fillDisease("");
+        });
+
+    When(
+        "^I fill all required fields except person-related fields in the new travel entry form$",
+        () -> {
+          travelEntry = travelEntryService.buildGeneratedEntryWithDifferentPointOfEntryDE();
+          fillReportDate(travelEntry.getReportDate(), Locale.GERMAN);
+          fillDateOfArrival(travelEntry.getDateOfArrival(), Locale.GERMAN);
+          selectResponsibleRegion(travelEntry.getResponsibleRegion());
+          selectResponsibleDistrict(travelEntry.getResponsibleDistrict());
+          fillDisease(travelEntry.getDisease());
+          disease = travelEntry.getDisease();
+          if (travelEntry.getDisease().equals("Andere epidemische Krankheit"))
+            fillOtherDisease("Test");
+          selectPointOfEntryRegion(travelEntry.getPointOfEntryRegion());
+          selectPointOfEntryDistrict(travelEntry.getPointOfEntryDistrict());
+          fillPointOfEntry(travelEntry.getPointOfEntry());
+          fillPointOfEntryDetails(travelEntry.getPointOfEntryDetails());
+        });
+
+    And(
+        "^I fill the person-related required fields in the new entry form$",
+        () -> {
+          travelEntry = travelEntryService.buildGeneratedEntryWithDifferentPointOfEntryDE();
+          fillFirstName(travelEntry.getFirstName());
+          fillLastName(travelEntry.getLastName());
+          selectSex(travelEntry.getSex());
+        });
+
+    Then(
+        "^I check that person-related fields are mandatory in the new entry form$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(INPUT_DATA_ERROR_POPUP);
+          webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Vorname");
+          webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Geschlecht");
+          webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Nachname");
+        });
+
+    And(
+        "^I close input data error popup$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(INPUT_DATA_ERROR_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(INPUT_DATA_ERROR_POPUP);
+        });
+  }
+
+  private void selectPointOfEntryDistrict(String pointOfEntryDistrict) {
+    webDriverHelpers.selectFromCombobox(POINT_OF_ENTRY_DISTRICT_BUTTON, pointOfEntryDistrict);
+  }
+
+  private void selectPointOfEntryRegion(String pointOfEntryRegion) {
+    webDriverHelpers.selectFromCombobox(POINT_OF_ENTRY_REGION_BUTTON, pointOfEntryRegion);
   }
 
   private void fillFirstName(String firstName) {
