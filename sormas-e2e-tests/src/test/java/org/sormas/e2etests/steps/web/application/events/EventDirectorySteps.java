@@ -854,6 +854,14 @@ public class EventDirectorySteps implements En {
                       "Event Management status is not correct"));
         });
     When(
+        "I click on last created API result in grid in Event Directory for Bulk Action",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.scrollToElement(getByEventUuid(apiState.getCreatedEvent().getUuid()));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getByEventUuid(apiState.getCreatedEvent().getUuid()));
+        });
+    When(
         "^I select last created API result in grid in Event Directory for Bulk Action$",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);

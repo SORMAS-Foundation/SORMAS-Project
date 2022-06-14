@@ -274,6 +274,7 @@ public class CreateNewSampleSteps implements En {
               webDriverHelpers.getTextFromWebElement(NUMBER_OF_TESTS_IN_SAMPLES),
               "Number of tests: 2",
               "Number of tests is correct!");
+          softly.assertAll();
         });
 
     When(
@@ -283,6 +284,7 @@ public class CreateNewSampleSteps implements En {
               webDriverHelpers.getNumberOfElements(EDIT_PATHOGEN_TEST),
               2,
               "Number of pathogen tests is not correct");
+          softly.assertAll();
         });
 
     When(

@@ -878,7 +878,7 @@ Feature: Create events
     And I archive facility
 
     #this testcase needs to be changed when bug 9212 is fixed
-  @#8556 @ignore
+    @env_main @#8556 @ignore
   Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of an Event Participant
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
