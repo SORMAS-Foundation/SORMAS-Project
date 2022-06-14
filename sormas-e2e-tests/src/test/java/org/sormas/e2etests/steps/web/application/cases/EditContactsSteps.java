@@ -41,7 +41,6 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESPONSIBLE_SURVEILLANCE_OFFICER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CASE_CONTACT_EXPORT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CLOSE_POPUP_BUTTON;
@@ -85,7 +84,6 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CON
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_CATEGORY_OPTIONS;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_CLASSIFICATION_OPTIONS;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_CREATED_POPUP;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_IDENTIFICATION_SOURCE_DETAILS_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.LAST_CONTACT_DATE;
@@ -422,30 +420,13 @@ public class EditContactsSteps implements En {
               false,
               "Responsible community input is not in read only state!");
           softly.assertEquals(
-              webDriverHelpers.isElementEnabled(CONTACT_IDENTIFICATION_SOURCE_DETAILS_COMBOBOX),
-              false,
-              "Contact identification combobox is not in read only state!");
-          softly.assertEquals(
               webDriverHelpers.isElementEnabled(RELATIONSHIP_WITH_CASE_INPUT),
               false,
               "Relationship with case input is not in read only state!");
           softly.assertEquals(
-              webDriverHelpers.isElementEnabled(CONTACT_CATEGORY_OPTIONS),
-              false,
-              "Contact category is not in read only state!");
-          softly.assertEquals(
-              webDriverHelpers.isElementEnabled(
-                  ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT),
-              false,
-              "Additional information input is not in read only state!");
-          softly.assertEquals(
               webDriverHelpers.isElementEnabled(VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX),
               false,
               "Vaccination status combobox is not in read only state!");
-          softly.assertEquals(
-              webDriverHelpers.isElementEnabled(RESPONSIBLE_SURVEILLANCE_OFFICER_COMBOBOX),
-              false,
-              "Responsible surveillance officer combobox is not in read only state!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(SAVE_EDIT_BUTTON),
               false,

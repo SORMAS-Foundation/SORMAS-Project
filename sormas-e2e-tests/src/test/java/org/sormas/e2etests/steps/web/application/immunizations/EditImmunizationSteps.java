@@ -1,19 +1,6 @@
 package org.sormas.e2etests.steps.web.application.immunizations;
 
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SAVE_EDIT_BUTTON;
-import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.*;
-import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DISEASE_INPUT;
-import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.FACILITY_NAME_DESCRIPTION_VALUE;
-import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
-import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SAMPLE_DELETION_POPUP_YES_BUTTON;
-
 import cucumber.api.java8.En;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
 import lombok.SneakyThrows;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
@@ -23,6 +10,48 @@ import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SAVE_EDIT_BUTTON;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.ACTION_CONFIRM_BUTTON;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.ARCHIVE_DEARCHIVE_BUTTON;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.BUTTONS_IN_VACCINATIONS_LOCATION;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.COMMIT_BUTTON;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DATE_OF_REPORT_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DELETE_BUTTON;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DELETE_VACCINATION_BUTTON;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DISCARD_BUTTON;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DISEASE_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.FACILITY_CATEGORY_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.FACILITY_COMBOBOX_IMMUNIZATION_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.FACILITY_NAME_DESCRIPTION_VALUE;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.FACILITY_TYPE_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.IMMUNIZATION_MANAGEMENT_STATUS_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.IMMUNIZATION_PERSON_TAB;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.IMMUNIZATION_STATUS_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.MEANS_OF_IMMUNIZATIONS_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.NEW_ENTRY_BUTTON;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.NUMBER_OF_DOSES;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.POPUP_MESSAGE;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.RESPONSIBLE_COMMUNITY_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.RESPONSIBLE_DISTRICT_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.RESPONSIBLE_REGION_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.UUID;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.VACCINATION_DATE_HEADER;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.VACCINATION_DOSE_HEADER;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.VACCINATION_ID_HEADER;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.VACCINATION_MANUFACTURER_HEADER;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.VACCINATION_NAME_HEADER;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.VACCINATION_TYPE_HEADER;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.getVaccinationByIndex;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SAMPLE_DELETION_POPUP_YES_BUTTON;
 
 public class EditImmunizationSteps implements En {
 
@@ -65,7 +94,8 @@ public class EditImmunizationSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(NEW_ENTRY_BUTTON));
     When(
         "I set Number of doses to {int} on Edit Immunization Page",
-        (Integer number) -> webDriverHelpers.fillInWebElement(NUMBER_OF_DOSES, String.valueOf(number)));
+        (Integer number) ->
+            webDriverHelpers.fillInWebElement(NUMBER_OF_DOSES, String.valueOf(number)));
     When(
         "^I click SAVE button on Edit Immunization Page$",
         () -> {
@@ -98,20 +128,22 @@ public class EditImmunizationSteps implements En {
         });
     When(
         "I check if Immunization status is set to {string}",
-        (String expected) -> assertHelpers.assertWithPoll20Second(
-            () ->
-                Assert.assertEquals(
-                    webDriverHelpers.getValueFromWebElement(IMMUNIZATION_STATUS_INPUT),
-                    expected,
-                    "Immunization status is different than expected")));
+        (String expected) ->
+            assertHelpers.assertWithPoll20Second(
+                () ->
+                    Assert.assertEquals(
+                        webDriverHelpers.getValueFromWebElement(IMMUNIZATION_STATUS_INPUT),
+                        expected,
+                        "Immunization status is different than expected")));
     When(
         "I check that number of added Vaccinations is {int}",
-        (Integer expected) -> assertHelpers.assertWithPoll20Second(
-            () ->
-                Assert.assertEquals(
-                    webDriverHelpers.getNumberOfElements(BUTTONS_IN_VACCINATIONS_LOCATION) - 1,
-                    (int) expected,
-                    "Number of vaccinations is different than expected")));
+        (Integer expected) ->
+            assertHelpers.assertWithPoll20Second(
+                () ->
+                    Assert.assertEquals(
+                        webDriverHelpers.getNumberOfElements(BUTTONS_IN_VACCINATIONS_LOCATION) - 1,
+                        (int) expected,
+                        "Number of vaccinations is different than expected")));
     When(
         "I click to edit {int} vaccination on Edit Immunization page",
         (Integer index) -> {

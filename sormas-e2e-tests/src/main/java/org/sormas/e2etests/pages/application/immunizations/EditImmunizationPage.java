@@ -41,6 +41,7 @@ public class EditImmunizationPage {
             "(//div[contains(@location,\"vaccinations\")]//span[@class=\"v-button-wrap\"])[%s]/..",
             index));
   }
+
   public static final By ARCHIVE_DEARCHIVE_BUTTON = By.id("archiveDearchive");
   public static final By ACTION_CONFIRM_BUTTON = By.id("actionConfirm");
   public static final By DISCARD_BUTTON = By.id("discard");
