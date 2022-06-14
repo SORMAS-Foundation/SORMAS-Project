@@ -3736,23 +3736,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		archiveAllArchivableCases(daysAfterCaseGetsArchived, LocalDate.now());
 	}
 
-	void archiveAllArchivableCases(int daysAfterCaseGetsArchived, LocalDate referenceDate) {
+	public void archiveAllArchivableCases(int daysAfterCaseGetsArchived, LocalDate referenceDate) {
 
 		long startTime = DateHelper.startTime();
 
 		LocalDate notChangedSince = referenceDate.minusDays(daysAfterCaseGetsArchived);
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<String> cq = cb.createQuery(String.class);
-		Root<Case> from = cq.from(Case.class);
-
-		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
-		cq.where(
-			cb.equal(from.get(Case.ARCHIVED), false),
-			cb.equal(from.get(Case.DELETED), false),
-			cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp, true)));
-		cq.select(from.get(Case.UUID)).distinct(true);
-		List<String> caseUuids = em.createQuery(cq).getResultList();
+		List<String> caseUuids = getCaseUuidsList(notChangedSince);
 
 		if (!caseUuids.isEmpty()) {
 			archive(caseUuids, true);
@@ -3763,6 +3752,20 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			caseUuids.size(),
 			daysAfterCaseGetsArchived,
 			DateHelper.durationMillies(startTime));
+	}
+
+	public List<String> getCaseUuidsList(LocalDate notChangedSince) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Case> from = cq.from(Case.class);
+
+		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
+		cq.where(
+			cb.equal(from.get(Case.ARCHIVED), false),
+			cb.equal(from.get(Case.DELETED), false),
+			cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp, true)));
+		cq.select(from.get(Case.UUID)).distinct(true);
+		return em.createQuery(cq).getResultList();
 	}
 
 	public Page<CaseFollowUpDto> getCaseFollowUpIndexPage(
