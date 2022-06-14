@@ -87,6 +87,124 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_INFO_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONTACTS_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EPIDEMIOLOGICAL_DATA_TAB;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CONFIRM;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.BLOOD_ORGAN_TISSUE_DONATION_IN_THE_LAST_6_MONTHS_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_CLASSIFICATION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_CLASSIFICATION_SPAN;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_IDENTIFICATION_SOURCE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_ORIGIN;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_PERSON_TAB;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_TAB;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CLINICAL_CONFIRMATION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CLINICAL_COURSE_TAB;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY_COMBOBOX_BY_PLACE_OF_STAY;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_QUARANTINE_ORDER_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CURRENT_HOSPITALIZATION_POPUP;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_OFFICIAL_QUARANTINE_ORDER_WAS_SENT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_OF_OUTCOME;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_OF_OUTCOME_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_OF_THE_VERBAL_ORDER;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_RECEIVED_AT_DISTRICT_LEVEL_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_RECEIVED_AT_NATIONAL_LEVEL_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_RECEIVED_AT_REGION_LEVEL_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_POPUP_YES_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISCARD_BUTTON_POPUP;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_VARIANT_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISTRICT_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_SAMPLE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_TASK_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_TRAVEL_ENTRY_FROM_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EPIDEMIOLOGICAL_CONFIRMATION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTERNAL_ID_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTERNAL_TOKEN_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTRA_COMMENT_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_ACTIVITY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_CATEGORY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_HEALTH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_HEALTH_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.FOLLOW_UP_TAB;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERAL_COMMENT_TEXTAREA;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.HOME_BASED_QUARANTINE_POSSIBLE_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.HOSPITALIZATION_TAB;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.INFRASTRUCTURE_DATA_POPUP;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.INVESTIGATED_DATE_FIELD;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.INVESTIGATION_STATUS_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.LABORATORY_DIAGNOSTIC_CONFIRMATION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_SAMPLE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_SAMPLE_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_TASK_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_TRAVEL_ENTRY_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.OFFICIAL_QUARANTINE_ORDER_SENT_CHECKBOX_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.OFFICIAL_QUARANTINE_ORDER_SENT_CHECKBOX_LABEL;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.OUTCOME_OF_CASE_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_DESCRIPTION_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_CHECKBOX_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_CHECKBOX_LABEL;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_SELECTED_VALUE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.POINT_OF_ENTRY_DETAILS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.POINT_OF_ENTRY_TEXT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.POPUPS_INPUTS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PREGNANCY_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PROHIBITION_TO_WORK_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_CHANGE_COMMENT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_DATE_FROM;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_DATE_FROM_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_DATE_TO;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_DATE_TO_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDERED_BY_DOCUMENT_CHECKBOX_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDERED_BY_DOCUMENT_CHECKBOX_LABEL;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDERED_BY_DOCUMENT_DATE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDERED_VERBALLY_CHECKBOX_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDERED_VERBALLY_CHECKBOX_LABEL;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_POPUP_DISCARD_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_POPUP_MESSAGE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_POPUP_SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_TYPE_DETAILS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE_DEFINITION_TEXT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY_DISTRICT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY_POPUP_DE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY_REGION;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY_SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REGION_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REINFECTION_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REPORT_DATE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REPORT_GPS_ACCURACY_IN_M_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REPORT_GPS_LATITUDE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REPORT_GPS_LONGITUDE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESPONSIBLE_COMMUNITY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESPONSIBLE_DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESPONSIBLE_REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESPONSIBLE_SURVEILLANCE_OFFICER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_AND_OPEN_HOSPITALIZATION_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SEQUELAE_DETAILS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SEQUELAE_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SYMPTOMS_TAB;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.TRIMESTER_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.UPLOAD_DOCUMENT_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTACT_TO_BODY_FLUIDS_OPTONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTACT_TO_CASE_COMBOBOX;
@@ -1518,6 +1636,101 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "^I check that Point Of Entry information is displayed as read-only on Edit case page$",
+        () -> {
+          String referenceReadOnlyAttribute =
+              webDriverHelpers.getAttributeFromWebElement(POINT_OF_ENTRY_TEXT, "readonly");
+          softly.assertNotNull(
+              referenceReadOnlyAttribute,
+              "The case reference definition shouldn't be editable, but it is!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I refer case from Point Of Entry$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(REFER_CASE_FROM_POINT_OF_ENTRY);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              REFER_CASE_FROM_POINT_OF_ENTRY_POPUP_DE);
+          webDriverHelpers.selectFromCombobox(REFER_CASE_FROM_POINT_OF_ENTRY_REGION, "Saarland");
+          webDriverHelpers.selectFromCombobox(
+              REFER_CASE_FROM_POINT_OF_ENTRY_DISTRICT, "LK Saarlouis");
+          webDriverHelpers.clickWebElementByText(PLACE_OF_STAY_OPTIONS, "ZUHAUSE");
+          webDriverHelpers.clickOnWebElementBySelector(REFER_CASE_FROM_POINT_OF_ENTRY_SAVE_BUTTON);
+        });
+
+    And(
+        "^I check that Point Of Entry and Place Of Stay information is correctly display on Edit case page$",
+        () -> {
+          String referenceReadOnlyAttribute =
+              webDriverHelpers.getAttributeFromWebElement(POINT_OF_ENTRY_TEXT, "readonly");
+          softly.assertNotNull(
+              referenceReadOnlyAttribute,
+              "The case reference definition shouldn't be editable, but it is!");
+
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                  PLACE_OF_STAY_SELECTED_VALUE),
+              "ZUHAUSE",
+              "Place of stay is not correct");
+
+          softly.assertEquals(
+              webDriverHelpers.getValueFromCombobox(PLACE_OF_STAY_REGION_COMBOBOX),
+              "Saarland",
+              "Place of stay region is not correct");
+
+          softly.assertEquals(
+              webDriverHelpers.getValueFromCombobox(PLACE_OF_STAY_DISTRICT_COMBOBOX),
+              "LK Saarlouis",
+              "Place of stay district is not correct");
+
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_TEXT),
+              "Anderer Flughafen",
+              "Point of entry is not correct");
+
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_DETAILS),
+              "Narita",
+              "Point of entry details are not correct");
+
+          softly.assertAll();
+        });
+
+    And(
+        "^I check that Case Origin is set to Point Of Entry$",
+        () -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(CASE_ORIGIN),
+              "Einreiseort",
+              "Point of entry is not correct");
+          softly.assertAll();
+        });
+
+    Then(
+        "^I check that differing Point Of Entry is correctly displayed on Edit case page$",
+        () -> {
+          String referenceReadOnlyAttribute =
+              webDriverHelpers.getAttributeFromWebElement(POINT_OF_ENTRY_TEXT, "readonly");
+          softly.assertNotNull(
+              referenceReadOnlyAttribute,
+              "The case reference definition shouldn't be editable, but it is!");
+
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_TEXT),
+              "Anderer Einreiseort",
+              "Point of entry is not correct");
+
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_DETAILS),
+              "Automated test dummy description",
+              "Point of entry details are not correct");
+
+          softly.assertAll();
         });
     When(
         "I click on the Archive case button and confirm popup",

@@ -191,6 +191,8 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_RESPONSIBLE_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_SAVE;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SECOND_DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SECOND_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_EVENTS_FOR_PERSON;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
@@ -1326,6 +1328,13 @@ public class EditEventSteps implements En {
         () -> {
           webDriverHelpers.selectFromCombobox(DISTRICT_COMBOBOX, "");
           webDriverHelpers.selectFromCombobox(REGION_COMBOBOX, "");
+        });
+
+    When(
+        "I set Region to {string} and District to {string} in Event Participant edit page",
+        (String aRegion, String aDistrict) -> {
+          webDriverHelpers.selectFromCombobox(SECOND_REGION_COMBOBOX, aRegion);
+          webDriverHelpers.selectFromCombobox(SECOND_DISTRICT_COMBOBOX, aDistrict);
         });
 
     When(

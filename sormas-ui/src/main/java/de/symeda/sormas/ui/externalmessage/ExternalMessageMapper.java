@@ -18,6 +18,7 @@ package de.symeda.sormas.ui.externalmessage;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -126,7 +127,7 @@ public class ExternalMessageMapper {
 					sample.getSpecimenCondition(),
 					externalMessage.getSpecimenCondition(),
 					SampleDto.SPECIMEN_CONDITION),
-				Mapping.of(sample::setLab, sample.getLab(), getLabReference(externalMessage.getLabExternalId()), SampleDto.LAB),
+				Mapping.of(sample::setLab, sample.getLab(), getLabReference(externalMessage.getReporterExternalIds()), SampleDto.LAB),
 				Mapping.of(sample::setLabDetails, sample.getLabDetails(), externalMessage.getReporterName(), SampleDto.LAB_DETAILS)));
 
 		if (externalMessage.getSampleReceivedDate() != null) {
@@ -210,7 +211,7 @@ public class ExternalMessageMapper {
 						Mapping.of(
 							pathogenTest::setLab,
 							pathogenTest.getLab(),
-							getLabReference(sourceTestReport.getTestLabExternalId()),
+							getLabReference(sourceTestReport.getTestLabExternalIds()),
 							PathogenTestDto.LAB),
 						Mapping.of(
 							pathogenTest::setLabDetails,
@@ -331,14 +332,28 @@ public class ExternalMessageMapper {
 		return new ImmutableTriple<>(testResultText, testedDiseaseVariant, testedDiseaseVariantDetails);
 	}
 
-	private FacilityReferenceDto getLabReference(String labExternalId) {
+	public FacilityReferenceDto getLabReference(List<String> labExternalIds) {
+
 		FacilityFacade facilityFacade = FacadeProvider.getFacilityFacade();
-		List<FacilityReferenceDto> labs =
-			labExternalId != null ? facilityFacade.getByExternalIdAndType(labExternalId, FacilityType.LABORATORY, false) : null;
-		if (labs != null && labs.size() == 1) {
+		List<FacilityReferenceDto> labs;
+
+		if (labExternalIds != null && !labExternalIds.isEmpty()) {
+
+			labs = labExternalIds.stream()
+				.filter(Objects::nonNull)
+				.map(id -> facilityFacade.getByExternalIdAndType(id, FacilityType.LABORATORY, false))
+				.flatMap(List::stream)
+				.collect(Collectors.toList());
+		} else {
+			labs = null;
+		}
+
+		if (labs == null) {
+			return facilityFacade.getReferenceByUuid(FacilityDto.OTHER_FACILITY_UUID);
+		} else if (labs.size() == 1) {
 			return labs.get(0);
 		} else {
-			return facilityFacade.getReferenceByUuid(FacilityDto.OTHER_FACILITY_UUID);
+			return null;
 		}
 	}
 
