@@ -393,13 +393,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 					getContentBinding().caseDataCaseClassification.disableWarningState();
 				}
 
-				if (caseClassification != CaseClassification.CONFIRMED) {
-					contentBinding.caseDataClinicalConfirmation.setValue(null);
-					contentBinding.caseDataEpidemiologicalConfirmation.setValue(null);
-					contentBinding.caseDataLaboratoryDiagnosticConfirmation.setValue(null);
-					contentBinding.caseDataCaseConfirmationBasis.setValue(null);
-				}
-
 				updateCaseConfirmationVisibility(getContentBinding());
 
 				CaseValidator.initializeGermanCaseClassificationValidation(record, caseClassification, getContentBinding());
