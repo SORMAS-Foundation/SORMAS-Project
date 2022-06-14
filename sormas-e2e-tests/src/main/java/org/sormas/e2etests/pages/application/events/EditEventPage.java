@@ -23,6 +23,7 @@ import org.openqa.selenium.By;
 public class EditEventPage {
   public static final By EVENT_PARTICIPANTS_TAB =
       By.cssSelector("#tab-events-eventparticipants span");
+  public static final By UUID_EDIT_EVENT = By.cssSelector("div[location='uuid']");
   public static final By FIRST_EVENT_PARTICIPANT = By.xpath("//table/tbody/tr[1]/td[1]//a");
   public static final By FIRST_RESULT_IN_EVENT_PARTICIPANT_TABLE = By.xpath("//td//a");
   public static final By FIRST_ARCHIVED_EVENT_PARTICIPANT = By.xpath("//table/tbody/tr[1]/td[2]");
@@ -76,8 +77,12 @@ public class EditEventPage {
   public static final By EDIT_EVENT_GROUP_BUTTON = By.id("add-event-0");
   public static final By NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON = By.id("list-events-0");
   public static final By NAVIGATE_TO_EVENT_DIRECTORY_LIST_GROUP_BUTTON = By.id("tab-events");
+  public static final By NAVIGATE_TO_EVENT_GROUP_BUTTON = By.id("tab-events-data");
   public static final By NAVIGATE_TO_EVENT_PARTICIPANTS_BUTTON =
       By.id("tab-events-eventparticipants");
+  public static final By EVENT_PARTICIPANT_HEADER =
+      By.xpath(
+          "//div[@class='v-label v-widget h2 v-label-h2 primary v-label-primary vspace-none v-label-vspace-none vspace-top-none v-label-vspace-top-none caption-truncated v-label-caption-truncated v-label-undef-w']");
   public static final By SAVE_BUTTON_FOR_EDIT_EVENT_GROUP = By.id("commit");
   public static final By FIRST_GROUP_ID = By.xpath("//table/tbody/tr[1]/td[2]");
   public static final By TOTAL_ACTIONS_COUNTER = By.cssSelector(".badge");
@@ -146,8 +151,20 @@ public class EditEventPage {
       PATHOGEN_FINE_TYPING_COMPLIANT_WITH_THE_ONE_OF_CASES_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE =
           By.xpath(
               "//label[text()='Erreger-Feintypisierung stimmt mit der der F\u00E4lle \u00FCberein']");
+  public static final By EVENT_DATE_OF_REPORT_EXCLAMATION_MARK =
+      By.xpath("//span[@class='v-errorindicator v-errorindicator-error']");
+  public static final By EVENT_DATE_OF_REPORT_EXCLAMATION_MARK_MESSAGE =
+      By.xpath("//div[@class='v-errormessage v-errormessage-error']");
+  public static final By EVENT_ERROR_POPUP_MESSAGE_WITH_INPUT_DATA_TITLE =
+      By.cssSelector(".popupContent h1");
+  public static final By EVENT_ERROR_POPUP_FIRST_MESSAGE =
+      By.xpath(
+          "//div[@class='popupContent']//li[text()='Date of report has to be after or on the same day as Start date']");
+  public static final By EVENT_ERROR_POPUP_SECOND_MESSAGE =
+      By.xpath(
+          "//div[@class='popupContent']//li[text()='Start date has to be before or on the same day as Date of report']");
 
   public static By getGroupEventName(String groupEventName) {
-    return By.xpath("//*[contains(text(),'" + groupEventName + "')]");
+    return By.xpath("//*[contains(text(),\"" + groupEventName + "\")]");
   }
 }

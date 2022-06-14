@@ -30,6 +30,8 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventJoins;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
@@ -117,7 +119,7 @@ public class TaskJoins extends QueryJoins<Task> {
 	}
 
 	public Join<Event, User> getEventReportingUser() {
-		return  getEventJoins().getReportingUser();
+		return getEventJoins().getReportingUser();
 	}
 
 	public Join<Event, User> getEventResponsibleUser() {
@@ -198,6 +200,14 @@ public class TaskJoins extends QueryJoins<Task> {
 
 	public Join<Case, Community> getCaseCommunity() {
 		return getCaseJoins().getCommunity();
+	}
+
+	public Join<Case, Facility> getCaseFacility() {
+		return getCaseJoins().getFacility();
+	}
+
+	public Join<Case, PointOfEntry> getCasePointOfEntry() {
+		return getCaseJoins().getPointOfEntry();
 	}
 
 	public Join<Contact, Region> getContactRegion() {

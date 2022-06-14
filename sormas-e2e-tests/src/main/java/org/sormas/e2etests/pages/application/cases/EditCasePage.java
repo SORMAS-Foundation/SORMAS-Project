@@ -51,11 +51,15 @@ public class EditCasePage {
           "[location='samples'] [class='v-button v-widget link v-button-link compact v-button-compact']");
   public static final By REPORT_DATE_INPUT = By.cssSelector("#reportDate input");
   public static final By CASE_CLASSIFICATION_COMBOBOX = By.cssSelector("#caseClassification div");
-  public static final By CASE_CLASSIFICATION_INPUT = By.cssSelector("#caseClassification input");
+  public static final By CASE_CLASSIFICATION_SPAN =
+      By.cssSelector("#caseClassification span input:checked+label");
+  public static final By CASE_CLASSIFICATION_INPUT =
+      By.cssSelector("#caseClassification input:checked+label");
   public static final By CLINICAL_CONFIRMATION_COMBOBOX =
       By.cssSelector("#clinicalConfirmation div");
   public static final By EPIDEMIOLOGICAL_CONFIRMATION_COMBOBOX =
       By.cssSelector("#epidemiologicalConfirmation div");
+  public static final By EPID_NUMBER_INPUT = By.cssSelector("#epidNumber input");
   public static final By LABORATORY_DIAGNOSTIC_CONFIRMATION_COMBOBOX =
       By.cssSelector("#laboratoryDiagnosticConfirmation div");
   public static final By INVESTIGATION_STATUS_OPTIONS =
@@ -85,6 +89,7 @@ public class EditCasePage {
   public static final By FACILITY_CATEGORY_COMBOBOX = By.cssSelector("#typeGroup div");
   public static final By FACILITY_TYPE_COMBOBOX = By.cssSelector("#facilityType div");
   public static final By FACILITY_HEALTH_COMBOBOX = By.cssSelector("#healthFacility div");
+  public static final By FACILITY_HEALTH_INPUT = By.cssSelector("#healthFacility input");
   public static final By FACILITY_ACTIVITY_COMBOBOX =
       By.cssSelector("[id='typeOfPlace'] [class='v-filterselect-button']");
   public static final By REGION_COMBOBOX = By.cssSelector("#responsibleRegion div");
@@ -180,6 +185,8 @@ public class EditCasePage {
       By.xpath("//*[contains(text(),'Pick or create case')]");
   public static final By CREATE_NEW_PERSON_CHECKBOX =
       By.xpath("//label[text()='Create a new person']");
+  public static final By SELECT_MATCHING_PERSON_CHECKBOX =
+      By.xpath("//label[text()='Select a matching person']");
   public static final By CREATE_NEW_CASE_CHECKBOX = By.xpath("//label[text()='Create a new case']");
   public static final By CURRENT_HOSPITALIZATION_POPUP =
       By.xpath("//*[contains(text(),'Current hospitalization')]");
@@ -217,6 +224,9 @@ public class EditCasePage {
   public static final By TOOLTIP_EYE_ICON_HOVER = By.xpath("//div[@class='v-tooltip-text']");
   public static final By REINFECTION_STATUS_LABEL = By.cssSelector("#reinfectionStatus input");
   public static final By CREATE_DOCUMENT_TEMPLATES = By.id("Create");
+  public static final By CREATE_DOCUMENT_TEMPLATES_DE = By.id("Erstellen");
+  public static final By CREATE_DOCUMENT_TEMPLATES_POPUP_DE =
+      By.cssSelector(".v-window #Erstellen");
   public static final By UPLOAD_DOCUMENT_CHECKBOX =
       By.xpath("//label[text()='Also upload the generated document to this entity']");
   public static final By POPUPS_INPUTS = By.cssSelector(".popupContent input");
@@ -227,4 +237,31 @@ public class EditCasePage {
   public static final By ARCHIVE_CASE_BUTTON = By.id("archiveDearchive");
   public static final By ARCHIVE_RELATED_CONTACTS_CHECKBOX =
       By.cssSelector(".popupContent span[class='v-checkbox v-widget']");
+  public static final By INFRASTRUCTURE_DATA_POPUP =
+      By.xpath("//*[contains(text(),'Infrastructure data has changed')]");
+  public static final By ACTION_CONFIRM = By.cssSelector("[id='actionConfirm']");
+  public static final By SAMPLES_CARD_DATE_OF_COLLECTED_SAMPLE =
+      By.xpath("(//div[@location='samples']//div[@class='v-label v-widget v-label-undef-w'])[1]");
+  public static final By SAMPLES_CARD_LABORATORY =
+      By.xpath("(//div[@location='samples']//div[@class='v-label v-widget v-label-undef-w'])[2]");
+  public static final By SAMPLES_CARD_NUMBER_OF_TESTS =
+      By.xpath("(//div[@location='samples']//div[@class='v-label v-widget v-label-undef-w'])[3]");
+  public static final By SAMPLES_CARD_DATE_AND_TIME_OF_RESULT =
+      By.xpath("(//div[@location='samples']//div[@class='v-label v-widget v-label-undef-w'])[4]");
+  public static final By SAMPLES_CARD_TEST_TYPE =
+      By.xpath("(//div[@location='samples']//div[@class='v-label v-widget v-label-undef-w'])[5]");
+  public static final By POINT_OF_ENTRY_TEXT = By.cssSelector("#pointOfEntry input");
+  public static final By POINT_OF_ENTRY_DETAILS = By.cssSelector("#pointOfEntryDetails");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY =
+      By.cssSelector("#caseReferFromPointOfEntry");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY_POPUP_DE =
+      By.xpath(
+          "//div[contains(@class,'v-window-header') and text()='Fall vom Einreiseort weiterleiten']");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY_REGION =
+      By.cssSelector(".popupContent #region div[role='button'");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY_DISTRICT =
+      By.cssSelector(".popupContent #district div[role='button'");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY_SAVE_BUTTON =
+      By.cssSelector(".popupContent #commit");
+  public static final By CASE_ORIGIN = By.cssSelector("#caseOrigin input");
 }

@@ -50,8 +50,8 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplingReason;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -65,7 +65,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testCaseExport() {
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		PersonDto personDto = creator.createPerson("James", "Smith", p -> {
 			LocationDto homeAddress = p.getAddress();
@@ -251,7 +251,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testContactExport() {
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		PersonDto personDto = creator.createPerson("James", "Smith", p -> {
 			LocationDto homeAddress = p.getAddress();

@@ -69,6 +69,7 @@ public class HospitalizationTabSteps implements En {
           selectWasThePatientHospitalizedPreviously(
               hospitalization.getWasThePatientHospitalizedPreviously());
           selectLeftAgainstMedicalAdvice(hospitalization.getLeftAgainstMedicalAdvice());
+          fillDescription(hospitalization.getDescription());
 
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SUCCESSFUL_SAVE_POPUP);
@@ -84,6 +85,8 @@ public class HospitalizationTabSteps implements En {
     When(
         "I set Patient Admitted at the facility as an inpatient as ([^\"]*)",
         (String option) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              PATIENT_ADMITTED_AT_FACILITY_OPTIONS);
           webDriverHelpers.clickWebElementByText(PATIENT_ADMITTED_AT_FACILITY_OPTIONS, option);
         });
 
@@ -139,6 +142,31 @@ public class HospitalizationTabSteps implements En {
           softly.assertEquals(collectedData.getFacility(), facility, "facilities are not equal");
           softly.assertAll();
         });
+
+    And(
+        "I set Reason for hospitalization as {string}",
+        (String reasonForHospitalization) -> {
+          webDriverHelpers.selectFromCombobox(
+              REASON_FOR_HOSPITALIZATION_COMBOBOX, reasonForHospitalization);
+        });
+
+    Then(
+        "^I check if description text field is available in Current Hospitalization tab$",
+        () -> webDriverHelpers.waitUntilIdentifiedElementIsPresent(DESCRIPTION_INPUT));
+
+    When(
+        "I set Was the patient hospitalized previously option to {string}",
+        (String option) ->
+            webDriverHelpers.clickWebElementByText(
+                WAS_THE_PATIENT_HOSPITALIZED_PREVIOUSLY_OPTIONS, option));
+
+    And(
+        "^I click on New entry to add a previous hospitalization$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(NEW_ENTRY_LINK));
+
+    And(
+        "^I check if Previous Hospitalization Popup is displayed$",
+        () -> webDriverHelpers.isElementVisibleWithTimeout(PREVIOUS_HOSPITALIZATION_POPUP, 10));
   }
 
   @SneakyThrows
@@ -194,6 +222,10 @@ public class HospitalizationTabSteps implements En {
     webDriverHelpers.clickWebElementByText(LEFT_AGAINST_MEDICAL_ADVICE_OPTIONS, option);
   }
 
+  private void fillDescription(String option) {
+    webDriverHelpers.fillInWebElement(DESCRIPTION_INPUT, option);
+  }
+
   private Hospitalization collectHospitalizationData() {
     return Hospitalization.builder()
         .dateOfVisitOrAdmission(
@@ -229,6 +261,7 @@ public class HospitalizationTabSteps implements En {
         .leftAgainstMedicalAdvice(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
                 LEFT_AGAINST_MEDICAL_ADVICE_OPTIONS))
+        .description(webDriverHelpers.getValueFromWebElement(DESCRIPTION_INPUT))
         .build();
   }
 

@@ -331,7 +331,7 @@ public class SurveillanceDashboardPage {
       By.xpath("//label[contains(text(),'Always show at least 7 entries')]");
   public static final By LEGEND_CHART_CASE_STATUS_CONFIRMED =
       By.cssSelector(
-          "g.highcharts-legend-item.highcharts-column-series.highcharts-color-undefined.highcharts-series-5 > text > tspan");
+          "g.highcharts-legend-item.highcharts-column-series.highcharts-color-undefined.highcharts-series-3 > text > tspan");
   public static final By LEGEND_CHART_CASE_STATUS_CONFIRMED_UNKNOWN_SYMPTOMS =
       By.cssSelector(
           "g.highcharts-legend-item.highcharts-column-series.highcharts-color-undefined.highcharts-series-3 > text > tspan");

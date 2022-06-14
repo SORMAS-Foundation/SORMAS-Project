@@ -32,7 +32,7 @@ public class ContactFollowUpDto extends FollowUpDto {
 	//formatter:on
 
 		super(uuid, personFirstName, personLastName, reportDate, followUpUntil, disease);
-		this.contactOfficer = new UserReferenceDto(contactOfficerUuid, contactOfficerFirstName, contactOfficerLastName, null);
+		this.contactOfficer = new UserReferenceDto(contactOfficerUuid, contactOfficerFirstName, contactOfficerLastName);
 		this.lastContactDate = lastContactDate;
 		this.symptomJournalStatus = symptomJournalStatus;
 		this.isInJurisdiction = isInJurisdiction;

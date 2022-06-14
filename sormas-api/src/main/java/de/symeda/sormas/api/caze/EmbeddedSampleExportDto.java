@@ -47,7 +47,14 @@ public class EmbeddedSampleExportDto implements Serializable {
 		this.result = result;
 	}
 
-	public EmbeddedSampleExportDto(String uuid, Date dateTime, String labUuid, String labName, String labDetails, PathogenTestResultType result, Long caseId) {
+	public EmbeddedSampleExportDto(
+		String uuid,
+		Date dateTime,
+		String labUuid,
+		String labName,
+		String labDetails,
+		PathogenTestResultType result,
+		Long caseId) {
 		this.uuid = uuid;
 		this.dateTime = dateTime;
 		this.lab = labUuid != null ? FacilityHelper.buildFacilityString(labUuid, labName, labDetails) : null;

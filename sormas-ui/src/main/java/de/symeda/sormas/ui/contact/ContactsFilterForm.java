@@ -44,7 +44,6 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -337,7 +336,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				null,
 				CHECKBOX_STYLE));
 
-		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
+		final JurisdictionLevel userJurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
 		if (userJurisdictionLevel != JurisdictionLevel.NATION && userJurisdictionLevel != JurisdictionLevel.NONE) {
 			addField(
 				moreFiltersContainer,

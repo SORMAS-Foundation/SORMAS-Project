@@ -283,7 +283,8 @@ public final class VaadinUiUtil {
 		boolean cancelOnClose) {
 
 		return showConfirmationPopup(caption, content, popupWindow -> {
-			Registration closeListener = popupWindow.addCloseListener((e) -> {
+
+			Registration closeListener = popupWindow.addCloseListener(e -> {
 				if (cancelOnClose) {
 					resultConsumer.apply(false);
 				}
@@ -356,12 +357,27 @@ public final class VaadinUiUtil {
 	 *            TRUE: Option A, FALSE: Option B
 	 */
 	public static Window showChooseOptionPopup(
+			String caption,
+			Component content,
+			String optionACaption,
+			String optionBCaption,
+			Integer width,
+			Consumer<Boolean> resultConsumer) {
+		return showChooseOptionPopup(caption, content, optionACaption, optionBCaption, width, resultConsumer, false);
+	}
+
+	/**
+	 * @param resultConsumer
+	 *            TRUE: Option A, FALSE: Option B
+	 */
+	public static Window showChooseOptionPopup(
 		String caption,
 		Component content,
 		String optionACaption,
 		String optionBCaption,
 		Integer width,
-		Consumer<Boolean> resultConsumer) {
+		Consumer<Boolean> resultConsumer,
+		boolean closable) {
 
 		Window popupWindow = VaadinUiUtil.createPopupWindow();
 		if (width != null) {
@@ -403,7 +419,7 @@ public final class VaadinUiUtil {
 		layout.setWidth(100, Unit.PERCENTAGE);
 		layout.setSpacing(true);
 		popupWindow.setContent(layout);
-		popupWindow.setClosable(false);
+		popupWindow.setClosable(closable);
 
 		UI.getCurrent().addWindow(popupWindow);
 		return popupWindow;

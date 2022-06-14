@@ -27,9 +27,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -57,6 +60,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
@@ -79,8 +83,10 @@ import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.AdoAttributes;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
+import de.symeda.sormas.backend.common.ChangeDateUuidComparator;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -110,7 +116,6 @@ import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.ChangeDateUuidComparator;
 import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -376,166 +381,185 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	}
 
 	@Override
-	// todo refactor this to use the create user filter form persons
 	public List<Person> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
-		User user = getCurrentUser();
-
+		long startTime = DateHelper.startTime();
+		logger.trace("getAllAfter started...");
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<Person> personsQuery = cb.createQuery(Person.class);
-		final Root<Person> personsRoot = personsQuery.from(Person.class);
-		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, personsQuery, personsRoot);
-		final PersonJoins joins = personQueryContext.getJoins();
+		Set<AdoAttributes> personAttributes = new LinkedHashSet<>();
 
-		// persons by district
+		// 1a. By District
+		{
+			User user = getCurrentUser();
+			final CriteriaQuery<AdoAttributes> cq = cb.createQuery(AdoAttributes.class);
+			final Root<Person> personRoot = cq.from(Person.class);
+			final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, personRoot);
 
-		Join<Person, Location> address = joins.getAddress();
-		Predicate districtFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
-		// date range
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(personQueryContext, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
-			districtFilter = cb.and(districtFilter, dateFilter);
-		}
-		personsQuery.where(districtFilter);
-		List<Person> districtResultList = getBatchedQueryResults(cb, personsQuery, personsRoot, batchSize);
+			// SELECT
+			cq.multiselect(personRoot.get(AdoAttributes.ID), personRoot.get(AdoAttributes.UUID), personRoot.get(AdoAttributes.CHANGE_DATE));
 
-		// persons by case
-		CriteriaQuery<Person> casePersonsQuery = cb.createQuery(Person.class);
-		Root<Case> casePersonsRoot = casePersonsQuery.from(Case.class);
-		Join<Person, Person> casePersonsSelect = casePersonsRoot.join(Case.PERSON);
-		casePersonsSelect.fetch(Person.ADDRESS);
-		casePersonsQuery.select(casePersonsSelect);
-		Predicate casePersonsFilter = caseService.createUserFilter(new CaseQueryContext(cb, casePersonsQuery, new CaseJoins(casePersonsRoot)));
-		// date range
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, casePersonsSelect, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
-			if (batchSize == null) {
-				// include case change dates: When a case is relocated it may become available to another user and this will have to include the person as-well
-				Predicate caseDateFilter = caseService.createChangeDateFilter(cb, casePersonsRoot, DateHelper.toTimestampUpper(date));
-				dateFilter = cb.or(dateFilter, caseDateFilter);
+			// FILTER
+			Predicate filter = cb.equal(personQueryContext.getJoins().getAddress().get(Location.DISTRICT), user.getDistrict());
+			if (date != null) {
+				filter = and(cb, filter, createChangeDateFilter(personQueryContext, DateHelper.toTimestampUpper(date), lastSynchronizedUuid));
 			}
-			if (casePersonsFilter != null) {
-				casePersonsFilter = cb.and(casePersonsFilter, dateFilter);
-			} else {
-				casePersonsFilter = dateFilter;
-			}
-		}
-		if (casePersonsFilter != null) {
-			casePersonsQuery.where(casePersonsFilter);
-		}
-		casePersonsQuery.distinct(true);
-		List<Person> casePersonsResultList = getBatchedQueryResults(cb, casePersonsQuery, casePersonsSelect, batchSize);
+			cq.where(filter);
 
-		// persons by contact
-		CriteriaQuery<Person> contactPersonsQuery = cb.createQuery(Person.class);
-		Root<Contact> contactPersonsRoot = contactPersonsQuery.from(Contact.class);
-		Join<Person, Person> contactPersonsSelect = contactPersonsRoot.join(Contact.PERSON);
-		contactPersonsSelect.fetch(Person.ADDRESS);
-		contactPersonsQuery.select(contactPersonsSelect);
-		Predicate contactPersonsFilter =
-			contactService.createUserFilter(new ContactQueryContext(cb, contactPersonsQuery, new ContactJoins(contactPersonsRoot)));
-		// date range
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, contactPersonsSelect, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
-			if (batchSize == null) {
-				Predicate contactDateFilter = contactService.createChangeDateFilter(cb, contactPersonsRoot, date);
-				dateFilter = cb.or(dateFilter, contactDateFilter);
-			}
-			contactPersonsFilter = and(cb, contactPersonsFilter, dateFilter);
+			List<AdoAttributes> personDistrictResult = getBatchedAttributesQueryResults(cb, cq, personRoot, batchSize);
+			personAttributes.addAll(personDistrictResult);
+			logger.trace(
+				"getAllAfter: Fetched personIds for {} reference. n: {}, {} ms",
+				District.class.getSimpleName(),
+				personDistrictResult.size(),
+				DateHelper.durationMillies(startTime));
 		}
-		if (contactPersonsFilter != null) {
-			contactPersonsQuery.where(contactPersonsFilter);
-		}
-		contactPersonsQuery.distinct(true);
-		List<Person> contactPersonsResultList = getBatchedQueryResults(cb, contactPersonsQuery, contactPersonsSelect, batchSize);
 
-		// persons by event participant
-		CriteriaQuery<Person> eventPersonsQuery = cb.createQuery(Person.class);
-		Root<EventParticipant> eventPersonsRoot = eventPersonsQuery.from(EventParticipant.class);
-		Join<Person, Person> eventPersonsSelect = eventPersonsRoot.join(EventParticipant.PERSON);
-		eventPersonsSelect.fetch(Person.ADDRESS);
-		eventPersonsQuery.select(eventPersonsSelect);
-		Predicate eventPersonsFilter = eventParticipantService
-			.createUserFilter(new EventParticipantQueryContext(cb, eventPersonsQuery, new EventParticipantJoins(eventPersonsRoot)));
-		// date range
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, eventPersonsSelect, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
-			if (batchSize == null) {
-				Predicate eventParticipantDateFilter =
-					eventParticipantService.createChangeDateFilter(cb, eventPersonsRoot, DateHelper.toTimestampUpper(date));
-				dateFilter = cb.or(dateFilter, eventParticipantDateFilter);
-			}
-			eventPersonsFilter = and(cb, eventPersonsFilter, dateFilter);
-		}
-		if (eventPersonsFilter != null) {
-			eventPersonsQuery.where(eventPersonsFilter);
-		}
-		eventPersonsQuery.distinct(true);
-		List<Person> eventPersonsResultList = getBatchedQueryResults(cb, eventPersonsQuery, eventPersonsSelect, batchSize);
+		// 1b. By Case
+		personAttributes.addAll(
+			getAllAfter(
+				cb,
+				Case.class,
+				Case.PERSON,
+				(q, f) -> caseService.createUserFilter(new CaseQueryContext(cb, q, new CaseJoins(f))),
+				(f, d) -> caseService.createChangeDateFilter(cb, f, d),
+				date,
+				batchSize,
+				lastSynchronizedUuid));
 
-		// persons by immunization
-		List<Person> immunizationPersonsResultList = new ArrayList<>();
+		// 1c. By Contact
+		personAttributes.addAll(
+			getAllAfter(
+				cb,
+				Contact.class,
+				Contact.PERSON,
+				(q, f) -> contactService.createUserFilter(new ContactQueryContext(cb, q, new ContactJoins(f))),
+				(f, d) -> contactService.createChangeDateFilter(cb, f, d),
+				date,
+				batchSize,
+				lastSynchronizedUuid));
+
+		// 1d. By EventParticipant
+		personAttributes.addAll(
+			getAllAfter(
+				cb,
+				EventParticipant.class,
+				EventParticipant.PERSON,
+				(q, f) -> eventParticipantService.createUserFilter(new EventParticipantQueryContext(cb, q, new EventParticipantJoins(f))),
+				(f, d) -> eventParticipantService.createChangeDateFilter(cb, f, DateHelper.toTimestampUpper(d)),
+				date,
+				batchSize,
+				lastSynchronizedUuid));
+
+		// 1e. By Immunization
 		if (!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-			CriteriaQuery<Person> immunizationPersonsQuery = cb.createQuery(Person.class);
-			Root<Immunization> immunizationPersonsRoot = immunizationPersonsQuery.from(Immunization.class);
-			Join<Immunization, Person> immunizationPersonsSelect = immunizationPersonsRoot.join(Immunization.PERSON);
-			immunizationPersonsSelect.fetch(Person.ADDRESS);
-			immunizationPersonsQuery.select(immunizationPersonsSelect);
-			Predicate immunizationPersonsFilter = immunizationService
-				.createUserFilter(new ImmunizationQueryContext(cb, immunizationPersonsQuery, new ImmunizationJoins(immunizationPersonsRoot)));
-			// date range
-			if (date != null) {
-				Predicate dateFilter = createChangeDateFilter(cb, immunizationPersonsSelect, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
-				if (batchSize == null) {
-					Predicate immunizationDateFilter =
-						immunizationService.createChangeDateFilter(cb, immunizationPersonsRoot, DateHelper.toTimestampUpper(date));
-					dateFilter = cb.or(dateFilter, immunizationDateFilter);
-				}
-				immunizationPersonsFilter = and(cb, immunizationPersonsFilter, dateFilter);
-			}
-			if (immunizationPersonsFilter != null) {
-				immunizationPersonsQuery.where(immunizationPersonsFilter);
-			}
-			immunizationPersonsQuery.distinct(true);
-			immunizationPersonsResultList = getBatchedQueryResults(cb, immunizationPersonsQuery, immunizationPersonsSelect, batchSize);
+			personAttributes.addAll(
+				getAllAfter(
+					cb,
+					Immunization.class,
+					Immunization.PERSON,
+					(q, f) -> immunizationService.createUserFilter(new ImmunizationQueryContext(cb, q, new ImmunizationJoins(f))),
+					(f, d) -> immunizationService.createChangeDateFilter(cb, f, DateHelper.toTimestampUpper(d)),
+					date,
+					batchSize,
+					lastSynchronizedUuid));
 		}
 
-		List<Person> travelEntryPersonsResultList = new ArrayList<>();
-		// if a batch size is given, this is a sync from the mobile app where travel entries are not relevant for now
-		if (batchSize == null) {
-			// persons by travel entries
-			CriteriaQuery<Person> tepQuery = cb.createQuery(Person.class);
-			Root<TravelEntry> tepRoot = tepQuery.from(TravelEntry.class);
-			Join<TravelEntry, Person> tepSelect = tepRoot.join(TravelEntry.PERSON);
-			tepSelect.fetch(Person.ADDRESS);
-			tepQuery.select(tepSelect);
-			Predicate tepFilter = travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, tepQuery, new TravelEntryJoins(tepRoot)));
-			// date range
-			if (date != null) {
-				Predicate dateFilter = createChangeDateFilter(cb, tepSelect, DateHelper.toTimestampUpper(date));
-				Predicate travelEntryDateFilter = travelEntryService.createChangeDateFilter(cb, tepRoot, DateHelper.toTimestampUpper(date));
-				tepFilter = and(cb, tepFilter, cb.or(dateFilter, travelEntryDateFilter));
-			}
-			if (tepFilter != null) {
-				tepQuery.where(tepFilter);
-			}
-			tepQuery.distinct(true);
-			travelEntryPersonsResultList = em.createQuery(tepQuery).getResultList();
+		// 1f. By TravelEntry (exluded for sync from the mobile app because they relevant for now)
+		if (!RequestContextHolder.isMobileSync()) {
+			personAttributes.addAll(
+				getAllAfter(
+					cb,
+					TravelEntry.class,
+					TravelEntry.PERSON,
+					(q, f) -> travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, q, new TravelEntryJoins(f))),
+					(f, d) -> travelEntryService.createChangeDateFilter(cb, f, DateHelper.toTimestampUpper(d)),
+					date,
+					batchSize,
+					lastSynchronizedUuid));
 		}
 
-		return Stream
-			.of(
-				districtResultList,
-				casePersonsResultList,
-				contactPersonsResultList,
-				eventPersonsResultList,
-				immunizationPersonsResultList,
-				travelEntryPersonsResultList)
-			.flatMap(List<Person>::stream)
-			.distinct()
-			.sorted(new ChangeDateUuidComparator<>())
+		// 2. Unique personIds sorted and limited by the given batch size
+		List<Long> personIds = personAttributes.stream()
+			.sorted(new ChangeDateUuidComparator())
+			.map(e -> e.getId())
 			.limit(batchSize == null ? Long.MAX_VALUE : batchSize)
 			.collect(Collectors.toList());
+		logger.trace(
+			"getAllAfter: Unique personIds identified. batchSize:{}, personAttributes:{}, personIds:{}, {} ms",
+			batchSize,
+			personAttributes.size(),
+			personIds.size(),
+			DateHelper.durationMillies(startTime));
+
+		// 3. Fetch Person entities by id
+		List<Person> persons = getByIds(personIds);
+		logger.trace("getAllAfter finished. Fetched persons:{}, {} ms", persons.size(), DateHelper.durationMillies(startTime));
+		return persons;
+	}
+
+	/**
+	 * Find persons by reference.
+	 * 
+	 * @param <R>
+	 *            Type of {@code referenceClass}.
+	 * @param cb
+	 *            builder to use for the query.
+	 * @param referenceClass
+	 *            The entity that is referencing the person.
+	 * @param personAttributeName
+	 *            Name of person attribute in {@code referenceClass}.
+	 * @param referenceUserFilterFunction
+	 *            Identify the references that are allowed for the user.
+	 * @param referenceChangeDateFilterFunction
+	 *            Identify the references that changed since {@code timestamp}.
+	 * @param timestamp
+	 *            Find persons changed after this point in time.
+	 * @param batchSize
+	 *            Number of persons to fetch.
+	 * @param lastSynchronizedUuid
+	 *            This entity identified by this {@code uuid} was the last one from that recent batch.
+	 */
+	private <R extends AbstractDomainObject> List<AdoAttributes> getAllAfter(
+		CriteriaBuilder cb,
+		Class<R> referenceClass,
+		String personAttributeName,
+		BiFunction<CriteriaQuery<AdoAttributes>, From<?, R>, Predicate> referenceUserFilterFunction,
+		BiFunction<From<?, R>, Date, Predicate> referenceChangeDateFilterFunction,
+		Date timestamp,
+		Integer batchSize,
+		String lastSynchronizedUuid) {
+
+		long startTime = DateHelper.startTime();
+		CriteriaQuery<AdoAttributes> cq = cb.createQuery(AdoAttributes.class);
+		Root<R> referenceRoot = cq.from(referenceClass);
+		Join<Person, Person> personJoin = referenceRoot.join(personAttributeName);
+
+		// SELECT
+		cq.multiselect(personJoin.get(AdoAttributes.ID), personJoin.get(AdoAttributes.UUID), personJoin.get(AdoAttributes.CHANGE_DATE));
+
+		// FILTER
+		Predicate filter = referenceUserFilterFunction.apply(cq, referenceRoot);
+		if (timestamp != null) {
+			Predicate dateFilter = createChangeDateFilter(cb, personJoin, DateHelper.toTimestampUpper(timestamp), lastSynchronizedUuid);
+			// Don't fetch persons by reference changes for mobile app. If a person is missing, it lazily fetches that missing person.
+			if (!RequestContextHolder.isMobileSync()) {
+				dateFilter = cb.or(dateFilter, referenceChangeDateFilterFunction.apply(referenceRoot, DateHelper.toTimestampUpper(timestamp)));
+			}
+			filter = and(cb, filter, dateFilter);
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.distinct(true);
+
+		List<AdoAttributes> result = getBatchedAttributesQueryResults(cb, cq, personJoin, batchSize);
+		logger.trace(
+			"getAllAfter: Fetched personIds for {} reference. n: {}, {} ms",
+			referenceClass.getSimpleName(),
+			result.size(),
+			DateHelper.durationMillies(startTime));
+		return result;
 	}
 
 	public List<Long> getInJurisdictionIDs(final List<Person> selectedEntities) {

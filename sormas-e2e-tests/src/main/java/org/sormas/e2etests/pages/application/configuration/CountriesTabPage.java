@@ -22,4 +22,5 @@ import org.openqa.selenium.By;
 public class CountriesTabPage {
   public static final By SEARCH_COUNTRY = By.id("search");
   public static final By SUBCONTINENT_TABLE_VALUE = By.xpath("//table//tbody//tr[1]/td[4]");
+  public static final By COUNTRY_GRID_RESULTS_ROWS = By.cssSelector("[role=rowgroup] tr a");
 }

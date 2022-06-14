@@ -63,13 +63,15 @@ public interface SampleFacade {
 
 	void deleteSample(SampleReferenceDto sampleRef, DeletionDetails deletionDetails);
 
-	void deleteAllSamples(List<String> sampleUuids);
+	void deleteAllSamples(List<String> sampleUuids, DeletionDetails deletionDetails);
 
 	List<String> deleteSamples(List<String> sampleUuids, DeletionDetails deletionDetails);
 
 	void validate(SampleDto sample) throws ValidationRuntimeException;
 
 	List<String> getDeletedUuidsSince(Date since);
+
+	List<String> getObsoleteUuidsSince(Date since);
 
 	boolean isDeleted(String sampleUuid);
 
@@ -80,6 +82,8 @@ public interface SampleFacade {
 	List<SampleDto> getByContactUuids(List<String> contactUuids);
 
 	List<SampleDto> getSimilarSamples(SampleSimilarityCriteria criteria);
+
+	List<SampleDto> getSamplesByCriteria(SampleCriteria criteria);
 
 	boolean exists(String uuid);
 

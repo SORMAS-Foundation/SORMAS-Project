@@ -113,6 +113,7 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 
 	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String CASE_IDENTIFICATION_SOURCE = "caseIdentificationSource";
+	public static final String CLASSIFICATION_DATE = "classificationDate";
 	public static final String SCREENING_TYPE = "screeningType";
 	public static final String CLINICAL_CONFIRMATION = "clinicalConfirmation";
 	public static final String EPIDEMIOLOGICAL_CONFIRMATION = "epidemiologicalConfirmation";

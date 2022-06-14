@@ -714,6 +714,37 @@ Feature: Create events
     And I check that Responsible User Info icon is visible on Event Directory Page
     And I check the displayed message is correct after hover to Responsible User Info icon
 
+  @issue=SORDEV-9946 @env_de
+  Scenario: Test Hide country specific fields in the 'Pick or create person' form of the duplicate detection pop-up, in German and French systems
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data for DE version
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I click on Add Participant button
+    Then I add Participant to an Event with same person data
+    And I click on save button in Add Participant form
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I click on Add Participant button
+    Then I add Participant to an Event with same person data
+    And I click on save button in Add Participant form
+    And I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
+
+  @env_main @issue=SORDEV-7460
+  Scenario: Test Extend the exposure and event startDate and endDate to include a startTime and endTime
+    Given I log in with National User
+    Then I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    Then I check Multi-day event checkbox and I pick Start date and End date on Create New Event Page
+    And I fill event Title field on Create New Event Page
+    And I click on save button on Create New Event Page
+    Then I navigate to EVENT from edit event page
+    And I collect the UUID displayed on Create New Event Page
+    And I collect the Date of Event from Create New Event Page
+    Then I navigate to EVENTS LIST from edit event page
+    And  I search for the last event uuid created by UI
+    Then I check that Date of EVENT displays event start date and event end date in table on event directory
+
   @issue=SORDEV-8667 @env_main
   Scenario: Test Adjustments to the jurisdiction definition process of event participants
     Given API: I create a new event
@@ -741,6 +772,110 @@ Feature: Create events
     And I click on Save Button in Edit Event directory
     Then I click on the Event participant tab
     And I add a participant to the event
+
+  @issue=SORDEV-10254 @env_main
+  Scenario: Manual archive Event participants/Events
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with status EVENT
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    And I collect the UUID displayed on Edit event page
+    Then I add a participant to the event
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    Then I click on the Archive event button
+    Then I check the end of processing date in the archive popup
+    And I click on the Events button from navbar
+    Then I set Relevance Status Filter to Archived events on Event Directory page
+    And I search for specific event by uuid in event directory
+    And I click on the searched event
+    Then I click on the Event participant tab
+    And I choose Archived event participants from combobox in the Event participant tab
+    Then I check if participant appears in the event participants list
+    Then I back to the Event tab
+    Then I click on the De-Archive event button
+    And I fill De-Archive event popup with test automation reason
+    And I click on the Events button from navbar
+    Then I set Relevance Status Filter to Active events on Event Directory page
+    And I search for specific event by uuid in event directory
+    And I click on the searched event
+    Then I click on the Event participant tab
+    And I choose Active event participants from combobox in the Event participant tab
+    Then I check if participant appears in the event participants list
+
+  @issue=SORDEV-9788 @env_de
+  Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Event Participant directory
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Events button from navbar
+    When I open the last created event via api
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    Then I click on ADD PARTICIPANT button
+    And I click on the person search button in add new event participant form
+    Then I check that National Health ID is not visible in Person search popup
+    And I check that Passport Number is not visible in Person search popup
+    And I check that Nickname is not visible in Person search popup
+
+  @issue=SORDEV-6076 @env_main
+  Scenario: Test Make event report date editable
+    Given I log in with National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    When I create a new event with today for date of report and date of event
+    Then I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    Then I check the only mandatory created data is correctly displayed in event edit page
+    Then I change the report event date for minus 1 day from today
+    And I click on Save Button in Edit Event directory
+    Then I check if date of report is set for 1 day ago from today
+    Then I change the report event date for minus 0 day from today
+    And I click on Save Button in Edit Event directory
+    And I set the date of event for today
+    And I change the report event date for minus 2 day from today
+    Then I check if date of report has an error exclamation mark with correct error message
+    And I click on Save Button in Edit Event directory
+    Then I check if error popup is displayed with message Please check the input data
+    And I check if error popup contains Date of report has to be after or on the same day as Start date
+    And I check if error popup contains Start date has to be before or on the same day as Date of report
+
+  @issue=SORDEV-5563 @env_de
+  Scenario: Add contact person details to facilities event participant
+    Given I log in as a Admin User
+    Then I click on the Configuration button from navbar
+    And I navigate to facilities tab in Configuration
+    And I click on New Entry button in Facilities tab in Configuration
+    Then I set name, region and district in Facilities tab in Configuration
+    And I set Facility Category to "Medizinische Einrichtung" and Facility Type to "Krankenhaus" in Facilities tab in Configuration
+    And I set Facility Contact person first and last name with email address and phone number
+    Then I click on Save Button in new Facility form
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    When I create a new event with specific data for DE version with created facility
+    And I check if data for created facility is automatically imported to the correct fields
+    Then I click on save button on Create New Event Page
+    And I click on the Events button from navbar
+    And I search for specific event with created facility in event directory
+    And I click on the searched event with created facility
+    And I check if data for created facility is automatically imported to the correct fields in Case Person tab
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I add only required data for event participant creation for DE
+    And I set Region to "Voreingestellte Bundesländer" and District to "Voreingestellter Landkreis" in Event Participant edit page
+    Then I set Facility Category to "Medizinische Einrichtung" and  Facility Type to "Krankenhaus"
+    And I set facility name to created facility
+    And I check if data for created facility is automatically imported to the correct fields in Case Person tab
+    Then I click on save button on Create New Event Page
+    Then I click on the Configuration button from navbar
+    And I navigate to facilities tab in Configuration
+    Then I search last created facility
+    Then I click on edit button for the last searched facility
+    And I archive facility
 
   @#8556 @ignore
   Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of an Event Participant

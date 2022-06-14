@@ -92,6 +92,8 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	CaseDataDto getCaseDataByUuid(String uuid);
 
+	CaseDataDto updateFollowUpComment(@Valid @NotNull CaseDataDto dto) throws ValidationRuntimeException;
+
 	CaseDataDto save(@Valid @NotNull CaseDataDto dto, boolean systemSave) throws ValidationRuntimeException;
 
 	CoreAndPersonDto<CaseDataDto> save(@Valid @NotNull CoreAndPersonDto<CaseDataDto> dto) throws ValidationRuntimeException;
@@ -130,7 +132,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<CaseDataDto> getAllCasesOfPerson(String personUuid);
 
-	List<String> deleteCases(List<String> caseUuids);
+	List<String> deleteCases(List<String> caseUuids, DeletionDetails deletionDetails);
 
 	void deleteWithContacts(String caseUuid, DeletionDetails deletionDetails);
 

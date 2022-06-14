@@ -1058,14 +1058,13 @@ public class EventParticipantFacadeEjb
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<SimilarEventParticipantDto> cq = cb.createQuery(SimilarEventParticipantDto.class);
 		final Root<EventParticipant> eventParticipantRoot = cq.from(EventParticipant.class);
-		cq.distinct(true);
 
-		Join<Object, Object> personJoin = eventParticipantRoot.join(EventParticipant.PERSON, JoinType.LEFT);
-		Join<Object, Object> eventJoin = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT);
 		EventParticipantQueryContext eventParticipantQueryContext = new EventParticipantQueryContext(cb, cq, eventParticipantRoot);
+		Join<EventParticipant, Person> personJoin = eventParticipantQueryContext.getJoins().getPerson();
+		Join<EventParticipant, Event> eventJoin = eventParticipantQueryContext.getJoins().getEvent();
 
 		Expression<Object> jurisdictionSelector =
-			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(new EventParticipantQueryContext(cb, cq, eventParticipantRoot)));
+			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(eventParticipantQueryContext));
 		cq.multiselect(
 			eventParticipantRoot.get(EventParticipant.UUID),
 			personJoin.get(Person.FIRST_NAME),
@@ -1076,16 +1075,7 @@ public class EventParticipantFacadeEjb
 			eventJoin.get(Event.EVENT_TITLE),
 			eventJoin.get(Event.START_DATE),
 			jurisdictionSelector);
-		cq.groupBy(
-			eventParticipantRoot.get(EventParticipant.UUID),
-			personJoin.get(Person.FIRST_NAME),
-			personJoin.get(Person.LAST_NAME),
-			eventParticipantRoot.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
-			eventJoin.get(Event.UUID),
-			eventJoin.get(Event.EVENT_STATUS),
-			eventJoin.get(Event.EVENT_TITLE),
-			eventJoin.get(Event.START_DATE),
-			jurisdictionSelector);
+		cq.distinct(true);
 
 		final Predicate defaultFilter = service.createDefaultFilter(cb, eventParticipantRoot);
 		final Predicate userFilter = service.createUserFilter(eventParticipantQueryContext);

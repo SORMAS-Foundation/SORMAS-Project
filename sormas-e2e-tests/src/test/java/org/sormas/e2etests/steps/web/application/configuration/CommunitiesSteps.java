@@ -15,7 +15,7 @@
 
 package org.sormas.e2etests.steps.web.application.configuration;
 
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NAME_UUID_EPID_NUMBER_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_ORIGIN_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DISEASE_COMBOBOX;
@@ -180,10 +180,11 @@ public class CommunitiesSteps implements En {
         });
 
     When(
-        "I filter last created Case by external ID",
+        "I filter last created Case by first and last name",
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(
-              NAME_UUID_EPID_NUMBER_LIKE_INPUT, caze.getExternalId());
+              PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
+              caze.getFirstName() + " " + caze.getLastName());
           TimeUnit.SECONDS.sleep(2); // wait for filter
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
@@ -239,7 +240,8 @@ public class CommunitiesSteps implements En {
   private void fillSpecificCaseFields(Case caze, Communities communities) {
     selectCaseOrigin(caze.getCaseOrigin());
     fillDisease(caze.getDisease());
-    fillExternalId(caze.getExternalId());
+    // field that is no longer available
+    // fillExternalId(caze.getExternalId());
     selectResponsibleRegion(communities.getRegion());
     selectResponsibleDistrict(communities.getDistrict());
     selectResponsibleCommunity(communities.getCommunityName());
@@ -260,7 +262,8 @@ public class CommunitiesSteps implements En {
         .firstName(userInfo.getFirstName())
         .lastName(userInfo.getLastName())
         .dateOfBirth(userInfo.getDateOfBirth())
-        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
+        // field that is no longer available
+        // .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
         .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
         .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))

@@ -20,6 +20,7 @@ import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
+import de.symeda.sormas.ui.utils.DirtyStateComponent;
 
 public class CampaignView extends AbstractDetailView<CampaignReferenceDto> {
 
@@ -96,5 +97,15 @@ public class CampaignView extends AbstractDetailView<CampaignReferenceDto> {
 		menu.removeAllViews();
 		menu.addView(CampaignsView.VIEW_NAME, I18nProperties.getCaption(Captions.campaignAllCampaigns));
 		menu.addView(CampaignView.VIEW_NAME, I18nProperties.getCaption(Captions.Campaign), params);
+	}
+
+	@Override
+	protected void setSubComponent(DirtyStateComponent newComponent) {
+		super.setSubComponent(newComponent);
+
+		CampaignDto campaignDto = FacadeProvider.getCampaignFacade().getByUuid(getReference().getUuid());
+		if(campaignDto.isDeleted()){
+			newComponent.setEnabled(false);
+		}
 	}
 }

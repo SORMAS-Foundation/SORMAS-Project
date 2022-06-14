@@ -227,6 +227,7 @@ public class EventDto extends SormasToSormasShareableDto {
 	private EventIdentificationSource eventIdentificationSource;
 	private boolean deleted;
 	private DeletionReason deletionReason;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String otherDeletionReason;
 
 	public static EventDto build() {
