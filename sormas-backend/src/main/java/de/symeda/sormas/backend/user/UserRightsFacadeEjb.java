@@ -189,8 +189,7 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 			columnIndex = 3;
 			for (UserRoleDto userRole : userRoleRights.keySet()) {
 				Cell roleRightCell = row.createCell(columnIndex);
-				if (userRoleRights.containsKey(userRole) && userRoleRights.get(userRole).contains(userRight)
-					|| userRoleFacade.hasUserRight(Collections.singletonList(userRole), userRight)) {
+				if (userRoleFacade.hasUserRight(Collections.singletonList(userRole), userRight)) {
 					roleRightCell.setCellStyle(authorizedStyle);
 					roleRightCell.setCellValue(I18nProperties.getString(Strings.yes));
 				} else {
