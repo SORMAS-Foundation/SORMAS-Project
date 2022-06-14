@@ -430,10 +430,13 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 				cb.equal(joins.getDistrict().get(District.UUID), infrastructureUuid));
 			break;
 		case REGION:
-			predicate = cb.and(cb.isNull(joins.getDistrict()), cb.equal(joins.getRegion().get(Region.UUID), infrastructureUuid));
+			predicate = cb.and(
+				cb.isNull(joins.getDistrict()),
+				cb.isNull(joins.getLaboratory()),
+				cb.equal(joins.getRegion().get(Region.UUID), infrastructureUuid));
 			break;
 		case NATION:
-			predicate = cb.isNull(joins.getRegion());
+			predicate = cb.and(cb.isNull(joins.getRegion()), cb.isNull(joins.getLaboratory()));
 			break;
 		default:
 			break;
