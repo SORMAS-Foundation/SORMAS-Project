@@ -1,17 +1,20 @@
 package de.symeda.sormas.app.backend.report;
 
+import android.util.Log;
+
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
-
-import android.util.Log;
+import java.util.function.Function;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -19,7 +22,6 @@ import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 
 public class AggregateReportDao extends AbstractAdoDao<AggregateReport> {
 
@@ -53,20 +55,16 @@ public class AggregateReportDao extends AbstractAdoDao<AggregateReport> {
 				diseasesWithReports.add(report.getDisease());
 			}
 
-			List<Disease> aggregateDiseases = DiseaseConfigurationCache.getInstance().getAllDiseases(true, null, false);
-			for (Disease disease : aggregateDiseases) {
-				if (!diseasesWithReports.contains(disease)) {
-					reports.add(build(disease, epiWeek));
-				}
-			}
+			Function<AggregateReport, String> diseaseComparator = r -> r.getDisease().toString();
+			Comparator<AggregateReport> comparator = Comparator.comparing(diseaseComparator)
+				.thenComparing(
+					r -> r.getAgeGroup() != null
+						? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
+						: StringUtils.EMPTY)
+				.thenComparing(
+						r -> r.getAgeGroup() != null ? Integer.parseInt(r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0);
 
-			Collections.sort(reports, new Comparator<AggregateReport>() {
-
-				@Override
-				public int compare(AggregateReport o1, AggregateReport o2) {
-					return o1.getDisease().toString().compareTo(o2.getDisease().toString());
-				}
-			});
+			Collections.sort(reports, comparator);
 
 			return reports;
 		} catch (SQLException e) {

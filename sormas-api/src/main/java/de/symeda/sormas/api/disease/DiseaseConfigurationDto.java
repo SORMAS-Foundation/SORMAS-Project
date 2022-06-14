@@ -3,6 +3,8 @@ package de.symeda.sormas.api.disease;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 
+import java.util.List;
+
 public class DiseaseConfigurationDto extends EntityDto {
 
 	private static final long serialVersionUID = -7653585175036656526L;
@@ -17,6 +19,7 @@ public class DiseaseConfigurationDto extends EntityDto {
 	private Integer eventParticipantFollowUpDuration;
 	private Boolean extendedClassification;
 	private Boolean extendedClassificationMulti;
+	private List<String> ageGroups;
 
 	public Disease getDisease() {
 		return disease;
@@ -96,5 +99,13 @@ public class DiseaseConfigurationDto extends EntityDto {
 
 	public void setExtendedClassificationMulti(Boolean extendedClassificationMulti) {
 		this.extendedClassificationMulti = extendedClassificationMulti;
+	}
+
+	public List<String> getAgeGroups() {
+		return ageGroups;
+	}
+
+	public void setAgeGroups(List<String> ageGroups) {
+		this.ageGroups = ageGroups;
 	}
 }

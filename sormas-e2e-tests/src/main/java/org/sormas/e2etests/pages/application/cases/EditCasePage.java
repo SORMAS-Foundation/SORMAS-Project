@@ -224,6 +224,9 @@ public class EditCasePage {
   public static final By TOOLTIP_EYE_ICON_HOVER = By.xpath("//div[@class='v-tooltip-text']");
   public static final By REINFECTION_STATUS_LABEL = By.cssSelector("#reinfectionStatus input");
   public static final By CREATE_DOCUMENT_TEMPLATES = By.id("Create");
+  public static final By CREATE_DOCUMENT_TEMPLATES_DE = By.id("Erstellen");
+  public static final By CREATE_DOCUMENT_TEMPLATES_POPUP_DE =
+      By.cssSelector(".v-window #Erstellen");
   public static final By UPLOAD_DOCUMENT_CHECKBOX =
       By.xpath("//label[text()='Also upload the generated document to this entity']");
   public static final By POPUPS_INPUTS = By.cssSelector(".popupContent input");
@@ -247,4 +250,18 @@ public class EditCasePage {
       By.xpath("(//div[@location='samples']//div[@class='v-label v-widget v-label-undef-w'])[4]");
   public static final By SAMPLES_CARD_TEST_TYPE =
       By.xpath("(//div[@location='samples']//div[@class='v-label v-widget v-label-undef-w'])[5]");
+  public static final By POINT_OF_ENTRY_TEXT = By.cssSelector("#pointOfEntry input");
+  public static final By POINT_OF_ENTRY_DETAILS = By.cssSelector("#pointOfEntryDetails");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY =
+      By.cssSelector("#caseReferFromPointOfEntry");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY_POPUP_DE =
+      By.xpath(
+          "//div[contains(@class,'v-window-header') and text()='Fall vom Einreiseort weiterleiten']");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY_REGION =
+      By.cssSelector(".popupContent #region div[role='button'");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY_DISTRICT =
+      By.cssSelector(".popupContent #district div[role='button'");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY_SAVE_BUTTON =
+      By.cssSelector(".popupContent #commit");
+  public static final By CASE_ORIGIN = By.cssSelector("#caseOrigin input");
 }

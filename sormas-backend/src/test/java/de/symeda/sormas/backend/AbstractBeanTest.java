@@ -25,6 +25,9 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.report.AggregateReportFacade;
+import de.symeda.sormas.backend.report.AggregateReport;
+import de.symeda.sormas.backend.report.AggregateReportFacadeEjb;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -429,6 +432,10 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public ActionFacade getActionFacade() {
 		return getBean(ActionFacadeEjb.ActionFacadeEjbLocal.class);
+	}
+
+	public AggregateReportFacade getAggregateReportFacade() {
+		return getBean(AggregateReportFacadeEjb.AggregateReportFacadeEjbLocal.class);
 	}
 
 	public VisitFacade getVisitFacade() {

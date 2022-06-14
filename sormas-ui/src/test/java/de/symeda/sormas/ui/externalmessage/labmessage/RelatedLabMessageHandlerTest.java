@@ -507,7 +507,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		labMessageToProcess.setReportId(reportId);
 		labMessageToProcess.setLabSampleId(labSampleId);
 		labMessageToProcess.setSampleMaterial(SampleMaterial.BLOOD);
-		labMessageToProcess.setLabExternalId(sample.getLab().getExternalId());
+		labMessageToProcess.setReporterExternalIds(Collections.singletonList(sample.getLab().getExternalId()));
 		labMessageToProcess.setSampleDateTime(sample.getSampleDateTime());
 		labMessageToProcess.setSpecimenCondition(sample.getSpecimenCondition());
 
@@ -554,7 +554,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		labMessageToProcess.setPersonLastName(person.getLastName());
 		labMessageToProcess.setPersonSex(person.getSex());
 		labMessageToProcess.setSampleMaterial(sample.getSampleMaterial());
-		labMessageToProcess.setLabExternalId(sample.getLab().getExternalId());
+		labMessageToProcess.setReporterExternalIds(Collections.singletonList(sample.getLab().getExternalId()));
 		labMessageToProcess.setSampleDateTime(sample.getSampleDateTime());
 		labMessageToProcess.setSpecimenCondition(sample.getSpecimenCondition());
 
@@ -621,7 +621,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		labMessageToProcess.setPersonLastName(person.getLastName());
 		labMessageToProcess.setPersonSex(person.getSex());
 		labMessageToProcess.setSampleMaterial(sample.getSampleMaterial());
-		labMessageToProcess.setLabExternalId(sample.getLab().getExternalId());
+		labMessageToProcess.setReporterExternalIds(Collections.singletonList(sample.getLab().getExternalId()));
 		labMessageToProcess.setSampleDateTime(sample.getSampleDateTime());
 		labMessageToProcess.setSpecimenCondition(sample.getSpecimenCondition());
 
@@ -698,7 +698,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		labMessageToProcess.setPersonLastName(person.getLastName());
 		labMessageToProcess.setPersonSex(person.getSex());
 		labMessageToProcess.setSampleMaterial(sample.getSampleMaterial());
-		labMessageToProcess.setLabExternalId(sample.getLab().getExternalId());
+		labMessageToProcess.setReporterExternalIds(Collections.singletonList(sample.getLab().getExternalId()));
 		labMessageToProcess.setSampleDateTime(sample.getSampleDateTime());
 		labMessageToProcess.setSpecimenCondition(sample.getSpecimenCondition());
 
@@ -756,7 +756,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		labMessageToProcess.setPersonLastName(person.getLastName() + " Changed");
 		labMessageToProcess.setPersonSex(person.getSex());
 		labMessageToProcess.setSampleMaterial(SampleMaterial.BLOOD);
-		labMessageToProcess.setLabExternalId(sample.getLab().getExternalId());
+		labMessageToProcess.setReporterExternalIds(Collections.singletonList(sample.getLab().getExternalId()));
 		labMessageToProcess.setSampleDateTime(sample.getSampleDateTime());
 		labMessageToProcess.setSpecimenCondition(sample.getSpecimenCondition());
 
@@ -798,7 +798,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		labMessageToProcess.setPersonLastName(person.getLastName());
 		labMessageToProcess.setPersonSex(person.getSex());
 		labMessageToProcess.setSampleMaterial(sample.getSampleMaterial());
-		labMessageToProcess.setLabExternalId(sample.getLab().getExternalId());
+		labMessageToProcess.setReporterExternalIds(Collections.singletonList(sample.getLab().getExternalId()));
 		labMessageToProcess.setSampleDateTime(sample.getSampleDateTime());
 		labMessageToProcess.setSpecimenCondition(sample.getSpecimenCondition());
 
@@ -833,7 +833,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		labMessageToProcess.setPersonLastName(person.getLastName());
 		labMessageToProcess.setPersonSex(person.getSex());
 		labMessageToProcess.setSampleMaterial(sample.getSampleMaterial());
-		labMessageToProcess.setLabExternalId(sample.getLab().getExternalId());
+		labMessageToProcess.setReporterExternalIds(Collections.singletonList(sample.getLab().getExternalId()));
 		labMessageToProcess.setSampleDateTime(sample.getSampleDateTime());
 		labMessageToProcess.setSpecimenCondition(sample.getSpecimenCondition());
 
@@ -859,7 +859,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		labMessageToProcess.setPersonLastName(person.getLastName());
 		labMessageToProcess.setPersonSex(person.getSex());
 		labMessageToProcess.setSampleMaterial(sample.getSampleMaterial());
-		labMessageToProcess.setLabExternalId(sample.getLab().getExternalId());
+		labMessageToProcess.setReporterExternalIds(Collections.singletonList(sample.getLab().getExternalId()));
 		labMessageToProcess.setSampleDateTime(sample.getSampleDateTime());
 		labMessageToProcess.setSpecimenCondition(sample.getSpecimenCondition());
 

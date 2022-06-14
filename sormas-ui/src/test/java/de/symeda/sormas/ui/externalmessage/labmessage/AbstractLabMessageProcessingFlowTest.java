@@ -15,9 +15,9 @@
 
 package de.symeda.sormas.ui.externalmessage.labmessage;
 
-import static de.symeda.sormas.ui.externalmessage.labmessage.processing.flow.ProcessingResultStatus.CANCELED;
-import static de.symeda.sormas.ui.externalmessage.labmessage.processing.flow.ProcessingResultStatus.CANCELED_WITH_CORRECTIONS;
-import static de.symeda.sormas.ui.externalmessage.labmessage.processing.flow.ProcessingResultStatus.DONE;
+import static de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus.CANCELED;
+import static de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus.CANCELED_WITH_CORRECTIONS;
+import static de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus.DONE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -30,6 +30,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import de.symeda.sormas.ui.externalmessage.processing.AbstractProcessingFlow.HandlerCallback;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -79,15 +82,13 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractLabMessageProcessingFlow;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractLabMessageProcessingFlow.HandlerCallback;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelatedLabMessageHandler;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelatedLabMessageHandler.HandlerResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractRelatedLabMessageHandler.HandlerResultStatus;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateEntryResult;
+import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateEventResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateSampleResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.flow.ProcessingResult;
 
 public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
@@ -105,7 +106,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	private BiConsumer<EventDto, HandlerCallback<EventDto>> handleCreateEvent;
 	private BiConsumer<EventParticipantDto, HandlerCallback<EventParticipantDto>> handleCreateEventParticipant;
 	private Supplier<CompletionStage<Boolean>> confirmPickExistingEventParticipant;
-	private BiConsumer<List<SampleDto>, HandlerCallback<PickOrCreateSampleResult>> handlePickOrCreateSample;
+	private PickOrCreateSampleHandler handlePickOrCreateSample;
 	private EditSampleHandler handleEditSample;
 	private TestDataCreator.RDCF rdcf;
 	private UserDto user;
@@ -175,13 +176,13 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		confirmPickExistingEventParticipant = Mockito.mock(Supplier.class);
 		when(confirmPickExistingEventParticipant.get()).thenReturn(CompletableFuture.completedFuture(true));
 
-		handlePickOrCreateSample = Mockito.mock(BiConsumer.class);
+		handlePickOrCreateSample = Mockito.mock(PickOrCreateSampleHandler.class);
 		PickOrCreateSampleResult pickOrCreateSampleResult = new PickOrCreateSampleResult();
 		pickOrCreateSampleResult.setNewSample(true);
 		doAnswer((invocation) -> {
 			getCallbackParam(invocation).done(pickOrCreateSampleResult);
 			return null;
-		}).when(handlePickOrCreateSample).accept(any(), any());
+		}).when(handlePickOrCreateSample).handle(any(), any(), any());
 
 		handleEditSample = Mockito.mock(EditSampleHandler.class);
 		doAnswer((invocation) -> {
@@ -274,10 +275,11 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 			@Override
 			protected void handlePickOrCreateSample(
-				List<SampleDto> samples,
+				List<SampleDto> similarSamples,
+				List<SampleDto> otherSamples,
 				ExternalMessageDto externalMessageDto,
 				HandlerCallback<PickOrCreateSampleResult> callback) {
-				handlePickOrCreateSample.accept(samples, callback);
+				handlePickOrCreateSample.handle(similarSamples, otherSamples, callback);
 			}
 
 			@Override
@@ -1193,7 +1195,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 			getCallbackParam(invocation).done(result);
 			return null;
-		}).when(handlePickOrCreateSample).accept(any(), any());
+		}).when(handlePickOrCreateSample).handle(any(), any(), any());
 
 		ArgumentCaptor<SampleDto> editedSampleCaptor = ArgumentCaptor.forClass(SampleDto.class);
 		@SuppressWarnings("unchecked")
@@ -1277,7 +1279,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		doAnswer((invocation) -> {
 			getCallbackParam(invocation).done(pickOrCreateSampleResult);
 			return null;
-		}).when(handlePickOrCreateSample).accept(any(), any());
+		}).when(handlePickOrCreateSample).handle(any(), any(), any());
 
 		ProcessingResult<SampleAndPathogenTests> result =
 			runFlow(createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED));
@@ -1294,7 +1296,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testPickExistingCaseAndPickExistingSample() throws ExecutionException, InterruptedException {
+	public void testPickExistingCaseAndPickExistingSimilarSample() throws ExecutionException, InterruptedException {
 
 		PersonDto person = creator.createPerson();
 		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
@@ -1333,7 +1335,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 			getCallbackParam(invocation).done(result);
 			return null;
-		}).when(handlePickOrCreateSample).accept(any(), any());
+		}).when(handlePickOrCreateSample).handle(any(), any(), any());
 
 		ArgumentCaptor<SampleDto> editedSampleCaptor = ArgumentCaptor.forClass(SampleDto.class);
 		ArgumentCaptor<List<PathogenTestDto>> editedTestsCaptor = ArgumentCaptor.forClass(List.class);
@@ -1386,6 +1388,73 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 	@Test
 	@SuppressWarnings("unchecked")
+	public void testPickExistingCaseAndPickExistingOtherSample() throws ExecutionException, InterruptedException {
+
+		PersonDto person = creator.createPerson();
+		doAnswer(answerPickOrCreatePerson(person)).when(handlePickOrCreatePerson).apply(any(), any());
+
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			person.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.SUSPECT,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		doAnswer(invocation -> {
+			List<CaseSelectionDto> cases = invocation.getArgument(0);
+
+			PickOrCreateEntryResult pickOrCreateEntryResult = new PickOrCreateEntryResult();
+			pickOrCreateEntryResult.setCaze(cases.get(0));
+
+			//noinspection unchecked
+			((HandlerCallback<PickOrCreateEntryResult>) invocation.getArgument(3)).done(pickOrCreateEntryResult);
+
+			return null;
+		}).when(handlePickOrCreateEntry).handle(any(), any(), any(), any());
+
+		SampleDto similarSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
+			s.setSampleMaterial(SampleMaterial.CRUST);
+			s.setLabSampleID("test-lab-sample-id");
+			s.setSpecimenCondition(SpecimenCondition.ADEQUATE);
+		});
+
+		SampleDto otherSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> {
+			s.setSampleMaterial(SampleMaterial.CRUST);
+		});
+
+		doAnswer((invocation) -> {
+			List<SampleDto> otherSamples = invocation.getArgument(1);
+			PickOrCreateSampleResult result = new PickOrCreateSampleResult();
+			result.setSample(otherSamples.get(0));
+
+			getCallbackParam(invocation).done(result);
+			return null;
+		}).when(handlePickOrCreateSample).handle(any(), any(), any());
+
+		doAnswer((invocation) -> {
+			SampleDto editedSample = invocation.getArgument(0);
+			List<PathogenTestDto> editedTests = invocation.getArgument(1);
+
+			getCallbackParam(invocation).done(new SampleAndPathogenTests(editedSample, editedTests));
+			return null;
+		}).when(handleEditSample).handle(any(), any(), any());
+
+		ExternalMessageDto externalMessage = createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED, m -> {
+			m.setLabSampleId(similarSample.getLabSampleID());
+		});
+
+		ProcessingResult<SampleAndPathogenTests> result = runFlow(externalMessage);
+
+		assertThat(result.getStatus(), is(DONE));
+
+		verify(handleEditSample, times(1)).handle(any(), any(), any());
+		assertThat(result.getData().getSample(), is(otherSample));
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
 	public void testPickExistingContactAndCreateSample() throws ExecutionException, InterruptedException {
 
 		PersonDto person = creator.createPerson();
@@ -1409,7 +1478,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		doAnswer((invocation) -> {
 			getCallbackParam(invocation).done(pickOrCreateSampleResult);
 			return null;
-		}).when(handlePickOrCreateSample).accept(any(), any());
+		}).when(handlePickOrCreateSample).handle(any(), any(), any());
 
 		ProcessingResult<SampleAndPathogenTests> result =
 			runFlow(createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED));
@@ -1453,7 +1522,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 			getCallbackParam(invocation).done(result);
 			return null;
-		}).when(handlePickOrCreateSample).accept(any(), any());
+		}).when(handlePickOrCreateSample).handle(any(), any(), any());
 
 		doAnswer((invocation) -> {
 			getCallbackParam(invocation).done(new SampleAndPathogenTests(invocation.getArgument(0), invocation.getArgument(1)));
@@ -1495,7 +1564,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		doAnswer((invocation) -> {
 			getCallbackParam(invocation).done(pickOrCreateSampleResult);
 			return null;
-		}).when(handlePickOrCreateSample).accept(any(), any());
+		}).when(handlePickOrCreateSample).handle(any(), any(), any());
 
 		ProcessingResult<SampleAndPathogenTests> result =
 			runFlow(createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED));
@@ -1546,7 +1615,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 
 			getCallbackParam(invocation).done(result);
 			return null;
-		}).when(handlePickOrCreateSample).accept(any(), any());
+		}).when(handlePickOrCreateSample).handle(any(), any(), any());
 
 		doAnswer((invocation) -> {
 			getCallbackParam(invocation).done(new SampleAndPathogenTests(invocation.getArgument(0), invocation.getArgument(1)));
@@ -1594,7 +1663,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		doAnswer((invocation) -> {
 			getCallbackParam(invocation).cancel();
 			return null;
-		}).when(handlePickOrCreateSample).accept(any(), any());
+		}).when(handlePickOrCreateSample).handle(any(), any(), any());
 
 		ProcessingResult<SampleAndPathogenTests> result =
 			runFlow(createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED));
@@ -1636,7 +1705,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		doAnswer((invocation) -> {
 			getCallbackParam(invocation).done(pickOrCreateSampleResult);
 			return null;
-		}).when(handlePickOrCreateSample).accept(any(), any());
+		}).when(handlePickOrCreateSample).handle(any(), any(), any());
 
 		doAnswer((invocation) -> {
 			getCallbackParam(invocation).cancel();
@@ -1646,7 +1715,7 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		ProcessingResult<SampleAndPathogenTests> result =
 			runFlow(createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED));
 
-		assertThat(result.getStatus(), is(CANCELED));
+		assertThat(result.getStatus(), is(ProcessingResultStatus.CANCELED));
 	}
 
 	private ProcessingResult<SampleAndPathogenTests> runFlow(ExternalMessageDto labMessage) throws ExecutionException, InterruptedException {
@@ -1715,6 +1784,11 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 	private interface EditSampleHandler {
 
 		void handle(SampleDto sample, List<PathogenTestDto> pathogenTests, HandlerCallback<SampleAndPathogenTests> callback);
+	}
+
+	private interface PickOrCreateSampleHandler {
+
+		void handle(List<SampleDto> similarSamples, List<SampleDto> otherSamples, HandlerCallback<PickOrCreateSampleResult> callback);
 	}
 
 	private interface CreateSampleAndPathogenTestHandler {

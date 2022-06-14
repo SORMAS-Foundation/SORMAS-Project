@@ -49,7 +49,6 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataSelectionField;
 import de.symeda.sormas.ui.importer.DataImporter;
 import de.symeda.sormas.ui.importer.ImportLineResult;

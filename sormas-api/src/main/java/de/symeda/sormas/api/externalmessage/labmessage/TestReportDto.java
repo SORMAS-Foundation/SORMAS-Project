@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.externalmessage.labmessage;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.constraints.Size;
 
@@ -34,8 +35,7 @@ public class TestReportDto extends EntityDto {
 	private ExternalMessageReferenceDto labMessage;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String testLabName;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
-	private String testLabExternalId;
+	private List<String> testLabExternalIds;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String testLabPostalCode;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
@@ -77,12 +77,12 @@ public class TestReportDto extends EntityDto {
 		this.testLabName = testLabName;
 	}
 
-	public String getTestLabExternalId() {
-		return testLabExternalId;
+	public List<String> getTestLabExternalIds() {
+		return testLabExternalIds;
 	}
 
-	public void setTestLabExternalId(String testLabExternalId) {
-		this.testLabExternalId = testLabExternalId;
+	public void setTestLabExternalIds(List<String> testLabExternalIds) {
+		this.testLabExternalIds = testLabExternalIds;
 	}
 
 	public String getTestLabPostalCode() {

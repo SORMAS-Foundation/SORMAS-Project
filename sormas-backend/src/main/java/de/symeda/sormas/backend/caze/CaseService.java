@@ -539,18 +539,37 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@Override
-	protected List<Predicate> getAdditionalObsoleteUuidsPredicates(Date since, CriteriaBuilder cb, Root<Case> from) {
+	protected List<Predicate> getAdditionalObsoleteUuidsPredicates(Date since, CriteriaBuilder cb, CriteriaQuery<String> cq, Root<Case> from) {
 
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
 			&& featureConfigurationFacade
 				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)) {
-			return Collections.singletonList(
-				cb.and(
-					cb.equal(from.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE),
-					cb.greaterThanOrEqualTo(from.get(Case.CLASSIFICATION_DATE), since)));
+			return Collections.singletonList(createObsoleteLimitedSyncCasePredicate(cb, from, since, getCurrentUser()));
 		} else {
 			return Collections.emptyList();
 		}
+	}
+
+	public Predicate createLimitedSyncCasePredicate(CriteriaBuilder cb, Join<?, Case> join, User currentUser) {
+
+		return cb.or(
+			cb.isNull(join.get(Case.UUID)),
+			cb.not(
+				cb.and(
+					cb.equal(join.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE),
+					cb.or(
+						cb.notEqual(join.get(Case.REPORTING_USER), currentUser),
+						cb.and(cb.equal(join.get(Case.REPORTING_USER), currentUser), cb.isNull(join.get(Case.CREATION_VERSION)))))));
+	}
+
+	public Predicate createObsoleteLimitedSyncCasePredicate(CriteriaBuilder cb, From<?, Case> root, Date since, User currentUser) {
+
+		return cb.and(
+			cb.equal(root.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE),
+			cb.greaterThanOrEqualTo(root.get(Case.CLASSIFICATION_DATE), since),
+			cb.or(
+				cb.notEqual(root.get(Case.REPORTING_USER), currentUser),
+				cb.and(cb.equal(root.get(Case.REPORTING_USER), currentUser), cb.isNull(root.get(Case.CREATION_VERSION)))));
 	}
 
 	@Override

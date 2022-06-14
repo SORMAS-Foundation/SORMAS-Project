@@ -684,7 +684,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			primaryCommitListener = null;
 	}
 
-	private void onCommit() {
+	protected void onCommit() {
 
 		for (CommitListener listener : commitListeners) {
 			try {
@@ -879,5 +879,9 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 				button.setEnabled(editable);
 			}
 		}
+	}
+
+	public void setButtonsVisible(boolean visible) {
+		buttonsPanel.setVisible(visible);
 	}
 }

@@ -40,6 +40,7 @@ public class AggregateReportDto extends EntityDto {
 	private Integer newCases;
 	private Integer labConfirmations;
 	private Integer deaths;
+	private String ageGroup;
 
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;
@@ -127,6 +128,14 @@ public class AggregateReportDto extends EntityDto {
 
 	public void setDeaths(Integer deaths) {
 		this.deaths = deaths;
+	}
+
+	public String getAgeGroup() {
+		return ageGroup;
+	}
+
+	public void setAgeGroup(String ageGroup) {
+		this.ageGroup = ageGroup;
 	}
 
 	public static AggregateReportDto build() {

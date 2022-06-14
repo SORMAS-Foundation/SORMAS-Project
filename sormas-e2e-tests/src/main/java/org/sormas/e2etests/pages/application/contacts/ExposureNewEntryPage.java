@@ -71,4 +71,8 @@ public class ExposureNewEntryPage {
       By.cssSelector(".v-window input#contactPersonPhone");
   public static final By CONTACT_PERSON_EMAIL_ADRESS =
       By.cssSelector(".v-window input#contactPersonEmail");
+  public static final By ACTIVITY_AS_CASE_TYPE_OF_ACTIVITY_COMBOBOX =
+      By.cssSelector(".v-window #activityAsCaseType div");
+  public static final By ACTIVITY_AS_CASE_FACILITY_TYPE_COMBOBOX =
+      By.cssSelector(".v-window #typeOfPlace div");
 }

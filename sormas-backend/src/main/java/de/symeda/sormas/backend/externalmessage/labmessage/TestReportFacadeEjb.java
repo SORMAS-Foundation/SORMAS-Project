@@ -57,7 +57,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 			return Collections.emptyList();
 		}
 
-		return externalMessageService.getByUuid(labMessageRef.getUuid()).getTestReports().stream().map(t -> toDto(t)).collect(Collectors.toList());
+		return externalMessageService.getByUuid(labMessageRef.getUuid()).getTestReports().stream().map(TestReportFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	public static TestReportDto toDto(TestReport source) {
@@ -70,7 +70,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 
 		target.setLabMessage(ExternalMessageFacadeEjb.toReferenceDto(source.getLabMessage()));
 		target.setTestLabName(source.getTestLabName());
-		target.setTestLabExternalId(source.getTestLabExternalId());
+		target.setTestLabExternalIds(source.getTestLabExternalIds());
 		target.setTestLabPostalCode(source.getTestLabPostalCode());
 		target.setTestLabCity(source.getTestLabCity());
 		target.setTestType(source.getTestType());
@@ -94,7 +94,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 
 		target.setLabMessage(externalMessage);
 		target.setTestLabName(source.getTestLabName());
-		target.setTestLabExternalId(source.getTestLabExternalId());
+		target.setTestLabExternalIds(source.getTestLabExternalIds());
 		target.setTestLabPostalCode(source.getTestLabPostalCode());
 		target.setTestLabCity(source.getTestLabCity());
 		target.setTestType(source.getTestType());

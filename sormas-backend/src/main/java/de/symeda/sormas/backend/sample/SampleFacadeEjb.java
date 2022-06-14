@@ -110,7 +110,6 @@ import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFa
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -225,11 +224,8 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, root);
 
-		SampleCriteria sampleCriteria = new SampleCriteria();
-		sampleCriteria.caze(criteria.getCaze()).contact(criteria.getContact()).eventParticipant(criteria.getEventParticipant());
-
-		Predicate filter = sampleService.createUserFilter(sampleQueryContext, sampleCriteria);
-		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(sampleCriteria, sampleQueryContext));
+		Predicate filter = sampleService.createUserFilter(sampleQueryContext, criteria.getSampleCriteria());
+		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(criteria.getSampleCriteria(), sampleQueryContext));
 
 		Predicate similarityFilter = null;
 		if (criteria.getLabSampleId() != null) {
@@ -258,15 +254,11 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		List<Sample> samples = em.createQuery(cq).getResultList();
 
-		if (samples.size() == 0 && (sampleDateTime == null || sampleMaterial == null)) {
-			return getByCriteria(sampleCriteria);
-		}
-
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return samples.stream().map(s -> convertToDto(s, pseudonymizer)).collect(Collectors.toList());
 	}
 
-	private List<SampleDto> getByCriteria(SampleCriteria criteria) {
+	public List<SampleDto> getSamplesByCriteria(SampleCriteria criteria) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
 		final Root<Sample> root = cq.from(Sample.class);
@@ -418,18 +410,22 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		return sampleService.findBy(criteria, userService.getCurrentUser(), AbstractDomainObject.CREATION_DATE, false)
 			.stream()
-			.collect(Collectors.toMap(s -> associatedObjectFn.apply(s).getUuid(), s -> s, (s1, s2) -> {
+			.collect(
+				Collectors.toMap(
+					s -> associatedObjectFn.apply(s).getUuid(),
+					s -> s,
+					(s1, s2) -> {
 
-				// keep the positive one
-				if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-					return s1;
-				} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-					return s2;
-				}
+						// keep the positive one
+						if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+							return s1;
+						} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+							return s2;
+						}
 
-				// ordered by creation date by default, so always keep the first one
-				return s1;
-			}))
+						// ordered by creation date by default, so always keep the first one
+						return s1;
+					}))
 			.values()
 			.stream()
 			.map(s -> convertToDto(s, pseudonymizer))

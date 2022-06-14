@@ -52,6 +52,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.BLOOD_ORG
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_CLASSIFICATION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_CLASSIFICATION_SPAN;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_IDENTIFICATION_SOURCE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_ORIGIN;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_PERSON_TAB;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_TAB;
@@ -114,6 +115,8 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_SELECTED_VALUE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.POINT_OF_ENTRY_DETAILS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.POINT_OF_ENTRY_TEXT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.POPUPS_INPUTS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PREGNANCY_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PROHIBITION_TO_WORK_OPTIONS;
@@ -134,6 +137,11 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTIN
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_TYPE_DETAILS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE_DEFINITION_TEXT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY_DISTRICT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY_POPUP_DE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY_REGION;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REGION_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REINFECTION_OPTIONS;
@@ -192,6 +200,7 @@ import static org.sormas.e2etests.steps.web.application.contacts.ContactDirector
 
 import cucumber.api.java8.En;
 import java.io.File;
+import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -203,6 +212,9 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Case;
@@ -223,6 +235,7 @@ import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
@@ -433,6 +446,117 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CREATE_QUARANTINE_ORDER_BUTTON);
         });
 
+    When(
+        "I check if generated document for Case based on {string} was downloaded properly",
+        (String name) -> {
+          String uuid = apiState.getCreatedCase().getUuid();
+          String pathToFile =
+              userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name;
+          Path path = Paths.get(pathToFile);
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      "Case document was not downloaded. Path used for check: "
+                          + path.toAbsolutePath()),
+              120);
+        });
+    When(
+        "I check if generated document for Case based on {string} contains all required fields",
+        (String name) -> {
+          String uuid = apiState.getCreatedCase().getUuid();
+          String pathToFile =
+              userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name;
+          FileInputStream fis = new FileInputStream(pathToFile);
+          XWPFDocument xdoc = new XWPFDocument(OPCPackage.open(fis));
+          List<XWPFParagraph> paragraphList = xdoc.getParagraphs();
+          String[] line = paragraphList.get(29).getText().split(":");
+          softly.assertEquals(
+              line[0], "Report Date", "Report date label is different than expected");
+          line = paragraphList.get(31).getText().split(":");
+          softly.assertEquals(
+              line[0], "Vaccination Date", "Vaccination date label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination
+                  .getVaccinationDate()
+                  .format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+              "Vaccination date value is different than expected");
+          line = paragraphList.get(32).getText().split(":");
+          softly.assertEquals(
+              line[0], "Vaccine name", "Vaccination name label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getVaccineName(),
+              "Vaccination name value is different than expected");
+          line = paragraphList.get(33).getText().split(":");
+          softly.assertEquals(
+              line[0],
+              "Vaccine name Details",
+              "Vaccination name Details label is different than expected");
+          line = paragraphList.get(34).getText().split(":");
+          softly.assertEquals(
+              line[0],
+              "Vaccine Manufacturer",
+              "Vaccination Manufacturer label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getVaccineManufacturer(),
+              "Vaccination Manufacturer label is different than expected");
+          line = paragraphList.get(35).getText().split(":");
+          softly.assertEquals(
+              line[0],
+              "Vaccine Manufacturer details",
+              "Vaccination Manufacturer details label is different than expected");
+          line = paragraphList.get(36).getText().split(":");
+          softly.assertEquals(
+              line[0], "Vaccine Type", "Vaccination Type label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getVaccineType(),
+              "Vaccination Type value is different than expected");
+          line = paragraphList.get(37).getText().split(":");
+          softly.assertEquals(
+              line[0], "Vaccine Dose", "Vaccination Dose label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getVaccineDose(),
+              "Vaccination Dose value is different than expected");
+          line = paragraphList.get(38).getText().split(":");
+          softly.assertEquals(line[0], "INN", "INN label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getInn(),
+              "INN value is different than expected");
+          line = paragraphList.get(39).getText().split(":");
+          softly.assertEquals(line[0], "Batch", "Batch label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getBatchNumber(),
+              "Batch value is different than expected");
+          line = paragraphList.get(40).getText().split(":");
+          softly.assertEquals(line[0], "UNII Code", "UNII Code label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getUniiCode(),
+              "UNII Code value is different than expected");
+          line = paragraphList.get(41).getText().split(":");
+          softly.assertEquals(line[0], "ATC Code", "ATC Code label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getAtcCode(),
+              "ATC Code value is different than expected");
+          line = paragraphList.get(42).getText().split(":");
+          softly.assertEquals(
+              line[0],
+              "Vaccination Info Source",
+              "Vaccination Info Source label is different than expected");
+          softly.assertEquals(
+              line[1].trim(),
+              CreateNewVaccinationSteps.vaccination.getVaccinationInfoSource(),
+              "Vaccination Info Source value is different than expected");
+          softly.assertAll();
+        });
     When(
         "I check the created data is correctly displayed on Edit case page",
         () -> {
@@ -1505,6 +1629,101 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "^I check that Point Of Entry information is displayed as read-only on Edit case page$",
+        () -> {
+          String referenceReadOnlyAttribute =
+              webDriverHelpers.getAttributeFromWebElement(POINT_OF_ENTRY_TEXT, "readonly");
+          softly.assertNotNull(
+              referenceReadOnlyAttribute,
+              "The case reference definition shouldn't be editable, but it is!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I refer case from Point Of Entry$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(REFER_CASE_FROM_POINT_OF_ENTRY);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              REFER_CASE_FROM_POINT_OF_ENTRY_POPUP_DE);
+          webDriverHelpers.selectFromCombobox(REFER_CASE_FROM_POINT_OF_ENTRY_REGION, "Saarland");
+          webDriverHelpers.selectFromCombobox(
+              REFER_CASE_FROM_POINT_OF_ENTRY_DISTRICT, "LK Saarlouis");
+          webDriverHelpers.clickWebElementByText(PLACE_OF_STAY_OPTIONS, "ZUHAUSE");
+          webDriverHelpers.clickOnWebElementBySelector(REFER_CASE_FROM_POINT_OF_ENTRY_SAVE_BUTTON);
+        });
+
+    And(
+        "^I check that Point Of Entry and Place Of Stay information is correctly display on Edit case page$",
+        () -> {
+          String referenceReadOnlyAttribute =
+              webDriverHelpers.getAttributeFromWebElement(POINT_OF_ENTRY_TEXT, "readonly");
+          softly.assertNotNull(
+              referenceReadOnlyAttribute,
+              "The case reference definition shouldn't be editable, but it is!");
+
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                  PLACE_OF_STAY_SELECTED_VALUE),
+              "ZUHAUSE",
+              "Place of stay is not correct");
+
+          softly.assertEquals(
+              webDriverHelpers.getValueFromCombobox(PLACE_OF_STAY_REGION_COMBOBOX),
+              "Saarland",
+              "Place of stay region is not correct");
+
+          softly.assertEquals(
+              webDriverHelpers.getValueFromCombobox(PLACE_OF_STAY_DISTRICT_COMBOBOX),
+              "LK Saarlouis",
+              "Place of stay district is not correct");
+
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_TEXT),
+              "Anderer Flughafen",
+              "Point of entry is not correct");
+
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_DETAILS),
+              "Narita",
+              "Point of entry details are not correct");
+
+          softly.assertAll();
+        });
+
+    And(
+        "^I check that Case Origin is set to Point Of Entry$",
+        () -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(CASE_ORIGIN),
+              "Einreiseort",
+              "Point of entry is not correct");
+          softly.assertAll();
+        });
+
+    Then(
+        "^I check that differing Point Of Entry is correctly displayed on Edit case page$",
+        () -> {
+          String referenceReadOnlyAttribute =
+              webDriverHelpers.getAttributeFromWebElement(POINT_OF_ENTRY_TEXT, "readonly");
+          softly.assertNotNull(
+              referenceReadOnlyAttribute,
+              "The case reference definition shouldn't be editable, but it is!");
+
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_TEXT),
+              "Anderer Einreiseort",
+              "Point of entry is not correct");
+
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_DETAILS),
+              "Automated test dummy description",
+              "Point of entry details are not correct");
+
+          softly.assertAll();
         });
   }
 

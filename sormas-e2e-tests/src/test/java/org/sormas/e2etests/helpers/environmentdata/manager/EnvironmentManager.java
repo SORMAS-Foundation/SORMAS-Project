@@ -74,6 +74,21 @@ public class EnvironmentManager {
   }
 
   @SneakyThrows
+  public String getRegionName(String regionUuid) {
+    response =
+        restAssuredClient.sendRequestAndGetResponse(
+            Request.builder().method(Method.GET).path(REGIONS_PATH + ALL_FROM_0).build());
+    objectMapper = getNewObjMapper();
+    List<Region> regions =
+        List.of(objectMapper.readValue(response.getBody().asInputStream(), Region[].class));
+    return regions.stream()
+        .filter(region -> region.getUuid().equalsIgnoreCase(regionUuid))
+        .findFirst()
+        .get()
+        .getName();
+  }
+
+  @SneakyThrows
   public String getDistrictUUID(String districtName) {
     response =
         restAssuredClient.sendRequestAndGetResponse(
@@ -86,6 +101,21 @@ public class EnvironmentManager {
         .findFirst()
         .get()
         .getUuid();
+  }
+
+  @SneakyThrows
+  public String getDistrictName(String districtUUID) {
+    response =
+        restAssuredClient.sendRequestAndGetResponse(
+            Request.builder().method(Method.GET).path(DISTRICTS_PATH + ALL_FROM_0).build());
+    objectMapper = getNewObjMapper();
+    List<District> districts =
+        List.of(objectMapper.readValue(response.getBody().asInputStream(), District[].class));
+    return districts.stream()
+        .filter(district -> district.getUuid().equalsIgnoreCase(districtUUID))
+        .findFirst()
+        .get()
+        .getName();
   }
 
   @SneakyThrows
