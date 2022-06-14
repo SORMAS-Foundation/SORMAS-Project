@@ -1376,25 +1376,6 @@ public class EditEventSteps implements En {
           }
         });
 
-    //    When(
-    //        "^I discard changes popup window or cancel if not working$",
-    //        () -> {
-    //          if (webDriverHelpers.isElementVisibleWithTimeout(POPUP_DISCARD_CHANGES_BUTTON, 30))
-    // {
-    //            webDriverHelpers.clickOnWebElementBySelector(POPUP_DISCARD_CHANGES_BUTTON);
-    //          }
-    //          TimeUnit.SECONDS.sleep(2);
-    //          if (webDriverHelpers.isElementVisibleWithTimeout(POPUP_DISCARD_CHANGES_BUTTON, 30))
-    // {
-    //            webDriverHelpers.clickOnWebElementBySelector(POPUP_DISCARD_CHANGES_BUTTON);
-    //          }
-    //          TimeUnit.SECONDS.sleep(2);
-    //          if (webDriverHelpers.isElementVisibleWithTimeout(POPUP_DISCARD_CHANGES_BUTTON, 30))
-    // {
-    //            webDriverHelpers.clickOnWebElementBySelector(POPUP_CANCEL_ACTION_BUTTON);
-    //          }
-    //        });
-
     When(
         "^I confirm all actions until unsaved changes popup window disappears$",
         () -> {
