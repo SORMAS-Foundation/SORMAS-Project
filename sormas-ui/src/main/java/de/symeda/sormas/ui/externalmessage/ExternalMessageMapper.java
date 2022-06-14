@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,6 +46,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 
 public class ExternalMessageMapper {
 
@@ -238,8 +240,12 @@ public class ExternalMessageMapper {
 						pathogenTest.getTestedDisease(),
 						externalMessage.getTestedDisease(),
 						PathogenTestDto.TESTED_DISEASE),
-					Mapping
-						.of(pathogenTest::setReportDate, pathogenTest.getReportDate(), getPathogenTestReportDate(), PathogenTestDto.REPORT_DATE))));
+					Mapping.of(
+						pathogenTest::setReportDate,
+						pathogenTest.getReportDate(),
+						getPathogenTestReportDate(),
+						DateHelper::getStartOfDay,
+						PathogenTestDto.REPORT_DATE))));
 
 		return changedFields;
 	}
@@ -294,6 +300,14 @@ public class ExternalMessageMapper {
 			m.newValue = newValue;
 
 			return m;
+		}
+
+		static <T, X> Mapping<T> of(Consumer<T> mapper, X originalValue, X newValue, Function<X, T> valueConvert, String... fieldPath) {
+			return of(
+				mapper,
+				originalValue != null ? valueConvert.apply(originalValue) : null,
+				newValue != null ? valueConvert.apply(newValue) : null,
+				fieldPath);
 		}
 	}
 
