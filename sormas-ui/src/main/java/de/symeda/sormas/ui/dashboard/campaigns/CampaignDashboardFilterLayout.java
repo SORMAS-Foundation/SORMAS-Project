@@ -63,7 +63,6 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 		infoLabel.setSizeUndefined();
 
-		final UserDto user = UserProvider.getCurrent().getUser();
 		final CampaignJurisdictionLevel campaignJurisdictionLevel =
 			CampaignJurisdictionLevel.getByJurisdictionLevel(UserProvider.getCurrent().getJurisdictionLevel());
 		dashboardDataProvider.setCampaignJurisdictionLevelGroupBy(getJurisdictionBelow(campaignJurisdictionLevel));

@@ -217,7 +217,8 @@ public class StartupShutdownService {
 
 		pointOfEntryService.createConstantPointsOfEntry();
 
-		upgrade(); // Has to be called before createDefaultUsers.
+		// Has to be called before createDefaultUsers
+		upgrade(); 
 
 		createDefaultUsers();
 

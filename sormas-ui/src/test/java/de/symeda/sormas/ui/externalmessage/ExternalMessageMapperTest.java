@@ -2,9 +2,16 @@ package de.symeda.sormas.ui.externalmessage;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.ui.TestDataCreator;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +32,12 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.ui.AbstractBeanTest;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class ExternalMessageMapperTest extends AbstractBeanTest {
@@ -151,5 +164,74 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 			assertEquals(diseaseVariant, result.getMiddle());
 			assertNull(result.getRight());
 		}
+	}
+
+	@Test
+	public void testMapToPersonPresentCondition() {
+		ExternalMessageDto labMessage = ExternalMessageDto.build();
+		PersonDto person = PersonDto.build();
+		ExternalMessageMapper mapper = ExternalMessageMapper.forLabMessage(labMessage);
+
+		// both values null
+		List<String[]> result = mapper.mapToPerson(person);
+		assertTrue(result.isEmpty());
+		assertNull(person.getPresentCondition());
+
+		// person value already set
+		person.setPresentCondition(PresentCondition.DEAD);
+		result = mapper.mapToPerson(person);
+		assertTrue(result.isEmpty());
+		assertEquals(PresentCondition.DEAD, person.getPresentCondition());
+
+		// equal values in person and lab message
+		labMessage.setPersonPresentCondition(PresentCondition.DEAD);
+		result = mapper.mapToPerson(person);
+		assertTrue(result.isEmpty());
+		assertEquals(PresentCondition.DEAD, person.getPresentCondition());
+
+		// different values in person and lab message
+		labMessage.setPersonPresentCondition(PresentCondition.ALIVE);
+		result = mapper.mapToPerson(person);
+		ArrayList<String[]> expectedResult = new ArrayList();
+		expectedResult.add(
+			new String[] {
+				"presentCondition" });
+		assertEquals(expectedResult.size(), result.size());
+		assertEquals(expectedResult.get(0).length, result.get(0).length);
+		assertEquals(expectedResult.get(0)[0], result.get(0)[0]);
+		assertEquals(PresentCondition.ALIVE, person.getPresentCondition());
+
+	}
+
+	@Test
+	public void testGetLabReference() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		final FacilityReferenceDto otherFacilityRef = getFacilityFacade().getReferenceByUuid(FacilityDto.OTHER_FACILITY_UUID);
+
+		ExternalMessageDto labMessageDto = ExternalMessageDto.build();
+		ExternalMessageMapper mapper = ExternalMessageMapper.forLabMessage(labMessageDto);
+
+		assertEquals(otherFacilityRef, mapper.getLabReference(Collections.emptyList()));
+		assertEquals(otherFacilityRef, mapper.getLabReference(Collections.singletonList("unknown")));
+
+		FacilityDto one = creator
+			.createFacility("One", FacilityType.LABORATORY, rdcf.region.toReference(), rdcf.district.toReference(), rdcf.community.toReference());
+		one.setExternalID("oneExternal");
+		one.setChangeDate(new Date());
+		getFacilityFacade().save(one);
+
+		FacilityDto two = creator
+			.createFacility("Two", FacilityType.LABORATORY, rdcf.region.toReference(), rdcf.district.toReference(), rdcf.community.toReference());
+		two.setExternalID("twoExternal");
+		two.setChangeDate(new Date());
+		getFacilityFacade().save(two);
+
+		FacilityReferenceDto oneExternal = mapper.getLabReference(Collections.singletonList("oneExternal"));
+		assertEquals(one.toReference(), oneExternal);
+
+		FacilityReferenceDto twoExternal = mapper.getLabReference(Collections.singletonList("twoExternal"));
+		assertEquals(two.toReference(), twoExternal);
+
+		assertNull(mapper.getLabReference(Arrays.asList("oneExternal", "twoExternal")));
 	}
 }

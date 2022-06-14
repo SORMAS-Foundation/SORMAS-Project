@@ -138,6 +138,7 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 	private Date creationDateTo;
 	private String reportingUserLike;
 	private String personLike;
+	private boolean excludeLimitedSyncRestrictions;
 
 	public UserRoleReferenceDto getReportingUserRole() {
 		return reportingUserRole;
@@ -707,5 +708,20 @@ public class ContactCriteria extends BaseCriteria implements Serializable {
 
 	public void setPersonLike(String personLike) {
 		this.personLike = personLike;
+	}
+
+	/**
+	 * Ignore user filter restrictions that would otherwise be applied by the limited synchronization feature.
+	 * Necessary e.g. when retrieving UUIDs of contacts related to cases that are supposed to be removed from the
+	 * mobile app, because otherwise the user filter would exclude those contacts.
+	 */
+	@IgnoreForUrl
+	public boolean isExcludeLimitedSyncRestrictions() {
+		return excludeLimitedSyncRestrictions;
+	}
+
+	public ContactCriteria excludeLimitedSyncRestrictions(boolean excludeLimitedSyncRestrictions) {
+		this.excludeLimitedSyncRestrictions = excludeLimitedSyncRestrictions;
+		return this;
 	}
 }

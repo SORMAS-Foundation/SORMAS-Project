@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.externalmessage;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
+import de.symeda.sormas.backend.caze.Case;
 import java.util.Date;
 import java.util.List;
 
@@ -17,10 +18,16 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+
+import com.vladmihalcea.hibernate.type.array.ListArrayType;
+
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -32,6 +39,7 @@ import de.symeda.sormas.backend.user.User;
 
 @Entity(name = ExternalMessage.TABLE_NAME)
 @Audited
+@TypeDef(name = "list-array", typeClass = ListArrayType.class)
 public class ExternalMessage extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "externalmessage";
@@ -46,7 +54,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String SAMPLE_MATERIAL_TEXT = "sampleMaterialText";
 	public static final String SPECIMEN_CONDITION = "specimenCondition";
 	public static final String REPORTER_NAME = "reporterName";
-	public static final String LAB_EXTERNAL_ID = "labExternalId";
+	public static final String REPORTER_EXTERNAL_IDS = "reporterExternalIds";
 	public static final String REPORTER_POSTAL_CODE = "reporterPostalCode";
 	public static final String REPORTER_CITY = "reporterCity";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
@@ -79,13 +87,14 @@ public class ExternalMessage extends AbstractDomainObject {
 	private SpecimenCondition specimenCondition;
 
 	private String reporterName;
-	private String labExternalId;
+	private List<String> reporterExternalIds;
 	private String reporterPostalCode;
 	private String reporterCity;
 
 	private String personFirstName;
 	private String personLastName;
 	private Sex personSex;
+	private PresentCondition personPresentCondition;
 	private Integer personBirthDateDD;
 	private Integer personBirthDateMM;
 	private Integer personBirthDateYYYY;
@@ -101,6 +110,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	private String reportId;
 	private PathogenTestResultType sampleOverallTestResult;
 	private Sample sample;
+	private Case caze;
 
 	private ExternalMessageStatus status = ExternalMessageStatus.UNPROCESSED;
 	private User assignee;
@@ -195,13 +205,17 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.reporterName = labName;
 	}
 
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
-	public String getLabExternalId() {
-		return labExternalId;
+	@Type(type = "list-array")
+	@Column(
+			name = "reporterexternalids",
+			columnDefinition = "VARCHAR(255) ARRAY"
+	)
+	public List<String> getReporterExternalIds() {
+		return reporterExternalIds;
 	}
 
-	public void setLabExternalId(String labExternalId) {
-		this.labExternalId = labExternalId;
+	public void setReporterExternalIds(List<String> reporterExternalIds) {
+		this.reporterExternalIds = reporterExternalIds;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
@@ -247,6 +261,14 @@ public class ExternalMessage extends AbstractDomainObject {
 
 	public void setPersonSex(Sex personSex) {
 		this.personSex = personSex;
+	}
+
+	public PresentCondition getPersonPresentCondition() {
+		return personPresentCondition;
+	}
+
+	public void setPersonPresentCondition(PresentCondition personPresentCondition) {
+		this.personPresentCondition = personPresentCondition;
 	}
 
 	@Column(name = "personbirthdatedd")
@@ -395,4 +417,12 @@ public class ExternalMessage extends AbstractDomainObject {
 		this.sample = sample;
 	}
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	public Case getCaze() {
+		return caze;
+	}
+
+	public void setCaze(Case caze) {
+		this.caze = caze;
+	}
 }

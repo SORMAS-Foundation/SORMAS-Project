@@ -1135,8 +1135,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
 							Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
 
-							List<Vaccination> relevantSortedVaccinations =
-								getRelevantSortedVaccinations(exportDto.getUuid(), mostRecentImmunization.getVaccinations());
+							List<Vaccination> relevantSortedVaccinations = getRelevantSortedVaccinations(
+								exportDto.getUuid(),
+								filteredImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList()));
 							Vaccination firstVaccination = null;
 							Vaccination lastVaccination = null;
 
@@ -1584,7 +1585,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return caseSave(dto, handleChanges, existingCase, toDto(existingCase), checkChangeDate, internal);
 	}
 
-	@RolesAllowed({ UserRight._CASE_EDIT })
+	@RolesAllowed({
+		UserRight._CASE_EDIT })
 	public CaseDataDto updateFollowUpComment(@Valid @NotNull CaseDataDto dto) throws ValidationRuntimeException {
 		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
 		Case caze = service.getByUuid(dto.getUuid());
@@ -2065,6 +2067,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		// Update case classification if the feature is enabled
 		CaseClassification classification = null;
+		boolean setClassificationInfo = true;
 		if (configFacade.isFeatureAutomaticCaseClassification()) {
 			if (newCase.getCaseClassification() != CaseClassification.NO_CASE) {
 				// calculate classification
@@ -2081,13 +2084,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 						newCase.setCaseClassification(classification);
 						newCase.setClassificationUser(null);
 						newCase.setClassificationDate(new Date());
+						setClassificationInfo = false;
 					}
 				}
-			} else if (newCase.getCaseClassification() != existingCase.getCaseClassification()) {
-				newCase.setClassificationUser(userService.getCurrentUser());
-				newCase.setClassificationDate(new Date());
 			}
-		} else if (newCase.getCaseClassification() != existingCase.getCaseClassification()) {
+		}
+
+		if (setClassificationInfo
+			&& ((existingCase == null && newCase.getCaseClassification() != CaseClassification.NOT_CLASSIFIED)
+				|| (existingCase != null && newCase.getCaseClassification() != existingCase.getCaseClassification()))) {
 			newCase.setClassificationUser(userService.getCurrentUser());
 			newCase.setClassificationDate(new Date());
 		}
@@ -2941,6 +2946,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			source.setTherapy(TherapyDto.build());
 		}
 		target.setTherapy(therapyFacade.fromDto(source.getTherapy(), checkChangeDate));
+		if (source.getHealthConditions() == null) {
+			source.setHealthConditions(HealthConditionsDto.build());
+		}
 		target.setHealthConditions(healthConditionsMapper.fromDto(source.getHealthConditions(), checkChangeDate));
 		if (source.getClinicalCourse() == null) {
 			source.setClinicalCourse(ClinicalCourseDto.build());

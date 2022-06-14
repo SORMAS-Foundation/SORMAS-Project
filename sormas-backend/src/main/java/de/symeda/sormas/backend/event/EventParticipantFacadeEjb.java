@@ -51,7 +51,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.common.DeletionDetails;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -65,6 +64,7 @@ import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
 import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
@@ -806,8 +806,9 @@ public class EventParticipantFacadeEjb
 						Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
 						Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
 
-						List<Vaccination> relevantSortedVaccinations =
-							getRelevantSortedVaccinations(exportDto.getEventUuid(), mostRecentImmunization.getVaccinations());
+						List<Vaccination> relevantSortedVaccinations = getRelevantSortedVaccinations(
+							exportDto.getEventUuid(),
+							filteredImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList()));
 						Vaccination firstVaccination = null;
 						Vaccination lastVaccination = null;
 
@@ -1063,8 +1064,7 @@ public class EventParticipantFacadeEjb
 		Join<EventParticipant, Person> personJoin = eventParticipantQueryContext.getJoins().getPerson();
 		Join<EventParticipant, Event> eventJoin = eventParticipantQueryContext.getJoins().getEvent();
 
-		Expression<Object> jurisdictionSelector =
-			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(eventParticipantQueryContext));
+		Expression<Object> jurisdictionSelector = JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(eventParticipantQueryContext));
 		cq.multiselect(
 			eventParticipantRoot.get(EventParticipant.UUID),
 			personJoin.get(Person.FIRST_NAME),

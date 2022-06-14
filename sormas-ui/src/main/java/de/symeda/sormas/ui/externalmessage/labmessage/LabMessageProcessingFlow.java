@@ -15,7 +15,12 @@
 
 package de.symeda.sormas.ui.externalmessage.labmessage;
 
-import static de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingUIHelper.showFormWithLabMessage;
+import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showCreateCaseWindow;
+import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showFormWithLabMessage;
+import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showMissingDiseaseConfiguration;
+import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showPickOrCreateEntryWindow;
+import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showPickOrCreatePersonWindow;
+import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showRelatedForwardedMessageConfirmation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +47,6 @@ import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -52,17 +56,15 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.caze.CaseCreateForm;
 import de.symeda.sormas.ui.contact.ContactCreateForm;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.events.EventParticipantEditForm;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
-import de.symeda.sormas.ui.externalmessage.EntrySelectionField;
-import de.symeda.sormas.ui.externalmessage.ExternalMessageMapper;
+import de.symeda.sormas.ui.externalmessage.processing.EntrySelectionField;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.AbstractLabMessageProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingHelper;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingUIHelper;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateEntryResult;
+import de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper;
+import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateEventResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.PickOrCreateSampleResult;
 import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
@@ -84,42 +86,17 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 
 	@Override
 	protected CompletionStage<Boolean> handleMissingDisease() {
-		return VaadinUiUtil.showConfirmationPopup(
-			I18nProperties.getCaption(Captions.externalMessageNoDisease),
-			new Label(I18nProperties.getString(Strings.messageDiseaseNotSpecifiedInLabMessage)),
-			I18nProperties.getCaption(Captions.actionContinue),
-			I18nProperties.getCaption(Captions.actionCancel));
+		return showMissingDiseaseConfiguration();
 	}
 
 	@Override
 	protected CompletionStage<Boolean> handleRelatedForwardedMessages() {
-		return VaadinUiUtil.showConfirmationPopup(
-			I18nProperties.getCaption(Captions.externalMessageForwardedMessageFound),
-			new Label(I18nProperties.getString(Strings.messageForwardedExternalMessageFound)),
-			I18nProperties.getCaption(Captions.actionYes),
-			I18nProperties.getCaption(Captions.actionCancel));
+		return showRelatedForwardedMessageConfirmation();
 	}
 
 	@Override
 	protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<PersonDto> callback) {
-		ControllerProvider.getPersonController()
-			.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessage), selectedPersonRef -> {
-				PersonDto selectedPersonDto = null;
-				if (selectedPersonRef != null) {
-					if (selectedPersonRef.getUuid().equals(person.getUuid())) {
-						selectedPersonDto = person;
-					} else {
-						selectedPersonDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPersonRef.getUuid());
-					}
-				}
-
-				callback.done(selectedPersonDto);
-			},
-				callback::cancel,
-				false,
-				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PERSON_DUPLICATE_CUSTOM_SEARCH)
-					? I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessageWithoutMatches)
-					: null);
+		showPickOrCreatePersonWindow(person, callback);
 	}
 
 	@Override
@@ -129,44 +106,20 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		List<SimilarEventParticipantDto> similarEventParticipants,
 		ExternalMessageDto labMessage,
 		HandlerCallback<PickOrCreateEntryResult> callback) {
-		EntrySelectionField selectField = new EntrySelectionField(labMessage, similarCases, similarContacts, similarEventParticipants);
 
-		final CommitDiscardWrapperComponent<EntrySelectionField> selectionField = new CommitDiscardWrapperComponent<>(selectField);
-		selectionField.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
-		selectionField.setWidth(1280, Sizeable.Unit.PIXELS);
+		EntrySelectionField.Options.Builder optionsBuilder = new EntrySelectionField.Options.Builder().addSelectCase(similarCases)
+			.addSelectContact(similarContacts)
+			.addSelectEventParticipant(similarEventParticipants)
+			.addCreateEntry(EntrySelectionField.OptionType.CREATE_CASE)
+			.addCreateEntry(EntrySelectionField.OptionType.CREATE_CONTACT)
+			.addCreateEntry(EntrySelectionField.OptionType.CREATE_EVENT_PARTICIPANT);
 
-		selectionField.addCommitListener(() -> callback.done(selectField.getValue()));
-		selectionField.addDiscardListener(callback::cancel);
-
-		selectField.setSelectionChangeCallback(commitAllowed -> selectionField.getCommitButton().setEnabled(commitAllowed));
-		selectionField.getCommitButton().setEnabled(false);
-
-		VaadinUiUtil.showModalPopupWindow(selectionField, I18nProperties.getString(Strings.headingPickOrCreateEntry), true);
+		showPickOrCreateEntryWindow(optionsBuilder.build(), labMessage, callback);
 	}
 
 	@Override
 	protected void handleCreateCase(CaseDataDto caze, PersonDto person, ExternalMessageDto labMessage, HandlerCallback<CaseDataDto> callback) {
-		Window window = VaadinUiUtil.createPopupWindow();
-
-		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
-			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, null, true);
-		caseCreateComponent.addCommitListener(() -> {
-			updateAddressAndSavePerson(
-				FacadeProvider.getPersonFacade().getPersonByUuid(caseCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
-				labMessage);
-
-			callback.done(caseCreateComponent.getWrappedComponent().getValue());
-
-		});
-		caseCreateComponent.addDiscardListener(callback::cancel);
-
-		caseCreateComponent.getWrappedComponent().setValue(caze);
-		if (Boolean.TRUE.equals(FacadeProvider.getPersonFacade().isValidPersonUuid(person.getUuid()))) {
-			caseCreateComponent.getWrappedComponent().setSearchedPerson(person);
-		}
-		caseCreateComponent.getWrappedComponent().setPerson(person);
-
-		showFormWithLabMessage(labMessage, caseCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewCase), false);
+		showCreateCaseWindow(caze, person, labMessage, callback);
 	}
 
 	@Override
@@ -205,7 +158,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 			ControllerProvider.getContactController().getContactCreateComponent(null, false, null, true);
 
 		contactCreateComponent.addCommitListener(() -> {
-			updateAddressAndSavePerson(
+			LabMessageProcessingHelper.updateAddressAndSavePerson(
 				FacadeProvider.getPersonFacade().getPersonByUuid(contactCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
 				labMessage);
 
@@ -336,10 +289,12 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 
 	@Override
 	protected void handlePickOrCreateSample(
-		List<SampleDto> samples,
+		List<SampleDto> similarSamples,
+		List<SampleDto> otherSamples,
 		ExternalMessageDto labMessage,
 		HandlerCallback<PickOrCreateSampleResult> callback) {
-		SampleSelectionField selectField = new SampleSelectionField(samples, I18nProperties.getString(Strings.infoPickOrCreateSample));
+		SampleSelectionField selectField =
+			new SampleSelectionField(similarSamples, otherSamples, I18nProperties.getString(Strings.infoPickOrCreateSample));
 
 		Window window = VaadinUiUtil.createPopupWindow();
 
@@ -373,7 +328,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		ExternalMessageDto labMessage,
 		HandlerCallback<SampleAndPathogenTests> callback) {
 
-		LabMessageProcessingUIHelper.showEditSampleWindow(sample, newPathogenTests, labMessage, callback::done, callback::cancel);
+		ExternalMessageProcessingUIHelper.showEditSampleWindow(sample, newPathogenTests, labMessage, callback::done, callback::cancel);
 	}
 
 	private CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
@@ -415,15 +370,5 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 				sampleController.addPathogenTestComponent(sampleCreateComponent, pathogenTest, caseSampleCount, true);
 			sampleController.setViaLimsFieldChecked(pathogenTestCreateComponent);
 		}
-	}
-
-	private void updateAddressAndSavePerson(PersonDto personDto, ExternalMessageDto externalMessageDto) {
-		if (personDto.getAddress().getCity() == null
-			&& personDto.getAddress().getHouseNumber() == null
-			&& personDto.getAddress().getPostalCode() == null
-			&& personDto.getAddress().getStreet() == null) {
-			ExternalMessageMapper.forLabMessage(externalMessageDto).mapToLocation(personDto.getAddress());
-		}
-		FacadeProvider.getPersonFacade().savePerson(personDto);
 	}
 }

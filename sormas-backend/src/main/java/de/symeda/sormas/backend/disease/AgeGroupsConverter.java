@@ -13,11 +13,24 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.externalmessage.labmessage.processing.flow;
+package de.symeda.sormas.backend.disease;
 
-import java.util.concurrent.CompletionStage;
+import static de.symeda.sormas.api.utils.AgeGroupUtils.convertToList;
+import static de.symeda.sormas.api.utils.AgeGroupUtils.convertToString;
 
-public interface FlowAction<T, R> {
+import java.util.List;
 
-	CompletionStage<ProcessingResult<R>> apply(ProcessingResult<T> currentResult);
+import javax.persistence.AttributeConverter;
+
+public class AgeGroupsConverter implements AttributeConverter<List<String>, String> {
+
+	@Override
+	public String convertToDatabaseColumn(List<String> ageGroupList) {
+		return convertToString(ageGroupList);
+	}
+
+	@Override
+	public List<String> convertToEntityAttribute(String ageGroupsString) {
+		return convertToList(ageGroupsString);
+	}
 }

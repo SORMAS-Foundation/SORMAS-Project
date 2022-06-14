@@ -89,4 +89,16 @@ public class FacilityResource extends EntityDtoResource {
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getFacilityFacade()::save);
 		return result;
 	}
+
+	@POST
+	@Path("/archive")
+	public List<String> archive(@RequestBody List<String> uuids) {
+		return FacadeProvider.getFacilityFacade().archive(uuids);
+	}
+
+	@POST
+	@Path("/dearchive")
+	public List<String> dearchive(@RequestBody List<String> uuids) {
+		return FacadeProvider.getFacilityFacade().dearchive(uuids);
+	}
 }
