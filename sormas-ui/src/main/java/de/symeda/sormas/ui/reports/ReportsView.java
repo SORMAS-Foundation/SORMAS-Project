@@ -60,7 +60,7 @@ public class ReportsView extends AbstractView {
 	public ReportsView() {
 		super(VIEW_NAME);
 
-		JurisdictionLevel jurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
+		JurisdictionLevel jurisdictionLevel = Objects.requireNonNull(UserProvider.getCurrent().getJurisdictionLevel());
 		if (jurisdictionLevel == JurisdictionLevel.NONE || jurisdictionLevel == JurisdictionLevel.NATION) {
 			grid = new WeeklyReportRegionsGrid();
 		} else {

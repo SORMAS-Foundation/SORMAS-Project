@@ -18,13 +18,11 @@
 package de.symeda.sormas.api.user;
 
 
-import de.symeda.sormas.api.utils.FeatureIndependent;
-import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FeatureIndependent;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 

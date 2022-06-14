@@ -78,6 +78,10 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 			}
 		}
 
+		if (criteria.getDisease() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(AggregateReport.DISEASE), criteria.getDisease()));
+		}
+
 		return filter;
 	}
 
