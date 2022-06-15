@@ -1404,10 +1404,7 @@ public class EditEventSteps implements En {
                 CONFIRM_ACTION, numberOfElements - 1);
           } while (webDriverHelpers.isElementVisibleWithTimeout(CONFIRM_ACTION, 30));
         });
-  }
 
-  private String collectEventParticipantUuid() {
-    return webDriverHelpers.getAttributeFromWebElement(EVENT_PARTICIPANT_UUID, "title");
     When(
         "I check if editable fields are read only for an archived event",
         () -> {
@@ -1480,6 +1477,10 @@ public class EditEventSteps implements En {
               "Delete button is not in read only state!");
           softly.assertAll();
         });
+  }
+
+  private String collectEventParticipantUuid() {
+    return webDriverHelpers.getAttributeFromWebElement(EVENT_PARTICIPANT_UUID, "title");
   }
 
   private Person collectPersonUuid() {
