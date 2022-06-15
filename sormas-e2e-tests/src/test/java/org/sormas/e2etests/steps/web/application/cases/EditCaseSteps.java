@@ -1669,6 +1669,7 @@ public class EditCaseSteps implements En {
               webDriverHelpers.isElementEnabled(DELETE_BUTTON),
               false,
               "Delete button is not in read only state!");
+          softly.assertAll();
         });
   }
 
