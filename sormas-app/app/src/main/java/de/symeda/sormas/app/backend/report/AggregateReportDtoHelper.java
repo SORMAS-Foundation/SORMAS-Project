@@ -72,7 +72,7 @@ public class AggregateReportDtoHelper extends AdoDtoHelper<AggregateReport, Aggr
 			target.setReportingUser(null);
 		}
 
-		if (source.getDistrict() != null) {
+		if (source.getRegion() != null) {
 			Region region = DatabaseHelper.getRegionDao().queryForId(source.getRegion().getId());
 			target.setRegion(RegionDtoHelper.toReferenceDto(region));
 		} else {
