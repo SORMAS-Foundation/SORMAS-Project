@@ -133,15 +133,11 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	@Override
-	public void deleteCases(List<CaseDataDto> cases) throws ExternalSurveillanceToolRuntimeException {
+	public void deleteCases(List<CaseDataDto> cases) throws ExternalSurveillanceToolException {
 		DeleteParameters params = new DeleteParameters();
 		params.setCases(cases);
 
-		try {
-			sendDeleteRequest(params);
-		} catch (ExternalSurveillanceToolException e) {
-			throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
-		}
+		sendDeleteRequest(params);
 
 		caseService.getByUuids(cases.stream().map(CaseDataDto::getUuid).collect(Collectors.toList())).forEach(caze -> {
 			shareInfoService.createAndPersistShareInfo(caze, ExternalShareStatus.DELETED);
@@ -149,15 +145,11 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	@Override
-	public void deleteEvents(List<EventDto> events) throws ExternalSurveillanceToolRuntimeException {
+	public void deleteEvents(List<EventDto> events) throws ExternalSurveillanceToolException {
 		DeleteParameters params = new DeleteParameters();
 		params.setEvents(events);
 
-		try {
-			sendDeleteRequest(params);
-		} catch (ExternalSurveillanceToolException e) {
-			throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
-		}
+		sendDeleteRequest(params);
 
 		eventService.getByUuids(events.stream().map(EventDto::getUuid).collect(Collectors.toList())).forEach(event -> {
 			shareInfoService.createAndPersistShareInfo(event, ExternalShareStatus.DELETED);

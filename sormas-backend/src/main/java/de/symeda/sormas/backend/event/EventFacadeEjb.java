@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -290,12 +291,16 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	@RolesAllowed(UserRight._EVENT_DELETE)
-	public void delete(String eventUuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolRuntimeException {
+	public void delete(String eventUuid, DeletionDetails deletionDetails) {
 		Event event = service.getByUuid(eventUuid);
-		deleteEvent(event, deletionDetails);
+		try {
+			deleteEvent(event, deletionDetails);
+		} catch (ExternalSurveillanceToolException e) {
+			throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+		}
 	}
 
-	private void deleteEvent(Event event, DeletionDetails deletionDetails) throws ExternalSurveillanceToolRuntimeException {
+	private void deleteEvent(Event event, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
 		if (event.getEventStatus() == EventStatus.CLUSTER
 			&& externalSurveillanceToolFacade.isFeatureEnabled()
 			&& externalShareInfoService.isEventShared(event.getId())) {
@@ -315,7 +320,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 					try {
 						deleteEvent(eventToBeDeleted, deletionDetails);
 						deletedEventUuids.add(eventToBeDeleted.getUuid());
-					} catch (ExternalSurveillanceToolRuntimeException e) {
+					} catch (ExternalSurveillanceToolException e) {
 						logger.error("The event with uuid:" + eventToBeDeleted.getUuid() + "could not be deleted");
 					}
 				}

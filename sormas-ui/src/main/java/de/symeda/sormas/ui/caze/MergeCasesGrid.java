@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.caze;
 
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import java.util.Date;
 import java.util.List;
 

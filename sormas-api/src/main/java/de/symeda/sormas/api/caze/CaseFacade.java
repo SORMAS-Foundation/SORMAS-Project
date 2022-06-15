@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
@@ -136,7 +137,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	void deleteWithContacts(String caseUuid, DeletionDetails deletionDetails);
 
-	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid) throws ExternalSurveillanceToolRuntimeException;
+	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid);
 
 	Date getOldestCaseOnsetDate();
 

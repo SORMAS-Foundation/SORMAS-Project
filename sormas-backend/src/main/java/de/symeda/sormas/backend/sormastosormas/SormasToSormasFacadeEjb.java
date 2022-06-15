@@ -32,7 +32,7 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
@@ -239,7 +239,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 
 		try {
 			shareInfoService.handleOwnershipChangeInExternalSurvTool(requestInfo);
-		} catch (ExternalSurveillanceToolRuntimeException e) {
+		} catch (ExternalSurveillanceToolException e) {
 			LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
 
 			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasAccept);

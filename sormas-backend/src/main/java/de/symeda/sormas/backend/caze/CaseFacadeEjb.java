@@ -21,6 +21,7 @@ import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -2521,7 +2522,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RolesAllowed(UserRight._CASE_MERGE)
-	public void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid) throws ExternalSurveillanceToolRuntimeException {
+	public void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid) {
 
 		Case caze = service.getByUuid(caseUuid);
 		Case duplicateOfCase = service.getByUuid(duplicateOfCaseUuid);
@@ -2534,7 +2535,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@RolesAllowed({
 		UserRight._CASE_DELETE,
 		UserRight._SYSTEM })
-	public void deleteCaseInExternalSurveillanceTool(Case caze) {
+	public void deleteCaseInExternalSurveillanceTool(Case caze) throws ExternalSurveillanceToolException {
 
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && caze.getExternalID() != null && !caze.getExternalID().isEmpty()) {
 			List<CaseDataDto> casesWithSameExternalId = getByExternalId(caze.getExternalID());

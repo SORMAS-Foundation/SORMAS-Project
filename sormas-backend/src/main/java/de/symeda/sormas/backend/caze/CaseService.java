@@ -14,6 +14,8 @@
  */
 package de.symeda.sormas.backend.caze;
 
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -975,7 +977,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			ensurePersisted(c);
 		});
 
-		caseFacade.deleteCaseInExternalSurveillanceTool(caze);
+		deleteCaseInExternalSurveillanceTool(caze);
 		deleteCaseLinks(caze);
 
 		super.deletePermanent(caze);
@@ -990,13 +992,21 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			.filter(sample -> sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null)
 			.forEach(sample -> sampleService.delete(sample, deletionDetails));
 
-		caseFacade.deleteCaseInExternalSurveillanceTool(caze);
+		deleteCaseInExternalSurveillanceTool(caze);
 		deleteCaseLinks(caze);
 		caze.setDeletionReason(deletionDetails.getDeletionReason());
 		caze.setOtherDeletionReason(deletionDetails.getOtherDeletionReason());
 
 		// Mark the case as deleted
 		super.delete(caze, deletionDetails);
+	}
+
+	private void deleteCaseInExternalSurveillanceTool(Case caze) {
+		try {
+			caseFacade.deleteCaseInExternalSurveillanceTool(caze);
+		} catch (ExternalSurveillanceToolException e) {
+			throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+		}
 	}
 
 	private void deleteCaseLinks(Case caze) {
