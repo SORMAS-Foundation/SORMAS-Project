@@ -1230,6 +1230,30 @@ Feature: Case end to end tests
     Then I click on edit button for the last searched facility
     And I archive facility
 
+  @env_main @#8556
+  Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of a Case
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    Then I navigate to the last created case via the url
+    Then I click on New Sample
+    Then I create a new Sample with positive test result with Guinea Worm as disease
+    Then I confirm the Create case from contact with positive test result
+    Then I navigate to the last created case via the url
+    Then I click on edit Sample
+    Then I click on new test result for pathogen tests
+    Then I create a new pathogen test result with Dengue Fever as disease
+    Then I confirm the Create case from contact with positive test result
+    Then I navigate to the last created case via the url
+    Then I validate only one sample is created with two pathogen tests
+    Then I click on edit Sample
+    Then I validate the existence of two pathogen tests
+
+
   @env_main @#8565
   Scenario: Check an archived case if its read only
     Given API: I create a new person

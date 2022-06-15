@@ -158,5 +158,8 @@ public class EditContactPage {
         String.format("//*[contains(text(),'Pick or create event')]//..//..//../tr[%s]", index));
   }
 
+  public static final By NUMBER_OF_TESTS_IN_SAMPLES =
+      By.cssSelector("div:nth-of-type(7) > .v-label.v-label-undef-w.v-widget");
+
   public static final By CONTACTS_LIST = By.id("tab-contacts");
 }

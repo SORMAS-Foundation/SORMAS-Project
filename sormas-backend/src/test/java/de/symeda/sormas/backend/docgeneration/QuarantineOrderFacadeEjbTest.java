@@ -139,6 +139,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		eventParticipantDto = creator.createEventParticipant(eventDto.toReference(), personDto, "participated", userDto.toReference());
 
 		sampleDto = SampleDto.build(userDto.toReference(), caseDataDto.toReference());
+		sampleDto.setLab(rdcf.facility);
 		sampleDto.setSampleDateTime(parseDate("11/09/2020"));
 		sampleDto.setSampleMaterial(SampleMaterial.NASAL_SWAB);
 		sampleDto.setPathogenTestResult(PathogenTestResultType.NEGATIVE);

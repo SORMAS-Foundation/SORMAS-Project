@@ -170,3 +170,33 @@ Feature: Sample Functionalities
     Then I click on the new additional test from the Edit Sample page
     And I complete all fields from Additional test result popup and save
     And I check that the created Additional test is correctly displayed
+
+    @env_main @#8556
+  Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of a Contact
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When I log in with National User
+    Then I navigate to the last created contact via the url
+    Then I click on New Sample
+    Then I collect the sample UUID displayed on create new sample page
+    Then I create a new Sample with positive test result with COVID-19 as disease
+    Then I confirm the Create case from contact with positive test result
+    Then I create a new case with specific data for positive pathogen test result
+    Then I save a new case
+    Then I navigate to the last created contact via the url
+    Then I click on edit Sample
+    Then I click on new test result for pathogen tests
+    Then I create a new pathogen test result with Anthrax as disease
+    Then I confirm the Create case from contact with positive test result
+    Then I create a new case with specific data for positive pathogen test result
+    Then I save a new case
+    Then I navigate to the last created contact via the url
+    Then I validate only one sample is created with two pathogen tests
+    Then I click on edit Sample
+    Then I validate the existence of two pathogen tests
+
+

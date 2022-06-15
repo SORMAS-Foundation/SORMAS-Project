@@ -53,6 +53,42 @@ import static org.sormas.e2etests.pages.application.immunizations.EditImmunizati
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SAMPLE_DELETION_POPUP_YES_BUTTON;
 
+import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SAVE_EDIT_BUTTON;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.BUTTONS_IN_VACCINATIONS_LOCATION;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DATE_OF_REPORT_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DELETE_VACCINATION_BUTTON;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DISEASE_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.FACILITY_CATEGORY_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.FACILITY_COMBOBOX_IMMUNIZATION_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.FACILITY_NAME_DESCRIPTION_VALUE;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.FACILITY_TYPE_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.IMMUNIZATION_MANAGEMENT_STATUS_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.IMMUNIZATION_STATUS_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.MEANS_OF_IMMUNIZATIONS_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.NEW_ENTRY_BUTTON;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.NUMBER_OF_DOSES;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.POPUP_MESSAGE;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.RESPONSIBLE_COMMUNITY_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.RESPONSIBLE_DISTRICT_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.RESPONSIBLE_REGION_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.UUID;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.VACCINATION_DATE_HEADER;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.VACCINATION_DOSE_HEADER;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.VACCINATION_ID_HEADER;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.VACCINATION_MANUFACTURER_HEADER;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.VACCINATION_NAME_HEADER;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.VACCINATION_TYPE_HEADER;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.getVaccinationByIndex;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SAMPLE_DELETION_POPUP_YES_BUTTON;
+
 public class EditImmunizationSteps implements En {
 
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
