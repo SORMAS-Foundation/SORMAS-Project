@@ -1627,48 +1627,48 @@ public class EditCaseSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(BACK_TO_CASES_LIST_BUTTON);
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(INVESTIGATION_STATUS_OPTIONS),
-              false,
-              "Investigation status option is not in read only state!");
+              true,
+              "Investigation status option is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(DISEASE_COMBOBOX),
-              false,
-              "Disease combobox is not in read only state!");
+              true,
+              "Disease combobox is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(OUTCOME_OF_CASE_OPTIONS),
-              false,
-              "Outcome of case is not in read only state!");
+              true,
+              "Outcome of case is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(FACILITY_CATEGORY_COMBOBOX),
-              false,
-              "Facility category is not in read only state!");
+              true,
+              "Facility category is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(RESPONSIBLE_COMMUNITY_COMBOBOX),
-              false,
-              "Responsible community combobox is not in read only state!");
+              true,
+              "Responsible community combobox is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(RESPONSIBLE_DISTRICT_COMBOBOX),
-              false,
-              "Responsible district is not in read only state!");
+              true,
+              "Responsible district is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(RESPONSIBLE_REGION_COMBOBOX),
-              false,
-              "Responsible region combobox is not in read only state!");
+              true,
+              "Responsible region combobox is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(FACILITY_TYPE_COMBOBOX),
-              false,
-              "Facility type combobox is not in read only state!");
+              true,
+              "Facility type combobox is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(EditEventPage.SAVE_BUTTON),
-              false,
-              "Save button is not in read only state!");
+              true,
+              "Save button is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(DISCARD_BUTTON),
-              false,
-              "Discard button is not in read only state!");
+              true,
+              "Discard button is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(DELETE_BUTTON),
-              false,
-              "Delete button is not in read only state!");
+              true,
+              "Delete button is not editable state but it should be since archived entities default value is true!");
           softly.assertAll();
         });
   }

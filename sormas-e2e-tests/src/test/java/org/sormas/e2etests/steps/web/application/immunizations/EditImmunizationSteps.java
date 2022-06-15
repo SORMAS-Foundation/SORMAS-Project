@@ -223,40 +223,40 @@ public class EditImmunizationSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(IMMUNIZATION_PERSON_TAB);
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(DISEASE_INPUT),
-              false,
-              "Disease input is not in read only state!");
+              true,
+              "Disease input is not is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(MEANS_OF_IMMUNIZATIONS_INPUT),
-              false,
-              "Means of immunization input is not in read only state!");
+              true,
+              "Means of immunization input is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(RESPONSIBLE_REGION_INPUT),
-              false,
-              "Responsible region input is not in read only state!");
+              true,
+              "Responsible region input is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(RESPONSIBLE_DISTRICT_INPUT),
-              false,
-              "Responsible district input is not in read only state!");
+              true,
+              "Responsible district input is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(RESPONSIBLE_COMMUNITY_INPUT),
-              false,
-              "Responsible community input is not in read only state!");
+              true,
+              "Responsible community input is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(DATE_OF_REPORT_INPUT),
-              false,
-              "Date of report input is not in read only state!");
+              true,
+              "Date of report input is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(DISCARD_BUTTON),
-              false,
-              "Discard button is not in read only state!");
+              true,
+              "Discard button is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(COMMIT_BUTTON),
-              false,
-              "Commit button is not in read only state!");
+              true,
+              "Commit button is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(DELETE_BUTTON),
-              false,
-              "Delete button is not in read only state!");
+              true,
+              "Delete button is not editable state but it should be since archived entities default value is true!");
           softly.assertAll();
         });
   }

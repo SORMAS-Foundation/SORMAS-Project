@@ -1413,68 +1413,68 @@ public class EditEventSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_PARTICIPANTS_TAB);
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(EVENT_STATUS_OPTIONS),
-              false,
-              "Event status option is not in read only state!");
+              true,
+              "Event status option is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(RISK_LEVEL_INPUT),
-              false,
-              "Risk level input is not in read only state!");
+              true,
+              "Risk level input is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(TITLE_INPUT),
-              false,
-              "Title input is not in read only state!");
+              true,
+              "Title input is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(EVENT_MANAGEMENT_STATUS_OPTIONS),
-              false,
-              "Event management status option is not in read only state!");
+              true,
+              "Event management status option is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(EVENT_INVESTIGATION_STATUS_OPTIONS),
-              false,
-              "Event investigation status option is not in read only state!");
+              true,
+              "Event investigation status option is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(RISK_LEVEL_COMBOBOX),
-              false,
-              "Risk level combobox is not in read only state!");
+              true,
+              "Risk level combobox is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(NEW_TASK_BUTTON),
-              false,
-              "New task button is not in read only state!");
+              true,
+              "New task button is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(NEW_ACTION_BUTTON),
-              false,
-              "New action button is not in read only state!");
+              true,
+              "New action button is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(LINK_EVENT_GROUP_BUTTON),
-              false,
-              "Link event group button is not in read only state!");
+              true,
+              "Link event group button is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(DISEASE_COMBOBOX),
-              false,
-              "Disease combobox is not in read only state!");
+              true,
+              "Disease combobox is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(PLACE_OF_STAY_COMBOBOX),
-              false,
-              "Place of stay combobox is not in read only state!");
+              true,
+              "Place of stay combobox is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(SOURCE_TYPE_COMBOBOX),
-              false,
-              "Source type combobox is not in read only state!");
+              true,
+              "Source type combobox is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(EVENT_STATUS_OPTIONS),
-              false,
-              "Event status options is not in read only state!");
+              true,
+              "Event status options is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(SAVE_BUTTON),
-              false,
-              "Save button is not in read only state!");
+              true,
+              "Save button is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(DISCARD_BUTTON),
-              false,
-              "Discard button is not in read only state!");
+              true,
+              "Discard button is not editable state but it should be since archived entities default value is true!");
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(DELETE_BUTTON),
-              false,
-              "Delete button is not in read only state!");
+              true,
+              "Delete button is not editable state but it should be since archived entities default value is true!");
           softly.assertAll();
         });
   }
