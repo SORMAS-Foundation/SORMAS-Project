@@ -29,8 +29,8 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 
 public class AgeGroupUtils {
 
-	private final static String AGE_GROUP_RANGE_REGEX = "\\d{1,3}[dmyDMY]_\\d{1,3}[dmyDMY]";
-	private final static String AGE_GROUP_START_AT_REGEX = "\\d{1,3}[dmyDMY]";
+	private static final String AGE_GROUP_RANGE_REGEX = "\\d{1,3}[dmyDMY]_\\d{1,3}[dmyDMY]";
+	private static final String AGE_GROUP_START_AT_REGEX = "\\d{1,3}[dmyDMY]";
 
 	public static void validateAgeGroup(String ageGroup) {
 		if (!(Pattern.matches(AGE_GROUP_RANGE_REGEX, ageGroup) || Pattern.matches(AGE_GROUP_START_AT_REGEX, ageGroup))) {

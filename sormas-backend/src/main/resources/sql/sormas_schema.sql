@@ -11615,6 +11615,8 @@ ALTER TABLE testreport_history RENAME COLUMN testlabexternalid TO testlabexterna
 
 INSERT INTO schema_version (version_number, comment) VALUES (468, 'Compare the list of Organization Ids with facilities in SORMAS #8949');
 
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (469, 'Remove UserRight DASHBOARD_CAMPAIGNS_VIEW from COMMUNITY_INFORMANT #4461', true);
+
 -- 2022-06-14 Allow surveillance officer to create aggregate reports #9052
 INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
 SELECT userrole_id, 'AGGREGATE_REPORT_EDIT', tstzrange(now(), null)
@@ -11642,7 +11644,7 @@ WHERE uu.userright = 'AGGREGATE_REPORT_VIEW'
                  WHERE uu2.userrole_id = uu.userrole_id
                    AND uu2.userright = 'AGGREGATE_REPORT_EXPORT');
 
-INSERT INTO schema_version (version_number, comment) VALUES (469, 'Allow surveillance officer to create aggregate reports #9052');
+INSERT INTO schema_version (version_number, comment) VALUES (470, 'Allow surveillance officer to create aggregate reports #9052');
 
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

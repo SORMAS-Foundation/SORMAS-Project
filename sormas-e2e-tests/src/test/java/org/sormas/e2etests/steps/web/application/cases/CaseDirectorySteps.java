@@ -440,8 +440,6 @@ public class CaseDirectorySteps implements En {
         "I navigate to Epidemiological Data tab on Edit Case Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EPI_DATA_TAB);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
-              ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE);
         });
     When(
         "^I click on ([^\"]*) Radiobutton on Epidemiological Data Page$",
