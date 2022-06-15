@@ -73,6 +73,8 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
+import static java.util.Objects.nonNull;
+
 /**
  * Collection of common UI related functions used by processing related code placed in multiple classes
  */
@@ -174,7 +176,8 @@ public class ExternalMessageProcessingUIHelper {
 		Window window = VaadinUiUtil.createPopupWindow();
 		MutableObject<CommitDiscardWrapperComponent<SampleEditForm>> editComponentWrapper = new MutableObject<>();
 		// discard on close without commit or discard button clicked
-		Registration closeListener = window.addCloseListener(e -> editComponentWrapper.getValue().discard());
+		Registration closeListener = window.addCloseListener(
+				nonNull(editComponentWrapper.getValue())?e -> editComponentWrapper.getValue().discard():e -> editComponentWrapper.getValue());
 
 		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent =
 			ExternalMessageProcessingUIHelper

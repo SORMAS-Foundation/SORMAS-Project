@@ -1614,6 +1614,7 @@ public enum DefaultUserRole {
 		return laboratoryJurisdictionPresent ? JurisdictionLevel.LABORATORY : JurisdictionLevel.NONE;
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

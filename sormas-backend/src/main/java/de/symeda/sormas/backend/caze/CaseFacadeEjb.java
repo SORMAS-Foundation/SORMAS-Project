@@ -1136,8 +1136,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
 							Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
 
-							List<Vaccination> relevantSortedVaccinations =
-								getRelevantSortedVaccinations(exportDto.getUuid(), mostRecentImmunization.getVaccinations());
+							List<Vaccination> relevantSortedVaccinations = getRelevantSortedVaccinations(
+								exportDto.getUuid(),
+								filteredImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList()));
 							Vaccination firstVaccination = null;
 							Vaccination lastVaccination = null;
 

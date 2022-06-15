@@ -260,6 +260,7 @@ public final class ConfigProvider {
 			instance.accessGranted = null;
 			instance.lastNotificationDate = null;
 			instance.lastObsoleteUuidsSyncDate = null;
+			instance.userRights = null;
 
 			// old credentials are no longer valid
 			RetroProvider.disconnect();
