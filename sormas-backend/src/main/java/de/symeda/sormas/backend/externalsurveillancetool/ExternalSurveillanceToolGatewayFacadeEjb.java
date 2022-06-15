@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.externalsurveillancetool;
 
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -28,6 +29,8 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -41,8 +44,6 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Stateless(name = "ExternalSurveillanceToolFacade")
 public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveillanceToolFacade {
@@ -132,11 +133,15 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	@Override
-	public void deleteCases(List<CaseDataDto> cases) throws ExternalSurveillanceToolException {
+	public void deleteCases(List<CaseDataDto> cases) throws ExternalSurveillanceToolRuntimeException {
 		DeleteParameters params = new DeleteParameters();
 		params.setCases(cases);
 
-		sendDeleteRequest(params);
+		try {
+			sendDeleteRequest(params);
+		} catch (ExternalSurveillanceToolException e) {
+			throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+		}
 
 		caseService.getByUuids(cases.stream().map(CaseDataDto::getUuid).collect(Collectors.toList())).forEach(caze -> {
 			shareInfoService.createAndPersistShareInfo(caze, ExternalShareStatus.DELETED);
@@ -144,11 +149,15 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	@Override
-	public void deleteEvents(List<EventDto> events) throws ExternalSurveillanceToolException {
+	public void deleteEvents(List<EventDto> events) throws ExternalSurveillanceToolRuntimeException {
 		DeleteParameters params = new DeleteParameters();
 		params.setEvents(events);
 
-		sendDeleteRequest(params);
+		try {
+			sendDeleteRequest(params);
+		} catch (ExternalSurveillanceToolException e) {
+			throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+		}
 
 		eventService.getByUuids(events.stream().map(EventDto::getUuid).collect(Collectors.toList())).forEach(event -> {
 			shareInfoService.createAndPersistShareInfo(event, ExternalShareStatus.DELETED);

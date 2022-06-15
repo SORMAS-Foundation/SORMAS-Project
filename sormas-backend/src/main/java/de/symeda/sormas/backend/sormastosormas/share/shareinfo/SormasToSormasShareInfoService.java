@@ -32,7 +32,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.backend.caze.Case;
@@ -228,7 +228,7 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		return getUuidsWithPendingOwnershipHandOver(SormasToSormasShareInfo.EVENT, events);
 	}
 
-	public void handleOwnershipChangeInExternalSurvTool(ShareRequestInfo requestInfo) throws ExternalSurveillanceToolException {
+	public void handleOwnershipChangeInExternalSurvTool(ShareRequestInfo requestInfo) throws ExternalSurveillanceToolRuntimeException {
 		List<Case> cases =
 			requestInfo.getShares().stream().map(SormasToSormasShareInfo::getCaze).filter(Objects::nonNull).collect(Collectors.toList());
 		List<Event> events =
@@ -254,7 +254,7 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 	}
 
 	private void handleOwnershipChangeInExternalSurvTool(boolean isOwnershipHandedOver, List<Case> cases, List<Event> events)
-		throws ExternalSurveillanceToolException {
+		throws ExternalSurveillanceToolRuntimeException {
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && isOwnershipHandedOver) {
 			if (cases.size() > 0) {
 				externalSurveillanceToolGatewayFacade.deleteCases(cases.stream().map(caseFacade::toDto).collect(Collectors.toList()));

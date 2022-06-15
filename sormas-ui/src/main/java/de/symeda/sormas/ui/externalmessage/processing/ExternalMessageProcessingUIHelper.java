@@ -52,7 +52,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -451,7 +451,7 @@ public class ExternalMessageProcessingUIHelper {
 					try {
 						FacadeProvider.getCaseFacade()
 							.delete(sample.getAssociatedCase().getUuid(), new DeletionDetails(DeletionReason.DUPLICATE_ENTRIES, null));
-					} catch (ExternalSurveillanceToolException survToolException) {
+					} catch (ExternalSurveillanceToolRuntimeException survToolException) {
 						// should not happen because the new case was not shared
 						throw new RuntimeException(survToolException);
 					}
