@@ -583,7 +583,7 @@ Feature: Create events
     And I open the last created Person via API
     And I check that SEE EVENTS FOR THIS PERSON button appears on Edit Person page
 
-  @env_main @#8555 @ignore
+  @env_main @#8555
   Scenario: Add back a person to an event who was previously deleted as event participant
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -844,3 +844,70 @@ Feature: Create events
     Then I check if error popup is displayed with message Please check the input data
     And I check if error popup contains Date of report has to be after or on the same day as Start date
     And I check if error popup contains Start date has to be before or on the same day as Date of report
+
+  @issue=SORDEV-5563 @env_de
+  Scenario: Add contact person details to facilities event participant
+    Given I log in as a Admin User
+    Then I click on the Configuration button from navbar
+    And I navigate to facilities tab in Configuration
+    And I click on New Entry button in Facilities tab in Configuration
+    Then I set name, region and district in Facilities tab in Configuration
+    And I set Facility Category to "Medizinische Einrichtung" and Facility Type to "Krankenhaus" in Facilities tab in Configuration
+    And I set Facility Contact person first and last name with email address and phone number
+    Then I click on Save Button in new Facility form
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    When I create a new event with specific data for DE version with created facility
+    And I check if data for created facility is automatically imported to the correct fields
+    Then I click on save button on Create New Event Page
+    And I click on the Events button from navbar
+    And I search for specific event with created facility in event directory
+    And I click on the searched event with created facility
+    And I check if data for created facility is automatically imported to the correct fields in Case Person tab
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I add only required data for event participant creation for DE
+    And I set Region to "Voreingestellte Bundesländer" and District to "Voreingestellter Landkreis" in Event Participant edit page
+    Then I set Facility Category to "Medizinische Einrichtung" and  Facility Type to "Krankenhaus"
+    And I set facility name to created facility
+    And I check if data for created facility is automatically imported to the correct fields in Case Person tab
+    Then I click on save button on Create New Event Page
+    Then I click on the Configuration button from navbar
+    And I navigate to facilities tab in Configuration
+    Then I search last created facility
+    Then I click on edit button for the last searched facility
+    And I archive facility
+
+    #this testcase needs to be changed when bug 9212 is fixed
+    @env_main @#8556 @ignore
+  Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of an Event Participant
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    When I am accessing the event tab using the created event via api
+    Then I add a participant created by API create person
+    Then I collect the event participant UUID displayed in event participants list
+    Then I navigate to a specific Event Participant of an Event based on UUID
+    Then I click on New Sample and discard changes is asked
+    Then I collect the sample UUID displayed on create new sample page
+    Then I create a new Sample with positive test result with COVID-19 as disease
+    Then I confirm last popup window when there are multiple ones
+#    Then I confirm the Create case from event participant with positive test result
+    Then I create a new case with specific data for positive pathogen test result
+    Then I confirm last popup window when there are multiple ones
+    Then I click on edit Sample
+    Then I confirm last popup window when there are multiple ones
+    Then I click on new test result for pathogen tests
+    Then I create a new pathogen test result with Cholera as disease
+    Then I confirm the Create case from contact with positive test result
+    Then I create a new case with specific data for positive pathogen test result
+    Then I navigate to a specific Event Participant of an Event based on UUID
+    Then I validate only one sample is created with two pathogen tests
+    Then I click on edit Sample
+    Then I validate the existence of two pathogen tests

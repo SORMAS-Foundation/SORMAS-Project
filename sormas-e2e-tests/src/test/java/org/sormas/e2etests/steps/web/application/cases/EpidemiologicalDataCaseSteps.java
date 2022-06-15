@@ -24,6 +24,7 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DONE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EDIT_TRAVEL_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.END_OF_EXPOSURE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EPIDEMIOLOGICAL_DATA_ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EXPOSURE_ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EXPOSURE_ACTION_CONFIRM;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EXPOSURE_CHOOSE_CASE_BUTTON;
@@ -198,6 +199,10 @@ public class EpidemiologicalDataCaseSteps implements En {
             webDriverHelpers.clickWebElementByText(ACTIVITY_DETAILS_KNOWN_OPTIONS, option));
 
     When(
+        "I set Type of place to ([^\"]*) in Exposure New Entry popup",
+        (String option) -> webDriverHelpers.selectFromCombobox(TYPE_OF_PLACE_COMBOBOX, option));
+
+    When(
         "I click on Residing or working in an area with high risk of transmission of the disease with ([^\"]*) option",
         (String option) -> {
           epidemiologialDataSavedFromFields =
@@ -325,6 +330,13 @@ public class EpidemiologicalDataCaseSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EXPOSURE_DETAILS_NEW_ENTRY_BUTTON);
         });
+
+    When(
+        "I click on New Entry in Activity as Case in Cases directory",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(
+                EPIDEMIOLOGICAL_DATA_ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON));
+
     When(
         "I select from Combobox all options in Type of activity field in Exposure for Epidemiological data tab for Cases",
         () -> {
@@ -524,6 +536,12 @@ public class EpidemiologicalDataCaseSteps implements En {
     Then(
         "I click on discard button from Epidemiological Data Exposure popup",
         () -> webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON));
+
+    Then(
+        "I click on discard button from Activity as Case popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON);
+        });
 
     Then(
         "I open saved activity from Epidemiological Data",

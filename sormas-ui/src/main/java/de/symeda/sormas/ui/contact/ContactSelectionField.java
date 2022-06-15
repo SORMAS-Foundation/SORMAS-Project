@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.contact;
 
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import java.util.function.Consumer;
 
 import com.vaadin.ui.Component;
@@ -27,21 +28,23 @@ public class ContactSelectionField extends CustomField<SimilarContactDto> {
 	public static final String CREATE_CONTACT = "createContact";
 	public static final String SELECT_CONTACT = "selectContact";
 
-	private ContactDto referenceContact;
-	private String infoText;
-	private String referenceFirstName;
-	private String referenceLastName;
+	private final ContactDto referenceContact;
+	private final PersonReferenceDto referencePerson;
+	private final String infoText;
+	private final String referenceFirstName;
+	private final String referenceLastName;
 	private VerticalLayout mainLayout;
 	private ContactSelectionGrid contactSelectionGrid;
 	private RadioButtonGroup<String> rbSelectContact;
 	private RadioButtonGroup<String> rbCreateContact;
 	private Consumer<Boolean> selectionChangeCallback;
 
-	public ContactSelectionField(ContactDto referenceContact, String infoText, String referenceFirstName, String referenceLastName) {
+	public ContactSelectionField(ContactDto referenceContact, PersonReferenceDto referencePerson, String infoText) {
 		this.referenceContact = referenceContact;
+		this.referencePerson = referencePerson;
 		this.infoText = infoText;
-		this.referenceFirstName = referenceFirstName;
-		this.referenceLastName = referenceLastName;
+		this.referenceFirstName = referencePerson.getFirstName();
+		this.referenceLastName = referencePerson.getLastName();
 
 		initializeGrid();
 	}
@@ -49,7 +52,7 @@ public class ContactSelectionField extends CustomField<SimilarContactDto> {
 	private void initializeGrid() {
 
 		final ContactSimilarityCriteria criteria = new ContactSimilarityCriteria(
-			referenceContact.getPerson(),
+			referencePerson,
 			referenceContact.getCaze(),
 			referenceContact.getDisease(),
 			referenceContact.getLastContactDate(),
@@ -101,8 +104,7 @@ public class ContactSelectionField extends CustomField<SimilarContactDto> {
 	public SimilarContactDto getValue() {
 
 		if (contactSelectionGrid != null) {
-			SimilarContactDto value = (SimilarContactDto) contactSelectionGrid.getSelectedRow();
-			return value;
+			return (SimilarContactDto) contactSelectionGrid.getSelectedRow();
 		}
 
 		return null;

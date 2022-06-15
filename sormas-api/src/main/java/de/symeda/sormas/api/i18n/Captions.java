@@ -165,6 +165,7 @@ public interface Captions {
 	String address = "address";
 	String AggregateReport_deaths = "AggregateReport.deaths";
 	String AggregateReport_disease = "AggregateReport.disease";
+	String AggregateReport_grouping = "AggregateReport.grouping";
 	String AggregateReport_healthFacility = "AggregateReport.healthFacility";
 	String AggregateReport_labConfirmations = "AggregateReport.labConfirmations";
 	String AggregateReport_newCases = "AggregateReport.newCases";
@@ -178,6 +179,7 @@ public interface Captions {
 	String aggregateReportNewAggregateReport = "aggregateReportNewAggregateReport";
 	String aggregateReportNewCasesShort = "aggregateReportNewCasesShort";
 	String aggregateReportReportFound = "aggregateReportReportFound";
+	String aggregateReportShowZeroRowsForGrouping = "aggregateReportShowZeroRowsForGrouping";
 	String aggregateReportThisWeek = "aggregateReportThisWeek";
 	String all = "all";
 	String area = "area";
