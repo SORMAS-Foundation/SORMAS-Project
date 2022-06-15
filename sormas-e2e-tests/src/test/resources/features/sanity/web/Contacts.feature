@@ -815,3 +815,12 @@ Feature: Contacts end to end tests
     Then I log in with National User
     Then I open last edited contact by API via URL navigation
     Then I check if editable fields are read only for an archived contact
+
+  @issue=SORDEV-6461 @env_main
+  Scenario: Test the task type in the contact's new task form
+    Given I log in as a Admin User
+    Then I click on the Contacts button from navbar
+    And I open the first contact from contacts list
+    And I click on the NEW TASK button
+    And I check if New task form is displayed correctly
+    And I check that values listed in the task type combobox are correct

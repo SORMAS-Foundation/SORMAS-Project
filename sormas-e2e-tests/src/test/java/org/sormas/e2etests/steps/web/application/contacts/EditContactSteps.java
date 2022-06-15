@@ -70,6 +70,7 @@ import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.pojo.web.QuarantineOrder;
 import org.sormas.e2etests.entities.services.ContactDocumentService;
 import org.sormas.e2etests.entities.services.ContactService;
+import org.sormas.e2etests.enums.TaskTypeValues;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
@@ -938,6 +939,24 @@ public class EditContactSteps implements En {
     When(
         "I navigate to follow-up visits tab",
         () -> webDriverHelpers.clickOnWebElementBySelector(FOLLOW_UP_VISITS));
+
+    And(
+        "^I check if New task form is displayed correctly$",
+        () -> {
+          String expectedString = "Create new task";
+          String actualString = webDriverHelpers.getTextFromWebElement(CREATE_NEW_TASK_FORM_HEADER);
+          softly.assertEquals(actualString, expectedString, "Unexpected popup title displayed");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check that values listed in the task type combobox are correct$",
+        () -> {
+          for (TaskTypeValues value : TaskTypeValues.values()) {
+            webDriverHelpers.selectFromCombobox(
+                TASK_TYPE_COMBOBOX, TaskTypeValues.getValueFor(value.toString()));
+          }
+        });
   }
 
   private void selectContactClassification(String classification) {

@@ -162,4 +162,6 @@ public class EditContactPage {
       By.cssSelector("div:nth-of-type(7) > .v-label.v-label-undef-w.v-widget");
 
   public static final By CONTACTS_LIST = By.id("tab-contacts");
+  public static final By CREATE_NEW_TASK_FORM_HEADER = By.xpath("//div[@class='v-window-header']");
+  public static final By TASK_TYPE_COMBOBOX = By.cssSelector(".v-window #taskType div");
 }
