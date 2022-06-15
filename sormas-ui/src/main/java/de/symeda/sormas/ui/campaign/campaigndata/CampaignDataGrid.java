@@ -15,8 +15,12 @@
 
 package de.symeda.sormas.ui.campaign.campaigndata;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.math.NumberUtils;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
@@ -26,6 +30,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignIndexDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -108,10 +113,48 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
+	
+	private CampaignFormDataEntry formatDate(CampaignFormDataEntry campaignFormDataEntry) {
+		DateFormat df = new SimpleDateFormat("dd/MM/YYYY");
+		
+		System.out.println("____33333333333333333333333333333333333______ "+campaignFormDataEntry);
+		DateFormat dfx = new SimpleDateFormat("dd/MM/yyyy");
+		if(campaignFormDataEntry != null) {
+		if(NumberUtils.isDigits(campaignFormDataEntry.getValue().toString()) && !NumberUtils.isParsable(campaignFormDataEntry.getValue().toString())) {
+			System.out.println("____33333333333");
+			//ret  = (CampaignFormDataEntry) dfx.format(campaignFormDataEntry.getValue());
+		} else {
+			System.out.println("____4444444444444444");
+			//ret = campaignFormDataEntry.getValue();
+		}
+		}
+		
+		
+		
+		
+		return campaignFormDataEntry;
+	}
 
 	public void addCustomColumn(String property, String caption) {
 		if(!property.toString().contains("readonly")){
-			System.out.println(caption+" --+++-- "+property);
+			//((Column<CampaignFormDataIndexDto, Date>) getColumn(CampaignFormDataIndexDto.FORM_DATE)).setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(I18nProperties.getUserLanguage())));
+			if(property.length() > 12){
+				System.out.println(caption+" --+_____________________DATE VALUE___________________++-- "+property);
+
+				System.out.println(">>>>><><>SSSD><<><> "+NumberUtils.isDigits("16348300000000000000"));
+				
+				Column<CampaignFormDataIndexDto, Object> newColumn =
+						addColumn(e -> formatDate(e.getFormValues().stream().filter(v -> v.getId().equals(property)).findFirst().orElse(null)));
+					newColumn.setSortable(false);
+					newColumn.setCaption(caption);
+					newColumn.setId(property);
+					newColumn.setWidth(240.0);
+					newColumn.setDescriptionGenerator(CampaignFormDataIndexDto -> newColumn.getCaption());//set the description of default columns #94-iyanuu
+					
+				
+			}else {
+			
+			System.out.println(caption+" --+_____________________STRING___________________++-- "+property);
 		Column<CampaignFormDataIndexDto, Object> newColumn =
 			addColumn(e -> e.getFormValues().stream().filter(v -> v.getId().equals(property)).findFirst().orElse(null));
 		newColumn.setSortable(false);
@@ -123,4 +166,5 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 		}
 	}
 
+}
 }

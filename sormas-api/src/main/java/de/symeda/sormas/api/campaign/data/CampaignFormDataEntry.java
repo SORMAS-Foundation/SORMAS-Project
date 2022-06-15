@@ -18,11 +18,16 @@ package de.symeda.sormas.api.campaign.data;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Objects;
 
 import javax.validation.constraints.Size;
+
+import org.apache.commons.lang3.math.NumberUtils;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -71,11 +76,21 @@ public class CampaignFormDataEntry implements Serializable, JsonDataEntry {
 			return "";
 		}
 
+		if (value instanceof Date) {
+			System.out.println("#############################################################################");
+			DateFormat dfx = new SimpleDateFormat("dd/MM/yyyy");
+			return NumberUtils.isDigits(value.toString()) ? dfx.format(new Date((Long) value)) : value.toString();
+		}
+		
 		if (value instanceof Boolean) {
 			return value.equals(Boolean.TRUE) ? I18nProperties.getString(Strings.yes) : I18nProperties.getString(Strings.no);
 		}
-
-		return value.toString();
+		
+		
+		System.out.println("##########################rrrrrrrrrrrrrrr###############################");
+		DateFormat dfx = new SimpleDateFormat("dd/MM/yyyy");
+		return NumberUtils.isDigits(value.toString()) ? dfx.format(new Date((Long) value)) : value.toString();
+		//return value.toString();
 	}
 
 	public static void removeNullValueEntries(Collection<CampaignFormDataEntry> entries) {

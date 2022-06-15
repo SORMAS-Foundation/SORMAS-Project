@@ -8465,16 +8465,6 @@ CREATE TRIGGER trig_copy_forgot_password
 
 
 
-CREATE OR REPLACE FUNCTION function_update() RETURNS TRIGGER AS
-$BODY$
-BEGIN
-    UPDATE user_account set username = new.username, email = new.useremail where id = new.id;
-    RETURN new;
-END;
-$BODY$
-language plpgsql;
-
-
      CREATE OR REPLACE FUNCTION function_update() RETURNS TRIGGER AS
      $BODY$
      BEGIN
@@ -8482,15 +8472,15 @@ language plpgsql;
      IF EXISTS(SELECT id FROM user_account where id = new.id limit 1) THEN
 
      UPDATE user_account set username = new.username, email = new.useremail where id = new.id;
+     
      RETURN new;
 
      ELSEIF EXISTS(SELECT id FROM users where useremail = new.useremail) THEN
 
 
-     INSERT INTO user_account(id,username,email)
-          VALUES(new.id,new.username,new.useremail);
+     INSERT INTO user_account(id,username,email) VALUES(new.id,new.username,new.useremail);
 
-               RETURN new;
+     RETURN new;
 
 
      END IF;

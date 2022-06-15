@@ -3,11 +3,11 @@
 // Global variable overrides. Must be declared before importing Valo.
 // For more information, see: https://vaadin.com/book/-/page/themes.valo.html
 // Example variants can be copy/pasted from https://vaadin.com/docs/v8/framework/articles/ValoExamples.html
-// See also https://vaadin.com/api/valo/
+// See also https://vaadin.com/api/valo/ v-link
 
 $v-luminance-threshold: 180 !default;
 
-$s-default-color: #0E693A;
+$s-default-color: rgb(0, 128, 0);
 $s-primary-color: #0E693A;
 $s-secondary-color: rgb(44, 169, 75);
 $s-critical-color: rgb(200, 0, 0);
@@ -18,7 +18,7 @@ $s-important-transparent-color: rgba(190, 105, 0, 0.7);
 $s-warning-color: $s-important-color;
 $s-relevant-color: rgb(200, 170, 0);
 $s-relevant-transparent-color: rgba(200, 170, 0, 0.7);
-$s-neutral-color: #00BFFF;
+$s-neutral-color: rgb(0, 128, 0);
 $s-positive-color: #32CD32;
 $s-minor-color: #808080;
 $s-steady-color: #FF8C00;
@@ -30,8 +30,8 @@ $v-background-color: #FEFEFE !default;
 $v-app-background-color: $v-background-color !default;
 $v-font-color: #394C5B !default;
 $v-selection-color: $s-primary-color !default;
-$v-focus-color: #CDD8EC !default;
-$v-focus-light-color: #F28A35 !default;
+$v-focus-color: rgb(0, 128, 0) !default;
+$v-focus-light-color: #90EE90 !default;
 $v-error-indicator-color: $s-critical-color !default;
 $v-friendly-color: $s-default-color !default;
 
@@ -41,7 +41,7 @@ $v-font-weight: 400 !default;
 $v-font-weight--header: 400 !default;
 $v-font-size--h3: 16px;
 
-$v-link-font-color: #1565A2;
+$v-link-font-color: rgb(0, 128, 0);
 
 $v-unit-size: 32px !default;
 $v-gradient: false;
@@ -59,8 +59,8 @@ $v-layout-spacing-vertical: round($v-unit-size / 1.8) !default;
 $v-layout-spacing-horizontal: round($v-unit-size / 1.8) !default;
 
 
-$editor-shadow: 0 0 10px 10px rgba(0,0,0,.1) !default;
-$editor-background-color: #6691C4 !default;
+$editor-shadow: 0 0 10px 10px rgb(0, 128, 0) !default;
+$editor-background-color: rgb(0, 128, 0) !default;
 $editor-embed-background-color: darken($editor-background-color, 5%) !default;
 $editor-raised-background-color: lighten($editor-background-color, 10%) !default;
 $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !default;

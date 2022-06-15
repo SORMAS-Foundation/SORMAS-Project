@@ -15,10 +15,12 @@
 
 package de.symeda.sormas.ui.campaign.campaigndata;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -437,24 +439,31 @@ if(value != null) {
 					field.setEnabled(true);
 				} else if(value.equals(false)){
 					field.setEnabled(false);
-					//Notification.show("Warning:", "Expression resulted in wrong value please check your data 1", Notification.TYPE_WARNING_MESSAGE);
+					//Notification.show("Warning:", Title "Expression resulted in wrong value please check your data 1", Notification.TYPE_WARNING_MESSAGE);
 				}
 			};
 			((TextArea) field).setValue(value != null ? value.toString() : null);
 			break;
 		case DATE:
 			if(value != null) {
-				SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 				try {
-					Date date = (Date) dateFormat.parseObject(value + "");
-						((DateField) field).setValue(value != null ? date : null);
-						 System.out.println(">>>>>>>>>>>>>>>>>>> daTE VALEUE been checked >>" +date);
-					} catch (ReadOnlyException | ConversionException | ParseException e) {
+					
+					String vc = value+"";
+					Date dst = vc.contains("00:00:00") ? dateFormatter(value+"") : new Date((Long) value); ;
+					
+						((DateField) field).setValue(value != null ? dst : null);
+						
+						
+						
+						
+					} catch (ReadOnlyException | ConversionException e) {
 									// TODO Auto-generated catch block
 					((DateField) field).setValue(null);
-					 System.out.println(">>>>>>>>>>>>>>>>>>> daTE VALEUE been checked >>" +value);
 					e.printStackTrace();
-				}
+				} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace(); 
+					}
 			};
 			break;
 		case RADIO:
@@ -508,6 +517,28 @@ if(value != null) {
 		default:
 			throw new IllegalArgumentException(type.toString());
 		}
+	}
+
+	private Date dateFormatter(String value) throws ParseException {
+		// TODO Auto-generated method stub
+	
+		 System.out.println(">>>>>>>>>>>>>>>>>>> daTE VALEUE to checked >>" +value);
+		 String dateStr = value;
+		 DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
+		 Date date;
+		
+			date = (Date)formatter.parse(dateStr);
+		
+		 System.out.println(date);        
+
+		 Calendar cal = Calendar.getInstance();
+		 cal.setTime(date);
+		 String formatedDate = cal.get(Calendar.DATE) + "/" + (cal.get(Calendar.MONTH) + 1) + "/" + cal.get(Calendar.YEAR);
+		 System.out.println("formatedDate : " + formatedDate); 
+		 
+		Date res = new Date(formatedDate+"");  
+		
+		return res;
 	}
 
 	private void setVisibilityDependency(AbstractComponent component, String dependingOnId,
@@ -566,7 +597,13 @@ if(value != null) {
 			Field<?> field = fields.get(id);
 			if (field instanceof NullableOptionGroup) {
 				return new CampaignFormDataEntry(id, ((NullableOptionGroup) field).getNullableValue());
-			} else {
+			} else if (field instanceof DateField) {
+				
+				System.out.println("----xx: "+field.getValue());
+				
+			//	System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ field is date"+ dateFormat.format(((DateField) field).getDateFormat().format(field.getValue()+"", null)));
+				return new CampaignFormDataEntry(id, ((DateField) field).getDateFormat().format(field.getValue()+"", null));
+			}else {
 				return new CampaignFormDataEntry(id, field.getValue());
 			}
 		}).collect(Collectors.toList());

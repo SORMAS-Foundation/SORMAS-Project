@@ -87,14 +87,14 @@ public class AboutView extends VerticalLayout implements View {
 		bannerSection.setStyleName("margin-set-style");
 		//bannerSection.setWidth("30");
 		//bannerSection.addStyleName(CssStyles.BACKGROUND_DARKER);
-		addComponent(bannerSection);
+		//addComponent(bannerSection);
 
 		// Info section
 		HorizontalLayout aboutLayout = new HorizontalLayout();
 		{
 			//aboutLayout.setMargin(CssStyles.); trying to set the margin-top of the about section. Hack: Decided to go for adding another component of defined height before the about layout
 			VerticalLayout infoLayout = new VerticalLayout();
-			infoLayout.setMargin(new MarginInfo(true, false, false, false));
+			infoLayout.setMargin(new MarginInfo(false, false, false, false));
 			infoLayout.addComponent(createInfoSection());
 			infoLayout.addStyleName(CssStyles.H1);
 			

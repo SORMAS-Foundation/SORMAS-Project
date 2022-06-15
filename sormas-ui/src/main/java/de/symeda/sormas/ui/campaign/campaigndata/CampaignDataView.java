@@ -283,6 +283,7 @@ public class CampaignDataView extends AbstractCampaignView {
 
 		CampaignReferenceDto campaignReferenceDtx = campaignSelector.getValue();
 		String campaignReferenceDto = campaignFormPhaseSelector.getValue();
+		((VerticalLayout) containerPanel.getContent()).removeAllComponents();
 		
 		if (campaignReferenceDto != null && campaignReferenceDtx != null) {
 			List<CampaignFormMetaReferenceDto> campagaignFormReferences =

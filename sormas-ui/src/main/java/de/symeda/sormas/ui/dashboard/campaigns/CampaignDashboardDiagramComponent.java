@@ -52,7 +52,12 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	private boolean showPercentages;
 	private boolean showAsColumnChart;
 	private boolean showDataLabels = false;
+	private boolean rotateDataLabels = true;
 	private boolean ignoreTotalsError = false;
+	private boolean pieChart = false;
+	private String chartType;
+	private String secondaryChartType;
+	private  Map mapSeries = new HashMap();  
 
 	private final HighChart campaignColumnChart;
 
@@ -64,6 +69,12 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		this.diagramDefinition = diagramDefinition;
 		this.showPercentages = diagramDefinition.isPercentageDefault();
 		this.totalValuesMap = totalValuesMap;
+		
+		this.secondaryChartType = diagramDefinition.getDiagramType().name().toLowerCase();
+		
+		this.chartType = secondaryChartType.equalsIgnoreCase(DiagramType.DOUGHNUT.toString()) ? "pie" : secondaryChartType;
+		pieChart = (chartType.equalsIgnoreCase(DiagramType.PIE.toString())) ? true : false;
+		
 
 		if (this.totalValuesMap != null && this.totalValuesMap.keySet().stream().noneMatch(r -> r.getStack() != null)) {
 			totalValuesWithoutStacks = true;
@@ -122,11 +133,11 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 	public void buildDiagramChart(String title, CampaignJurisdictionLevel campaignJurisdictionLevelGroupBy) {
 		final StringBuilder hcjs = new StringBuilder();
-
+	
 		//@formatter:off
 		hcjs.append("var options = {"
 				+ "chart:{ "
-				+ " type: '" + (showAsColumnChart ? "column" : "bar") + "', "
+				+ " type: '"+chartType+"', "
 				+ " backgroundColor: 'white', "
 				+ " borderRadius: '1', "
 				+ " borderWidth: '1', "
@@ -193,6 +204,9 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		appendSeries(campaignJurisdictionLevelGroupBy, hcjs);
 
 		hcjs.append("}");
+		
+		System.out.println(hcjs.toString());
+		
 		campaignColumnChart.setHcjs(hcjs.toString());
 	}
 
@@ -227,9 +241,15 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			hcjs.append("opposite: true,");
 		}
 		hcjs.append("categories: [");
+		int op = 0;
 		for (String caption : xAxisInfo.values()) {
+			
 			hcjs.append("'").append(StringEscapeUtils.escapeEcmaScript(caption)).append("',");
-		}
+			
+			mapSeries.put(op++, caption);
+			System.out.println(op +"      +      "+caption);
+			
+			}
 		hcjs.append("]},");
 
 		//@formatter:off
@@ -246,7 +266,13 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	}
 
 	private void appendSeries(CampaignJurisdictionLevel campaignJurisdictionLevelGroupBy, StringBuilder hcjs) {
-		hcjs.append("series: [");
+		String innerS = secondaryChartType.equalsIgnoreCase(DiagramType.DOUGHNUT.toString()) ? " innerSize: '50%'," : "";
+		
+		if(pieChart) {
+			hcjs.append("series: [{ "+innerS+" data: [");
+		}else{
+			hcjs.append("series: [");
+		}
 		for (CampaignDiagramSeries series : diagramDefinition.getCampaignDiagramSeries()) {
 			String seriesKey = series.getFormId() + series.getFieldId();
 			if (!diagramDataBySeriesAndXAxis.containsKey(seriesKey))
@@ -260,9 +286,16 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 					fieldName = I18nProperties.getString(Strings.populationDataByCommunity);
 				}
 			}
+			
+			if(chartType.equalsIgnoreCase(DiagramType.PIE.toString())) {
+				//hcjs.append("data: [{");
+				appendPieData(campaignJurisdictionLevelGroupBy == CampaignJurisdictionLevel.COMMUNITY, hcjs, series, seriesData, fieldName);
+				hcjs.append("]},");
+			}else {
 
 			hcjs.append("{ name:'").append(StringEscapeUtils.escapeEcmaScript(fieldName)).append("', data: [");
 			appendData(campaignJurisdictionLevelGroupBy == CampaignJurisdictionLevel.COMMUNITY, hcjs, series, seriesData);
+			
 			final String stack = series.getStack();
 			final String color = series.getColor();
 			if (color != null || stack != null) {
@@ -278,6 +311,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			} else {
 				hcjs.append("]},");
 			}
+		}
 		}
 		hcjs.append("]");
 	}
@@ -335,6 +369,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		CampaignDiagramSeries series,
 		Map<Object, CampaignDiagramDataDto> seriesData) {
 		for (Object axisKey : xAxisInfo.keySet()) {
+			System.out.println("+++++++++++++++++++++++++++++++++++++ "+axisKey);
 			if (seriesData.containsKey(axisKey)) {
 				if (showPercentages && totalValuesMap != null) {
 					Double totalValue = totalValuesMap.get(
@@ -364,9 +399,53 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			}
 		}
 	}
+	
+	private void appendPieData(
+			boolean isCommunityGrouping,
+			StringBuilder hcjs,
+			CampaignDiagramSeries series,
+			Map<Object, CampaignDiagramDataDto> seriesData,
+			String fieldName) {
+		
+		
+		int iii = 0;
+			for (Object axisKey : xAxisInfo.keySet()) {
+				
+			//	System.out.println(mapSeries.get(iii++) +" ==== "+iii+" +++++++++++++++++++++++++++++++++++++ "+axisKey);
+				if (seriesData.containsKey(axisKey)) {
+					/*if (showPercentages && totalValuesMap != null) {
+						Double totalValue = totalValuesMap.get(
+							new CampaignDashboardTotalsReference(
+								seriesData.get(axisKey).getGroupingKey(),
+								totalValuesWithoutStacks ? null : series.getStack()));
+						if (totalValue == null) {
+							if (!isCommunityGrouping && !ignoreTotalsError) {
+								Notification.show(
+									String.format(I18nProperties.getString(Strings.errorCampaignDiagramTotalsCalculationError), getDiagramCaption()),
+									ERROR_MESSAGE);
+								ignoreTotalsError = true; // only show once
+							}
+						} else if (totalValue > 0) {
+							final double originalValue = seriesData.get(axisKey).getValueSum().doubleValue() / totalValue * 100;
+							final double scaledValue =
+								BigDecimal.valueOf(originalValue).setScale(originalValue < 2 ? 1 : 0, RoundingMode.HALF_UP).doubleValue();
+							hcjs.append(scaledValue).append(",");
+						} else {
+							hcjs.append("0,");
+						}
+					}*/// else {
+					
+						hcjs.append("{name: '"+mapSeries.get(iii++)+"', y: "+seriesData.get(axisKey).getValueSum().toString()).append("},");
+				//	}
+				} else {
+					hcjs.append("0,");  
+				}
+			}
+			mapSeries.clear();
+		}
 
 	private void appendPlotOptions(StringBuilder hcjs, Map<String, Long> stackMap) {
-		if (stackMap.size() > 0 || showDataLabels) {
+		if (stackMap.size() > 0 || showDataLabels || rotateDataLabels) {
 			hcjs.append("plotOptions: {");
 
 			if (stackMap.size() > 0) {
@@ -380,6 +459,44 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 					hcjs.append(", format: '{y}%'");
 				}
 				hcjs.append("}}");
+			}
+			
+			if (rotateDataLabels && chartType == DiagramType.COLUMN.name().toLowerCase()) {
+				hcjs.append((stackMap.size() > 0 || showDataLabels) ? ", " : "")
+					.append(
+						"labels: { rotation: -45, style: {fontSize: '13px', fontFamily: 'Verdana, sans-serif'}}");
+			}
+			
+			
+			if(pieChart && !secondaryChartType.equalsIgnoreCase(DiagramType.DOUGHNUT.toString())) {
+				hcjs.append((stackMap.size() > 0 || showDataLabels || rotateDataLabels) ? ", " : "");
+				System.out.println("______________________________________________");
+				hcjs.append(" pie: {\n"
+						+ "            allowPointSelect: true,\n"
+						+ "            cursor: 'pointer',\n"
+						+ "            dataLabels: {\n"
+						+ "                enabled: true,\n"
+						+ "                format: '<b>{point.name}</b>: {point.percentage:.1f} %'\n"
+						+ "            }\n"
+						+ "        }");
+			} else if(pieChart && secondaryChartType.equalsIgnoreCase(DiagramType.DOUGHNUT.toString())){
+				
+				hcjs.append(", pie: {\n"
+						+ "            dataLabels: {\n"
+						+ "                enabled: true,\n"
+						+ "                distance: -50,\n"
+						+ " format: '<b>{point.name}</b>: {point.percentage:.1f} %',\n"
+						+ "                style: {\n"
+						+ "                    fontWeight: 'bold',\n"
+						+ "                    color: 'white'\n"
+						+ "                }\n"
+						+ "            },\n"
+						+ "            startAngle: -90,\n"
+						+ "            endAngle: 90,\n"
+						+ "            center: ['50%', '75%'],\n"
+						+ "            size: '110%'\n"
+						+ "        }");
+				
 			}
 
 			hcjs.append("},");
@@ -413,6 +530,17 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	public void setShowAsColumnChart(boolean showAsColumnChart) {
 		this.showAsColumnChart = showAsColumnChart;
 	}
+	
+
+	public String getChartType() {
+		return chartType;
+	}
+
+	public void setChartType(String chartType) {
+		this.chartType = chartType;
+	}
+	
+	
 
 	public String getDiagramCaption() {
 		String diagramCaption = diagramDefinition.getDiagramCaption();
