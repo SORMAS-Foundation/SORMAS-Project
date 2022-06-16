@@ -137,8 +137,7 @@ public class NotificationServiceTest extends AbstractBeanTest {
 		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		UserDto survOff = creator.createUser(rdcf, "Case", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
-		User survOffUser = getUserService().getByUuid(survOff.getUuid());
-		survOffUser = getUserService().loadRoles(survOffUser);
+		User survOffUser = getEagerUser(survOff.getUuid());
 
 //		Mockito.when(userService.getAllByRegionsAndNotificationTypes(any(),any(), any())).then(invocation -> {
 //			// load only for SURVEILLANCE_SUPERVISOR, so the additional CASE_SUPERVISOR user will be added in the notification service
@@ -179,9 +178,9 @@ public class NotificationServiceTest extends AbstractBeanTest {
 		UserDto caseSup = creator.createUser(rdcf, "Case", "Sup", creator.getUserRoleReference(DefaultUserRole.CASE_SUPERVISOR));
 		UserDto contSup = creator.createUser(rdcf, "Cont", "Sup", creator.getUserRoleReference(DefaultUserRole.CONTACT_SUPERVISOR));
 
-		User survSupUser = getUserService().loadRoles(getUserService().getByReferenceDto(survSup.toReference()));
-		User survOffUser = getUserService().loadRoles(getUserService().getByReferenceDto(caseSup.toReference()));
-		User contSupUser = getUserService().loadRoles(getUserService().getByReferenceDto(contSup.toReference()));
+		User survSupUser = getEagerUser(survSup.getUuid());
+		User survOffUser = getEagerUser(caseSup.getUuid());
+		User contSupUser = getEagerUser(contSup.getUuid());
 
 		Mockito.doAnswer(invocation -> {
 			Map<User, String> userMessages = (Map<User, String>) invocation.getArgument(0);

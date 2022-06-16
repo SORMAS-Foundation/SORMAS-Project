@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.caze;
 
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +18,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseIndexDto;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -111,7 +112,7 @@ public class MergeCasesGrid extends AbstractMergeGrid<CaseIndexDto, CaseCriteria
 	private boolean deleteCaseAsDuplicate(CaseIndexDto caze, CaseIndexDto caseToMergeAndDelete) {
 		try {
 			FacadeProvider.getCaseFacade().deleteCaseAsDuplicate(caseToMergeAndDelete.getUuid(), caze.getUuid());
-		} catch (ExternalSurveillanceToolException e) {
+		} catch (ExternalSurveillanceToolRuntimeException e) {
 			return false;
 		}
 
