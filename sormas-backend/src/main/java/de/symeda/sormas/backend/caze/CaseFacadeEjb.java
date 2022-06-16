@@ -2545,6 +2545,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
+    @RolesAllowed(UserRight._CASE_ARCHIVE)
 	public void updateStatusInExternalSurveillanceTool(String entityUuid, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException{
 		Case caze = caseService.getByUuid(entityUuid);
 		//TODO: do we need the check for externalId too? -> caze.getExternalID() != null && !caze.getExternalID().isEmpty()
@@ -2556,6 +2557,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
+    @RolesAllowed(UserRight._CASE_ARCHIVE)
 	public void updateStatusInExternalSurveillanceToolForMultipleCases(List<String> entityUuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException{
 	    //TODO: if the check for externalId != null and externalID not empty is needed the entityUuids list should be filtered
         List<String> filteredEntityUuids = entityUuids.stream().filter(this::hasExternalId).collect(Collectors.toList());
@@ -3737,6 +3739,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		archiveAllArchivableCases(daysAfterCaseGetsArchived, LocalDate.now());
 	}
 
+    @RolesAllowed(UserRight._SYSTEM)
 	public void archiveAllArchivableCases(int daysAfterCaseGetsArchived, LocalDate referenceDate) {
 
 		long startTime = DateHelper.startTime();
