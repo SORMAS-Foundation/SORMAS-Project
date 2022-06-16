@@ -30,7 +30,6 @@ import java.util.Collections;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.ui.Button;
@@ -48,6 +47,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -265,22 +265,17 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 				ValoTheme.BUTTON_PRIMARY,
 				FORCE_CAPTION);
 		} else {
-			linkImmunizationToCaseButton = ButtonHelper.createButton(
-				Captions.linkImmunizationToCaseButton,
-				e -> {
-					if(this.isModified()){
-						actionCallback.accept(() ->{
-							ImmunizationDto immunizationDto = FacadeProvider.getImmunizationFacade().getByUuid(getValue().getUuid());
-							buildAndOpenSearchSpecificCaseWindow(immunizationDto);
-						});
-					}
-					else{
-						buildAndOpenSearchSpecificCaseWindow(this.getValue());
-					}
+			linkImmunizationToCaseButton = ButtonHelper.createButton(Captions.linkImmunizationToCaseButton, e -> {
+				if (this.isModified()) {
+					actionCallback.accept(() -> {
+						ImmunizationDto immunizationDto = FacadeProvider.getImmunizationFacade().getByUuid(getValue().getUuid());
+						buildAndOpenSearchSpecificCaseWindow(immunizationDto);
+					});
+				} else {
+					buildAndOpenSearchSpecificCaseWindow(this.getValue());
+				}
 
-				},
-				ValoTheme.BUTTON_PRIMARY,
-				FORCE_CAPTION);
+			}, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
 		}
 		getContent().addComponent(linkImmunizationToCaseButton, LINK_IMMUNIZATION_TO_CASE_BTN_LOC);
 		linkImmunizationToCaseButton.setVisible(shouldShowRecoveryFields(meansOfImmunizationValue));
