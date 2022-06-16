@@ -17,6 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
@@ -42,13 +48,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.i18n.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.http.HttpStatus;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -58,7 +70,6 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
-import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
@@ -89,7 +100,6 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
@@ -136,6 +146,23 @@ import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.visit.Visit;
 
 public class ContactFacadeEjbTest extends AbstractBeanTest {
+
+    private static final int WIREMOCK_TESTING_PORT = 8888;
+    private ExternalSurveillanceToolFacade subjectUnderTest;
+
+    @Rule
+    public WireMockRule wireMockRule = new WireMockRule(options().port(WIREMOCK_TESTING_PORT), false);
+
+    @Before
+    public void setup() {
+        configureExternalSurvToolUrlForWireMock();
+        subjectUnderTest = getExternalSurveillanceToolGatewayFacade();
+    }
+
+    @After
+    public void teardown() {
+        clearExternalSurvToolUrlForWireMock();
+    }
 
 	@Test
 	public void testGetMatchingContacts() {
@@ -1522,10 +1549,10 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(10, getContactFacade().countMaximumFollowUpDays(null));
 	}
 
+	//TODO
 	@Test
 	public void testArchiveOrDearchiveContact() {
-
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+        RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),
@@ -1534,14 +1561,18 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			"Sup",
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = creator.createCase(
-			user.toReference(),
-			cazePerson.toReference(),
-			Disease.EVD,
-			CaseClassification.PROBABLE,
-			InvestigationStatus.PENDING,
-			new Date(),
-			rdcf);
+
+        String externalId2 ="2";
+        CaseDataDto caze = creator.createCase(user.toReference(), rdcf, (c) -> {
+            c.setPerson(cazePerson.toReference());
+            c.setExternalID("externalId2");
+            c.setDisease(Disease.EVD);
+            c.setCaseClassification(CaseClassification.PROBABLE);
+            c.setInvestigationStatus(InvestigationStatus.PENDING);
+            c.setReportDate(new Date());
+        });
+
+
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 		creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
@@ -1554,6 +1585,12 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getVisitFacade().getAllActiveVisitsAfter(null).size());
 		assertEquals(1, getVisitFacade().getAllActiveUuids().size());
 
+        stubFor(
+                post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+                        .withRequestBody(containing("caseUuids"))
+                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+		//usage or archive
 		getCaseFacade().archive(caze.getUuid(), null, true);
 
 		// getAllActiveContacts and getAllUuids should return length 0
@@ -2004,4 +2041,12 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			null,
 			rdcf);
 	}
+
+    private void configureExternalSurvToolUrlForWireMock() {
+        MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", WIREMOCK_TESTING_PORT));
+    }
+
+    private void clearExternalSurvToolUrlForWireMock() {
+        MockProducer.getProperties().setProperty("survnet.url", "");
+    }
 }
