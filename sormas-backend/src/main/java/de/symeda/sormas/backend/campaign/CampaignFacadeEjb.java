@@ -26,6 +26,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -423,19 +424,19 @@ public class CampaignFacadeEjb
 
 	@Override
 	@RolesAllowed(UserRight._CAMPAIGN_ARCHIVE)
-	public void archive(String entityUuid, Date endOfProcessingDate) {
+	public void archive(String entityUuid, Date endOfProcessingDate) throws ExternalSurveillanceToolException {
 		super.archive(entityUuid, endOfProcessingDate);
 	}
 
 	@Override
 	@RolesAllowed(UserRight._CAMPAIGN_ARCHIVE)
-	public void archive(List<String> entityUuids) {
+	public void archive(List<String> entityUuids) throws ExternalSurveillanceToolException{
 		super.archive(entityUuids);
 	}
 
 	@Override
 	@RolesAllowed(UserRight._CAMPAIGN_ARCHIVE)
-	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+	public void dearchive(List<String> entityUuids, String dearchiveReason) throws ExternalSurveillanceToolException{
 		super.dearchive(entityUuids, dearchiveReason);
 	}
 

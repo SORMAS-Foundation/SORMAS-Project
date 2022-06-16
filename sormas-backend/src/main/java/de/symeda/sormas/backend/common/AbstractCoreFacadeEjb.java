@@ -42,6 +42,7 @@ import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.AccessDeniedException;
@@ -226,17 +227,17 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	public abstract void validate(DTO dto) throws ValidationRuntimeException;
 
 	@DenyAll
-	public void archive(String entityUuid, Date endOfProcessingDate) {
+	public void archive(String entityUuid, Date endOfProcessingDate) throws ExternalSurveillanceToolException{
 		service.archive(entityUuid, endOfProcessingDate);
 	}
 
 	@DenyAll
-	public void archive(List<String> entityUuids) {
+	public void archive(List<String> entityUuids) throws ExternalSurveillanceToolException {
 		service.archive(entityUuids);
 	}
 
 	@DenyAll
-	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+	public void dearchive(List<String> entityUuids, String dearchiveReason) throws ExternalSurveillanceToolException {
 		service.dearchive(entityUuids, dearchiveReason);
 	}
 

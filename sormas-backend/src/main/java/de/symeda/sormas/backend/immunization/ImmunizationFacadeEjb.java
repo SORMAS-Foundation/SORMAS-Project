@@ -42,6 +42,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -663,13 +664,13 @@ public class ImmunizationFacadeEjb
 
 	@Override
 	@RolesAllowed(UserRight._IMMUNIZATION_ARCHIVE)
-	public void archive(String entityUuid, Date endOfProcessingDate) {
+	public void archive(String entityUuid, Date endOfProcessingDate) throws ExternalSurveillanceToolException {
 		super.archive(entityUuid, endOfProcessingDate);
 	}
 
 	@Override
 	@RolesAllowed(UserRight._IMMUNIZATION_ARCHIVE)
-	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+	public void dearchive(List<String> entityUuids, String dearchiveReason) throws ExternalSurveillanceToolException{
 		super.dearchive(entityUuids, dearchiveReason);
 	}
 

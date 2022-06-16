@@ -23,6 +23,7 @@ import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -391,19 +392,19 @@ public class TravelEntryFacadeEjb
 
 	@Override
 	@RolesAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
-	public void archive(String entityUuid, Date endOfProcessingDate) {
+	public void archive(String entityUuid, Date endOfProcessingDate) throws ExternalSurveillanceToolException{
 		super.archive(entityUuid, endOfProcessingDate);
 	}
 
 	@Override
 	@RolesAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
-	public void archive(List<String> entityUuids) {
+	public void archive(List<String> entityUuids) throws ExternalSurveillanceToolException {
 		super.archive(entityUuids);
 	}
 
 	@Override
 	@RolesAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
-	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+	public void dearchive(List<String> entityUuids, String dearchiveReason) throws ExternalSurveillanceToolException{
 		super.dearchive(entityUuids, dearchiveReason);
 	}
 

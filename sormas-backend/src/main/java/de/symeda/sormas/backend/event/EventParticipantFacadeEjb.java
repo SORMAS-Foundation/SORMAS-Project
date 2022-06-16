@@ -1131,13 +1131,13 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	@RolesAllowed(UserRight._EVENTPARTICIPANT_ARCHIVE)
-	public void archive(String entityUuid, Date endOfProcessingDate) {
+	public void archive(String entityUuid, Date endOfProcessingDate) throws ExternalSurveillanceToolException{
 		super.archive(entityUuid, endOfProcessingDate);
 	}
 
 	@Override
 	@RolesAllowed(UserRight._EVENTPARTICIPANT_ARCHIVE)
-	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+	public void dearchive(List<String> entityUuids, String dearchiveReason) throws ExternalSurveillanceToolException{
 		super.dearchive(entityUuids, dearchiveReason);
 	}
 

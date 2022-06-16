@@ -63,6 +63,7 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -564,19 +565,19 @@ public class ContactFacadeEjb
 
 	@Override
 	@RolesAllowed(UserRight._CONTACT_ARCHIVE)
-	public void archive(String entityUuid, Date endOfProcessingDate) {
+	public void archive(String entityUuid, Date endOfProcessingDate) throws ExternalSurveillanceToolException {
 		super.archive(entityUuid, endOfProcessingDate);
 	}
 
 	@Override
 	@RolesAllowed(UserRight._CONTACT_ARCHIVE)
-	public void archive(List<String> entityUuids) {
+	public void archive(List<String> entityUuids) throws ExternalSurveillanceToolException{
 		super.archive(entityUuids);
 	}
 
 	@Override
 	@RolesAllowed(UserRight._CONTACT_ARCHIVE)
-	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+	public void dearchive(List<String> entityUuids, String dearchiveReason) throws ExternalSurveillanceToolException{
 		super.dearchive(entityUuids, dearchiveReason);
 	}
 
