@@ -1454,11 +1454,11 @@ public class ContactFacadeEjb
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@RolesAllowed(UserRight._SYSTEM)
-	public void archiveAllArchivableContacts(int daysAfterContactsGetsArchived) {
+	public void archiveAllArchivableContacts(int daysAfterContactsGetsArchived) throws ExternalSurveillanceToolException {
 		archiveAllArchivableContacts(daysAfterContactsGetsArchived, LocalDate.now());
 	}
 
-	private void archiveAllArchivableContacts(int daysAfterEventGetsArchived, @NotNull LocalDate referenceDate) {
+	private void archiveAllArchivableContacts(int daysAfterEventGetsArchived, @NotNull LocalDate referenceDate) throws ExternalSurveillanceToolException {
 		LocalDate notChangedSince = referenceDate.minusDays(daysAfterEventGetsArchived);
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

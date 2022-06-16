@@ -24,6 +24,7 @@ import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -33,7 +34,7 @@ public interface ImmunizationFacade extends CoreFacade<ImmunizationDto, Immuniza
 
 	List<String> getArchivedUuidsSince(Date since);
 
-	void archiveAllArchivableImmunizations(int daysAfterImmunizationsGetsArchived);
+	void archiveAllArchivableImmunizations(int daysAfterImmunizationsGetsArchived) throws ExternalSurveillanceToolException;
 
 	List<String> getDeletedUuidsSince(Date since);
 

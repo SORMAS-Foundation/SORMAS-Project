@@ -51,6 +51,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -253,11 +254,11 @@ public class EventParticipantFacadeEjb
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@RolesAllowed(UserRight._SYSTEM)
-	public void archiveAllArchivableEventParticipants(int daysAfterEventParticipantGetsArchived) {
+	public void archiveAllArchivableEventParticipants(int daysAfterEventParticipantGetsArchived) throws ExternalSurveillanceToolException {
 		archiveAllArchivableEventParticipants(daysAfterEventParticipantGetsArchived, LocalDate.now());
 	}
 
-	private void archiveAllArchivableEventParticipants(int daysAfterEventParticipantGetsArchived, @NotNull LocalDate referenceDate) {
+	private void archiveAllArchivableEventParticipants(int daysAfterEventParticipantGetsArchived, @NotNull LocalDate referenceDate) throws ExternalSurveillanceToolException {
 		LocalDate notChangedSince = referenceDate.minusDays(daysAfterEventParticipantGetsArchived);
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -1131,7 +1132,7 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	@RolesAllowed(UserRight._EVENTPARTICIPANT_ARCHIVE)
-	public void archive(String entityUuid, Date endOfProcessingDate) throws ExternalSurveillanceToolException{
+	public void archive(String entityUuid, Date endOfProcessingDate) throws ExternalSurveillanceToolException {
 		super.archive(entityUuid, endOfProcessingDate);
 	}
 

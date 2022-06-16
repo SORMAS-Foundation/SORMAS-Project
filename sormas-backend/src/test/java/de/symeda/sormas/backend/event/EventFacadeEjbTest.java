@@ -45,6 +45,7 @@ import java.util.List;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.backend.MockProducer;
 import org.apache.http.HttpStatus;
@@ -277,7 +278,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testArchiveOrDearchiveEvent() {
+	public void testArchiveOrDearchiveEvent() throws ExternalSurveillanceToolException {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
@@ -340,7 +341,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testArchiveAllArchivableEvents() {
+	public void testArchiveAllArchivableEvents() throws ExternalSurveillanceToolException {
 
 		RDCFEntities rdcfEntities = creator.createRDCFEntities();
 		RDCF rdcf = creator.createRDCF();

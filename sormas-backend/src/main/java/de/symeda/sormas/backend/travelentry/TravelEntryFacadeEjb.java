@@ -190,11 +190,11 @@ public class TravelEntryFacadeEjb
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@RolesAllowed(UserRight._SYSTEM)
-	public void archiveAllArchivableTravelEntries(int daysAfterTravelEntryGetsArchived) {
+	public void archiveAllArchivableTravelEntries(int daysAfterTravelEntryGetsArchived) throws ExternalSurveillanceToolException {
 		archiveAllArchivableTravelEntry(daysAfterTravelEntryGetsArchived, LocalDate.now());
 	}
 
-	private void archiveAllArchivableTravelEntry(int daysAfterTravelEntryGetsArchived, @NotNull LocalDate referenceDate) {
+	private void archiveAllArchivableTravelEntry(int daysAfterTravelEntryGetsArchived, @NotNull LocalDate referenceDate) throws ExternalSurveillanceToolException {
 		LocalDate notChangedSince = referenceDate.minusDays(daysAfterTravelEntryGetsArchived);
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

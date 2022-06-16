@@ -3735,13 +3735,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@RolesAllowed(UserRight._SYSTEM)
-	public void archiveAllArchivableCases(int daysAfterCaseGetsArchived) {
+	public void archiveAllArchivableCases(int daysAfterCaseGetsArchived) throws ExternalSurveillanceToolException {
 
 		archiveAllArchivableCases(daysAfterCaseGetsArchived, LocalDate.now());
 	}
 
     @RolesAllowed(UserRight._SYSTEM)
-	public void archiveAllArchivableCases(int daysAfterCaseGetsArchived, LocalDate referenceDate) {
+	public void archiveAllArchivableCases(int daysAfterCaseGetsArchived, LocalDate referenceDate) throws ExternalSurveillanceToolException {
 
 		long startTime = DateHelper.startTime();
 

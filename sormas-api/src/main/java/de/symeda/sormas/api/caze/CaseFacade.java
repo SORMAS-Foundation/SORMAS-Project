@@ -169,7 +169,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	CaseDataDto cloneCase(CaseDataDto existingCaseDto);
 
-	void archiveAllArchivableCases(int daysAfterCaseGetsArchived);
+	void archiveAllArchivableCases(int daysAfterCaseGetsArchived) throws ExternalSurveillanceToolException;
 
 	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count, Random randomGenerator);
 

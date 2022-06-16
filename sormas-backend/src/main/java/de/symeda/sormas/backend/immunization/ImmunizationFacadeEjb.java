@@ -261,11 +261,11 @@ public class ImmunizationFacadeEjb
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@RolesAllowed(UserRight._SYSTEM)
-	public void archiveAllArchivableImmunizations(int daysAfterImmunizationsGetsArchived) {
+	public void archiveAllArchivableImmunizations(int daysAfterImmunizationsGetsArchived) throws ExternalSurveillanceToolException {
 		archiveAllArchivableImmunizations(daysAfterImmunizationsGetsArchived, LocalDate.now());
 	}
 
-	private void archiveAllArchivableImmunizations(int daysAfterImmunizationGetsArchived, @NotNull LocalDate referenceDate) {
+	private void archiveAllArchivableImmunizations(int daysAfterImmunizationGetsArchived, @NotNull LocalDate referenceDate) throws ExternalSurveillanceToolException {
 		LocalDate notChangedSince = referenceDate.minusDays(daysAfterImmunizationGetsArchived);
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

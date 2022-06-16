@@ -54,6 +54,7 @@ import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.backend.MockProducer;
 import org.apache.commons.lang3.time.DateUtils;
@@ -2094,7 +2095,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 
 	@Test
-	public void testArchiveAllArchivableCases() {
+	public void testArchiveAllArchivableCases() throws ExternalSurveillanceToolException {
         RDCF rdcf = creator.createRDCF();
 		UserReferenceDto user = creator.createUser(rdcf).toReference();
 		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();

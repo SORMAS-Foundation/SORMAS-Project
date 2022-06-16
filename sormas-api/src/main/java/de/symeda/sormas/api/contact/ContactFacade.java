@@ -37,6 +37,7 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -114,7 +115,7 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 
 	List<String> getArchivedUuidsSince(Date since);
 
-	void archiveAllArchivableContacts(int daysAfterContactsGetsArchived);
+	void archiveAllArchivableContacts(int daysAfterContactsGetsArchived) throws ExternalSurveillanceToolException;
 
 	List<String> getDeletedUuidsSince(Date since);
 

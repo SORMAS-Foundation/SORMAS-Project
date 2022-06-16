@@ -58,7 +58,7 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 
 	List<String> getDeletedUuidsSince(Date since);
 
-	void archiveAllArchivableEvents(int daysAfterEventsGetsArchived);
+	void archiveAllArchivableEvents(int daysAfterEventsGetsArchived) throws ExternalSurveillanceToolException;
 
 	EditPermissionType isEventEditAllowed(String eventUuid);
 

@@ -25,6 +25,7 @@ import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -148,7 +149,7 @@ public class CronService {
 	}
 
 	@Schedule(hour = "1", minute = "15", second = "0", persistent = false)
-	public void archiveCases() {
+	public void archiveCases() throws ExternalSurveillanceToolException {
 
 		final int daysAfterCaseGetsArchived = featureConfigurationFacade
 			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
@@ -167,7 +168,7 @@ public class CronService {
 	}
 
 	@Schedule(hour = "1", minute = "20", second = "0", persistent = false)
-	public void archiveEvents() {
+	public void archiveEvents() throws ExternalSurveillanceToolException {
 
 		final int daysAfterEventsGetsArchived = featureConfigurationFacade
 			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
@@ -223,7 +224,7 @@ public class CronService {
 	}
 
 	@Schedule(hour = "2", minute = "15", persistent = false)
-	public void archiveContacts() {
+	public void archiveContacts() throws ExternalSurveillanceToolException {
 		final int daysAfterContactsGetsArchived = featureConfigurationFacade
 			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CONTACT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
 
@@ -233,7 +234,7 @@ public class CronService {
 	}
 
 	@Schedule(hour = "2", minute = "20", persistent = false)
-	public void archiveEventParticipants() {
+	public void archiveEventParticipants() throws ExternalSurveillanceToolException {
 		final int daysAfterEventParticipantGetsArchived = featureConfigurationFacade
 			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT_PARTICIPANT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
 
@@ -243,7 +244,7 @@ public class CronService {
 	}
 
 	@Schedule(hour = "2", minute = "25", persistent = false)
-	public void archiveImmunizations() {
+	public void archiveImmunizations() throws ExternalSurveillanceToolException {
 		final int daysAfterImmunizationsGetsArchived = featureConfigurationFacade
 			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.IMMUNIZATION, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
 
@@ -253,7 +254,7 @@ public class CronService {
 	}
 
 	@Schedule(hour = "2", minute = "30", persistent = false)
-	public void archiveTravelEntry() {
+	public void archiveTravelEntry() throws ExternalSurveillanceToolException {
 		final int daysAfterTravelEntryGetsArchived = featureConfigurationFacade
 			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.TRAVEL_ENTRY, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
 

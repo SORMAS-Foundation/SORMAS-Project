@@ -1246,13 +1246,13 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@RolesAllowed(UserRight._SYSTEM)
-	public void archiveAllArchivableEvents(int daysAfterEventGetsArchived) {
+	public void archiveAllArchivableEvents(int daysAfterEventGetsArchived) throws ExternalSurveillanceToolException {
 
 		archiveAllArchivableEvents(daysAfterEventGetsArchived, LocalDate.now());
 	}
 
 	@RolesAllowed(UserRight._SYSTEM)
-	void archiveAllArchivableEvents(int daysAfterEventGetsArchived, @NotNull LocalDate referenceDate) {
+	void archiveAllArchivableEvents(int daysAfterEventGetsArchived, @NotNull LocalDate referenceDate) throws ExternalSurveillanceToolException {
 
 		LocalDate notChangedSince = referenceDate.minusDays(daysAfterEventGetsArchived);
 
