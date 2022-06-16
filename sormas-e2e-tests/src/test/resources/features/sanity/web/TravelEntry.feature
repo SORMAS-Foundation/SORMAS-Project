@@ -265,3 +265,20 @@ Feature: Create travel entries
     And I convert the Travel Entry into a case
     Then I check that differing Point Of Entry is correctly displayed on Edit case page
     And I check that Case Origin is set to Point Of Entry
+
+  @issue=SORDEV-8037 @env_de
+  Scenario: Test Add documents and document templates to TravelEntries
+    Given I log in as a National User
+    And I click on the Entries button from navbar
+    And I click on the New Travel Entry button from Travel Entries directory
+    When I fill the required fields in a new travel entry form
+    And I click on Save button from the new travel entry form
+    Then I check the created data is correctly displayed on Edit travel entry page for DE version
+    And I click on Create Document button from Bulk Actions combobox on Edit Travel Entry Page
+    And I click on checkbox to upload generated document to entities in Create Document form in Travel Entry directory
+    And I select "ExampleDocumentTemplateTravelEntry.docx" Create Document form in Travel Entry directory
+    And I click on Create button in Create Document form in Travel Entry directory
+    And I click on close button in Create Document Order form
+    Then I check if generated document based on "ExampleDocumentTemplateTravelEntry.docx" appeared in Documents tab in Edit Travel Entry directory
+    And I check if downloaded file is correct for "ExampleDocumentTemplateTravelEntry.docx" in Edit Travel Entry directory
+    And I delete downloaded file created from "ExampleDocumentTemplateTravelEntry.docx" Document Template for Travel Entry
