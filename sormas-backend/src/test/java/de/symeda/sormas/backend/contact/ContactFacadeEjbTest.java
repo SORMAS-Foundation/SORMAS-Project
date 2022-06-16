@@ -1549,7 +1549,6 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(10, getContactFacade().countMaximumFollowUpDays(null));
 	}
 
-	//TODO
 	@Test
 	public void testArchiveOrDearchiveContact() {
         RDCF rdcf = creator.createRDCF();
