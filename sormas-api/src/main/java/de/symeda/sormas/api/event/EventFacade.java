@@ -93,9 +93,9 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 		boolean eventInvestigationStatusChange,
 		boolean eventManagementStatusChange);
 
-	void archive(String eventUuid, Date endOfProcessingDate) throws ExternalSurveillanceToolException;
+	void archive(String eventUuid, Date endOfProcessingDate);
 
-	void archive(List<String> eventUuids) throws ExternalSurveillanceToolException;
+	void archive(List<String> eventUuids);
 
-	void dearchive(List<String> eventUuids, String dearchiveReason) throws ExternalSurveillanceToolException;
+	void dearchive(List<String> eventUuids, String dearchiveReason);
 }

@@ -2545,7 +2545,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
-	public void updateStatusInExternalSurveillanceTool(String entityUuid, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException{
+	public void updateStatusInExternalSurveillanceTool(String entityUuid, ExternalShareStatus externalShareStatus) {
 		Case caze = caseService.getByUuid(entityUuid);
 		//TODO: do we need the check for externalId too? -> caze.getExternalID() != null && !caze.getExternalID().isEmpty()
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && caze.getExternalID() != null && !caze.getExternalID().isEmpty()) {
@@ -2571,33 +2571,33 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@RolesAllowed(UserRight._CASE_ARCHIVE)
 	public void archive(String entityUuid, Date endOfProcessingDate, boolean includeContacts) {
 		super.archive(entityUuid, endOfProcessingDate);
-		updateStatusInExternalSurveillanceTool(entityUuid, ExternalShareStatus.ARCHIVED);
 		if (includeContacts) {
 			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(Collections.singletonList(entityUuid));
 			contactService.archive(caseContacts);
 		}
+		updateStatusInExternalSurveillanceTool(entityUuid, ExternalShareStatus.ARCHIVED);
 	}
 
 	@Override
 	@RolesAllowed(UserRight._CASE_ARCHIVE)
 	public void archive(List<String> entityUuids, boolean includeContacts) {
 		super.archive(entityUuids);
-		updateStatusInExternalSurveillanceToolForMultipleCases(entityUuids, ExternalShareStatus.ARCHIVED);
 		if (includeContacts) {
 			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(entityUuids);
 			contactService.archive(caseContacts);
 		}
+        updateStatusInExternalSurveillanceToolForMultipleCases(entityUuids, ExternalShareStatus.ARCHIVED);
 	}
 
 	@Override
 	@RolesAllowed(UserRight._CASE_ARCHIVE)
 	public void dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts) {
 		super.dearchive(entityUuids, dearchiveReason);
-		updateStatusInExternalSurveillanceToolForMultipleCases(entityUuids, ExternalShareStatus.DEARCHIVED);
 		if (includeContacts) {
 			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(entityUuids);
 			contactService.dearchive(caseContacts, dearchiveReason);
 		}
+        updateStatusInExternalSurveillanceToolForMultipleCases(entityUuids, ExternalShareStatus.DEARCHIVED);
 	}
 
 	@Override

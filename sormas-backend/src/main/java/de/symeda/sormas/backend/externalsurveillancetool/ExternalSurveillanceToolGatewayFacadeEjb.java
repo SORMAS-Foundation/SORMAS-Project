@@ -64,7 +64,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	@Override
-	public void sendCases(List<String> caseUuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
+	public void sendCases(List<String> caseUuids, ExternalShareStatus externalShareStatus) {
 		ExportParameters params = new ExportParameters();
 		params.setCaseUuids(caseUuids);
 		if (externalShareStatus.equals(ExternalShareStatus.ARCHIVED)) {
@@ -79,7 +79,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	@Override
-	public void sendEvents(List<String> eventUuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
+	public void sendEvents(List<String> eventUuids, ExternalShareStatus externalShareStatus) {
 		ExportParameters params = new ExportParameters();
 		params.setEventUuids(eventUuids);
 
