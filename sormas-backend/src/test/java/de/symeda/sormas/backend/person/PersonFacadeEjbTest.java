@@ -1,5 +1,11 @@
 package de.symeda.sormas.backend.person;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -22,7 +28,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
+import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import org.apache.http.HttpStatus;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -56,7 +69,6 @@ import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.person.PersonFollowUpEndDto;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
@@ -77,10 +89,27 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	protected TestDataCreator.RDCFEntities rdcfEntities;
 	protected UserDto nationalUser;
 
+    private static final int WIREMOCK_TESTING_PORT = 8888;
+    private ExternalSurveillanceToolFacade subjectUnderTest;
+
+    @Rule
+    public WireMockRule wireMockRule = new WireMockRule(options().port(WIREMOCK_TESTING_PORT), false);
+
 	/**
 	 * Resets mocks to their initial state so that mock configurations are not
 	 * shared between tests.
 	 */
+
+    @Before
+    public void setup() {
+        configureExternalSurvToolUrlForWireMock();
+        subjectUnderTest = getExternalSurveillanceToolGatewayFacade();
+    }
+
+    @After
+    public void teardown() {
+        clearExternalSurvToolUrlForWireMock();
+    }
 
 	@Override
 	public void init() {
@@ -344,8 +373,18 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		EventDto inactiveEvent = creator.createEvent(user.toReference());
 		creator.createEventParticipant(inactiveEvent.toReference(), person7, user.toReference());
 
+        stubFor(
+                post(urlEqualTo("/export")).withRequestBody(containing(inactiveCase.getUuid()))
+                        .withRequestBody(containing("caseUuids"))
+                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 		getCaseFacade().archive(inactiveCase.getUuid(), null);
-		getEventFacade().archive(inactiveEvent.getUuid(), null);
+
+
+        stubFor(
+                post(urlEqualTo("/export")).withRequestBody(containing(inactiveEvent.getUuid()))
+                        .withRequestBody(containing("eventUuids"))
+                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+        getEventFacade().archive(inactiveEvent.getUuid(), null);
 
 		// Only persons that have active case, contact or event participant associations should be retrieved
 		List<String> relevantNameUuids =
@@ -895,7 +934,15 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		getCaseFacade().save(caze);
 	}
 
-	@Test
+    private void configureExternalSurvToolUrlForWireMock() {
+        MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", WIREMOCK_TESTING_PORT));
+    }
+
+    private void clearExternalSurvToolUrlForWireMock() {
+        MockProducer.getProperties().setProperty("survnet.url", "");
+    }
+
+    @Test
 	public void testSetMissingGeoCoordinates() {
 
 		assertThat(getPersonFacade().setMissingGeoCoordinates(false), equalTo(0L));

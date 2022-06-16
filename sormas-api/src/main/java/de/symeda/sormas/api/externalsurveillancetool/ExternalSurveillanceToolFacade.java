@@ -39,7 +39,7 @@ public interface ExternalSurveillanceToolFacade {
 	 */
 	void sendCases(List<String> caseUuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException;
 
-	void sendEvents(List<String> eventUuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException;
+	void sendEvents(List<String> eventUuids, ExternalShareStatus externalShareStatus);
 
 	void createCaseShareInfo(List<String> caseUuids);
 
