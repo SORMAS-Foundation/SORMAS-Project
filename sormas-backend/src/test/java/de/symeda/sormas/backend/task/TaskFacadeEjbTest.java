@@ -17,6 +17,12 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.task;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
@@ -35,7 +41,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
+import de.symeda.sormas.backend.MockProducer;
+import org.apache.http.HttpStatus;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -68,6 +81,23 @@ import de.symeda.sormas.backend.TestDataCreator.RDCF;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TaskFacadeEjbTest extends AbstractBeanTest {
+
+    private static final int WIREMOCK_TESTING_PORT = 8888;
+    private ExternalSurveillanceToolFacade subjectUnderTest;
+
+    @Rule
+    public WireMockRule wireMockRule = new WireMockRule(options().port(WIREMOCK_TESTING_PORT), false);
+
+    @Before
+    public void setup() {
+        configureExternalSurvToolUrlForWireMock();
+        subjectUnderTest = getExternalSurveillanceToolGatewayFacade();
+    }
+
+    @After
+    public void teardown() {
+        clearExternalSurvToolUrlForWireMock();
+    }
 
 	@Test
 	public void testTaskDirectoryForDeletedLinkedCase() {
@@ -153,7 +183,6 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testArchivedTaskNotGettingTransfered() {
-
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
@@ -163,14 +192,16 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			"Sup",
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = creator.createCase(
-			user.toReference(),
-			cazePerson.toReference(),
-			Disease.EVD,
-			CaseClassification.PROBABLE,
-			InvestigationStatus.PENDING,
-			new Date(),
-			rdcf);
+
+        CaseDataDto caze = creator.createCase(user.toReference(), rdcf, (c) -> {
+            c.setPerson(cazePerson.toReference());
+            c.setExternalID("externalId2");
+            c.setDisease(Disease.EVD);
+            c.setCaseClassification(CaseClassification.PROBABLE);
+            c.setInvestigationStatus(InvestigationStatus.PENDING);
+            c.setReportDate(new Date());
+        });
+
 		PersonDto contactPerson = creator.createPerson("Contact", "Person");
 		ContactDto contact =
 			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
@@ -230,7 +261,17 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(6, getTaskFacade().getAllActiveTasksAfter(null).size());
 		assertEquals(6, getTaskFacade().getAllActiveUuids().size());
 
+
+        stubFor(
+                post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+                        .withRequestBody(containing("caseUuids"))
+                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 		getCaseFacade().archive(caze.getUuid(), null);
+
+        stubFor(
+                post(urlEqualTo("/export")).withRequestBody(containing(event.getUuid()))
+                        .withRequestBody(containing("eventUuids"))
+                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 		getEventFacade().archive(event.getUuid(), null);
 
 		// getAllActiveTasks and getAllUuids should return length 1
@@ -532,4 +573,12 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(rdcf2.district, taskIndexDtos.get(0).getDistrict());
 		assertEquals(rdcf2.community, taskIndexDtos.get(0).getCommunity());
 	}
+
+    private void configureExternalSurvToolUrlForWireMock() {
+        MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", WIREMOCK_TESTING_PORT));
+    }
+
+    private void clearExternalSurvToolUrlForWireMock() {
+        MockProducer.getProperties().setProperty("survnet.url", "");
+    }
 }

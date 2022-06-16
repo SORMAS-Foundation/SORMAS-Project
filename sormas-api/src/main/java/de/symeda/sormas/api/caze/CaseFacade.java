@@ -231,11 +231,11 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	PreviousCaseDto getMostRecentPreviousCase(PersonReferenceDto person, Disease disease, Date startDate);
 
-	void archive(String entityUuid, Date endOfProcessingDate, boolean includeContacts);
+	void archive(String entityUuid, Date endOfProcessingDate, boolean includeContacts) throws ExternalSurveillanceToolException;
 
-	void archive(List<String> entityUuids, boolean includeContacts);
+	void archive(List<String> entityUuids, boolean includeContacts) throws ExternalSurveillanceToolException;
 
-	void dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts);
+	void dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts) throws ExternalSurveillanceToolException;
 
 	void setResultingCase(EventParticipantReferenceDto eventParticipantReferenceDto, CaseReferenceDto caseReferenceDto);
 }
