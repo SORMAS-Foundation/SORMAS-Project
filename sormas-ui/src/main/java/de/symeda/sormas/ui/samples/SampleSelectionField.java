@@ -44,7 +44,7 @@ public class SampleSelectionField extends CustomField<SampleDto> {
 		this.selectionChangeCallback = callback;
 	}
 
-	private static RadioButtonGroup<String> createSelectSelectRadioGroup(String value, String captionTag, SampleSelectionGrid sampleGrid) {
+	private static RadioButtonGroup<String> createSelectSelectRadioGroup(String value, String captionTag) {
 
 		RadioButtonGroup<String> radioGroup = new RadioButtonGroup<>();
 		radioGroup.setItems(value);
@@ -94,7 +94,7 @@ public class SampleSelectionField extends CustomField<SampleDto> {
 		addInfoComponent();
 
 		similarSampleGrid = createSampleGrid(similarSamples);
-		rbSelectSimilarSample = createSelectSelectRadioGroup(SELECT_SIMILAR_SAMPLE, Captions.selectSimilarSample, similarSampleGrid);
+		rbSelectSimilarSample = createSelectSelectRadioGroup(SELECT_SIMILAR_SAMPLE, Captions.selectSimilarSample);
 		mainLayout.addComponent(rbSelectSimilarSample);
 		if (similarSamples.isEmpty()) {
 			rbSelectSimilarSample.setEnabled(false);
@@ -103,7 +103,7 @@ public class SampleSelectionField extends CustomField<SampleDto> {
 		}
 
 		otherSampleGrid = createSampleGrid(otherSamples);
-		rbSelectOtherSample = createSelectSelectRadioGroup(SELECT_OTHER_SAMPLE, Captions.selectOtherSample, otherSampleGrid);
+		rbSelectOtherSample = createSelectSelectRadioGroup(SELECT_OTHER_SAMPLE, Captions.selectOtherSample);
 		mainLayout.addComponent(rbSelectOtherSample);
 		if (otherSamples.isEmpty()) {
 			rbSelectOtherSample.setEnabled(false);

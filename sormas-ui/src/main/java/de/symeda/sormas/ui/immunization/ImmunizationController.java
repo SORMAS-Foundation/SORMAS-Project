@@ -131,9 +131,9 @@ public class ImmunizationController {
 		return null;
 	}
 
-	public CommitDiscardWrapperComponent<ImmunizationDataForm> getImmunizationDataEditComponent(ImmunizationDto immunizationDto) {
+	public CommitDiscardWrapperComponent<ImmunizationDataForm> getImmunizationDataEditComponent(ImmunizationDto immunizationDto, Consumer<Runnable> actionCallback) {
 
-		ImmunizationDataForm immunizationDataForm = new ImmunizationDataForm(immunizationDto.isPseudonymized(), immunizationDto.getRelatedCase());
+		ImmunizationDataForm immunizationDataForm = new ImmunizationDataForm(immunizationDto.isPseudonymized(), immunizationDto.getRelatedCase(), actionCallback);
 		immunizationDataForm.setValue(immunizationDto);
 
 		UserProvider currentUserProvider = UserProvider.getCurrent();

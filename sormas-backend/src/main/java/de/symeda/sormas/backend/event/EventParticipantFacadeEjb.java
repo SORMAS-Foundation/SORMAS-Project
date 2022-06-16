@@ -76,7 +76,7 @@ import de.symeda.sormas.api.event.EventParticipantListEntryDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -457,7 +457,7 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	@RolesAllowed(UserRight._EVENTPARTICIPANT_DELETE)
-	public void delete(String uuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
+	public void delete(String uuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolRuntimeException {
 		EventParticipant eventParticipant = service.getByUuid(uuid);
 		service.delete(eventParticipant, deletionDetails);
 	}

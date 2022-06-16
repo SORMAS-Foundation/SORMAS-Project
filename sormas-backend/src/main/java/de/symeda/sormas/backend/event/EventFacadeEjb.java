@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -79,7 +80,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -291,9 +292,13 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	@RolesAllowed(UserRight._EVENT_DELETE)
-	public void delete(String eventUuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
+	public void delete(String eventUuid, DeletionDetails deletionDetails) {
 		Event event = service.getByUuid(eventUuid);
-		deleteEvent(event, deletionDetails);
+		try {
+			deleteEvent(event, deletionDetails);
+		} catch (ExternalSurveillanceToolException e) {
+			throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+		}
 	}
 
 	private void deleteEvent(Event event, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {

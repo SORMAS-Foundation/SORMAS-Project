@@ -826,20 +826,6 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	}
 
 	/**
-	 * Make sure lazy loaded roles are loaded
-	 */
-	public User loadRoles(User user) {
-		if (!em.contains(user)) {
-			user = em.merge(user);
-		}
-		for (UserRole userRole : user.getUserRoles()) {
-			userRole.getEmailNotificationTypes().size();
-			userRole.getSmsNotificationTypes().size();
-		}
-		return user;
-	}
-
-	/**
 	 * @param root
 	 *            root to {@link User} or {@link UserReference}.
 	 */

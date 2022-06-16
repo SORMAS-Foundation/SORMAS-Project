@@ -65,6 +65,7 @@ import java.util.concurrent.TimeUnit;
 import static org.sormas.e2etests.pages.application.actions.CreateNewActionPage.NEW_ACTION_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_POPUP_YES_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SELECT_MATCHING_PERSON_CHECKBOX;
@@ -118,6 +119,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGAT
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_ACTION_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_EVENT_GROUP_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_GROUP_EVENT_CREATED_MESSAGE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.OTHER_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.PATHOGEN_FINE_TYPING_COMPLIANT_WITH_THE_ONE_OF_CASES_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
@@ -1269,6 +1271,13 @@ public class EditEventSteps implements En {
         });
 
     When(
+        "I confirm Archive event popup",
+        () -> {
+          webDriverHelpers.scrollToElement(CONFIRM_DEARCHIVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_DEARCHIVE_BUTTON);
+        });
+
+    When(
         "I check if Archive event popup is displayed correctly",
         () -> {
           String expectedString = "Archive event participant";
@@ -1394,6 +1403,79 @@ public class EditEventSteps implements En {
             webDriverHelpers.clickOnWebElementBySelectorAndIndex(
                 CONFIRM_ACTION, numberOfElements - 1);
           } while (webDriverHelpers.isElementVisibleWithTimeout(CONFIRM_ACTION, 30));
+        });
+
+    When(
+        "I check if editable fields are read only for an archived event",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          TimeUnit.SECONDS.sleep(15);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_PARTICIPANTS_TAB);
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(EVENT_STATUS_OPTIONS),
+              true,
+              "Event status option is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RISK_LEVEL_INPUT),
+              true,
+              "Risk level input is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(TITLE_INPUT),
+              true,
+              "Title input is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(EVENT_MANAGEMENT_STATUS_OPTIONS),
+              true,
+              "Event management status option is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(EVENT_INVESTIGATION_STATUS_OPTIONS),
+              true,
+              "Event investigation status option is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RISK_LEVEL_COMBOBOX),
+              true,
+              "Risk level combobox is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(NEW_TASK_BUTTON),
+              true,
+              "New task button is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(NEW_ACTION_BUTTON),
+              true,
+              "New action button is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(LINK_EVENT_GROUP_BUTTON),
+              true,
+              "Link event group button is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DISEASE_COMBOBOX),
+              true,
+              "Disease combobox is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(PLACE_OF_STAY_COMBOBOX),
+              true,
+              "Place of stay combobox is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(SOURCE_TYPE_COMBOBOX),
+              true,
+              "Source type combobox is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(EVENT_STATUS_OPTIONS),
+              true,
+              "Event status options is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(SAVE_BUTTON),
+              true,
+              "Save button is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DISCARD_BUTTON),
+              true,
+              "Discard button is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DELETE_BUTTON),
+              true,
+              "Delete button is not editable state but it should be since archived entities default value is true!");
+          softly.assertAll();
         });
   }
 

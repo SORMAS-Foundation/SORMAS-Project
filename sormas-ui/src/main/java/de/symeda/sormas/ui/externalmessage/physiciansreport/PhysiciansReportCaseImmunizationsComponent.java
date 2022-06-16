@@ -149,7 +149,7 @@ public class PhysiciansReportCaseImmunizationsComponent extends CommitDiscardWra
 
 	@Override
 	public boolean isDirty() {
-		return vaccinationsToUpdate.size() > 0 || vaccinationsToCreate.size() > 0 || vaccinationsToDelete.size() > 0;
+		return !vaccinationsToUpdate.isEmpty() || !vaccinationsToCreate.isEmpty() || !vaccinationsToDelete.isEmpty();
 	}
 
 	private void handleAddVaccination(CaseDataDto caze) {

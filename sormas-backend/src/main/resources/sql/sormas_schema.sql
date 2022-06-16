@@ -11615,5 +11615,6 @@ ALTER TABLE testreport_history RENAME COLUMN testlabexternalid TO testlabexterna
 
 INSERT INTO schema_version (version_number, comment) VALUES (468, 'Compare the list of Organization Ids with facilities in SORMAS #8949');
 
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (469, 'Remove UserRight DASHBOARD_CAMPAIGNS_VIEW from COMMUNITY_INFORMANT #4461', true);
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
