@@ -2092,13 +2092,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		getCaseFacade().doesEpidNumberExist("NIE-08034912345", "not-a-uuid", Disease.OTHER);
 	}
 
-	private void configureExternalSurvToolUrlForWireMock() {
-		MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", WIREMOCK_TESTING_PORT));
-	}
-
-	private void clearExternalSurvToolUrlForWireMock() {
-		MockProducer.getProperties().setProperty("survnet.url", "");
-	}
 
 	@Test
 	public void testArchiveAllArchivableCases() {
@@ -2945,5 +2938,13 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcfEntities);
 	}
+
+    private void configureExternalSurvToolUrlForWireMock() {
+        MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", WIREMOCK_TESTING_PORT));
+    }
+
+    private void clearExternalSurvToolUrlForWireMock() {
+        MockProducer.getProperties().setProperty("survnet.url", "");
+    }
 
 }

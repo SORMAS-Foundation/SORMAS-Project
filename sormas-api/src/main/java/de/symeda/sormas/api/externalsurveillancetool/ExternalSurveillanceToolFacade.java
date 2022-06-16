@@ -37,9 +37,9 @@ public interface ExternalSurveillanceToolFacade {
 	 * @param caseUuids
 	 * @return http response code of the gateway
 	 */
-	void sendCases(List<String> caseUuids, ExternalShareStatus externalShareStatus);
+	void sendCases(List<String> caseUuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException;
 
-	void sendEvents(List<String> eventUuids, ExternalShareStatus externalShareStatus);
+	void sendEvents(List<String> eventUuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException;
 
 	void createCaseShareInfo(List<String> caseUuids);
 
