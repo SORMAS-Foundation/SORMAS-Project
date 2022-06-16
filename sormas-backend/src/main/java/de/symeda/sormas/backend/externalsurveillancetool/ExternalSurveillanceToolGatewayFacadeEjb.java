@@ -94,7 +94,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 		sendRequest(params);
 	}
 
-	private void sendRequest(ExportParameters params) {
+	private void sendRequest(ExportParameters params) throws ExternalSurveillanceToolException {
 		String serviceUrl = configFacade.getExternalSurveillanceToolGatewayUrl().trim();
 
 		Response response = ClientBuilder.newBuilder()
