@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.utils.AgeGroupUtils;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -67,13 +68,7 @@ public class AggregateReportDao extends AbstractAdoDao<AggregateReport> {
 	public static void sortAggregateReports(List<AggregateReport> reports) {
 		Function<AggregateReport, String> diseaseComparator = r -> r.getDisease().toString();
 		Comparator<AggregateReport> comparator = Comparator.comparing(diseaseComparator)
-			.thenComparing(
-				r -> r.getAgeGroup() != null
-					? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
-					: StringUtils.EMPTY)
-			.thenComparing(
-					r -> r.getAgeGroup() != null ? Integer.parseInt(r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0);
-
+			.thenComparing(report -> report.getAgeGroup(), AgeGroupUtils.getComparator());
 		Collections.sort(reports, comparator);
 	}
 
