@@ -902,27 +902,27 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	@RolesAllowed(UserRight._EVENT_ARCHIVE)
 	public void archive(String eventUuid, Date endOfProcessingDate) throws ExternalSurveillanceToolException{
 		super.archive(eventUuid, endOfProcessingDate);
-        updateStatusInExternalSurveillanceTool(eventUuid, ExternalShareStatus.ARCHIVED);
 		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(Collections.singletonList(eventUuid));
 		eventParticipantService.archive(eventParticipantList);
+        updateStatusInExternalSurveillanceTool(eventUuid, ExternalShareStatus.ARCHIVED);
 	}
 
 	@Override
 	@RolesAllowed(UserRight._EVENT_ARCHIVE)
 	public void archive(List<String> eventUuids) throws ExternalSurveillanceToolException{
 		super.archive(eventUuids);
-        updateStatusInExternalSurveillanceToolForMultipleCases(eventUuids, ExternalShareStatus.ARCHIVED);
 		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(eventUuids);
 		eventParticipantService.archive(eventParticipantList);
+        updateStatusInExternalSurveillanceToolForMultipleCases(eventUuids, ExternalShareStatus.ARCHIVED);
 	}
 
 	@Override
 	@RolesAllowed(UserRight._EVENT_ARCHIVE)
 	public void dearchive(List<String> eventUuids, String dearchiveReason) throws ExternalSurveillanceToolException{
 		super.dearchive(eventUuids, dearchiveReason);
-        updateStatusInExternalSurveillanceToolForMultipleCases(eventUuids, ExternalShareStatus.DEARCHIVED);
 		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(eventUuids);
 		eventParticipantService.dearchive(eventParticipantList, dearchiveReason);
+        updateStatusInExternalSurveillanceToolForMultipleCases(eventUuids, ExternalShareStatus.DEARCHIVED);
 	}
 
 	@Override
