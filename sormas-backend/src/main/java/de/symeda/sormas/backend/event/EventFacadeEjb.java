@@ -886,21 +886,21 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		return service.getArchivedUuidsSince(since);
 	}
 
-    public void updateStatusInExternalSurveillanceTool(String eventUuid, ExternalShareStatus externalShareStatus) {
+    public void updateStatusInExternalSurveillanceTool(String eventUuid, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
         //TODO: do we need the following check too here?  -> event.getExternalId != null && !event.getExternalID().isEmpty()
         if (externalSurveillanceToolFacade.isFeatureEnabled()) {
                 externalSurveillanceToolFacade.sendEvents(Collections.singletonList(eventUuid), externalShareStatus);
         }
     }
 
-    public void updateStatusInExternalSurveillanceToolForMultipleCases(List<String> entityUuids, ExternalShareStatus externalShareStatus) {
+    public void updateStatusInExternalSurveillanceToolForMultipleCases(List<String> entityUuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException{
         //TODO: if the check for externalId != null and externalID not empty is needed the entityUuids list should be filtered
         externalSurveillanceToolFacade.sendEvents(entityUuids, externalShareStatus);
     }
 
 	@Override
 	@RolesAllowed(UserRight._EVENT_ARCHIVE)
-	public void archive(String eventUuid, Date endOfProcessingDate) {
+	public void archive(String eventUuid, Date endOfProcessingDate) throws ExternalSurveillanceToolException{
 		super.archive(eventUuid, endOfProcessingDate);
 		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(Collections.singletonList(eventUuid));
 		eventParticipantService.archive(eventParticipantList);
@@ -909,7 +909,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	@RolesAllowed(UserRight._EVENT_ARCHIVE)
-	public void archive(List<String> eventUuids) {
+	public void archive(List<String> eventUuids) throws ExternalSurveillanceToolException{
 		super.archive(eventUuids);
 		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(eventUuids);
 		eventParticipantService.archive(eventParticipantList);
@@ -918,7 +918,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	@RolesAllowed(UserRight._EVENT_ARCHIVE)
-	public void dearchive(List<String> eventUuids, String dearchiveReason) {
+	public void dearchive(List<String> eventUuids, String dearchiveReason) throws ExternalSurveillanceToolException{
 		super.dearchive(eventUuids, dearchiveReason);
 		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(eventUuids);
 		eventParticipantService.dearchive(eventParticipantList, dearchiveReason);

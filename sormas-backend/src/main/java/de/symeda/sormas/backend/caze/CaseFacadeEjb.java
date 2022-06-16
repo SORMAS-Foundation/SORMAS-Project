@@ -2569,7 +2569,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RolesAllowed(UserRight._CASE_ARCHIVE)
-	public void archive(String entityUuid, Date endOfProcessingDate, boolean includeContacts) {
+	public void archive(String entityUuid, Date endOfProcessingDate, boolean includeContacts) throws ExternalSurveillanceToolException {
 		super.archive(entityUuid, endOfProcessingDate);
 		if (includeContacts) {
 			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(Collections.singletonList(entityUuid));
@@ -2580,7 +2580,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RolesAllowed(UserRight._CASE_ARCHIVE)
-	public void archive(List<String> entityUuids, boolean includeContacts) {
+	public void archive(List<String> entityUuids, boolean includeContacts) throws ExternalSurveillanceToolException{
 		super.archive(entityUuids);
 		if (includeContacts) {
 			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(entityUuids);
@@ -2591,7 +2591,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RolesAllowed(UserRight._CASE_ARCHIVE)
-	public void dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts) {
+	public void dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts) throws ExternalSurveillanceToolException{
 		super.dearchive(entityUuids, dearchiveReason);
 		if (includeContacts) {
 			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(entityUuids);
