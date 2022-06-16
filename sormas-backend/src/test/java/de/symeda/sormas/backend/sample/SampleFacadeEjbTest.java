@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.List;
 
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Test;
@@ -509,7 +510,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testArchivedSampleNotGettingTransfered() {
+	public void testArchivedSampleNotGettingTransfered() throws ExternalSurveillanceToolException {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(

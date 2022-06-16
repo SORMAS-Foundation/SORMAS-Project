@@ -1478,7 +1478,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testArchiveAndDearchiveCase() {
+	public void testArchiveAndDearchiveCase() throws ExternalSurveillanceToolException {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),

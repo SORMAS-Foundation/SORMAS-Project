@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Date;
 import java.util.HashMap;
 
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
 import org.junit.Test;
@@ -30,7 +31,7 @@ import de.symeda.sormas.backend.feature.FeatureConfiguration;
 public class AdoServiceWithUserFilterTest extends AbstractBeanTest {
 
 	@Test
-	public void testGetObsoleteUuidsSince() {
+	public void testGetObsoleteUuidsSince() throws ExternalSurveillanceToolException {
 
 		FeatureConfigurationIndexDto featureConfiguration =
 			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, true, null);

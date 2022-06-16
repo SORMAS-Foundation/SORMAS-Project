@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import org.apache.http.HttpStatus;
@@ -351,7 +352,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetMatchingNameDtos() {
+	public void testGetMatchingNameDtos() throws ExternalSurveillanceToolException {
 		UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		// 1-3 = Active persons; 4 = Person without reference; 5-7 = Inactive persons

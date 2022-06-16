@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.backend.MockProducer;
 import org.apache.http.HttpStatus;
@@ -57,7 +58,7 @@ public class DashboardServiceTest extends AbstractBeanTest {
     }
 
 	@Test
-	public void testGetEventCountByStatusWithArchivingAndDeletion() {
+	public void testGetEventCountByStatusWithArchivingAndDeletion() throws ExternalSurveillanceToolException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		EventDto signal = creator.createEvent(user.toReference(), EventStatus.SIGNAL);

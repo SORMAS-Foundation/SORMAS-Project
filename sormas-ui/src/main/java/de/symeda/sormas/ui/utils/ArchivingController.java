@@ -18,6 +18,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -52,9 +53,13 @@ public class ArchivingController<F extends CoreFacade> {
 			640,
 			e -> {
 				if (Boolean.TRUE.equals(e)) {
-					doArchive(entityFacade, coreEntityDto.getUuid(), DateHelper8.toDate(endOfProcessingDate.getValue()));
+                    try {
+                        doArchive(entityFacade, coreEntityDto.getUuid(), DateHelper8.toDate(endOfProcessingDate.getValue()));
+                    } catch (ExternalSurveillanceToolException externalSurveillanceToolException) {
+                        externalSurveillanceToolException.printStackTrace();
+                    }
 
-					Notification.show(
+                    Notification.show(
 						String.format(
 							I18nProperties.getString(archiveMessages.getMessageEntityArchived()),
 							I18nProperties.getString(archiveMessages.getEntityName())),
@@ -64,7 +69,7 @@ public class ArchivingController<F extends CoreFacade> {
 			});
 	}
 
-	protected void doArchive(F entityFacade, String uuid, Date endOfProcessingDate) {
+	protected void doArchive(F entityFacade, String uuid, Date endOfProcessingDate) throws ExternalSurveillanceToolException {
 		entityFacade.archive(uuid, endOfProcessingDate);
 	}
 
@@ -104,8 +109,12 @@ public class ArchivingController<F extends CoreFacade> {
 						dearchiveReason.setComponentError(new UserError(I18nProperties.getString(Strings.messageArchiveUndoneReasonMandatory)));
 						return false;
 					}
-					doDearchive(entityFacade, Collections.singletonList(coreEntityDto.getUuid()), dearchiveReason.getValue());
-					Notification.show(
+                    try {
+                        doDearchive(entityFacade, Collections.singletonList(coreEntityDto.getUuid()), dearchiveReason.getValue());
+                    } catch (ExternalSurveillanceToolException e) {
+                        e.printStackTrace();
+                    }
+                    Notification.show(
 						String.format(
 							I18nProperties.getString(archiveMessages.getMessageEntityDearchived()),
 							I18nProperties.getString(archiveMessages.getEntityName())),
@@ -116,7 +125,7 @@ public class ArchivingController<F extends CoreFacade> {
 			});
 	}
 
-	protected void doDearchive(F entityFacade, List<String> uuidList, String dearchiveReason) {
+	protected void doDearchive(F entityFacade, List<String> uuidList, String dearchiveReason) throws ExternalSurveillanceToolException {
 		entityFacade.dearchive(uuidList, dearchiveReason);
 	}
 
@@ -156,9 +165,13 @@ public class ArchivingController<F extends CoreFacade> {
 				null,
 				e -> {
 					if (Boolean.TRUE.equals(e)) {
-						doArchive(entityFacade, entityUuids);
+                        try {
+                            doArchive(entityFacade, entityUuids);
+                        } catch (ExternalSurveillanceToolException externalSurveillanceToolException) {
+                            externalSurveillanceToolException.printStackTrace();
+                        }
 
-						callback.run();
+                        callback.run();
 						new Notification(
 							I18nProperties.getString(archivedHeading),
 							I18nProperties.getString(archivedMessage),
@@ -169,7 +182,7 @@ public class ArchivingController<F extends CoreFacade> {
 		}
 	}
 
-	protected void doArchive(F entityFacade, List<String> entityUuids) {
+	protected void doArchive(F entityFacade, List<String> entityUuids) throws ExternalSurveillanceToolException {
 		entityFacade.archive(entityUuids);
 	}
 
@@ -224,9 +237,13 @@ public class ArchivingController<F extends CoreFacade> {
 							dearchiveReason.setComponentError(new UserError(I18nProperties.getString(Strings.messageArchiveUndoneReasonMandatory)));
 							return false;
 						}
-						doDearchive(entityFacade, entityUuids, dearchiveReason.getValue());
+                        try {
+                            doDearchive(entityFacade, entityUuids, dearchiveReason.getValue());
+                        } catch (ExternalSurveillanceToolException e) {
+                            e.printStackTrace();
+                        }
 
-						callback.run();
+                        callback.run();
 						new Notification(
 							I18nProperties.getString(headingEntityDearchived),
 							I18nProperties.getString(messageEntityDearchived),

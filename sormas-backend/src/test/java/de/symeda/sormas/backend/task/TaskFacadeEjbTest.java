@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.backend.MockProducer;
 import org.apache.http.HttpStatus;
@@ -182,7 +183,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testArchivedTaskNotGettingTransfered() {
+	public void testArchivedTaskNotGettingTransfered() throws ExternalSurveillanceToolException {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),

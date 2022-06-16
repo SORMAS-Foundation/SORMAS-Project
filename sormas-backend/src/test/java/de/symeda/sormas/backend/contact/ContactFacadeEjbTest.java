@@ -52,6 +52,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.i18n.Strings;
 import org.apache.commons.lang3.StringUtils;
@@ -1550,7 +1551,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testArchiveOrDearchiveContact() {
+	public void testArchiveOrDearchiveContact() throws ExternalSurveillanceToolException {
         RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
