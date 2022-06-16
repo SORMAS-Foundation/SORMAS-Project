@@ -56,7 +56,7 @@ public class AggregateReportsView extends AbstractView {
 
 		boolean criteriaUninitialized = !ViewModelProviders.of(AggregateReportsView.class).has(AggregateReportCriteria.class);
 		criteria = ViewModelProviders.of(AggregateReportsView.class).get(AggregateReportCriteria.class);
-		if (criteriaUninitialized) {
+		if (criteriaUninitialized || criteria.getEpiWeekFrom() == null || criteria.getEpiWeekTo() == null) {
 			criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
 		}
 
@@ -155,6 +155,7 @@ public class AggregateReportsView extends AbstractView {
 			ViewModelProviders.of(AggregateReportsView.class).remove(AggregateReportCriteria.class);
 			criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
 			criteria.setDisease(null);
+			criteria.setRegion(null);
 			navigateTo(criteria, true);
 		});
 
@@ -190,10 +191,10 @@ public class AggregateReportsView extends AbstractView {
 		}
 
 		if (criteria.getEpiWeekFrom() == null) {
-			criteria.setEpiWeekFrom(epiWeekFrom);
+			criteria.setEpiWeekFrom(epiWeekFrom != null ? epiWeekFrom : DateHelper.getEpiWeek(new Date()));
 		}
 		if (criteria.getEpiWeekTo() == null) {
-			criteria.setEpiWeekTo(epiWeekTo);
+			criteria.setEpiWeekTo(epiWeekTo != null ? epiWeekTo : DateHelper.getEpiWeek(new Date()));
 		}
 
 		grid.reload();

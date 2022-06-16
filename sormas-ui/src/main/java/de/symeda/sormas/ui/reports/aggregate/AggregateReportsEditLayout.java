@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.vaadin.server.ErrorMessage;
+import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -26,6 +28,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
@@ -53,9 +56,9 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 
 	private Window window;
 
-	private OptionGroup epiweekOptions;
+	private OptionGroup epiWeekOptions;
 	private ComboBox<Integer> comboBoxYear;
-	private ComboBox<EpiWeek> comboBoxEpiweek;
+	private ComboBox<EpiWeek> comboBoxEpiWeek;
 	private ComboBox<RegionReferenceDto> comboBoxRegion;
 	private ComboBox<DistrictReferenceDto> comboBoxDistrict;
 	private ComboBox<FacilityReferenceDto> comboBoxFacility;
@@ -75,25 +78,33 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 
 		this.window = window;
 
-		epiweekOptions = new OptionGroup();
-		epiweekOptions.addItems(EpiWeekFilterOption.values());
-		epiweekOptions.addStyleNames(ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
-		CssStyles.style(epiweekOptions, ValoTheme.OPTIONGROUP_HORIZONTAL);
-		epiweekOptions.addValueChangeListener(e -> updateEpiweekFields());
+		epiWeekOptions = new OptionGroup();
+		epiWeekOptions.addItems(EpiWeekFilterOption.values());
+		epiWeekOptions.addStyleNames(ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
+		CssStyles.style(epiWeekOptions, ValoTheme.OPTIONGROUP_HORIZONTAL);
+		epiWeekOptions.addValueChangeListener(e -> updateEpiWeekFields());
 		if (!edit) {
-			addComponent(epiweekOptions);
+			addComponent(epiWeekOptions);
 		}
 
 		comboBoxYear = new ComboBox<>(I18nProperties.getString(Strings.year), DateHelper.getYearsToNow(2000));
 		comboBoxYear.setWidth(250, Unit.PIXELS);
-		comboBoxYear.addValueChangeListener(e -> updateEpiweekFields());
+		comboBoxYear.addValueChangeListener(e -> {
+			updateEpiWeekFields();
+			setEpiWeekComponentErrors();
+		});
+		comboBoxYear.setRequiredIndicatorVisible(true);
 
-		comboBoxEpiweek = new ComboBox<>(I18nProperties.getString(Strings.epiWeek));
-		comboBoxEpiweek.setWidth(250, Unit.PIXELS);
-		if (!edit) {
-			comboBoxEpiweek.addValueChangeListener(e -> checkForExistingData());
-		}
-		addComponent(new HorizontalLayout(comboBoxYear, comboBoxEpiweek));
+		comboBoxEpiWeek = new ComboBox<>(I18nProperties.getString(Strings.epiWeek));
+		comboBoxEpiWeek.setWidth(250, Unit.PIXELS);
+		comboBoxEpiWeek.addValueChangeListener(e -> {
+			if (!edit) {
+				checkForExistingData();
+			}
+			setEpiWeekComponentErrors();
+		});
+		comboBoxEpiWeek.setRequiredIndicatorVisible(true);
+		addComponent(new HorizontalLayout(comboBoxYear, comboBoxEpiWeek));
 
 		comboBoxRegion = new ComboBox<>();
 		comboBoxRegion.setWidth(250, Unit.PIXELS);
@@ -169,8 +180,8 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		if (edit) {
 			comboBoxYear.setValue(criteria.getEpiWeekFrom().getYear());
 			comboBoxYear.setEnabled(false);
-			comboBoxEpiweek.setValue(criteria.getEpiWeekFrom());
-			comboBoxEpiweek.setEnabled(false);
+			comboBoxEpiWeek.setValue(criteria.getEpiWeekFrom());
+			comboBoxEpiWeek.setEnabled(false);
 			comboBoxRegion.setValue(criteria.getRegion());
 			comboBoxRegion.setEnabled(false);
 			comboBoxDistrict.setValue(criteria.getDistrict());
@@ -262,11 +273,11 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 	}
 
 	private void checkForExistingData() {
-		if (comboBoxEpiweek.getValue() != null && (comboBoxFacility.getValue() != null || comboBoxPoe.getValue() != null) && !popUpIsShown) {
+		if (comboBoxEpiWeek.getValue() != null && (comboBoxFacility.getValue() != null || comboBoxPoe.getValue() != null) && !popUpIsShown) {
 			AggregateReportCriteria criteria = new AggregateReportCriteria();
 			criteria.setDistrict(comboBoxDistrict.getValue());
-			criteria.setEpiWeekFrom(comboBoxEpiweek.getValue());
-			criteria.setEpiWeekTo(comboBoxEpiweek.getValue());
+			criteria.setEpiWeekFrom(comboBoxEpiWeek.getValue());
+			criteria.setEpiWeekTo(comboBoxEpiWeek.getValue());
 			criteria.setHealthFacility(comboBoxFacility.getValue());
 			criteria.setPointOfEntry(comboBoxPoe.getValue());
 			criteria.setRegion(comboBoxRegion.getValue());
@@ -302,7 +313,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 
 	private void initialize() {
 
-		epiweekOptions.setValue(EpiWeekFilterOption.THIS_WEEK);
+		epiWeekOptions.setValue(EpiWeekFilterOption.THIS_WEEK);
 	}
 
 	private void switchToEditMode() {
@@ -318,9 +329,9 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 				diseasesWithoutReport.remove(disease);
 			}
 		}
-		removeComponent(epiweekOptions);
+		removeComponent(epiWeekOptions);
 		comboBoxYear.setEnabled(false);
-		comboBoxEpiweek.setEnabled(false);
+		comboBoxEpiWeek.setEnabled(false);
 		comboBoxRegion.setEnabled(false);
 		comboBoxDistrict.setEnabled(false);
 		comboBoxFacility.setEnabled(false);
@@ -328,8 +339,19 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 	}
 
 	private void save() {
+
 		if (!isValid()) {
 			Notification.show(I18nProperties.getString(Strings.errorIntegerFieldValidationFailed), "", Type.ERROR_MESSAGE);
+			return;
+		}
+
+		if (comboBoxYear.getComponentError() != null) {
+			Notification.show(I18nProperties.getValidationError(Validations.specifyYear), "", Type.ERROR_MESSAGE);
+			return;
+		}
+
+		if (comboBoxEpiWeek.getComponentError() != null) {
+			Notification.show(I18nProperties.getValidationError(Validations.specifyEpiWeek), "", Type.ERROR_MESSAGE);
 			return;
 		}
 
@@ -378,7 +400,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 					newReport.setDisease(diseaseMap.get(editForm.getDisease()));
 					newReport.setAgeGroup(editForm.getAgeGroup());
 					newReport.setDistrict(comboBoxDistrict.getValue());
-					newReport.setEpiWeek(comboBoxEpiweek.getValue().getWeek());
+					newReport.setEpiWeek(comboBoxEpiWeek.getValue().getWeek());
 					newReport.setHealthFacility(comboBoxFacility.getValue());
 					newReport.setLabConfirmations(labConfirmations);
 					newReport.setNewCases(newCases);
@@ -405,48 +427,69 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		return valid;
 	}
 
-	private void updateEpiweekFields() {
+	private void updateEpiWeekFields() {
 
 		boolean enableEpiweekFields;
 
-		if (EpiWeekFilterOption.LAST_WEEK.equals(epiweekOptions.getValue())) {
-
+		if (EpiWeekFilterOption.LAST_WEEK.equals(epiWeekOptions.getValue())) {
 			EpiWeek lastEpiweek = DateHelper.getPreviousEpiWeek(Calendar.getInstance().getTime());
-
 			comboBoxYear.setValue(lastEpiweek.getYear());
-			comboBoxEpiweek.setValue(lastEpiweek);
-
+			comboBoxEpiWeek.setValue(lastEpiweek);
 			enableEpiweekFields = false;
-
-		} else if (EpiWeekFilterOption.THIS_WEEK.equals(epiweekOptions.getValue())) {
-
+		} else if (EpiWeekFilterOption.THIS_WEEK.equals(epiWeekOptions.getValue())) {
 			EpiWeek thisEpiweek = DateHelper.getEpiWeek(Calendar.getInstance().getTime());
-
 			comboBoxYear.setValue(thisEpiweek.getYear());
-			comboBoxEpiweek.setValue(thisEpiweek);
-
+			comboBoxEpiWeek.setValue(thisEpiweek);
 			enableEpiweekFields = false;
-
 		} else {
 			enableEpiweekFields = true;
 		}
 
 		comboBoxYear.setEnabled(enableEpiweekFields);
-		comboBoxEpiweek.setEnabled(enableEpiweekFields);
+		comboBoxEpiWeek.setEnabled(enableEpiweekFields);
 
 		Integer year = comboBoxYear.getValue();
 
 		if (year != null) {
-			EpiWeek selectedEpiWeek = comboBoxEpiweek.getValue();
+			EpiWeek selectedEpiWeek = comboBoxEpiWeek.getValue();
 			List<EpiWeek> epiWeekOptions = DateHelper.createEpiWeekList(year);
-			comboBoxEpiweek.setItems(epiWeekOptions);
+			comboBoxEpiWeek.setItems(epiWeekOptions);
 			if (selectedEpiWeek != null) {
 				EpiWeek adjustedEpiWeek = DateHelper.getSameEpiWeek(selectedEpiWeek, epiWeekOptions);
-				comboBoxEpiweek.setValue(adjustedEpiWeek);
+				comboBoxEpiWeek.setValue(adjustedEpiWeek);
 			}
 		} else {
-			comboBoxEpiweek.clear();
+			comboBoxEpiWeek.clear();
 		}
+	}
+
+	private void setEpiWeekComponentErrors() {
+
+		comboBoxYear.setComponentError(comboBoxYear.getValue() == null ? new ErrorMessage() {
+
+			@Override
+			public ErrorLevel getErrorLevel() {
+				return ErrorLevel.ERROR;
+			}
+
+			@Override
+			public String getFormattedHtmlMessage() {
+				return I18nProperties.getValidationError(Validations.specifyYear);
+			}
+		} : null);
+
+		comboBoxEpiWeek.setComponentError(comboBoxEpiWeek.getValue() == null ? new ErrorMessage() {
+
+			@Override
+			public ErrorLevel getErrorLevel() {
+				return ErrorLevel.ERROR;
+			}
+
+			@Override
+			public String getFormattedHtmlMessage() {
+				return I18nProperties.getValidationError(Validations.specifyEpiWeek);
+			}
+		} : null);
 	}
 
 	public FieldGroup getFieldGroups() {
