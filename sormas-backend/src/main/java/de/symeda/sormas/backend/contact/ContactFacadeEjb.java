@@ -63,8 +63,6 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.common.DeletionDetails;
-import de.symeda.sormas.api.common.DeletionReason;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +74,8 @@ import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CoreAndPersonDto;
 import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactBulkEditData;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -193,6 +193,7 @@ import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserReference;
+import de.symeda.sormas.backend.user.UserRoleFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -273,6 +274,8 @@ public class ContactFacadeEjb
 	private VaccinationService vaccinationService;
 	@EJB
 	private ContactService contactService;
+	@EJB
+	private UserRoleFacadeEjb.UserRoleFacadeEjbLocal userRoleFacadeEjb;
 
 	@Resource
 	private ManagedScheduledExecutorService executorService;
@@ -844,8 +847,9 @@ public class ContactFacadeEjb
 							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
 							Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
 
-							List<Vaccination> relevantSortedVaccinations =
-								getRelevantSortedVaccinations(exportContact.getUuid(), mostRecentImmunization.getVaccinations());
+							List<Vaccination> relevantSortedVaccinations = getRelevantSortedVaccinations(
+								exportContact.getUuid(),
+								filteredImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList()));
 							Vaccination firstVaccination = null;
 							Vaccination lastVaccination = null;
 
@@ -885,14 +889,16 @@ public class ContactFacadeEjb
 						UserReference user = contactUsers.get(exportContact.getReportingUserId());
 
 						exportContact.setReportingUserName(user.getName());
-						exportContact.setReportingUserRoles(user.getUserRoles());
+						exportContact.setReportingUserRoles(
+							user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toReferenceDto(userRole)).collect(Collectors.toSet()));
 					}
 
 					if (exportContact.getFollowUpStatusChangeUserId() != null) {
 						UserReference user = contactUsers.get(exportContact.getFollowUpStatusChangeUserId());
 
 						exportContact.setFollowUpStatusChangeUserName(user.getName());
-						exportContact.setFollowUpStatusChangeUserRoles(user.getUserRoles());
+						exportContact.setFollowUpStatusChangeUserRoles(
+							user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toReferenceDto(userRole)).collect(Collectors.toSet()));
 					}
 				}
 

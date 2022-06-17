@@ -36,6 +36,7 @@ public class Case {
   String outcomeOfCase;
   String reportingDistrict;
   String externalId;
+  String epidNumber;
   String externalToken;
   String uuid;
   String facilityCategory;
@@ -48,6 +49,9 @@ public class Case {
   String region;
   String district;
   String pointOfEntry;
+  String pointOfEntryDetails;
+  String pointOfEntryRegion;
+  String pointOfEntryDistrict;
   String presentConditionOfPerson;
   String primaryEmailAddress;
   String primaryPhoneNumber;
@@ -78,6 +82,7 @@ public class Case {
   String laboratoryDiagnosticConfirmation;
   String investigationStatus;
   String differentPlaceOfStayJurisdiction;
+  String differentPointOfEntryJurisdiction;
   String facility;
   String quarantineOrderedVerbally;
   String quarantineOrderedByDocument;

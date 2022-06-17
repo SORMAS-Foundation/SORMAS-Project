@@ -111,18 +111,21 @@ public class EditContactPersonSteps implements En {
         () -> {
           newGeneratedPerson = personService.buildGeneratedPerson();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-          fillSalutation(newGeneratedPerson.getSalutation());
+          // field no longer available
+          // fillSalutation(newGeneratedPerson.getSalutation());
           fillDateOfBirth(newGeneratedPerson.getDateOfBirth());
           selectSex(newGeneratedPerson.getSex());
           selectPresentConditionOfPerson(newGeneratedPerson.getPresentConditionOfPerson());
-          fillExternalId(newGeneratedPerson.getExternalId());
-          fillExternalToken(newGeneratedPerson.getExternalToken());
-          fillExternalToken(newGeneratedPerson.getExternalToken());
+          // field no longer available
+          //          fillExternalId(newGeneratedPerson.getExternalId());
+          // field no longer available
+          //          fillExternalToken(newGeneratedPerson.getExternalToken());
+          //          fillExternalToken(newGeneratedPerson.getExternalToken());
           selectTypeOfOccupation(newGeneratedPerson.getTypeOfOccupation());
 
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-
-          selectStaffOfArmedForces(newGeneratedPerson.getStaffOfArmedForces());
+          // field no longer available
+          //          selectStaffOfArmedForces(newGeneratedPerson.getStaffOfArmedForces());
           selectRegion(newGeneratedPerson.getRegion());
           selectDistrict(newGeneratedPerson.getDistrict());
           selectCommunity(newGeneratedPerson.getCommunity());
@@ -138,8 +141,10 @@ public class EditContactPersonSteps implements En {
           selectAreaType(newGeneratedPerson.getAreaType());
           fillContactPersonFirstName(newGeneratedPerson.getContactPersonFirstName());
           fillContactPersonLastName(newGeneratedPerson.getContactPersonLastName());
-          fillBirthName(newGeneratedPerson.getBirthName());
-          fillNamesOfGuardians(newGeneratedPerson.getNameOfGuardians());
+          // field no longer available
+          //          fillBirthName(newGeneratedPerson.getBirthName());
+          // field no longer available
+          //          fillNamesOfGuardians(newGeneratedPerson.getNameOfGuardians());
         });
 
     Then(

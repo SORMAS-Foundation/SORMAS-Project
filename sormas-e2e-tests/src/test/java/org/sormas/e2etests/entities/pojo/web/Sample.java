@@ -18,9 +18,14 @@
 
 package org.sormas.e2etests.entities.pojo.web;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.Value;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
-import lombok.*;
 
 @Value
 @AllArgsConstructor
@@ -49,4 +54,5 @@ public class Sample {
   LocalTime timeOfResult;
   String resultVerifiedByLabSupervisor;
   String testResultsComment;
+  String testResults;
 }

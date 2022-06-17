@@ -71,18 +71,9 @@ Feature: Case end to end tests
     Then I set Quarantine Home
     And I check if Quarantine start field is available
     And I check if Quarantine end field is available
-    Then I select Quarantine ordered verbally checkbox
-    And I check if Date of verbal order field is available
-    Then I select Quarantine ordered by official document checkbox
-    And I check if Date of the official document ordered field is available
-    Then I select Official quarantine order sent
-    And I check if Date official quarantine order was sent field is available
     Then I set Quarantine Institutional
     And I check if Quarantine start field is available
     And I check if Quarantine end field is available
-    And I check if Date of verbal order field is available
-    And I check if Date of the official document ordered field is available
-    And I check if Date official quarantine order was sent field is available
     Then I set Quarantine None
     Then I set Quarantine Unknown
     Then I set Quarantine Other
@@ -433,11 +424,13 @@ Feature: Case end to end tests
     And I click on the NEW CASE button
     When I fill new case with for one person with specified date for month ago
     Then I click on save case button
+    Then I collect uuid of the case
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     Then I fill second new case with for one person with specified date for present day
     And I confirm changes in selected Case
     And I confirm Pick person in Case
+    Then I collect uuid of the case
     Then I click on the Cases button from navbar
     And I filter Cases by created person name
     Then I select first created case for person from Cases list
@@ -505,11 +498,13 @@ Feature: Case end to end tests
     And I click on the NEW CASE button
     When I fill new case with for one person with specified date for month ago
     Then I click on save case button
+    And I collect uuid of the case
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     Then I fill second new case with for one person with specified date for present day
     And I confirm changes in selected Case
     And I confirm Pick person in Case
+    And I collect uuid of the case
     Then I click on the Cases button from navbar
     And I filter Cases by created person name
     Then I select second created case for person from Cases list
@@ -542,11 +537,13 @@ Feature: Case end to end tests
     And I click on the NEW CASE button
     When I fill new case with for one person with specified date for month ago
     Then I click on save case button
+    And I collect uuid of the case
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     Then I fill second new case with for one person with specified date for present day
     And I confirm changes in selected Case
     And I confirm Pick person in Case
+    And I collect uuid of the case
     Then I click on the Cases button from navbar
     And I filter Cases by created person name
     Then I select second created case for person from Cases list
@@ -759,7 +756,6 @@ Feature: Case end to end tests
     And I check that an import success notification appears in the Import Case Contact popup
     Then I delete exported file from Case Contact Directory
 
-
   @issue=SORDEV-7456 @env_de
   Scenario: Check different facility types depending on type of place in Epidemiological Tab
     Given I log in with National User
@@ -954,7 +950,7 @@ Feature: Case end to end tests
     Given I log in with National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
-    And I create a new case with specific data
+    And I create a new case with specific data and new person
     And I navigate to case person tab
     And I set case person's sex as Male
     And I click on save button to Save Person data in Case Person Tab
@@ -1038,7 +1034,7 @@ Feature: Case end to end tests
     Then I click on New Sample
     And I check if value "Urine p.m" is unavailable in Type of Sample combobox on Create new Sample page
 
-  @env_main @issue=SORDEV-9155
+  @issue=SORDEV-9155 @env_main
   Scenario: Test Vaccinations get lost when merging cases with duplicate persons
     Given I log in as a Admin User
     And I click on the Cases button from navbar
@@ -1066,7 +1062,27 @@ Feature: Case end to end tests
     And I open last created case
     And I check if Vaccination Status is set to "Vaccinated" on Edit Case page
 
-    @env_main @issue=SORDEV-5613
+  @issue=SORDEV-7460 @env_main
+  Scenario: Test Extend the exposure and event startDate and endDate to include a startTime and endTime
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    Then I navigate to Epidemiological Data tab on Edit Case Page
+    And I click on Exposure details known with YES option
+    Then I click on New Entry in Exposure Details Known in Cases directory
+    And I set Start and End of activity by current date in Exposure form
+    And I select a Type of activity Work option in Exposure for Epidemiological data tab in Cases
+    And I click on SAVE button in Exposure form
+    And I collect the Date of Start and End Exposure from Exposure page
+    Then I check that Date field displays start date and end date in table Exposure on Epidemiological data tab
+
+     @issue=SORDEV-5613 @env_main
       Scenario: Option to attach document like pdf, word, jpeg to cases
       Given I log in with National User
       When I click on the Cases button from navbar
@@ -1093,3 +1109,163 @@ Feature: Case end to end tests
       And I check if jpg file is downloaded correctly
       Then I delete last uploaded document file from case tab
       And I check if last uploaded file was deleted from document files in case tab
+
+  @issue=SORDEV-9151 @env_de
+  Scenario: Check if specific Case fields are hidden (DE specific)
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    When I open last created case
+    And I navigate to case person tab
+    Then I check that Passport Number is not visible
+    And I check that National Health ID is not visible
+    And I check that Education is not visible
+    And I check that Community Contact Person is not visible
+    And I check that Nickname is not visible
+    And I check that Mother's Maiden Name is not visible
+    And I check that Mother's Name is not visible
+    And I check that Father's Name is not visible
+
+  @issue=SORDEV-9788 @env_de
+  Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Case directory
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    Then I click on the NEW CASE button
+    And I click on the person search button in new case form
+    Then I check that National Health ID is not visible in Person search popup
+    And I check that Passport Number is not visible in Person search popup
+    And I check that Nickname is not visible in Person search popup
+
+  @issue=SORDEV-9788 @env_de
+  Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Case Contact directory
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    When I open last created case
+    And I open the Case Contacts tab
+    Then I click on new contact button from Case Contacts tab
+    And I click on the person search button in create new contact form
+    Then I check that National Health ID is not visible in Person search popup
+    And I check that Passport Number is not visible in Person search popup
+    And I check that Nickname is not visible in Person search popup
+
+  @issue=SORDEV-9946 @env_de
+  Scenario: Test Hide country specific fields in the 'Pick or create person' form of the duplicate detection pop-up, in German and French systems
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill a new case form with same person details for DE version
+    And I click on Save button in Case form
+    Then I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill a new case form with same person details for DE version
+    And I click on Save button in Case form
+    Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
+    And I open the Case Contacts tab
+    And I click on the NEW CONTACT button
+    And I fill a new contact form with same person data for DE version
+    And I click on SAVE new contact button
+    And I open the Case Contacts tab
+    And I click on the NEW CONTACT button
+    And I fill a new contact form with same person data for DE version
+    And I click on SAVE new contact case button
+    Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
+
+  @issue=SORDEV-9496 @env_de
+  Scenario: Test Handle person related fields and search button for travel entry forms
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new case
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    Then I click on the Cases button from navbar
+    When I open the last created Case via API
+    Then I navigate to Epidemiological Data tab on Edit Case Page
+    And I click on new entry button from Epidemiological Data tab for DE
+    When I fill the required fields in a new travel entry form without disease and person data
+    Then I check that First Name is not visible in New Travel Entry popup
+    And I check that Last Name is not visible in New Travel Entry popup
+    And I check that Sex is not visible in New Travel Entry popup
+    And I check that disease in New Travel Entry popup is disabled
+    And I click on Save button from the new travel entry form
+    Then I click on the Cases button from navbar
+    When I open the last created Case via API
+    Then I navigate to Epidemiological Data tab on Edit Case Page
+    Then I check if added travel Entry appeared in Epi Data tab
+    And I navigate to the last created via api Person page via URL
+    Then I click on new entry button on Edit Person Page for DE
+    When I fill the required fields in a new travel entry form without disease and person data
+    Then I check that First Name is not visible in New Travel Entry popup
+    And I check that Last Name is not visible in New Travel Entry popup
+    And I check that Sex is not visible in New Travel Entry popup
+    And I check that disease in New Travel Entry popup is enabled
+    And I click on Save button from the new travel entry form
+    Then I navigate to the last created via api Person page via URL
+    And I check if added travel Entry appeared on Edit Person Page
+
+  @issue=SORDEV-5563 @env_de
+  Scenario: Add contact person details to facilities case person
+    Given I log in as a Admin User
+    Then I click on the Configuration button from navbar
+    And I navigate to facilities tab in Configuration
+    And I click on New Entry button in Facilities tab in Configuration
+    Then I set name, region and district in Facilities tab in Configuration
+    And I set Facility Category to "Medizinische Einrichtung" and Facility Type to "Krankenhaus" in Facilities tab in Configuration
+    And I set Facility Contact person first and last name with email address and phone number
+    Then I click on Save Button in new Facility form
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data using created facility
+    Then I click on save case button
+    Then I navigate to case person tab
+    Then I click yes on the DISCARD UNSAVED CHANGES popup if it appears
+    Then I set Facility Category to "Medizinische Einrichtung" and  Facility Type to "Krankenhaus"
+    And I set Region to "Voreingestellte Bundesländer" and District to "Voreingestellter Landkreis"
+    And I set facility name to created facility
+    And I check if data for created facility is automatically imported to the correct fields in Case Person tab
+    Then I click SAVE button on Edit Contact Page
+    Then I click on the Configuration button from navbar
+    And I navigate to facilities tab in Configuration
+    Then I search last created facility
+    Then I click on edit button for the last searched facility
+    And I archive facility
+
+  @env_main @#8556
+  Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of a Case
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    Then I navigate to the last created case via the url
+    Then I click on New Sample
+    Then I create a new Sample with positive test result with Guinea Worm as disease
+    Then I confirm the Create case from contact with positive test result
+    Then I navigate to the last created case via the url
+    Then I click on edit Sample
+    Then I click on new test result for pathogen tests
+    Then I create a new pathogen test result with Dengue Fever as disease
+    Then I confirm the Create case from contact with positive test result
+    Then I navigate to the last created case via the url
+    Then I validate only one sample is created with two pathogen tests
+    Then I click on edit Sample
+    Then I validate the existence of two pathogen tests
+
+
+  @env_main @#8565
+  Scenario: Check an archived case if its read only
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I open last edited case by API via URL navigation
+    Then I click on the Archive case button and confirm popup
+    Then I click on logout button from navbar
+    Then I log in with National User
+    Then I open last edited case by API via URL navigation
+    Then I check if editable fields are read only for an archived case

@@ -64,6 +64,7 @@ import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleJurisdictionFlagsDto;
 import de.symeda.sormas.api.sample.SampleListEntryDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.NotificationType;
@@ -224,11 +225,8 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, root);
 
-		SampleCriteria sampleCriteria = new SampleCriteria();
-		sampleCriteria.caze(criteria.getCaze()).contact(criteria.getContact()).eventParticipant(criteria.getEventParticipant());
-
-		Predicate filter = sampleService.createUserFilter(sampleQueryContext, sampleCriteria);
-		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(sampleCriteria, sampleQueryContext));
+		Predicate filter = sampleService.createUserFilter(sampleQueryContext, criteria.getSampleCriteria());
+		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(criteria.getSampleCriteria(), sampleQueryContext));
 
 		Predicate similarityFilter = null;
 		if (criteria.getLabSampleId() != null) {
@@ -257,15 +255,11 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		List<Sample> samples = em.createQuery(cq).getResultList();
 
-		if (samples.size() == 0 && (sampleDateTime == null || sampleMaterial == null)) {
-			return getByCriteria(sampleCriteria);
-		}
-
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return samples.stream().map(s -> convertToDto(s, pseudonymizer)).collect(Collectors.toList());
 	}
 
-	private List<SampleDto> getByCriteria(SampleCriteria criteria) {
+	public List<SampleDto> getSamplesByCriteria(SampleCriteria criteria) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
 		final Root<Sample> root = cq.from(Sample.class);
@@ -322,12 +316,24 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
+
 		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
 		}
 
 		return sampleService.getDeletedUuidsSince(user, since);
+	}
+
+	@Override
+	public List<String> getObsoleteUuidsSince(Date since) {
+
+		User user = userService.getCurrentUser();
+		if (user == null) {
+			return Collections.emptyList();
+		}
+
+		return sampleService.getObsoleteUuidsSince(since);
 	}
 
 	@Override
@@ -353,6 +359,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		if (internal && existingSample != null && !sampleService.isSampleEditAllowed(existingSample)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorSampleNotEditable));
 		}
+
+		validate(dto);
 
 		SampleDto existingSampleDto = toDto(existingSample);
 
@@ -403,22 +411,18 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		return sampleService.findBy(criteria, userService.getCurrentUser(), AbstractDomainObject.CREATION_DATE, false)
 			.stream()
-			.collect(
-				Collectors.toMap(
-					s -> associatedObjectFn.apply(s).getUuid(),
-					s -> s,
-					(s1, s2) -> {
+			.collect(Collectors.toMap(s -> associatedObjectFn.apply(s).getUuid(), s -> s, (s1, s2) -> {
 
-						// keep the positive one
-						if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-							return s1;
-						} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-							return s2;
-						}
+				// keep the positive one
+				if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+					return s1;
+				} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+					return s2;
+				}
 
-						// ordered by creation date by default, so always keep the first one
-						return s1;
-					}))
+				// ordered by creation date by default, so always keep the first one
+				return s1;
+			}))
 			.values()
 			.stream()
 			.map(s -> convertToDto(s, pseudonymizer))
@@ -451,7 +455,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				I18nProperties
 					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_PURPOSE)));
 		}
-		if (sample.getLab() == null) {
+		if (sample.getSamplePurpose() == SamplePurpose.EXTERNAL && sample.getLab() == null) {
 			throw new ValidationRuntimeException(
 				I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.LAB)));
 		}
@@ -1013,7 +1017,9 @@ public class SampleFacadeEjb implements SampleFacade {
 		return sampleService.isSampleEditAllowed(sample);
 	}
 
-	@RolesAllowed(UserRight._SAMPLE_CREATE)
+	@RolesAllowed({
+		UserRight._SAMPLE_CREATE,
+		UserRight._CASE_CREATE })
 	public void cloneSampleForCase(Sample sample, Case caze) {
 		SampleDto newSample = SampleDto.build(sample.getReportingUser().toReference(), caze.toReference());
 		DtoHelper.copyDtoValues(newSample, SampleFacadeEjb.toDto(sample), true);

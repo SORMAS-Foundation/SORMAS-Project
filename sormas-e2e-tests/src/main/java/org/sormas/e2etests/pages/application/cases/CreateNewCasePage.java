@@ -35,6 +35,7 @@ public class CreateNewCasePage {
   public static final By FACILITY_CATEGORY_COMBOBOX = By.cssSelector("#typeGroup div");
   public static final By FACILITY_TYPE_COMBOBOX = By.cssSelector("#type div");
   public static final By FACILITY_COMBOBOX = By.cssSelector("#healthFacility div");
+  public static final By FACILITY_NAME_COMBOBOX = By.cssSelector("#facility div");
   public static final By PLACE_OF_STAY_HOME =
       By.xpath("//div[@location='facilityOrHomeLoc']//label[contains(text(), 'Home')]");
   public static final By FIRST_NAME_INPUT =
@@ -46,6 +47,7 @@ public class CreateNewCasePage {
   public static final By CASE_ORIGIN_OPTIONS =
       By.cssSelector(".popupContent #caseOrigin .v-select-option");
   public static final By EXTERNAL_ID_INPUT = By.cssSelector(".popupContent #externalID");
+  public static final By EPID_NUMBER_INPUT = By.cssSelector(".popupContent #epidNumber");
   public static final By PLACE_OF_STAY =
       By.cssSelector(".popupContent div[location='facilityOrHomeLoc'] span.v-select-option label");
   public static final By PLACE_DESCRIPTION_INPUT =
@@ -99,4 +101,29 @@ public class CreateNewCasePage {
       By.xpath("(//div[@location='documents']//div[@class='v-button v-widget'])[2]");
   public static final By ACTION_CONFIRM_POPUP_BUTTON =
       By.cssSelector(".popupContent #actionConfirm");
+  public static final By NATIONAL_HEALTH_ID_POPUP_TABLE_HEADER =
+      By.xpath(
+          "//div[@class='popupContent']//div[contains(@class,'v-grid-column-header-content') and text()=\"Krankenversicherungsnummer\"]");
+  public static final By NICKNAME_POPUP_TABLE_HEADER =
+      By.xpath(
+          "//div[@class='popupContent']//div[contains(@class,'v-grid-column-header-content') and text()=\"Spitzname\"]");
+  public static final By PASSPORT_NUMBER_POPUP_TABLE_HEADER =
+      By.xpath(
+          "//div[@class='popupContent']//div[contains(@class,'v-grid-column-header-content') and text()=\"Reisepassnummer\"]");
+  public static final By NICKNAME_ATTRIBUTE =
+      By.xpath("//span[@class=\"v-captiontext\" and text()=\"Spitzname\"]");
+  public static final By PASSPORT_NUMBER_ATTRIBUTE =
+      By.xpath("//span[@class=\"v-captiontext\" and text()=\"Reisepassnummer\"]");
+  public static final By NATIONAL_HEALTH_ID_ATTRIBUTE =
+      By.xpath("//span[@class=\"v-captiontext\" and text()=\"Krankenversicherungsnummer\"]");
+  public static final By DIFFERENT_POINT_OF_ENTRY_JURISDICTION =
+      By.cssSelector(".popupContent #differentPointOfEntryJurisdiction");
+  public static final By POINT_OF_ENTRY_REGION_BUTTON =
+      By.cssSelector(".popupContent #pointOfEntryRegion div[role='button']");
+  public static final By POINT_OF_ENTRY_DISTRICT_BUTTON =
+      By.cssSelector(".popupContent #pointOfEntryDistrict div[role='button']");
+  public static final By POINT_OF_ENTRY_COMBOBOX =
+      By.cssSelector(".popupContent #pointOfEntry div[role='button'");
+  public static final By POINT_OF_ENTRY_DETAILS =
+      By.cssSelector(".popupContent #pointOfEntryDetails");
 }

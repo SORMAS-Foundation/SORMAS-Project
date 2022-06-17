@@ -66,4 +66,9 @@ public class EditSamplePage {
   public static final By SAMPLE_DELETION_POPUP = By.cssSelector(".v-window .popupContent");
   public static final By SAMPLE_DELETION_POPUP_YES_BUTTON = By.id("actionConfirm");
   public static final By SAVE_SAMPLE_BUTTON = By.id("commit");
+  public static final By DELETE_SAMPLE_REASON_POPUP =
+      By.xpath(
+          "//div[@class='popupContent']//*[text()='Reason for deletion']/../following-sibling::div//div");
+  public static final By EDIT_PATHOGEN_TEST =
+      By.cssSelector(".v-align-right.v-slot.v-slot-compact.v-slot-link > div[role='button']");
 }

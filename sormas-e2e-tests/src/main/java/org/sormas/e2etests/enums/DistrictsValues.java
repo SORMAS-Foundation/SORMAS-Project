@@ -19,8 +19,10 @@ package org.sormas.e2etests.enums;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
+@Slf4j
 public enum DistrictsValues {
   VoreingestellterLandkreis(
       "Voreingestellter Landkreis",
@@ -39,6 +41,7 @@ public enum DistrictsValues {
 
   @SneakyThrows
   public static String getNameValueForUuid(String option) {
+    log.warn("Please migrate to new implementation and take data from EnvironmentManager class");
     DistrictsValues[] districtValuesOptions = DistrictsValues.values();
     for (DistrictsValues value : districtValuesOptions) {
       if (value.uuidMain.equalsIgnoreCase(option) || value.uuidDE.equalsIgnoreCase(option))
@@ -49,6 +52,7 @@ public enum DistrictsValues {
 
   @SneakyThrows
   public static String getNameValueFor(String option) {
+    log.warn("Please migrate to new implementation and take data from EnvironmentManager class");
     DistrictsValues[] districtsValues = DistrictsValues.values();
     for (DistrictsValues value : districtsValues) {
       if (value.getName().equalsIgnoreCase(option)) return value.getName();
@@ -58,6 +62,7 @@ public enum DistrictsValues {
 
   @SneakyThrows
   public static String getUuidValueForLocale(String districtName, String locale) {
+    log.warn("Please migrate to new implementation and take data from EnvironmentManager class");
     DistrictsValues[] districtsValues = DistrictsValues.values();
     for (DistrictsValues value : districtsValues) {
       if (value.name().equalsIgnoreCase(districtName)) {

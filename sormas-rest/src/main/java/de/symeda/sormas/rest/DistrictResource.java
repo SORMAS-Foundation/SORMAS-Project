@@ -82,4 +82,17 @@ public class DistrictResource extends EntityDtoResource {
 		return FacadeProvider.getDistrictFacade()
 			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
+
+	@POST
+	@Path("/archive")
+	public List<String> archive(@RequestBody List<String> uuids) {
+		return FacadeProvider.getDistrictFacade().archive(uuids);
+	}
+
+	@POST
+	@Path("/dearchive")
+	public List<String> dearchive(@RequestBody List<String> uuids) {
+		return FacadeProvider.getDistrictFacade().dearchive(uuids);
+	}
+
 }

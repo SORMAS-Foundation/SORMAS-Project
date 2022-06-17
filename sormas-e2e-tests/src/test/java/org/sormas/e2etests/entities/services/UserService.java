@@ -136,7 +136,7 @@ public class UserService {
         .gpsLongitude(faker.random().nextInt(20, 40).toString())
         .gpsAccuracy(faker.random().nextInt(2, 5).toString())
         .active(true)
-        .userRole("ReST User")
+        .userRole("National Clinician")
         .userName("userName" + currentTimeMillis)
         .limitedDisease(DiseasesValues.getRandomDiseaseCaption())
         .build();

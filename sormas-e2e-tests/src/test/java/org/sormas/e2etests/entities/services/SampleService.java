@@ -23,7 +23,9 @@ import com.google.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import org.sormas.e2etests.entities.pojo.web.Sample;
-import org.sormas.e2etests.enums.*;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.LaboratoryValues;
+import org.sormas.e2etests.enums.PathogenTestedDisease;
 
 public class SampleService {
   private final Faker faker;
@@ -65,6 +67,29 @@ public class SampleService {
         .build();
   }
 
+  public Sample buildAlternateSampleWithSelectableDisease(String disease) {
+    long currentTimeMillis = System.currentTimeMillis();
+    return Sample.builder()
+        .purposeOfTheSample("INTERNAL/IN-HOUSE TESTING")
+        .dateOfCollection(LocalDate.now().minusDays(10))
+        .timeOfCollection(LocalTime.of(10, 30))
+        .sampleType("Blood")
+        .reasonForSample("Presence of symptoms")
+        .sampleID(faker.number().randomNumber(7, false))
+        .commentsOnSample(currentTimeMillis + "Comment on Create Sample requests or received")
+        .sampleTestResults("Positive")
+        .reportDate(LocalDate.now().minusDays(10))
+        .typeOfTest("Culture")
+        .testedDisease(disease)
+        .dateOfResult(LocalDate.now().minusDays(10))
+        .timeOfResult(LocalTime.of(10, 30))
+        .laboratory("Voreingestelltes Labor")
+        .resultVerifiedByLabSupervisor("YES")
+        .testResultsComment(currentTimeMillis + "Comment on new Pathogen requests or received")
+        .testResults("Positive")
+        .build();
+  }
+
   public Sample buildGeneratedSampleTestResult() {
     long currentTimeMillis = System.currentTimeMillis();
     return Sample.builder()
@@ -84,7 +109,7 @@ public class SampleService {
     long currentTimeMillis = System.currentTimeMillis();
     return Sample.builder()
         .sampleTestResults("Positive")
-        .reportDate(LocalDate.now().minusDays(10))
+        //   .reportDate(LocalDate.now().minusDays(10))
         .typeOfTest("PCR / RT-PCR")
         .testedDisease(DiseasesValues.CORONAVIRUS.getDiseaseCaption())
         .dateOfResult(LocalDate.now().minusDays(10))
@@ -138,7 +163,7 @@ public class SampleService {
       testedDiseaseType = PathogenTestedDisease.getRandomPathogenTestedDisease();
     }
     return Sample.builder()
-        .reportDate(LocalDate.now().minusDays(10))
+        //   .reportDate(LocalDate.now().minusDays(10))
         .typeOfTest(testType)
         .testedDisease(testedDiseaseType)
         .dateOfResult(LocalDate.now())
@@ -153,7 +178,7 @@ public class SampleService {
   public Sample buildPathogenTestResultTypeVerified(String testType) {
     long currentTimeMillis = System.currentTimeMillis();
     return Sample.builder()
-        .reportDate(LocalDate.now().minusDays(2))
+        //   .reportDate(LocalDate.now().minusDays(2))
         .typeOfTest(testType)
         .testedDisease("COVID-19")
         .dateOfResult(LocalDate.now().minusDays(1))

@@ -23,11 +23,13 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.Comparator;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Validator;
-import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
@@ -45,10 +47,12 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRoleDto;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -84,6 +88,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
                     fluidRowLocs(UserDto.LIMITED_DISEASE, "", "");
     //@formatter:off
 
+    Map<UserRoleReferenceDto, UserRoleDto> userRoleMap;
+    
     public UserEditForm(boolean create) {
 
         super(UserDto.class, UserDto.I18N_PREFIX, true, new FieldVisibilityCheckers(), UiFieldAccessCheckers.getNoop());
@@ -133,9 +139,12 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
         addField(UserDto.ACTIVE, CheckBox.class);
         addField(UserDto.USER_NAME, TextField.class);
-        addField(UserDto.USER_ROLES, OptionGroup.class).addValidator(new UserRolesValidator());
-        OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
+        OptionGroup userRoles = addField(UserDto.USER_ROLES, OptionGroup.class);
+        userRoleMap = FacadeProvider.getUserRoleFacade().getEnabledUserRoles().stream().collect(Collectors.toMap(userRole -> userRole.toReference(), userRole -> userRole));
+        userRoles.addItems(userRoleMap.keySet().stream().sorted(Comparator.comparing(UserRoleReferenceDto::getCaption)).collect(Collectors.toList()));
+        userRoles.addValidator(new UserRolesValidator());
         userRoles.setMultiSelect(true);
+        CssStyles.style(CssStyles.CAPTION_ON_TOP);
 
         ComboBox region = addInfrastructureField(UserDto.REGION);
         ComboBox community = addInfrastructureField(UserDto.COMMUNITY);
@@ -190,25 +199,25 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     private void updateFieldsByUserRole() {
 
 		final Field userRolesField = getFieldGroup().getField(UserDto.USER_ROLES);
-		final Set<UserRole> userRoles = (Set<UserRole>) userRolesField.getValue();
 
-		final JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(userRoles);
+        Set<UserRoleReferenceDto> userRolesFieldValue = (Set<UserRoleReferenceDto>) userRolesField.getValue();
+        final JurisdictionLevel jurisdictionLevel = UserRoleDto.getJurisdictionLevel(userRolesFieldValue.stream().map(userRole -> userRoleMap.get(userRole)).collect(Collectors.toSet()));
 
-		final boolean hasAssociatedOfficer = UserRole.hasAssociatedOfficer(userRoles);
-		final boolean hasOptionalHealthFacility = UserRole.hasOptionalHealthFacility(userRoles);
-		final boolean isPortHealthUser = UserRole.isPortHealthUser(userRoles);
+		final boolean hasAssociatedDistrictUser = UserProvider.getCurrent().hasAssociatedDistrictUser();
+		final boolean hasOptionalHealthFacility = UserProvider.getCurrent().hasOptionalHealthFacility();
+		final boolean isPortHealthUser = UserProvider.getCurrent().isPortHealthUser();
 
-		final boolean usePointOfEntry = (isPortHealthUser && hasAssociatedOfficer) || jurisdictionLevel == JurisdictionLevel.POINT_OF_ENTRY;
+		final boolean usePointOfEntry = (isPortHealthUser && hasAssociatedDistrictUser) || jurisdictionLevel == JurisdictionLevel.POINT_OF_ENTRY;
 		final boolean useHealthFacility = jurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY;
         final boolean useLaboratory = jurisdictionLevel == JurisdictionLevel.LABORATORY;
 		final boolean useCommunity = jurisdictionLevel == JurisdictionLevel.COMMUNITY;
-		final boolean useDistrict = hasAssociatedOfficer || jurisdictionLevel == JurisdictionLevel.DISTRICT	|| useCommunity || useHealthFacility || usePointOfEntry;;
+		final boolean useDistrict = hasAssociatedDistrictUser || jurisdictionLevel == JurisdictionLevel.DISTRICT	|| useCommunity || useHealthFacility || usePointOfEntry;
 		final boolean useRegion = jurisdictionLevel == JurisdictionLevel.REGION || useDistrict;
 
 		final ComboBox associatedOfficer = (ComboBox) getFieldGroup().getField(UserDto.ASSOCIATED_OFFICER);
-		associatedOfficer.setVisible(hasAssociatedOfficer);
-		setRequired(hasAssociatedOfficer && !isPortHealthUser, UserDto.ASSOCIATED_OFFICER);
-		if (!hasAssociatedOfficer) {
+		associatedOfficer.setVisible(hasAssociatedDistrictUser);
+		setRequired(hasAssociatedDistrictUser && !isPortHealthUser, UserDto.ASSOCIATED_OFFICER);
+		if (!hasAssociatedDistrictUser) {
 			associatedOfficer.clear();
 		}
 
@@ -267,16 +276,6 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
     @Override
     protected String createHtmlLayout() {
         return HTML_LAYOUT;
-    }
-
-    @Override
-    public void setValue(UserDto userDto) throws com.vaadin.v7.data.Property.ReadOnlyException, Converter.ConversionException {
-
-        OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
-        userRoles.removeAllItems();
-        userRoles.addItems(UserUiHelper.getAssignableRoles(userDto.getUserRoles()));
-
-        super.setValue(userDto);
     }
 
     class UserNameValidator implements Validator {

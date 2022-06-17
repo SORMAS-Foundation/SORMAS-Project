@@ -238,7 +238,7 @@ public class AboutDirectorySteps implements En {
           new FileInputStream(
               new File(
                   userDirPath
-                      + "//downloads//sormas_datenbeschreibungsverzeichnis_"
+                      + "//downloads//sormas_data_dictionary_"
                       + LocalDate.now()
                       + "_.xlsx"));
       Workbook workbook = new XSSFWorkbook(excelFile);
@@ -253,9 +253,9 @@ public class AboutDirectorySteps implements En {
         while (cellIterator.hasNext()) {
 
           Cell currentCell = cellIterator.next();
-          if (currentCell.getCellTypeEnum() == CellType.STRING) {
+          if (currentCell.getCellType() == CellType.STRING) {
             xlsxFileContentList.add(currentCell.getStringCellValue() + ",");
-          } else if (currentCell.getCellTypeEnum() == CellType.NUMERIC) {
+          } else if (currentCell.getCellType() == CellType.NUMERIC) {
             xlsxFileContentList.add(currentCell.getNumericCellValue() + ",");
           }
         }

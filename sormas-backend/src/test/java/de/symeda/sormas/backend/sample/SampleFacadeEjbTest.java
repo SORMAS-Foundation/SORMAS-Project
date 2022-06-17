@@ -67,8 +67,9 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -81,8 +82,13 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 	public void testGetIndexList() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -126,8 +132,13 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 	public void testCount() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -252,8 +263,13 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 	public void testGetIndexListForCaseConvertedFromContact() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person1");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -323,8 +339,13 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		Date since = new Date();
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		UserDto admin = getUserFacade().getByUserName("admin");
 		String adminUuid = admin.getUuid();
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -367,8 +388,13 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		Date since = new Date();
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		//1st Case person
 		PersonDto firstCazePerson = creator.createPerson("FirstCase", "FirstPerson");
@@ -418,8 +444,13 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		Date since = new Date();
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		PersonDto secondCazePerson = creator.createPerson("SecondCase", "SecondPerson");
 		CaseDataDto secondCaze = creator.createCase(
@@ -481,8 +512,13 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 	public void testArchivedSampleNotGettingTransfered() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -531,7 +567,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 	public void testGetByCaseUuids() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		CaseDataDto caze2 = creator.createCase(user.toReference(), person.toReference(), rdcf);
@@ -551,7 +587,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetSimilarSamples() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER);
+		UserDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 		CaseDataDto caze = creator.createCase(officer.toReference(), creator.createPerson().toReference(), rdcf);
 
 		Date sampleDateTime1 = DateHelper.parseDate("11.02.2021", new SimpleDateFormat("dd.MM.yyyy"));
@@ -578,16 +614,16 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 			.createSample(eventParticipant.toReference(), sampleDateTime1, new Date(), officer.toReference(), SampleMaterial.BLOOD, rdcf.facility);
 
 		SampleSimilarityCriteria criteria = new SampleSimilarityCriteria();
-		criteria.caze(caze.toReference());
+		criteria.sampleCriteria(new SampleCriteria().caze(caze.toReference()));
 
 		criteria.setLabSampleId("case_sample_id");
 		List<SampleDto> similarSamples = getSampleFacade().getSimilarSamples(criteria);
 		MatcherAssert.assertThat(similarSamples, hasSize(1));
 
-		// should return all samples for unknown lab sample id and missing date and material
+		// should return no samples for unknown lab sample id and missing date and material
 		criteria.setLabSampleId("unknown_id");
 		similarSamples = getSampleFacade().getSimilarSamples(criteria);
-		MatcherAssert.assertThat(similarSamples, hasSize(2));
+		MatcherAssert.assertThat(similarSamples, hasSize(0));
 
 		criteria.setSampleMaterial(SampleMaterial.BLOOD);
 
@@ -608,7 +644,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		MatcherAssert.assertThat(similarSamples, hasSize(0));
 
 		// contact samples
-		SampleSimilarityCriteria contactSampleCriteria = new SampleSimilarityCriteria().contact(contact);
+		SampleSimilarityCriteria contactSampleCriteria = new SampleSimilarityCriteria().sampleCriteria(new SampleCriteria().contact(contact));
 		contactSampleCriteria.setSampleDateTime(sampleDateTime1);
 		contactSampleCriteria.setSampleMaterial(SampleMaterial.BLOOD);
 
@@ -617,7 +653,8 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		MatcherAssert.assertThat(contactSimilarSamples.get(0).getUuid(), is(contactSample.getUuid()));
 
 		// event participant samples
-		SampleSimilarityCriteria eventParticipantSampleCriteria = new SampleSimilarityCriteria().eventParticipant(eventParticipant.toReference());
+		SampleSimilarityCriteria eventParticipantSampleCriteria =
+			new SampleSimilarityCriteria().sampleCriteria(new SampleCriteria().eventParticipant(eventParticipant.toReference()));
 		eventParticipantSampleCriteria.setSampleDateTime(sampleDateTime1);
 		eventParticipantSampleCriteria.setSampleMaterial(SampleMaterial.BLOOD);
 
@@ -631,7 +668,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 
 		String labSampleId = "1234";
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto officer = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER);
+		UserDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 		CaseDataDto caze = creator.createCase(officer.toReference(), creator.createPerson().toReference(), rdcf);
 
 		SampleDto sample = creator.createSample(caze.toReference(), officer.toReference(), rdcf.facility, (s) -> {

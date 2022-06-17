@@ -18,6 +18,46 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
+import cucumber.api.java8.En;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
+import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.EventGroup;
+import org.sormas.e2etests.entities.services.EventGroupService;
+import org.sormas.e2etests.entities.services.EventService;
+import org.sormas.e2etests.enums.CommunityValues;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.EventReferenceDateOptions;
+import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.enums.RiskLevelValues;
+import org.sormas.e2etests.enums.SourceTypeValues;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
+import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.NavBarPage;
+import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
+import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.BaseSteps;
+import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS_ARCHIVE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_COMMUNITY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DATA_TYPE_FILTER_COMBOBOX;
@@ -34,6 +74,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_A
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_RESULT_IN_EVENT_PARTICIPANT_TABLE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_EDIT_EVENT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BASIC_EVENT_EXPORT_BUTTON;
@@ -81,6 +122,8 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FI
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FIRST_CHECKBOX_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FIRST_EVENT_GROUP;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FIRST_EVENT_ID_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FIRST_GRID_DATE_OF_EVENT;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FIRST_GRID_UUID_RESULT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.GROUP_EVENTS_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.GROUP_ID_COLUMN;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ID_FIELD_FILTER;
@@ -106,49 +149,13 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.UN
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByIndex;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByUUID;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DESCRIPTION_OF_CREATE_CASE_FROM_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANT_DISPLAY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.CONFIRM_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
-
-import cucumber.api.java8.En;
-import java.io.File;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import javax.inject.Inject;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
-import org.sormas.e2etests.common.DataOperations;
-import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.entities.pojo.web.EventGroup;
-import org.sormas.e2etests.entities.services.EventGroupService;
-import org.sormas.e2etests.entities.services.EventService;
-import org.sormas.e2etests.enums.CommunityValues;
-import org.sormas.e2etests.enums.DiseasesValues;
-import org.sormas.e2etests.enums.DistrictsValues;
-import org.sormas.e2etests.enums.EventReferenceDateOptions;
-import org.sormas.e2etests.enums.RegionsValues;
-import org.sormas.e2etests.enums.RiskLevelValues;
-import org.sormas.e2etests.enums.SourceTypeValues;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
-import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
-import org.sormas.e2etests.helpers.AssertHelpers;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.NavBarPage;
-import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
-import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.steps.BaseSteps;
-import org.testng.Assert;
-import org.testng.asserts.SoftAssert;
+import static org.sormas.e2etests.steps.web.application.events.CreateNewEventSteps.DateOfEvent;
 
 public class EventDirectorySteps implements En {
   private final WebDriverHelpers webDriverHelpers;
@@ -404,7 +411,6 @@ public class EventDirectorySteps implements En {
     When(
         "^I click on SAVE button in Link Event to group form$",
         () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_IN_LINK_FORM));
-
     When(
         "^I click on Linked Group Id on Edit Event Page$",
         () -> webDriverHelpers.clickOnWebElementBySelector(LINKED_EVENT_GROUP_ID));
@@ -752,7 +758,7 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               getByEventUuid(eventUuid));
           webDriverHelpers.clickOnWebElementBySelector(getByEventUuid(eventUuid));
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
         });
 
     When(
@@ -775,6 +781,7 @@ public class EventDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_PARTICIPANT);
         });
+
     When(
         "I click on the first result in table from event participant",
         () -> {
@@ -847,6 +854,14 @@ public class EventDirectorySteps implements En {
                       "Event Management status is not correct"));
         });
     When(
+        "I click on last created API result in grid in Event Directory for Bulk Action",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.scrollToElement(getByEventUuid(apiState.getCreatedEvent().getUuid()));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getByEventUuid(apiState.getCreatedEvent().getUuid()));
+        });
+    When(
         "^I select last created API result in grid in Event Directory for Bulk Action$",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
@@ -855,16 +870,6 @@ public class EventDirectorySteps implements En {
               getCheckboxByUUID(apiState.getCreatedEvent().getUuid()));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
-
-    When(
-        "I click on last created API result in grid in Event Directory for Bulk Action",
-        () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-          webDriverHelpers.scrollToElement(getByEventUuid(apiState.getCreatedEvent().getUuid()));
-          webDriverHelpers.clickOnWebElementBySelector(
-              getByEventUuid(apiState.getCreatedEvent().getUuid()));
-        });
-
     When(
         "^I select last created UI result in grid in Event Directory for Bulk Action$",
         () -> {
@@ -875,7 +880,6 @@ public class EventDirectorySteps implements En {
               getCheckboxByUUID(CreateNewEventSteps.newEvent.getUuid()));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
-
     When(
         "I click on last created UI result in grid in Event Directory for Bulk Action",
         () -> {
@@ -883,6 +887,29 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.scrollToElement(getByEventUuid(CreateNewEventSteps.newEvent.getUuid()));
           webDriverHelpers.clickOnWebElementBySelector(
               getByEventUuid(CreateNewEventSteps.newEvent.getUuid()));
+        });
+
+    When(
+        "I search for the last event uuid created by UI",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              SEARCH_EVENT_BY_FREE_TEXT, CreateNewEventSteps.eventUUID);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(EVENTS_COLUMN_HEADERS);
+        });
+
+    Then(
+        "I check that Date of EVENT displays event start date and event end date in table on event directory",
+        () -> {
+          TimeUnit.SECONDS.sleep(3); // waiting for table loaded
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_GRID_UUID_RESULT);
+          String dateOfEventfromTableGrid =
+              webDriverHelpers.getTextFromWebElement(FIRST_GRID_DATE_OF_EVENT);
+          softly.assertEquals(
+              dateOfEventfromTableGrid,
+              DateOfEvent,
+              "The value from table grid in Date of Event field not include start date, time, end date, time values");
+          softly.assertAll();
         });
 
     When(
@@ -903,7 +930,10 @@ public class EventDirectorySteps implements En {
 
     When(
         "I open the first event from events list",
-        () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_ID_BUTTON));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_ID_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_EDIT_EVENT);
+        });
 
     When(
         "I open the first event group from events list group",
@@ -951,7 +981,7 @@ public class EventDirectorySteps implements En {
           TimeUnit.SECONDS.sleep(3);
           webDriverHelpers.sendFile(
               FILE_PICKER,
-              userDirPath + "/downloads/sormas_ereignisteilnehmer_" + LocalDate.now() + "_.csv");
+              userDirPath + "/downloads/sormas_event_participants_" + LocalDate.now() + "_.csv");
         });
     When(
         "I click on the {string} button from the Import Event Participant popup",
@@ -964,7 +994,7 @@ public class EventDirectorySteps implements En {
           File toDelete =
               new File(
                   userDirPath
-                      + "/downloads/sormas_ereignisteilnehmer_"
+                      + "/downloads/sormas_event_participants_"
                       + LocalDate.now()
                       + "_.csv");
           toDelete.deleteOnExit();
@@ -1036,6 +1066,7 @@ public class EventDirectorySteps implements En {
         "I click on the Import button from Events directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(IMPORT_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FILE_PICKER);
         });
 
     When(
@@ -1117,6 +1148,14 @@ public class EventDirectorySteps implements En {
           TimeUnit.SECONDS.sleep(8); // wait for basic download if in parallel
           webDriverHelpers.clickOnWebElementBySelector(DETAILED_EVENT_EXPORT_BUTTON);
           TimeUnit.SECONDS.sleep(4); // wait for download
+        });
+
+    When(
+        "^I confirm the Create case from event participant with positive test result$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              DESCRIPTION_OF_CREATE_CASE_FROM_EVENT_PARTICIPANT);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });
 
     When(

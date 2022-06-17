@@ -60,6 +60,7 @@ public class AggregateReportDtoHelper extends AdoDtoHelper<AggregateReport, Aggr
 		target.setNewCases(source.getNewCases());
 		target.setLabConfirmations(source.getLabConfirmations());
 		target.setDeaths(source.getDeaths());
+		target.setAgeGroup(source.getAgeGroup());
 	}
 
 	@Override
@@ -71,7 +72,7 @@ public class AggregateReportDtoHelper extends AdoDtoHelper<AggregateReport, Aggr
 			target.setReportingUser(null);
 		}
 
-		if (source.getDistrict() != null) {
+		if (source.getRegion() != null) {
 			Region region = DatabaseHelper.getRegionDao().queryForId(source.getRegion().getId());
 			target.setRegion(RegionDtoHelper.toReferenceDto(region));
 		} else {
@@ -105,6 +106,7 @@ public class AggregateReportDtoHelper extends AdoDtoHelper<AggregateReport, Aggr
 		target.setNewCases(source.getNewCases());
 		target.setLabConfirmations(source.getLabConfirmations());
 		target.setDeaths(source.getDeaths());
+		target.setAgeGroup(source.getAgeGroup());
 	}
 
     @Override

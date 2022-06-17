@@ -35,9 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.EntityRelevanceStatus;
-import de.symeda.sormas.api.common.DeletionDetails;
-import de.symeda.sormas.api.task.TaskCriteria;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,9 +42,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
@@ -55,12 +54,13 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -72,8 +72,13 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testTaskDirectoryForDeletedLinkedCase() {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.userRoleDtoMap.get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -99,13 +104,18 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		List<TaskIndexDto> tasks = getTaskFacade().getIndexList(new TaskCriteria().relevanceStatus(EntityRelevanceStatus.ALL), 0, 100, null);
 		Assert.assertEquals(0, tasks.size());
 	}
-	
+
 	@Test
 	public void testSampleDeletion() {
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		UserDto admin = getUserFacade().getByUserName("admin");
 		String adminUuid = admin.getUuid();
 		TaskDto task = creator.createTask(
@@ -130,8 +140,13 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	public void testGetIndexList() {
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		// Database should contain the created task
 		assertNotNull(getTaskFacade().getIndexList(null, 0, 100, null));
 	}
@@ -140,8 +155,13 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	public void testArchivedTaskNotGettingTransfered() {
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -228,8 +248,13 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetAllActiveTasksBatched() {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -356,12 +381,19 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
 
 		// 1. Region level user without a task
-		UserDto survSup = creator.createUser(rdcf1.region.getUuid(), null, null, "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto survSup = creator
+			.createUser(rdcf1.region.getUuid(), null, null, "Surv", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		loginWith(survSup);
 		assertThat(getTaskFacade().getIndexList(null, 0, 100, null), is(empty()));
 
 		// 2a. District level user with task
-		UserDto survOff = creator.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), null, "Surv", "Off", UserRole.SURVEILLANCE_OFFICER);
+		UserDto survOff = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			null,
+			"Surv",
+			"Off",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 		loginWith(survOff);
 		assertThat(getTaskFacade().getIndexList(null, 0, 100, null), is(empty()));
 
@@ -389,7 +421,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			null,
 			"Comm",
 			"Inf",
-			UserRole.COMMUNITY_INFORMANT);
+			creator.getUserRoleReference(DefaultUserRole.COMMUNITY_INFORMANT));
 		loginWith(commInf);
 
 		assertThat(getTaskFacade().getIndexList(null, 0, 100, null), is(empty()));
@@ -406,19 +438,19 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetAllTasksForUsersWithoutRights() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, UserRole.ADMIN, UserRole.NATIONAL_USER);
-		UserDto userCaseOfficer = creator.createUser(rdcf, UserRole.CASE_OFFICER);
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto userCaseOfficer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.CASE_OFFICER));
 		loginWith(user);
 
 		PersonDto person = creator.createPerson("case person", "ln");
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 
 		ContactDto contact = creator.createContact(
-				user.toReference(),
-				person.toReference(),
-				caze.getDisease(),
-				contactDto -> contactDto.setResultingCase(caze.toReference()));
-
+			user.toReference(),
+			person.toReference(),
+			caze.getDisease(),
+			contactDto -> contactDto.setResultingCase(caze.toReference()));
 
 		creator.createTask(TaskContext.CONTACT, contact.toReference(), t -> {
 			t.setTaskStatus(TaskStatus.PENDING);
@@ -455,8 +487,8 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 
 		// 1. one user with tasks, one without
 		RDCF rdcf = new RDCF(creator.createRDCFEntities());
-		UserDto user1 = creator.createUser(rdcf, "First", "User", UserRole.SURVEILLANCE_SUPERVISOR);
-		UserDto user2 = creator.createUser(rdcf, "Second", "User", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user1 = creator.createUser(rdcf, "First", "User", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto user2 = creator.createUser(rdcf, "Second", "User", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		creator.createTask(user1.toReference());
 
@@ -476,11 +508,11 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testAllTaskAndDispalyCaseResponsibleRegion() {
+	public void testAllTaskAndDisplayCaseResponsibleRegion() {
 		RDCF rdcf1 = new RDCF(creator.createRDCFEntities("Region1", "District1", "Community1", "Facility1"));
 		RDCF rdcf2 = new RDCF(creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2"));
 
-		UserDto user = creator.createUser(rdcf1, UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(rdcf1, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto person = creator.createPerson();
 		creator.createCase(user.toReference(), rdcf1, (c) -> {
 			c.setPerson(person.toReference());
@@ -496,8 +528,8 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 
 		List<TaskIndexDto> taskIndexDtos = getTaskFacade().getIndexList(null, 0, 100, null);
 		assertEquals(1, taskIndexDtos.size());
-		assertEquals(rdcf2.region.getCaption(), taskIndexDtos.get(0).getRegion());
-		assertEquals(rdcf2.district.getCaption(), taskIndexDtos.get(0).getDistrict());
-		assertEquals(rdcf2.community.getCaption(), taskIndexDtos.get(0).getCommunity());
+		assertEquals(rdcf2.region, taskIndexDtos.get(0).getRegion());
+		assertEquals(rdcf2.district, taskIndexDtos.get(0).getDistrict());
+		assertEquals(rdcf2.community, taskIndexDtos.get(0).getCommunity());
 	}
 }

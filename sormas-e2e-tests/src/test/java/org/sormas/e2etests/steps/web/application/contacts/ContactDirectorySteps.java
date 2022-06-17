@@ -71,6 +71,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.BULK_ACTIONS_CONTACT_VALUES;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.BULK_CREATE_QUARANTINE_ORDER;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_FROM_OTHER_INSTANCES_CHECKBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_ONLY_HIGH_PRIOROTY_CHECKBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_WITH_EXTENDED_QUARANTINE_CHECKBOX;
@@ -270,6 +271,7 @@ public class ContactDirectorySteps implements En {
         "I open the last created contact",
         () -> {
           searchAfterContactByMultipleOptions(apiState.getCreatedContact().getUuid());
+          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(CONTACTS_COLUMN_HEADERS);
           openContactFromResultsByUUID(apiState.getCreatedContact().getUuid());
         });
 
@@ -895,6 +897,7 @@ public class ContactDirectorySteps implements En {
         "I search after last created contact via API by UUID and open",
         () -> {
           searchAfterContactByMultipleOptions(apiState.getCreatedContact().getUuid());
+          TimeUnit.SECONDS.sleep(2);
           openContactFromResultsByUUID(apiState.getCreatedContact().getUuid());
         });
 

@@ -29,6 +29,7 @@ public class TravelEntryPage {
       By.xpath("//*[text()='Eine neue Person anlegen']");
   public static final By IMPORT_SUCCESS_DE = By.xpath("//*[text()='Import erfolgreich!']");
   public static final By NEW_TRAVEL_ENTRY_BUTTON = By.cssSelector("div#travelEntryNewTravelEntry");
+  public static final By EPI_DATA_CASE_NEW_TRAVEL_ENTRY_DE_BUTTON = By.id("Neue Einreise");
   public static final By PERSON_FILTER_INPUT = By.id("nameUuidExternalIDLike");
   public static final By RECOVERED_ENTRIES = By.id("onlyRecoveredEntries");
   public static final By VACCINATED_ENTRIES = By.id("onlyVaccinatedEntries");
@@ -62,4 +63,8 @@ public class TravelEntryPage {
       By.cssSelector("[id='weekFrom'] [class='v-filterselect-button']");
   public static final By WEEK_TO_OPTION_COMBOBOX =
       By.cssSelector("[id='weekTo'] [class='v-filterselect-button']");
+  public static final By DELETE_TRAVEL_ENTRY_POPUP =
+      By.xpath("//div[@class='popupContent']//div[@class='v-filterselect-button']");
+  public static final By ENTRY_DETAILED_COLUMN_HEADERS =
+      By.cssSelector("thead .v-grid-column-default-header-content");
 }

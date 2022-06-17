@@ -66,8 +66,8 @@ import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
@@ -88,8 +88,13 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 	public void setup() throws URISyntaxException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility", "PointOfEntry");
 
-		UserDto userDto = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto userDto = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		loginWith(userDto);
 
 		quarantineOrderFacadeEjb = getQuarantineOrderFacade();
@@ -134,6 +139,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		eventParticipantDto = creator.createEventParticipant(eventDto.toReference(), personDto, "participated", userDto.toReference());
 
 		sampleDto = SampleDto.build(userDto.toReference(), caseDataDto.toReference());
+		sampleDto.setLab(rdcf.facility);
 		sampleDto.setSampleDateTime(parseDate("11/09/2020"));
 		sampleDto.setSampleMaterial(SampleMaterial.NASAL_SWAB);
 		sampleDto.setPathogenTestResult(PathogenTestResultType.NEGATIVE);

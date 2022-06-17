@@ -29,9 +29,9 @@ public interface EventParticipantFacadeRetro {
 
 	@GET("eventparticipants/all/{since}/{size}/{lastSynchronizedUuid}")
 	Call<List<EventParticipantDto>> pullAllSince(
-			@Path("since") long since,
-			@Path("size") int size,
-			@Path("lastSynchronizedUuid") String lastSynchronizedUuid);
+		@Path("since") long since,
+		@Path("size") int size,
+		@Path("lastSynchronizedUuid") String lastSynchronizedUuid);
 
 	@POST("eventparticipants/query")
 	Call<List<EventParticipantDto>> pullByUuids(@Body List<String> uuids);
@@ -42,9 +42,6 @@ public interface EventParticipantFacadeRetro {
 	@GET("eventparticipants/uuids")
 	Call<List<String>> pullUuids();
 
-	@GET("eventparticipants/archived/{since}")
-	Call<List<String>> pullArchivedUuidsSince(@Path("since") long since);
-
-	@GET("eventparticipants/deleted/{since}")
-	Call<List<String>> pullDeletedUuidsSince(@Path("since") long since);
+	@GET("eventparticipants/obsolete/{since}")
+	Call<List<String>> pullObsoleteUuidsSince(@Path("since") long since);
 }

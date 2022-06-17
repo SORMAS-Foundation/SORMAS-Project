@@ -29,7 +29,7 @@ public class EditPersonPage {
   public static final By DATE_OF_BIRTH_YEAR_COMBOBOX = By.cssSelector("#birthdateYYYY input+div");
   public static final By DATE_OF_BIRTH_MONTH_COMBOBOX = By.cssSelector("#birthdateMM input+div");
   public static final By DATE_OF_BIRTH_DAY_COMBOBOX = By.cssSelector("#birthdateDD input+div");
-  public static final By SEX_INPUT = By.cssSelector("#sex input");
+  public static final By SEX_INPUT = By.cssSelector("[id='sex'] input");
   public static final By SEX_COMBOBOX = By.cssSelector("[location='sex'] div[role='combobox'] div");
   public static final By SALUTATION_INPUT = By.cssSelector("[location=salutation] input");
   public static final By SALUTATION_COMBOBOX = By.cssSelector("[location=salutation] input + div");
@@ -47,8 +47,10 @@ public class EditPersonPage {
   public static final By STAFF_OF_ARMED_FORCES_INPUT =
       By.cssSelector("[location=armedForcesRelationType] input");
   public static final By REGION_COMBOBOX = By.cssSelector("#region > div");
+  public static final By SECOND_REGION_COMBOBOX = By.xpath("(//div[@id='region']//div)[2]");
   public static final By REGION_INPUT = By.cssSelector("#region > input");
   public static final By DISTRICT_COMBOBOX = By.cssSelector("#district > div");
+  public static final By SECOND_DISTRICT_COMBOBOX = By.xpath("(//div[@id='district']//div)[2]");
   public static final By DISTRICT_INPUT = By.cssSelector("#district > input");
   public static final By COMMUNITY_COMBOBOX = By.cssSelector("#community > div");
   public static final By COMMUNITY_INPUT = By.cssSelector("#community > input");
@@ -117,6 +119,14 @@ public class EditPersonPage {
       By.cssSelector("#tab-events-eventparticipants");
   public static final By NO_TRAVEL_ENTRY_LABEL_DE =
       By.xpath("//div[text()=\"Es gibt keine Einreisen f\u00FCr diese Person\"]");
+  public static final By FACILITY_CONTACT_PERSON_FIRST_NAME_CASE_PERSON_INPUT =
+      By.cssSelector("#contactPersonFirstName");
+  public static final By FACILITY_CONTACT_PERSON_LAST_NAME_CASE_PERSON_INPUT =
+      By.cssSelector("#contactPersonLastName");
+  public static final By FACILITY_CONTACT_PERSON_PHONE_CASE_PERSON_INPUT =
+      By.cssSelector("#contactPersonPhone");
+  public static final By FACILITY_CONTACT_PERSON_EMAIL_CASE_PERSON_INPUT =
+      By.cssSelector("#contactPersonEmail");
 
   public static By getByPersonUuid(String personUuid) {
     return By.cssSelector("a[title='" + personUuid + "']");

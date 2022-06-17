@@ -14,8 +14,6 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
@@ -24,13 +22,9 @@ import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
-import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "DiseaseConfigurationFacade")
 public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade {
-
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
 
 	@EJB
 	private DiseaseConfigurationService service;
@@ -186,6 +180,30 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		return followUpDurations.get(disease);
 	}
 
+	public static DiseaseConfigurationDto toDto(DiseaseConfiguration source) {
+
+		if (source == null) {
+			return null;
+		}
+
+		DiseaseConfigurationDto target = new DiseaseConfigurationDto();
+		DtoHelper.fillDto(target, source);
+
+		target.setDisease(source.getDisease());
+		target.setActive(source.getActive());
+		target.setPrimaryDisease(source.getPrimaryDisease());
+		target.setCaseBased(source.getCaseBased());
+		target.setFollowUpEnabled(source.getFollowUpEnabled());
+		target.setFollowUpDuration(source.getFollowUpDuration());
+		target.setCaseFollowUpDuration(source.getCaseFollowUpDuration());
+		target.setEventParticipantFollowUpDuration(source.getEventParticipantFollowUpDuration());
+		target.setExtendedClassification(source.getExtendedClassification());
+		target.setExtendedClassificationMulti(source.getExtendedClassificationMulti());
+		target.setAgeGroups(source.getAgeGroups());
+
+		return target;
+	}
+
 	@Override
 	public int getCaseFollowUpDuration(Disease disease) {
 		return caseFollowUpDurations.get(disease);
@@ -214,27 +232,8 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		return null;
 	}
 
-	public static DiseaseConfigurationDto toDto(DiseaseConfiguration source) {
-
-		if (source == null) {
-			return null;
-		}
-
-		DiseaseConfigurationDto target = new DiseaseConfigurationDto();
-		DtoHelper.fillDto(target, source);
-
-		target.setDisease(source.getDisease());
-		target.setActive(source.getActive());
-		target.setPrimaryDisease(source.getPrimaryDisease());
-		target.setCaseBased(source.getCaseBased());
-		target.setFollowUpEnabled(source.getFollowUpEnabled());
-		target.setFollowUpDuration(source.getFollowUpDuration());
-		target.setCaseFollowUpDuration(source.getCaseFollowUpDuration());
-		target.setEventParticipantFollowUpDuration(source.getEventParticipantFollowUpDuration());
-		target.setExtendedClassification(source.getExtendedClassification());
-		target.setExtendedClassificationMulti(source.getExtendedClassificationMulti());
-
-		return target;
+	@Override public List<String> getAgeGroups(Disease disease) {
+		return service.getDiseaseConfiguration(disease).getAgeGroups();
 	}
 
 	public DiseaseConfiguration fromDto(@NotNull DiseaseConfigurationDto source, boolean checkChangeDate) {
@@ -252,6 +251,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		target.setEventParticipantFollowUpDuration(source.getEventParticipantFollowUpDuration());
 		target.setExtendedClassification(source.getExtendedClassification());
 		target.setExtendedClassificationMulti(source.getExtendedClassificationMulti());
+		target.setAgeGroups(source.getAgeGroups());
 
 		return target;
 	}

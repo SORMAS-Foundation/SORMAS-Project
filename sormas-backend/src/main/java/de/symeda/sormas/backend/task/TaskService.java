@@ -19,7 +19,9 @@ package de.symeda.sormas.backend.task;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
@@ -40,6 +42,9 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.RequestContextHolder;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskJurisdictionFlagsDto;
@@ -47,11 +52,11 @@ import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
@@ -61,6 +66,7 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventQueryContext;
 import de.symeda.sormas.backend.event.EventService;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
@@ -68,6 +74,7 @@ import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 
@@ -85,6 +92,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 	private UserService userService;
 	@EJB
 	private TravelEntryService travelEntryService;
+	@EJB
+	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public TaskService() {
 		super(Task.class);
@@ -145,6 +154,10 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 	}
 
 	public Predicate createUserFilter(TaskQueryContext taskQueryContext) {
+		return createUserFilter(taskQueryContext, null);
+	}
+
+	public Predicate createUserFilter(TaskQueryContext taskQueryContext, TaskCriteria taskCriteria) {
 
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
@@ -156,14 +169,11 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		From<?, Task> taskPath = taskQueryContext.getRoot();
 
 		TaskJoins joins = taskQueryContext.getJoins();
+
 		Predicate assigneeFilter = createAssigneeFilter(cb, joins.getAssignee());
 
-		Predicate contactRightsPredicate = this.createContactFilter(
-			cb,
-			taskQueryContext.getRoot(),
-			joins.getAssignee(),
-			joins.getTaskObservers(),
-			currentUser);
+		Predicate contactRightsPredicate =
+			this.createContactFilter(cb, taskQueryContext.getRoot(), joins.getAssignee(), joins.getTaskObservers(), currentUser);
 		if (contactRightsPredicate != null) {
 			assigneeFilter = cb.and(assigneeFilter, contactRightsPredicate);
 		}
@@ -176,15 +186,18 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			travelEntryService.createDefaultFilter(cb, joins.getTravelEntry()));
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
-			|| currentUser.hasUserRole(UserRole.REST_USER)) {
+		if (jurisdictionLevel == JurisdictionLevel.NATION && currentUser.getUserRoles().stream().noneMatch(UserRole::isPortHealthUser)) {
 			return cb.and(assigneeFilter, relatedEntityNotDeletedFilter);
 		}
 
 		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), currentUser);
 		filter = cb.or(filter, cb.equal(taskPath.get(Task.ASSIGNEE_USER), currentUser));
 
-		Predicate caseFilter = caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()));
+		Predicate caseFilter = caseService.createUserFilter(
+			new CaseQueryContext(cb, cq, joins.getCaseJoins()),
+			taskCriteria != null
+				? new CaseUserFilterCriteria().excludeLimitedSyncRestrictions(taskCriteria.isExcludeLimitedSyncRestrictions())
+				: null);
 		if (caseFilter != null) {
 			filter = cb.or(filter, caseFilter);
 		}
@@ -196,13 +209,50 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		if (eventFilter != null) {
 			filter = cb.or(filter, eventFilter);
 		}
-		Predicate travelEntryFilter =
-			travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq, joins.getTravelEntryJoins()));
+		Predicate travelEntryFilter = travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq, joins.getTravelEntryJoins()));
 		if (travelEntryFilter != null) {
 			filter = cb.or(filter, travelEntryFilter);
 		}
 
-		return CriteriaBuilderHelper.and(cb, filter, relatedEntityNotDeletedFilter, assigneeFilter);
+		if ((taskCriteria == null || !taskCriteria.isExcludeLimitedSyncRestrictions())
+			&& featureConfigurationFacade
+				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
+			&& RequestContextHolder.isMobileSync()) {
+
+			Predicate limitedCaseSyncPredicate = CriteriaBuilderHelper.and(
+				cb,
+				caseService.createLimitedSyncCasePredicate(cb, joins.getCaze(), currentUser),
+				caseService.createLimitedSyncCasePredicate(cb, joins.getContactCase(), currentUser));
+
+			return CriteriaBuilderHelper.and(cb, filter, relatedEntityNotDeletedFilter, limitedCaseSyncPredicate, assigneeFilter);
+		} else {
+			return CriteriaBuilderHelper.and(cb, filter, relatedEntityNotDeletedFilter, assigneeFilter);
+		}
+	}
+
+	@Override
+	protected List<Predicate> getAdditionalObsoleteUuidsPredicates(Date since, CriteriaBuilder cb, CriteriaQuery<String> cq, Root<Task> from) {
+
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
+			&& featureConfigurationFacade
+				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)) {
+
+			List<Predicate> predicates = new ArrayList<>();
+
+			TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, from);
+			predicates.add(caseService.createObsoleteLimitedSyncCasePredicate(cb, taskQueryContext.getJoins().getCaze(), since, getCurrentUser()));
+			predicates
+				.add(caseService.createObsoleteLimitedSyncCasePredicate(cb, taskQueryContext.getJoins().getContactCase(), since, getCurrentUser()));
+			return predicates;
+		} else {
+			return Collections.emptyList();
+		}
+	}
+
+	@Override
+	protected Predicate getUserFilterForObsoleteUuids(CriteriaBuilder cb, CriteriaQuery<String> cq, Root<Task> from) {
+
+		return createUserFilter(new TaskQueryContext(cb, cq, from), new TaskCriteria().excludeLimitedSyncRestrictions(true));
 	}
 
 	public Predicate createAssigneeFilter(CriteriaBuilder cb, Join<?, User> assigneeUserJoin) {

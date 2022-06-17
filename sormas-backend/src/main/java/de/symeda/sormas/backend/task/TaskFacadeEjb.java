@@ -21,11 +21,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -59,7 +57,6 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskDto;
@@ -100,6 +97,7 @@ import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationJoins;
@@ -256,7 +254,11 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
 		target.setContact(ContactFacadeEjb.toReferenceDto(source.getContact()));
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
-		target.setTravelEntry(travelEntryFacade.toRefDto(source.getTravelEntry()));
+		if (source.getTravelEntry() != null) {
+			target.setTravelEntry(travelEntryFacade.toRefDto(source.getTravelEntry()));
+		} else {
+			target.setTravelEntry(null);
+		}
 
 		target.setClosedLat(source.getClosedLat());
 		target.setClosedLon(source.getClosedLon());
@@ -456,45 +458,55 @@ public class TaskFacadeEjb implements TaskFacade {
 		TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, task);
 		TaskJoins joins = taskQueryContext.getJoins();
 
-		// Filter select based on case/contact/event region/district/community
-		Expression<Object> region = cb.selectCase()
-			.when(cb.isNotNull(joins.getCaseResponsibleRegion()), joins.getCaseResponsibleRegion().get(Region.NAME))
-			.otherwise(
-				cb.selectCase()
-					.when(cb.isNotNull(joins.getCaseRegion()), joins.getCaseRegion().get(Region.NAME))
-					.otherwise(
-						cb.selectCase()
-							.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(Region.NAME))
-							.otherwise(
-								cb.selectCase()
-									.when(cb.isNotNull(joins.getEventRegion()), joins.getEventRegion().get(Region.NAME))
-									.otherwise(joins.getTravelEntryResponsibleRegion().get(Region.NAME)))));
-
-		Expression<Object> district = cb.selectCase()
-			.when(cb.isNotNull(joins.getCaseResponsibleDistrict()), joins.getCaseResponsibleDistrict().get(District.NAME))
-			.otherwise(
-				cb.selectCase()
-					.when(cb.isNotNull(joins.getCaseDistrict()), joins.getCaseDistrict().get(District.NAME))
-					.otherwise(
-						cb.selectCase()
-							.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(District.NAME))
-							.otherwise(
-								cb.selectCase()
-									.when(cb.isNotNull(joins.getEventDistrict()), joins.getEventDistrict().get(District.NAME))
-									.otherwise(joins.getTravelEntryResponsibleDistrict().get(District.NAME)))));
-
-		Expression<Object> community = cb.selectCase()
-			.when(cb.isNotNull(joins.getCaseResponsibleCommunity()), joins.getCaseResponsibleCommunity().get(Community.NAME))
-			.otherwise(
-				cb.selectCase()
-					.when(cb.isNotNull(joins.getCaseCommunity()), joins.getCaseCommunity().get(Community.NAME))
-					.otherwise(
-						cb.selectCase()
-							.when(cb.isNotNull(joins.getContactCommunity()), joins.getContactCommunity().get(Community.NAME))
-							.otherwise(
-								cb.selectCase()
-									.when(cb.isNotNull(joins.getEventCommunity()), joins.getEventCommunity().get(Community.NAME))
-									.otherwise(joins.getTravelEntryResponsibleCommunity().get(Community.NAME)))));
+		// Filter select based on case/contact/event region/district/community and case facility/point of entry
+		Expression<Object> regionUuid = getIndexJurisdictionExpression(
+			cb,
+			joins.getCaseResponsibleRegion(),
+			joins.getCaseRegion(),
+			joins.getContactRegion(),
+			joins.getEventRegion(),
+			joins.getTravelEntryResponsibleRegion(),
+			Region.UUID);
+		Expression<Object> regionName = getIndexJurisdictionExpression(
+			cb,
+			joins.getCaseResponsibleRegion(),
+			joins.getCaseRegion(),
+			joins.getContactRegion(),
+			joins.getEventRegion(),
+			joins.getTravelEntryResponsibleRegion(),
+			Region.NAME);
+		Expression<Object> districtUuid = getIndexJurisdictionExpression(
+			cb,
+			joins.getCaseResponsibleDistrict(),
+			joins.getCaseDistrict(),
+			joins.getContactDistrict(),
+			joins.getEventDistrict(),
+			joins.getTravelEntryResponsibleDistrict(),
+			District.UUID);
+		Expression<Object> districtName = getIndexJurisdictionExpression(
+			cb,
+			joins.getCaseResponsibleDistrict(),
+			joins.getCaseDistrict(),
+			joins.getContactDistrict(),
+			joins.getEventDistrict(),
+			joins.getTravelEntryResponsibleDistrict(),
+			District.NAME);
+		Expression<Object> communityUuid = getIndexJurisdictionExpression(
+			cb,
+			joins.getCaseResponsibleCommunity(),
+			joins.getCaseCommunity(),
+			joins.getContactCommunity(),
+			joins.getEventCommunity(),
+			joins.getTravelEntryResponsibleCommunity(),
+			Community.UUID);
+		Expression<Object> communityName = getIndexJurisdictionExpression(
+			cb,
+			joins.getCaseResponsibleCommunity(),
+			joins.getCaseCommunity(),
+			joins.getContactCommunity(),
+			joins.getEventCommunity(),
+			joins.getTravelEntryResponsibleCommunity(),
+			Community.NAME);
 
 		List<Selection<?>> selections = new ArrayList<>(
 			Arrays.asList(
@@ -537,9 +549,16 @@ public class TaskFacadeEjb implements TaskFacade {
 				joins.getAssignee().get(User.FIRST_NAME),
 				joins.getAssignee().get(User.LAST_NAME),
 				task.get(Task.ASSIGNEE_REPLY),
-				region,
-				district,
-				community));
+				regionUuid,
+				regionName,
+				districtUuid,
+				districtName,
+				communityUuid,
+				communityName,
+				joins.getCaseFacility().get(Facility.UUID),
+				joins.getCaseFacility().get(Facility.NAME),
+				joins.getCasePointOfEntry().get(PointOfEntry.UUID),
+				joins.getCasePointOfEntry().get(PointOfEntry.NAME)));
 
 		selections.addAll(taskService.getJurisdictionSelections(taskQueryContext));
 		cq.multiselect(selections);
@@ -603,10 +622,10 @@ public class TaskFacadeEjb implements TaskFacade {
 					expression = joins.getEvent().get(Event.START_DATE);
 					break;
 				case TaskIndexDto.DISTRICT:
-					expression = district;
+					expression = districtName;
 					break;
 				case TaskIndexDto.REGION:
-					expression = region;
+					expression = regionName;
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -665,6 +684,29 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		return tasks;
+	}
+
+	private Expression<Object> getIndexJurisdictionExpression(
+		CriteriaBuilder cb,
+		Join<?, ?> caseResponsibleJurisdictionJoin,
+		Join<?, ?> caseJurisdictionJoin,
+		Join<?, ?> contactJurisdictionJoin,
+		Join<?, ?> eventJurisdictionJoin,
+		Join<?, ?> travelEntryResponsibleJurisdictionJoin,
+		String propertyName) {
+
+		return cb.selectCase()
+			.when(cb.isNotNull(caseResponsibleJurisdictionJoin), caseResponsibleJurisdictionJoin.get(propertyName))
+			.otherwise(
+				cb.selectCase()
+					.when(cb.isNotNull(caseJurisdictionJoin), caseJurisdictionJoin.get(propertyName))
+					.otherwise(
+						cb.selectCase()
+							.when(cb.isNotNull(contactJurisdictionJoin), contactJurisdictionJoin.get(propertyName))
+							.otherwise(
+								cb.selectCase()
+									.when(cb.isNotNull(eventJurisdictionJoin), eventJurisdictionJoin.get(propertyName))
+									.otherwise(travelEntryResponsibleJurisdictionJoin.get(propertyName)))));
 	}
 
 	@Override
@@ -965,45 +1007,6 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	public List<DistrictReferenceDto> getDistrictsByTaskUuids(List<String> taskUuids, Long limit) {
-		Set<String> districtUuids = new HashSet<>();
-		IterableHelper.executeBatched(taskUuids, ModelConstants.PARAMETER_LIMIT, batchedTaskUuids -> {
-			if (districtUuids.size() >= limit) {
-				return;
-			}
-
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaQuery<String> cq = cb.createQuery(String.class);
-			Root<Task> from = cq.from(Task.class);
-			Join<Task, Case> caseJoin = from.join(Task.CAZE, JoinType.LEFT);
-			Join<Case, District> caseDistrictJoin = caseJoin.join(Case.DISTRICT, JoinType.LEFT);
-			Join<Task, Contact> contactJoin = from.join(Task.CONTACT, JoinType.LEFT);
-			Join<Contact, District> contactDistrictJoin = contactJoin.join(Contact.DISTRICT, JoinType.LEFT);
-			Join<Task, Event> eventJoin = from.join(Task.EVENT, JoinType.LEFT);
-			Join<Event, Location> eventLocationJoin = eventJoin.join(Event.EVENT_LOCATION, JoinType.LEFT);
-			Join<Location, District> eventDistrictJoin = eventLocationJoin.join(Location.DISTRICT, JoinType.LEFT);
-
-			cq.where(
-				cb.and(
-					from.get(Task.UUID).in(taskUuids),
-					cb.or(
-						caseDistrictJoin.get(District.UUID).isNotNull(),
-						contactDistrictJoin.get(District.UUID).isNotNull(),
-						eventDistrictJoin.get(District.UUID).isNotNull())));
-			cq.select(
-				cb.coalesce(
-					cb.coalesce(caseDistrictJoin.get(District.UUID), contactDistrictJoin.get(District.UUID)),
-					eventDistrictJoin.get(District.UUID)))
-				.distinct(true);
-
-			List<String> batchedDistrictUuids = em.createQuery(cq).setMaxResults(limit.intValue()).getResultList();
-			districtUuids.addAll(batchedDistrictUuids);
-		});
-
-		return districtUuids.stream().map(DistrictReferenceDto::new).limit(limit).collect(Collectors.toList());
-	}
-
-	@Override
 	public List<String> getArchivedUuidsSince(Date since) {
 
 		if (userService.getCurrentUser() == null) {
@@ -1011,6 +1014,16 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		return taskService.getArchivedUuidsSince(since);
+	}
+
+	@Override
+	public List<String> getObsoleteUuidsSince(Date since) {
+
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+
+		return taskService.getObsoleteUuidsSince(since);
 	}
 
 	private String buildSpecificTaskMessage(String messageTemplate, TaskType taskType, TaskContext taskContext, AbstractDomainObject entity) {
