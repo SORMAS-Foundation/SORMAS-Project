@@ -73,6 +73,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.share.ExternalShareStatus;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -2574,6 +2575,32 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			contactService.dearchive(caseContacts, dearchiveReason);
 		}
 	}
+
+    @Override
+    @RolesAllowed(UserRight._CASE_ARCHIVE)
+    public void noticeSurvnetAboutEntityStatus(String entityUuid, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
+        Case caze = caseService.getByUuid(entityUuid);
+        //TODO: do we need the check for externalId too? -> caze.getExternalID() != null && !caze.getExternalID().isEmpty()
+        if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && caze.getExternalID() != null && !caze.getExternalID().isEmpty()) {
+            List<CaseDataDto> casesWithSameExternalId = getByExternalId(caze.getExternalID());
+            if (casesWithSameExternalId != null && casesWithSameExternalId.size() == 1) {
+                externalSurveillanceToolGatewayFacade.sendCases(Collections.singletonList(entityUuid), externalShareStatus);
+            }
+        }
+    }
+
+    @Override
+    @RolesAllowed(UserRight._CASE_ARCHIVE)
+    public void noticeSurvnetAboutEntitiesStatus(List<String> entityUuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
+        //TODO: if the check for externalId != null and externalID not empty is needed the entityUuids list should be filtered
+        List<String> filteredEntityUuids = entityUuids.stream().filter(this::hasExternalId).collect(Collectors.toList());
+        externalSurveillanceToolGatewayFacade.sendCases(filteredEntityUuids, externalShareStatus);
+    }
+
+    public boolean hasExternalId(String entityUuid) {
+        Case caze = caseService.getByUuid(entityUuid);
+        return caze.getExternalID() != null && !caze.getExternalID().isEmpty();
+    }
 
 	@Override
 	@RolesAllowed({

@@ -21,6 +21,8 @@ import java.util.List;
 
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, CRITERIA extends BaseCriteria>
@@ -42,6 +44,10 @@ public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 
 	void dearchive(List<String> entityUuids, String dearchiveReason);
 
-	Date calculateEndOfProcessingDate(String entityUuids);
+    default void noticeSurvnetAboutEntityStatus(String uuid, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {};
+
+    default void noticeSurvnetAboutEntitiesStatus(List<String> uuid, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {};
+
+    Date calculateEndOfProcessingDate(String entityUuids);
 
 }

@@ -65,19 +65,40 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	@Override
-	public void sendCases(List<String> caseUuids) throws ExternalSurveillanceToolException {
-		ExportParameters params = new ExportParameters();
-		params.setCaseUuids(caseUuids);
+	public void sendCases(List<String> caseUuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
+        ExportParameters params = new ExportParameters();
+        params.setCaseUuids(caseUuids);
+        if (externalShareStatus.equals(ExternalShareStatus.ARCHIVED)) {
+            params.setArchived(true);
+        } else {
+            params.setArchived(false);
+        }
 
-		sendRequest(params);
+        sendRequest(params);
+
+        //TODO: do we need the shareInfoService here as it is used in case of deleteCases?
+    /*    caseService.getByUuids(cases.stream().map(CaseDataDto::getUuid).collect(Collectors.toList())).forEach(caze -> {
+            shareInfoService.createAndPersistShareInfo(caze, ExternalShareStatus.DELETED);
+        });*/
 	}
 
 	@Override
-	public void sendEvents(List<String> eventUuids) throws ExternalSurveillanceToolException {
-		ExportParameters params = new ExportParameters();
-		params.setEventUuids(eventUuids);
+	public void sendEvents(List<String> eventUuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
+        ExportParameters params = new ExportParameters();
+        params.setEventUuids(eventUuids);
 
-		sendRequest(params);
+        if (externalShareStatus.equals(ExternalShareStatus.ARCHIVED)) {
+            params.setArchived(true);
+        } else {
+            params.setArchived(false);
+        }
+
+        sendRequest(params);
+
+        //TODO: do we need the shareInfoService here as it is used in case of deleteEvents?
+  /*      eventService.getByUuids(events.stream().map(EventDto::getUuid).collect(Collectors.toList())).forEach(event -> {
+            shareInfoService.createAndPersistShareInfo(event, ExternalShareStatus.DELETED);
+        });*/
 	}
 
 	private void sendRequest(ExportParameters params) throws ExternalSurveillanceToolException {
@@ -203,9 +224,10 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	public static class ExportParameters {
-
 		private List<String> caseUuids;
 		private List<String> eventUuids;
+		// check if Boolean is needed - test with Survnet
+		private boolean archived;
 
 		public List<String> getCaseUuids() {
 			return caseUuids;
@@ -222,6 +244,14 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 		public void setEventUuids(List<String> eventUuids) {
 			this.eventUuids = eventUuids;
 		}
+
+        public boolean isArchived() {
+            return archived;
+        }
+
+        public void setArchived(boolean archived) {
+            this.archived = archived;
+        }
 	}
 
 	public static class DeleteParameters {

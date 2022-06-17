@@ -57,6 +57,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.share.ExternalShareStatus;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -913,6 +914,22 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(eventUuids);
 		eventParticipantService.dearchive(eventParticipantList, dearchiveReason);
 	}
+
+    @Override
+    @RolesAllowed(UserRight._EVENT_ARCHIVE)
+    public void noticeSurvnetAboutEntityStatus(String eventUuid, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
+        //TODO: do we need the following check too here?  -> event.getExternalId != null && !event.getExternalID().isEmpty()
+        if (externalSurveillanceToolFacade.isFeatureEnabled()) {
+            externalSurveillanceToolFacade.sendEvents(Collections.singletonList(eventUuid), externalShareStatus);
+        }
+    }
+
+    @Override
+    @RolesAllowed(UserRight._EVENT_ARCHIVE)
+    public void noticeSurvnetAboutEntitiesStatus(List<String> entityUuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
+        //TODO: if the check for externalId != null and externalID not empty is needed the entityUuids list should be filtered
+        externalSurveillanceToolFacade.sendEvents(entityUuids, externalShareStatus);
+    }
 
 	@Override
 	public Set<String> getAllSubordinateEventUuids(String eventUuid) {

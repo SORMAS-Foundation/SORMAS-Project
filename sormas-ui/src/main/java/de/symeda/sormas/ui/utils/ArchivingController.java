@@ -18,9 +18,12 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.share.ExternalShareStatus;
+import de.symeda.sormas.api.utils.DataHelper;
 
 public class ArchivingController<F extends CoreFacade> {
 
@@ -53,20 +56,41 @@ public class ArchivingController<F extends CoreFacade> {
 			e -> {
 				if (Boolean.TRUE.equals(e)) {
 					doArchive(entityFacade, coreEntityDto.getUuid(), DateHelper8.toDate(endOfProcessingDate.getValue()));
+                    Notification.show(
+                            String.format(
+                                    I18nProperties.getString(archiveMessages.getMessageEntityArchived()),
+                                    I18nProperties.getString(archiveMessages.getEntityName())),
+                            Notification.Type.ASSISTIVE_NOTIFICATION);
 
-					Notification.show(
-						String.format(
-							I18nProperties.getString(archiveMessages.getMessageEntityArchived()),
-							I18nProperties.getString(archiveMessages.getEntityName())),
-						Notification.Type.ASSISTIVE_NOTIFICATION);
+					// TODO: test this one
+                    if (isEntityFacadeACaseOrEvent(entityFacade)) {
+                        try {
+                            doNoticeSurvnetAboutEntityStatus(entityFacade, coreEntityDto.getUuid(), ExternalShareStatus.ARCHIVED);
+                        } catch (ExternalSurveillanceToolException externalSurveillanceToolException) {
+                            Notification.show(String.format(
+                                            I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotSent),
+                                            DataHelper.getShortUuid(coreEntityDto.getUuid())),
+                                    "",
+                                    Notification.Type.ERROR_MESSAGE);
+                        }
+                    }
 					callback.run();
 				}
 			});
 	}
 
+    public boolean isEntityFacadeACaseOrEvent(F entityFacade) {
+        String entityFacadeName = entityFacade.getClass().getSimpleName();
+        return entityFacadeName.contains("EventFacade") || entityFacadeName.contains("CaseFacade");
+    }
+
 	protected void doArchive(F entityFacade, String uuid, Date endOfProcessingDate) {
 		entityFacade.archive(uuid, endOfProcessingDate);
 	}
+
+	protected void doNoticeSurvnetAboutEntityStatus(F entityFacade, String uuid, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
+        entityFacade.noticeSurvnetAboutEntityStatus(uuid, externalShareStatus);
+    }
 
 	protected void addAdditionalArchiveFields(VerticalLayout verticalLayout) {
 	}
@@ -111,6 +135,18 @@ public class ArchivingController<F extends CoreFacade> {
 							I18nProperties.getString(archiveMessages.getEntityName())),
 						Notification.Type.ASSISTIVE_NOTIFICATION);
 					callback.run();
+
+                    // test this
+                    if (isEntityFacadeACaseOrEvent(entityFacade)) {
+                        try {
+                            doNoticeSurvnetAboutEntitiesStatus(entityFacade, Collections.singletonList(coreEntityDto.getUuid()), ExternalShareStatus.DEARCHIVED);
+                        } catch (ExternalSurveillanceToolException externalSurveillanceToolException) {
+                            //TODO add message for multiple items
+                            Notification.show(String.format(
+                                    I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntriesNotSent),
+                                    Notification.Type.ERROR_MESSAGE));
+                        }
+                    }
 				}
 				return true;
 			});
@@ -157,13 +193,24 @@ public class ArchivingController<F extends CoreFacade> {
 				e -> {
 					if (Boolean.TRUE.equals(e)) {
 						doArchive(entityFacade, entityUuids);
-
 						callback.run();
 						new Notification(
 							I18nProperties.getString(archivedHeading),
 							I18nProperties.getString(archivedMessage),
 							Notification.Type.HUMANIZED_MESSAGE,
 							false).show(Page.getCurrent());
+
+						// test this
+                        if (isEntityFacadeACaseOrEvent(entityFacade)) {
+                            try {
+                                doNoticeSurvnetAboutEntitiesStatus(entityFacade, entityUuids, ExternalShareStatus.ARCHIVED);
+                            } catch (ExternalSurveillanceToolException externalSurveillanceToolException) {
+                                //TODO add message for multiple items
+                                Notification.show(String.format(
+                                        I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntriesNotSent),
+                                        Notification.Type.ERROR_MESSAGE));
+                            }
+                        }
 					}
 				});
 		}
@@ -172,6 +219,10 @@ public class ArchivingController<F extends CoreFacade> {
 	protected void doArchive(F entityFacade, List<String> entityUuids) {
 		entityFacade.archive(entityUuids);
 	}
+
+    protected void doNoticeSurvnetAboutEntitiesStatus(F entityFacade, List<String> uuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
+        entityFacade.noticeSurvnetAboutEntitiesStatus(uuids, externalShareStatus);
+    }
 
 	public void dearchiveSelectedItems(
 		List<String> entityUuids,
@@ -232,6 +283,18 @@ public class ArchivingController<F extends CoreFacade> {
 							I18nProperties.getString(messageEntityDearchived),
 							Notification.Type.HUMANIZED_MESSAGE,
 							false).show(Page.getCurrent());
+
+                        // test this
+                        if (isEntityFacadeACaseOrEvent(entityFacade)) {
+                            try {
+                                doNoticeSurvnetAboutEntitiesStatus(entityFacade, entityUuids, ExternalShareStatus.DEARCHIVED);
+                            } catch (ExternalSurveillanceToolException externalSurveillanceToolException) {
+                                //TODO add message for multiple items
+                                Notification.show(String.format(
+                                        I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntriesNotSent),
+                                        Notification.Type.ERROR_MESSAGE));
+                            }
+                        }
 					}
 					return true;
 				});

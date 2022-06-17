@@ -49,7 +49,7 @@ public class ExternalSurveillanceServiceGateway {
 			I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendCase),
 			I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmDeleteCase),
 			caze.isDontShareWithReportingTool() ? null : () -> {
-				FacadeProvider.getExternalSurveillanceToolFacade().sendCases(Collections.singletonList(caze.getUuid()));
+				FacadeProvider.getExternalSurveillanceToolFacade().sendCases(Collections.singletonList(caze.getUuid()), null);
 			},
 			() -> {
 				FacadeProvider.getExternalSurveillanceToolFacade().deleteCases(Collections.singletonList(caze));
@@ -68,7 +68,7 @@ public class ExternalSurveillanceServiceGateway {
 			I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendEvent),
 			I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmDeleteEvent),
 			() -> {
-				FacadeProvider.getExternalSurveillanceToolFacade().sendEvents(Collections.singletonList(event.getUuid()));
+				FacadeProvider.getExternalSurveillanceToolFacade().sendEvents(Collections.singletonList(event.getUuid()), null);
 			},
 			() -> {
 				FacadeProvider.getExternalSurveillanceToolFacade().deleteEvents(Collections.singletonList(event));
@@ -106,7 +106,7 @@ public class ExternalSurveillanceServiceGateway {
 
 	public static void sendCasesToExternalSurveillanceTool(List<String> uuids, Runnable callback, boolean shouldConfirm) {
 		sendToExternalSurveillanceTool(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendCases), () -> {
-			FacadeProvider.getExternalSurveillanceToolFacade().sendCases(uuids);
+			FacadeProvider.getExternalSurveillanceToolFacade().sendCases(uuids, null);
 			new Notification(
 					I18nProperties.getString(Strings.headingCasesSentToExternalSurveillanceTool),
 					I18nProperties.getString(Strings.messageCasesSentToExternalSurveillanceTool),
@@ -118,7 +118,7 @@ public class ExternalSurveillanceServiceGateway {
 
 	public static void sendEventsToExternalSurveillanceTool(List<String> uuids, Runnable callback, boolean shouldConfirm) {
 		sendToExternalSurveillanceTool(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendEvents), () -> {
-			FacadeProvider.getExternalSurveillanceToolFacade().sendEvents(uuids);
+			FacadeProvider.getExternalSurveillanceToolFacade().sendEvents(uuids, null);
 			new Notification(
 				I18nProperties.getString(Strings.headingEventsSentToExternalSurveillanceTool),
 				I18nProperties.getString(Strings.messageEventsSentToExternalSurveillanceTool),
