@@ -268,7 +268,13 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		}
 		if (CollectionUtils.isNotEmpty(districtUuids)) {
 			Join<User, District> districtJoin = userRoot.join(User.DISTRICT, JoinType.LEFT);
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.in(districtJoin.get(AbstractDomainObject.UUID)).value(districtUuids));
+			Join<User, Region> userRegionJoin = userRoot.join(User.REGION, JoinType.LEFT);
+			Join<Region, District> districtRegionJoin = userRegionJoin.join(Region.DISTRICTS, JoinType.LEFT);
+
+			Predicate districtFilter = cb.or(cb.in(districtJoin.get(AbstractDomainObject.UUID)).value(districtUuids),
+					cb.in(districtRegionJoin.get(AbstractDomainObject.UUID)).value(districtUuids));
+
+			filter = CriteriaBuilderHelper.and(cb, filter, districtFilter);
 			userEntityJoinUsed = true;
 		}
 		if (filterByJurisdiction) {
