@@ -31,6 +31,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -280,7 +281,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		cq.where(filter);
 		cq.select(cb.equal(from.get(ExternalMessage.STATUS), ExternalMessageStatus.PROCESSED));
 
-		return QueryHelper.getSingleResult(em, cq);
+		return BooleanUtils.isTrue(QueryHelper.getSingleResult(em, cq));
 	}
 
 	@Override

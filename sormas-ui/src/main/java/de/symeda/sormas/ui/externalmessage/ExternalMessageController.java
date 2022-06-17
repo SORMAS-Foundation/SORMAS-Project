@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import javax.naming.NamingException;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -250,7 +251,7 @@ public class ExternalMessageController {
 				I18nProperties.getString(Strings.no),
 				null,
 				confirmed -> {
-					if (confirmed != null && confirmed) {
+					if (BooleanUtils.isTrue(confirmed)) {
 						if (FacadeProvider.getExternalMessageFacade().isProcessed(externalMessage.getUuid())) {
 							showAlreadyProcessedPopup(null, false);
 						} else {
@@ -273,7 +274,7 @@ public class ExternalMessageController {
 				I18nProperties.getString(Strings.no),
 				null,
 				confirmed -> {
-					if (confirmed != null && confirmed) {
+					if (BooleanUtils.isTrue(confirmed)) {
 						if (FacadeProvider.getExternalMessageFacade().isProcessed(externalMessage.getUuid())) {
 							showAlreadyProcessedPopup(null, false);
 						} else {
