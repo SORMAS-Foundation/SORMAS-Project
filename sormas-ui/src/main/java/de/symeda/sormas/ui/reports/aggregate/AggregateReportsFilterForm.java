@@ -95,6 +95,8 @@ public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateRepo
 		UserDto user = currentUserDto();
 		final RegionReferenceDto userRegion = user.getRegion();
 		final DistrictReferenceDto userDistrict = user.getDistrict();
+		final FacilityReferenceDto userFacility = user.getHealthFacility();
+		final PointOfEntryReferenceDto userPointOfEntry = user.getPointOfEntry();
 
 		if (userRegion != null) {
 			regionFilter.setEnabled(false);
@@ -103,6 +105,10 @@ public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateRepo
 				districtFilter.setEnabled(false);
 				facilityFilter.addItems(FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(userDistrict, false));
 				pointOfEntryFilter.addItems(FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(userDistrict.getUuid(), false));
+				if (userFacility != null || userPointOfEntry != null) {
+					facilityFilter.setEnabled(false);
+					pointOfEntryFilter.setEnabled(false);
+				}
 			}
 		}
 
