@@ -2,9 +2,9 @@ package de.symeda.sormas.ui.reports.aggregate;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -32,6 +32,8 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
+import de.symeda.sormas.api.report.DiseaseAgeGroup;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UserProvider;
@@ -64,8 +66,9 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 	private Button saveButton;
 	private List<AggregateReportEditForm> editForms = new ArrayList<>();
 	private Map<String, Disease> diseaseMap;
-	private Map<String, Disease> diseasesWithoutReport;
-	private Map<Disease, AggregateReportDto> reports;
+	private List<Disease> diseasesWithoutReport = new ArrayList<>();
+	private List<DiseaseAgeGroup> diseaseAgeGroupsWithoutReport = new ArrayList<>();
+	private List<AggregateReportDto> reports;
 	private boolean popUpIsShown = false;
 
 	public AggregateReportsEditLayout(Window window, AggregateReportCriteria criteria, boolean edit) {
@@ -179,36 +182,47 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			comboBoxFacility.setEnabled(false);
 			comboBoxPoe.setValue(criteria.getPointOfEntry());
 			comboBoxPoe.setEnabled(false);
-			reports = FacadeProvider.getAggregateReportFacade()
-				.getList(criteria)
-				.stream()
-				.collect(Collectors.toMap(AggregateReportDto::getDisease, dto -> dto));
+			reports = FacadeProvider.getAggregateReportFacade().getList(criteria);
 		}
 
 		List<Disease> diseaseList = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, null, false);
 		diseaseMap = diseaseList.stream().collect(Collectors.toMap(Disease::toString, disease -> disease));
-		diseasesWithoutReport = new HashMap<String, Disease>(diseaseMap);
+		diseaseMap.values().forEach(disease -> {
+			List<String> ageGroups = FacadeProvider.getDiseaseConfigurationFacade().getAgeGroups(disease);
+			if (ageGroups != null) {
+				ageGroups.forEach(ageGroup -> {
+					diseaseAgeGroupsWithoutReport.add(new DiseaseAgeGroup(disease.toString(), ageGroup));
+				});
+			} else {
+				diseaseAgeGroupsWithoutReport.add(new DiseaseAgeGroup(disease.toString(), null));
+			}
+			diseasesWithoutReport.add(disease);
+		});
 		if (reports != null) {
-			for (AggregateReportDto report : reports.values()) {
+			for (AggregateReportDto report : reports) {
 				String disease = report.getDisease().toString();
 				AggregateReportEditForm editForm = new AggregateReportEditForm(disease, null, false);
 				editForm.setNewCases(report.getNewCases());
 				editForm.setLabConfirmations(report.getLabConfirmations());
 				editForm.setDeaths(report.getDeaths());
 				editForms.add(editForm);
+				diseaseAgeGroupsWithoutReport.remove(new DiseaseAgeGroup(disease, report.getAgeGroup()));
 				diseasesWithoutReport.remove(disease);
 			}
 		}
 
-		for (String disease : diseasesWithoutReport.keySet()) {
 
-			List<String> ageGroups = FacadeProvider.getDiseaseConfigurationFacade().getAgeGroups(diseasesWithoutReport.get(disease));
+		for (Disease disease : diseasesWithoutReport) {
+
+			String diseaseString = disease.toString();
+
+			List<String> ageGroups = FacadeProvider.getDiseaseConfigurationFacade().getAgeGroups(disease);
 			if (ageGroups == null || ageGroups.isEmpty()) {
-				editForms.add(new AggregateReportEditForm(disease, null, false));
+				editForms.add(new AggregateReportEditForm(diseaseString, null, false));
 			} else {
 				int i = 0;
 				for (String ageGroup : ageGroups) {
-					editForms.add(new AggregateReportEditForm(disease, ageGroup, i == 0));
+					editForms.add(new AggregateReportEditForm(diseaseString, ageGroup, i == 0));
 					i++;
 				}
 			}
@@ -270,10 +284,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			criteria.setHealthFacility(comboBoxFacility.getValue());
 			criteria.setPointOfEntry(comboBoxPoe.getValue());
 			criteria.setRegion(comboBoxRegion.getValue());
-			reports = FacadeProvider.getAggregateReportFacade()
-				.getList(criteria)
-				.stream()
-				.collect(Collectors.toMap(AggregateReportDto::getDisease, dto -> dto));
+			reports = FacadeProvider.getAggregateReportFacade().getList(criteria);
 			if (!reports.isEmpty()) {
 				popUpIsShown = true;
 				Consumer<Boolean> resultConsumer = new Consumer<Boolean>() {
@@ -303,6 +314,25 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 	private void initialize() {
 
 		epiweekOptions.setValue(EpiWeekFilterOption.THIS_WEEK);
+		final UserDto currentUser = UserProvider.getCurrent().getUser();
+		RegionReferenceDto region = currentUser.getRegion();
+		if (region != null) {
+			comboBoxRegion.setValue(region);
+			comboBoxRegion.setEnabled(false);
+		}
+		DistrictReferenceDto district = currentUser.getDistrict();
+		if (district != null) {
+			comboBoxDistrict.setValue(district);
+			comboBoxDistrict.setEnabled(false);
+		}
+		FacilityReferenceDto healthFacility = currentUser.getHealthFacility();
+		PointOfEntryReferenceDto pointOfEntry = currentUser.getPointOfEntry();
+		if (healthFacility != null || pointOfEntry != null) {
+			comboBoxFacility.setValue(healthFacility);
+			comboBoxPoe.setValue(pointOfEntry);
+			comboBoxFacility.setEnabled(false);
+			comboBoxPoe.setEnabled(false);
+		}
 	}
 
 	private void switchToEditMode() {
@@ -310,12 +340,14 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		window.setCaption(I18nProperties.getString(Strings.headingEditAggregateReport));
 		for (AggregateReportEditForm editForm : editForms) {
 			String disease = editForm.getDisease();
-			AggregateReportDto report = reports.get(diseaseMap.get(disease));
-			if (report != null) {
+			String ageGroup = editForm.getAgeGroup();
+			Optional<AggregateReportDto> optionalAggregateReportDto = getReportByDiseaseAndAgeGroup(disease, ageGroup);
+			if (optionalAggregateReportDto.isPresent()) {
+				AggregateReportDto report = optionalAggregateReportDto.get();
 				editForm.setNewCases(report.getNewCases());
 				editForm.setLabConfirmations(report.getLabConfirmations());
 				editForm.setDeaths(report.getDeaths());
-				diseasesWithoutReport.remove(disease);
+				diseaseAgeGroupsWithoutReport.remove(new DiseaseAgeGroup(disease, ageGroup));
 			}
 		}
 		removeComponent(epiweekOptions);
@@ -325,6 +357,14 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		comboBoxDistrict.setEnabled(false);
 		comboBoxFacility.setEnabled(false);
 		comboBoxPoe.setEnabled(false);
+	}
+
+	private Optional<AggregateReportDto> getReportByDiseaseAndAgeGroup(String disease, String ageGroup) {
+		return reports.stream().filter(dto -> {
+					boolean ageGroupMatches = dto.getAgeGroup() != null ? dto.getAgeGroup().equals(ageGroup) : ageGroup == null;
+					boolean diseaseMatches = dto.getDisease() != null ? dto.getDisease().equals(disease) : disease == null;
+					return diseaseMatches && ageGroupMatches;
+				}).findFirst();
 	}
 
 	private void save() {
@@ -362,7 +402,11 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 
 			AggregateReportDto report = null;
 			if (reports != null) {
-				report = reports.get(diseaseMap.get(editForm.getDisease()));
+				Optional<AggregateReportDto> reportByDiseaseAndAgeGroup =
+					getReportByDiseaseAndAgeGroup(editForm.getDisease(), editForm.getAgeGroup());
+				if (reportByDiseaseAndAgeGroup.isPresent()) {
+					report = reportByDiseaseAndAgeGroup.get();
+				}
 			}
 			if (report != null && (deaths > 0 || labConfirmations > 0 || newCases > 0)) {
 				report.setDeaths(deaths);

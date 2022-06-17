@@ -155,6 +155,7 @@ public class AggregateReportsView extends AbstractView {
 			ViewModelProviders.of(AggregateReportsView.class).remove(AggregateReportCriteria.class);
 			criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
 			criteria.setDisease(null);
+			criteria.setShowZeroRowsForGrouping(false);
 			navigateTo(criteria, true);
 		});
 
