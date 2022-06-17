@@ -2,7 +2,6 @@ package de.symeda.sormas.backend.externalmessage;
 
 import static java.util.stream.Collectors.toList;
 
-import de.symeda.sormas.backend.caze.CaseService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,8 +31,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.BooleanUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -61,6 +59,7 @@ import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReportFacadeEjb;
@@ -91,8 +90,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
-
-	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
 	private ExternalMessageService externalMessageService;
@@ -273,7 +270,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	}
 
 	@Override
-	public Boolean isProcessed(String uuid) {
+	public boolean isProcessed(String uuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
@@ -284,7 +281,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		cq.where(filter);
 		cq.select(cb.equal(from.get(ExternalMessage.STATUS), ExternalMessageStatus.PROCESSED));
 
-		return QueryHelper.getSingleResult(em, cq);
+		return BooleanUtils.isTrue(QueryHelper.getSingleResult(em, cq));
 	}
 
 	@Override
@@ -450,9 +447,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		String version = I18nProperties.getCaption(Captions.versionIsMissing);
 		try {
 			version = labResultsFacade.getVersion();
-		} finally {
-			return version;
+		} catch (Exception e) {
 		}
+		return version;
 	}
 
 	private ExternalMessageFetchResult getSuccessfulFetchResult(ExternalMessageResult<List<ExternalMessageDto>> externalMessageResult) {
