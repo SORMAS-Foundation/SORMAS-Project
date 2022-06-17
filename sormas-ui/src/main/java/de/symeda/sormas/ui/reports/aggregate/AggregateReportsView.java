@@ -153,8 +153,8 @@ public class AggregateReportsView extends AbstractView {
 
 		aggregateReportsFilterForm.addResetHandler(e -> {
 			ViewModelProviders.of(AggregateReportsView.class).remove(AggregateReportCriteria.class);
+			criteria = new AggregateReportCriteria();
 			criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
-			criteria.setDisease(null);
 			navigateTo(criteria, true);
 		});
 
