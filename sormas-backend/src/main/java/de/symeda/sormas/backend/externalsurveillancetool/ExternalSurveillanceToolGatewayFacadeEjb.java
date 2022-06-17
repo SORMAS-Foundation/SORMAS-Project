@@ -28,6 +28,8 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.event.Event;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,9 +79,10 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
         sendRequest(params);
 
         //TODO: do we need the shareInfoService here as it is used in case of deleteCases?
-    /*    caseService.getByUuids(cases.stream().map(CaseDataDto::getUuid).collect(Collectors.toList())).forEach(caze -> {
-            shareInfoService.createAndPersistShareInfo(caze, ExternalShareStatus.DELETED);
-        });*/
+        caseUuids.forEach(uuid -> {
+            Case caze = caseService.getByUuid(uuid);
+            shareInfoService.createAndPersistShareInfo(caze, externalShareStatus);
+        });
 	}
 
 	@Override
@@ -96,9 +99,10 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
         sendRequest(params);
 
         //TODO: do we need the shareInfoService here as it is used in case of deleteEvents?
-  /*      eventService.getByUuids(events.stream().map(EventDto::getUuid).collect(Collectors.toList())).forEach(event -> {
-            shareInfoService.createAndPersistShareInfo(event, ExternalShareStatus.DELETED);
-        });*/
+        eventUuids.forEach(uuid -> {
+            Event event = eventService.getByUuid(uuid);
+            shareInfoService.createAndPersistShareInfo(event, externalShareStatus);
+        });
 	}
 
 	private void sendRequest(ExportParameters params) throws ExternalSurveillanceToolException {
@@ -226,7 +230,6 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	public static class ExportParameters {
 		private List<String> caseUuids;
 		private List<String> eventUuids;
-		// check if Boolean is needed - test with Survnet
 		private boolean archived;
 
 		public List<String> getCaseUuids() {

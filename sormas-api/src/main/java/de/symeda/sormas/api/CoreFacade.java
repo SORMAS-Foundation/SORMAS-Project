@@ -44,10 +44,13 @@ public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 
 	void dearchive(List<String> entityUuids, String dearchiveReason);
 
-    default void noticeSurvnetAboutEntityStatus(String uuid, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {};
+	default void noticeSurvnetAboutEntityStatus(String uuid, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
+	};
 
-    default void noticeSurvnetAboutEntitiesStatus(List<String> uuid, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {};
+	default void noticeSurvnetAboutEntitiesStatus(List<String> uuid, ExternalShareStatus externalShareStatus)
+		throws ExternalSurveillanceToolException {
+	};
 
-    Date calculateEndOfProcessingDate(String entityUuids);
+	Date calculateEndOfProcessingDate(String entityUuids);
 
 }

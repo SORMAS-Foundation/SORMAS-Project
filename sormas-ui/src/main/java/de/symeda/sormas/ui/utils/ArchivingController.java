@@ -143,7 +143,7 @@ public class ArchivingController<F extends CoreFacade> {
                         } catch (ExternalSurveillanceToolException externalSurveillanceToolException) {
                             //TODO add message for multiple items
                             Notification.show(String.format(
-                                    I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntriesNotSent),
+                                    I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotSent),
                                     Notification.Type.ERROR_MESSAGE));
                         }
                     }
@@ -207,7 +207,7 @@ public class ArchivingController<F extends CoreFacade> {
                             } catch (ExternalSurveillanceToolException externalSurveillanceToolException) {
                                 //TODO add message for multiple items
                                 Notification.show(String.format(
-                                        I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntriesNotSent),
+                                        I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotSent),
                                         Notification.Type.ERROR_MESSAGE));
                             }
                         }
@@ -291,7 +291,7 @@ public class ArchivingController<F extends CoreFacade> {
                             } catch (ExternalSurveillanceToolException externalSurveillanceToolException) {
                                 //TODO add message for multiple items
                                 Notification.show(String.format(
-                                        I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntriesNotSent),
+                                        I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotSent),
                                         Notification.Type.ERROR_MESSAGE));
                             }
                         }

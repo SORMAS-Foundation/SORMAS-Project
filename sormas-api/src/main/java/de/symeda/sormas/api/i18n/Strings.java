@@ -330,7 +330,6 @@ public interface Strings {
 	String ExternalSurveillanceToolGateway_deletedAt = "ExternalSurveillanceToolGateway.deletedAt";
 	String ExternalSurveillanceToolGateway_notificationEntriesDeleted = "ExternalSurveillanceToolGateway.notificationEntriesDeleted";
 	String ExternalSurveillanceToolGateway_notificationEntriesSent = "ExternalSurveillanceToolGateway.notificationEntriesSent";
-    String ExternalSurveillanceToolGateway_notificationEntriesNotSent = "ExternalSurveillanceToolGateway.notificationEntriesNotSent";
 	String ExternalSurveillanceToolGateway_notificationEntryNotDeleted = "ExternalSurveillanceToolGateway.notificationEntryNotDeleted";
 	String ExternalSurveillanceToolGateway_notificationEntryNotSent = "ExternalSurveillanceToolGateway.notificationEntryNotSent";
 	String ExternalSurveillanceToolGateway_notificationEntrySent = "ExternalSurveillanceToolGateway.notificationEntrySent";
