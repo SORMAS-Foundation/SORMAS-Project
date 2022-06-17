@@ -100,8 +100,8 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 
 		subjectUnderTest.sendCases(Arrays.asList(case1.getUuid(), case2.getUuid()), ExternalShareStatus.ARCHIVED);
 
-		assertThat(getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().caze(case1.toReference()), 0, 100), hasSize(1));
-		assertThat(getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().caze(case2.toReference()), 0, 100), hasSize(1));
+		assertThat(getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().caze(case1.toReference()), 0, 100), hasSize(2));
+		assertThat(getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().caze(case2.toReference()), 0, 100), hasSize(2));
 	}
 
 	@Test
@@ -127,8 +127,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 		subjectUnderTest.sendEvents(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "VXAERX-5RCKFA-G5DVXH-DPHPCAFB"),  ExternalShareStatus.ARCHIVED);
 
-		// Events don't actually exist, so no share info is created
-		assertThat(getBean(ExternalShareInfoService.class).getAll(), hasSize(0));
+		assertThat(getBean(ExternalShareInfoService.class).getAll(), hasSize(2));
 	}
 
 	@Test
