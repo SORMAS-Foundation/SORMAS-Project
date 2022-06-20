@@ -53,16 +53,14 @@ public class RemoteDriverFactory implements DriverFactory {
   @Override
   public ChromeDriver getRemoteWebDriver() {
     final String remoteDriverPath = "/usr/lib64/chromium-browser/chromedriver";
-    log.info("Taking chromedriver from: {}", remoteDriverPath);
     System.setProperty("webdriver.chrome.driver", remoteDriverPath);
-    log.info("Adding all chrome preferences");
     final ChromeOptions options = new ChromeOptions();
     final HashMap<String, Object> chromePreferences = new HashMap<>();
     chromePreferences.put("download.default_directory", userDirectory + "/downloads");
     options.merge(desiredCapabilities);
     options.addArguments("--no-default-browser-check");
     options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.IGNORE);
-    //options.addArguments("disable-infobars");
+    options.addArguments("disable-infobars");
     options.addArguments("--headless");
     options.addArguments("--no-sandbox");
     options.addArguments("--disable-browser-side-navigation");
@@ -81,8 +79,6 @@ public class RemoteDriverFactory implements DriverFactory {
     options.addArguments("--window-size=1920,1080");
     options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
     options.setCapability(SUPPORTS_ALERTS, false);
-    log.info("Returning ChromeDriver instance with provided arguments");
-    log.info("Returning chromedriver with options set.");
     return new ChromeDriver(options);
   }
 }
