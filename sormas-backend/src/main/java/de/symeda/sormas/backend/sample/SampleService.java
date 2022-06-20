@@ -53,6 +53,7 @@ import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -600,10 +601,10 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 			final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
 			if (sampleAssociationType == SampleAssociationType.CASE) {
 				filter = CriteriaBuilderHelper.or(cb, filter, caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()), null));
-			} else if (sampleAssociationType == SampleAssociationType.CONTACT) {
+			} else if (sampleAssociationType == SampleAssociationType.CONTACT && !RequestContextHolder.isMobileSync()) {
 				filter = CriteriaBuilderHelper
 					.or(cb, filter, contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()), null));
-			} else if (sampleAssociationType == SampleAssociationType.EVENT_PARTICIPANT) {
+			} else if (sampleAssociationType == SampleAssociationType.EVENT_PARTICIPANT && !RequestContextHolder.isMobileSync()) {
 				filter = CriteriaBuilderHelper.or(
 					cb,
 					filter,
@@ -616,15 +617,23 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 				CriteriaBuilderHelper.or(
 					cb,
 					caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()), null),
-					contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()), null),
-					eventParticipantService.createUserFilter(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins()))));
+					RequestContextHolder.isMobileSync()
+						? null
+						: contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()), null),
+					RequestContextHolder.isMobileSync()
+						? null
+						: eventParticipantService.createUserFilter(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins()))));
 		} else {
 			filter = CriteriaBuilderHelper.or(
 				cb,
 				filter,
 				caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()), null),
-				contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()), null),
-				eventParticipantService.createUserFilter(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins())));
+				RequestContextHolder.isMobileSync()
+					? null
+					: contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()), null),
+				RequestContextHolder.isMobileSync()
+					? null
+					: eventParticipantService.createUserFilter(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins())));
 		}
 
 		return filter;
@@ -829,16 +838,16 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 				}
 
 				Predicate likeFilters = cb.or(
-						//case
+					//case
 					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.UUID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCasePerson().get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getCasePerson().get(Person.LAST_NAME), textFilter),
 					CriteriaBuilderHelper.ilike(cb, joins.getCaze().get(Case.EPID_NUMBER), textFilter),
-						//contact
+					//contact
 					CriteriaBuilderHelper.ilike(cb, joins.getContact().get(Contact.UUID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getContactJoins().getPerson().get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getContactJoins().getPerson().get(Person.LAST_NAME), textFilter),
-						//EventParticipant
+					//EventParticipant
 					CriteriaBuilderHelper.ilike(cb, joins.getEventParticipant().get(EventParticipant.UUID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getEventParticipantJoins().getPerson().get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, joins.getEventParticipantJoins().getPerson().get(Person.LAST_NAME), textFilter),

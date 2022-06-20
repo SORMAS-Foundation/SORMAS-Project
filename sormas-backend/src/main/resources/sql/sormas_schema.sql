@@ -11617,4 +11617,34 @@ INSERT INTO schema_version (version_number, comment) VALUES (468, 'Compare the l
 
 INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (469, 'Remove UserRight DASHBOARD_CAMPAIGNS_VIEW from COMMUNITY_INFORMANT #4461', true);
 
+-- 2022-06-14 Allow surveillance officer to create aggregate reports #9052
+INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+SELECT userrole_id, 'AGGREGATE_REPORT_EDIT', tstzrange(now(), null)
+FROM userroles_userrights uu
+WHERE uu.userright = 'AGGREGATE_REPORT_VIEW'
+  AND exists(SELECT uu2.userrole_id
+             FROM userroles_userrights uu2
+             WHERE uu2.userrole_id = uu.userrole_id
+               AND uu2.userright = 'CASE_EDIT')
+  AND NOT exists(SELECT uu2.userrole_id
+                 FROM userroles_userrights uu2
+                 WHERE uu2.userrole_id = uu.userrole_id
+                   AND uu2.userright = 'AGGREGATE_REPORT_EDIT');
+
+INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+SELECT userrole_id, 'AGGREGATE_REPORT_EXPORT', tstzrange(now(), null)
+FROM userroles_userrights uu
+WHERE uu.userright = 'AGGREGATE_REPORT_VIEW'
+  AND exists(SELECT uu2.userrole_id
+             FROM userroles_userrights uu2
+             WHERE uu2.userrole_id = uu.userrole_id
+               AND uu2.userright = 'CASE_EXPORT')
+  AND NOT exists(SELECT uu2.userrole_id
+                 FROM userroles_userrights uu2
+                 WHERE uu2.userrole_id = uu.userrole_id
+                   AND uu2.userright = 'AGGREGATE_REPORT_EXPORT');
+
+INSERT INTO schema_version (version_number, comment) VALUES (470, 'Allow surveillance officer to create aggregate reports #9052');
+
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
