@@ -101,6 +101,7 @@ import static org.sormas.e2etests.pages.application.events.EventParticipantsPage
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_PERSON_POPUP;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+import org.junit.Assert;
 
 @Slf4j
 public class EditContactsSteps implements En {
@@ -450,7 +451,6 @@ public class EditContactsSteps implements En {
         () -> {
           contactID1 = getContactIDByIndex(1);
           contactID2 = getContactIDByIndex(2);
-
         });
     And(
         "I open contact number {int}",
@@ -461,7 +461,6 @@ public class EditContactsSteps implements En {
     Then(
         "I compare previous first contact ID with actually second contact ID",
         () -> {
-
           Assert.assertEquals(contactID1, getContactIDByIndex(2));
         });
   }
