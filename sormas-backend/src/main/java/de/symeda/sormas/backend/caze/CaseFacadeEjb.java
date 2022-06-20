@@ -2578,7 +2578,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
     @Override
     @RolesAllowed(UserRight._CASE_ARCHIVE)
-    public void noticeExternalSurveillanceToolAboutEntityStatus(String entityUuid, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
+    public void setArchiveInExternalSurveillanceToolForEntity(String entityUuid, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
         Case caze = caseService.getByUuid(entityUuid);
         //TODO: do we need the check for externalId too? -> caze.getExternalID() != null && !caze.getExternalID().isEmpty()
         if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && caze.getExternalID() != null && !caze.getExternalID().isEmpty()) {
@@ -2591,7 +2591,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
     @Override
     @RolesAllowed(UserRight._CASE_ARCHIVE)
-    public void noticeExternalSurveillanceToolAboutEntitiesStatus(List<String> entityUuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
+    public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
         //TODO: if the check for externalId != null and externalID not empty is needed the entityUuids list should be filtered
         List<String> filteredEntityUuids = entityUuids.stream().filter(this::hasExternalId).collect(Collectors.toList());
         externalSurveillanceToolGatewayFacade.sendCases(filteredEntityUuids, externalShareStatus);

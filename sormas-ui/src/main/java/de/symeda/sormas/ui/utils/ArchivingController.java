@@ -63,15 +63,15 @@ public class ArchivingController<F extends CoreFacade> {
 
                     callback.run();
 
-                    noticeExternalSurveillanceToolAboutEntity(entityFacade, coreEntityDto.getUuid(), ExternalShareStatus.ARCHIVED);
+                    setArchiveInExternalSurveillanceToolForEntity(entityFacade, coreEntityDto.getUuid(), ExternalShareStatus.ARCHIVED);
 				}
 			});
 	}
 
-    public void noticeExternalSurveillanceToolAboutEntity(F entityFacade, String entityUuid, ExternalShareStatus externalShareStatus) {
+    public void setArchiveInExternalSurveillanceToolForEntity(F entityFacade, String entityUuid, ExternalShareStatus externalShareStatus) {
         if (isEntityFacadeACaseOrEvent(entityFacade)) {
             try {
-                doNoticeExternalSurveillanceToolAboutEntityStatus(entityFacade, entityUuid, ExternalShareStatus.ARCHIVED);
+                doSetArchiveInExternalSurveillanceToolForEntity(entityFacade, entityUuid, ExternalShareStatus.ARCHIVED);
             } catch (ExternalSurveillanceToolException exception) {
                 Notification.show(
                         String.format(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotSent)),
@@ -89,8 +89,8 @@ public class ArchivingController<F extends CoreFacade> {
 		entityFacade.archive(uuid, endOfProcessingDate);
 	}
 
-	protected void doNoticeExternalSurveillanceToolAboutEntityStatus(F entityFacade, String uuid, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
-        entityFacade.noticeExternalSurveillanceToolAboutEntityStatus(uuid, externalShareStatus);
+	protected void doSetArchiveInExternalSurveillanceToolForEntity(F entityFacade, String uuid, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
+        entityFacade.setArchiveInExternalSurveillanceToolForEntity(uuid, externalShareStatus);
     }
 
 	protected void addAdditionalArchiveFields(VerticalLayout verticalLayout) {
@@ -137,7 +137,7 @@ public class ArchivingController<F extends CoreFacade> {
 						Notification.Type.ASSISTIVE_NOTIFICATION);
 					callback.run();
 
-					noticeExternalSurveillanceToolAboutEntities(entityFacade, Collections.singletonList(coreEntityDto.getUuid()), ExternalShareStatus.DEARCHIVED);
+					setArchiveInExternalSurveillanceToolForEntities(entityFacade, Collections.singletonList(coreEntityDto.getUuid()), ExternalShareStatus.DEARCHIVED);
 				}
 				return true;
 			});
@@ -191,7 +191,7 @@ public class ArchivingController<F extends CoreFacade> {
 							Notification.Type.HUMANIZED_MESSAGE,
 							false).show(Page.getCurrent());
 
-                        noticeExternalSurveillanceToolAboutEntities(entityFacade, entityUuids, ExternalShareStatus.ARCHIVED);
+                        setArchiveInExternalSurveillanceToolForEntities(entityFacade, entityUuids, ExternalShareStatus.ARCHIVED);
 					}
 				});
 		}
@@ -201,14 +201,14 @@ public class ArchivingController<F extends CoreFacade> {
 		entityFacade.archive(entityUuids);
 	}
 
-    protected void doNoticeExternalSurveillanceToolAboutEntitiesStatus(F entityFacade, List<String> uuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
-        entityFacade.noticeExternalSurveillanceToolAboutEntitiesStatus(uuids, externalShareStatus);
+    protected void doSetArchiveInExternalSurveillanceToolForEntities(F entityFacade, List<String> uuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
+        entityFacade.setArchiveInExternalSurveillanceToolForEntities(uuids, externalShareStatus);
     }
 
-    public void noticeExternalSurveillanceToolAboutEntities(F entityFacade, List<String> entityUuids, ExternalShareStatus externalShareStatus) {
+    public void setArchiveInExternalSurveillanceToolForEntities(F entityFacade, List<String> entityUuids, ExternalShareStatus externalShareStatus) {
         if (isEntityFacadeACaseOrEvent(entityFacade)) {
             try {
-                doNoticeExternalSurveillanceToolAboutEntitiesStatus(entityFacade, entityUuids, ExternalShareStatus.ARCHIVED);
+                doSetArchiveInExternalSurveillanceToolForEntities(entityFacade, entityUuids, ExternalShareStatus.ARCHIVED);
             } catch (ExternalSurveillanceToolException exception) {
                 Notification.show(
                         String.format(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotSent)),
@@ -277,7 +277,7 @@ public class ArchivingController<F extends CoreFacade> {
 							Notification.Type.HUMANIZED_MESSAGE,
 							false).show(Page.getCurrent());
 
-                        noticeExternalSurveillanceToolAboutEntities(entityFacade, entityUuids, ExternalShareStatus.DEARCHIVED);
+                        setArchiveInExternalSurveillanceToolForEntities(entityFacade, entityUuids, ExternalShareStatus.DEARCHIVED);
 					}
 					return true;
 				});
