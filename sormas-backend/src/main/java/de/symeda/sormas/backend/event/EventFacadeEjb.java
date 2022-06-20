@@ -917,7 +917,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
     @Override
     @RolesAllowed(UserRight._EVENT_ARCHIVE)
-    public void noticeSurvnetAboutEntityStatus(String eventUuid, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
+    public void noticeExternalSurveillanceToolAboutEntityStatus(String eventUuid, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
         //TODO: do we need the following check too here?  -> event.getExternalId != null && !event.getExternalID().isEmpty()
         if (externalSurveillanceToolFacade.isFeatureEnabled()) {
             externalSurveillanceToolFacade.sendEvents(Collections.singletonList(eventUuid), externalShareStatus);
@@ -926,7 +926,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
     @Override
     @RolesAllowed(UserRight._EVENT_ARCHIVE)
-    public void noticeSurvnetAboutEntitiesStatus(List<String> entityUuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
+    public void noticeExternalSurveillanceToolAboutEntitiesStatus(List<String> entityUuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
         //TODO: if the check for externalId != null and externalID not empty is needed the entityUuids list should be filtered
         externalSurveillanceToolFacade.sendEvents(entityUuids, externalShareStatus);
     }

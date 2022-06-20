@@ -2093,7 +2093,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
     @Test
-    public void testNoticeSurvnetAboutEntityStatus_WithProperEntity() throws ExternalSurveillanceToolException {
+    public void testNoticeExternalSurveillanceToolAboutEntityStatus_WithProperEntity() throws ExternalSurveillanceToolException {
         RDCF rdcf = creator.createRDCF();
         UserReferenceDto user = creator.createUser(rdcf).toReference();
         PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
@@ -2109,12 +2109,12 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
                         .withRequestBody(containing("caseUuids"))
                         .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-        cut.noticeSurvnetAboutEntityStatus(caze.getUuid(), ExternalShareStatus.ARCHIVED);
+        cut.noticeExternalSurveillanceToolAboutEntityStatus(caze.getUuid(), ExternalShareStatus.ARCHIVED);
         wireMockRule.verify(exactly(1), postRequestedFor(urlEqualTo("/export")));
     }
 
     @Test
-    public void testNoticeSurvnetAboutEntityStatus_WithoutProperEntity() throws ExternalSurveillanceToolException {
+    public void testNoticeExternalSurveillanceToolAboutEntityStatus_WithoutProperEntity() throws ExternalSurveillanceToolException {
         RDCF rdcf = creator.createRDCF();
         UserReferenceDto user = creator.createUser(rdcf).toReference();
         PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
@@ -2128,12 +2128,12 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
                         .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
         //the case does not have an externalId set and after the filtering the sendCases will not be called
-        cut.noticeSurvnetAboutEntityStatus(caze.getUuid(), ExternalShareStatus.ARCHIVED);
+        cut.noticeExternalSurveillanceToolAboutEntityStatus(caze.getUuid(), ExternalShareStatus.ARCHIVED);
         wireMockRule.verify(exactly(0), postRequestedFor(urlEqualTo("/export")));
 	}
 
     @Test(expected = ExternalSurveillanceToolException.class)
-    public void testNoticeSurvnetAboutEntityStatus_Exception() throws ExternalSurveillanceToolException {
+    public void testNoticeExternalSurveillanceToolAboutEntityStatus_Exception() throws ExternalSurveillanceToolException {
         RDCF rdcf = creator.createRDCF();
         UserReferenceDto user = creator.createUser(rdcf).toReference();
         PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
@@ -2150,7 +2150,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
                         .withRequestBody(containing("caseUuids"))
                         .willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
 
-        cut.noticeSurvnetAboutEntityStatus(caze.getUuid(), ExternalShareStatus.ARCHIVED);
+        cut.noticeExternalSurveillanceToolAboutEntityStatus(caze.getUuid(), ExternalShareStatus.ARCHIVED);
     }
 
 	@Test

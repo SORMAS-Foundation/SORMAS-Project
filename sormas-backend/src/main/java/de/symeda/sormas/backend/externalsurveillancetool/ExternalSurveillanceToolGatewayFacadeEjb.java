@@ -78,7 +78,6 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
         sendRequest(params);
 
-        //TODO: do we need the shareInfoService here as it is used in case of deleteCases?
         caseUuids.forEach(uuid -> {
             Case caze = caseService.getByUuid(uuid);
             shareInfoService.createAndPersistShareInfo(caze, externalShareStatus);
@@ -98,7 +97,6 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
         sendRequest(params);
 
-        //TODO: do we need the shareInfoService here as it is used in case of deleteEvents?
         eventUuids.forEach(uuid -> {
             Event event = eventService.getByUuid(uuid);
             shareInfoService.createAndPersistShareInfo(event, externalShareStatus);

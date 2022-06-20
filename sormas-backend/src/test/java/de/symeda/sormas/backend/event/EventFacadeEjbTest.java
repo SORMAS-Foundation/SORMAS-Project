@@ -280,7 +280,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 
 
     @Test
-    public void testNoticeSurvnetAboutEntityStatus_WithProperEntity() throws ExternalSurveillanceToolException {
+    public void testExternalSurveillanceToolAboutEntityStatus_WithProperEntity() throws ExternalSurveillanceToolException {
         RDCF rdcf = creator.createRDCF();
         UserReferenceDto user = creator.createUser(rdcf).toReference();
 
@@ -308,12 +308,12 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
                         .withRequestBody(containing("eventUuids"))
                         .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-        cut.noticeSurvnetAboutEntityStatus(event.getUuid(), ExternalShareStatus.DEARCHIVED);
+        cut.noticeExternalSurveillanceToolAboutEntityStatus(event.getUuid(), ExternalShareStatus.DEARCHIVED);
         wireMockRule.verify(exactly(1), postRequestedFor(urlEqualTo("/export")));
     }
 
     @Test(expected = ExternalSurveillanceToolException.class)
-    public void testNoticeSurvnetAboutEntityStatus_Exception() throws ExternalSurveillanceToolException {
+    public void testNoticeExternalSurveillanceToolAboutEntityStatus_Exception() throws ExternalSurveillanceToolException {
         RDCF rdcf = creator.createRDCF();
         UserReferenceDto user = creator.createUser(rdcf).toReference();
 
@@ -340,7 +340,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
                         .withRequestBody(containing("eventUuids"))
                         .willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
 
-        cut.noticeSurvnetAboutEntityStatus(event.getUuid(), ExternalShareStatus.ARCHIVED);
+        cut.noticeExternalSurveillanceToolAboutEntityStatus(event.getUuid(), ExternalShareStatus.ARCHIVED);
     }
 
 	@Test
