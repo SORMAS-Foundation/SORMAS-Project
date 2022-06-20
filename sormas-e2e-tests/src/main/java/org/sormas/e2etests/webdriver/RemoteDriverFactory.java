@@ -52,8 +52,9 @@ public class RemoteDriverFactory implements DriverFactory {
   @SneakyThrows
   @Override
   public ChromeDriver getRemoteWebDriver() {
-    log.info("Setting Chrome Driver's path");
-    System.setProperty("webdriver.chrome.driver", "/usr/lib64/chromium-browser/chromedriver");
+    final String remoteDriverPath = "/usr/lib64/chromium-browser/chromedriver";
+    log.info("Taking chromedriver from: {}", remoteDriverPath);
+    System.setProperty("webdriver.chrome.driver", remoteDriverPath);
     log.info("Adding all chrome preferences");
     final ChromeOptions options = new ChromeOptions();
     final HashMap<String, Object> chromePreferences = new HashMap<>();
@@ -61,9 +62,8 @@ public class RemoteDriverFactory implements DriverFactory {
     options.merge(desiredCapabilities);
     options.addArguments("--no-default-browser-check");
     options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.IGNORE);
-    options.addArguments("disable-infobars");
+    //options.addArguments("disable-infobars");
     options.addArguments("--headless");
-    options.addArguments("enable-automation");
     options.addArguments("--no-sandbox");
     options.addArguments("--disable-browser-side-navigation");
     options.addArguments("--disable-gpu-sandbox");
@@ -82,6 +82,7 @@ public class RemoteDriverFactory implements DriverFactory {
     options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
     options.setCapability(SUPPORTS_ALERTS, false);
     log.info("Returning ChromeDriver instance with provided arguments");
+    log.info("Returning chromedriver with options set.");
     return new ChromeDriver(options);
   }
 }
