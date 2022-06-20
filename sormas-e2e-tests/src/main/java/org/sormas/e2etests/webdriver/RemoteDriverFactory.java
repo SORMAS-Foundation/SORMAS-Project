@@ -20,6 +20,7 @@ package org.sormas.e2etests.webdriver;
 
 import static org.openqa.selenium.remote.CapabilityType.SUPPORTS_ALERTS;
 
+import java.io.File;
 import java.util.HashMap;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -38,6 +39,7 @@ public class RemoteDriverFactory implements DriverFactory {
   private final DesiredCapabilities desiredCapabilities;
   private final DriverMetaData driverMetaData;
   private final String userDirectory = System.getProperty("user.dir");
+  private final String remoteDriverPath = "/usr/lib64/chromium-browser/chromedriver";
 
   @Inject
   public RemoteDriverFactory(
@@ -52,7 +54,7 @@ public class RemoteDriverFactory implements DriverFactory {
   @SneakyThrows
   @Override
   public ChromeDriver getRemoteWebDriver() {
-    final String remoteDriverPath = "/usr/lib64/chromium-browser/chromedriver";
+    checkIfDriverExists();
     System.setProperty("webdriver.chrome.driver", remoteDriverPath);
     final ChromeOptions options = new ChromeOptions();
     final HashMap<String, Object> chromePreferences = new HashMap<>();
@@ -80,5 +82,13 @@ public class RemoteDriverFactory implements DriverFactory {
     options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
     options.setCapability(SUPPORTS_ALERTS, false);
     return new ChromeDriver(options);
+  }
+
+  @SneakyThrows
+  private void checkIfDriverExists() {
+    File driverPath = new File(remoteDriverPath);
+    if(!driverPath.exists()) {
+      throw new Exception("Unable to find chromedriver!");
+    }
   }
 }
