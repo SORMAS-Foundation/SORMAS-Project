@@ -984,6 +984,40 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@Override
+    public void archive(String entityUuid, Date endOfProcessingDate) {
+        super.archive(entityUuid, endOfProcessingDate);
+        setArchiveInExternalSurveillanceToolForEntity(entityUuid, true);
+    }
+
+	@Override
+    public void archive(List<String> entityUuids){
+	    super.archive(entityUuids);
+	    setArchiveInExternalSurveillanceToolForEntities(entityUuids, true);
+    }
+
+    @Override
+    public void dearchive(List<String> entityUuids, String dearchiveReason){
+        super.dearchive(entityUuids, dearchiveReason);
+        setArchiveInExternalSurveillanceToolForEntities(entityUuids, false);
+    }
+
+    public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) {
+        try {
+            caseFacade.setArchiveInExternalSurveillanceToolForEntities(entityUuids, archived);
+        } catch (ExternalSurveillanceToolException e) {
+            throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+        }
+    }
+
+    public void setArchiveInExternalSurveillanceToolForEntity(String entityUuid, boolean archived) {
+        try {
+            caseFacade.setArchiveInExternalSurveillanceToolForEntity(entityUuid, archived);
+        } catch (ExternalSurveillanceToolException e) {
+            throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+        }
+    }
+
+	@Override
 	public void delete(Case caze, DeletionDetails deletionDetails) {
 
 		// Soft-delete all samples that are only associated with this case

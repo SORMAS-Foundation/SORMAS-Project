@@ -18,7 +18,6 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -61,36 +60,13 @@ public class ArchivingController<F extends CoreFacade> {
 						Notification.Type.ASSISTIVE_NOTIFICATION);
 
                     callback.run();
-
-                    setArchiveInExternalSurveillanceToolForEntity(entityFacade, coreEntityDto.getUuid(), true);
 				}
 			});
 	}
 
-    public void setArchiveInExternalSurveillanceToolForEntity(F entityFacade, String entityUuid, boolean archived) {
-        if (isEntityFacadeACaseOrEvent(entityFacade)) {
-            try {
-                doSetArchiveInExternalSurveillanceToolForEntity(entityFacade, entityUuid, archived);
-            } catch (ExternalSurveillanceToolException exception) {
-                Notification.show(
-                        String.format(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotSent)),
-                        Notification.Type.ERROR_MESSAGE);
-            }
-        }
-    }
-
-    public boolean isEntityFacadeACaseOrEvent(F entityFacade) {
-        String entityFacadeName = entityFacade.getClass().getSimpleName();
-        return entityFacadeName.contains("EventFacade") || entityFacadeName.contains("CaseFacade");
-    }
-
 	protected void doArchive(F entityFacade, String uuid, Date endOfProcessingDate) {
 		entityFacade.archive(uuid, endOfProcessingDate);
 	}
-
-	protected void doSetArchiveInExternalSurveillanceToolForEntity(F entityFacade, String uuid, boolean archived) throws ExternalSurveillanceToolException {
-        entityFacade.setArchiveInExternalSurveillanceToolForEntity(uuid, archived);
-    }
 
 	protected void addAdditionalArchiveFields(VerticalLayout verticalLayout) {
 	}
@@ -135,8 +111,6 @@ public class ArchivingController<F extends CoreFacade> {
 							I18nProperties.getString(archiveMessages.getEntityName())),
 						Notification.Type.ASSISTIVE_NOTIFICATION);
 					callback.run();
-
-					setArchiveInExternalSurveillanceToolForEntities(entityFacade, Collections.singletonList(coreEntityDto.getUuid()), false);
 				}
 				return true;
 			});
@@ -189,8 +163,6 @@ public class ArchivingController<F extends CoreFacade> {
 							I18nProperties.getString(archivedMessage),
 							Notification.Type.HUMANIZED_MESSAGE,
 							false).show(Page.getCurrent());
-
-                        setArchiveInExternalSurveillanceToolForEntities(entityFacade, entityUuids, true);
 					}
 				});
 		}
@@ -199,22 +171,6 @@ public class ArchivingController<F extends CoreFacade> {
 	protected void doArchive(F entityFacade, List<String> entityUuids) {
 		entityFacade.archive(entityUuids);
 	}
-
-    protected void doSetArchiveInExternalSurveillanceToolForEntities(F entityFacade, List<String> uuids, boolean archived) throws ExternalSurveillanceToolException {
-        entityFacade.setArchiveInExternalSurveillanceToolForEntities(uuids, archived);
-    }
-
-    public void setArchiveInExternalSurveillanceToolForEntities(F entityFacade, List<String> entityUuids, boolean archived) {
-        if (isEntityFacadeACaseOrEvent(entityFacade)) {
-            try {
-                doSetArchiveInExternalSurveillanceToolForEntities(entityFacade, entityUuids, archived);
-            } catch (ExternalSurveillanceToolException exception) {
-                Notification.show(
-                        String.format(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotSent)),
-                        Notification.Type.ERROR_MESSAGE);
-            }
-        }
-    }
 
 	public void dearchiveSelectedItems(
 		List<String> entityUuids,
@@ -275,8 +231,6 @@ public class ArchivingController<F extends CoreFacade> {
 							I18nProperties.getString(messageEntityDearchived),
 							Notification.Type.HUMANIZED_MESSAGE,
 							false).show(Page.getCurrent());
-
-                        setArchiveInExternalSurveillanceToolForEntities(entityFacade, entityUuids, false);
 					}
 					return true;
 				});
