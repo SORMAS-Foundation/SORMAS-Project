@@ -15,13 +15,6 @@
 
 package de.symeda.sormas.ui.externalmessage.processing;
 
-import com.vaadin.shared.ui.MarginInfo;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.ui.caze.CaseCreateForm;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingHelper;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,6 +29,7 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import com.vaadin.server.ClientConnector;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.Registration;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -49,21 +43,26 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.caze.CaseCreateForm;
 import de.symeda.sormas.ui.externalmessage.ExternalMessageForm;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageUiHelper;
+import de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingHelper;
+import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
 import de.symeda.sormas.ui.samples.PathogenTestForm;
 import de.symeda.sormas.ui.samples.SampleController;
 import de.symeda.sormas.ui.samples.SampleCreateForm;
@@ -72,6 +71,8 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+
+import static java.util.Objects.nonNull;
 
 /**
  * Collection of common UI related functions used by processing related code placed in multiple classes
@@ -174,23 +175,24 @@ public class ExternalMessageProcessingUIHelper {
 		Window window = VaadinUiUtil.createPopupWindow();
 		MutableObject<CommitDiscardWrapperComponent<SampleEditForm>> editComponentWrapper = new MutableObject<>();
 		// discard on close without commit or discard button clicked
-		Registration closeListener = window.addCloseListener(e -> editComponentWrapper.getValue().discard());
+		Registration closeListener = window.addCloseListener(
+				nonNull(editComponentWrapper.getValue())?e -> editComponentWrapper.getValue().discard():e -> editComponentWrapper.getValue());
 
-		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent =
-			ExternalMessageProcessingUIHelper
-				.getSampleEditComponent(sample, newPathogenTests, externalMessageDto, commitHandler, cancelHandler, () -> {
+		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent = ExternalMessageProcessingUIHelper
+			.getSampleEditComponent(sample, newPathogenTests, externalMessageDto, commitHandler, cancelHandler, () -> {
 				// do not discard
 				closeListener.remove();
 				window.close();
 			});
 
 		showFormWithLabMessage(externalMessageDto, sampleEditComponent, window, I18nProperties.getString(Strings.headingEditSample), false, false);
-		sampleEditComponent.addDoneListener(() -> {
-			// prevent discard on close
-			closeListener.remove();
-			// close after commit/discard
-			window.close();
-		});
+		sampleEditComponent.addDoneListener(
+			() -> {
+				// prevent discard on close
+				closeListener.remove();
+				// close after commit/discard
+				window.close();
+			});
 	}
 
 	private static CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(
@@ -448,13 +450,8 @@ public class ExternalMessageProcessingUIHelper {
 			SampleDto sample = ((SampleCreateForm) component).getValue();
 			if (sample.getAssociatedCase() != null) {
 				return ButtonHelper.createButton(Captions.externalMessage_deleteNewlyCreatedCase, e -> {
-					try {
-						FacadeProvider.getCaseFacade()
-							.delete(sample.getAssociatedCase().getUuid(), new DeletionDetails(DeletionReason.DUPLICATE_ENTRIES, null));
-					} catch (ExternalSurveillanceToolException survToolException) {
-						// should not happen because the new case was not shared
-						throw new RuntimeException(survToolException);
-					}
+					FacadeProvider.getCaseFacade()
+						.delete(sample.getAssociatedCase().getUuid(), new DeletionDetails(DeletionReason.DUPLICATE_ENTRIES, null));
 				}, ValoTheme.BUTTON_PRIMARY);
 			} else if (sample.getAssociatedContact() != null) {
 				return ButtonHelper.createButton(

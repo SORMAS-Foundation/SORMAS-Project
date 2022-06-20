@@ -45,4 +45,19 @@ public class VaccinationService {
         .atcCode(String.valueOf(faker.idNumber()))
         .build();
   }
+
+  public Vaccination buildGeneratedVaccination() {
+    return Vaccination.builder()
+        .vaccinationDate(LocalDate.now().minusDays(1))
+        .vaccineName("Unknown")
+        .vaccineManufacturer("Unknown")
+        .vaccineType(faker.medical().medicineName())
+        .vaccinationInfoSource("Vaccination card")
+        .vaccineDose(String.valueOf(faker.number().numberBetween(0, 3)))
+        .inn(String.valueOf(faker.idNumber()))
+        .uniiCode(String.valueOf(faker.idNumber()))
+        .batchNumber(String.valueOf(faker.idNumber()))
+        .atcCode(String.valueOf(faker.idNumber()))
+        .build();
+  }
 }

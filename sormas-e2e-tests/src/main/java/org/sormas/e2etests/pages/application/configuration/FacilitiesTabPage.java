@@ -44,4 +44,19 @@ public class FacilitiesTabPage {
       By.cssSelector(".v-window [location='district'] [role='combobox'] div");
   public static final By FACILITY_CATEGORY_COMBOBOX = By.cssSelector(".v-window #typeGroup div");
   public static final By FACILITY_TYPE_COMBOBOX = By.cssSelector(".v-window #type div");
+  public static final By FACILITY_EXPOSURE_TYPE_COMBOBOX =
+      By.cssSelector(".v-window #facilityType div");
+  public static final By FACILITY_CONTACT_PERSON_FIRST_NAME_INPUT =
+      By.cssSelector(".v-window #contactPersonFirstName");
+  public static final By FACILITY_CONTACT_PERSON_LAST_NAME_INPUT =
+      By.cssSelector(".v-window #contactPersonLastName");
+  public static final By FACILITY_CONTACT_PERSON_PHONE_INPUT =
+      By.cssSelector(".v-window #contactPersonPhone");
+  public static final By FACILITY_CONTACT_PERSON_EMAIL_INPUT =
+      By.cssSelector(".v-window #contactPersonEmail");
+  public static final By EDIT_FIRST_FACILITY_BUTTON =
+      By.xpath("(//span[@class='v-icon v-icon-edit'])[1]");
+  public static final By ARCHIVE_FACILITY_BUTTON =
+      By.cssSelector(".v-window #actionArchiveInfrastructure");
+  public static final By ACTION_CONFIRM_BUTTON = By.id("actionConfirm");
 }

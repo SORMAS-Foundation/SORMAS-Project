@@ -29,7 +29,7 @@ import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -255,7 +255,7 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetAllActiveUuids() throws ExternalSurveillanceToolException {
+	public void testGetAllActiveUuids() throws ExternalSurveillanceToolRuntimeException {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
@@ -294,7 +294,7 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetAllActiveVisitsAfter() throws InterruptedException, ExternalSurveillanceToolException {
+	public void testGetAllActiveVisitsAfter() throws InterruptedException, ExternalSurveillanceToolRuntimeException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		Date date = new Date();

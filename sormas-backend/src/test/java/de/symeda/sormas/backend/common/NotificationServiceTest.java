@@ -68,6 +68,7 @@ public class NotificationServiceTest extends AbstractBeanTest {
 	@InjectMocks
 	private NotificationService notificationService;
 
+	@SuppressWarnings("unchecked")
 	public void init() {
 		super.init();
 
@@ -79,7 +80,8 @@ public class NotificationServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testSendNotifications() throws NotificationDeliveryFailedException {
+	public void testSendNotificationsDirectInvokation() throws NotificationDeliveryFailedException {
+
 		notificationService
 			.sendNotifications(NotificationType.CASE_LAB_RESULT_ARRIVED, null, null, MessageSubject.CASE_CLASSIFICATION_CHANGED, "Test message");
 
@@ -88,7 +90,9 @@ public class NotificationServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testSendNotifications_loadUsersByRoles() throws NotificationDeliveryFailedException {
+	@SuppressWarnings("unchecked")
+	public void testSendNotificationsLoadUsersByRoles() throws NotificationDeliveryFailedException {
+
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		Region region = getRegionService().getByReferenceDto(rdcf.region);
 
@@ -124,15 +128,16 @@ public class NotificationServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testSendNotifications_additionalUsers() throws NotificationDeliveryFailedException {
+	public void testSendNotificationsAdditionalUsers() throws NotificationDeliveryFailedException {
+
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		Region region = getRegionService().getByReferenceDto(rdcf.region);
 
+		@SuppressWarnings("unused")
 		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		UserDto survOff = creator.createUser(rdcf, "Case", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
-		User survOffUser = getUserService().getByUuid(survOff.getUuid());
-		survOffUser = getUserService().loadRoles(survOffUser);
+		User survOffUser = getEagerUser(survOff.getUuid());
 
 //		Mockito.when(userService.getAllByRegionsAndNotificationTypes(any(),any(), any())).then(invocation -> {
 //			// load only for SURVEILLANCE_SUPERVISOR, so the additional CASE_SUPERVISOR user will be added in the notification service
@@ -164,16 +169,18 @@ public class NotificationServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testSendNotifications_filterUserMessagesByRoles() throws NotificationDeliveryFailedException {
+	@SuppressWarnings("unchecked")
+	public void testSendNotificationsFilterUserMessagesByRoles() throws NotificationDeliveryFailedException {
+
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
 		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		UserDto caseSup = creator.createUser(rdcf, "Case", "Sup", creator.getUserRoleReference(DefaultUserRole.CASE_SUPERVISOR));
 		UserDto contSup = creator.createUser(rdcf, "Cont", "Sup", creator.getUserRoleReference(DefaultUserRole.CONTACT_SUPERVISOR));
 
-		User survSupUser = getUserService().loadRoles(getUserService().getByReferenceDto(survSup.toReference()));
-		User survOffUser = getUserService().loadRoles(getUserService().getByReferenceDto(caseSup.toReference()));
-		User contSupUser = getUserService().loadRoles(getUserService().getByReferenceDto(contSup.toReference()));
+		User survSupUser = getEagerUser(survSup.getUuid());
+		User survOffUser = getEagerUser(caseSup.getUuid());
+		User contSupUser = getEagerUser(contSup.getUuid());
 
 		Mockito.doAnswer(invocation -> {
 			Map<User, String> userMessages = (Map<User, String>) invocation.getArgument(0);
@@ -199,7 +206,8 @@ public class NotificationServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testSendNotifications_notificationFeatureNotAllowed() throws NotificationDeliveryFailedException {
+	public void testSendNotificationsFeatureDisabled() throws NotificationDeliveryFailedException {
+
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
 		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));

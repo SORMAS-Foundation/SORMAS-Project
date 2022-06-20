@@ -63,7 +63,7 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -798,7 +798,7 @@ public class EventController {
 				if (!existEventParticipantsLinkedToEvent(event)) {
 					try {
 						FacadeProvider.getEventFacade().delete(event.getUuid(), deleteDetails);
-					} catch (ExternalSurveillanceToolException e) {
+					} catch (ExternalSurveillanceToolRuntimeException e) {
 						Notification.show(
 							String.format(
 								I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotDeleted),
@@ -938,7 +938,7 @@ public class EventController {
 						} else {
 							try {
 								FacadeProvider.getEventFacade().delete(eventDto.getUuid(), deleteDetails);
-							} catch (ExternalSurveillanceToolException e) {
+						} catch (ExternalSurveillanceToolRuntimeException e) {
 								countNotDeletedEventsFromExternalTool = countNotDeletedEventsFromExternalTool + 1;
 								nonDeletableEventsFromExternalTool.append(selectedRow.getUuid(), 0, 6).append(", ");
 							}

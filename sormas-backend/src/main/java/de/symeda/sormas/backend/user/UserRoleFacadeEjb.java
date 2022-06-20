@@ -96,19 +96,18 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 
 	@Override
 	public boolean hasUserRight(Collection<UserRoleDto> userRoles, UserRight userRight) {
-		for (UserRoleDto userRole : userRoles) {
-			if (userRole.getUserRights().contains(userRight))
-				return true;
-		}
-		return false;
+
+		return hasAnyUserRight(userRoles, Collections.singleton(userRight));
 	}
 
 	@Override
 	public boolean hasAnyUserRight(Collection<UserRoleDto> userRoles, Collection<UserRight> userRights) {
+
 		for (UserRoleDto userRole : userRoles) {
 			for (UserRight userRight : userRights) {
-				if (userRole.getUserRights().contains(userRight))
+				if (userRole.getUserRights().contains(userRight)) {
 					return true;
+				}
 			}
 		}
 		return false;
