@@ -125,6 +125,48 @@ import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELET
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.contacts.ContactDirectorySteps.exposureData;
 
+import cucumber.api.java8.En;
+import java.io.File;
+import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Case;
+import org.sormas.e2etests.entities.pojo.web.QuarantineOrder;
+import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
+import org.sormas.e2etests.entities.services.CaseDocumentService;
+import org.sormas.e2etests.entities.services.CaseService;
+import org.sormas.e2etests.enums.CaseClassification;
+import org.sormas.e2etests.enums.CaseOutcome;
+import org.sormas.e2etests.enums.YesNoUnknownOptions;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
+import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.NavBarPage;
+import org.sormas.e2etests.pages.application.cases.EditCasePage;
+import org.sormas.e2etests.pages.application.contacts.EditContactPage;
+import org.sormas.e2etests.pages.application.events.EditEventPage;
+import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
+import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
+
 @Slf4j
 public class EditCaseSteps implements En {
 
@@ -138,6 +180,9 @@ public class EditCaseSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
   public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   public static final String userDirPath = System.getProperty("user.dir");
+
+  public static String caseID1;
+  public static String caseID2;
 
   @SneakyThrows
   @Inject
@@ -1671,6 +1716,24 @@ public class EditCaseSteps implements En {
               "Delete button is not editable state but it should be since archived entities default value is true!");
           softly.assertAll();
         });
+    Then(
+        "I get two last cases ID",
+        () -> {
+          caseID1 = getCaseIDByIndex(1);
+          caseID2 = getCaseIDByIndex(2);
+        });
+    And(
+        "I open case number {int}",
+        (Integer index) -> {
+          webDriverHelpers.getWebElement(getCaseIDPathByIndex(index)).click();
+          Thread.sleep(5000);
+        });
+
+    Then(
+        "I compare previous first case ID with actually second case ID",
+        () -> {
+          Assert.assertEquals(caseID1, getCaseIDByIndex(2));
+        });
   }
 
   private Case collectCasePersonUuid() {
@@ -2093,5 +2156,9 @@ public class EditCaseSteps implements En {
 
   private void fillExtraComment(String extraComment) {
     webDriverHelpers.fillInAndLeaveWebElement(EditCasePage.EXTRA_COMMENT_TEXTAREA, extraComment);
+  }
+
+  private String getCaseIDByIndex(int index) {
+    return webDriverHelpers.getTextFromWebElement(getCaseIDPathByIndex(index));
   }
 }

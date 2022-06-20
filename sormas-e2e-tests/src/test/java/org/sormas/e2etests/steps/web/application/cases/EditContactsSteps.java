@@ -94,6 +94,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SAV
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.TYPE_OF_CONTACT_OPTIONS;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.getContactIDPathByIndex;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CREATE_NEW_PERSON_RADIO_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_CONTACT_POPUP;
@@ -112,6 +113,9 @@ public class EditContactsSteps implements En {
   public static Contact collectedContact;
   protected String contactUUID;
   public static final String userDirPath = System.getProperty("user.dir");
+
+  public static String contactID1;
+  public static String contactID2;
 
   @Inject
   public EditContactsSteps(
@@ -441,6 +445,25 @@ public class EditContactsSteps implements En {
               "Delete button is not editable state but it should be since archived entities default value is true!");
           softly.assertAll();
         });
+    Then(
+        "I get two last contacts ID",
+        () -> {
+          contactID1 = getContactIDByIndex(1);
+          contactID2 = getContactIDByIndex(2);
+
+        });
+    And(
+        "I open contact number {int}",
+        (Integer index) -> {
+          webDriverHelpers.getWebElement(getContactIDPathByIndex(index)).click();
+        });
+
+    Then(
+        "I compare previous first contact ID with actually second contact ID",
+        () -> {
+
+          Assert.assertEquals(contactID1, getContactIDByIndex(2));
+        });
   }
 
   private void fillFirstName(String firstName) {
@@ -617,5 +640,9 @@ public class EditContactsSteps implements En {
             webDriverHelpers.getValueFromWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT))
         .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .build();
+  }
+
+  private String getContactIDByIndex(int index) {
+    return webDriverHelpers.getTextFromWebElement(getContactIDPathByIndex(index));
   }
 }

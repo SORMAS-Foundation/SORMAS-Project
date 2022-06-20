@@ -158,8 +158,16 @@ public class EditContactPage {
         String.format("//*[contains(text(),'Pick or create event')]//..//..//../tr[%s]", index));
   }
 
+  public static By getUuidByEventIndex(int index) {
+    return By.xpath(String.format("//table/tbody/tr[%s]/td[1]", index));
+  }
+
   public static final By NUMBER_OF_TESTS_IN_SAMPLES =
       By.cssSelector("div:nth-of-type(7) > .v-label.v-label-undef-w.v-widget");
 
   public static final By CONTACTS_LIST = By.id("tab-contacts");
+
+  public static By getContactIDPathByIndex(int index) {
+    return By.xpath(String.format("//table/tbody/tr[%s]/td[1]/a", index));
+  }
 }

@@ -815,3 +815,25 @@ Feature: Contacts end to end tests
     Then I log in with National User
     Then I open last edited contact by API via URL navigation
     Then I check if editable fields are read only for an archived contact
+
+  @env_main @issue=SORDEV-7453
+  Scenario: Check contacts order after contact edit
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    And I click on the Contacts button from navbar
+    Then I get two last contacts ID
+    And I open contact number 2
+    And I change all contact fields and save
+    And I click on the Contacts button from navbar
+    Then I compare previous first contact ID with actually second contact ID
+
+
+
