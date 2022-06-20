@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.backend.caze;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -29,6 +31,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -51,12 +59,19 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
+import de.symeda.sormas.backend.MockProducer;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
 import org.joda.time.DateTime;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -173,9 +188,25 @@ import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 public class CaseFacadeEjbTest extends AbstractBeanTest {
+    private static final int WIREMOCK_TESTING_PORT = 8888;
+    private ExternalSurveillanceToolFacade subjectUnderTest;
 
-	@Rule
-	public final ExpectedException exception = ExpectedException.none();
+    @Rule
+    public WireMockRule wireMockRule = new WireMockRule(options().port(WIREMOCK_TESTING_PORT), false);
+
+    @Rule
+    public final ExpectedException exception = ExpectedException.none();
+
+    @Before
+    public void setup() {
+        configureExternalSurvToolUrlForWireMock();
+        subjectUnderTest = getExternalSurveillanceToolGatewayFacade();
+    }
+
+    @After
+    public void teardown() {
+        clearExternalSurvToolUrlForWireMock();
+    }
 
 	@Test
 	public void testFilterByResponsibleRegionAndDistrictOfCase() {
@@ -2061,6 +2092,67 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		getCaseFacade().doesEpidNumberExist("NIE-08034912345", "not-a-uuid", Disease.OTHER);
 	}
 
+    @Test
+    public void testNoticeSurvnetAboutEntityStatus_WithProperEntity() throws ExternalSurveillanceToolException {
+        RDCF rdcf = creator.createRDCF();
+        UserReferenceDto user = creator.createUser(rdcf).toReference();
+        PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
+
+        CaseDataDto caze = creator.createCase(user, rdcf, (c) -> {
+            c.setPerson(person);
+            c.setExternalID("externalId1");
+        });
+        CaseFacadeEjbLocal cut = getBean(CaseFacadeEjbLocal.class);
+
+        stubFor(
+                post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+                        .withRequestBody(containing("caseUuids"))
+                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+        cut.noticeSurvnetAboutEntityStatus(caze.getUuid(), ExternalShareStatus.ARCHIVED);
+        wireMockRule.verify(exactly(1), postRequestedFor(urlEqualTo("/export")));
+    }
+
+    @Test
+    public void testNoticeSurvnetAboutEntityStatus_WithoutProperEntity() throws ExternalSurveillanceToolException {
+        RDCF rdcf = creator.createRDCF();
+        UserReferenceDto user = creator.createUser(rdcf).toReference();
+        PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
+
+        CaseDataDto caze = creator.createCase(user,person, rdcf);
+        CaseFacadeEjbLocal cut = getBean(CaseFacadeEjbLocal.class);
+        
+        stubFor(
+                post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+                        .withRequestBody(containing("caseUuids"))
+                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+        //the case does not have an externalId set and after the filtering the sendCases will not be called
+        cut.noticeSurvnetAboutEntityStatus(caze.getUuid(), ExternalShareStatus.ARCHIVED);
+        wireMockRule.verify(exactly(0), postRequestedFor(urlEqualTo("/export")));
+	}
+
+    @Test(expected = ExternalSurveillanceToolException.class)
+    public void testNoticeSurvnetAboutEntityStatus_Exception() throws ExternalSurveillanceToolException {
+        RDCF rdcf = creator.createRDCF();
+        UserReferenceDto user = creator.createUser(rdcf).toReference();
+        PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
+
+        CaseDataDto caze = creator.createCase(user, rdcf, (c) -> {
+            c.setPerson(person);
+            c.setExternalID("externalId1");
+        });
+
+        CaseFacadeEjbLocal cut = getBean(CaseFacadeEjbLocal.class);
+
+        stubFor(
+                post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+                        .withRequestBody(containing("caseUuids"))
+                        .willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
+
+        cut.noticeSurvnetAboutEntityStatus(caze.getUuid(), ExternalShareStatus.ARCHIVED);
+    }
+
 	@Test
 	public void testArchiveAllArchivableCases() {
 
@@ -2899,4 +2991,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcfEntities);
 	}
 
+    private void configureExternalSurvToolUrlForWireMock() {
+        MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", WIREMOCK_TESTING_PORT));
+    }
+
+    private void clearExternalSurvToolUrlForWireMock() {
+        MockProducer.getProperties().setProperty("survnet.url", "");
+    }
 }

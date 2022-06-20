@@ -15,6 +15,14 @@
 
 package de.symeda.sormas.backend.event;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -36,11 +44,19 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
+import de.symeda.sormas.backend.MockProducer;
+import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -70,6 +86,22 @@ import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 
 public class EventFacadeEjbTest extends AbstractBeanTest {
+    private static final int WIREMOCK_TESTING_PORT = 8888;
+    private ExternalSurveillanceToolFacade subjectUnderTest;
+
+    @Rule
+    public WireMockRule wireMockRule = new WireMockRule(options().port(WIREMOCK_TESTING_PORT), false);
+
+    @Before
+    public void setup() {
+        configureExternalSurvToolUrlForWireMock();
+        subjectUnderTest = getExternalSurveillanceToolGatewayFacade();
+    }
+
+    @After
+    public void teardown() {
+        clearExternalSurvToolUrlForWireMock();
+    }
 
 	@Test
 	public void testEventDeletion() throws ExternalSurveillanceToolRuntimeException {
@@ -245,6 +277,71 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		// List should have one entry
 		assertThat(results, Matchers.hasSize(1));
 	}
+
+
+    @Test
+    public void testNoticeSurvnetAboutEntityStatus_WithProperEntity() throws ExternalSurveillanceToolException {
+        RDCF rdcf = creator.createRDCF();
+        UserReferenceDto user = creator.createUser(rdcf).toReference();
+
+        EventDto event = creator.createEvent(
+                EventStatus.SIGNAL,
+                EventInvestigationStatus.PENDING,
+                "",
+                "",
+                "",
+                "",
+                "",
+                TypeOfPlace.FACILITY,
+                new Date(),
+                new Date(),
+                user,
+                user,
+                Disease.DENGUE,
+                rdcf.district);
+
+        EventFacadeEjbLocal cut = getBean(EventFacadeEjbLocal.class);
+        cut.archive(event.getUuid(), null);
+
+        stubFor(
+                post(urlEqualTo("/export")).withRequestBody(containing(event.getUuid()))
+                        .withRequestBody(containing("eventUuids"))
+                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+        cut.noticeSurvnetAboutEntityStatus(event.getUuid(), ExternalShareStatus.DEARCHIVED);
+        wireMockRule.verify(exactly(1), postRequestedFor(urlEqualTo("/export")));
+    }
+
+    @Test(expected = ExternalSurveillanceToolException.class)
+    public void testNoticeSurvnetAboutEntityStatus_Exception() throws ExternalSurveillanceToolException {
+        RDCF rdcf = creator.createRDCF();
+        UserReferenceDto user = creator.createUser(rdcf).toReference();
+
+        EventDto event = creator.createEvent(
+                EventStatus.SIGNAL,
+                EventInvestigationStatus.PENDING,
+                "",
+                "",
+                "",
+                "",
+                "",
+                TypeOfPlace.FACILITY,
+                new Date(),
+                new Date(),
+                user,
+                user,
+                Disease.DENGUE,
+                rdcf.district);
+
+        EventFacadeEjbLocal cut = getBean(EventFacadeEjbLocal.class);
+
+        stubFor(
+                post(urlEqualTo("/export")).withRequestBody(containing(event.getUuid()))
+                        .withRequestBody(containing("eventUuids"))
+                        .willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
+
+        cut.noticeSurvnetAboutEntityStatus(event.getUuid(), ExternalShareStatus.ARCHIVED);
+    }
 
 	@Test
 	public void testArchiveOrDearchiveEvent() {
@@ -547,4 +644,12 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertTrue(userReferenceDtos.contains(limitedCovidNationalUser));
 		Assert.assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
 	}
+
+    private void configureExternalSurvToolUrlForWireMock() {
+        MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", WIREMOCK_TESTING_PORT));
+    }
+
+    private void clearExternalSurvToolUrlForWireMock() {
+        MockProducer.getProperties().setProperty("survnet.url", "");
+    }
 }
