@@ -185,7 +185,6 @@ public class CreateNewTaskSteps implements En {
     selectAssignedTo(task.getAssignedTo());
     selectPriority(task.getPriority());
     fillCommentsOnTask(task.getCommentsOnTask());
-    fillCommentsOnExecution(task.getCommentsOnExecution());
   }
 
   private void selectTaskType(String taskType) {

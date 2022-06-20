@@ -151,6 +151,20 @@ public class TaskManagementSteps implements En {
               });
           softly.assertAll();
         });
+    When(
+        "^I check displayed task's context of first result is ([^\"]*)$",
+        (String taskContext) -> {
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(TASK_CONTEXT_FIRST_RESULT),
+              taskContext,
+              "Task context is not correct displayed");
+          softly.assertAll();
+        });
+    When(
+        "^I click on associated link to Travel Entry$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ASSOCIATED_LINK_FIRST_RESULT);
+        });
 
     When(
         "^I filter Task status ([^\"]*)$",

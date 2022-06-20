@@ -242,7 +242,7 @@ Feature: Create travel entries
 
   @issue=SORDEV-8043 @env_de
   Scenario: Test Add TravelEntries to tasks
-    Given I log in as a National User
+    Given I log in as a Admin User
     And I click on the Entries button from navbar
     And I click on the New Travel Entry button from Travel Entries directory
     When I fill the required fields in a new travel entry form
@@ -252,6 +252,16 @@ Feature: Create travel entries
     Then I fill a new task form with specific data for DE version
     And I click on Save button in New Task form
     Then I check if new task is displayed in Task tab on Edit Travel Entry page
+    And I click on edit task icon of the first created task
+    And I check that Discard option is visible in Edit Task form on Edit Travel Entry page
+    And I check that Delete option is visible in Edit Task form on Edit Travel Entry page
+    And I check that Save option is visible in Edit Task form on Edit Travel Entry page
+    And I check that Task status option is visible in Edit Task form on Edit Travel Entry page
+    And I click on Discard button in Task form
+    And I click on the Tasks button from navbar
+    And I filter Task context by Einreise
+    And I check displayed task's context of first result is Einreise
+    And I click on associated link to Travel Entry
 
   @issue=SORDEV-8411 @env_de
   Scenario: Test Travel Entry conversion to case
