@@ -60,7 +60,6 @@ public class RemoteDriverFactory implements DriverFactory {
     final HashMap<String, Object> chromePreferences = new HashMap<>();
     chromePreferences.put("download.default_directory", userDirectory + "/downloads");
     options.merge(desiredCapabilities);
-    //options.addArguments("--no-default-browser-check");
     options.setUnhandledPromptBehaviour(UnexpectedAlertBehaviour.IGNORE);
     options.addArguments("disable-infobars");
     options.addArguments("--headless");
