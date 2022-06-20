@@ -150,7 +150,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 
 		Date sampleDate = DateHelper.subtractDays(new Date(), 5);
 
-		SampleDto sample = creator.createSample(cazeDto.toReference(), user.toReference(), new Facility(), s -> {
+		SampleDto sample = creator.createSample(cazeDto.toReference(), user.toReference(), rdcf.facility, s -> {
 			s.setSampleDateTime(sampleDate);
 			s.setSamplingReason(SamplingReason.OTHER_REASON);
 			s.setSamplingReasonDetails("Test reason");
@@ -328,7 +328,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 		Date sampleDate = DateHelper.subtractDays(new Date(), 5);
 
 		SampleDto sample =
-			creator.createSample(contactDto.toReference(), sampleDate, new Date(), user.toReference(), SampleMaterial.BLOOD, new Facility());
+			creator.createSample(contactDto.toReference(), sampleDate, new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
 
 		Date testDate = DateHelper.subtractDays(new Date(), 4);
 		creator.createPathogenTest(

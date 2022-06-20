@@ -19,6 +19,7 @@
 package org.sormas.e2etests.steps.web.application.entries;
 
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DIFFERENT_POINT_OF_ENTRY_JURISDICTION;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CLOSE_FORM_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.POINT_OF_ENTRY_DISTRICT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.POINT_OF_ENTRY_REGION_BUTTON;
@@ -26,6 +27,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISTRICT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTERNAL_ID_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REGION_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REPORT_DATE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
@@ -50,9 +52,11 @@ import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CREATE_CASE_FROM_TRAVEL_ENTRY;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DELETE_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISCARD_TASK_BUTTON;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CREATE_DOCUMENT_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CREATE_DOCUMENT_POPUP_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISEASE_NAME_INPUT;
-import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.EDIT_TASK_DE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.FIRST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.GENERATED_DOCUMENT_NAME_DE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.INFO_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.LAST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.NEW_TASK_DE;
@@ -64,10 +68,16 @@ import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TASK_STATUS_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TRAVEL_ENTRY_PERSON_TAB;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TRAVEL_ENTRY_TAB;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PERSON_FILTER_INPUT;
+import static org.sormas.e2etests.steps.web.application.entries.TravelEntryDirectorySteps.userDirPath;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -82,11 +92,13 @@ import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.pojo.web.TravelEntry;
 import org.sormas.e2etests.entities.services.TravelEntryService;
 import org.sormas.e2etests.enums.GenderValues;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.cases.CreateNewCasePage;
 import org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage;
 import org.sormas.e2etests.pages.application.entries.EditTravelEntryPage;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 public class CreateNewTravelEntrySteps implements En {
@@ -114,7 +126,8 @@ public class CreateNewTravelEntrySteps implements En {
       TravelEntryService travelEntryService,
       ApiState apiState,
       Faker faker,
-      SoftAssert softly) {
+      SoftAssert softly,
+      AssertHelpers assertHelpers) {
     this.webDriverHelpers = webDriverHelpers;
     Random r = new Random();
     char c = (char) (r.nextInt(26) + 'a');
@@ -445,6 +458,61 @@ public class CreateNewTravelEntrySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(DISCARD_TASK_BUTTON);
         });
 
+    And(
+        "I click on Create Document button from Bulk Actions combobox on Edit Travel Entry Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_BUTTON_DE));
+    And(
+        "I click on checkbox to upload generated document to entities in Create Document form in Travel Entry directory",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE));
+    When(
+        "I select {string} Create Document form in Travel Entry directory",
+        (String name) -> {
+          webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, name);
+        });
+    And(
+        "I click on Create button in Create Document form in Travel Entry directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_POPUP_BUTTON_DE);
+        });
+    And(
+        "I click on close button in Create Document Order form",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CLOSE_FORM_BUTTON));
+
+    When(
+        "I check if downloaded file is correct for {string} in Edit Travel Entry directory",
+        (String name) -> {
+          String uuid = aTravelEntry.getUuid();
+          Path path =
+              Paths.get(
+                  userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name);
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      "Quarantine order document was not downloaded. Path used for check: "
+                          + path.toAbsolutePath()));
+        });
+    When(
+        "I check if generated document based on {string} appeared in Documents tab in Edit Travel Entry directory",
+        (String name) -> {
+          String uuid = aTravelEntry.getUuid();
+          String path = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertEquals(
+                      path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME_DE)),
+              120);
+        });
+    When(
+        "I delete downloaded file created from {string} Document Template for Travel Entry",
+        (String name) -> {
+          String uuid = aTravelEntry.getUuid();
+          File toDelete =
+              new File(
+                  userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name);
+          toDelete.deleteOnExit();
+        });
     When(
         "I collect travel UUID from travel entry",
         () -> {
@@ -753,6 +821,7 @@ public class CreateNewTravelEntrySteps implements En {
         .pointOfEntryDetails(
             webDriverHelpers.getValueFromWebElement(
                 EditTravelEntryPage.POINT_OF_ENTRY_DETAILS_INPUT))
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .build();
   }
 

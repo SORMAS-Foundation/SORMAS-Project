@@ -20,7 +20,6 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
@@ -47,7 +46,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
-import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRightsFacade;
 import de.symeda.sormas.api.user.UserRoleDto;
@@ -191,8 +189,7 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 			columnIndex = 3;
 			for (UserRoleDto userRole : userRoleRights.keySet()) {
 				Cell roleRightCell = row.createCell(columnIndex);
-				if (userRoleRights.containsKey(userRole) && userRoleRights.get(userRole).contains(userRight)
-					|| userRoleFacade.hasUserRight(Collections.singletonList(userRole), userRight)) {
+				if (userRoleFacade.hasUserRight(Collections.singletonList(userRole), userRight)) {
 					roleRightCell.setCellStyle(authorizedStyle);
 					roleRightCell.setCellValue(I18nProperties.getString(Strings.yes));
 				} else {

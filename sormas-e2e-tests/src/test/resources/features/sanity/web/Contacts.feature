@@ -770,3 +770,48 @@ Feature: Contacts end to end tests
     When I click on new Visit button
     And I create a new Visit with specific data
     Then I check that username is displayed in the Visit Origin column
+
+  @issue=SORDEV-5563 @env_de
+  Scenario: Add contact person details to facilities contacts
+    Given I log in as a Admin User
+    Then I click on the Configuration button from navbar
+    And I navigate to facilities tab in Configuration
+    And I click on New Entry button in Facilities tab in Configuration
+    Then I set name, region and district in Facilities tab in Configuration
+    And I set Facility Category to "Medizinische Einrichtung" and Facility Type to "Krankenhaus" in Facilities tab in Configuration
+    And I set Facility Contact person first and last name with email address and phone number
+    Then I click on Save Button in new Facility form
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a mandatory fields for a new contact form for DE
+    And I click on SAVE new contact button
+    Then I open Contact Person tab
+    And I set Region to "Voreingestellte Bundesländer" and District to "Voreingestellter Landkreis"
+    Then I set Facility Category to "Medizinische Einrichtung" and  Facility Type to "Krankenhaus"
+    And I set facility name to created facility
+    And I check if data for created facility is automatically imported to the correct fields in Case Person tab
+    And I click on save button from Edit Person page
+    Then I click on the Configuration button from navbar
+    And I navigate to facilities tab in Configuration
+    Then I search last created facility
+    Then I click on edit button for the last searched facility
+    And I archive facility
+
+  @env_main @#8565
+  Scenario: Check an archived contact if its read only
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I open last edited contact by API via URL navigation
+    Then I click on the Archive contact button and confirm popup
+    Then I click on logout button from navbar
+    Then I log in with National User
+    Then I open last edited contact by API via URL navigation
+    Then I check if editable fields are read only for an archived contact

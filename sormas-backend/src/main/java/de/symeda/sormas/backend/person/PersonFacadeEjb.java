@@ -1704,7 +1704,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	public void mergePerson(PersonDto leadPerson, PersonDto otherPerson) {
 
 		// Make sure the resulting person does not have multiple primary contact details
-		Set primaryContactDetailTypes = new HashSet<>();
+		Set<PersonContactDetailType> primaryContactDetailTypes = new HashSet<>();
 		for (PersonContactDetailDto contactDetailDto : leadPerson.getPersonContactDetails()) {
 			if (contactDetailDto.isPrimaryContact()) {
 				primaryContactDetailTypes.add(contactDetailDto.getPersonContactDetailType());

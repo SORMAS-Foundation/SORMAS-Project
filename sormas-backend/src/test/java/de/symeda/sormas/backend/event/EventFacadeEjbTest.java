@@ -53,7 +53,7 @@ import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.share.ExternalShareStatus;
@@ -72,7 +72,7 @@ import de.symeda.sormas.backend.share.ExternalShareInfo;
 public class EventFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
-	public void testEventDeletion() throws ExternalSurveillanceToolException {
+	public void testEventDeletion() throws ExternalSurveillanceToolRuntimeException {
 
 		Date since = new Date();
 

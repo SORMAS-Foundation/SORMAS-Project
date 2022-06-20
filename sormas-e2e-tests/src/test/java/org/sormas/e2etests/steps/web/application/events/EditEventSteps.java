@@ -18,10 +18,56 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
+import com.github.javafaker.Faker;
+import cucumber.api.java8.En;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Event;
+import org.sormas.e2etests.entities.pojo.web.EventGroup;
+import org.sormas.e2etests.entities.pojo.web.EventHandout;
+import org.sormas.e2etests.entities.pojo.web.EventParticipant;
+import org.sormas.e2etests.entities.pojo.web.Person;
+import org.sormas.e2etests.entities.services.EventDocumentService;
+import org.sormas.e2etests.entities.services.EventGroupService;
+import org.sormas.e2etests.entities.services.EventParticipantService;
+import org.sormas.e2etests.entities.services.EventService;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.GenderValues;
+import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
+import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.events.EditEventPage;
+import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps;
+import org.sormas.e2etests.steps.web.application.contacts.EditContactSteps;
+import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
+import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
 import static org.sormas.e2etests.pages.application.actions.CreateNewActionPage.NEW_ACTION_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_POPUP_YES_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SELECT_MATCHING_PERSON_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.ARCHIVE_POPUP_WINDOW_HEADER;
@@ -73,6 +119,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGAT
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_ACTION_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_EVENT_GROUP_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_GROUP_EVENT_CREATED_MESSAGE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.OTHER_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.PATHOGEN_FINE_TYPING_COMPLIANT_WITH_THE_ONE_OF_CASES_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
@@ -109,6 +156,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ge
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ADD_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ARCHIVE_EVENT_PARTICIPANT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_ACTION;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_BUTTON_FOR_SELECT_PERSON_FROM_ADD_PARTICIPANTS_WINDOW;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_DEARCHIVE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_DELETION_OF_EVENT_PARTICIPANT;
@@ -120,6 +168,7 @@ import static org.sormas.e2etests.pages.application.events.EventParticipantsPage
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ERROR_MESSAGE_TEXT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANTS_TAB;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANT_DISPLAY_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANT_UUID;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_TAB;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PARTICIPANT_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PARTICIPANT_FIRST_NAME_INPUT;
@@ -145,52 +194,11 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_RESPONSIBLE_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_SAVE;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SECOND_DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SECOND_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_EVENTS_FOR_PERSON;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
-
-import com.github.javafaker.Faker;
-import cucumber.api.java8.En;
-import java.io.File;
-import java.io.FileInputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
-import org.apache.poi.openxml4j.opc.OPCPackage;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.entities.pojo.web.Event;
-import org.sormas.e2etests.entities.pojo.web.EventGroup;
-import org.sormas.e2etests.entities.pojo.web.EventHandout;
-import org.sormas.e2etests.entities.pojo.web.EventParticipant;
-import org.sormas.e2etests.entities.pojo.web.Person;
-import org.sormas.e2etests.entities.services.EventDocumentService;
-import org.sormas.e2etests.entities.services.EventGroupService;
-import org.sormas.e2etests.entities.services.EventParticipantService;
-import org.sormas.e2etests.entities.services.EventService;
-import org.sormas.e2etests.enums.DistrictsValues;
-import org.sormas.e2etests.enums.GenderValues;
-import org.sormas.e2etests.enums.RegionsValues;
-import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
-import org.sormas.e2etests.helpers.AssertHelpers;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.events.EditEventPage;
-import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps;
-import org.sormas.e2etests.steps.web.application.contacts.EditContactSteps;
-import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
-import org.testng.Assert;
-import org.testng.asserts.SoftAssert;
 
 public class EditEventSteps implements En {
 
@@ -200,6 +208,7 @@ public class EditEventSteps implements En {
   public static Event createdEvent;
   public static EventGroup groupEvent;
   public static Person person;
+  public static String eventParticpantId;
   public static EventHandout aEventHandout;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
   public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
@@ -1262,6 +1271,13 @@ public class EditEventSteps implements En {
         });
 
     When(
+        "I confirm Archive event popup",
+        () -> {
+          webDriverHelpers.scrollToElement(CONFIRM_DEARCHIVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_DEARCHIVE_BUTTON);
+        });
+
+    When(
         "I check if Archive event popup is displayed correctly",
         () -> {
           String expectedString = "Archive event participant";
@@ -1319,6 +1335,13 @@ public class EditEventSteps implements En {
         });
 
     When(
+        "I set Region to {string} and District to {string} in Event Participant edit page",
+        (String aRegion, String aDistrict) -> {
+          webDriverHelpers.selectFromCombobox(SECOND_REGION_COMBOBOX, aRegion);
+          webDriverHelpers.selectFromCombobox(SECOND_DISTRICT_COMBOBOX, aDistrict);
+        });
+
+    When(
         "I check that message appearing in hover of Info icon is equal to expected on Edit Event page",
         () -> {
           String expected =
@@ -1335,6 +1358,129 @@ public class EditEventSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(EditEventPage.EVENT_PARTICIPANTS_TAB);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
         });
+
+    When(
+        "^I collect the event participant UUID displayed in event participants list$",
+        () -> {
+          eventParticpantId = collectEventParticipantUuid();
+        });
+
+    When(
+        "I navigate to a specific Event Participant of an Event based on UUID",
+        () -> {
+          String LAST_CREATED_EVENT_EVENT_PARTICIPANT_URL =
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
+                  + "/sormas-ui/#!events/eventparticipants/data/"
+                  + eventParticpantId;
+          webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_EVENT_PARTICIPANT_URL);
+          webDriverHelpers.waitForPageLoaded();
+        });
+
+    When(
+        "^I click on New Sample and discard changes is asked$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(NEW_SAMPLE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(POPUP_DISCARD_CHANGES_BUTTON, 30)) {
+            webDriverHelpers.clickOnWebElementBySelector(POPUP_DISCARD_CHANGES_BUTTON);
+          }
+        });
+
+    When(
+        "^I confirm all actions until unsaved changes popup window disappears$",
+        () -> {
+          //          do {
+          //            WebElement element =
+          //                webDriverHelpers.returnTheVisibleAndClickableElement(CONFIRM_ACTION);
+          //            webDriverHelpers.clickOnWebElement(element);
+          //          } while (webDriverHelpers.isElementVisibleWithTimeout(CONFIRM_ACTION, 30));
+        });
+
+    When(
+        "^I confirm last popup window when there are multiple ones$",
+        () -> {
+          do {
+            int numberOfElements = webDriverHelpers.getNumberOfElements(CONFIRM_ACTION);
+            webDriverHelpers.clickOnWebElementBySelectorAndIndex(
+                CONFIRM_ACTION, numberOfElements - 1);
+          } while (webDriverHelpers.isElementVisibleWithTimeout(CONFIRM_ACTION, 30));
+        });
+
+    When(
+        "I check if editable fields are read only for an archived event",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          TimeUnit.SECONDS.sleep(15);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_PARTICIPANTS_TAB);
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(EVENT_STATUS_OPTIONS),
+              true,
+              "Event status option is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RISK_LEVEL_INPUT),
+              true,
+              "Risk level input is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(TITLE_INPUT),
+              true,
+              "Title input is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(EVENT_MANAGEMENT_STATUS_OPTIONS),
+              true,
+              "Event management status option is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(EVENT_INVESTIGATION_STATUS_OPTIONS),
+              true,
+              "Event investigation status option is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RISK_LEVEL_COMBOBOX),
+              true,
+              "Risk level combobox is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(NEW_TASK_BUTTON),
+              true,
+              "New task button is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(NEW_ACTION_BUTTON),
+              true,
+              "New action button is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(LINK_EVENT_GROUP_BUTTON),
+              true,
+              "Link event group button is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DISEASE_COMBOBOX),
+              true,
+              "Disease combobox is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(PLACE_OF_STAY_COMBOBOX),
+              true,
+              "Place of stay combobox is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(SOURCE_TYPE_COMBOBOX),
+              true,
+              "Source type combobox is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(EVENT_STATUS_OPTIONS),
+              true,
+              "Event status options is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(SAVE_BUTTON),
+              true,
+              "Save button is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DISCARD_BUTTON),
+              true,
+              "Discard button is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DELETE_BUTTON),
+              true,
+              "Delete button is not editable state but it should be since archived entities default value is true!");
+          softly.assertAll();
+        });
+  }
+
+  private String collectEventParticipantUuid() {
+    return webDriverHelpers.getAttributeFromWebElement(EVENT_PARTICIPANT_UUID, "title");
   }
 
   private Person collectPersonUuid() {
