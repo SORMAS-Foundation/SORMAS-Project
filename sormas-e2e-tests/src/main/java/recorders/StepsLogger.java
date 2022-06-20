@@ -24,11 +24,8 @@ import io.qameta.allure.listener.StepLifecycleListener;
 import io.qameta.allure.model.StepResult;
 import java.io.FileInputStream;
 import java.lang.management.ManagementFactory;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.OutputType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 @Slf4j
@@ -55,25 +52,12 @@ public class StepsLogger implements StepLifecycleListener {
   @Override
   public void afterStepUpdate(final StepResult result) {
     if (isScreenshotEnabled && driver != null) {
-      takeScreenshotAfter();
       if (!result.getStatus().value().contains("pass")) {
         attachConsoleLog();
       }
     }
     isScreenshotEnabled = true;
     log.info("{} -> Finished step -> {}", PROCESS_ID_STRING, result.getName());
-  }
-
-  @Attachment(value = "After step screenshot", type = "image/png")
-  public void takeScreenshotAfter() {
-    byte[] screenShot = driver.getScreenshotAs(OutputType.BYTES);
-    Allure.getLifecycle()
-        .addAttachment(
-            "Screenshot at :"
-                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MMM-yy hh:mm:ss")),
-            "image/png",
-            "png",
-            screenShot);
   }
 
   @SneakyThrows

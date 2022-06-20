@@ -1,4 +1,4 @@
-@UI @Sanity @About
+@UI @Sanity @Configuration
 Feature: Country end to end tests
 
   @issue=SORDEV-7463 @env_main
