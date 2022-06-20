@@ -9,6 +9,7 @@ import org.sormas.e2etests.entities.services.ImmunizationService;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 import javax.inject.Inject;
 import java.time.LocalDate;
@@ -18,15 +19,21 @@ import java.util.concurrent.TimeUnit;
 
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SAVE_EDIT_BUTTON;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.ACTION_CONFIRM_BUTTON;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.ARCHIVE_DEARCHIVE_BUTTON;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.BUTTONS_IN_VACCINATIONS_LOCATION;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DATE_OF_REPORT_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DELETE_BUTTON;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DELETE_VACCINATION_BUTTON;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DISEASE_INPUT;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.FACILITY_CATEGORY_INPUT;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.FACILITY_COMBOBOX_IMMUNIZATION_INPUT;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.FACILITY_NAME_DESCRIPTION_VALUE;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.FACILITY_TYPE_INPUT;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.IMMUNIZATION_MANAGEMENT_STATUS_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.IMMUNIZATION_PERSON_TAB;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.IMMUNIZATION_STATUS_INPUT;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.MEANS_OF_IMMUNIZATIONS_INPUT;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.NEW_ENTRY_BUTTON;
@@ -58,7 +65,8 @@ public class EditImmunizationSteps implements En {
   public EditImmunizationSteps(
       WebDriverHelpers webDriverHelpers,
       ImmunizationService immunizationService,
-      AssertHelpers assertHelpers) {
+      AssertHelpers assertHelpers,
+      SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -196,6 +204,60 @@ public class EditImmunizationSteps implements En {
             elementVisible = false;
           }
           Assert.assertTrue(elementVisible, option + " is not visible!");
+        });
+
+    When(
+        "^I click on archive button from immunization tab$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ARCHIVE_DEARCHIVE_BUTTON);
+          webDriverHelpers.scrollToElement(ARCHIVE_DEARCHIVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_DEARCHIVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_BUTTON);
+        });
+
+    When(
+        "^I check if editable fields are read only for an archived immunization$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          TimeUnit.SECONDS.sleep(15);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(IMMUNIZATION_PERSON_TAB);
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DISEASE_INPUT),
+              true,
+              "Disease input is not is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(MEANS_OF_IMMUNIZATIONS_INPUT),
+              true,
+              "Means of immunization input is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RESPONSIBLE_REGION_INPUT),
+              true,
+              "Responsible region input is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RESPONSIBLE_DISTRICT_INPUT),
+              true,
+              "Responsible district input is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RESPONSIBLE_COMMUNITY_INPUT),
+              true,
+              "Responsible community input is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DATE_OF_REPORT_INPUT),
+              true,
+              "Date of report input is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DISCARD_BUTTON),
+              true,
+              "Discard button is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(COMMIT_BUTTON),
+              true,
+              "Commit button is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DELETE_BUTTON),
+              true,
+              "Delete button is not editable state but it should be since archived entities default value is true!");
+          softly.assertAll();
         });
   }
 

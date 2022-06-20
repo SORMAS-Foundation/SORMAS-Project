@@ -16,12 +16,6 @@ package de.symeda.sormas.ui.externalmessage;
 
 import static de.symeda.sormas.ui.externalmessage.processing.ExternalMessageProcessingUIHelper.showAlreadyProcessedPopup;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
-import de.symeda.sormas.ui.externalmessage.physiciansreport.PhysiciansReportProcessingFlow;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +24,7 @@ import java.util.stream.Collectors;
 
 import javax.naming.NamingException;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +42,8 @@ import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageIndexDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageResult;
@@ -63,6 +60,10 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageProcessingFlow;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageSlider;
 import de.symeda.sormas.ui.externalmessage.labmessage.RelatedLabMessageHandler;
+import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
+import de.symeda.sormas.ui.externalmessage.physiciansreport.PhysiciansReportProcessingFlow;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -225,7 +226,7 @@ public class ExternalMessageController {
 		Button deleteButton = ButtonHelper.createButton(
 			Captions.actionDelete,
 			I18nProperties.getCaption(Captions.actionDelete),
-			(e) -> VaadinUiUtil.showDeleteConfirmationWindow(
+			e -> VaadinUiUtil.showDeleteConfirmationWindow(
 				String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getCaption(Captions.ExternalMessage)),
 				() -> {
 					if (FacadeProvider.getExternalMessageFacade().isProcessed(externalMessage.getUuid())) {
@@ -243,14 +244,14 @@ public class ExternalMessageController {
 		Button unclearButton = ButtonHelper.createButton(
 			Captions.actionUnclearLabMessage,
 			I18nProperties.getCaption(Captions.actionUnclearLabMessage),
-			(e) -> VaadinUiUtil.showConfirmationPopup(
+			e -> VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getString(Strings.headingConfirmUnclearLabMessage),
 				new Label(I18nProperties.getString(Strings.confirmationUnclearExternalMessage)),
 				I18nProperties.getString(Strings.yes),
 				I18nProperties.getString(Strings.no),
 				null,
-				(confirmed) -> {
-					if (confirmed) {
+				confirmed -> {
+					if (BooleanUtils.isTrue(confirmed)) {
 						if (FacadeProvider.getExternalMessageFacade().isProcessed(externalMessage.getUuid())) {
 							showAlreadyProcessedPopup(null, false);
 						} else {
@@ -266,14 +267,14 @@ public class ExternalMessageController {
 		Button forwardButton = ButtonHelper.createButton(
 			Captions.actionManualForwardLabMessage,
 			I18nProperties.getCaption(Captions.actionManualForwardLabMessage),
-			(e) -> VaadinUiUtil.showConfirmationPopup(
+			e -> VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getString(Strings.headingConfirmManuallyForwardedLabMessage),
 				new Label(I18nProperties.getString(Strings.confirmationManuallyForwardedExternalMessage)),
 				I18nProperties.getString(Strings.yes),
 				I18nProperties.getString(Strings.no),
 				null,
-				(confirmed) -> {
-					if (confirmed) {
+				confirmed -> {
+					if (BooleanUtils.isTrue(confirmed)) {
 						if (FacadeProvider.getExternalMessageFacade().isProcessed(externalMessage.getUuid())) {
 							showAlreadyProcessedPopup(null, false);
 						} else {
@@ -290,7 +291,7 @@ public class ExternalMessageController {
 			Button shareButton = ButtonHelper.createIconButton(
 				Captions.sormasToSormasSendLabMessage,
 				VaadinIcons.SHARE,
-				(e) -> ControllerProvider.getSormasToSormasController().shareLabMessage(externalMessage, callback));
+				e -> ControllerProvider.getSormasToSormasController().shareLabMessage(externalMessage, callback));
 
 			buttonsPanel.addComponent(shareButton);
 		}

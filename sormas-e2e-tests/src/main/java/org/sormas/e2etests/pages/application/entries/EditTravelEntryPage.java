@@ -49,4 +49,12 @@ public class EditTravelEntryPage {
   public static final By TRAVEL_ENTRY_CASE_UUID = By.cssSelector("#caseIdLabel");
   public static final By CASE_PERSON_NAME = By.xpath("//div[@class='v-slot'][4]//div//div[2]");
   public static final By INFO_BUTTON = By.id("info");
+  public static final By CREATE_DOCUMENT_BUTTON_DE = By.id("Erstellen");
+  public static final By UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE =
+      By.xpath("//div[@class='popupContent']//input[@type='checkbox']/following-sibling::label");
+  public static final By CREATE_DOCUMENT_POPUP_BUTTON_DE =
+      By.cssSelector(".popupContent [id='Erstellen']");
+  public static final By GENERATED_DOCUMENT_NAME_DE =
+      By.xpath(
+          "//div[text()='Dokumente']/../parent::div/../../following-sibling::div//div[@class='v-label v-widget caption-truncated v-label-caption-truncated v-label-undef-w']");
 }

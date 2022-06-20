@@ -162,7 +162,7 @@ public class TestDataCreator {
 			userRoleDto.setJurisdictionLevel(defaultUserRole.getJurisdictionLevel());
 			userRoleDto = beanTest.getUserRoleFacade().saveUserRole(userRoleDto);
 			userRoleDtoMap.put(defaultUserRole, userRoleDto.toReference());
-			UserRole userRole = beanTest.getUserRoleService().getByUuidEager(userRoleDto.getUuid());
+			UserRole userRole = beanTest.getEagerUserRole(userRoleDto.getUuid());
 			userRoleMap.put(defaultUserRole, userRole);
 		});
 	}

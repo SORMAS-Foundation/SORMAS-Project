@@ -218,7 +218,7 @@ public class StartupShutdownService {
 		pointOfEntryService.createConstantPointsOfEntry();
 
 		// Has to be called before createDefaultUsers
-		upgrade(); 
+		upgrade();
 
 		createDefaultUsers();
 
@@ -793,6 +793,13 @@ public class StartupShutdownService {
 							userService.persist(user);
 						});
 					}
+				}
+				break;
+			case 469:
+				UserRole userRole = userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.COMMUNITY_INFORMANT));
+				if (userRole != null) {
+					userRole.getUserRights().removeIf(userRight -> userRight == UserRight.DASHBOARD_CAMPAIGNS_VIEW);
+					userRoleService.ensurePersisted(userRole);
 				}
 				break;
 
