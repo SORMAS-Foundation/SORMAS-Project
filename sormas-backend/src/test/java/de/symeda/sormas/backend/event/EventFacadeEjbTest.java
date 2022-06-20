@@ -308,7 +308,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
                         .withRequestBody(containing("eventUuids"))
                         .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-        cut.setArchiveInExternalSurveillanceToolForEntity(event.getUuid(), ExternalShareStatus.DEARCHIVED);
+        cut.setArchiveInExternalSurveillanceToolForEntity(event.getUuid(), false);
         wireMockRule.verify(exactly(1), postRequestedFor(urlEqualTo("/export")));
     }
 
@@ -340,7 +340,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
                         .withRequestBody(containing("eventUuids"))
                         .willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
 
-        cut.setArchiveInExternalSurveillanceToolForEntity(event.getUuid(), ExternalShareStatus.ARCHIVED);
+        cut.setArchiveInExternalSurveillanceToolForEntity(event.getUuid(), true);
     }
 
 	@Test

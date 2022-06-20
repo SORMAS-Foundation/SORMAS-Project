@@ -2578,23 +2578,23 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
     @Override
     @RolesAllowed(UserRight._CASE_ARCHIVE)
-    public void setArchiveInExternalSurveillanceToolForEntity(String entityUuid, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
+    public void setArchiveInExternalSurveillanceToolForEntity(String entityUuid, boolean archived) throws ExternalSurveillanceToolException {
         Case caze = caseService.getByUuid(entityUuid);
         //TODO: do we need the check for externalId too? -> caze.getExternalID() != null && !caze.getExternalID().isEmpty()
         if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && caze.getExternalID() != null && !caze.getExternalID().isEmpty()) {
             List<CaseDataDto> casesWithSameExternalId = getByExternalId(caze.getExternalID());
             if (casesWithSameExternalId != null && casesWithSameExternalId.size() == 1) {
-                externalSurveillanceToolGatewayFacade.sendCases(Collections.singletonList(entityUuid), externalShareStatus);
+                externalSurveillanceToolGatewayFacade.sendCases(Collections.singletonList(entityUuid), archived);
             }
         }
     }
 
     @Override
     @RolesAllowed(UserRight._CASE_ARCHIVE)
-    public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
+    public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) throws ExternalSurveillanceToolException {
         //TODO: if the check for externalId != null and externalID not empty is needed the entityUuids list should be filtered
         List<String> filteredEntityUuids = entityUuids.stream().filter(this::hasExternalId).collect(Collectors.toList());
-        externalSurveillanceToolGatewayFacade.sendCases(filteredEntityUuids, externalShareStatus);
+        externalSurveillanceToolGatewayFacade.sendCases(filteredEntityUuids, archived);
     }
 
     public boolean hasExternalId(String entityUuid) {

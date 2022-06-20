@@ -34,7 +34,6 @@ import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.OccupationType;
@@ -98,7 +97,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 				.withRequestBody(containing("caseUuids"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-		subjectUnderTest.sendCases(Arrays.asList(case1.getUuid(), case2.getUuid()), ExternalShareStatus.ARCHIVED);
+		subjectUnderTest.sendCases(Arrays.asList(case1.getUuid(), case2.getUuid()), true);
 
 		assertThat(getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().caze(case1.toReference()), 0, 100), hasSize(2));
 		assertThat(getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().caze(case2.toReference()), 0, 100), hasSize(2));
@@ -112,7 +111,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
 		try {
-			subjectUnderTest.sendCases(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "test-not-found"),  ExternalShareStatus.ARCHIVED);
+			subjectUnderTest.sendCases(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "test-not-found"),  true);
 		} catch (ExternalSurveillanceToolException e) {
 			assertThat(e.getMessage(), Matchers.is(I18nProperties.getString("ExternalSurveillanceToolGateway.notificationErrorSending")));
 		}
@@ -125,7 +124,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 				.withRequestBody(containing("VXAERX-5RCKFA-G5DVXH-DPHPCAFB"))
 				.withRequestBody(containing("eventUuids"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
-		subjectUnderTest.sendEvents(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "VXAERX-5RCKFA-G5DVXH-DPHPCAFB"),  ExternalShareStatus.ARCHIVED);
+		subjectUnderTest.sendEvents(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "VXAERX-5RCKFA-G5DVXH-DPHPCAFB"),  true);
 
 		assertThat(getBean(ExternalShareInfoService.class).getAll(), hasSize(2));
 	}

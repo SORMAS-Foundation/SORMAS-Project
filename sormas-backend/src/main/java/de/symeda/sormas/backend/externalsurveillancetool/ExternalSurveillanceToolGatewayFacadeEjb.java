@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.externalsurveillancetool;
 
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -67,39 +66,30 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	@Override
-	public void sendCases(List<String> caseUuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
+	public void sendCases(List<String> caseUuids, boolean archived) throws ExternalSurveillanceToolException {
         ExportParameters params = new ExportParameters();
         params.setCaseUuids(caseUuids);
-        if (externalShareStatus.equals(ExternalShareStatus.ARCHIVED)) {
-            params.setArchived(true);
-        } else {
-            params.setArchived(false);
-        }
+        params.setArchived(archived);
 
         sendRequest(params);
 
         caseUuids.forEach(uuid -> {
             Case caze = caseService.getByUuid(uuid);
-            shareInfoService.createAndPersistShareInfo(caze, externalShareStatus);
+            shareInfoService.createAndPersistShareInfo(caze, ExternalShareStatus.SHARED);
         });
 	}
 
 	@Override
-	public void sendEvents(List<String> eventUuids, ExternalShareStatus externalShareStatus) throws ExternalSurveillanceToolException {
+	public void sendEvents(List<String> eventUuids, boolean archived) throws ExternalSurveillanceToolException {
         ExportParameters params = new ExportParameters();
         params.setEventUuids(eventUuids);
-
-        if (externalShareStatus.equals(ExternalShareStatus.ARCHIVED)) {
-            params.setArchived(true);
-        } else {
-            params.setArchived(false);
-        }
+        params.setArchived(archived);
 
         sendRequest(params);
 
         eventUuids.forEach(uuid -> {
             Event event = eventService.getByUuid(uuid);
-            shareInfoService.createAndPersistShareInfo(event, externalShareStatus);
+            shareInfoService.createAndPersistShareInfo(event, ExternalShareStatus.SHARED);
         });
 	}
 

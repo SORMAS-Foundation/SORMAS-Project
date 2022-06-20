@@ -2109,7 +2109,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
                         .withRequestBody(containing("caseUuids"))
                         .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-        cut.setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), ExternalShareStatus.ARCHIVED);
+        cut.setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true);
         wireMockRule.verify(exactly(1), postRequestedFor(urlEqualTo("/export")));
     }
 
@@ -2128,7 +2128,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
                         .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
         //the case does not have an externalId set and after the filtering the sendCases will not be called
-        cut.setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), ExternalShareStatus.ARCHIVED);
+        cut.setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true);
         wireMockRule.verify(exactly(0), postRequestedFor(urlEqualTo("/export")));
 	}
 
@@ -2150,7 +2150,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
                         .withRequestBody(containing("caseUuids"))
                         .willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
 
-        cut.setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), ExternalShareStatus.ARCHIVED);
+        cut.setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(),true);
     }
 
 	@Test
