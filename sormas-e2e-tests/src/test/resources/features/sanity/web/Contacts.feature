@@ -823,4 +823,12 @@ Feature: Contacts end to end tests
     And I open the first contact from contacts list
     And I click on the NEW TASK button
     And I check if New task form is displayed correctly
+    And I check that required fields are marked as mandatory
+    And I clear Due Date field in the New task form
+    And I click SAVE button on New Task form
+    Then I check that all required fields are mandatory in the New task form
+    When I close input data error popup
     And I check that values listed in the task type combobox are correct
+    And I choose Other task as described in comments option from task type combobox in the New task form
+    Then I check that Comments on task field is mandatory in the New task form
+
