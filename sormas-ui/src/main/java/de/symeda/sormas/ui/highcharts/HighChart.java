@@ -52,10 +52,10 @@ import com.vaadin.ui.AbstractJavaScriptComponent;
 @JavaScript({
 	"jquery.slim.min.js",
 	"highcharts.js",
+	"wordcloud.js",
 	"highcharts-connector.js",
 	"highcharts-exporting.js",
 	"highcharts-export-data.js",
-	"accessibility.js",
 	"highcharts-no-data.js" })
 public class HighChart extends AbstractJavaScriptComponent {
 

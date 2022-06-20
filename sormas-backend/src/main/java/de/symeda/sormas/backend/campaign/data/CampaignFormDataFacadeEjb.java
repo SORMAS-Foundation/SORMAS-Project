@@ -20,6 +20,7 @@
 
 package de.symeda.sormas.backend.campaign.data;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -581,8 +582,8 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 						.append("((jsonMeta ->> '").append(CampaignFormElement.TYPE).append("') = '")
 						.append(CampaignFormElementType.RANGE.toString() + "')")
 
-						.append("THEN sum(cast_to_int(jsonData->>'").append(CampaignFormDataEntry.VALUE)
-						.append("', 0)) ELSE sum(CASE WHEN(jsonData->>'").append(CampaignFormDataEntry.VALUE)
+						.append("THEN round(SUM (CAST (jsonData->>'").append(CampaignFormDataEntry.VALUE)
+						.append("' AS NUMERIC)), 2) ELSE sum(CASE WHEN(jsonData->>'").append(CampaignFormDataEntry.VALUE)
 						.append("') = '").append(series.getReferenceValue())
 						.append("' THEN 1 ELSE 0 END) END as sumValue,"); 
 			} else {
@@ -767,8 +768,8 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 						.append("((jsonMeta ->> '").append(CampaignFormElement.TYPE).append("') = '")
 						.append(CampaignFormElementType.RANGE.toString() + "')")
 
-						.append("THEN sum(cast_to_int(jsonData->>'").append(CampaignFormDataEntry.VALUE)
-						.append("', 0)) ELSE sum(CASE WHEN(jsonData->>'").append(CampaignFormDataEntry.VALUE)
+						.append("THEN round(SUM (CAST (jsonData->>'").append(CampaignFormDataEntry.VALUE)
+						.append("' AS NUMERIC)), 2) ELSE sum(CASE WHEN(jsonData->>'").append(CampaignFormDataEntry.VALUE)
 						.append("') = '").append(series.getReferenceValue())
 						.append("' THEN 1 ELSE 0 END) END as sumValue");
 			} else {
@@ -902,7 +903,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 			resultData.addAll(resultList.stream()
 					.map((result) -> new CampaignDiagramDataDto((String) result[0], (String) result[1],
-							(String) result[2], (String) result[3], (Number) result[4], //(String) result[5],
+							(String) result[2], (String) result[3], result[4].toString(), //(String) result[5],
 							//(String) result[6],
 							// (String) result[7],
 							series.getStack()))

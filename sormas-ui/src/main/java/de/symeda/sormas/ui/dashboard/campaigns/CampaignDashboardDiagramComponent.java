@@ -4,6 +4,7 @@ import static com.vaadin.ui.Notification.Type.ERROR_MESSAGE;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -55,6 +56,7 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 	private boolean rotateDataLabels = true;
 	private boolean ignoreTotalsError = false;
 	private boolean pieChart = false;
+	private boolean cardChart = false;
 	private String chartType;
 	private String secondaryChartType;
 	private  Map mapSeries = new HashMap();  
@@ -127,13 +129,31 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			setShowAsColumnChart(!isShowAsColumnChart());
 			buildDiagramChart(getDiagramCaption(), campaignJurisdictionLevelGroupBy);
 		});
+		
+		
+		JavaScript.getCurrent().execute("\n"
+				+ "Highcharts.seriesTypes.wordcloud.prototype.deriveFontSize = function(\n"
+				+ "  relativeWeight\n"
+				+ ") {\n"
+				+ "  var maxFontSize = 10;\n"
+				+ "  // Will return a fontSize between 0px and 25px.\n"
+				+ "  return Math.floor(maxFontSize * 1);\n"
+				+ "};");
+		
+		
 
 		buildDiagramChart(getDiagramCaption(), campaignJurisdictionLevelGroupBy);
 	}
 
 	public void buildDiagramChart(String title, CampaignJurisdictionLevel campaignJurisdictionLevelGroupBy) {
 		final StringBuilder hcjs = new StringBuilder();
-	
+		if(chartType.equalsIgnoreCase(DiagramType.CARD.toString())) {	
+			
+			cardChart = true;
+			appendSeries(campaignJurisdictionLevelGroupBy, hcjs);
+			
+			return;
+		} else {
 		//@formatter:off
 		hcjs.append("var options = {"
 				+ "chart:{ "
@@ -205,9 +225,9 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 
 		hcjs.append("}");
 		
-		System.out.println(hcjs.toString());
 		
 		campaignColumnChart.setHcjs(hcjs.toString());
+	}
 	}
 
 	private void appendAxisInformation(StringBuilder hcjs, Map<String, Long> stackMap, CampaignJurisdictionLevel campaignJurisdictionLevelGroupBy) {
@@ -220,7 +240,10 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			}
 		}
 
-		hcjs.append("xAxis: {");
+		hcjs.append(" exporting: {\n"
+				+ "        showTable: false,"
+				+ "togglePercentages: false\n"
+				+ "    }, \nxAxis: {");
 		if (Objects.nonNull(diagramDefinition.getCampaignSeriesTotal())) {
 			Optional<CampaignDiagramSeries> isPopulationGroupUsed =
 				diagramDefinition.getCampaignSeriesTotal().stream().filter(series -> Objects.nonNull(series.getPopulationGroup())).findFirst();
@@ -247,7 +270,6 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			hcjs.append("'").append(StringEscapeUtils.escapeEcmaScript(caption)).append("',");
 			
 			mapSeries.put(op++, caption);
-			System.out.println(op +"      +      "+caption);
 			
 			}
 		hcjs.append("]},");
@@ -270,6 +292,8 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		
 		if(pieChart) {
 			hcjs.append("series: [{ "+innerS+" data: [");
+		}else if(cardChart) {
+			
 		}else{
 			hcjs.append("series: [");
 		}
@@ -293,7 +317,12 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 				//hcjs.append("data: [{");
 				appendPieData(campaignJurisdictionLevelGroupBy == CampaignJurisdictionLevel.COMMUNITY, hcjs, series, seriesData, fieldName);
 				//hcjs.append("]},");
-			}else {
+			}else if(cardChart) {
+				
+				appendCardData(hcjs, series, seriesData, fieldName);
+				 
+				
+			}else{
 
 			hcjs.append("{ name:'").append(StringEscapeUtils.escapeEcmaScript(fieldName)).append("', data: [");
 			appendData(campaignJurisdictionLevelGroupBy == CampaignJurisdictionLevel.COMMUNITY, hcjs, series, seriesData);
@@ -398,13 +427,13 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 						hcjs.append("0,");
 					}
 				} else {
-					hcjs.append(seriesData.get(axisKey).getValueSum().toString()).append(",");
+					hcjs.append(seriesData.get(axisKey).getValueSum().doubleValue()).append(",");
 				}
 			} else {
 				hcjs.append("0,");
 			}
 		}
-		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ "+hcjs);
+	//	System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ "+hcjs);
 	}
 	
 	private void appendPieData(
@@ -443,12 +472,238 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 						}
 					}*/// else {
 					
-						hcjs.append("{name: '"+seriesData.get(axisKey).getFieldCaption() +"', y: "+seriesData.get(axisKey).getValueSum().toString()).append("},");
+						hcjs.append("{name: '"+seriesData.get(axisKey).getStack() +"', y: "+seriesData.get(axisKey).getValueSum().doubleValue()).append("},");
 				//	}
 				} else {
 					hcjs.append("0,");  
 				}
 			}
+			mapSeries.clear();
+		}
+	
+	
+	
+	
+	private void appendCardData(
+			StringBuilder hcjs,
+			CampaignDiagramSeries series,
+			Map<Object, CampaignDiagramDataDto> seriesData,
+			String fieldName) {
+		
+			for (Object axisKey : xAxisInfo.keySet()) { 
+				String perce = "";
+				if(showPercentages) {
+					perce = "%";
+					
+				}
+				if (seriesData.containsKey(axisKey)) {
+					
+					
+					if (showPercentages && totalValuesMap != null) {
+						Double totalValue = totalValuesMap.get(
+							new CampaignDashboardTotalsReference(
+								seriesData.get(axisKey).getGroupingKey(),
+								totalValuesWithoutStacks ? null : series.getStack()));
+						if (totalValue == null) {
+							if (!ignoreTotalsError) {
+								//Notification.show(
+									//String.format(I18nProperties.getString(Strings.errorCampaignDiagramTotalsCalculationError), getDiagramCaption()),
+								//	ERROR_MESSAGE);
+								ignoreTotalsError = true; // only show once
+							}
+						} else if (totalValue > 0) {
+							final double originalValue = seriesData.get(axisKey).getValueSum().doubleValue() / totalValue * 100;
+							final double scaledValue =
+								BigDecimal.valueOf(originalValue).setScale(originalValue < 2 ? 1 : 0, RoundingMode.HALF_UP).doubleValue();
+						
+							//@formatter:off
+							hcjs.append("var options = { \n"
+									+ " chart: {\n"
+									+ "        backgroundColor: 'white',\n"
+									+ "        borderRadius: '1',\n"
+									+ "        borderWidth: '1',\n"
+									+ "        spacing: [20, 20, 20, 20],\n"
+									+ "    },\n"
+									+ "    credits: {\n"
+									+ "        enabled: false\n"
+									+ "    },\n"
+									+ " exporting: { enabled: false },"
+									+ " series: [{\n"
+									+ "        type: 'wordcloud',\n"
+									+ "        data: data = ['"+scaledValue+""+perce+"'].reduce((arr, word) => {\n"
+									+ "        let obj = Highcharts.find(arr, obj => obj.name === word);\n"
+									+ "        if (obj) {\n"
+									+ "            obj.weight += 1;\n"
+									+ "        } else {\n"
+									+ "            obj = {\n"
+									+ "                name: word,\n"
+									+ "                weight: 1\n"
+									+ "            };\n"
+									+ "            arr.push(obj);\n"
+									+ "        }\n"
+									+ "        return arr;\n"
+									+ "    }, []),\n"
+									+ "        name: '"+seriesData.get(axisKey).getStack()+"'\n"
+									+ "    }],\n"
+									+ "    title: {\n"
+									+ "        text: '"+seriesData.get(axisKey).getStack()+"',\n"
+									+ "    style: {\n"
+									+ "                color: '#0C090A',\n"
+									+ "                fontWeight: 'normal',\n"
+									+ "                 fontSize: '12px' \n"
+									+ "            } }");
+							//@formatter:on
+							
+							
+							
+						} else {
+							hcjs.append("var options = { \n"
+									+ " chart: {\n"
+									+ "        backgroundColor: 'white',\n"
+									+ "        borderRadius: '1',\n"
+									+ "        borderWidth: '1',\n"
+									+ "        spacing: [20, 20, 20, 20],\n"
+									+ "    },\n"
+									+ "    credits: {\n"
+									+ "        enabled: false\n"
+									+ "    },\n"
+									+ " exporting: { enabled: false },"
+									+ " series: [{\n"
+									+ "        type: 'wordcloud',\n"
+									+ "        data: data = ['0"+perce+"', ' '].reduce((arr, word) => {\n"
+									+ "        let obj = Highcharts.find(arr, obj => obj.name === word);\n"
+									+ "        if (obj) {\n"
+									+ "            obj.weight += 1;\n"
+									+ "        } else {\n"
+									+ "            obj = {\n"
+									+ "                name: word,\n"
+									+ "                weight: 1\n"
+									+ "            };\n"
+									+ "            arr.push(obj);\n"
+									+ "        }\n"
+									+ "        return arr;\n"
+									+ "    }, []),\n"
+									+ "        name: '"+seriesData.get(axisKey).getStack().toString()+"'\n"
+									+ "    }],\n"
+									+ "    title: {\n"
+									+ "        text: '"+seriesData.get(axisKey).getStack().toString()+"',\n"
+									+ "    style: {\n"
+									+ "                color: '#0C090A',\n"
+									+ "                fontWeight: 'normal',\n"
+									+ "                 fontSize: '12px' \n"
+									+ "            } }");
+							//@formatter:on
+						}
+						} else {
+					
+					System.out.println("+_________1_________________+: "+seriesData.get(axisKey).getValueSum());
+					
+			
+					String temNum = seriesData.get(axisKey).getValueSum().toString();
+					double amount = Double.parseDouble(temNum);
+					
+					final double scaledValue =
+							BigDecimal.valueOf(amount).setScale(amount < 2 ? 1 : 0, RoundingMode.HALF_UP).doubleValue();
+					
+					System.out.println("+_____________2_____________+: "+scaledValue);
+					
+					
+					DecimalFormat formatter = new DecimalFormat("#,###.##");
+					//YES_NO	hcjs.append("'"+seriesData.get(axisKey).getValueSum().toString()).append("'");
+						
+						//@formatter:off
+						hcjs.append("var options = { \n"
+								+ " chart: {\n"
+								+ "        backgroundColor: 'white',\n"
+								+ "        borderRadius: '1',\n"
+								+ "        borderWidth: '1',\n"
+								+ "        spacing: [20, 20, 20, 20],\n"
+								+ "    },\n"
+								+ "    credits: {\n"
+								+ "        enabled: false\n"
+								+ "    },\n"
+								+ " exporting: { enabled: false },"
+								+ " series: [{\n"
+								+ "        type: 'wordcloud',\n"
+								+ "        data: data = ['"+formatter.format(amount)+""+perce+"'].reduce((arr, word) => {\n"
+								+ "        let obj = Highcharts.find(arr, obj => obj.name === word);\n"
+								+ "        if (obj) {\n"
+								+ "            obj.weight += 1;\n"
+								+ "        } else {\n"
+								+ "            obj = {\n"
+								+ "                name: word,\n"
+								+ "                weight: 1\n"
+								+ "            };\n"
+								+ "            arr.push(obj);\n"
+								+ "        }\n"
+								+ "        return arr;\n"
+								+ "    }, []),\n"
+								+ "        name: '"+seriesData.get(axisKey).getStack().toString()+"'\n"
+								+ "    }],\n"
+								+ "    title: {\n"
+								+ "        text: '"+seriesData.get(axisKey).getStack().toString()+"',\n"
+								+ "    style: {\n"
+								+ "                color: '#0C090A',\n"
+								+ "                fontWeight: 'normal',\n"
+								+ "                 fontSize: '12px' \n"
+								+ "            } }");
+						//@formatter:on
+						
+						
+				
+				}
+					} else {
+					//@formatter:off
+					hcjs.append("var options = { \n"
+							+ " chart: {\n"
+							+ "        backgroundColor: 'white',\n"
+							+ "        borderRadius: '1',\n"
+							+ "        borderWidth: '1',\n"
+							+ "        spacing: [20, 20, 20, 20],\n"
+							+ "    },\n"
+							+ "    credits: {\n"
+							+ "        enabled: false\n"
+							+ "    },\n"
+							+ " exporting: { enabled: false },"
+							+ " series: [{\n"
+							+ "        type: 'wordcloud',\n"
+							+ "        data: data = ['0"+perce+"', ' '].reduce((arr, word) => {\n"
+							+ "        let obj = Highcharts.find(arr, obj => obj.name === word);\n"
+							+ "        if (obj) {\n"
+							+ "            obj.weight += 1;\n"
+							+ "        } else {\n"
+							+ "            obj = {\n"
+							+ "                name: word,\n"
+							+ "                weight: 1\n"
+							+ "            };\n"
+							+ "            arr.push(obj);\n"
+							+ "        }\n"
+							+ "        return arr;\n"
+							+ "    }, []),\n"
+							+ "        name: '"+seriesData.get(axisKey).getStack().toString()+"'\n"
+							+ "    }],\n"
+							+ "    title: {\n"
+							+ "        text: '"+seriesData.get(axisKey).getStack().toString()+"',\n"
+							+ "    style: {\n"
+							+ "                color: '#0C090A',\n"
+							+ "                fontWeight: 'normal',\n"
+							+ "                 fontSize: '12px' \n"
+							+ "            } }");
+					//@formatter:on
+				}
+			}
+			
+			
+			
+			
+
+			hcjs.append("}");
+			
+			System.out.println(hcjs.toString());
+			
+			campaignColumnChart.setHcjs(hcjs.toString());
+			
+			
 			mapSeries.clear();
 		}
 
@@ -478,7 +733,6 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 			
 			if(pieChart && !secondaryChartType.equalsIgnoreCase(DiagramType.DOUGHNUT.toString())) {
 				hcjs.append((stackMap.size() > 0 || showDataLabels || rotateDataLabels) ? ", " : "");
-				System.out.println("______________________________________________");
 				hcjs.append(" pie: {\n"
 						+ "            allowPointSelect: true,\n"
 						+ "            cursor: 'pointer',\n"
@@ -511,7 +765,9 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 		}
 
 		if (showPercentages && totalValuesMap != null) {
+			if(!pieChart) {
 			hcjs.append("tooltip:{ valueSuffix: ' %' }, ");
+			}
 		}
 	}
 

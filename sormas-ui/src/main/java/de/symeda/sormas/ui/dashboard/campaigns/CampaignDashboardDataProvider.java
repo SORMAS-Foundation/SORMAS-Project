@@ -200,7 +200,7 @@ public class CampaignDashboardDataProvider {
 			if (campaignDashboardElement.getTabId().equals(tabId) && (subTabId == null || campaignDashboardElement.getSubTabId().equals(subTabId))) {
 				System.out.println(tabId+ "TAB_ID~~~~~~~~~~~~"+ subTabId +" = subTabId~~~~~~~~~~~~~~~~~~~~~"+campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getDiagramType() +"~~~~~~~~~~~~~~~~~```    "+getFormType());
 			
-				if(campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getDiagramType() == DiagramType.PIE) {	
+				if(campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getDiagramType() == DiagramType.PIE || campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getDiagramType() == DiagramType.DOUGHNUT || campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getDiagramType() == DiagramType.CARD) {	
 					
 					List<CampaignDiagramDataDto> diagramData = FacadeProvider.getCampaignFormDataFacade()
 							.getDiagramDataByGroups(
