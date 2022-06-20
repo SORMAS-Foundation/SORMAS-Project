@@ -34,7 +34,7 @@ public class DistrictIndexDto extends EntityDto {
 	public static final String POPULATION = "population";
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String REGION = "region";
-	public static final String EXTERNAL_ID = "externalID";
+	public static final String EXTERNAL_ID = "externalId";
 
 	private String name;
 	private String epidCode;
@@ -42,7 +42,7 @@ public class DistrictIndexDto extends EntityDto {
 	private Integer population;
 	private Float growthRate;
 	private RegionReferenceDto region;
-	private Long externalID;
+	private Long externalId;
 
 	public DistrictIndexDto() {
 		super();
@@ -101,16 +101,16 @@ public class DistrictIndexDto extends EntityDto {
 		this.growthRate = growthRate;
 	}
 
-	public Long getExternalID() {
-		return externalID;
+	public Long getExternalId() {
+		return externalId;
 	}
 
-	public void setExternalID(Long externalID) {
-		this.externalID = externalID;
+	public void setExternalId(Long externalId) {
+		this.externalId = externalId;
 	}
 
 	public DistrictReferenceDto toReference() {
-		return new DistrictReferenceDto(getUuid(), name, externalID);
+		return new DistrictReferenceDto(getUuid(), name, externalId);
 	}
 
 	public static DistrictIndexDto build() {

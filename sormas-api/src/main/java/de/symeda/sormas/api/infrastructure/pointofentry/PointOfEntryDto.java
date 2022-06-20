@@ -38,7 +38,7 @@ public class PointOfEntryDto extends EntityDto {
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
 	public static final String ACTIVE = "active";
-	public static final String EXTERNAL_ID = "externalID";
+	public static final String EXTERNAL_ID = "externalId";
 
 	private PointOfEntryType pointOfEntryType;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
@@ -54,7 +54,7 @@ public class PointOfEntryDto extends EntityDto {
 	private boolean active;
 	private boolean archived;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	private Long externalID;
+	private Long externalId;
 
 	public PointOfEntryDto(
 		Date creationDate,
@@ -72,7 +72,7 @@ public class PointOfEntryDto extends EntityDto {
 		Double latitude,
 		Double longitude,
 		boolean active,
-		Long externalID) {
+		Long externalId) {
 
 		super(creationDate, changeDate, uuid);
 
@@ -88,7 +88,7 @@ public class PointOfEntryDto extends EntityDto {
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.active = active;
-		this.externalID = externalID;
+		this.externalId = externalId;
 	}
 
 	public PointOfEntryDto() {
@@ -193,12 +193,12 @@ public class PointOfEntryDto extends EntityDto {
 		this.archived = archived;
 	}
 
-	public Long getExternalID() {
-		return externalID;
+	public Long getExternalId() {
+		return externalId;
 	}
 
-	public void setExternalID(Long externalID) {
-		this.externalID = externalID;
+	public void setExternalId(Long externalId) {
+		this.externalId = externalId;
 	}
 
 	@Override
@@ -207,6 +207,6 @@ public class PointOfEntryDto extends EntityDto {
 	}
 
 	public PointOfEntryReferenceDto toReference() {
-		return new PointOfEntryReferenceDto(getUuid(), toString(), pointOfEntryType, externalID);
+		return new PointOfEntryReferenceDto(getUuid(), toString(), pointOfEntryType, externalId);
 	}
 }

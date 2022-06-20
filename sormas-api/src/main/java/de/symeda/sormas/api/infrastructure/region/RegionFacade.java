@@ -45,7 +45,7 @@ public interface RegionFacade extends GeoLocationFacade<RegionDto, RegionIndexDt
 
 	List<RegionDto> getByName(String name, boolean includeArchivedEntities);
 	
-	List<RegionDto> getByExternalID(Long ext_id, boolean includeArchivedEntities);
+	List<RegionDto> getByExternalId(Long ext_id, boolean includeArchivedEntities, int notUsed);
 
 	List<String> getNamesByIds(List<Long> regionIds);
 

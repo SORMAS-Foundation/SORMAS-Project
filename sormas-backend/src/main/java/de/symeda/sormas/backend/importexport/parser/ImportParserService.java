@@ -225,7 +225,7 @@ public class ImportParserService {
 
 	private RegionReferenceDto parseRegion(String v, Class<RegionReferenceDto> clazz, String path) throws ImportErrorException {
 		System.out.println("_____IN REGION PARSER---");
-		List<Region> regions = regionService.getByExternalID(Long.parseLong(v), false);
+		List<Region> regions = regionService.getByExternalId(Long.parseLong(v), false, 0);
 		if (regions.isEmpty()) {
 			throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist, v, path));
 		} else if (regions.size() > 1) {
@@ -238,7 +238,7 @@ public class ImportParserService {
 	private DistrictReferenceDto parseDistrict(String v, Class<DistrictReferenceDto> clazz, String path) throws ImportErrorException {
 		System.out.println("_____IN District PARSER--- " +v);
 		Region regionV = new Region();
-		List<District> districts = districtService.getByExternalID(Long.parseLong(v), regionV, false);
+		List<District> districts = districtService.getByExternalId(Long.parseLong(v), regionV, false, 0);
 		if (districts.isEmpty()) {
 			throw new ImportErrorException(I18nProperties.getValidationError(Validations.importEntryDoesNotExist, v, path));
 		} else if (districts.size() > 1) {

@@ -1355,7 +1355,7 @@ public class TestDataCreator {
 					pointOfEntry.getUuid(),
 					pointOfEntry.getName(),
 					pointOfEntry.getPointOfEntryType(),
-					pointOfEntry.getExternalID())
+					pointOfEntry.getExternalId())
 				: null);
 	}
 
@@ -1512,7 +1512,7 @@ public class TestDataCreator {
 		pointOfEntry.setName(pointOfEntryName);
 		pointOfEntry.setDistrict(district);
 		pointOfEntry.setRegion(region);
-		pointOfEntry.setExternalID(externalId);
+		pointOfEntry.setExternalId(externalId);
 
 		beanTest.getPointOfEntryService().persist(pointOfEntry);
 

@@ -509,7 +509,7 @@ public abstract class DataImporter {
 		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
 			
 			System.out.println("_____IN REGION ISASSIGNMENT________-----------_________________+========  " +entry);
-			List<RegionDto> regions = FacadeProvider.getRegionFacade().getByExternalID(Long.parseLong(entry), false);
+			List<RegionDto> regions = FacadeProvider.getRegionFacade().getByExternalId(Long.parseLong(entry), false, 0);
 			if (regions.isEmpty()) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
@@ -518,7 +518,7 @@ public abstract class DataImporter {
 					I18nProperties.getValidationError(Validations.importRegionNotUnique, entry, buildEntityProperty(entryHeaderPath)));
 			} else {
 
-				System.out.println(regions.get(0).getExternalID()+" >>>>>>>>>>>>>>>>>>>>>>>>>>>. "+regions.get(0).getName());
+				System.out.println(regions.get(0).getExternalId()+" >>>>>>>>>>>>>>>>>>>>>>>>>>>. "+regions.get(0).getName());
 				
 				
 				RegionDto region = regions.get(0);

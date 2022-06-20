@@ -81,7 +81,7 @@ public class PointOfEntryFacadeEjb extends AbstractInfrastructureEjb<PointOfEntr
 			return null;
 		}
 
-		return new PointOfEntryReferenceDto(entity.getUuid(), entity.toString(), entity.getPointOfEntryType(), entity.getExternalID());
+		return new PointOfEntryReferenceDto(entity.getUuid(), entity.toString(), entity.getPointOfEntryType(), entity.getExternalId());
 	}
 
 	@Override
@@ -364,7 +364,7 @@ public class PointOfEntryFacadeEjb extends AbstractInfrastructureEjb<PointOfEntr
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setArchived(source.isArchived());
-		target.setExternalID(source.getExternalID());
+		target.setExternalId(source.getExternalId());
 
 		return target;
 	}
@@ -385,7 +385,7 @@ public class PointOfEntryFacadeEjb extends AbstractInfrastructureEjb<PointOfEntr
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
 		dto.setArchived(entity.isArchived());
-		dto.setExternalID(entity.getExternalID());
+		dto.setExternalId(entity.getExternalId());
 
 		return dto;
 	}

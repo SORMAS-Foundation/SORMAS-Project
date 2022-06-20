@@ -68,13 +68,13 @@ public class RegionService extends AbstractInfrastructureAdoService<Region> {
 		return em.createQuery(cq).getResultList();
 	}
 	
-	public List<Region> getByExternalID(Long ext_id, boolean includeArchivedEntities) {
-//System.out.println("####################################3 "+ext_id);
+	public List<Region> getByExternalId(Long ext_id, boolean includeArchivedEntities, int noUsed) {
+System.out.println("####################################3 "+ext_id);
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Region> cq = cb.createQuery(getElementClass());
 		Root<Region> from = cq.from(getElementClass());
 		//System.out.println("SSSSSSDDDDDSSSSS45 - "+SQLExtractor.from(em.createQuery(cq)));
-		Predicate filter = cb.equal(from.get("externalID"), ext_id);
+		Predicate filter = cb.equal(from.get("externalId"), ext_id);
 		
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
