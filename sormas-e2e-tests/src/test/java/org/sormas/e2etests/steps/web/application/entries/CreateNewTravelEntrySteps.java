@@ -18,8 +18,8 @@
 
 package org.sormas.e2etests.steps.web.application.entries;
 
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DIFFERENT_POINT_OF_ENTRY_JURISDICTION;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CLOSE_FORM_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DIFFERENT_POINT_OF_ENTRY_JURISDICTION;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.POINT_OF_ENTRY_DISTRICT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.POINT_OF_ENTRY_REGION_BUTTON;
@@ -751,6 +751,7 @@ public class CreateNewTravelEntrySteps implements En {
   }
 
   private TravelEntry collectTravelEntryData() {
+    System.out.println(webDriverHelpers.getValueFromWebElement(UUID_INPUT));
     return TravelEntry.builder()
         .disease(webDriverHelpers.getValueFromCombobox(EditTravelEntryPage.DISEASE_COMBOBOX))
         .responsibleRegion(
@@ -792,7 +793,7 @@ public class CreateNewTravelEntrySteps implements En {
         .firstName(webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT))
         .lastName(webDriverHelpers.getValueFromWebElement(LAST_NAME_INPUT))
         .sex(webDriverHelpers.getValueFromCombobox(EditTravelEntryPage.SEX_COMBOBOX))
-        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .personUuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .build();
   }
 

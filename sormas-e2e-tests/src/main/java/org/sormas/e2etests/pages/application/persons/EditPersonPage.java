@@ -127,6 +127,14 @@ public class EditPersonPage {
       By.cssSelector("#contactPersonPhone");
   public static final By FACILITY_CONTACT_PERSON_EMAIL_CASE_PERSON_INPUT =
       By.cssSelector("#contactPersonEmail");
+  public static final By TRAVEL_ENTRY_ID_IN_TRAVEL_ENTRY_TAB =
+      By.xpath("(//div[@location='travelEntries']//div[contains(@class, 'v-label')])[2]");
+  public static final By DISEASE_IN_TRAVEL_ENTRY_TAB =
+      By.xpath("(//div[@location='travelEntries']//div[contains(@class, 'v-label')])[4]");
+  public static final By DATE_IN_TRAVEL_ENTRY_TAB =
+      By.xpath("(//div[@location='travelEntries']//div[contains(@class, 'v-label')])[3]");
+  public static final By DESCRIPTION_IN_TRAVEL_ENTRY_TAB =
+      By.xpath("(//div[@location='travelEntries']//div[contains(@class, 'v-label')])[5]");
 
   public static By getByPersonUuid(String personUuid) {
     return By.cssSelector("a[title='" + personUuid + "']");
