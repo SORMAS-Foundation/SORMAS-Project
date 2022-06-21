@@ -1203,30 +1203,6 @@ Feature: Case end to end tests
     Then I navigate to the last created via api Person page via URL
     And I check if added travel Entry appeared on Edit Person Page
 
-  @issue=SORDEV-7453 @env_main
-  Scenario: Test cases sorting after edit case
-    Given I log in as a Admin User
-    And I click on the Cases button from navbar
-    And I click on the NEW CASE button
-    When I create a new case with specific data
-    Then I click on save case button
-    And I click on the Cases button from navbar
-    And I click on the NEW CASE button
-    When I create a new case with specific data
-    Then I click on save case button
-    And I click on the Cases button from navbar
-    And I check two newest cases ID
-    And I search for case with Index: 2 and open
-    Then I click on save case button
-    And I click on the Cases button from navbar
-    Then I compare previous first and second case ID with current first and second case ID
-
-
-
-
-
-
-
   @issue=SORDEV-5563 @env_de
   Scenario: Add contact person details to facilities case person
     Given I log in as a Admin User
