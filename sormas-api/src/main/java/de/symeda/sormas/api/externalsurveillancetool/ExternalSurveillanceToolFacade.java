@@ -23,7 +23,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.EventDto;
 
 /**
- * Gateway to interact with the local external surveillance tool instance of the health Exdepartment
+ * Gateway to interact with the local external surveillance tool instance of the health department
  */
 @Remote
 public interface ExternalSurveillanceToolFacade {

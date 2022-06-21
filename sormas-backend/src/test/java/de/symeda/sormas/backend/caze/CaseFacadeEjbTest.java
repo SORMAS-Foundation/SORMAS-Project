@@ -1501,6 +1501,13 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(null).size());
 		assertEquals(1, getCaseFacade().getAllActiveUuids().size());
 
+        stubFor(
+                post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+                        .withRequestBody(containing("caseUuids"))
+                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+        Case case1 = getCaseService().getByUuid(caze.getUuid());
+        getExternalShareInfoService().createAndPersistShareInfo(case1, ExternalShareStatus.SHARED);
 		getCaseFacade().archive(caze.getUuid(), null);
 
 		// getAllActiveCases and getAllUuids should return length 0
@@ -2098,10 +2105,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
         UserReferenceDto user = creator.createUser(rdcf).toReference();
         PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
 
-        CaseDataDto caze = creator.createCase(user, rdcf, (c) -> {
-            c.setPerson(person);
-            c.setExternalID("externalId1");
-        });
+        CaseDataDto caze = creator.createCase(user, person, rdcf);
+        Case case1 = getCaseService().getByUuid(caze.getUuid());
+        getExternalShareInfoService().createAndPersistShareInfo(case1, ExternalShareStatus.SHARED);
         CaseFacadeEjbLocal cut = getBean(CaseFacadeEjbLocal.class);
 
         stubFor(

@@ -41,6 +41,8 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -111,6 +113,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private ExternalShareInfoService externalShareInfoService;
+    @EJB
+    private EventFacadeEjb.EventFacadeEjbLocal eventFacade;
 
 	public EventService() {
 		super(Event.class);
@@ -268,6 +272,40 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		cq.where(filter);
 
 		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
+	}
+
+	@Override
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		super.archive(entityUuid, endOfProcessingDate);
+		setArchiveInExternalSurveillanceToolForEntity(entityUuid, true);
+	}
+
+	@Override
+	public void archive(List<String> entityUuids) {
+		super.archive(entityUuids);
+		setArchiveInExternalSurveillanceToolForEntities(entityUuids, true);
+	}
+
+	@Override
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		super.dearchive(entityUuids, dearchiveReason);
+		setArchiveInExternalSurveillanceToolForEntities(entityUuids, false);
+	}
+
+	public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) {
+		try {
+			eventFacade.setArchiveInExternalSurveillanceToolForEntities(entityUuids, archived);
+		} catch (ExternalSurveillanceToolException e) {
+			throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+		}
+	}
+
+	public void setArchiveInExternalSurveillanceToolForEntity(String entityUuid, boolean archived) {
+		try {
+			eventFacade.setArchiveInExternalSurveillanceToolForEntity(entityUuid, archived);
+		} catch (ExternalSurveillanceToolException e) {
+			throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+		}
 	}
 
 	public List<String> getArchivedUuidsSince(Date since) {

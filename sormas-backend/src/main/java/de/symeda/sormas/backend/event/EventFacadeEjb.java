@@ -57,6 +57,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.share.ExternalShareStatus;
+import de.symeda.sormas.backend.share.ExternalShareInfo;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -160,6 +162,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
 	@EJB
 	private EventParticipantService eventParticipantService;
+    @EJB
+    private EventService eventService;
 	@Resource
 	private ManagedScheduledExecutorService executorService;
 
@@ -914,21 +918,30 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		eventParticipantService.dearchive(eventParticipantList, dearchiveReason);
 	}
 
-    @Override
-    @RolesAllowed(UserRight._EVENT_ARCHIVE)
-    public void setArchiveInExternalSurveillanceToolForEntity(String eventUuid, boolean archived) throws ExternalSurveillanceToolException {
-        //TODO: do we need the following check too here?  -> event.getExternalId != null && !event.getExternalID().isEmpty()
-        if (externalSurveillanceToolFacade.isFeatureEnabled()) {
-            externalSurveillanceToolFacade.sendEvents(Collections.singletonList(eventUuid), archived);
-        }
-    }
+	@Override
+	@RolesAllowed(UserRight._EVENT_ARCHIVE)
+	public void setArchiveInExternalSurveillanceToolForEntity(String eventUuid, boolean archived) throws ExternalSurveillanceToolException {
+		Event event = eventService.getByUuid(eventUuid);
+		if (externalSurveillanceToolFacade.isFeatureEnabled()
+			&& externalShareInfoService.isEventShared(event.getId())
+			&& !hasShareInfoWithDeletedStatus(eventUuid)) {
+			externalSurveillanceToolFacade.sendEvents(Collections.singletonList(eventUuid), archived);
+		}
+	}
 
-    @Override
-    @RolesAllowed(UserRight._EVENT_ARCHIVE)
-    public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) throws ExternalSurveillanceToolException {
-        //TODO: if the check for externalId != null and externalID not empty is needed the entityUuids list should be filtered
-        externalSurveillanceToolFacade.sendEvents(entityUuids, archived);
-    }
+	public boolean hasShareInfoWithDeletedStatus(String entityUuid) {
+		List<ExternalShareInfo> result = externalShareInfoService.getShareInfoByEvent(entityUuid);
+		return result.stream().anyMatch(info -> info.getStatus().equals(ExternalShareStatus.DELETED));
+	}
+
+	@Override
+	@RolesAllowed(UserRight._EVENT_ARCHIVE)
+	public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) throws ExternalSurveillanceToolException {
+		if (externalSurveillanceToolFacade.isFeatureEnabled()) {
+			List<String> filteredEntityUuids = externalShareInfoService.getSharedEventUuidsWithoutDeletedStatus(entityUuids);
+			externalSurveillanceToolFacade.sendEvents(filteredEntityUuids, archived);
+		}
+	}
 
 	@Override
 	public Set<String> getAllSubordinateEventUuids(String eventUuid) {
