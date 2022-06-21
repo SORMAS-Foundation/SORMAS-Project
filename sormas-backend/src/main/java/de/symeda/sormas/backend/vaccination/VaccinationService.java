@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.vaccination;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,6 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -118,28 +118,31 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 	}
 
 	public boolean isVaccinationRelevant(Case caze, Vaccination vaccination) {
-		return vaccination.getVaccinationDate() != null
-			&& (caze.getSymptoms().getOnsetDate() != null
-				? DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(caze.getSymptoms().getOnsetDate())
-				: DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(caze.getReportDate()));
+		Date relevantVaccinationDate =
+			vaccination.getVaccinationDate() != null ? vaccination.getVaccinationDate() : DateHelper.subtractDays(vaccination.getReportDate(), 14);
+		return (caze.getSymptoms().getOnsetDate() != null
+			? DateHelper.getEndOfDay(relevantVaccinationDate).before(caze.getSymptoms().getOnsetDate())
+			: DateHelper.getEndOfDay(relevantVaccinationDate).before(caze.getReportDate()));
+
 	}
 
 	public boolean isVaccinationRelevant(Contact contact, Vaccination vaccination) {
-		return vaccination.getVaccinationDate() != null
-			&& (contact.getLastContactDate() != null
-				? DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(contact.getLastContactDate())
-				: DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(contact.getReportDateTime()));
+		Date relevantVaccinationDate =
+			vaccination.getVaccinationDate() != null ? vaccination.getVaccinationDate() : DateHelper.subtractDays(vaccination.getReportDate(), 14);
+		return (contact.getLastContactDate() != null
+			? DateHelper.getEndOfDay(relevantVaccinationDate).before(contact.getLastContactDate())
+			: DateHelper.getEndOfDay(relevantVaccinationDate).before(contact.getReportDateTime()));
+
 	}
 
 	public boolean isVaccinationRelevant(Event event, Vaccination vaccination) {
-		if (vaccination.getVaccinationDate() == null) {
-			return false;
-		}
+		Date relevantVaccinationDate =
+			vaccination.getVaccinationDate() != null ? vaccination.getVaccinationDate() : DateHelper.subtractDays(vaccination.getReportDate(), 14);
 		if (event.getStartDate() != null) {
-			return DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(event.getStartDate());
+			return DateHelper.getEndOfDay(relevantVaccinationDate).before(event.getStartDate());
 		}
 		return event.getEndDate() != null
-			? DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(event.getEndDate())
-			: DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(event.getReportDateTime());
+			? DateHelper.getEndOfDay(relevantVaccinationDate).before(event.getEndDate())
+			: DateHelper.getEndOfDay(relevantVaccinationDate).before(event.getReportDateTime());
 	}
 }
