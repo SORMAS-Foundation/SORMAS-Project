@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.sormastosormas.shareinfo;
 
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import java.util.List;
 
 import javax.ejb.Remote;
@@ -25,4 +26,6 @@ public interface SormasToSormasShareInfoFacade {
 	List<SormasToSormasShareInfoDto> getIndexList(SormasToSormasShareInfoCriteria criteria, Integer first, Integer max);
 
 	SormasToSormasShareInfoDto getShareInfoByUuid(String uuid);
+
+	SormasToSormasShareInfoDto getCaseShareInfoByOrganization(CaseReferenceDto caze, String organizationId);
 }

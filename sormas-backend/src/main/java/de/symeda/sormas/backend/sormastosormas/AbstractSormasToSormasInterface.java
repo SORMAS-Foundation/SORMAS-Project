@@ -229,7 +229,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			ensureConsistentOptions(options);
 		}
 
-		validateEntitiesBeforeShare(entities, options.isHandOverOwnership());
+		validateEntitiesBeforeShare(entities, options.isHandOverOwnership(), options.getOrganization().getId());
 
 		String requestUuid = DataHelper.createUuid();
 
@@ -276,6 +276,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		String organizationId = shareRequest.getOriginInfo().getOrganizationId();
 
+		validateShareRequestBeforeAccept(shareRequest);
+
 		SormasToSormasEncryptedDataDto encryptedData =
 			sormasToSormasRestClient.post(organizationId, requestGetDataEndpoint, requestUuid, SormasToSormasEncryptedDataDto.class);
 
@@ -312,7 +314,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		User currentUser = userService.getCurrentUser();
 		List<ADO> entities = getEntityService().getByUuids(entityUuids);
 
-		validateEntitiesBeforeShare(entities, options.isHandOverOwnership());
+		validateEntitiesBeforeShare(entities, options.isHandOverOwnership(), options.getOrganization().getId());
 		ensureConsistentOptions(options);
 
 		String requestUuid = DataHelper.createUuid();
@@ -523,9 +525,12 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	protected abstract Class<S[]> getShareDataClass();
 
-	protected abstract void validateEntitiesBeforeShare(List<ADO> entities, boolean handOverOwnership) throws SormasToSormasException;
+	protected abstract void validateEntitiesBeforeShare(List<ADO> entities, boolean handOverOwnership, String targetOrganizationId)
+		throws SormasToSormasException;
 
 	protected abstract void validateEntitiesBeforeShare(List<SormasToSormasShareInfo> shares) throws SormasToSormasException;
+
+	protected abstract void validateShareRequestBeforeAccept(SormasToSormasShareRequestDto shareRequest) throws SormasToSormasException;
 
 	private void syncEntityToShares(ADO entity, ShareRequestInfo requestInfo, ShareTreeCriteria criteria, User currentUser)
 		throws SormasToSormasException {

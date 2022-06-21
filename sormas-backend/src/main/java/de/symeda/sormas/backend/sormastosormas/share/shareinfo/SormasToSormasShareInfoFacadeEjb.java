@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.sormastosormas.share.shareinfo;
 
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -68,7 +69,17 @@ public class SormasToSormasShareInfoFacadeEjb implements SormasToSormasShareInfo
 		return toDto(shareInfoService.getByUuid(uuid));
 	}
 
+	@Override
+	public SormasToSormasShareInfoDto getCaseShareInfoByOrganization(CaseReferenceDto caze, String organizationId) {
+		SormasToSormasShareInfo shareInfo = shareInfoService.getByCaseAndOrganization(caze.getUuid(), organizationId);
+		return toDto(shareInfo);
+	}
+
 	public SormasToSormasShareInfoDto toDto(SormasToSormasShareInfo source) {
+		if (source == null) {
+			return null;
+		}
+
 		SormasToSormasShareInfoDto target = new SormasToSormasShareInfoDto();
 
 		DtoHelper.fillDto(target, source);
