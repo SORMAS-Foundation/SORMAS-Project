@@ -20,6 +20,7 @@ import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_4;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_5;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -137,12 +138,18 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 					return null;
 				}
 
-				SormasToSormasShareInfoDto caseShareInfo =
-					FacadeProvider.getSormasToSormasShareInfoFacade().getCaseShareInfoByOrganization(contact.getCaze(), t.getId());
-				if (caseShareInfo == null
-					|| (caseShareInfo.getRequestStatus() != ShareRequestStatus.PENDING
-						&& caseShareInfo.getRequestStatus() != ShareRequestStatus.ACCEPTED)) {
-					return I18nProperties.getString(Strings.errorSormasToSormasShareContactWithUnsharedSourceCase);
+				String targetOrganizationId = t.getId();
+
+				SormasToSormasOriginInfoDto originInfo = contact.getSormasToSormasOriginInfo();
+				if (originInfo == null || !originInfo.getOrganizationId().equals(targetOrganizationId)) {
+					SormasToSormasShareInfoDto caseShareInfo =
+						FacadeProvider.getSormasToSormasShareInfoFacade().getCaseShareInfoByOrganization(contact.getCaze(), targetOrganizationId);
+
+					if (caseShareInfo == null
+						|| (caseShareInfo.getRequestStatus() != ShareRequestStatus.PENDING
+							&& caseShareInfo.getRequestStatus() != ShareRequestStatus.ACCEPTED)) {
+						return I18nProperties.getString(Strings.errorSormasToSormasShareContactWithUnsharedSourceCase);
+					}
 				}
 
 				return null;

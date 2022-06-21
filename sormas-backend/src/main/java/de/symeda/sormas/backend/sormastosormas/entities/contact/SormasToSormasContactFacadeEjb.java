@@ -133,7 +133,8 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 						ValidationErrors.create(
 							new ValidationErrorGroup(Captions.Contact),
 							new ValidationErrorMessage(Validations.sormasToSormasContactHasNoCase))));
-			} else {
+			} else if (contact.getSormasToSormasOriginInfo() == null
+				|| !contact.getSormasToSormasOriginInfo().getOrganizationId().equals(targetOrganizationId)) {
 				SormasToSormasShareInfo caseShareInfo = shareInfoService.getByCaseAndOrganization(contact.getCaze().getUuid(), targetOrganizationId);
 				if (caseShareInfo == null) {
 					validationErrors.add(
@@ -141,7 +142,7 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 							buildContactValidationGroupName(contact),
 							ValidationErrors.create(
 								new ValidationErrorGroup(Captions.Contact),
-								new ValidationErrorMessage(Validations.sormasToSormasContactHasNoCase))));
+								new ValidationErrorMessage(Validations.sormasToSormasContactCaseNotShared))));
 				} else {
 					ShareRequestInfo latestRequest =
 						ShareInfoHelper.getLatestRequest(caseShareInfo.getRequests().stream()).orElseGet(ShareRequestInfo::new);
