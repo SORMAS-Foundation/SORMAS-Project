@@ -40,7 +40,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
+import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -172,7 +172,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	}
 
 	@Override
-	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
+	public DeletionInfoDto getAutomaticDeletionInfo(String uuid) {
 
 		DeletionConfiguration deletionConfiguration = deletionConfigurationService.getCoreEntityTypeConfig(getCoreEntityType());
 
@@ -185,7 +185,24 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		Object[] deletionData = getDeletionData(uuid, deletionConfiguration);
 		Date referenceDate = (Date) deletionData[0];
 		Date deletiondate = DateHelper.addDays(referenceDate, deletionConfiguration.getDeletionPeriod());
-		return new AutomaticDeletionInfoDto(deletiondate, (Date) deletionData[1], deletionConfiguration.getDeletionPeriod());
+		return new DeletionInfoDto(deletiondate, (Date) deletionData[1], deletionConfiguration.getDeletionPeriod());
+	}
+
+	@Override
+	public DeletionInfoDto getManuallyDeletionInfo(String uuid) {
+
+		DeletionConfiguration deletionConfiguration = deletionConfigurationService.getCoreEntityTypeManualDeletionConfig(getCoreEntityType());
+
+		if (deletionConfiguration == null
+				|| deletionConfiguration.getDeletionPeriod() == null
+				|| deletionConfiguration.getDeletionReference() == null) {
+			return null;
+		}
+
+		Object[] deletionData = getDeletionData(uuid, deletionConfiguration);
+		Date referenceDate = (Date) deletionData[0];
+		Date deletiondate = DateHelper.addDays(referenceDate, deletionConfiguration.getDeletionPeriod());
+		return new DeletionInfoDto(deletiondate, (Date) deletionData[1], deletionConfiguration.getDeletionPeriod());
 	}
 
 	protected String getDeleteReferenceField(DeletionReference deletionReference) {

@@ -12,7 +12,7 @@ import com.vaadin.ui.UI;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.common.DeletionReason;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
+import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -34,7 +34,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
+import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
@@ -149,11 +149,11 @@ public class ImmunizationController {
 			}
 		};
 
-		AutomaticDeletionInfoDto automaticDeletionInfoDto =
-			FacadeProvider.getImmunizationFacade().getAutomaticDeletionInfo(immunizationDto.getUuid());
-		if (automaticDeletionInfoDto != null) {
-			editComponent.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel(automaticDeletionInfoDto));
-		}
+		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getImmunizationFacade().getAutomaticDeletionInfo(immunizationDto.getUuid());
+		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getCaseFacade().getManuallyDeletionInfo(immunizationDto.getUuid());
+
+		editComponent.getButtonsPanel()
+			.addComponentAsFirst(new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, immunizationDto.isDeleted()));
 
 		if (immunizationDto.isDeleted()) {
 			editComponent.getWrappedComponent().getField(ImmunizationDto.DELETION_REASON).setVisible(true);
