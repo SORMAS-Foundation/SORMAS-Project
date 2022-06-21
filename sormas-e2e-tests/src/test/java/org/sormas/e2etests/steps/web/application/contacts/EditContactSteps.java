@@ -70,6 +70,7 @@ import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.pojo.web.QuarantineOrder;
 import org.sormas.e2etests.entities.services.ContactDocumentService;
 import org.sormas.e2etests.entities.services.ContactService;
+import org.sormas.e2etests.enums.TaskTypeValues;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
@@ -938,6 +939,70 @@ public class EditContactSteps implements En {
     When(
         "I navigate to follow-up visits tab",
         () -> webDriverHelpers.clickOnWebElementBySelector(FOLLOW_UP_VISITS));
+
+    And(
+        "^I check if New task form is displayed correctly$",
+        () -> {
+          String expectedString = "Create new task";
+          String actualString = webDriverHelpers.getTextFromWebElement(CREATE_NEW_TASK_FORM_HEADER);
+          softly.assertEquals(actualString, expectedString, "Unexpected popup title displayed");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check that values listed in the task type combobox are correct$",
+        () -> {
+          for (TaskTypeValues value : TaskTypeValues.values()) {
+            webDriverHelpers.selectFromCombobox(
+                TASK_TYPE_COMBOBOX, TaskTypeValues.getValueFor(value.toString()));
+          }
+        });
+
+    And(
+        "^I clear Due Date field in the New task form$",
+        () -> webDriverHelpers.clearWebElement(NEW_TASK_DUE_DATE));
+
+    Then(
+        "^I check that all required fields are mandatory in the New task form$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(INPUT_DATA_ERROR_POPUP);
+          webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Task type");
+          webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Due date");
+          webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Assigned to");
+        });
+
+    And(
+        "^I click SAVE button on New Task form$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_NEW_TASK_BUTTON));
+
+    And(
+        "^I check that required fields are marked as mandatory$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(TASK_TYPE_TITLE);
+          webDriverHelpers.checkWebElementContainsText(TASK_TYPE_TITLE, "*");
+          webDriverHelpers.checkWebElementContainsText(DUE_DATE_TITLE, "*");
+          webDriverHelpers.checkWebElementContainsText(ASSIGNED_TO_TITLE, "*");
+        });
+
+    When(
+        "^I close input data error popup$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(INPUT_DATA_ERROR_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(INPUT_DATA_ERROR_POPUP);
+        });
+
+    And(
+        "^I choose Other task as described in comments option from task type combobox in the New task form$",
+        () ->
+            webDriverHelpers.selectFromCombobox(
+                TASK_TYPE_COMBOBOX, "other task as described in comments"));
+
+    Then(
+        "^I check that Comments on task field is mandatory in the New task form$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(COMMENTS_ON_TASK_TITLE);
+          webDriverHelpers.checkWebElementContainsText(COMMENTS_ON_TASK_TITLE, "*");
+        });
   }
 
   private void selectContactClassification(String classification) {
