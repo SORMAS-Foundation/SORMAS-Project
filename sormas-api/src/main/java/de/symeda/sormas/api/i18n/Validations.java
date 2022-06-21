@@ -161,10 +161,15 @@ public interface Validations {
 	String requiredField = "requiredField";
 	String softAddEntryToList = "softAddEntryToList";
 	String softApproximateAgeTooHigh = "softApproximateAgeTooHigh";
+	String sormasToSormasAcceptCaseBeforeContact = "sormasToSormasAcceptCaseBeforeContact";
+	String sormasToSormasAcceptContactHasNoCase = "sormasToSormasAcceptContactHasNoCase";
+	String sormasToSormasAcceptContactWithoutCaseShared = "sormasToSormasAcceptContactWithoutCaseShared";
 	String sormasToSormasCaseExists = "sormasToSormasCaseExists";
 	String sormasToSormasCommunity = "sormasToSormasCommunity";
 	String sormasToSormasContactCaseNotExists = "sormasToSormasContactCaseNotExists";
+	String sormasToSormasContactCaseNotShared = "sormasToSormasContactCaseNotShared";
 	String sormasToSormasContactExists = "sormasToSormasContactExists";
+	String sormasToSormasContactHasNoCase = "sormasToSormasContactHasNoCase";
 	String sormasToSormasContinent = "sormasToSormasContinent";
 	String sormasToSormasCountry = "sormasToSormasCountry";
 	String sormasToSormasDistrict = "sormasToSormasDistrict";

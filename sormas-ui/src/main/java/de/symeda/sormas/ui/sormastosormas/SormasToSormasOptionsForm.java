@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.ui.sormastosormas;
 
+import static de.symeda.sormas.ui.utils.CssStyles.LABEL_WHITE_SPACE_NORMAL;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_4;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_5;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.util.Arrays;
@@ -23,15 +26,23 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
@@ -43,9 +54,11 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 
 public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOptionsDto> {
 
+	private static final String TARGET_VALIDATION_ERROR_LOC = "targetValidationErrorLoc";
 	private static final String CUSTOM_OPTIONS_PLACE_HOLDER = "__custom__";
 
 	private static final String HTML_LAYOUT = fluidRowLocs(SormasToSormasOptionsDto.ORGANIZATION)
+		+ fluidRowLocs(TARGET_VALIDATION_ERROR_LOC)
 		+ fluidRowLocs(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP)
 		+ fluidRowLocs(SormasToSormasOptionsDto.PSEUDONYMIZE_PERSONAL_DATA)
 		+ fluidRowLocs(SormasToSormasOptionsDto.PSEUDONYMIZE_SENSITIVE_DATA)
@@ -60,6 +73,9 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 	private final BiConsumer<SormasToSormasOptionsForm, SormasToSormasShareInfoDto> updateCustomOptionsByPreviousShare;
 	private final Consumer<SormasToSormasOptionsForm> customFieldDependencies;
+	private Function<SormasServerDescriptor, String> targetValidator;
+
+	private ComboBox targetCombo;
 
 	public static SormasToSormasOptionsForm forCase(List<SormasToSormasShareInfoDto> currentShares) {
 		return new SormasToSormasOptionsForm(
@@ -74,13 +90,13 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_SAMPLES)).setValue(s.isWithSamples());
 				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_IMMUNIZATIONS)).setValue(s.isWithImmunizations());
 			},
-				(form) -> {
-					FieldHelper.setEnabledWhen(
-							form.getFieldGroup(),
-							SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
-							Boolean.FALSE,
-							SormasToSormasOptionsDto.WITH_SAMPLES,
-							false);
+			(form) -> {
+				FieldHelper.setEnabledWhen(
+					form.getFieldGroup(),
+					SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
+					Boolean.FALSE,
+					SormasToSormasOptionsDto.WITH_SAMPLES,
+					false);
 				FieldHelper.setEnabledWhen(
 					form.getFieldGroup(),
 					SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
@@ -88,12 +104,12 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 					SormasToSormasOptionsDto.WITH_IMMUNIZATIONS,
 					false);
 
-					FieldHelper.setValueWhen(
-							form.getFieldGroup(),
-							SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
-							Boolean.TRUE,
-							SormasToSormasOptionsDto.WITH_SAMPLES,
-							Boolean.TRUE);
+				FieldHelper.setValueWhen(
+					form.getFieldGroup(),
+					SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
+					Boolean.TRUE,
+					SormasToSormasOptionsDto.WITH_SAMPLES,
+					Boolean.TRUE);
 
 				FieldHelper.setValueWhen(
 					form.getFieldGroup(),
@@ -101,11 +117,11 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 					Boolean.TRUE,
 					SormasToSormasOptionsDto.WITH_IMMUNIZATIONS,
 					Boolean.TRUE);
-				});
+			});
 	}
 
-	public static SormasToSormasOptionsForm forContact(List<SormasToSormasShareInfoDto> currentShares) {
-		return new SormasToSormasOptionsForm(
+	public static SormasToSormasOptionsForm forContact(ContactDto contact, List<SormasToSormasShareInfoDto> currentShares) {
+		SormasToSormasOptionsForm optionsForm = new SormasToSormasOptionsForm(
 			currentShares,
 			true,
 			Arrays.asList(SormasToSormasOptionsDto.WITH_SAMPLES, SormasToSormasOptionsDto.WITH_IMMUNIZATIONS),
@@ -114,6 +130,26 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_IMMUNIZATIONS)).setValue(s.isWithImmunizations());
 			},
 			null);
+
+		if (contact != null) {
+			optionsForm.setTargetValidator(t -> {
+				if (t == null) {
+					return null;
+				}
+
+				SormasToSormasShareInfoDto caseShareInfo =
+					FacadeProvider.getSormasToSormasShareInfoFacade().getCaseShareInfoByOrganization(contact.getCaze(), t.getId());
+				if (caseShareInfo == null
+					|| (caseShareInfo.getRequestStatus() != ShareRequestStatus.PENDING
+						&& caseShareInfo.getRequestStatus() != ShareRequestStatus.ACCEPTED)) {
+					return I18nProperties.getString(Strings.errorSormasToSormasShareContactWithUnsharedSourceCase);
+				}
+
+				return null;
+			});
+		}
+
+		return optionsForm;
 	}
 
 	public static SormasToSormasOptionsForm forEvent(List<SormasToSormasShareInfoDto> currentShares) {
@@ -179,10 +215,10 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 	@Override
 	protected void addFields() {
-		ComboBox availableServersCombo = addField(SormasToSormasOptionsDto.ORGANIZATION, ComboBox.class);
-		availableServersCombo.setRequired(true);
+		targetCombo = addField(SormasToSormasOptionsDto.ORGANIZATION, ComboBox.class);
+		targetCombo.setRequired(true);
 		List<SormasServerDescriptor> availableServers = FacadeProvider.getSormasToSormasFacade().getAllAvailableServers();
-		availableServersCombo.addItems(availableServers);
+		targetCombo.addItems(availableServers);
 
 		if (hasOptions) {
 
@@ -192,12 +228,27 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 			pseudonymizeSensitiveData.addStyleNames(CssStyles.VSPACE_3);
 
-			availableServersCombo.addValueChangeListener(e -> {
+			targetCombo.addValueChangeListener(e -> {
 				SormasServerDescriptor selectedServer = (SormasServerDescriptor) e.getProperty().getValue();
 
 				if (selectedServer == null) {
+					getContent().removeComponent(TARGET_VALIDATION_ERROR_LOC);
+
 					return;
 				}
+
+				if (targetValidator != null) {
+					String validationMessage = targetValidator.apply(selectedServer);
+
+					if (StringUtils.isNoneBlank(validationMessage)) {
+						Label messageLabel = new Label(VaadinIcons.WARNING.getHtml() + " " + validationMessage, ContentMode.HTML);
+						messageLabel.addStyleNames(LABEL_WHITE_SPACE_NORMAL, VSPACE_4, VSPACE_TOP_5);
+						getContent().addComponent(messageLabel, TARGET_VALIDATION_ERROR_LOC);
+					} else {
+						getContent().removeComponent(TARGET_VALIDATION_ERROR_LOC);
+					}
+				}
+
 				Optional<SormasToSormasShareInfoDto> previousShare = findShareByOrganization(currentShares, selectedServer.getId());
 
 				previousShare.ifPresent(s -> {
@@ -269,6 +320,10 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 		});
 	}
 
+	public void setTargetValidator(Function<SormasServerDescriptor, String> targetValidator) {
+		this.targetValidator = targetValidator;
+	}
+
 	private static Optional<SormasToSormasShareInfoDto> findShareByOrganization(List<SormasToSormasShareInfoDto> shares, String organizationId) {
 		for (SormasToSormasShareInfoDto share : shares) {
 			if (share.getTargetDescriptor().getId().equals(organizationId)) {
@@ -277,5 +332,13 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 		}
 
 		return Optional.empty();
+	}
+
+	public ComboBox getTargetCombo() {
+		return targetCombo;
+	}
+
+	public boolean isTargetValid() {
+		return targetValidator == null || targetValidator.apply((SormasServerDescriptor) targetCombo.getValue()) == null;
 	}
 }

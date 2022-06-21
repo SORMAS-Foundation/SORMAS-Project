@@ -20,6 +20,7 @@ import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.EVE
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventValidationGroupName;
 
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -98,7 +99,8 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	}
 
 	@Override
-	protected void validateEntitiesBeforeShare(List<Event> entities, boolean handOverOwnership) throws SormasToSormasException {
+	protected void validateEntitiesBeforeShare(List<Event> entities, boolean handOverOwnership, String targetOrganizationId)
+		throws SormasToSormasException {
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 		for (Event event : entities) {
 			if (!eventService.isEventEditAllowed(event).equals(EditPermissionType.ALLOWED)) {
@@ -119,7 +121,13 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	protected void validateEntitiesBeforeShare(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {
 		validateEntitiesBeforeShare(
 			shares.stream().map(SormasToSormasShareInfo::getEvent).filter(Objects::nonNull).collect(Collectors.toList()),
-			shares.get(0).isOwnershipHandedOver());
+			shares.get(0).isOwnershipHandedOver(),
+			shares.get(0).getOrganizationId());
+	}
+
+	@Override
+	protected void validateShareRequestBeforeAccept(SormasToSormasShareRequestDto shareRequest) throws SormasToSormasException {
+
 	}
 
 	@Override
