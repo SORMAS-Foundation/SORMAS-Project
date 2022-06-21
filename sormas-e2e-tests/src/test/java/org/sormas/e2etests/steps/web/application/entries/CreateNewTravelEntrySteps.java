@@ -694,7 +694,7 @@ public class CreateNewTravelEntrySteps implements En {
         });
 
     Then(
-        "^I check that all required fields except person fields are mandatory in the new travel entry form$",
+        "^I check that all required fields except person fields are mandatory in the new travel entry form DE specific$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(INPUT_DATA_ERROR_POPUP);
           webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Einreisedatum");
@@ -739,7 +739,7 @@ public class CreateNewTravelEntrySteps implements En {
         });
 
     When(
-        "^I fill all required fields except person-related fields in the new travel entry form$",
+        "^I fill all required fields except person-related fields in the new travel entry form DE specific$",
         () -> {
           travelEntry = travelEntryService.buildGeneratedEntryWithDifferentPointOfEntryDE();
           fillReportDate(travelEntry.getReportDate(), Locale.GERMAN);
@@ -757,7 +757,7 @@ public class CreateNewTravelEntrySteps implements En {
         });
 
     And(
-        "^I fill the person-related required fields in the new entry form$",
+        "^I fill the person-related required fields in the new entry form DE specific$",
         () -> {
           travelEntry = travelEntryService.buildGeneratedEntryWithDifferentPointOfEntryDE();
           fillFirstName(travelEntry.getFirstName());
@@ -766,7 +766,7 @@ public class CreateNewTravelEntrySteps implements En {
         });
 
     Then(
-        "^I check that person-related fields are mandatory in the new entry form$",
+        "^I check that person-related fields are mandatory in the new entry form DE specific$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(INPUT_DATA_ERROR_POPUP);
           webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Vorname");

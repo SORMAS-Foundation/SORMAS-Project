@@ -274,13 +274,13 @@ Feature: Create travel entries
     And I check that new travel entry form contains all the necessary fields
     And I clear report date and disease fields in the new travel entry form
     And I click on Save button from the new travel entry form
-    Then I check that all required fields except person fields are mandatory in the new travel entry form
+    Then I check that all required fields except person fields are mandatory in the new travel entry form DE specific
     And I close input data error popup
-    When I fill all required fields except person-related fields in the new travel entry form
+    When I fill all required fields except person-related fields in the new travel entry form DE specific
     And I click on Save button from the new travel entry form
-    Then I check that person-related fields are mandatory in the new entry form
+    Then I check that person-related fields are mandatory in the new entry form DE specific
     And I close input data error popup
-    And I fill the person-related required fields in the new entry form
+    And I fill the person-related required fields in the new entry form DE specific
 
   @issue=SORDEV-8037 @env_de
   Scenario: Test Add documents and document templates to TravelEntries
