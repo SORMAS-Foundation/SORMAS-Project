@@ -2144,49 +2144,61 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
         UserReferenceDto user = creator.createUser(rdcf).toReference();
         PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
 
-        CaseDataDto caze = creator.createCase(user, rdcf, (c) -> {
-            c.setPerson(person);
-            c.setExternalID("externalId1");
-        });
+        CaseDataDto caseDataDto = creator.createCase(user, person, rdcf);
+        Case caze = getCaseService().getByUuid(caseDataDto.getUuid());
+        getExternalShareInfoService().createAndPersistShareInfo(caze, ExternalShareStatus.SHARED);
 
         CaseFacadeEjbLocal cut = getBean(CaseFacadeEjbLocal.class);
 
         stubFor(
-                post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+                post(urlEqualTo("/export")).withRequestBody(containing(caseDataDto.getUuid()))
                         .withRequestBody(containing("caseUuids"))
                         .willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
 
         cut.setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(),true);
     }
 
-	@Test
-	public void testArchiveAllArchivableCases() {
+    @Test
+    public void testArchiveAllArchivableCases() {
 
-		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserReferenceDto user = creator.createUser(rdcf).toReference();
-		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
+        RDCFEntities rdcf = creator.createRDCFEntities();
+        UserReferenceDto user = creator.createUser(rdcf).toReference();
+        PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
 
-		// One archived case
-		CaseDataDto case1 = creator.createCase(user, person, rdcf);
-		CaseFacadeEjbLocal cut = getBean(CaseFacadeEjbLocal.class);
-		cut.archive(case1.getUuid(), null);
+        // One archived case
+        CaseDataDto case1 = creator.createCase(user, person, rdcf);
+        Case caze1 = getCaseService().getByUuid(case1.getUuid());
+        getExternalShareInfoService().createAndPersistShareInfo(caze1, ExternalShareStatus.SHARED);
 
-		// One other case
-		CaseDataDto case2 = creator.createCase(user, person, rdcf);
+        CaseFacadeEjbLocal cut = getBean(CaseFacadeEjbLocal.class);
+        stubFor(
+                post(urlEqualTo("/export")).withRequestBody(containing(case1.getUuid()))
+                        .withRequestBody(containing("caseUuids"))
+                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+        cut.archive(case1.getUuid(), null);
+        assertTrue(cut.isArchived(case1.getUuid()));
 
-		assertTrue(cut.isArchived(case1.getUuid()));
-		assertFalse(cut.isArchived(case2.getUuid()));
+        // One other case
+        CaseDataDto case2 = creator.createCase(user, person, rdcf);
+        Case caze2 = getCaseService().getByUuid(case2.getUuid());
+        getExternalShareInfoService().createAndPersistShareInfo(caze2, ExternalShareStatus.SHARED);
+        assertFalse(cut.isArchived(case2.getUuid()));
 
-		// Case of "today" shouldn't be archived
-		cut.archiveAllArchivableCases(70, LocalDate.now().plusDays(69));
-		assertTrue(cut.isArchived(case1.getUuid()));
-		assertFalse(cut.isArchived(case2.getUuid()));
+        stubFor(
+                post(urlEqualTo("/export")).withRequestBody(containing(case2.getUuid()))
+                        .withRequestBody(containing("caseUuids"))
+                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-		// Case of "yesterday" should be archived
-		cut.archiveAllArchivableCases(70, LocalDate.now().plusDays(71));
-		assertTrue(cut.isArchived(case1.getUuid()));
-		assertTrue(cut.isArchived(case2.getUuid()));
-	}
+       // Case of "today" shouldn't be archived
+        cut.archiveAllArchivableCases(70, LocalDate.now().plusDays(69));
+        assertTrue(cut.isArchived(case1.getUuid()));
+        assertFalse(cut.isArchived(case2.getUuid()));
+
+        // Case of "yesterday" should be archived
+        cut.archiveAllArchivableCases(70, LocalDate.now().plusDays(71));
+        assertTrue(cut.isArchived(case1.getUuid()));
+        assertTrue(cut.isArchived(case2.getUuid()));
+    }
 
 	@Test
 	public void testCreateInvestigationTask() {

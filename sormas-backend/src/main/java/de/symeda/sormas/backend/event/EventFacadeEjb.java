@@ -162,8 +162,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
 	@EJB
 	private EventParticipantService eventParticipantService;
-    @EJB
-    private EventService eventService;
+	@EJB
+	private EventService eventService;
 	@Resource
 	private ManagedScheduledExecutorService executorService;
 
