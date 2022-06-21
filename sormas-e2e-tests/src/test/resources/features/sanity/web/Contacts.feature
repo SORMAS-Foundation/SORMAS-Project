@@ -818,22 +818,22 @@ Feature: Contacts end to end tests
 
   @env_main @issue=SORDEV-7453
   Scenario: Check contacts order after contact edit
-    When API: I create a new person
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    And API: I create a new contact
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    And API: I create a new contact
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
     Given I log in as a National User
     And I click on the Contacts button from navbar
-    Then I get two last contacts ID
-    And I open contact number 2
-    And I change all contact fields and save
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click on SAVE new contact button
     And I click on the Contacts button from navbar
-    Then I compare previous first contact ID with actually second contact ID
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click on SAVE new contact button
+    And I click on the Contacts button from navbar
+    Then I get two last contacts ID from cases list
+    And I open 2 contact in order from list
+    And I fill general comment in contact edit page with EDITED
+    And I click SAVE button on Edit Contact Page
+    And I click on the Contacts button from navbar
+    Then I compare previous first contact ID on the list with actually second contact ID on list
 
 
 

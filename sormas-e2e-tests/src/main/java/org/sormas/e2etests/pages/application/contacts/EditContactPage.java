@@ -96,6 +96,8 @@ public class EditContactPage {
   public static final By RESPONSIBLE_STATUS_OFFICER_COMBOBOX =
       By.cssSelector(".v-verticallayout [location='contactOfficer'] [role='combobox'] div");
   public static final By GENERAL_COMMENT_TEXT = By.id("additionalDetails");
+  public static final By GENERAL_COMMENT_TEXT_AREA =
+      By.xpath("//textarea[@id='additionalDetails']");
   public static final By SAVE_EDIT_BUTTON = By.id("commit");
   public static final By DISCARD_POPUP_BUTTON = By.cssSelector(".popupContent #discard");
   public static final By FOLLOW_UP_VISITS = By.id("tab-contacts-visits");

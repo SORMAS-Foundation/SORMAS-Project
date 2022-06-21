@@ -181,9 +181,6 @@ public class EditCaseSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   public static final String userDirPath = System.getProperty("user.dir");
 
-  public static String caseID1;
-  public static String caseID2;
-
   @SneakyThrows
   @Inject
   public EditCaseSteps(
@@ -1716,23 +1713,11 @@ public class EditCaseSteps implements En {
               "Delete button is not editable state but it should be since archived entities default value is true!");
           softly.assertAll();
         });
-    Then(
-        "I get two last cases ID",
-        () -> {
-          caseID1 = getCaseIDByIndex(1);
-          caseID2 = getCaseIDByIndex(2);
-        });
-    And(
-        "I open case number {int}",
-        (Integer index) -> {
-          webDriverHelpers.getWebElement(getCaseIDPathByIndex(index)).click();
-          Thread.sleep(5000);
-        });
 
-    Then(
-        "I compare previous first case ID with actually second case ID",
-        () -> {
-          Assert.assertEquals(caseID1, getCaseIDByIndex(2));
+    And(
+        "I fill general comment in case edit page with ([^\"]*)",
+        (String comment) -> {
+          webDriverHelpers.fillInWebElement(EditContactPage.GENERAL_COMMENT_TEXT, comment);
         });
   }
 
@@ -2156,9 +2141,5 @@ public class EditCaseSteps implements En {
 
   private void fillExtraComment(String extraComment) {
     webDriverHelpers.fillInAndLeaveWebElement(EditCasePage.EXTRA_COMMENT_TEXTAREA, extraComment);
-  }
-
-  private String getCaseIDByIndex(int index) {
-    return webDriverHelpers.getTextFromWebElement(getCaseIDPathByIndex(index));
   }
 }
