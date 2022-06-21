@@ -10,10 +10,14 @@ Feature: Login with different type of users
     Examples:
       | user                      |
       | National User             |
+      | National Language User    |
       | Contact Supervisor        |
+      | Surveillance Officer      |
+      | Surveillance Supervisor   |
       | Laboratory Officer        |
       | Point of Entry Supervisor |
-      | Surveillance Officer      |
+      | Admin User                |
+      | Rest AUTOMATION           |
 
   @env_de @LoginDe
   Scenario Outline: Login with <user> user on German Environment
@@ -24,11 +28,14 @@ Feature: Login with different type of users
     Examples:
       | user                      |
       | National User             |
+      | National Language User    |
       | Contact Supervisor        |
+      | Surveillance Officer      |
+      | Surveillance Supervisor   |
       | Laboratory Officer        |
       | Point of Entry Supervisor |
-      | Surveillance Officer      |
-
+      | Admin User                |
+      | Rest AUTOMATION           |
   @issue=SORQA-69 @env_de
   Scenario: Check German language setting
     Given I log in with National User
