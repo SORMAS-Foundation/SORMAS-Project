@@ -818,7 +818,7 @@ Feature: Contacts end to end tests
 
   @issue=SORDEV-6461 @env_main
   Scenario: Test the task type in the contact's new task form
-    Given I log in as a Admin User
+    Given I log in as a National User
     Then I click on the Contacts button from navbar
     And I open the first contact from contacts list
     And I click on the NEW TASK button
