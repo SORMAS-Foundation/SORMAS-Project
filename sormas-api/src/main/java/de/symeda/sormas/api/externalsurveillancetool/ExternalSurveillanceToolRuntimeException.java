@@ -15,17 +15,17 @@
 
 package de.symeda.sormas.api.externalsurveillancetool;
 
-public class ExternalSurveillanceToolException extends Exception {
+public class ExternalSurveillanceToolRuntimeException extends RuntimeException {
 
-	private static final long serialVersionUID = 5120465544006933850L;
+	private static final long serialVersionUID = -3526487657644154163L;
 
 	private String errorCode;
 
-	public ExternalSurveillanceToolException(String message) {
+	public ExternalSurveillanceToolRuntimeException(String message) {
 		super(message);
 	}
 
-	public ExternalSurveillanceToolException(String message, String errorCode) {
+	public ExternalSurveillanceToolRuntimeException(String message, String errorCode) {
 		this(message);
 		this.errorCode = errorCode;
 	}

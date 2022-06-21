@@ -796,3 +796,22 @@ Feature: Contacts end to end tests
     Then I search last created facility
     Then I click on edit button for the last searched facility
     And I archive facility
+
+  @env_main @#8565
+  Scenario: Check an archived contact if its read only
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I open last edited contact by API via URL navigation
+    Then I click on the Archive contact button and confirm popup
+    Then I click on logout button from navbar
+    Then I log in with National User
+    Then I open last edited contact by API via URL navigation
+    Then I check if editable fields are read only for an archived contact

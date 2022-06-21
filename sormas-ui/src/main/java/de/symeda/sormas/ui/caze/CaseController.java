@@ -77,7 +77,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -1162,7 +1162,7 @@ public class CaseController {
 				FacadeProvider.getCaseFacade().delete(caze.getUuid(), deletionDetails);
 			}
 			UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
-		} catch (ExternalSurveillanceToolException e) {
+		} catch (ExternalSurveillanceToolRuntimeException e) {
 			Notification.show(
 				String.format(
 					I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotDeleted),
@@ -1569,7 +1569,7 @@ public class CaseController {
 					for (CaseIndexDto selectedRow : selectedRows) {
 						try {
 							FacadeProvider.getCaseFacade().delete(selectedRow.getUuid(), deleteDetails);
-						} catch (ExternalSurveillanceToolException e) {
+						} catch (ExternalSurveillanceToolRuntimeException e) {
 							countNotDeletedCases++;
 							nonDeletableCases.append(selectedRow.getUuid(), 0, 6).append(", ");
 						}

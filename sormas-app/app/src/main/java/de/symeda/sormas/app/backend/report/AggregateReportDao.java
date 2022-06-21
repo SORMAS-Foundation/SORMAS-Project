@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.utils.AgeGroupUtils;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -55,16 +56,7 @@ public class AggregateReportDao extends AbstractAdoDao<AggregateReport> {
 				diseasesWithReports.add(report.getDisease());
 			}
 
-			Function<AggregateReport, String> diseaseComparator = r -> r.getDisease().toString();
-			Comparator<AggregateReport> comparator = Comparator.comparing(diseaseComparator)
-				.thenComparing(
-					r -> r.getAgeGroup() != null
-						? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
-						: StringUtils.EMPTY)
-				.thenComparing(
-						r -> r.getAgeGroup() != null ? Integer.parseInt(r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0);
-
-			Collections.sort(reports, comparator);
+			sortAggregateReports(reports);
 
 			return reports;
 		} catch (SQLException e) {
@@ -73,7 +65,14 @@ public class AggregateReportDao extends AbstractAdoDao<AggregateReport> {
 		}
 	}
 
-	private AggregateReport build(Disease disease, EpiWeek epiWeek) {
+	public static void sortAggregateReports(List<AggregateReport> reports) {
+		Function<AggregateReport, String> diseaseComparator = r -> r.getDisease().toString();
+		Comparator<AggregateReport> comparator = Comparator.comparing(diseaseComparator)
+			.thenComparing(report -> report.getAgeGroup(), AgeGroupUtils.getComparator());
+		Collections.sort(reports, comparator);
+	}
+
+	public AggregateReport build(Disease disease, EpiWeek epiWeek) {
 		AggregateReport report = super.build();
 
 		User user = ConfigProvider.getUser();
