@@ -30,6 +30,7 @@ import org.sormas.e2etests.entities.pojo.api.Event;
 import org.sormas.e2etests.entities.pojo.api.EventLocation;
 import org.sormas.e2etests.entities.pojo.api.Region;
 import org.sormas.e2etests.entities.pojo.api.ReportingUser;
+import org.sormas.e2etests.entities.pojo.api.chunks.DiseaseVariant;
 import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
@@ -63,6 +64,12 @@ public class EventApiService {
     return Event.builder()
         .uuid(UUID.randomUUID().toString())
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
+        .diseaseVariant(
+            DiseaseVariant.builder()
+                .value("B.1.617.3")
+                .caption("B.1.617.3")
+                .hasDetails(true)
+                .build())
         .reportingUser(
             ReportingUser.builder()
                 .uuid(

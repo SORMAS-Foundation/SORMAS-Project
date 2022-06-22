@@ -36,6 +36,8 @@ public class CreateNewEventPage {
   public static final By EVENT_INVESTIGATION_STATUS_OPTIONS =
       By.cssSelector(".popupContent #eventInvestigationStatus label");
   public static final By DISEASE_COMBOBOX = By.cssSelector(".popupContent #disease div");
+  public static final By DISEASE_VARIANT_COMBOBOX =
+      By.cssSelector(".popupContent #diseaseVariant div");
   public static final By SOURCE_TYPE_COMBOBOX = By.cssSelector(".popupContent #srcType div");
   public static final By TYPE_OF_PLACE_COMBOBOX = By.cssSelector(".popupContent #typeOfPlace div");
   public static final By PRIMARY_MODE_OF_TRANSMISSION_INPUT =

@@ -75,6 +75,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EV
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EXPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTERED_EVENT_LINK_EVENT_FORM;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_DISEASE;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_DISEASE_VARIANT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_REPORTING_USER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_RISK_LEVEL;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_SOURCE_TYPE;
@@ -544,6 +545,11 @@ public class EventDirectorySteps implements En {
           String disease = apiState.getCreatedEvent().getDisease();
           webDriverHelpers.selectFromCombobox(
               FILTER_BY_DISEASE, DiseasesValues.getCaptionForName(disease));
+        });
+    When(
+        "I select {string} Disease Variant filter on Event Directory Page",
+        (String dV) -> {
+          webDriverHelpers.selectFromCombobox(FILTER_BY_DISEASE_VARIANT, dV);
         });
 
     When(
