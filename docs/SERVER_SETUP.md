@@ -148,8 +148,8 @@ Keycloak can be set up in two ways:
 Setting Keycloak up as a standalone installation as described in the [Getting started](https://www.keycloak.org/guides) section of the official guide
 * Make sure to configure Keycloak with PostgreSQL [Database](https://www.keycloak.org/server/db)
 * Set up an [Admin User](https://www.keycloak.org/docs/latest/server_admin/#creating-the-account-remotely)
-* Copy the `themes` folder content to `${KEYCLOAK_HOME}/themes` [Deploying Themes](https://www.keycloak.org/docs/18.0/server_development/#_themes)
-* Deploy the `sormas-keycloak-service-provider` [Using Keycloak Deployer](https://www.keycloak.org/docs/18.0/server_development/#_providers)
+* Copy the `themes` folder content to `${KEYCLOAK_HOME}/themes` as described [here](https://www.keycloak.org/docs/18.0/server_development/#_themes)
+* Deploy the `sormas-keycloak-service-provider` as described [here](https://www.keycloak.org/docs/18.0/server_development/#_providers)
 * Update the `sormas-base/setup/keycloak/SORMAS.json` file by replacing the following placeholders: `${SORMAS_SERVER_URL}`, `${KEYCLOAK_SORMAS_UI_SECRET}`, `${KEYCLOAK_SORMAS_BACKEND_SECRET}`, `${KEYCLOAK_SORMAS_REST_SECRET}`
 * Create the SORMAS Realm by importing `sormas-base/setup/keycloak/SORMAS.json` see [Create a New Realm](https://www.keycloak.org/docs/18.0/server_admin/#proc-creating-a-realm_server_administration_guide)
 * Update the `sormas-*` clients by generating new secrets for them
