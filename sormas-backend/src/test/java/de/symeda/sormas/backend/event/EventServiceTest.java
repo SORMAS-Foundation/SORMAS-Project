@@ -133,8 +133,10 @@ public class EventServiceTest extends AbstractBeanTest {
 
 		ContactDto contact = creator.createContact(rdcf, user.toReference(), contactPerson.toReference());
 
-		EventDto event = creator.createEvent(user.toReference(), contact.getDisease());
-		creator.createEventParticipant(event.toReference(), contactPerson, user.toReference());
+		EventDto eventDto = creator.createEvent(user.toReference(), contact.getDisease());
+		Event event = getEventService().getByUuid(eventDto.getUuid());
+        getExternalShareInfoService().createAndPersistShareInfo(event, ExternalShareStatus.SHARED);
+		creator.createEventParticipant(eventDto.toReference(), contactPerson, user.toReference());
 
 		EventService sut = getEventService();
 
@@ -142,6 +144,11 @@ public class EventServiceTest extends AbstractBeanTest {
 		assertEquals(1, result.size());
 		assertEquals(event.getUuid(), result.get(0).getEventUuid());
 		assertEquals(event.getEventTitle(), result.get(0).getEventTitle());
+
+        stubFor(
+                post(urlEqualTo("/export")).withRequestBody(containing(event.getUuid()))
+                        .withRequestBody(containing("eventUuids"))
+                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
 		// archiving should not have any effect on the export list
 		getEventFacade().archive(Collections.singletonList(event.getUuid()));
@@ -167,8 +174,10 @@ public class EventServiceTest extends AbstractBeanTest {
 
 		CaseDataDto caze = creator.createCase(user.toReference(), contactPerson.toReference(), rdcf);
 
-		EventDto event = creator.createEvent(user.toReference(), caze.getDisease());
-		EventParticipantDto participant = creator.createEventParticipant(event.toReference(), contactPerson, user.toReference());
+		EventDto eventDto = creator.createEvent(user.toReference(), caze.getDisease());
+		Event event = getEventService().getByUuid(eventDto.getUuid());
+		getExternalShareInfoService().createAndPersistShareInfo(event, ExternalShareStatus.SHARED);
+		EventParticipantDto participant = creator.createEventParticipant(eventDto.toReference(), contactPerson, user.toReference());
 		participant.setResultingCase(caze.toReference());
 		getEventParticipantFacade().save(participant);
 
@@ -177,8 +186,13 @@ public class EventServiceTest extends AbstractBeanTest {
 		Long cazeId = getCaseService().getIdByUuid(caze.getUuid());
 		List<EventSummaryDetails> result = sut.getEventSummaryDetailsByCases(Arrays.asList(cazeId));
 		assertEquals(1, result.size());
-		assertEquals(event.getUuid(), result.get(0).getEventUuid());
-		assertEquals(event.getEventTitle(), result.get(0).getEventTitle());
+		assertEquals(eventDto.getUuid(), result.get(0).getEventUuid());
+		assertEquals(eventDto.getEventTitle(), result.get(0).getEventTitle());
+
+        stubFor(
+                post(urlEqualTo("/export")).withRequestBody(containing(event.getUuid()))
+                        .withRequestBody(containing("eventUuids"))
+                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
 		// archiving should not have any effect on the export list
 		getEventFacade().archive(Collections.singletonList(event.getUuid()));
