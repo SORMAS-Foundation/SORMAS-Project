@@ -435,6 +435,27 @@ public class SampleFacadeEjb implements SampleFacade {
 		if (sample.getAssociatedCase() == null && sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCaseContactOrEventParticipant));
 		}
+		else {
+			if (sample.getAssociatedCase() != null) {
+				Case caze = caseService.getByUuid(sample.getAssociatedCase().getUuid());
+				if (caze == null) {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCaseContactOrEventParticipant));
+				}
+			}
+			if (sample.getAssociatedContact() != null) {
+				Contact contact = contactService.getByUuid(sample.getAssociatedContact().getUuid());
+				if (contact == null) {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCaseContactOrEventParticipant));
+				}
+			}
+			if (sample.getAssociatedEventParticipant() != null) {
+				EventParticipant eventParticipant = eventParticipantService.getByUuid(sample.getAssociatedEventParticipant().getUuid());
+				if (eventParticipant == null) {
+					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCaseContactOrEventParticipant));
+				}
+			}
+		}
+
 		if (sample.getSampleDateTime() == null) {
 			throw new ValidationRuntimeException(
 				I18nProperties
@@ -455,10 +476,19 @@ public class SampleFacadeEjb implements SampleFacade {
 				I18nProperties
 					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_PURPOSE)));
 		}
-		if (sample.getSamplePurpose() == SamplePurpose.EXTERNAL && sample.getLab() == null) {
+
+		Facility facility = facilityService.getByUuid(sample.getLab().getUuid());
+		if (sample.getSamplePurpose() == SamplePurpose.EXTERNAL && sample.getLab() == null && facility == null) {
 			throw new ValidationRuntimeException(
 				I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.LAB)));
 		}
+
+		User reportingUser = userService.getByUuid(sample.getReportingUser().getUuid());
+		if(reportingUser == null) {
+			throw new ValidationRuntimeException(
+					I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.REPORTING_USER)));
+		}
+
 	}
 
 	private List<SampleExportDto> getExportList(
