@@ -50,6 +50,7 @@ import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 import org.sormas.e2etests.steps.web.application.entries.CreateNewTravelEntrySteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
+import org.sormas.e2etests.steps.web.application.immunizations.CreateNewImmunizationSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
@@ -223,6 +224,22 @@ public class PersonDirectorySteps implements En {
           String communityName = apiState.getLastCreatedPerson().getAddress().getCommunity();
           webDriverHelpers.selectFromCombobox(
               COMMUNITY_PERSON_COMBOBOX, CommunityValues.getNameValueForUuid(communityName));
+        });
+    When(
+        "I filter by Person full name from Immunization on Person Directory Page",
+        () -> {
+          TimeUnit.SECONDS.sleep(3); // waiting for grid refresh
+          webDriverHelpers.fillAndSubmitInWebElement(
+              MULTIPLE_OPTIONS_SEARCH_INPUT,
+              CreateNewImmunizationSteps.immunization.getFirstName()
+                  + " "
+                  + CreateNewImmunizationSteps.immunization.getLastName());
+        });
+    When(
+        "I click Immunization aggregation button on Person Directory Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(IMMUNIZATION_AGGREGATION_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     Then(

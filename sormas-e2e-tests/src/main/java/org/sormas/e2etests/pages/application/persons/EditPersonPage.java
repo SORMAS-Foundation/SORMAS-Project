@@ -119,6 +119,24 @@ public class EditPersonPage {
       By.cssSelector("#tab-events-eventparticipants");
   public static final By NO_TRAVEL_ENTRY_LABEL_DE =
       By.xpath("//div[text()=\"Es gibt keine Einreisen f\u00FCr diese Person\"]");
+  public static final By IMMUNIZATION_ID_LABEL =
+      By.xpath(
+          "(//div[@class='v-label v-widget bold v-label-bold uppercase v-label-uppercase v-label-undef-w'])[1]");
+  public static final By IMMUNIZATION_DISEASE_LABEL =
+      By.xpath(
+          "(//div[@class='v-label v-widget bold v-label-bold uppercase v-label-uppercase v-label-undef-w'])[2]");
+  public static final By MEANS_OF_IMMUNIZATION_LABEL =
+      By.xpath(
+          "(//div[@location='immunizations']//div[@class=\"v-label v-widget v-label-undef-w\"])[1]");
+  public static final By IMMUNIZATION_STATUS_LABEL =
+      By.xpath(
+          "(//div[@location='immunizations']//div[@class=\"v-label v-widget v-label-undef-w\"])[2]");
+  public static final By MANAGEMENT_STATUS_LABEL =
+      By.xpath(
+          "(//div[@location='immunizations']//div[@class=\"v-label v-widget v-label-undef-w\"])[3]");
+  public static final By IMMUNIZATION_PERIOD_LABEL =
+      By.xpath(
+          "(//div[@location='immunizations']//div[@class=\"v-label v-widget v-label-undef-w\"])[4]");
   public static final By FACILITY_CONTACT_PERSON_FIRST_NAME_CASE_PERSON_INPUT =
       By.cssSelector("#contactPersonFirstName");
   public static final By FACILITY_CONTACT_PERSON_LAST_NAME_CASE_PERSON_INPUT =

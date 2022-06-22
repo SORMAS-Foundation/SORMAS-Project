@@ -2,6 +2,7 @@ package org.sormas.e2etests.steps.web.application.immunizations;
 
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SAVE_EDIT_BUTTON;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.*;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.ACTION_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.ARCHIVE_DEARCHIVE_BUTTON;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.BUTTONS_IN_VACCINATIONS_LOCATION;
@@ -33,6 +34,7 @@ import static org.sormas.e2etests.pages.application.immunizations.EditImmunizati
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.VACCINATION_NAME_HEADER;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.VACCINATION_TYPE_HEADER;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.getVaccinationByIndex;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.SAMPLE_DELETION_POPUP_YES_BUTTON;
 
@@ -273,6 +275,10 @@ public class EditImmunizationSteps implements En {
         .facilityCategory(webDriverHelpers.getValueFromWebElement(FACILITY_CATEGORY_INPUT))
         .facilityType(webDriverHelpers.getValueFromWebElement(FACILITY_TYPE_INPUT))
         .facility(webDriverHelpers.getValueFromWebElement(FACILITY_COMBOBOX_IMMUNIZATION_INPUT))
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .managementStatus(
+            webDriverHelpers.getValueFromWebElement(IMMUNIZATION_MANAGEMENT_STATUS_INPUT))
+        .immunizationStatus(webDriverHelpers.getValueFromWebElement(IMMUNIZATION_STATUS_INPUT))
         .build();
   }
 

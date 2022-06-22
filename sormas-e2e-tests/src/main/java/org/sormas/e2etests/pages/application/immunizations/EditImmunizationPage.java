@@ -18,12 +18,12 @@ public class EditImmunizationPage {
   public static final By FACILITY_CATEGORY_INPUT = By.cssSelector("#typeGroup input");
   public static final By FACILITY_TYPE_INPUT = By.cssSelector("#facilityType input");
   public static final By IMMUNIZATION_PERSON_TAB = By.cssSelector("div#tab-immunizations-person");
-  public static final By NEW_ENTRY_BUTTON = By.id("actionNewEntry");
-  public static final By NUMBER_OF_DOSES = By.id("numberOfDoses");
-  public static final By POPUP_MESSAGE = By.xpath("//div[@class='popupContent']//p");
   public static final By IMMUNIZATION_MANAGEMENT_STATUS_INPUT =
       By.cssSelector("#immunizationManagementStatus input");
   public static final By IMMUNIZATION_STATUS_INPUT = By.cssSelector("#immunizationStatus input");
+  public static final By NEW_ENTRY_BUTTON = By.id("actionNewEntry");
+  public static final By NUMBER_OF_DOSES = By.id("numberOfDoses");
+  public static final By POPUP_MESSAGE = By.xpath("//div[@class='popupContent']//p");
   public static final By BUTTONS_IN_VACCINATIONS_LOCATION =
       By.xpath("//div[contains(@location,\"vaccinations\")]//span[@class=\"v-button-wrap\"]");
   public static final By DELETE_VACCINATION_BUTTON = By.cssSelector(".popupContent #delete");
