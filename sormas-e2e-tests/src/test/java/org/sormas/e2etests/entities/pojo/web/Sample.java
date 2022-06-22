@@ -18,14 +18,13 @@
 
 package org.sormas.e2etests.entities.pojo.web;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Value;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 @Value
 @AllArgsConstructor

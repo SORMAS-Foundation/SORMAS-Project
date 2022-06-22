@@ -53,8 +53,14 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACIL
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACILITY_TYPE_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FIRST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.HOUSE_NUMBER_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.IMMUNIZATION_DISEASE_LABEL;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.IMMUNIZATION_ID_LABEL;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.IMMUNIZATION_PERIOD_LABEL;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.IMMUNIZATION_STATUS_LABEL;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.INVALID_DATA_ERROR;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.LAST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.MANAGEMENT_STATUS_LABEL;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.MEANS_OF_IMMUNIZATION_LABEL;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.NAMES_OF_GUARDIANS_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.NO_TRAVEL_ENTRY_LABEL_DE;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_CONTACT_DETAILS_CONTACT_INFORMATION_INPUT;
@@ -98,6 +104,7 @@ import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
+import org.sormas.e2etests.steps.web.application.immunizations.EditImmunizationSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
@@ -215,6 +222,55 @@ public class EditPersonSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SEE_CASES_FOR_PERSON_BUTTON);
           //          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
           //          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+        });
+    Then(
+        "I check if data of created immunization is in Immunization tab on Edit Person Page",
+        () -> {
+          String textFromLabel;
+          String[] values;
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_ID_LABEL),
+              EditImmunizationSteps.collectedImmunization.getUuid().substring(0, 6).toUpperCase(),
+              "Immunization Id label is different than expected");
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_DISEASE_LABEL),
+              EditImmunizationSteps.collectedImmunization.getDisease().toUpperCase(),
+              "Immunization Disease label is different than expected");
+          textFromLabel = webDriverHelpers.getTextFromWebElement(MEANS_OF_IMMUNIZATION_LABEL);
+          values = textFromLabel.split(":");
+          softly.assertEquals(
+              values[0],
+              "Means of immunization",
+              "Means of immunization label is different than expected");
+          softly.assertEquals(
+              values[1].trim(),
+              EditImmunizationSteps.collectedImmunization.getMeansOfImmunization(),
+              "Means of immunization value is different than expected");
+          textFromLabel = webDriverHelpers.getTextFromWebElement(IMMUNIZATION_STATUS_LABEL);
+          values = textFromLabel.split(":");
+          softly.assertEquals(
+              values[0],
+              "Immunization status",
+              "Immunization status label is different than expected");
+          softly.assertEquals(
+              values[1].trim(),
+              EditImmunizationSteps.collectedImmunization.getImmunizationStatus(),
+              "Immunization status value is different than expected");
+          textFromLabel = webDriverHelpers.getTextFromWebElement(MANAGEMENT_STATUS_LABEL);
+          values = textFromLabel.split(":");
+          softly.assertEquals(
+              values[0], "Management status", "Management status label is different than expected");
+          softly.assertEquals(
+              values[1].trim(),
+              EditImmunizationSteps.collectedImmunization.getManagementStatus(),
+              "Management status value is different than expected");
+          textFromLabel = webDriverHelpers.getTextFromWebElement(IMMUNIZATION_PERIOD_LABEL);
+          values = textFromLabel.split(":");
+          softly.assertEquals(
+              values[0],
+              "Immunization period",
+              "Immunization period label is different than expected");
+          softly.assertAll();
         });
 
     Then(

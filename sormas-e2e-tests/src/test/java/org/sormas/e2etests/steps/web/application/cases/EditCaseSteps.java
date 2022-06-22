@@ -18,49 +18,6 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
-import cucumber.api.java8.En;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.openxml4j.opc.OPCPackage;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.sormas.e2etests.common.DataOperations;
-import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.entities.pojo.web.Case;
-import org.sormas.e2etests.entities.pojo.web.QuarantineOrder;
-import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
-import org.sormas.e2etests.entities.services.CaseDocumentService;
-import org.sormas.e2etests.entities.services.CaseService;
-import org.sormas.e2etests.enums.CaseClassification;
-import org.sormas.e2etests.enums.CaseOutcome;
-import org.sormas.e2etests.enums.YesNoUnknownOptions;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
-import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
-import org.sormas.e2etests.helpers.AssertHelpers;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.NavBarPage;
-import org.sormas.e2etests.pages.application.cases.EditCasePage;
-import org.sormas.e2etests.pages.application.contacts.EditContactPage;
-import org.sormas.e2etests.pages.application.events.EditEventPage;
-import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
-import org.testng.Assert;
-import org.testng.asserts.SoftAssert;
-
-import javax.inject.Inject;
-import java.io.File;
-import java.io.FileInputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import static org.sormas.e2etests.enums.CaseOutcome.DECEASED;
 import static org.sormas.e2etests.enums.CaseOutcome.FACILITY_OTHER;
 import static org.sormas.e2etests.enums.CaseOutcome.INVESTIGATION_DISCARDED;

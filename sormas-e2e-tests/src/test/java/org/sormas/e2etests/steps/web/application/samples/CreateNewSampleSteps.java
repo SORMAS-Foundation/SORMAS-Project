@@ -18,34 +18,6 @@
 
 package org.sormas.e2etests.steps.web.application.samples;
 
-import com.github.javafaker.Faker;
-import cucumber.api.java8.En;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.entities.pojo.web.Sample;
-import org.sormas.e2etests.entities.pojo.web.SampleAdditionalTest;
-import org.sormas.e2etests.entities.services.SampleAdditionalTestService;
-import org.sormas.e2etests.entities.services.SampleService;
-import org.sormas.e2etests.enums.PathogenTestResults;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.steps.BaseSteps;
-import org.testng.asserts.SoftAssert;
-
-import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_DATE_AND_TIME_OF_RESULT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_DATE_OF_COLLECTED_SAMPLE;
