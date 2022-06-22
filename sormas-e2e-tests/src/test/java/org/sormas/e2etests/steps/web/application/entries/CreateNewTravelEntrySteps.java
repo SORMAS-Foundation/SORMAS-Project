@@ -905,6 +905,7 @@ public class CreateNewTravelEntrySteps implements En {
   }
 
   private TravelEntry collectTravelEntryData() {
+    System.out.println(webDriverHelpers.getValueFromWebElement(UUID_INPUT));
     return TravelEntry.builder()
         .disease(webDriverHelpers.getValueFromCombobox(EditTravelEntryPage.DISEASE_COMBOBOX))
         .responsibleRegion(
@@ -946,7 +947,7 @@ public class CreateNewTravelEntrySteps implements En {
         .firstName(webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT))
         .lastName(webDriverHelpers.getValueFromWebElement(LAST_NAME_INPUT))
         .sex(webDriverHelpers.getValueFromCombobox(EditTravelEntryPage.SEX_COMBOBOX))
-        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .personUuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .build();
   }
 

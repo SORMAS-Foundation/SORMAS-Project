@@ -149,6 +149,12 @@ public class PersonDirectorySteps implements En {
                         webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
                         number.intValue(),
                         "Number of displayed cases is not correct")));
+    Then(
+        "I click on Travel Entry aggrgation button in Person Directory for DE specific",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(TRAVEL_ENTRY_AGGREGATION_BUTTON_DE);
+          TimeUnit.SECONDS.sleep(2);
+        });
 
     Then(
         "I fill Year of birth filter in Persons with the year of the last created person via API",
@@ -184,7 +190,7 @@ public class PersonDirectorySteps implements En {
         () -> {
           String personUUID =
               dataOperations.getPartialUuidFromAssociatedLink(
-                  CreateNewTravelEntrySteps.aTravelEntry.getUuid());
+                  CreateNewTravelEntrySteps.collectTravelEntryPersonUuid);
           webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, personUUID);
         });
 
@@ -365,6 +371,7 @@ public class PersonDirectorySteps implements En {
         "I click on first person in person directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(By.cssSelector("[role='gridcell'] a"));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(

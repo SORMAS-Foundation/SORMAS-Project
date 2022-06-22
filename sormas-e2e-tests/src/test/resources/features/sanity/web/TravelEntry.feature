@@ -321,3 +321,20 @@ Feature: Create travel entries
     Then I check if generated document based on "ExampleDocumentTemplateTravelEntry.docx" appeared in Documents tab in Edit Travel Entry directory
     And I check if downloaded file is correct for "ExampleDocumentTemplateTravelEntry.docx" in Edit Travel Entry directory
     And I delete downloaded file created from "ExampleDocumentTemplateTravelEntry.docx" Document Template for Travel Entry
+
+  @issue=SORDEV-7160 @env_de
+  Scenario: Test TravelEntries III: TravelEntry list for person forms
+    Given I log in as a National User
+    And I click on the Entries button from navbar
+    And I click on the New Travel Entry button from Travel Entries directory
+    When I fill the required fields in a new travel entry form
+    And I click on Save button from the new travel entry form
+    Then I check the created data is correctly displayed on Edit travel entry page for DE version
+    And I navigate to person tab in Edit travel entry page
+    And I collect the Travel Entry person UUID displayed on Travel Entry Person page
+    When I click on the Persons button from navbar
+    And I fill UUID of the collected person from last created Travel Entry
+    Then I apply on the APPLY FILTERS button
+    And I click on Travel Entry aggrgation button in Person Directory for DE specific
+    And I click on first person in person directory
+    Then I check if data of created Travel Entry is in Travel Entry tab on Edit Person Page for De specific
