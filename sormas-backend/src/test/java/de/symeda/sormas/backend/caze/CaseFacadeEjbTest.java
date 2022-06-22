@@ -2100,65 +2100,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
     @Test
-    public void testSetArchiveInExternalSurveillanceToolForEntity_WithProperEntity() throws ExternalSurveillanceToolException {
-        RDCF rdcf = creator.createRDCF();
-        UserReferenceDto user = creator.createUser(rdcf).toReference();
-        PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
-
-        CaseDataDto caze = creator.createCase(user, person, rdcf);
-        Case case1 = getCaseService().getByUuid(caze.getUuid());
-        getExternalShareInfoService().createAndPersistShareInfo(case1, ExternalShareStatus.SHARED);
-        CaseFacadeEjbLocal cut = getBean(CaseFacadeEjbLocal.class);
-
-        stubFor(
-                post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
-                        .withRequestBody(containing("caseUuids"))
-                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
-
-        cut.setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true);
-        wireMockRule.verify(exactly(1), postRequestedFor(urlEqualTo("/export")));
-    }
-
-    @Test
-    public void testSetArchiveInExternalSurveillanceToolForEntity_WithoutProperEntity() throws ExternalSurveillanceToolException {
-        RDCF rdcf = creator.createRDCF();
-        UserReferenceDto user = creator.createUser(rdcf).toReference();
-        PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
-
-        CaseDataDto caze = creator.createCase(user,person, rdcf);
-        CaseFacadeEjbLocal cut = getBean(CaseFacadeEjbLocal.class);
-        
-        stubFor(
-                post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
-                        .withRequestBody(containing("caseUuids"))
-                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
-
-        //the case does not have an externalId set and after the filtering the sendCases will not be called
-        cut.setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true);
-        wireMockRule.verify(exactly(0), postRequestedFor(urlEqualTo("/export")));
-	}
-
-    @Test(expected = ExternalSurveillanceToolException.class)
-    public void testSetArchiveInExternalSurveillanceToolForEntity_Exception() throws ExternalSurveillanceToolException {
-        RDCF rdcf = creator.createRDCF();
-        UserReferenceDto user = creator.createUser(rdcf).toReference();
-        PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
-
-        CaseDataDto caseDataDto = creator.createCase(user, person, rdcf);
-        Case caze = getCaseService().getByUuid(caseDataDto.getUuid());
-        getExternalShareInfoService().createAndPersistShareInfo(caze, ExternalShareStatus.SHARED);
-
-        CaseFacadeEjbLocal cut = getBean(CaseFacadeEjbLocal.class);
-
-        stubFor(
-                post(urlEqualTo("/export")).withRequestBody(containing(caseDataDto.getUuid()))
-                        .withRequestBody(containing("caseUuids"))
-                        .willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
-
-        cut.setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(),true);
-    }
-
-    @Test
     public void testArchiveAllArchivableCases() {
 
         RDCFEntities rdcf = creator.createRDCFEntities();
