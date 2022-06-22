@@ -925,3 +925,18 @@ Feature: Create events
     Then I log in with National User
     Then I am accessing the event tab using the created event via api
     Then I check if editable fields are read only for an archived event
+
+  @issue=SORDEV-7094 @env_main
+  Scenario Outline: Test Event identification source fields
+    Given I log in with National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with event identification source "<name>"
+    And I back to the Event tab
+    Then I check that checkbox Event Identification source with selected "<name>" have HTML value: "checked"
+
+    Examples:
+      | name             |
+      | UNKNOWN          |
+      | BACKWARD-TRACING |
+      | FORWARD-TRACING  |
