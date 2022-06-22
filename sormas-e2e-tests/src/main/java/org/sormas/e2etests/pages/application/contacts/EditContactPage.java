@@ -163,8 +163,8 @@ public class EditContactPage {
   public static final By COMMENTS_ON_TASK_TITLE = By.cssSelector("[location='creatorComment']");
   public static final By SAVE_NEW_TASK_BUTTON = By.cssSelector(".popupContent #commit");
   public static final By INPUT_DATA_ERROR_POPUP =
-          By.xpath(
-                  "//div[@class='v-Notification error v-Notification-error']//div[contains(@class,'popupContent')]");
+      By.xpath(
+          "//div[@class='v-Notification error v-Notification-error']//div[contains(@class,'popupContent')]");
 
   public static By getByEventIndex(int index) {
     return By.xpath(
@@ -183,5 +183,4 @@ public class EditContactPage {
   public static By getContactIDPathByIndex(int index) {
     return By.xpath(String.format("//table/tbody/tr[%s]/td[1]/a", index));
   }
-
 }
