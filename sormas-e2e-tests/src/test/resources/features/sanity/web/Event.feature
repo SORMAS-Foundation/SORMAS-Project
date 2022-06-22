@@ -961,3 +961,22 @@ Feature: Create events
     And I check that number of displayed Event results is 0
     And I select "B.1.617.3" Disease Variant filter on Event Directory Page
     And I apply on the APPLY FILTERS button from Event
+
+  @issue=SORDEV-7467 @env_main
+  Scenario Outline: Test Allow surveillance supervisors and contact supervisors to access bulk-edition in the event directory
+    Given I log in as a <user>
+    Then I click on the Events button from navbar
+    And I click on the More button on Event directory page
+    And I click Enter Bulk Edit Mode on Event directory page
+    And I click on Bulk Actions combobox on Event Directory Page
+    And I check that Edit option is visible in Bulk Actions dropdown
+    And I check that Group option is visible in Bulk Actions dropdown
+    And I check that Archive option is visible in Bulk Actions dropdown
+    And I check that Delete option is not visible in Bulk Actions dropdown
+
+    Examples:
+      | user                      |
+      | Contact Supervisor        |
+      | Surveillance Supervisor   |
+
+
