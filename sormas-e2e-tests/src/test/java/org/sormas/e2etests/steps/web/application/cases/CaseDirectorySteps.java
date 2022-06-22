@@ -1047,7 +1047,10 @@ public class CaseDirectorySteps implements En {
     Then(
         "I compare previous first case ID on the list with actually second case ID on list",
         () -> {
-          Assert.assertEquals(caseID1, getCaseIDByIndex(2));
+          Assert.assertEquals(
+              caseID1,
+              getCaseIDByIndex(2),
+              "Edited case do not move previous first case to second place on list.");
         });
   }
 

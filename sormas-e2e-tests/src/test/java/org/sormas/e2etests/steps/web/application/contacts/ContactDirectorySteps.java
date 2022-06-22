@@ -990,7 +990,10 @@ public class ContactDirectorySteps implements En {
     Then(
         "I compare previous first contact ID on the list with actually second contact ID on list",
         () -> {
-          org.junit.Assert.assertEquals(contactID1, getContactIDByIndex(2));
+          Assert.assertEquals(
+              contactID1,
+              getContactIDByIndex(2),
+              "Edited contact do not move previous first contact to second place on list.");
         });
   }
 
