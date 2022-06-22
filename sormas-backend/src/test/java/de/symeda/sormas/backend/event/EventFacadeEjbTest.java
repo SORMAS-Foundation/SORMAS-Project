@@ -17,9 +17,7 @@ package de.symeda.sormas.backend.event;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
-import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
@@ -47,7 +45,6 @@ import java.util.List;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.backend.MockProducer;
 import org.apache.http.HttpStatus;
@@ -277,75 +274,6 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		// List should have one entry
 		assertThat(results, Matchers.hasSize(1));
 	}
-
-
-    @Test
-    public void testSetArchiveInExternalSurveillanceToolForEntity_WithProperEntity() throws ExternalSurveillanceToolException {
-        RDCF rdcf = creator.createRDCF();
-        UserReferenceDto user = creator.createUser(rdcf).toReference();
-
-        EventDto eventDto = creator.createEvent(
-                EventStatus.SIGNAL,
-                EventInvestigationStatus.PENDING,
-                "",
-                "",
-                "",
-                "",
-                "",
-                TypeOfPlace.FACILITY,
-                new Date(),
-                new Date(),
-                user,
-                user,
-                Disease.DENGUE,
-                rdcf.district);
-
-        Event event = getEventService().getByUuid(eventDto.getUuid());
-        getExternalShareInfoService().createAndPersistShareInfo(event, ExternalShareStatus.SHARED);
-        EventFacadeEjbLocal cut = getBean(EventFacadeEjbLocal.class);
-
-        stubFor(
-                post(urlEqualTo("/export")).withRequestBody(containing(event.getUuid()))
-                        .withRequestBody(containing("eventUuids"))
-                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
-
-        cut.setArchiveInExternalSurveillanceToolForEntity(event.getUuid(), false);
-        wireMockRule.verify(exactly(1), postRequestedFor(urlEqualTo("/export")));
-    }
-
-    @Test(expected = ExternalSurveillanceToolException.class)
-    public void testSetArchiveInExternalSurveillanceToolForEntity_Exception() throws ExternalSurveillanceToolException {
-        RDCF rdcf = creator.createRDCF();
-        UserReferenceDto user = creator.createUser(rdcf).toReference();
-
-        EventDto eventDto = creator.createEvent(
-                EventStatus.SIGNAL,
-                EventInvestigationStatus.PENDING,
-                "",
-                "",
-                "",
-                "",
-                "",
-                TypeOfPlace.FACILITY,
-                new Date(),
-                new Date(),
-                user,
-                user,
-                Disease.DENGUE,
-                rdcf.district);
-
-        Event event = getEventService().getByUuid(eventDto.getUuid());
-        getExternalShareInfoService().createAndPersistShareInfo(event, ExternalShareStatus.SHARED);
-
-        EventFacadeEjbLocal cut = getBean(EventFacadeEjbLocal.class);
-
-        stubFor(
-                post(urlEqualTo("/export")).withRequestBody(containing(eventDto.getUuid()))
-                        .withRequestBody(containing("eventUuids"))
-                        .willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
-
-        cut.setArchiveInExternalSurveillanceToolForEntity(eventDto.getUuid(), true);
-    }
 
 	@Test
 	public void testArchiveOrDearchiveEvent() {
