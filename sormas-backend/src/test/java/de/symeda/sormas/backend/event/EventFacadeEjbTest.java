@@ -284,7 +284,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
         RDCF rdcf = creator.createRDCF();
         UserReferenceDto user = creator.createUser(rdcf).toReference();
 
-        EventDto event = creator.createEvent(
+        EventDto eventDto = creator.createEvent(
                 EventStatus.SIGNAL,
                 EventInvestigationStatus.PENDING,
                 "",
@@ -300,8 +300,9 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
                 Disease.DENGUE,
                 rdcf.district);
 
+        Event event = getEventService().getByUuid(eventDto.getUuid());
+        getExternalShareInfoService().createAndPersistShareInfo(event, ExternalShareStatus.SHARED);
         EventFacadeEjbLocal cut = getBean(EventFacadeEjbLocal.class);
-        cut.archive(event.getUuid(), null);
 
         stubFor(
                 post(urlEqualTo("/export")).withRequestBody(containing(event.getUuid()))
@@ -317,7 +318,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
         RDCF rdcf = creator.createRDCF();
         UserReferenceDto user = creator.createUser(rdcf).toReference();
 
-        EventDto event = creator.createEvent(
+        EventDto eventDto = creator.createEvent(
                 EventStatus.SIGNAL,
                 EventInvestigationStatus.PENDING,
                 "",
@@ -333,14 +334,17 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
                 Disease.DENGUE,
                 rdcf.district);
 
+        Event event = getEventService().getByUuid(eventDto.getUuid());
+        getExternalShareInfoService().createAndPersistShareInfo(event, ExternalShareStatus.SHARED);
+
         EventFacadeEjbLocal cut = getBean(EventFacadeEjbLocal.class);
 
         stubFor(
-                post(urlEqualTo("/export")).withRequestBody(containing(event.getUuid()))
+                post(urlEqualTo("/export")).withRequestBody(containing(eventDto.getUuid()))
                         .withRequestBody(containing("eventUuids"))
                         .willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
 
-        cut.setArchiveInExternalSurveillanceToolForEntity(event.getUuid(), true);
+        cut.setArchiveInExternalSurveillanceToolForEntity(eventDto.getUuid(), true);
     }
 
 	@Test
@@ -353,7 +357,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			"Surv",
 			"Sup",
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
-		EventDto event = creator.createEvent(
+		EventDto eventDto = creator.createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
 			"Title",
@@ -369,7 +373,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			Disease.EVD,
 			rdcf.district);
 		PersonDto eventPerson = creator.createPerson("Event", "Person");
-		creator.createEventParticipant(event.toReference(), eventPerson, "Description", user.toReference());
+		creator.createEventParticipant(eventDto.toReference(), eventPerson, "Description", user.toReference());
 		Date testStartDate = new Date();
 
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 1
@@ -378,7 +382,15 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getEventParticipantFacade().getAllActiveEventParticipantsAfter(null).size());
 		assertEquals(1, getEventParticipantFacade().getAllActiveUuids().size());
 
-		getEventFacade().archive(event.getUuid(), null);
+        stubFor(
+                post(urlEqualTo("/export")).withRequestBody(containing(eventDto.getUuid()))
+                        .withRequestBody(containing("eventUuids"))
+                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+        Event event1 = getEventService().getByUuid(eventDto.getUuid());
+        getExternalShareInfoService().createAndPersistShareInfo(event1, ExternalShareStatus.SHARED);
+
+		getEventFacade().archive(eventDto.getUuid(), null);
 
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 0
 		assertEquals(0, getEventFacade().getAllAfter(null).size());
@@ -389,7 +401,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		// getArchivedUuidsSince should return length 1
 		assertEquals(1, getEventFacade().getArchivedUuidsSince(testStartDate).size());
 
-		getEventFacade().dearchive(Collections.singletonList(event.getUuid()), null);
+		getEventFacade().dearchive(Collections.singletonList(eventDto.getUuid()), null);
 
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 1
 		assertEquals(1, getEventFacade().getAllAfter(null).size());
@@ -409,7 +421,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		UserReferenceDto user = creator.createUser(rdcfEntities).toReference();
 
 		// One archived event
-		EventDto event1 = creator.createEvent(
+		EventDto eventDto1 = creator.createEvent(
 			EventStatus.EVENT,
 			EventInvestigationStatus.PENDING,
 			"",
@@ -424,11 +436,20 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			user,
 			Disease.ANTHRAX,
 			rdcf.district);
+
+        Event event1 = getEventService().getByUuid(eventDto1.getUuid());
+        getExternalShareInfoService().createAndPersistShareInfo(event1, ExternalShareStatus.SHARED);
 		EventFacadeEjbLocal cut = getBean(EventFacadeEjbLocal.class);
-		cut.archive(event1.getUuid(), null);
+
+        stubFor(
+                post(urlEqualTo("/export")).withRequestBody(containing(eventDto1.getUuid()))
+                        .withRequestBody(containing("eventUuids"))
+                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+		cut.archive(eventDto1.getUuid(), null);
 
 		// One other event
-		EventDto event2 = creator.createEvent(
+		EventDto eventDto2 = creator.createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
 			"",
@@ -444,18 +465,26 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			Disease.DENGUE,
 			rdcf.district);
 
-		assertTrue(cut.isArchived(event1.getUuid()));
-		assertFalse(cut.isArchived(event2.getUuid()));
+		assertTrue(cut.isArchived(eventDto1.getUuid()));
+		assertFalse(cut.isArchived(eventDto2.getUuid()));
+
+        Event event2 = getEventService().getByUuid(eventDto2.getUuid());
+        getExternalShareInfoService().createAndPersistShareInfo(event2, ExternalShareStatus.SHARED);
+
+        stubFor(
+                post(urlEqualTo("/export")).withRequestBody(containing(eventDto2.getUuid()))
+                        .withRequestBody(containing("eventUuids"))
+                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
 		// Event of "today" shouldn't be archived
 		cut.archiveAllArchivableEvents(70, LocalDate.now().plusDays(69));
-		assertTrue(cut.isArchived(event1.getUuid()));
-		assertFalse(cut.isArchived(event2.getUuid()));
+		assertTrue(cut.isArchived(eventDto1.getUuid()));
+		assertFalse(cut.isArchived(eventDto2.getUuid()));
 
 		// Event of "yesterday" should be archived
 		cut.archiveAllArchivableEvents(70, LocalDate.now().plusDays(71));
-		assertTrue(cut.isArchived(event1.getUuid()));
-		assertTrue(cut.isArchived(event2.getUuid()));
+		assertTrue(cut.isArchived(eventDto1.getUuid()));
+		assertTrue(cut.isArchived(eventDto2.getUuid()));
 	}
 
 	@Test
