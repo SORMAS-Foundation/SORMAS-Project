@@ -20,7 +20,7 @@ import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_4;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_5;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -42,10 +42,12 @@ import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -78,8 +80,8 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 	private ComboBox targetCombo;
 
-	public static SormasToSormasOptionsForm forCase(List<SormasToSormasShareInfoDto> currentShares) {
-		return new SormasToSormasOptionsForm(
+	public static SormasToSormasOptionsForm forCase(CaseDataDto caze, List<SormasToSormasShareInfoDto> currentShares) {
+		SormasToSormasOptionsForm optionsForm = new SormasToSormasOptionsForm(
 			currentShares,
 			true,
 			Arrays.asList(
@@ -119,6 +121,28 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 					SormasToSormasOptionsDto.WITH_IMMUNIZATIONS,
 					Boolean.TRUE);
 			});
+
+		if (caze != null) {
+			// in case of bulk send, only backend validation is possible
+			optionsForm.setTargetValidator(t -> {
+				if (t == null) {
+					return null;
+				}
+
+				String targetOrganizationId = t.getId();
+
+				SormasToSormasShareInfoDto caseShareInfo =
+					FacadeProvider.getSormasToSormasShareInfoFacade().getCaseShareInfoByOrganization(caze.toReference(), targetOrganizationId);
+
+				if (caseShareInfo != null && caseShareInfo.getRequestStatus() == ShareRequestStatus.PENDING) {
+					return I18nProperties.getString(Strings.errorSormasToSormasExistingPendingRequest);
+				}
+
+				return null;
+			});
+		}
+
+		return optionsForm;
 	}
 
 	public static SormasToSormasOptionsForm forContact(ContactDto contact, List<SormasToSormasShareInfoDto> currentShares) {
@@ -133,6 +157,7 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 			null);
 
 		if (contact != null) {
+			// in case of bulk send, only backend validation is possible
 			optionsForm.setTargetValidator(t -> {
 				if (t == null) {
 					return null;
@@ -152,6 +177,13 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 					}
 				}
 
+				SormasToSormasShareInfoDto contactShareInfo =
+					FacadeProvider.getSormasToSormasShareInfoFacade().getContactShareInfoByOrganization(contact.toReference(), targetOrganizationId);
+
+				if (contactShareInfo != null && contactShareInfo.getRequestStatus() == ShareRequestStatus.PENDING) {
+					return I18nProperties.getString(Strings.errorSormasToSormasExistingPendingRequest);
+				}
+
 				return null;
 			});
 		}
@@ -159,8 +191,8 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 		return optionsForm;
 	}
 
-	public static SormasToSormasOptionsForm forEvent(List<SormasToSormasShareInfoDto> currentShares) {
-		return new SormasToSormasOptionsForm(
+	public static SormasToSormasOptionsForm forEvent(EventDto event, List<SormasToSormasShareInfoDto> currentShares) {
+		SormasToSormasOptionsForm optionsForm = new SormasToSormasOptionsForm(
 			currentShares,
 			true,
 			Arrays.asList(
@@ -187,6 +219,26 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 					Boolean.TRUE,
 					true);
 			});
+
+		optionsForm.setTargetValidator(t -> {
+			if (t == null) {
+				return null;
+			}
+
+			String targetOrganizationId = t.getId();
+
+			SormasToSormasShareInfoDto eventShareInfo =
+				FacadeProvider.getSormasToSormasShareInfoFacade().getEventShareInfoByOrganization(event.toReference(), targetOrganizationId);
+
+			if (eventShareInfo != null && eventShareInfo.getRequestStatus() == ShareRequestStatus.PENDING) {
+				return I18nProperties.getString(Strings.errorSormasToSormasExistingPendingRequest);
+			}
+
+			return null;
+		});
+
+		return optionsForm;
+
 	}
 
 	public static SormasToSormasOptionsForm withoutOptions() {

@@ -311,6 +311,7 @@ public interface Strings {
 	String errorSormasToSormasDecrypt = "errorSormasToSormasDecrypt";
 	String errorSormasToSormasDeleteFromExternalSurveillanceTool = "errorSormasToSormasDeleteFromExternalSurveillanceTool";
 	String errorSormasToSormasEncrypt = "errorSormasToSormasEncrypt";
+	String errorSormasToSormasExistingPendingRequest = "errorSormasToSormasExistingPendingRequest";
 	String errorSormasToSormasInvalidRequestMethod = "errorSormasToSormasInvalidRequestMethod";
 	String errorSormasToSormasLoadShares = "errorSormasToSormasLoadShares";
 	String errorSormasToSormasRequestProcessed = "errorSormasToSormasRequestProcessed";

@@ -175,6 +175,7 @@ public interface Validations {
 	String sormasToSormasDistrict = "sormasToSormasDistrict";
 	String sormasToSormasEventExists = "sormasToSormasEventExists";
 	String sormasToSormasEventParticipantExists = "sormasToSormasEventParticipantExists";
+	String sormasToSormasExistingPendingRequest = "sormasToSormasExistingPendingRequest";
 	String sormasToSormasExternalMessageExists = "sormasToSormasExternalMessageExists";
 	String sormasToSormasFacility = "sormasToSormasFacility";
 	String sormasToSormasImmunizationExists = "sormasToSormasImmunizationExists";

@@ -20,7 +20,9 @@ import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CAS
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
 
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -127,6 +129,20 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 						ValidationErrors.create(
 							new ValidationErrorGroup(Captions.CaseData),
 							new ValidationErrorMessage(Validations.sormasToSormasPersonEnrolled))));
+			}
+
+			SormasToSormasShareInfo shareInfo = shareInfoService.getByCaseAndOrganization(caze.getUuid(), targetOrganizationId);
+			if (shareInfo != null) {
+				ShareRequestInfo latestShare = ShareInfoHelper.getLatestRequest(shareInfo.getRequests().stream()).orElseGet(ShareRequestInfo::new);
+
+				if (latestShare.getRequestStatus() == ShareRequestStatus.PENDING) {
+					validationErrors.add(
+						new ValidationErrors(
+							buildCaseValidationGroupName(caze),
+							ValidationErrors.create(
+								new ValidationErrorGroup(Captions.CaseData),
+								new ValidationErrorMessage(Validations.sormasToSormasExistingPendingRequest))));
+				}
 			}
 		}
 

@@ -73,7 +73,7 @@ public class SormasToSormasController {
 			.getIndexList(new SormasToSormasShareInfoCriteria().caze(caze.toReference()), null, null);
 		shareToSormasFromDetailPage(
 			options -> FacadeProvider.getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options),
-			SormasToSormasOptionsForm.forCase(currentShares));
+			SormasToSormasOptionsForm.forCase(caze, currentShares));
 	}
 
 	public void shareSelectedCases(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
@@ -81,7 +81,7 @@ public class SormasToSormasController {
 			options -> FacadeProvider.getSormasToSormasCaseFacade()
 				.share(selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()), options),
 			callback,
-			SormasToSormasOptionsForm.forCase(null),
+			SormasToSormasOptionsForm.forCase(null, null),
 			new SormasToSormasOptionsDto());
 	}
 
@@ -115,7 +115,7 @@ public class SormasToSormasController {
 
 		shareToSormasFromDetailPage(
 			options -> FacadeProvider.getSormasToSormasEventFacade().share(Collections.singletonList(event.getUuid()), options),
-			SormasToSormasOptionsForm.forEvent(currentShares));
+			SormasToSormasOptionsForm.forEvent(event, currentShares));
 	}
 
 	public void shareLabMessage(ExternalMessageDto labMessage, Runnable callback) {
