@@ -204,7 +204,7 @@ public class ExternalShareInfoService extends AdoServiceWithUserFilter<ExternalS
 		Predicate entityUuidsFilter = associatedObjectJoin.get(AbstractDomainObject.UUID).in(entityUuids);
 
 		Predicate filter =
-			CriteriaBuilderHelper.and(cb, entityUuidsFilter, associatedObjectJoin.get(AbstractDomainObject.ID).in(survToolShareSubQuery).not());
+			CriteriaBuilderHelper.and(cb, entityUuidsFilter, cb.not(associatedObjectJoin.get(AbstractDomainObject.ID).in(survToolShareSubQuery)));
 		cq.where(filter);
 
 		cq.select(externalShareInfo.join(associatedObjectName).get(AbstractDomainObject.UUID)).distinct(true);

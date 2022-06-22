@@ -59,7 +59,7 @@ public class ArchivingController<F extends CoreFacade> {
 							I18nProperties.getString(archiveMessages.getEntityName())),
 						Notification.Type.ASSISTIVE_NOTIFICATION);
 
-                    callback.run();
+					callback.run();
 				}
 			});
 	}

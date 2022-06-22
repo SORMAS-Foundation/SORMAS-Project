@@ -919,31 +919,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
-	@RolesAllowed(UserRight._EVENT_ARCHIVE)
-	public void setArchiveInExternalSurveillanceToolForEntity(String eventUuid, boolean archived) throws ExternalSurveillanceToolException {
-		Event event = eventService.getByUuid(eventUuid);
-		if (externalSurveillanceToolFacade.isFeatureEnabled()
-			&& externalShareInfoService.isEventShared(event.getId())
-			&& !hasShareInfoWithDeletedStatus(eventUuid)) {
-			externalSurveillanceToolFacade.sendEvents(Collections.singletonList(eventUuid), archived);
-		}
-	}
-
-	public boolean hasShareInfoWithDeletedStatus(String entityUuid) {
-		List<ExternalShareInfo> result = externalShareInfoService.getShareInfoByEvent(entityUuid);
-		return result.stream().anyMatch(info -> info.getStatus().equals(ExternalShareStatus.DELETED));
-	}
-
-	@Override
-	@RolesAllowed(UserRight._EVENT_ARCHIVE)
-	public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) throws ExternalSurveillanceToolException {
-		if (externalSurveillanceToolFacade.isFeatureEnabled()) {
-			List<String> filteredEntityUuids = externalShareInfoService.getSharedEventUuidsWithoutDeletedStatus(entityUuids);
-			externalSurveillanceToolFacade.sendEvents(filteredEntityUuids, archived);
-		}
-	}
-
-	@Override
 	public Set<String> getAllSubordinateEventUuids(String eventUuid) {
 
 		Set<String> uuids = new HashSet<>();

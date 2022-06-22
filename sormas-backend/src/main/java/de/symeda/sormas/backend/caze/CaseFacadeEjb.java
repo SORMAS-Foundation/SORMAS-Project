@@ -2578,36 +2578,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CASE_ARCHIVE)
-	public void setArchiveInExternalSurveillanceToolForEntity(String entityUuid, boolean archived) throws ExternalSurveillanceToolException {
-		Case caze = caseService.getByUuid(entityUuid);
-		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()
-			&& externalShareInfoService.isCaseShared(caze.getId())
-			&& !hasShareInfoWithDeletedStatus(entityUuid)) {
-			externalSurveillanceToolGatewayFacade.sendCases(Collections.singletonList(entityUuid), archived);
-		}
-	}
-
-	public boolean hasShareInfoWithDeletedStatus(String entityUuid) {
-		List<ExternalShareInfo> result = externalShareInfoService.getShareInfoByCase(entityUuid);
-		return result.stream().anyMatch(info -> info.getStatus().equals(ExternalShareStatus.DELETED));
-	}
-
-	@Override
-	@RolesAllowed(UserRight._CASE_ARCHIVE)
-	public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) throws ExternalSurveillanceToolException {
-		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
-			List<String> filteredEntityUuids = externalShareInfoService.getSharedCaseUuidsWithoutDeletedStatus(entityUuids);
-			externalSurveillanceToolGatewayFacade.sendCases(filteredEntityUuids, archived);
-		}
-	}
-
-	public boolean hasExternalId(String entityUuid) {
-		Case caze = caseService.getByUuid(entityUuid);
-		return caze.getExternalID() != null && !caze.getExternalID().isEmpty();
-	}
-
-	@Override
 	@RolesAllowed({
 		UserRight._CASE_CREATE,
 		UserRight._CASE_EDIT })

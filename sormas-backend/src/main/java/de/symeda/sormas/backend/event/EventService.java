@@ -43,6 +43,8 @@ import javax.transaction.Transactional;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
+import de.symeda.sormas.api.share.ExternalShareStatus;
+import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -115,6 +117,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	private ExternalShareInfoService externalShareInfoService;
     @EJB
     private EventFacadeEjb.EventFacadeEjbLocal eventFacade;
+    @EJB
+    private ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
 
 	public EventService() {
 		super(Event.class);
@@ -293,21 +297,34 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) {
-		try {
-			eventFacade.setArchiveInExternalSurveillanceToolForEntities(entityUuids, archived);
-		} catch (ExternalSurveillanceToolException e) {
-			throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
+			try {
+				externalSurveillanceToolGatewayFacade
+					.sendEvents(externalShareInfoService.getSharedEventUuidsWithoutDeletedStatus(entityUuids), archived);
+			} catch (ExternalSurveillanceToolException e) {
+				throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+			}
 		}
 	}
 
-	public void setArchiveInExternalSurveillanceToolForEntity(String entityUuid, boolean archived) {
-		try {
-			eventFacade.setArchiveInExternalSurveillanceToolForEntity(entityUuid, archived);
-		} catch (ExternalSurveillanceToolException e) {
-			throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+	public void setArchiveInExternalSurveillanceToolForEntity(String eventUuid, boolean archived) {
+		Event event = getByUuid(eventUuid);
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()
+			&& externalShareInfoService.isEventShared(event.getId())
+			&& !hasShareInfoWithDeletedStatus(eventUuid)) {
+			try {
+				externalSurveillanceToolGatewayFacade.sendEvents(Collections.singletonList(eventUuid), archived);
+			} catch (ExternalSurveillanceToolException e) {
+				throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+			}
 		}
 	}
 
+	public boolean hasShareInfoWithDeletedStatus(String entityUuid) {
+		List<ExternalShareInfo> result = externalShareInfoService.getShareInfoByEvent(entityUuid);
+		return result.stream().anyMatch(info -> info.getStatus().equals(ExternalShareStatus.DELETED));
+	}
+    
 	public List<String> getArchivedUuidsSince(Date since) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
