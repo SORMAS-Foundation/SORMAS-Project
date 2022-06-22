@@ -1477,11 +1477,6 @@ public class EditEventSteps implements En {
               "Delete button is not editable state but it should be since archived entities default value is true!");
           softly.assertAll();
         });
-  }
-
-  private String collectEventParticipantUuid() {
-    return webDriverHelpers.getAttributeFromWebElement(EVENT_PARTICIPANT_UUID, "title");
-
     Then(
         "I check that checkbox Event Identification source with selected {string} have HTML value: {string}",
         (final String text, final String expected) -> {
@@ -1489,6 +1484,10 @@ public class EditEventSteps implements En {
               webDriverHelpers.checkCheckboxIsCheckedByHTMLFromParent(
                   EVENT_IDENTIFICATION_SOURCE_COMBOBOX, text, expected));
         });
+  }
+
+  private String collectEventParticipantUuid() {
+    return webDriverHelpers.getAttributeFromWebElement(EVENT_PARTICIPANT_UUID, "title");
   }
 
   private Person collectPersonUuid() {
