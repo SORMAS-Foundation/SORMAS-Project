@@ -18,7 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application;
 
-import static org.sormas.e2etests.pages.application.NavBarPage.USER_SETTINGS_LANGUAGE_ICON;
+import static org.sormas.e2etests.pages.application.NavBarPage.USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.LOGOUT_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
@@ -113,25 +113,13 @@ public class LoginSteps implements En {
               NavBarPage.USER_SETTINGS_BUTTON, "Benutzereinstellungen");
         });
     Then(
-        "I check that English language is selected in User Settings",
-        () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(USER_SETTINGS_LANGUAGE_ICON);
-          String selectedLanguageIconURL =
-              webDriverHelpers.getSrcFromWebElement(USER_SETTINGS_LANGUAGE_ICON);
-          String expectedLanguageIconURL =
-              "https://test-auto.sormas.netzlink.com/sormas-ui/VAADIN/themes/sormas/img/flag-icons/en.png";
-          Assert.assertEquals(expectedLanguageIconURL, selectedLanguageIconURL);
-        });
-
-    Then(
-        "I check that Deutsch language is selected in User Settings",
-        () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(USER_SETTINGS_LANGUAGE_ICON);
-          String selectedLanguageIconURL =
-              webDriverHelpers.getSrcFromWebElement(USER_SETTINGS_LANGUAGE_ICON);
-          String expectedLanguageIconURL =
-              "https://test-de.sormas.netzlink.com/sormas-ui/VAADIN/themes/sormas/img/flag-icons/de.png";
-          Assert.assertEquals(expectedLanguageIconURL, selectedLanguageIconURL);
+        "I check that ([^\"]*) language is selected in User Settings",
+        (String expectedLanguageText) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT);
+          String selectedLanguageText =
+              webDriverHelpers.getValueFromWebElement(USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT);
+          Assert.assertEquals(expectedLanguageText, selectedLanguageText);
         });
   }
 }
