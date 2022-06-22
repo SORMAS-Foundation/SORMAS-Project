@@ -119,7 +119,7 @@ public class LoginSteps implements En {
               USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT);
           String selectedLanguageText =
               webDriverHelpers.getValueFromWebElement(USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT);
-          Assert.assertEquals(expectedLanguageText, selectedLanguageText);
+          Assert.assertEquals("Selected language is not correct", expectedLanguageText, selectedLanguageText);
         });
   }
 }
