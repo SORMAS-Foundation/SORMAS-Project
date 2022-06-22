@@ -7,6 +7,7 @@ Feature: Login with different type of users
     Then I log in as a <user>
     Then I am logged in with name <user>
 
+
     Examples:
       | user                      |
       | National User             |
