@@ -18,9 +18,12 @@ package de.symeda.sormas.backend.sormastosormas.entities.event;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.EVENT_ENDPOINT;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.EVENT_SYNC_ENDPOINT;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventValidationGroupName;
 
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -109,6 +112,20 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 						buildEventValidationGroupName(event),
 						ValidationErrors
 							.create(new ValidationErrorGroup(Captions.Event), new ValidationErrorMessage(Validations.sormasToSormasNotEditable))));
+			}
+
+			SormasToSormasShareInfo shareInfo = shareInfoService.getByEventAndOrganization(event.getUuid(), targetOrganizationId);
+			if (shareInfo != null) {
+				ShareRequestInfo latestShare = ShareInfoHelper.getLatestRequest(shareInfo.getRequests().stream()).orElseGet(ShareRequestInfo::new);
+
+				if (latestShare.getRequestStatus() == ShareRequestStatus.PENDING) {
+					validationErrors.add(
+						new ValidationErrors(
+							buildEventValidationGroupName(event),
+							ValidationErrors.create(
+								new ValidationErrorGroup(Captions.Event),
+								new ValidationErrorMessage(Validations.sormasToSormasExistingPendingRequest))));
+				}
 			}
 		}
 

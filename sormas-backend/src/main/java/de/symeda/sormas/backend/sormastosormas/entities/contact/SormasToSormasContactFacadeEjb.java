@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.sormastosormas.entities.contact;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CONTACT_ENDPOINT;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CONTACT_SYNC_ENDPOINT;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
 
 import java.util.ArrayList;
@@ -155,6 +156,20 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 									new ValidationErrorGroup(Captions.Contact),
 									new ValidationErrorMessage(Validations.sormasToSormasContactCaseNotShared))));
 					}
+				}
+			}
+
+			SormasToSormasShareInfo shareInfo = shareInfoService.getByContactAndOrganization(contact.getUuid(), targetOrganizationId);
+			if (shareInfo != null) {
+				ShareRequestInfo latestShare = ShareInfoHelper.getLatestRequest(shareInfo.getRequests().stream()).orElseGet(ShareRequestInfo::new);
+
+				if (latestShare.getRequestStatus() == ShareRequestStatus.PENDING) {
+					validationErrors.add(
+						new ValidationErrors(
+							buildContactValidationGroupName(contact),
+							ValidationErrors.create(
+								new ValidationErrorGroup(Captions.Contact),
+								new ValidationErrorMessage(Validations.sormasToSormasExistingPendingRequest))));
 				}
 			}
 		}

@@ -16,6 +16,8 @@
 package de.symeda.sormas.backend.sormastosormas.share.shareinfo;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -72,6 +74,18 @@ public class SormasToSormasShareInfoFacadeEjb implements SormasToSormasShareInfo
 	@Override
 	public SormasToSormasShareInfoDto getCaseShareInfoByOrganization(CaseReferenceDto caze, String organizationId) {
 		SormasToSormasShareInfo shareInfo = shareInfoService.getByCaseAndOrganization(caze.getUuid(), organizationId);
+		return toDto(shareInfo);
+	}
+
+	@Override
+	public SormasToSormasShareInfoDto getContactShareInfoByOrganization(ContactReferenceDto contact, String organizationId) {
+		SormasToSormasShareInfo shareInfo = shareInfoService.getByContactAndOrganization(contact.getUuid(), organizationId);
+		return toDto(shareInfo);
+	}
+
+	@Override
+	public SormasToSormasShareInfoDto getEventShareInfoByOrganization(EventReferenceDto event, String organizationId) {
+		SormasToSormasShareInfo shareInfo = shareInfoService.getByEventAndOrganization(event.getUuid(), organizationId);
 		return toDto(shareInfo);
 	}
 
