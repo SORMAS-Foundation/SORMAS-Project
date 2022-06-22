@@ -108,6 +108,7 @@ public class CreateNewEventSteps implements En {
           selectEventManagementStatusOption(newEvent.getEventManagementStatus());
           selectRiskLevel(newEvent.getRiskLevel());
           selectDisease(newEvent.getDisease());
+          selectDiseaseVariant(newEvent.getDiseaseVariant());
           fillTitle(newEvent.getTitle());
           selectSourceType(newEvent.getSourceType());
           selectTypeOfPlace(newEvent.getEventLocation());
@@ -321,6 +322,10 @@ public class CreateNewEventSteps implements En {
 
   private void selectDisease(String disease) {
     webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
+  }
+
+  private void selectDiseaseVariant(String diseaseVariant) {
+    webDriverHelpers.selectFromCombobox(DISEASE_VARIANT_COMBOBOX, diseaseVariant);
   }
 
   private void fillTitle(String title) {
