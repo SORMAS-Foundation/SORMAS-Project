@@ -18,7 +18,9 @@ package de.symeda.sormas.ui.externalmessage;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,6 +46,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 
 public class ExternalMessageMapper {
 
@@ -66,6 +69,11 @@ public class ExternalMessageMapper {
 				Mapping.of(person::setBirthdateMM, person.getBirthdateMM(), externalMessage.getPersonBirthDateMM(), PersonDto.BIRTH_DATE_MM),
 				Mapping.of(person::setBirthdateYYYY, person.getBirthdateYYYY(), externalMessage.getPersonBirthDateYYYY(), PersonDto.BIRTH_DATE_YYYY),
 				Mapping.of(person::setSex, person.getSex(), externalMessage.getPersonSex(), PersonDto.SEX),
+				Mapping.of(
+					person::setPresentCondition,
+					person.getPresentCondition(),
+					externalMessage.getPersonPresentCondition(),
+					PersonDto.PRESENT_CONDITION),
 				Mapping.of(person::setPhone, person.getPhone(), externalMessage.getPersonPhone(), PersonDto.PERSON_CONTACT_DETAILS),
 				Mapping.of(person::setEmailAddress, person.getEmailAddress(), externalMessage.getPersonEmail(), PersonDto.PERSON_CONTACT_DETAILS)));
 
@@ -121,7 +129,7 @@ public class ExternalMessageMapper {
 					sample.getSpecimenCondition(),
 					externalMessage.getSpecimenCondition(),
 					SampleDto.SPECIMEN_CONDITION),
-				Mapping.of(sample::setLab, sample.getLab(), getLabReference(externalMessage.getLabExternalId()), SampleDto.LAB),
+				Mapping.of(sample::setLab, sample.getLab(), getLabReference(externalMessage.getReporterExternalIds()), SampleDto.LAB),
 				Mapping.of(sample::setLabDetails, sample.getLabDetails(), externalMessage.getReporterName(), SampleDto.LAB_DETAILS)));
 
 		if (externalMessage.getSampleReceivedDate() != null) {
@@ -205,7 +213,7 @@ public class ExternalMessageMapper {
 						Mapping.of(
 							pathogenTest::setLab,
 							pathogenTest.getLab(),
-							getLabReference(sourceTestReport.getTestLabExternalId()),
+							getLabReference(sourceTestReport.getTestLabExternalIds()),
 							PathogenTestDto.LAB),
 						Mapping.of(
 							pathogenTest::setLabDetails,
@@ -232,8 +240,12 @@ public class ExternalMessageMapper {
 						pathogenTest.getTestedDisease(),
 						externalMessage.getTestedDisease(),
 						PathogenTestDto.TESTED_DISEASE),
-					Mapping
-						.of(pathogenTest::setReportDate, pathogenTest.getReportDate(), getPathogenTestReportDate(), PathogenTestDto.REPORT_DATE))));
+					Mapping.of(
+						pathogenTest::setReportDate,
+						pathogenTest.getReportDate(),
+						getPathogenTestReportDate(),
+						DateHelper::getStartOfDay,
+						PathogenTestDto.REPORT_DATE))));
 
 		return changedFields;
 	}
@@ -289,6 +301,14 @@ public class ExternalMessageMapper {
 
 			return m;
 		}
+
+		static <T, X> Mapping<T> of(Consumer<T> mapper, X originalValue, X newValue, Function<X, T> valueConvert, String... fieldPath) {
+			return of(
+				mapper,
+				originalValue != null ? valueConvert.apply(originalValue) : null,
+				newValue != null ? valueConvert.apply(newValue) : null,
+				fieldPath);
+		}
 	}
 
 	/**
@@ -326,14 +346,28 @@ public class ExternalMessageMapper {
 		return new ImmutableTriple<>(testResultText, testedDiseaseVariant, testedDiseaseVariantDetails);
 	}
 
-	private FacilityReferenceDto getLabReference(String labExternalId) {
+	public FacilityReferenceDto getLabReference(List<String> labExternalIds) {
+
 		FacilityFacade facilityFacade = FacadeProvider.getFacilityFacade();
-		List<FacilityReferenceDto> labs =
-			labExternalId != null ? facilityFacade.getByExternalIdAndType(labExternalId, FacilityType.LABORATORY, false) : null;
-		if (labs != null && labs.size() == 1) {
+		List<FacilityReferenceDto> labs;
+
+		if (labExternalIds != null && !labExternalIds.isEmpty()) {
+
+			labs = labExternalIds.stream()
+				.filter(Objects::nonNull)
+				.map(id -> facilityFacade.getByExternalIdAndType(id, FacilityType.LABORATORY, false))
+				.flatMap(List::stream)
+				.collect(Collectors.toList());
+		} else {
+			labs = null;
+		}
+
+		if (labs == null) {
+			return facilityFacade.getReferenceByUuid(FacilityDto.OTHER_FACILITY_UUID);
+		} else if (labs.size() == 1) {
 			return labs.get(0);
 		} else {
-			return facilityFacade.getReferenceByUuid(FacilityDto.OTHER_FACILITY_UUID);
+			return null;
 		}
 	}
 

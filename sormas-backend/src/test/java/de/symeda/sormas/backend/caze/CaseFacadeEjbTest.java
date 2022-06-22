@@ -103,7 +103,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -1209,7 +1209,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testCaseDeletion() throws ExternalSurveillanceToolException {
+	public void testCaseDeletion() throws ExternalSurveillanceToolRuntimeException {
 		Date since = new Date();
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
@@ -1618,7 +1618,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGenerateEpidNumber() throws ExternalSurveillanceToolException {
+	public void testGenerateEpidNumber() throws ExternalSurveillanceToolRuntimeException {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator.createUser(
@@ -2690,7 +2690,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			cazePerson.toReference(),
 			Disease.EVD,
-			CaseClassification.PROBABLE,
+			CaseClassification.NOT_CLASSIFIED,
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcf);
@@ -2700,7 +2700,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			user.toReference(),
 			cazePerson2.toReference(),
 			Disease.EVD,
-			CaseClassification.PROBABLE,
+			CaseClassification.NOT_CLASSIFIED,
 			InvestigationStatus.PENDING,
 			DateUtils.addMinutes(new Date(), -3),
 			rdcf);
@@ -2845,7 +2845,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testUpdateFollowUpComment(){
+	public void testUpdateFollowUpComment() {
 		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
@@ -2857,15 +2857,15 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		});
 
 		CaseDataDto resultCaseDto = getCaseFacade().getCaseDataByUuid(caze.getUuid());
-		assertEquals(initialComment , resultCaseDto.getFollowUpComment());
+		assertEquals(initialComment, resultCaseDto.getFollowUpComment());
 
 		String updateComment = "comment2";
 		caze.setFollowUpComment(updateComment);
 		CaseDataDto updateCase = getCaseFacade().updateFollowUpComment(caze);
 
-		assertEquals(updateComment , updateCase.getFollowUpComment());
+		assertEquals(updateComment, updateCase.getFollowUpComment());
 		resultCaseDto = getCaseFacade().getCaseDataByUuid(caze.getUuid());
-		assertEquals(updateComment , resultCaseDto.getFollowUpComment());
+		assertEquals(updateComment, resultCaseDto.getFollowUpComment());
 	}
 
 	private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";

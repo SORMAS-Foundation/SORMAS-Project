@@ -171,7 +171,10 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		Root<EventGroup> eventGroupSubQuery = eventCountSubquery.from(EventGroup.class);
 		Join<EventGroup, Event> eventSubQueryJoin = eventGroupSubQuery.join(EventGroup.EVENTS, JoinType.LEFT);
 		eventCountSubquery.select(cb.countDistinct(eventSubQueryJoin.get(Event.ID)));
-		eventCountSubquery.where(cb.equal(eventGroupSubQuery.get(EventGroup.ID), eventGroup.get(EventGroup.ID)));
+		eventCountSubquery.where(
+			cb.and(
+				cb.equal(eventGroupSubQuery.get(EventGroup.ID), eventGroup.get(EventGroup.ID)),
+				eventService.createDefaultFilter(cb, eventSubQueryJoin)));
 		eventCountSubquery.groupBy(eventGroupSubQuery.get(EventGroup.ID));
 
 		cq.multiselect(
@@ -322,7 +325,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 		for (Event event : events) {
 			final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-			if (jurisdictionLevel != JurisdictionLevel.NATION) {
+			if ((jurisdictionLevel != JurisdictionLevel.NATION) && !currentUser.isAdmin()) {
 				Region region = event.getEventLocation().getRegion();
 				if (!userService.hasRegion(new RegionReferenceDto(region.getUuid()))) {
 					throw new UnsupportedOperationException(
@@ -366,7 +369,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		Event event = eventService.getByUuid(eventReference.getUuid());
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if (jurisdictionLevel != JurisdictionLevel.NATION) {
+		if ((jurisdictionLevel != JurisdictionLevel.NATION) && !currentUser.isAdmin()) {
 			Region region = event.getEventLocation().getRegion();
 			if (!userService.hasRegion(new RegionReferenceDto(region.getUuid()))) {
 				throw new UnsupportedOperationException(
@@ -401,7 +404,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		EventGroup eventGroup = eventGroupService.getByUuid(uuid);
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if (jurisdictionLevel != JurisdictionLevel.NATION) {
+		if ((jurisdictionLevel != JurisdictionLevel.NATION) && !currentUser.isAdmin()) {
 			List<RegionReferenceDto> regions = getEventGroupRelatedRegions(eventGroup.getUuid());
 			for (RegionReferenceDto region : regions) {
 				if (!userService.hasRegion(region)) {
@@ -427,7 +430,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		EventGroup eventGroup = eventGroupService.getByUuid(uuid);
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if (jurisdictionLevel != JurisdictionLevel.NATION) {
+		if ((jurisdictionLevel != JurisdictionLevel.NATION) && !currentUser.isAdmin()) {
 			List<RegionReferenceDto> regions = getEventGroupRelatedRegions(eventGroup.getUuid());
 			for (RegionReferenceDto region : regions) {
 				if (!userService.hasRegion(region)) {

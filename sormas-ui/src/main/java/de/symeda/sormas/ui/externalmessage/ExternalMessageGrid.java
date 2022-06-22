@@ -217,14 +217,15 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 	}
 
 	private Component buildProcessComponent(ExternalMessageIndexDto indexDto) {
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_MESSAGE_PROCESS)
-			&& indexDto.getStatus().isProcessable()
-			&& ExternalMessageType.LAB_MESSAGE.equals(indexDto.getType())) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_MESSAGE_PROCESS) && indexDto.getStatus().isProcessable()) {
 			// build process button
-			return ButtonHelper.createButton(
-				Captions.externalMessageProcess,
-				e -> ControllerProvider.getExternalMessageController().processLabMessage(indexDto.getUuid()),
-				ValoTheme.BUTTON_PRIMARY);
+			return ButtonHelper.createButton(Captions.externalMessageProcess, e -> {
+				if (ExternalMessageType.LAB_MESSAGE == indexDto.getType()) {
+					ControllerProvider.getExternalMessageController().processLabMessage(indexDto.getUuid());
+				} else if (ExternalMessageType.PHYSICIANS_REPORT == indexDto.getType()) {
+					ControllerProvider.getExternalMessageController().processPhysiciansReport(indexDto.getUuid());
+				}
+			}, ValoTheme.BUTTON_PRIMARY);
 		} else {
 			// build placeholder necessary to circumvent a vaadin scaling issue (see #7681)
 			Label placeholder = new Label(PLACEHOLDER_SPACE);
@@ -240,10 +241,7 @@ public class ExternalMessageGrid extends FilteredGrid<ExternalMessageIndexDto, E
 			String.format(PDF_FILENAME_FORMAT, DataHelper.getShortUuid(labMessage.getUuid()), DateHelper.formatDateForExport(new Date()));
 
 		StreamResource streamResource = new StreamResource(
-			(StreamResource.StreamSource) () -> ControllerProvider.getExternalMessageController()
-				.convertToPDF(labMessage.getUuid())
-				.map(ByteArrayInputStream::new)
-				.orElse(null),
+			() -> ControllerProvider.getExternalMessageController().convertToPDF(labMessage.getUuid()).map(ByteArrayInputStream::new).orElse(null),
 			fileName);
 		streamResource.setMIMEType("text/pdf");
 

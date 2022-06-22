@@ -622,6 +622,7 @@ public interface Strings {
 	String headingPreviousPathogenTestInformation = "headingPreviousPathogenTestInformation";
 	String headingPreviousPersonInformation = "headingPreviousPersonInformation";
 	String headingPreviousSampleInformation = "headingPreviousSampleInformation";
+	String headingProcessPhysiciansReport = "headingProcessPhysiciansReport";
 	String headingQuarantineForCases = "headingQuarantineForCases";
 	String headingRecovery = "headingRecovery";
 	String headingReduceQuarantine = "headingReduceQuarantine";
@@ -884,6 +885,7 @@ public interface Strings {
 	String messageActivateAccount = "messageActivateAccount";
 	String messageAdditionalTestDeleted = "messageAdditionalTestDeleted";
 	String messageAdditionalTestSaved = "messageAdditionalTestSaved";
+	String messageAggregatedReportEpiWeekFilterNotFilled = "messageAggregatedReportEpiWeekFilterNotFilled";
 	String messageAggregateReportFound = "messageAggregateReportFound";
 	String messageAllCampaignFormsValid = "messageAllCampaignFormsValid";
 	String messageAllCasesAlreadyInEvent = "messageAllCasesAlreadyInEvent";

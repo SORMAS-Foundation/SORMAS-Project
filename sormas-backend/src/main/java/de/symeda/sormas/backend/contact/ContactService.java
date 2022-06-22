@@ -46,14 +46,15 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.common.DeletionDetails;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -470,6 +471,27 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		cq.select(contact.get(Contact.UUID));
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	@Override
+	protected List<Predicate> getAdditionalObsoleteUuidsPredicates(Date since, CriteriaBuilder cb, CriteriaQuery<String> cq, Root<Contact> from) {
+
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
+			&& featureConfigurationFacade
+				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)) {
+
+			ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, from);
+			return Collections.singletonList(
+				caseService.createObsoleteLimitedSyncCasePredicate(cb, contactQueryContext.getJoins().getCaze(), since, getCurrentUser()));
+		} else {
+			return Collections.emptyList();
+		}
+	}
+
+	@Override
+	protected Predicate getUserFilterForObsoleteUuids(CriteriaBuilder cb, CriteriaQuery<String> cq, Root<Contact> from) {
+
+		return createUserFilter(new ContactQueryContext(cb, cq, from), new ContactCriteria().excludeLimitedSyncRestrictions(true));
 	}
 
 	public Long countContactsForMap(Region region, District district, Disease disease, Date from, Date to) {
@@ -970,13 +992,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		CriteriaQuery<?> cq = contactQueryContext.getQuery();
 		CriteriaBuilder cb = contactQueryContext.getCriteriaBuilder();
-		From<?, ?> contactPath = contactQueryContext.getRoot();
 
 		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, contactQueryContext.getJoins().getCaseJoins());
 		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
 			userFilter = caseService.createUserFilter(caseQueryContext);
 		} else {
-			CaseUserFilterCriteria userFilterCriteria = new CaseUserFilterCriteria();
+			CaseUserFilterCriteria userFilterCriteria =
+				new CaseUserFilterCriteria().excludeLimitedSyncRestrictions(contactCriteria.isExcludeLimitedSyncRestrictions());
 			userFilter = caseService.createUserFilter(caseQueryContext, userFilterCriteria);
 		}
 
@@ -1057,6 +1079,14 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb,
 				filter,
 				cb.or(cb.equal(contactPath.get(Contact.DISEASE), currentUser.getLimitedDisease()), cb.isNull(contactPath.get(Contact.DISEASE))));
+		}
+
+		if ((contactCriteria == null || !contactCriteria.isExcludeLimitedSyncRestrictions())
+			&& featureConfigurationFacade
+				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
+			&& RequestContextHolder.isMobileSync()) {
+			final Predicate limitedCaseSyncPredicate = caseService.createLimitedSyncCasePredicate(cb, qc.getJoins().getCaze(), currentUser);
+			filter = CriteriaBuilderHelper.and(cb, filter, limitedCaseSyncPredicate);
 		}
 
 		return filter;

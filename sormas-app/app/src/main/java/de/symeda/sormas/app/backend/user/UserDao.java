@@ -106,14 +106,16 @@ public class UserDao extends AbstractAdoDao<User> {
 			User currentUser = ConfigProvider.getUser();
 
 			// create role filters for national and regional users
-			List<UserRole> nationalOrRegionalRoles = DatabaseHelper.getUserRoleDao()
+			String nationalOrRegionalRoles = DatabaseHelper.getUserRoleDao()
 				.queryForAll()
 				.stream()
 				.filter(
 					userRole -> JurisdictionLevel.NATION.equals(userRole.getJurisdictionLevel())
 						|| JurisdictionLevel.REGION.equals(userRole.getJurisdictionLevel()))
-				.collect(Collectors.toList());
-			createRolesFilter(builder, nationalOrRegionalRoles);
+				.map(userRole -> userRole.getId().toString())
+				.collect(Collectors.joining(","));
+			builder.join(userUserRoleDao.queryBuilder());
+			where.raw(UserUserRole.TABLE_NAME + "." + UserUserRole.USER_ROLE + "_id in (" + nationalOrRegionalRoles + " )");
 
 			// conjunction by default, jurisdiction filter should not be empty because of combining role and jurisdiction filters by OR
 			// if the current user is a national one than it should see all users
@@ -238,7 +240,7 @@ public class UserDao extends AbstractAdoDao<User> {
 
 	private void createRolesFilter(QueryBuilder<User, Long> userQB, List<UserRole> roles) throws SQLException {
 		QueryBuilder userrolesQB = userUserRoleDao.queryBuilder();
-		userrolesQB.where().in(UserUserRole.USER_ROLE+"_id", roles);
+		userrolesQB.where().in(UserUserRole.USER_ROLE + "_id", roles);
 		userQB.join(userrolesQB);
 	}
 
@@ -264,7 +266,7 @@ public class UserDao extends AbstractAdoDao<User> {
 			return;
 
 		DeleteBuilder<UserUserRole, Long> userUserRoleDeleteBuilder = userUserRoleDao.deleteBuilder();
-		userUserRoleDeleteBuilder.where().eq(UserUserRole.USER+"_id", data);
+		userUserRoleDeleteBuilder.where().eq(UserUserRole.USER + "_id", data);
 		userUserRoleDeleteBuilder.delete();
 
 		super.delete(data);
@@ -277,7 +279,7 @@ public class UserDao extends AbstractAdoDao<User> {
 		super.update(data);
 		// 1. Delete existing UserUserRoles
 		DeleteBuilder<UserUserRole, Long> userUserRoleDeleteBuilder = userUserRoleDao.deleteBuilder();
-		userUserRoleDeleteBuilder.where().eq(UserUserRole.USER+"_id", data);
+		userUserRoleDeleteBuilder.where().eq(UserUserRole.USER + "_id", data);
 		userUserRoleDeleteBuilder.delete();
 
 		// 2. Create new UserUserRoles

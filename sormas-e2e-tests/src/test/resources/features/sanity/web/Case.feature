@@ -1202,3 +1202,70 @@ Feature: Case end to end tests
     And I click on Save button from the new travel entry form
     Then I navigate to the last created via api Person page via URL
     And I check if added travel Entry appeared on Edit Person Page
+
+  @issue=SORDEV-5563 @env_de
+  Scenario: Add contact person details to facilities case person
+    Given I log in as a Admin User
+    Then I click on the Configuration button from navbar
+    And I navigate to facilities tab in Configuration
+    And I click on New Entry button in Facilities tab in Configuration
+    Then I set name, region and district in Facilities tab in Configuration
+    And I set Facility Category to "Medizinische Einrichtung" and Facility Type to "Krankenhaus" in Facilities tab in Configuration
+    And I set Facility Contact person first and last name with email address and phone number
+    Then I click on Save Button in new Facility form
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data using created facility
+    Then I click on save case button
+    Then I navigate to case person tab
+    Then I click yes on the DISCARD UNSAVED CHANGES popup if it appears
+    Then I set Facility Category to "Medizinische Einrichtung" and  Facility Type to "Krankenhaus"
+    And I set Region to "Voreingestellte Bundesländer" and District to "Voreingestellter Landkreis"
+    And I set facility name to created facility
+    And I check if data for created facility is automatically imported to the correct fields in Case Person tab
+    Then I click SAVE button on Edit Contact Page
+    Then I click on the Configuration button from navbar
+    And I navigate to facilities tab in Configuration
+    Then I search last created facility
+    Then I click on edit button for the last searched facility
+    And I archive facility
+
+  @env_main @#8556
+  Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of a Case
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    Then I navigate to the last created case via the url
+    Then I click on New Sample
+    Then I create a new Sample with positive test result with Guinea Worm as disease
+    Then I confirm the Create case from contact with positive test result
+    Then I navigate to the last created case via the url
+    Then I click on edit Sample
+    Then I click on new test result for pathogen tests
+    Then I create a new pathogen test result with Dengue Fever as disease
+    Then I confirm the Create case from contact with positive test result
+    Then I navigate to the last created case via the url
+    Then I validate only one sample is created with two pathogen tests
+    Then I click on edit Sample
+    Then I validate the existence of two pathogen tests
+
+
+  @env_main @#8565
+  Scenario: Check an archived case if its read only
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I open last edited case by API via URL navigation
+    Then I click on the Archive case button and confirm popup
+    Then I click on logout button from navbar
+    Then I log in with National User
+    Then I open last edited case by API via URL navigation
+    Then I check if editable fields are read only for an archived case

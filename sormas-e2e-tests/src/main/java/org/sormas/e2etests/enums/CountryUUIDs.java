@@ -19,8 +19,10 @@ package org.sormas.e2etests.enums;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
+@Slf4j
 public enum CountryUUIDs {
   Germany("SUSZ6P-4YQIB3-WMSLMG-IAPRKJ4Y", "XZGQNV-LR5PHR-XGX55Q-PXD4CJMI");
 
@@ -34,6 +36,7 @@ public enum CountryUUIDs {
 
   @SneakyThrows
   public static String getUuidValueForLocale(String country, String locale) {
+    log.warn("Please migrate to new implementation and take data from EnvironmentManager class");
     CountryUUIDs[] countryUUIDs = CountryUUIDs.values();
     for (CountryUUIDs value : countryUUIDs) {
       if (value.name().equalsIgnoreCase(country)) {

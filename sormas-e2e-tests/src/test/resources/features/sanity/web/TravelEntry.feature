@@ -239,3 +239,62 @@ Feature: Create travel entries
     Then I check that National Health ID is not visible in Person search popup
     And I check that Passport Number is not visible in Person search popup
     And I check that Nickname is not visible in Person search popup
+
+  @issue=SORDEV-8411 @env_de
+  Scenario: Test Travel Entry conversion to case
+    Given I log in with National User
+    When I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I select "EINREISEORT" as a Case Origin in Case Popup
+    Then I check if Different Point Of Entry Jurisdiction checkbox appears
+    When I select Different Point Of Entry Jurisdiction checkbox
+    Then I check if additional Point Of Entry fields appear
+    When I create a new case with Point Of Entry for DE version
+    And I click on save button in the case popup
+    And I check that Point Of Entry information is displayed as read-only on Edit case page
+    And I refer case from Point Of Entry
+    And I check that Point Of Entry and Place Of Stay information is correctly display on Edit case page
+    Then I click on the Entries button from navbar
+    And I click on the New Travel Entry button from Travel Entries directory
+    And I check if Different Point Of Entry Jurisdiction checkbox appears in New Travel Entry popup
+    And I select Different Point Of Entry Jurisdiction checkbox
+    And I check if additional Point Of Entry fields appear
+    When I create new travel entry with Different Point Of Entry Jurisdiction for DE
+    And I click on Save button from the new travel entry form
+    And I check the created Different Point Of Entry data is correctly displayed on Edit travel entry page for DE
+    And I convert the Travel Entry into a case
+    Then I check that differing Point Of Entry is correctly displayed on Edit case page
+    And I check that Case Origin is set to Point Of Entry
+
+  @issue=SORDEV-7167 @env_de
+  Scenario: Test DEA TravelEntry form
+    Given I log in as a Admin User
+    When I click on the Entries button from navbar
+    And I click on the New Travel Entry button from Travel Entries directory
+    And I check that new travel entry form contains all the necessary fields
+    And I clear report date and disease fields in the new travel entry form
+    And I click on Save button from the new travel entry form
+    Then I check that all required fields except person fields are mandatory in the new travel entry form DE specific
+    And I close input data error popup
+    When I fill all required fields except person-related fields in the new travel entry form DE specific
+    And I click on Save button from the new travel entry form
+    Then I check that person-related fields are mandatory in the new entry form DE specific
+    And I close input data error popup
+    And I fill the person-related required fields in the new entry form DE specific
+
+  @issue=SORDEV-8037 @env_de
+  Scenario: Test Add documents and document templates to TravelEntries
+    Given I log in as a National User
+    And I click on the Entries button from navbar
+    And I click on the New Travel Entry button from Travel Entries directory
+    When I fill the required fields in a new travel entry form
+    And I click on Save button from the new travel entry form
+    Then I check the created data is correctly displayed on Edit travel entry page for DE version
+    And I click on Create Document button from Bulk Actions combobox on Edit Travel Entry Page
+    And I click on checkbox to upload generated document to entities in Create Document form in Travel Entry directory
+    And I select "ExampleDocumentTemplateTravelEntry.docx" Create Document form in Travel Entry directory
+    And I click on Create button in Create Document form in Travel Entry directory
+    And I click on close button in Create Document Order form
+    Then I check if generated document based on "ExampleDocumentTemplateTravelEntry.docx" appeared in Documents tab in Edit Travel Entry directory
+    And I check if downloaded file is correct for "ExampleDocumentTemplateTravelEntry.docx" in Edit Travel Entry directory
+    And I delete downloaded file created from "ExampleDocumentTemplateTravelEntry.docx" Document Template for Travel Entry

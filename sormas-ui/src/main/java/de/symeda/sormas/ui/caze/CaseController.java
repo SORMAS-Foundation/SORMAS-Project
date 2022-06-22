@@ -77,7 +77,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -212,7 +212,7 @@ public class CaseController {
 					if (updatedEventparticipant.getResultingCase() != null) {
 						String caseUuid = updatedEventparticipant.getResultingCase().getUuid();
 						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-						convertSamePersonContactsAndEventparticipants(caze);
+						convertSamePersonContactsAndEventParticipants(caze, null);
 					}
 				});
 				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
@@ -224,7 +224,7 @@ public class CaseController {
 
 				FacadeProvider.getCaseFacade().setSampleAssociations(updatedEventParticipant.toReference(), selectedCase.toReference());
 
-				convertSamePersonContactsAndEventparticipants(selectedCase);
+				convertSamePersonContactsAndEventParticipants(selectedCase, null);
 
 				navigateToView(CaseDataView.VIEW_NAME, selectedCase.getUuid(), null);
 			}
@@ -264,7 +264,7 @@ public class CaseController {
 					if (contactDto.getResultingCase() != null) {
 						String caseUuid = contactDto.getResultingCase().getUuid();
 						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-						convertSamePersonContactsAndEventparticipants(caze);
+						convertSamePersonContactsAndEventParticipants(caze, null);
 					}
 				});
 				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
@@ -281,7 +281,7 @@ public class CaseController {
 
 				FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), selectedCase.toReference());
 
-				convertSamePersonContactsAndEventparticipants(selectedCase);
+				convertSamePersonContactsAndEventParticipants(selectedCase, null);
 
 				navigateToView(CaseDataView.VIEW_NAME, selectedCase.getUuid(), null);
 			}
@@ -312,7 +312,7 @@ public class CaseController {
 		});
 	}
 
-	private void convertSamePersonContactsAndEventparticipants(CaseDataDto caze) {
+	public void convertSamePersonContactsAndEventParticipants(CaseDataDto caze, Runnable callback) {
 
 		List<SimilarContactDto> matchingContacts;
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
@@ -365,12 +365,21 @@ public class CaseController {
 				saveCase(refreshedCaze);
 				setResultingCase(refreshedCaze, matchingContacts, matchingEventParticipants);
 				SormasUI.refreshView();
+
+				if (callback != null) {
+					callback.run();
+				}
+			});
+			convertToCaseConfirmComponent.addDiscardListener(() -> {
+				if (callback != null) {
+					callback.run();
+				}
 			});
 
 			Button convertSomeButton =
 				ButtonHelper.createButton("convertSome", I18nProperties.getCaption(Captions.actionYesForSome), (Button.ClickListener) event -> {
 					convertToCaseConfirmComponent.discard();
-					showConvertToCaseSelection(caze, matchingContacts, matchingEventParticipants);
+					showConvertToCaseSelection(caze, matchingContacts, matchingEventParticipants, callback);
 				}, ValoTheme.BUTTON_PRIMARY);
 
 			HorizontalLayout buttonsPanel = convertToCaseConfirmComponent.getButtonsPanel();
@@ -378,14 +387,19 @@ public class CaseController {
 			buttonsPanel.setComponentAlignment(convertSomeButton, Alignment.BOTTOM_RIGHT);
 			buttonsPanel.setExpandRatio(convertSomeButton, 0);
 
-			VaadinUiUtil.showModalPopupWindow(convertToCaseConfirmComponent, I18nProperties.getString(Strings.headingCaseConversion));
+			VaadinUiUtil.showModalPopupWindow(convertToCaseConfirmComponent, I18nProperties.getString(Strings.headingCaseConversion), true);
+		} else {
+			if (callback != null) {
+				callback.run();
+			}
 		}
 	}
 
 	private void showConvertToCaseSelection(
 		CaseDataDto caze,
 		List<SimilarContactDto> matchingContacts,
-		List<SimilarEventParticipantDto> matchingEventParticipants) {
+		List<SimilarEventParticipantDto> matchingEventParticipants,
+		Runnable callback) {
 
 		ConvertToCaseSelectionField convertToCaseSelectionField = new ConvertToCaseSelectionField(caze, matchingContacts, matchingEventParticipants);
 		convertToCaseSelectionField.setWidth(1280, Sizeable.Unit.PIXELS);
@@ -406,7 +420,13 @@ public class CaseController {
 			SormasUI.refreshView();
 		});
 
-		VaadinUiUtil.showModalPopupWindow(convertToCaseSelectComponent, I18nProperties.getString(Strings.headingCaseConversion));
+		convertToCaseSelectComponent.addDoneListener(() -> {
+			if (callback != null) {
+				callback.run();
+			}
+		});
+
+		VaadinUiUtil.showModalPopupWindow(convertToCaseSelectComponent, I18nProperties.getString(Strings.headingCaseConversion), true);
 	}
 
 	private void setResultingCase(
@@ -1142,7 +1162,7 @@ public class CaseController {
 				FacadeProvider.getCaseFacade().delete(caze.getUuid(), deletionDetails);
 			}
 			UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
-		} catch (ExternalSurveillanceToolException e) {
+		} catch (ExternalSurveillanceToolRuntimeException e) {
 			Notification.show(
 				String.format(
 					I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotDeleted),
@@ -1549,7 +1569,7 @@ public class CaseController {
 					for (CaseIndexDto selectedRow : selectedRows) {
 						try {
 							FacadeProvider.getCaseFacade().delete(selectedRow.getUuid(), deleteDetails);
-						} catch (ExternalSurveillanceToolException e) {
+						} catch (ExternalSurveillanceToolRuntimeException e) {
 							countNotDeletedCases++;
 							nonDeletableCases.append(selectedRow.getUuid(), 0, 6).append(", ");
 						}

@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.externalmessage.labmessage.processing;
+package de.symeda.sormas.ui.externalmessage.processing;
 
 import java.io.Serializable;
 

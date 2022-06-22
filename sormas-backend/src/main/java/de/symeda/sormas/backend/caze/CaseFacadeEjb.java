@@ -21,6 +21,7 @@ import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -141,7 +142,7 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpDto;
@@ -1135,8 +1136,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
 							Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
 
-							List<Vaccination> relevantSortedVaccinations =
-								getRelevantSortedVaccinations(exportDto.getUuid(), mostRecentImmunization.getVaccinations());
+							List<Vaccination> relevantSortedVaccinations = getRelevantSortedVaccinations(
+								exportDto.getUuid(),
+								filteredImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList()));
 							Vaccination firstVaccination = null;
 							Vaccination lastVaccination = null;
 
@@ -1584,7 +1586,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return caseSave(dto, handleChanges, existingCase, toDto(existingCase), checkChangeDate, internal);
 	}
 
-	@RolesAllowed({ UserRight._CASE_EDIT })
+	@RolesAllowed({
+		UserRight._CASE_EDIT })
 	public CaseDataDto updateFollowUpComment(@Valid @NotNull CaseDataDto dto) throws ValidationRuntimeException {
 		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
 		Case caze = service.getByUuid(dto.getUuid());
@@ -2065,6 +2068,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		// Update case classification if the feature is enabled
 		CaseClassification classification = null;
+		boolean setClassificationInfo = true;
 		if (configFacade.isFeatureAutomaticCaseClassification()) {
 			if (newCase.getCaseClassification() != CaseClassification.NO_CASE) {
 				// calculate classification
@@ -2081,13 +2085,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 						newCase.setCaseClassification(classification);
 						newCase.setClassificationUser(null);
 						newCase.setClassificationDate(new Date());
+						setClassificationInfo = false;
 					}
 				}
-			} else if (newCase.getCaseClassification() != existingCase.getCaseClassification()) {
-				newCase.setClassificationUser(userService.getCurrentUser());
-				newCase.setClassificationDate(new Date());
 			}
-		} else if (newCase.getCaseClassification() != existingCase.getCaseClassification()) {
+		}
+
+		if (setClassificationInfo
+			&& ((existingCase == null && newCase.getCaseClassification() != CaseClassification.NOT_CLASSIFIED)
+				|| (existingCase != null && newCase.getCaseClassification() != existingCase.getCaseClassification()))) {
 			newCase.setClassificationUser(userService.getCurrentUser());
 			newCase.setClassificationDate(new Date());
 		}
@@ -2472,7 +2478,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RolesAllowed(UserRight._CASE_DELETE)
-	public void delete(String caseUuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
+	public void delete(String caseUuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolRuntimeException {
 		Case caze = service.getByUuid(caseUuid);
 		deleteCase(caze, deletionDetails);
 	}
@@ -2487,7 +2493,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Optional.of(caze.getContacts()).ifPresent(cl -> cl.forEach(c -> contactService.delete(c, deletionDetails)));
 	}
 
-	private void deleteCase(Case caze, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
+	private void deleteCase(Case caze, DeletionDetails deletionDetails) throws ExternalSurveillanceToolRuntimeException {
 
 		externalJournalService.handleExternalJournalPersonUpdateAsync(caze.getPerson().toReference());
 		service.delete(caze, deletionDetails);
@@ -2505,7 +2511,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					try {
 						deleteCase(caseToBeDeleted, deletionDetails);
 						deletedCasesUuids.add(caseToBeDeleted.getUuid());
-					} catch (ExternalSurveillanceToolException e) {
+					} catch (ExternalSurveillanceToolRuntimeException e) {
 						logger.error("The case with uuid:" + caseToBeDeleted.getUuid() + "could not be deleted");
 					}
 				}
@@ -2516,7 +2522,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RolesAllowed(UserRight._CASE_MERGE)
-	public void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid) throws ExternalSurveillanceToolException {
+	public void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid) {
 
 		Case caze = service.getByUuid(caseUuid);
 		Case duplicateOfCase = service.getByUuid(duplicateOfCaseUuid);
@@ -2529,7 +2535,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@RolesAllowed({
 		UserRight._CASE_DELETE,
 		UserRight._SYSTEM })
-	public void deleteCaseInExternalSurveillanceTool(Case caze) {
+	public void deleteCaseInExternalSurveillanceTool(Case caze) throws ExternalSurveillanceToolException {
 
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && caze.getExternalID() != null && !caze.getExternalID().isEmpty()) {
 			List<CaseDataDto> casesWithSameExternalId = getByExternalId(caze.getExternalID());
@@ -2941,6 +2947,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			source.setTherapy(TherapyDto.build());
 		}
 		target.setTherapy(therapyFacade.fromDto(source.getTherapy(), checkChangeDate));
+		if (source.getHealthConditions() == null) {
+			source.setHealthConditions(HealthConditionsDto.build());
+		}
 		target.setHealthConditions(healthConditionsMapper.fromDto(source.getHealthConditions(), checkChangeDate));
 		if (source.getClinicalCourse() == null) {
 			source.setClinicalCourse(ClinicalCourseDto.build());

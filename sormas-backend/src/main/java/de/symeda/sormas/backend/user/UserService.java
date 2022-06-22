@@ -430,10 +430,13 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 				cb.equal(joins.getDistrict().get(District.UUID), infrastructureUuid));
 			break;
 		case REGION:
-			predicate = cb.and(cb.isNull(joins.getDistrict()), cb.equal(joins.getRegion().get(Region.UUID), infrastructureUuid));
+			predicate = cb.and(
+				cb.isNull(joins.getDistrict()),
+				cb.isNull(joins.getLaboratory()),
+				cb.equal(joins.getRegion().get(Region.UUID), infrastructureUuid));
 			break;
 		case NATION:
-			predicate = cb.isNull(joins.getRegion());
+			predicate = cb.and(cb.isNull(joins.getRegion()), cb.isNull(joins.getLaboratory()));
 			break;
 		default:
 			break;
@@ -820,20 +823,6 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			return false;
 		}
 		return currentUser.getRegion().getUuid().equals(regionReference.getUuid());
-	}
-
-	/**
-	 * Make sure lazy loaded roles are loaded
-	 */
-	public User loadRoles(User user) {
-		if (!em.contains(user)) {
-			user = em.merge(user);
-		}
-		for (UserRole userRole : user.getUserRoles()) {
-			userRole.getEmailNotificationTypes().size();
-			userRole.getSmsNotificationTypes().size();
-		}
-		return user;
 	}
 
 	/**

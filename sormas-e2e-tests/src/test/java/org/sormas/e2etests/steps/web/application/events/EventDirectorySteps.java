@@ -109,9 +109,11 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.UN
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByIndex;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByUUID;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DESCRIPTION_OF_CREATE_CASE_FROM_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANT_DISPLAY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.CONFIRM_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.events.CreateNewEventSteps.DateOfEvent;
 
@@ -778,6 +780,7 @@ public class EventDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_PARTICIPANT);
         });
+
     When(
         "I click on the first result in table from event participant",
         () -> {
@@ -850,6 +853,14 @@ public class EventDirectorySteps implements En {
                       "Event Management status is not correct"));
         });
     When(
+        "I click on last created API result in grid in Event Directory for Bulk Action",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.scrollToElement(getByEventUuid(apiState.getCreatedEvent().getUuid()));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getByEventUuid(apiState.getCreatedEvent().getUuid()));
+        });
+    When(
         "^I select last created API result in grid in Event Directory for Bulk Action$",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
@@ -858,16 +869,6 @@ public class EventDirectorySteps implements En {
               getCheckboxByUUID(apiState.getCreatedEvent().getUuid()));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
-
-    When(
-        "I click on last created API result in grid in Event Directory for Bulk Action",
-        () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-          webDriverHelpers.scrollToElement(getByEventUuid(apiState.getCreatedEvent().getUuid()));
-          webDriverHelpers.clickOnWebElementBySelector(
-              getByEventUuid(apiState.getCreatedEvent().getUuid()));
-        });
-
     When(
         "^I select last created UI result in grid in Event Directory for Bulk Action$",
         () -> {
@@ -878,7 +879,6 @@ public class EventDirectorySteps implements En {
               getCheckboxByUUID(CreateNewEventSteps.newEvent.getUuid()));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
-
     When(
         "I click on last created UI result in grid in Event Directory for Bulk Action",
         () -> {
@@ -1147,6 +1147,14 @@ public class EventDirectorySteps implements En {
           TimeUnit.SECONDS.sleep(8); // wait for basic download if in parallel
           webDriverHelpers.clickOnWebElementBySelector(DETAILED_EVENT_EXPORT_BUTTON);
           TimeUnit.SECONDS.sleep(4); // wait for download
+        });
+
+    When(
+        "^I confirm the Create case from event participant with positive test result$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              DESCRIPTION_OF_CREATE_CASE_FROM_EVENT_PARTICIPANT);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });
 
     When(

@@ -25,6 +25,9 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.report.AggregateReportFacade;
+import de.symeda.sormas.backend.report.AggregateReport;
+import de.symeda.sormas.backend.report.AggregateReportFacadeEjb;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -217,6 +220,8 @@ import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.CurrentUserService;
+import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRightsFacadeEjb.UserRightsFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb.UserRoleFacadeEjbLocal;
@@ -317,6 +322,31 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 			entity.getClass(),
 			AbstractDomainObject.UUID,
 			entity.getUuid());
+	}
+
+	public UserRole getEagerUserRole(String uuid) {
+
+		UserRole userRole = getEntityAttached(getUserRoleService().getByUuid(uuid));
+		initUserRole(userRole);
+		return userRole;
+	}
+
+	public User getEagerUser(String uuid) {
+
+		User user = getEntityAttached(getUserService().getByUuid(uuid));
+		for (UserRole userRole : user.getUserRoles()) {
+			initUserRole(userRole);
+		}
+		return user;
+	}
+
+	/**
+	 * Initializes lazy references.
+	 */
+	private void initUserRole(UserRole userRole) {
+
+		userRole.getEmailNotificationTypes().size();
+		userRole.getSmsNotificationTypes().size();
 	}
 
 	protected void createDeletionConfigurations() {
@@ -429,6 +459,10 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public ActionFacade getActionFacade() {
 		return getBean(ActionFacadeEjb.ActionFacadeEjbLocal.class);
+	}
+
+	public AggregateReportFacade getAggregateReportFacade() {
+		return getBean(AggregateReportFacadeEjb.AggregateReportFacadeEjbLocal.class);
 	}
 
 	public VisitFacade getVisitFacade() {

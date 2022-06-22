@@ -13,11 +13,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.externalmessage.labmessage.processing;
+package de.symeda.sormas.ui.externalmessage.processing;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,7 @@ import org.apache.commons.lang3.mutable.MutableObject;
 import com.vaadin.server.ClientConnector;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.Registration;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -41,21 +43,26 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.caze.CaseCreateForm;
 import de.symeda.sormas.ui.externalmessage.ExternalMessageForm;
 import de.symeda.sormas.ui.externalmessage.labmessage.LabMessageUiHelper;
+import de.symeda.sormas.ui.externalmessage.labmessage.processing.LabMessageProcessingHelper;
+import de.symeda.sormas.ui.externalmessage.labmessage.processing.SampleAndPathogenTests;
 import de.symeda.sormas.ui.samples.PathogenTestForm;
 import de.symeda.sormas.ui.samples.SampleController;
 import de.symeda.sormas.ui.samples.SampleCreateForm;
@@ -65,12 +72,98 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
+import static java.util.Objects.nonNull;
+
 /**
  * Collection of common UI related functions used by processing related code placed in multiple classes
  */
-public class LabMessageProcessingUIHelper {
+public class ExternalMessageProcessingUIHelper {
 
-	private LabMessageProcessingUIHelper() {
+	private ExternalMessageProcessingUIHelper() {
+	}
+
+	public static CompletionStage<Boolean> showMissingDiseaseConfiguration() {
+		return VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getCaption(Captions.externalMessageNoDisease),
+			new Label(I18nProperties.getString(Strings.messageDiseaseNotSpecifiedInLabMessage)),
+			I18nProperties.getCaption(Captions.actionContinue),
+			I18nProperties.getCaption(Captions.actionCancel));
+	}
+
+	public static CompletionStage<Boolean> showRelatedForwardedMessageConfirmation() {
+		return VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getCaption(Captions.externalMessageForwardedMessageFound),
+			new Label(I18nProperties.getString(Strings.messageForwardedExternalMessageFound)),
+			I18nProperties.getCaption(Captions.actionYes),
+			I18nProperties.getCaption(Captions.actionCancel));
+	}
+
+	public static void showPickOrCreatePersonWindow(PersonDto person, AbstractProcessingFlow.HandlerCallback<PersonDto> callback) {
+		ControllerProvider.getPersonController()
+			.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessage), selectedPersonRef -> {
+				PersonDto selectedPersonDto = null;
+				if (selectedPersonRef != null) {
+					if (selectedPersonRef.getUuid().equals(person.getUuid())) {
+						selectedPersonDto = person;
+					} else {
+						selectedPersonDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPersonRef.getUuid());
+					}
+				}
+
+				callback.done(selectedPersonDto);
+			},
+				callback::cancel,
+				false,
+				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PERSON_DUPLICATE_CUSTOM_SEARCH)
+					? I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessageWithoutMatches)
+					: null);
+	}
+
+	public static void showPickOrCreateEntryWindow(
+		EntrySelectionField.Options options,
+		ExternalMessageDto labMessage,
+		AbstractProcessingFlow.HandlerCallback<PickOrCreateEntryResult> callback) {
+		EntrySelectionField selectField = new EntrySelectionField(labMessage, options);
+
+		final CommitDiscardWrapperComponent<EntrySelectionField> selectionField = new CommitDiscardWrapperComponent<>(selectField);
+		selectionField.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
+		selectionField.setWidth(1280, Sizeable.Unit.PIXELS);
+
+		selectionField.addCommitListener(() -> callback.done(selectField.getValue()));
+		selectionField.addDiscardListener(callback::cancel);
+
+		selectField.setSelectionChangeCallback(commitAllowed -> selectionField.getCommitButton().setEnabled(commitAllowed));
+		selectionField.getCommitButton().setEnabled(false);
+
+		VaadinUiUtil.showModalPopupWindow(selectionField, I18nProperties.getString(Strings.headingPickOrCreateEntry), true);
+	}
+
+	public static void showCreateCaseWindow(
+		CaseDataDto caze,
+		PersonDto person,
+		ExternalMessageDto labMessage,
+		AbstractProcessingFlow.HandlerCallback<CaseDataDto> callback) {
+		Window window = VaadinUiUtil.createPopupWindow();
+
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
+			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, null, true);
+		caseCreateComponent.addCommitListener(() -> {
+			LabMessageProcessingHelper.updateAddressAndSavePerson(
+				FacadeProvider.getPersonFacade().getPersonByUuid(caseCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
+				labMessage);
+
+			callback.done(caseCreateComponent.getWrappedComponent().getValue());
+
+		});
+		caseCreateComponent.addDiscardListener(callback::cancel);
+
+		caseCreateComponent.getWrappedComponent().setValue(caze);
+		if (Boolean.TRUE.equals(FacadeProvider.getPersonFacade().isValidPersonUuid(person.getUuid()))) {
+			caseCreateComponent.getWrappedComponent().setSearchedPerson(person);
+		}
+		caseCreateComponent.getWrappedComponent().setPerson(person);
+
+		showFormWithLabMessage(labMessage, caseCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewCase), false);
 	}
 
 	public static void showEditSampleWindow(
@@ -82,22 +175,24 @@ public class LabMessageProcessingUIHelper {
 		Window window = VaadinUiUtil.createPopupWindow();
 		MutableObject<CommitDiscardWrapperComponent<SampleEditForm>> editComponentWrapper = new MutableObject<>();
 		// discard on close without commit or discard button clicked
-		Registration closeListener = window.addCloseListener(e -> editComponentWrapper.getValue().discard());
+		Registration closeListener = window.addCloseListener(
+				nonNull(editComponentWrapper.getValue())?e -> editComponentWrapper.getValue().discard():e -> editComponentWrapper.getValue());
 
-		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent =
-			LabMessageProcessingUIHelper.getSampleEditComponent(sample, newPathogenTests, externalMessageDto, commitHandler, cancelHandler, () -> {
+		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent = ExternalMessageProcessingUIHelper
+			.getSampleEditComponent(sample, newPathogenTests, externalMessageDto, commitHandler, cancelHandler, () -> {
 				// do not discard
 				closeListener.remove();
 				window.close();
 			});
 
 		showFormWithLabMessage(externalMessageDto, sampleEditComponent, window, I18nProperties.getString(Strings.headingEditSample), false, false);
-		sampleEditComponent.addDoneListener(() -> {
-			// prevent discard on close
-			closeListener.remove();
-			// close after commit/discard
-			window.close();
-		});
+		sampleEditComponent.addDoneListener(
+			() -> {
+				// prevent discard on close
+				closeListener.remove();
+				// close after commit/discard
+				window.close();
+			});
 	}
 
 	private static CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(
@@ -218,6 +313,9 @@ public class LabMessageProcessingUIHelper {
 		ExternalMessageForm form = new ExternalMessageForm();
 		form.setWidth(550, Sizeable.Unit.PIXELS);
 
+		form.addStyleName(CssStyles.VSPACE_TOP_3);
+		editComponent.addStyleName(CssStyles.VSPACE_TOP_3);
+
 		HorizontalSplitPanel horizontalSplitPanel = new HorizontalSplitPanel();
 		horizontalSplitPanel.setFirstComponent(form);
 		horizontalSplitPanel.setSecondComponent(editComponent);
@@ -230,7 +328,7 @@ public class LabMessageProcessingUIHelper {
 
 		HorizontalLayout layout = new HorizontalLayout(panel);
 		layout.setHeightFull();
-		layout.setMargin(true);
+		layout.setMargin(new MarginInfo(false, true, true, true));
 
 		window.setHeightFull();
 		window.setContent(layout);
@@ -304,7 +402,7 @@ public class LabMessageProcessingUIHelper {
 		}
 	}
 
-	private static void addProcessedInMeantimeCheck(
+	public static void addProcessedInMeantimeCheck(
 		CommitDiscardWrapperComponent<? extends Component> createComponent,
 		ExternalMessageDto externalMessageDto,
 		boolean entityCreated) {
@@ -352,13 +450,8 @@ public class LabMessageProcessingUIHelper {
 			SampleDto sample = ((SampleCreateForm) component).getValue();
 			if (sample.getAssociatedCase() != null) {
 				return ButtonHelper.createButton(Captions.externalMessage_deleteNewlyCreatedCase, e -> {
-					try {
-						FacadeProvider.getCaseFacade()
-							.delete(sample.getAssociatedCase().getUuid(), new DeletionDetails(DeletionReason.DUPLICATE_ENTRIES, null));
-					} catch (ExternalSurveillanceToolException survToolException) {
-						// should not happen because the new case was not shared
-						throw new RuntimeException(survToolException);
-					}
+					FacadeProvider.getCaseFacade()
+						.delete(sample.getAssociatedCase().getUuid(), new DeletionDetails(DeletionReason.DUPLICATE_ENTRIES, null));
 				}, ValoTheme.BUTTON_PRIMARY);
 			} else if (sample.getAssociatedContact() != null) {
 				return ButtonHelper.createButton(

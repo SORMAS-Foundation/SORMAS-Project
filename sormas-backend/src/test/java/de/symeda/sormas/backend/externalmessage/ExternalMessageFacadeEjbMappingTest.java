@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 import org.junit.Test;
@@ -19,6 +20,7 @@ import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
 import de.symeda.sormas.api.externalmessage.ExternalMessageType;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -74,7 +76,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		source.setSampleMaterial(SampleMaterial.NASAL_SWAB);
 		source.setSampleMaterialText("Sample material text");
 		source.setReporterName("Test Lab Name");
-		source.setLabExternalId("Test Lab External Id");
+		source.setReporterExternalIds(Arrays.asList("Test Lab External Id 1", "Test Lab External Id 2"));
 		source.setReporterPostalCode("Test Lab Postal Code");
 		source.setReporterCity("Test Lab City");
 		source.setSpecimenCondition(SpecimenCondition.ADEQUATE);
@@ -82,6 +84,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		source.setPersonFirstName("Person First Name");
 		source.setPersonLastName("Person Last Name");
 		source.setPersonSex(Sex.OTHER);
+		source.setPersonPresentCondition(PresentCondition.ALIVE);
 		source.setPersonBirthDateDD(1);
 		source.setPersonBirthDateDD(1);
 		source.setPersonBirthDateYYYY(1970);
@@ -110,7 +113,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getSampleMaterial(), result.getSampleMaterial());
 		assertEquals(source.getSampleMaterialText(), result.getSampleMaterialText());
 		assertEquals(source.getReporterName(), result.getReporterName());
-		assertEquals(source.getLabExternalId(), result.getLabExternalId());
+		assertEquals(source.getReporterExternalIds(), result.getReporterExternalIds());
 		assertEquals(source.getReporterPostalCode(), result.getReporterPostalCode());
 		assertEquals(source.getReporterCity(), result.getReporterCity());
 		assertEquals(source.getSpecimenCondition(), result.getSpecimenCondition());
@@ -118,6 +121,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getPersonFirstName(), result.getPersonFirstName());
 		assertEquals(source.getPersonLastName(), result.getPersonLastName());
 		assertEquals(source.getPersonSex(), result.getPersonSex());
+		assertEquals(source.getPersonPresentCondition(), result.getPersonPresentCondition());
 		assertEquals(source.getPersonBirthDateDD(), result.getPersonBirthDateDD());
 		assertEquals(source.getPersonBirthDateMM(), result.getPersonBirthDateMM());
 		assertEquals(source.getPersonBirthDateYYYY(), result.getPersonBirthDateYYYY());
@@ -161,7 +165,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		source.setSampleMaterial(SampleMaterial.NASAL_SWAB);
 		source.setSampleMaterialText("Sample material text");
 		source.setReporterName("Test Lab Name");
-		source.setLabExternalId("Test Lab External Id");
+		source.setReporterExternalIds(Arrays.asList("Test Lab External Id 1", "Test Lab External Id 2"));
 		source.setReporterPostalCode("Test Lab Postal Code");
 		source.setReporterCity("Test Lab City");
 		source.setSpecimenCondition(SpecimenCondition.ADEQUATE);
@@ -169,6 +173,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		source.setPersonFirstName("Person First Name");
 		source.setPersonLastName("Person Last Name");
 		source.setPersonSex(Sex.OTHER);
+		source.setPersonPresentCondition(PresentCondition.DEAD);
 		source.setPersonBirthDateDD(1);
 		source.setPersonBirthDateDD(1);
 		source.setPersonBirthDateYYYY(1970);
@@ -198,7 +203,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getSampleMaterial(), result.getSampleMaterial());
 		assertEquals(source.getSampleMaterialText(), result.getSampleMaterialText());
 		assertEquals(source.getReporterName(), result.getReporterName());
-		assertEquals(source.getLabExternalId(), result.getLabExternalId());
+		assertEquals(source.getReporterExternalIds(), result.getReporterExternalIds());
 		assertEquals(source.getReporterPostalCode(), result.getReporterPostalCode());
 		assertEquals(source.getReporterCity(), result.getReporterCity());
 		assertEquals(source.getSpecimenCondition(), result.getSpecimenCondition());
@@ -206,6 +211,7 @@ public class ExternalMessageFacadeEjbMappingTest extends TestCase {
 		assertEquals(source.getPersonFirstName(), result.getPersonFirstName());
 		assertEquals(source.getPersonLastName(), result.getPersonLastName());
 		assertEquals(source.getPersonSex(), result.getPersonSex());
+		assertEquals(source.getPersonPresentCondition(), result.getPersonPresentCondition());
 		assertEquals(source.getPersonBirthDateDD(), result.getPersonBirthDateDD());
 		assertEquals(source.getPersonBirthDateMM(), result.getPersonBirthDateMM());
 		assertEquals(source.getPersonBirthDateYYYY(), result.getPersonBirthDateYYYY());

@@ -157,4 +157,20 @@ public class EditContactPage {
     return By.xpath(
         String.format("//*[contains(text(),'Pick or create event')]//..//..//../tr[%s]", index));
   }
+
+  public static final By NUMBER_OF_TESTS_IN_SAMPLES =
+      By.cssSelector("div:nth-of-type(7) > .v-label.v-label-undef-w.v-widget");
+
+  public static final By CONTACTS_LIST = By.id("tab-contacts");
+  public static final By CREATE_NEW_TASK_FORM_HEADER = By.xpath("//div[@class='v-window-header']");
+  public static final By TASK_TYPE_COMBOBOX = By.cssSelector(".v-window #taskType div");
+  public static final By NEW_TASK_DUE_DATE = By.cssSelector("#dueDate_date input");
+  public static final By TASK_TYPE_TITLE = By.cssSelector("[location='taskType']");
+  public static final By DUE_DATE_TITLE = By.cssSelector("[location='dueDate']");
+  public static final By ASSIGNED_TO_TITLE = By.cssSelector("[location='assigneeUser']");
+  public static final By COMMENTS_ON_TASK_TITLE = By.cssSelector("[location='creatorComment']");
+  public static final By SAVE_NEW_TASK_BUTTON = By.cssSelector(".popupContent #commit");
+  public static final By INPUT_DATA_ERROR_POPUP =
+      By.xpath(
+          "//div[@class='v-Notification error v-Notification-error']//div[contains(@class,'popupContent')]");
 }
