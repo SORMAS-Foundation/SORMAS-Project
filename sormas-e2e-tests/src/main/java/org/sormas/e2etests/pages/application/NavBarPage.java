@@ -37,4 +37,7 @@ public class NavBarPage {
   public static final By USER_SETTINGS_BUTTON = By.cssSelector("[id='actionSettings-2']");
   public static final By ENTRIES_BUTTON = By.cssSelector("div#travelEntries");
   public static final By LOGOUT_BUTTON = By.cssSelector("[id='actionLogout-2']");
+
+  public static final By USER_SETTINGS_LANGUAGE_COMBOBOX = By.cssSelector("[id='language']");
+  public static final By USER_SETTINGS_LANGUAGE_ICON = By.xpath("//div[2]/img");
 }

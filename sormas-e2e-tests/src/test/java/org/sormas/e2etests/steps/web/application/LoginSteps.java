@@ -18,12 +18,14 @@
 
 package org.sormas.e2etests.steps.web.application;
 
+import static org.sormas.e2etests.pages.application.NavBarPage.USER_SETTINGS_LANGUAGE_ICON;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.LOGOUT_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
 import org.sormas.e2etests.enums.UserRoles;
 import org.sormas.e2etests.envconfig.dto.EnvUser;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
@@ -96,6 +98,40 @@ public class LoginSteps implements En {
         () -> {
           webDriverHelpers.checkWebElementContainsText(
               NavBarPage.CONFIGURATION_BUTTON, "Einstellungen");
+        });
+
+    When(
+        "I check that English word for User Settings is present in the left main menu",
+        () -> {
+          webDriverHelpers.checkWebElementContainsText(
+              NavBarPage.USER_SETTINGS_BUTTON, "User Settings");
+        });
+    When(
+        "I check that German word for User Settings is present in the left main menu",
+        () -> {
+          webDriverHelpers.checkWebElementContainsText(
+              NavBarPage.USER_SETTINGS_BUTTON, "Benutzereinstellungen");
+        });
+    Then(
+        "I check that English language is selected in User Settings",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(USER_SETTINGS_LANGUAGE_ICON);
+          String selectedLanguageIconURL =
+              webDriverHelpers.getSrcFromWebElement(USER_SETTINGS_LANGUAGE_ICON);
+          String expectedLanguageIconURL =
+              "https://test-auto.sormas.netzlink.com/sormas-ui/VAADIN/themes/sormas/img/flag-icons/en.png";
+          Assert.assertEquals(expectedLanguageIconURL, selectedLanguageIconURL);
+        });
+
+    Then(
+        "I check that Deutsch language is selected in User Settings",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(USER_SETTINGS_LANGUAGE_ICON);
+          String selectedLanguageIconURL =
+              webDriverHelpers.getSrcFromWebElement(USER_SETTINGS_LANGUAGE_ICON);
+          String expectedLanguageIconURL =
+              "https://test-de.sormas.netzlink.com/sormas-ui/VAADIN/themes/sormas/img/flag-icons/de.png";
+          Assert.assertEquals(expectedLanguageIconURL, selectedLanguageIconURL);
         });
   }
 }
