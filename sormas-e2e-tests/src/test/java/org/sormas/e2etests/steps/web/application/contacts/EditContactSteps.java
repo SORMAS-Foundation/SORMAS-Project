@@ -985,7 +985,7 @@ public class EditContactSteps implements En {
         });
 
     When(
-        "^I close input data error popup$",
+        "^I close input data error popup in Contact Directory$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(INPUT_DATA_ERROR_POPUP);
           webDriverHelpers.clickOnWebElementBySelector(INPUT_DATA_ERROR_POPUP);

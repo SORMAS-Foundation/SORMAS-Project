@@ -15,6 +15,20 @@
 
 package org.sormas.e2etests.helpers;
 
+import static com.google.common.truth.Truth.assertWithMessage;
+import static java.time.Duration.ofSeconds;
+import static org.awaitility.Awaitility.await;
+import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.core.ConditionTimeoutException;
@@ -31,21 +45,6 @@ import org.openqa.selenium.interactions.Actions;
 import org.sormas.e2etests.common.TimerLite;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
-
-import javax.inject.Inject;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import static com.google.common.truth.Truth.assertWithMessage;
-import static java.time.Duration.ofSeconds;
-import static org.awaitility.Awaitility.await;
-import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
 
 @Slf4j
 public class WebDriverHelpers {
