@@ -8,10 +8,12 @@ import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -23,12 +25,16 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.reports.AggregateReportViewConfiguration;
+import de.symeda.sormas.ui.reports.AggregateReportViewType;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.ExportEntityName;
+import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 
@@ -39,20 +45,30 @@ public class AggregateReportsView extends AbstractView {
 
 	private AggregateReportCriteria criteria;
 
-	private AggregateReportsGrid grid;
+//	private AggregateReportsGrid grid;
+	private FilteredGrid<?, AggregateReportCriteria> grid;
 	private VerticalLayout gridLayout;
 	private Button btnExport;
 	private Button btnCreate;
 	private Button btnEdit;
 
 	private CheckBox showZeroRowsGrouping;
+	private CheckBox showOnlyDuplicates;
 
 	private AggregateReportsFilterForm aggregateReportsFilterForm;
+
+	private AggregateReportViewConfiguration viewConfiguration;
 
 	public AggregateReportsView() {
 		super(VIEW_NAME);
 
 		UserDto user = UserProvider.getCurrent().getUser();
+
+		viewConfiguration = ViewModelProviders.of(AggregateReportsView.class).get(AggregateReportViewConfiguration.class);
+
+		if (viewConfiguration.getViewType() == null) {
+			viewConfiguration.setViewType(AggregateReportViewType.AGGREGATE_REPORTING);
+		}
 
 		boolean criteriaUninitialized = !ViewModelProviders.of(AggregateReportsView.class).has(AggregateReportCriteria.class);
 		criteria = ViewModelProviders.of(AggregateReportsView.class).get(AggregateReportCriteria.class);
@@ -61,9 +77,23 @@ public class AggregateReportsView extends AbstractView {
 		}
 
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.REGION);
-		grid = new AggregateReportsGrid(criteria);
+
+		if (AggregateReportViewType.REPORT_DATA.equals(viewConfiguration.getViewType())) {
+			grid = new ReportDataGrid(criteria);
+		} else {
+			grid = new AggregateReportsGrid(criteria);
+		}
+
 		gridLayout = new VerticalLayout();
-		gridLayout.addComponent(createGroupingBar());
+
+		if (AggregateReportViewType.AGGREGATE_REPORTING.equals(viewConfiguration.getViewType())) {
+			gridLayout.addComponent(createGroupingBar());
+		}
+
+		if (AggregateReportViewType.REPORT_DATA.equals(viewConfiguration.getViewType())) {
+			gridLayout.addComponent(createDuplicateFilter());
+		}
+
 		gridLayout.addComponent(createFilterBar(user));
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
@@ -74,11 +104,32 @@ public class AggregateReportsView extends AbstractView {
 
 		addComponent(gridLayout);
 
+		OptionGroup aggregateReportViewSwitcher = new OptionGroup();
+		aggregateReportViewSwitcher.setId("aggregateReportViewSwitcher");
+		CssStyles
+			.style(aggregateReportViewSwitcher, CssStyles.FORCE_CAPTION, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
+		aggregateReportViewSwitcher.addItem(AggregateReportViewType.AGGREGATE_REPORTING);
+		aggregateReportViewSwitcher
+			.setItemCaption(AggregateReportViewType.AGGREGATE_REPORTING, I18nProperties.getCaption(Captions.aggregateReport_AggregateReportingView));
+
+		aggregateReportViewSwitcher.addItem(AggregateReportViewType.REPORT_DATA);
+		aggregateReportViewSwitcher
+			.setItemCaption(AggregateReportViewType.REPORT_DATA, I18nProperties.getCaption(Captions.aggregateReport_ReportDataView));
+
+		aggregateReportViewSwitcher.setValue(viewConfiguration.getViewType());
+
+		aggregateReportViewSwitcher.addValueChangeListener(e -> {
+			AggregateReportViewType viewType = (AggregateReportViewType) e.getProperty().getValue();
+			viewConfiguration.setViewType(viewType);
+			SormasUI.get().getNavigator().navigateTo(AggregateReportsView.VIEW_NAME);
+		});
+		addHeaderComponent(aggregateReportViewSwitcher);
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.AGGREGATE_REPORT_EDIT)) {
 			btnCreate = ButtonHelper.createIconButton(
 				Captions.aggregateReportNewAggregateReport,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getAggregateReportController().openEditOrCreateWindow(() -> grid.reload(), false),
+				e -> ControllerProvider.getAggregateReportController().openEditOrCreateWindow(() -> ((AggregateReportsGrid) grid).reload(), false),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(btnCreate);
@@ -86,7 +137,7 @@ public class AggregateReportsView extends AbstractView {
 			btnEdit = ButtonHelper.createIconButton(
 				Captions.aggregateReportEditAggregateReport,
 				VaadinIcons.EDIT,
-				e -> ControllerProvider.getAggregateReportController().openEditOrCreateWindow(() -> grid.reload(), true),
+				e -> ControllerProvider.getAggregateReportController().openEditOrCreateWindow(() -> ((AggregateReportsGrid) grid).reload(), true),
 				ValoTheme.BUTTON_PRIMARY);
 			btnEdit.setVisible(false);
 
@@ -104,14 +155,29 @@ public class AggregateReportsView extends AbstractView {
 		}
 	}
 
+	private Component createDuplicateFilter() {
+
+		showOnlyDuplicates = new CheckBox();
+		showOnlyDuplicates.setId(AggregateReportCriteria.SHOW_ONLY_DUPLICATES);
+		showOnlyDuplicates.setCaption(I18nProperties.getCaption(Captions.aggregateReportShowOnlyDuplicateReports));
+		showOnlyDuplicates.addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
+		showOnlyDuplicates.setValue(false);
+
+		showOnlyDuplicates.addValueChangeListener(e -> {
+			criteria.setShowOnlyDuplicates(e.getValue());
+		});
+
+		return showOnlyDuplicates;
+	}
+
 	private HorizontalLayout createGroupingBar() {
 		HorizontalLayout jurisdictionLayout = new HorizontalLayout();
 		AggregateReportGroupingSelector aggregateReportGroupingSelector = new AggregateReportGroupingSelector();
 		aggregateReportGroupingSelector.addValueChangeListener(e -> {
 			AggregateReportGroupingLevel groupingValue = (AggregateReportGroupingLevel) e.getValue();
 			criteria.setAggregateReportGroupingLevel(groupingValue);
-			grid.setColumnsVisibility(groupingValue);
-			grid.reload();
+			((AggregateReportsGrid) grid).setColumnsVisibility(groupingValue);
+			((AggregateReportsGrid) grid).reload();
 		});
 		jurisdictionLayout.addComponent(aggregateReportGroupingSelector);
 
@@ -159,7 +225,8 @@ public class AggregateReportsView extends AbstractView {
 
 		aggregateReportsFilterForm.addApplyHandler(e -> {
 			if (epiWeekFilterBarDataValidation()) {
-				grid.reload();
+//				((AggregateReportsGrid) grid).reload();
+				reloadData();
 			} else {
 				NotificationHelper.showNotification(
 					I18nProperties.getString(Strings.messageAggregatedReportEpiWeekFilterNotFilled),
@@ -195,7 +262,19 @@ public class AggregateReportsView extends AbstractView {
 			criteria.setEpiWeekTo(epiWeekTo != null ? epiWeekTo : DateHelper.getEpiWeek(new Date()));
 		}
 
-		grid.reload();
+		reloadData();
+	}
+
+	private void reloadData() {
+		switch (viewConfiguration.getViewType()) {
+		case AGGREGATE_REPORTING:
+			((AggregateReportsGrid) grid).reload();
+			break;
+
+		case REPORT_DATA:
+			((ReportDataGrid) grid).reload();
+			break;
+		}
 	}
 
 	AggregateReportCriteria getCriteria() {

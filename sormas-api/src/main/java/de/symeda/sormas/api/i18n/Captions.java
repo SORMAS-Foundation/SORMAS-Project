@@ -170,6 +170,8 @@ public interface Captions {
 	String AggregateReport_labConfirmations = "AggregateReport.labConfirmations";
 	String AggregateReport_newCases = "AggregateReport.newCases";
 	String AggregateReport_pointOfEntry = "AggregateReport.pointOfEntry";
+	String aggregateReport_AggregateReportingView = "aggregateReport_AggregateReportingView";
+	String aggregateReport_ReportDataView = "aggregateReport_ReportDataView";
 	String aggregateReportDeathsShort = "aggregateReportDeathsShort";
 	String aggregateReportDiscardSelection = "aggregateReportDiscardSelection";
 	String aggregateReportEditAggregateReport = "aggregateReportEditAggregateReport";
@@ -179,6 +181,7 @@ public interface Captions {
 	String aggregateReportNewAggregateReport = "aggregateReportNewAggregateReport";
 	String aggregateReportNewCasesShort = "aggregateReportNewCasesShort";
 	String aggregateReportReportFound = "aggregateReportReportFound";
+	String aggregateReportShowOnlyDuplicateReports = "aggregateReportShowOnlyDuplicateReports";
 	String aggregateReportShowZeroRowsForGrouping = "aggregateReportShowZeroRowsForGrouping";
 	String aggregateReportThisWeek = "aggregateReportThisWeek";
 	String all = "all";

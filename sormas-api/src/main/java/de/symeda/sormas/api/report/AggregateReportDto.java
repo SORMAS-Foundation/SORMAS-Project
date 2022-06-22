@@ -28,6 +28,7 @@ public class AggregateReportDto extends EntityDto {
 	public static final String NEW_CASES = "newCases";
 	public static final String LAB_CONFIRMATIONS = "labConfirmations";
 	public static final String DEATHS = "deaths";
+	public static final String AGE_GROUP = "ageGroup";
 
 	private UserReferenceDto reportingUser;
 	private Disease disease;
@@ -41,6 +42,7 @@ public class AggregateReportDto extends EntityDto {
 	private Integer labConfirmations;
 	private Integer deaths;
 	private String ageGroup;
+	private Boolean duplicate = Boolean.FALSE;
 
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;
@@ -136,6 +138,14 @@ public class AggregateReportDto extends EntityDto {
 
 	public void setAgeGroup(String ageGroup) {
 		this.ageGroup = ageGroup;
+	}
+
+	public Boolean getDuplicate() {
+		return duplicate;
+	}
+
+	public void setDuplicate(Boolean duplicate) {
+		this.duplicate = duplicate;
 	}
 
 	public static AggregateReportDto build() {
