@@ -11,6 +11,8 @@ public class ExposureNewEntryPage {
   public static final By EXPOSURE_DETAILS_ROLE_COMBOBOX =
       By.cssSelector(".v-window [location='exposureRole'] [role='combobox'] div");
   public static final By RISK_AREA_CHECKBOX = By.cssSelector(".v-window #riskArea label");
+  public static final By ANIMAL_CONTACT_LABEL =
+      By.xpath("//div[@class='v-captiontext' and text()='Animal contact']");
   public static final By INDOORS_CHECKBOX = By.cssSelector(".v-window #indoors label");
   public static final By OUTDOORS_CHECKBOX = By.cssSelector(".v-window #outdoors label");
   public static final By WEARING_MASK_CHECKBOX = By.cssSelector(".v-window #wearingMask label");
