@@ -668,14 +668,17 @@ public class EpidemiologicalDataCaseSteps implements En {
         "I check if Exposure Type of activity has not a ([^\"]*) option",
         (String option) -> {
           softly.assertFalse(
-              webDriverHelpers.checkIfElementExistsInCombobox(TYPE_OF_ACTIVITY_COMBOBOX, option));
+              webDriverHelpers.checkIfElementExistsInCombobox(TYPE_OF_ACTIVITY_COMBOBOX, option),
+              "Exposure type is incorrect");
           softly.assertAll();
         });
 
     When(
         "I check if Exposure details has a ([^\"]*) option",
         (String option) -> {
-          softly.assertFalse(webDriverHelpers.isElementVisibleWithTimeout(ANIMAL_CONTACT_LABEL, 1));
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(ANIMAL_CONTACT_LABEL, 1),
+              "Exposure details has a incorrect option");
           softly.assertAll();
         });
   }

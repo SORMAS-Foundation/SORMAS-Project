@@ -187,7 +187,9 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOU
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EVENT_PARTICIPANTS_DATA_TAB;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
+import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.DISCARD_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.contacts.ContactDirectorySteps.exposureData;
 
@@ -1784,7 +1786,8 @@ public class EditCaseSteps implements En {
         "I check if Type of sample has not a ([^\"]*) option",
         (String option) -> {
           softly.assertFalse(
-              webDriverHelpers.checkIfElementExistsInCombobox(SAMPLE_TYPE_COMBOBOX, option));
+              webDriverHelpers.checkIfElementExistsInCombobox(SAMPLE_TYPE_COMBOBOX, option),
+              "Type of sample is incorrect");
           softly.assertAll();
         });
   }

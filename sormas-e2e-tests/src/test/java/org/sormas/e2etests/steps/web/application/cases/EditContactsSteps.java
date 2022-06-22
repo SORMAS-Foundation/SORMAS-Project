@@ -18,9 +18,8 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISCARD_BUTTON_POPUP;
-import static org.sormas.e2etests.pages.application.cases.EditContactsPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISCARD_BUTTON_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CASE_CONTACT_EXPORT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CLOSE_POPUP_BUTTON;
@@ -448,7 +447,8 @@ public class EditContactsSteps implements En {
         "I check if Task Type has not a ([^\"]*) option",
         (String option) -> {
           softly.assertFalse(
-              webDriverHelpers.checkIfElementExistsInCombobox(TASK_TYPE_COMBOBOX, option));
+              webDriverHelpers.checkIfElementExistsInCombobox(TASK_TYPE_COMBOBOX, option),
+              "Task type is incorrect");
           softly.assertAll();
         });
 

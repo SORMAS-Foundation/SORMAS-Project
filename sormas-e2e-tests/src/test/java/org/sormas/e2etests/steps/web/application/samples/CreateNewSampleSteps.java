@@ -643,7 +643,8 @@ public class CreateNewSampleSteps implements En {
         "I check if Type of test in new pathogen results has no ([^\"]*) option",
         (String typeOfTest) -> {
           softly.assertFalse(
-              webDriverHelpers.checkIfElementExistsInCombobox(TYPE_OF_TEST_COMBOBOX, typeOfTest));
+              webDriverHelpers.checkIfElementExistsInCombobox(TYPE_OF_TEST_COMBOBOX, typeOfTest),
+              "Type of test is incorrect");
           softly.assertAll();
         });
   }
