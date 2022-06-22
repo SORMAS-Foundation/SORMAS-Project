@@ -85,3 +85,19 @@ Feature: Immunization end to end tests
     Then I log in with National User
     Then I navigate to last created immunization by API via URL
     Then I check if editable fields are read only for an archived immunization
+
+  @issue=SORDEV-7041 @env_main
+  Scenario:Test Immunizations III: Immunization list for person forms
+    Given I log in as a Admin User
+    And I click on the Immunizations button from navbar
+    And I click on the NEW IMMUNIZATION button
+    When I create a new immunization with specific data
+    Then I check the created data is correctly displayed on Edit immunization page
+    And I click on Person tab from Immunization page
+    Then I check the created data is correctly displayed on Edit immunization person page
+    Then I click on the Persons button from navbar
+    And I filter by Person full name from Immunization on Person Directory Page
+    And I click on the APPLY FILTERS button
+    And I click Immunization aggregation button on Person Directory Page
+    Then I click on first person in person directory
+    And I check if data of created immunization is in Immunization tab on Edit Person Page

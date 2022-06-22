@@ -289,6 +289,22 @@ Feature: Create travel entries
     Then I check that differing Point Of Entry is correctly displayed on Edit case page
     And I check that Case Origin is set to Point Of Entry
 
+  @issue=SORDEV-7167 @env_de
+  Scenario: Test DEA TravelEntry form
+    Given I log in as a Admin User
+    When I click on the Entries button from navbar
+    And I click on the New Travel Entry button from Travel Entries directory
+    And I check that new travel entry form contains all the necessary fields
+    And I clear report date and disease fields in the new travel entry form
+    And I click on Save button from the new travel entry form
+    Then I check that all required fields except person fields are mandatory in the new travel entry form DE specific
+    And I close input data error popup
+    When I fill all required fields except person-related fields in the new travel entry form DE specific
+    And I click on Save button from the new travel entry form
+    Then I check that person-related fields are mandatory in the new entry form DE specific
+    And I close input data error popup
+    And I fill the person-related required fields in the new entry form DE specific
+
   @issue=SORDEV-8037 @env_de
   Scenario: Test Add documents and document templates to TravelEntries
     Given I log in as a National User
