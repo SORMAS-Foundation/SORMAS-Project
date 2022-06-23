@@ -373,7 +373,7 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getDistrict().getRegion()));
 		dto.setArchived(entity.isArchived());
-		dto.setExternalID(entity.getExternalId());
+		dto.setExternalId(entity.getExternalId());
 
 		return dto;
 	}
@@ -386,7 +386,7 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 		target.setGrowthRate(source.getGrowthRate());
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setArchived(source.isArchived());
-		target.setExternalId(source.getExternalID());
+		target.setExternalId(source.getExternalId());
 
 		return target;
 	}

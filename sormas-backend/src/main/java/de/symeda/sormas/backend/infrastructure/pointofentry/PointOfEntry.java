@@ -28,7 +28,7 @@ public class PointOfEntry extends InfrastructureAdo {
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
 	public static final String ACTIVE = "active";
-	public static final String EXTERNAL_ID = "externalID";
+	public static final String EXTERNAL_ID = "externalId";
 
 	private PointOfEntryType pointOfEntryType;
 	private String name;
@@ -37,7 +37,7 @@ public class PointOfEntry extends InfrastructureAdo {
 	private Double latitude;
 	private Double longitude;
 	private boolean active;
-	private Long externalID;
+	private Long externalId;
 
 	@Enumerated(EnumType.STRING)
 	public PointOfEntryType getPointOfEntryType() {
@@ -100,12 +100,12 @@ public class PointOfEntry extends InfrastructureAdo {
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
-	public Long getExternalID() {
-		return externalID;
+	public Long getExternalId() {
+		return externalId;
 	}
 
-	public void setExternalID(Long externalID) {
-		this.externalID = externalID;
+	public void setExternalId(Long externalId) {
+		this.externalId = externalId;
 	}
 
 	@Override

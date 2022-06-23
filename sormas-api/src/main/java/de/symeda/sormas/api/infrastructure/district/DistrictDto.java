@@ -39,7 +39,7 @@ public class DistrictDto extends EntityDto {
 	public static final String RISK = "risk";
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String REGION = "region";
-	public static final String EXTERNAL_ID = "externalID";
+	public static final String EXTERNAL_ID = "externalId";
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
@@ -52,7 +52,7 @@ public class DistrictDto extends EntityDto {
 	//@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	
 	//@Min(2)
-	private Long externalID;
+	private Long externalId;
 
 	public DistrictDto(
 		Date creationDate,
@@ -66,7 +66,7 @@ public class DistrictDto extends EntityDto {
 		String regionUuid,
 		String regionName,
 		Long regionExternalId,
-		Long externalID) {
+		Long externalId) {
 
 		super(creationDate, changeDate, uuid);
 		this.archived = archived;
@@ -75,7 +75,7 @@ public class DistrictDto extends EntityDto {
 		this.risk = risk;
 		this.growthRate = growthRate;
 		this.region = new RegionReferenceDto(regionUuid, regionName, regionExternalId);
-		this.externalID = externalID;
+		this.externalId = externalId;
 	}
 
 	public DistrictDto() {
@@ -135,19 +135,19 @@ public class DistrictDto extends EntityDto {
 		this.archived = archived;
 	}
 
-	public Long getExternalID() {
-		System.out.println("ddddddddddddddddddddddd?????????????????????????????//===================ddddddddddddddd");
-		return externalID;
+	public Long getExternalId() {
+		System.out.println("ddddddddddddddddddddddd?????????getExternalId??//===================ddddddddddddddd");
+		return externalId;
 	}
 
-	public void setExternalID(Long externalID) {
-		this.externalID = externalID;
+	public void setExternalId(Long externalId) {
+		this.externalId = externalId;
 	}
 
 	public DistrictReferenceDto toReference() {
-		System.out.println("ddddddddddddddddddddddddddddddddddddddddddddd=================================ddddddddddddddd");
+		System.out.println("ddddddddddddddddddddddddddddddddddddddddddddd=========DistrictReferenceDto========================ddddddddddddddd");
 	//	return new DistrictReferenceDto(getUuid());
-		return new DistrictReferenceDto(getUuid(), name, externalID);
+		return new DistrictReferenceDto(getUuid(), name, externalId);
 	}
 
 	public static DistrictDto build() {

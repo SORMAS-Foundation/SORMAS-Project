@@ -287,7 +287,7 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 			new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalId()),
 			new CommunityReferenceDto(community.getUuid(), community.getName(), community.getExternalId()),
 			new FacilityReferenceDto(facility.getUuid(), facility.getName(), facility.getExternalID()),
-			new PointOfEntryReferenceDto(pointOfEntry.getUuid(), pointOfEntry.getName(), PointOfEntryType.AIRPORT, pointOfEntry.getExternalID()));
+			new PointOfEntryReferenceDto(pointOfEntry.getUuid(), pointOfEntry.getName(), PointOfEntryType.AIRPORT, pointOfEntry.getExternalId()));
 
 		return rdcf;
 	}

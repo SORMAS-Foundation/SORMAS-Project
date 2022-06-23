@@ -311,7 +311,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 		dto.setEpidCode(entity.getEpidCode());
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setArchived(entity.isArchived());
-		dto.setExternalID(entity.getExternalId());
+		dto.setExternalId(entity.getExternalId());
 		dto.setArea(AreaFacadeEjb.toReferenceDto(entity.getArea()));
 		dto.setCountry(CountryFacadeEjb.toReferenceDto(entity.getCountry()));
 
@@ -330,7 +330,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 		dto.setEpidCode(entity.getEpidCode());
 		dto.setPopulation(populationDataFacade.getRegionPopulation(dto.getUuid()));
 		dto.setGrowthRate(entity.getGrowthRate());
-		dto.setExternalID(entity.getExternalId());
+		dto.setExternalId(entity.getExternalId());
 		dto.setArea(AreaFacadeEjb.toReferenceDto(entity.getArea()));
 		dto.setCountry(CountryFacadeEjb.toReferenceDto(entity.getCountry()));
 
@@ -375,8 +375,8 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 		return service.getByName(name, includeArchivedEntities).stream().map(this::toDto).collect(Collectors.toList());
 	}
 	
-	public List<RegionDto> getByExternalID(Long ext_id, boolean includeArchivedEntities) {
-		return service.getByExternalID(ext_id, includeArchivedEntities).stream().map(this::toDto).collect(Collectors.toList());
+	public List<RegionDto> getByExternalId(Long ext_id, boolean includeArchivedEntities, int notUsed) {
+		return service.getByExternalId(ext_id, includeArchivedEntities, 0).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -408,7 +408,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 		target.setEpidCode(source.getEpidCode());
 		target.setGrowthRate(source.getGrowthRate());
 		target.setArchived(source.isArchived());
-		target.setExternalId(source.getExternalID());
+		target.setExternalId(source.getExternalId());
 		target.setArea(areaService.getByReferenceDto(source.getArea()));
 		target.setCountry(countryService.getByReferenceDto(source.getCountry()));
 
@@ -427,4 +427,5 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 			super(service, featureConfiguration);
 		}
 	}
+
 }

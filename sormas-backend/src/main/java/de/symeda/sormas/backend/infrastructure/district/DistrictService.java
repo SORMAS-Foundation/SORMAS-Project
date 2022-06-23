@@ -128,11 +128,11 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 	}
 	
 	
-	public List<District> getByExternalID(Long ext_id, Region reg_ext_id, boolean includeArchivedEntities) {
+	public List<District> getByExternalId(Long ext_id, Region reg_ext_id, boolean includeArchivedEntities, int notUsed) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<District> cq = cb.createQuery(getElementClass());  
 		Root<District> from = cq.from(getElementClass());
-		Predicate filter = cb.equal(from.get("externalID"), ext_id);
+		Predicate filter = cb.equal(from.get("externalId"), ext_id);
 		
 		//suspending region here temporarily
 		if (reg_ext_id != null) {

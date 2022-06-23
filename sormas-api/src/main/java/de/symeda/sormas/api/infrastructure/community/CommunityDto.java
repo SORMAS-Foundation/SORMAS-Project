@@ -39,7 +39,7 @@ public class CommunityDto extends EntityDto {
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
-	public static final String EXTERNAL_ID = "externalID";
+	public static final String EXTERNAL_ID = "externalId";
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
@@ -49,7 +49,7 @@ public class CommunityDto extends EntityDto {
 	private boolean archived;
 
 	
-	private Long externalID;
+	private Long externalId;
 
 	public CommunityDto(
 		Date creationDate,
@@ -64,7 +64,7 @@ public class CommunityDto extends EntityDto {
 		String districtUuid,
 		String districtName,
 		Long districtExternalId,
-		Long externalID) {
+		Long externalId) {
 
 		super(creationDate, changeDate, uuid);
 		this.archived = archived;
@@ -72,7 +72,7 @@ public class CommunityDto extends EntityDto {
 		this.growthRate = growthRate;
 		this.region = new RegionReferenceDto(regionUuid, regionName, regionExternalId);
 		this.district = new DistrictReferenceDto(districtUuid, districtName, districtExternalId);
-		this.externalID = externalID;
+		this.externalId = externalId;
 	}
 
 	public CommunityDto() {
@@ -119,16 +119,16 @@ public class CommunityDto extends EntityDto {
 		this.archived = archived;
 	}
 
-	public Long getExternalID() {
-		return externalID;
+	public Long getExternalId() {
+		return externalId;
 	}
 
-	public void setExternalID(Long externalID) {
-		this.externalID = externalID;
+	public void setExternalId(Long externalId) {
+		this.externalId = externalId;
 	}
 
 	public CommunityReferenceDto toReference() {
-		return new CommunityReferenceDto(getUuid(), getName(), getExternalID());
+		return new CommunityReferenceDto(getUuid(), getName(), getExternalId());
 	}
 
 	@Override

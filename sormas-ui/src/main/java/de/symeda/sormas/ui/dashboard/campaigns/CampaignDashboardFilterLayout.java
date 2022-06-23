@@ -111,7 +111,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 		final CampaignReferenceDto lastStartedCampaign = dashboardDataProvider.getLastStartedCampaign();
 		if (lastStartedCampaign != null) {
-			System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.  "+lastStartedCampaign);
+		//	System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.  "+lastStartedCampaign);
 			campaignFilter.setValue(lastStartedCampaign);
 			campaignPhaseFilter.setValue("inter-campaign");
 		}
@@ -126,7 +126,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 			dashboardView.refreshDashboard();
 		});
 		addComponent(campaignFormPhaseSelector);
-		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.  "+campaignFormPhaseSelector.getValue().toLowerCase());
+		//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.  "+campaignFormPhaseSelector.getValue().toLowerCase());
 		dashboardDataProvider.setCampaignFormPhase(campaignFormPhaseSelector.getValue().toLowerCase());
 	}
 

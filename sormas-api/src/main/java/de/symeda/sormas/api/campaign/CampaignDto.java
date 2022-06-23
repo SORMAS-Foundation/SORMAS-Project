@@ -125,15 +125,11 @@ public class CampaignDto extends EntityDto {
 	}
 
 	public Set<CampaignFormMetaReferenceDto> getCampaignFormMetas() {
-		System.out.println("******%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*******");
-		return campaignFormMetas;
+			return campaignFormMetas;
 	}
 	
 	public Set<CampaignFormMetaReferenceDto> getCampaignFormMetas(String formType) {
-		//System.out.println("*********************** "+ formType);
-		//System.out.println(campaignFormMetas.stream().filter(e -> e.getFormType().equals(formType)).collect(Collectors.toSet()));
-		//System.out.println(campaignFormMetas);
-		
+	
 		return campaignFormMetas.stream().filter(e -> e.getFormtype().equals(formType)).collect(Collectors.toSet());
 	}
 
@@ -144,11 +140,7 @@ public class CampaignDto extends EntityDto {
 	public List<CampaignDashboardElement> getCampaignDashboardElements() {
 		return campaignDashboardElements;
 	}
-	
-	//public List<CampaignDashboardElement> getCampaignDashboardElements(String formType) {
 
-	//	return campaignDashboardElements;//.stream().filter(e -> e.getPhase().equals(formType)).collect(Collectors.toList());
-	//}
 
 	public void setCampaignDashboardElements(List<CampaignDashboardElement> campaignDashboardElements) {
 		this.campaignDashboardElements = campaignDashboardElements;
