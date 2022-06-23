@@ -228,6 +228,21 @@ public class CreateNewContactSteps implements En {
         });
 
     When(
+        "I fill only mandatory fields with and set relationship with case to ([^\"]*)",
+        (String option) -> {
+          contact = contactService.buildGeneratedContact();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          fillFirstName(contact.getFirstName());
+          fillLastName(contact.getLastName());
+          selectSex(contact.getSex());
+          fillDateOfReport(contact.getReportDate(), Locale.ENGLISH);
+          fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
+          selectResponsibleRegion(contact.getResponsibleRegion());
+          selectResponsibleDistrict(contact.getResponsibleDistrict());
+          fillRelationshipWithCase(option);
+        });
+
+    When(
         "^I fill a mandatory fields for a new contact form for DE$",
         () -> {
           contact = contactService.buildGeneratedContactDE();
