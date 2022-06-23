@@ -1315,7 +1315,6 @@ Feature: Case end to end tests
     Then I click on edit Sample
     Then I validate the existence of two pathogen tests
 
-
   @env_main @#8565
   Scenario: Check an archived case if its read only
     Given API: I create a new person
@@ -1572,4 +1571,43 @@ Feature: Case end to end tests
     And I set Final Laboratory Result to "Positiv" on Create new Sample page
     And I save the created sample
     And I check that text appearing in hover over Expected Follow-up is based on Symptoms collection date
+
+
+  @issue=SORDEV-6839 @env_main
+  Scenario: Check the split of jurisdiction and place of stay
+    Given I log in as a National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I check if place of stay is split to responsible jurisdiction and place of stay
+    And I fill new case form without epid number
+    And I click on Save button in Case form
+    And I check that I get navigated to the Edit Case page
+    And I check the created data is correctly displayed on Edit case page
+    When I click on the Cases button from navbar
+    When I click on the NEW CASE button
+    And I click on Place of stay of this case differs from its responsible jurisdiction in New case form
+    And I fill new case form with different place of stay region and district
+    And I click on Save button in Case form
+    And I check the created data for different place of stay region and district are correctly displayed on Edit case page
+    And I check that the responsible jurisdiction region is different from the place of stay region
+    And I check that the responsible jurisdiction district is different from the place of stay district
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I set Responsible region to "Region1" and District to "District11"
+    And I set Place of stay to FACILITY in New case form
+    And I check that "Community111" option is available in Facility dropdown
+    And I click on Place of stay of this case differs from its responsible jurisdiction in New case form
+    And I set Place of stay region to "Region2" and Place of stay district to "District21"
+    And I check that "Community211" option is available in Facility dropdown
+    And I create a new case with different place of stay and Facility as a Place of stay
+    And I check the facility and place of stay created data are correctly displayed on Edit case page
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I select "POINT OF ENTRY" as a Case Origin in Case Popup
+    And I set Responsible region to "Voreingestellte Bundesländer" and District to "Voreingestellter Landkreis"
+    And I check that "Voreingestellter Einreiseort1" option is available in Point of entry dropdown
+    And I set Responsible region to "Region1" and District to "District11"
+    And I click on Place of stay of this case differs from its responsible jurisdiction in New case form
+    And I set Place of stay region to "Voreingestellte Bundesländer" and Place of stay district to "Voreingestellter Landkreis"
+    And I check that "Voreingestellter Einreiseort1" option is available in Point of entry dropdown
 

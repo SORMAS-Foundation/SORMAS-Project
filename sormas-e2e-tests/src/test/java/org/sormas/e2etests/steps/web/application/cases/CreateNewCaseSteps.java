@@ -1128,6 +1128,120 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
+
+    Then(
+        "^I check if place of stay is split to responsible jurisdiction and place of stay$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(RESPONSIBLE_JURISDICTION_LABEL);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(PLACE_OF_STAY);
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(RESPONSIBLE_JURISDICTION_LABEL),
+              "Responsible jurisdiction");
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(PLACE_OF_STAY_LABEL), "Place of stay");
+          softly.assertAll();
+        });
+
+    And(
+        "^I fill new case form without epid number$",
+        () -> {
+          caze = caseService.buildGeneratedCase();
+          selectCaseOrigin(caze.getCaseOrigin());
+          fillDisease(caze.getDisease());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
+          selectSex(caze.getSex());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
+          fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+          fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+          fillPlaceDescription(caze.getPlaceDescription());
+        });
+
+    And(
+        "^I click on Place of stay of this case differs from its responsible jurisdiction in New case form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DIFFERENT_PLACE_OF_STAY_CHECKBOX_LABEL);
+        });
+
+    And(
+        "^I fill new case form with different place of stay region and district$",
+        () -> {
+          caze = caseService.buildGeneratedCaseWithDifferentPlaceOfStay();
+          selectCaseOrigin(caze.getCaseOrigin());
+          fillDisease(caze.getDisease());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+          selectPlaceOfStayRegion(caze.getPlaceOfStayRegion());
+          selectPlaceOfStayDistrict(caze.getPlaceOfStayDistrict());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
+          selectSex(caze.getSex());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
+          fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+          fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+          fillPlaceDescription(caze.getPlaceDescription());
+        });
+
+    And(
+        "^I create a new case with different place of stay and Facility as a Place of stay$",
+        () -> {
+          caze = caseService.buildCaseWithFacilityAndDifferentPlaceOfStay();
+          fillAllCaseFieldsForFacilityAndDifferentPlaceOfStay(caze);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
+
+    And(
+        "^I set Place of stay to ([^\"]*) in New case form$",
+        (String option) -> {
+          selectPlaceOfStay(option);
+        });
+
+    And(
+        "I check that {string} option is available in Facility dropdown",
+        (String facilityOption) -> {
+          webDriverHelpers.selectFromCombobox(FACILITY_COMBOBOX, facilityOption);
+        });
+
+    And(
+        "I set Responsible region to {string} and District to {string}",
+        (String aRegion, String aDistrict) -> {
+          selectResponsibleRegion(aRegion);
+          selectResponsibleDistrict(aDistrict);
+        });
+
+    And(
+        "I set Place of stay region to {string} and Place of stay district to {string}",
+        (String aRegion, String arDistrict) -> {
+          selectPlaceOfStayRegion(aRegion);
+          selectPlaceOfStayDistrict(arDistrict);
+        });
+
+    And(
+        "I check that {string} option is available in Point of entry dropdown",
+        (String pointOfEntryOption) -> {
+          webDriverHelpers.selectFromCombobox(POINT_OF_ENTRY_COMBOBOX, pointOfEntryOption);
+        });
+  }
+
+  private void selectPlaceOfStayDistrict(String placeOfStayDistrict) {
+    webDriverHelpers.selectFromCombobox(PLACE_OF_STAY_DISTRICT_COMBOBOX, placeOfStayDistrict);
+  }
+
+  private void selectPlaceOfStayRegion(String placeOfStayRegion) {
+    webDriverHelpers.selectFromCombobox(PLACE_OF_STAY_REGION_COMBOBOX, placeOfStayRegion);
   }
 
   private void fillPointOfEntryDetails(String pointOfEntryDetails) {
@@ -1292,6 +1406,22 @@ public class CreateNewCaseSteps implements En {
     fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
     selectFacility(caze.getFacility());
     fillPlaceDescription(caze.getFacilityNameAndDescription());
+  }
+
+  private void fillAllCaseFieldsForFacilityAndDifferentPlaceOfStay(Case caze) {
+    selectCaseOrigin(caze.getCaseOrigin());
+    fillDisease(caze.getDisease());
+    selectResponsibleRegion(caze.getResponsibleRegion());
+    selectResponsibleDistrict(caze.getResponsibleDistrict());
+    selectPlaceOfStay(caze.getPlaceOfStay());
+    selectPlaceOfStayRegion(caze.getPlaceOfStayRegion());
+    selectPlaceOfStayDistrict(caze.getPlaceOfStayDistrict());
+    fillFirstName(caze.getFirstName());
+    fillLastName(caze.getLastName());
+    fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
+    selectSex(caze.getSex());
+    fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+    selectFacility(caze.getFacility());
   }
 
   private List<WebElement> getTableRows() {

@@ -334,4 +334,6 @@ public class EditCasePage {
   public static final By LINK_EVENT_BUTTON_DE = By.id("Ereignis verkn\u00FCpfen");
   public static final By ADD_A_PARTICIPANT_HEADER_DE =
       By.xpath("//*[contains(text(),'Neuen Ereignisteilnehmer hinzuf\u00FCgen')]");
+  public static final By PLACE_OF_STAY_REGION_INPUT = By.cssSelector("#region input");
+  public static final By PLACE_OF_STAY_DISTRICT_INPUT = By.cssSelector("#district input");
 }
