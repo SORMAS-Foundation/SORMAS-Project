@@ -166,7 +166,7 @@ public class SormasErrorHandler implements ErrorHandler {
 
 				return error;
 
-			} else if(rootCause instanceof NO_PERMISSION){
+			} else if (rootCause instanceof NO_PERMISSION) {
 				return new LocalUserError(I18nProperties.getString(Strings.errorForbidden), ContentMode.TEXT, ErrorLevel.ERROR);
 			} else {
 				String message = t.getMessage();

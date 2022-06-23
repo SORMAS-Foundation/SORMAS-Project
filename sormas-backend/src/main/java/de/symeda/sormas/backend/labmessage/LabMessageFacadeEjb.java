@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -68,9 +67,10 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "LabMessageFacade")
-@RolesAllowed(UserRight._LAB_MESSAGES)
+@RightsAllowed(UserRight._LAB_MESSAGES)
 public class LabMessageFacadeEjb implements LabMessageFacade {
 
 	public static final List<String> VALID_SORT_PROPERTY_NAMES = Arrays.asList(
@@ -366,7 +366,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	 * @return An indication whether the fetching of new labMessage was successful. If it was not, an error message meant for UI users.
 	 */
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._SYSTEM,
 		UserRight._LAB_MESSAGES })
 	public LabMessageFetchResult fetchAndSaveExternalLabMessages(Date since) {

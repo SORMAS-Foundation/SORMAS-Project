@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -16,9 +15,10 @@ import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.labmessage.TestReportFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "TestReportFacade")
-@RolesAllowed(UserRight._LAB_MESSAGES)
+@RightsAllowed(UserRight._LAB_MESSAGES)
 public class TestReportFacadeEjb implements TestReportFacade {
 
 	@EJB
