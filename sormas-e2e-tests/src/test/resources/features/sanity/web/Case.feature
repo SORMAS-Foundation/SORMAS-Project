@@ -1169,6 +1169,44 @@ Feature: Case end to end tests
     And I click on SAVE new contact case button
     Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
 
+  @issue=SORDEV-8413 @env_main
+  Scenario: Test Hide specific enum values based on the related disease
+    Given I log in with National User
+    When I click on the Cases button from navbar
+    Then I click on the NEW CASE button
+    And I create a new case with specific data
+    Then I click on New Task from Case page
+    And I check if Task Type has not a environmental health activities option
+    And I check if Task Type has not a safe burial / cremation option
+    And I check if Task Type has not a depopulation of animals option
+    And I check if Task Type has not a testing of animals option
+    Then I click on discard button from new task
+    And I navigate to epidemiological data tab in Edit case page
+    And I click on Exposure details known with YES option
+    Then I click on New Entry in Exposure Details Known in Cases directory
+    And I check if Exposure Type of activity has not a Burial option
+    And I check if Exposure details has a Animal contact option
+    Then I click on discard button from Epidemiological Data Exposure popup
+    And I navigate to case tab
+    Then I click yes on the DISCARD UNSAVED CHANGES popup if it appears
+    Then I click on New Sample
+    And I check if Type of sample has not a stool option
+    And I check if Type of sample has not a rectal swab option
+    And I check if Type of sample has not a crust option
+    And I check if Type of sample has not a urine option
+    And I check if Type of sample has not a nurchal skin biopsy option
+    And I check if Type of sample has not a brain tissue option
+    Then I create a new Sample with specific data and save
+    And I click on edit Sample
+    And I click on the new pathogen test from the Edit Sample page
+    Then I set Test Disease as COVID-19 in new pathogen result
+    And I check if Type of test in new pathogen results has no incubation time option
+    And I check if Type of test in new pathogen results has no Indirect Fluorescent Antibody time option
+    And I check if Type of test in new pathogen results has no Direct Fluorescent Antibody time option
+    And I check if Type of test in new pathogen results has no Microscopy time option
+    And I check if Type of test in new pathogen results has no Gram Stain time option
+    And I check if Type of test in new pathogen results has no Latex Agglutination time option
+
   @issue=SORDEV-9496 @env_de
   Scenario: Test Handle person related fields and search button for travel entry forms
     Given API: I create a new person

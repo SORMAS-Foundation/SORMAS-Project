@@ -262,7 +262,7 @@ public class PathogenTestFacadeEjbPseudonymizationTest extends AbstractBeanTest 
 
 	private void assertPseudonymized(PathogenTestDto pathogenTes) {
 		assertThat(pathogenTes.getLab().getCaption(), is("Lab"));
-		assertThat(pathogenTes.getLabDetails(), isEmptyString());
+		assertThat(pathogenTes.getLabDetails(), is("Test lab details"));
 		assertThat(pathogenTes.getLabUser(), is(nullValue()));
 		assertThat(pathogenTes.getTestTypeText(), isEmptyString());
 	}

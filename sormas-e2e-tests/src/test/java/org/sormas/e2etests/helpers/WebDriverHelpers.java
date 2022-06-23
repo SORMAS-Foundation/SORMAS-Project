@@ -637,6 +637,12 @@ public class WebDriverHelpers {
     return baseSteps.getDriver().findElement(byObject).getText();
   }
 
+  public String getSrcFromWebElement(By byObject) {
+    waitUntilIdentifiedElementIsVisibleAndClickable(byObject);
+    scrollToElement(byObject);
+    return baseSteps.getDriver().findElement(byObject).getAttribute("src");
+  }
+
   public int getNumberOfElements(By byObject) {
     try {
       return baseSteps.getDriver().findElements(byObject).size();
@@ -793,6 +799,18 @@ public class WebDriverHelpers {
       return baseSteps.getDriver().findElement(checkbox).findElement(CHECKBOX_TEXT_LABEL).getText();
     } else {
       throw new Error(String.format("checked was found as NULL for %s: ", checkbox));
+    }
+  }
+
+  public boolean checkCheckboxIsCheckedByHTMLFromParent(
+      final By selector, final String text, final String expected) {
+    try {
+      return getWebElementBySelectorAndText(selector, text)
+          .findElement((By.xpath("./..")))
+          .getAttribute("outerHTML")
+          .contains(expected);
+    } catch (ConditionTimeoutException ignored) {
+      throw new NoSuchElementException(String.format("Element: %s not found", selector));
     }
   }
 

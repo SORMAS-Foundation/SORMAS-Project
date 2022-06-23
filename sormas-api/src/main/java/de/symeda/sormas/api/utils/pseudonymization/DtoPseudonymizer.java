@@ -21,9 +21,12 @@ import java.util.Collection;
 import java.util.List;
 
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.FieldAccessCheckers;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.DefaultValuePseudonymizer;
+
+import static java.util.Objects.nonNull;
 
 public class DtoPseudonymizer {
 
@@ -229,7 +232,9 @@ public class DtoPseudonymizer {
 
 			ValuePseudonymizer<?> pseudonymizer = getPseudonymizer(field, pseudonymizerClass);
 			Object emptyValue = pseudonymizer.pseudonymize(field.get(dto));
-			field.set(dto, emptyValue);
+			if (!(nonNull(field.getAnnotation(SensitiveData.class)) && field.getAnnotation(SensitiveData.class).mandatoryField())) {
+				field.set(dto, emptyValue);
+			}
 		} catch (IllegalAccessException | InstantiationException e) {
 			throw new RuntimeException(e);
 		} finally {

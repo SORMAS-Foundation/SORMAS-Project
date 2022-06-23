@@ -50,6 +50,7 @@ public class CreateNewTaskPage {
       By.xpath("//*[@id='observerUsers']//div[@role='combobox']//input");
   public static final By SELECTED_OBSERVER_USER =
       By.xpath("//*[@id='observerUsers']//div[@class='v-label v-widget v-has-width']");
+  public static final By DISCARD_BUTTON = By.id("discard");
 
   public static By getDeleteIconByUser(String user) {
     return By.xpath(
