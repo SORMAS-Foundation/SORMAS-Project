@@ -195,8 +195,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 					.map(campaignFormMetaReferenceDto -> campaignFormMetaService.getByUuid(campaignFormMetaReferenceDto.getUuid()))
 					.collect(Collectors.toSet()));
 		}
-		System.out.println("))))))))))))))(((((((((((((( "+source.getCampaignDashboardElements());
-		target.setDashboardElements(source.getCampaignDashboardElements());// .stream().filter(e -> e.getDiagramId().equals("")));
+			target.setDashboardElements(source.getCampaignDashboardElements());// .stream().filter(e -> e.getDiagramId().equals("")));
 		return target;
 	}
 	
@@ -209,8 +208,6 @@ public class CampaignFacadeEjb implements CampaignFacade {
 	
 	protected void validate(CampaignDto campaignDto, String formPhase) {
 		final List<CampaignDashboardElement> nonfilteredList = campaignDto.getCampaignDashboardElements();
-		
-		System.out.println(formPhase +" ))))))))formPhaseformPhaseformPhaseformPhaseformPhase(((((((( "+campaignDto.getCampaignDashboardElements().toArray());
 		
 		List<CampaignDashboardElement> campaignDashboardElements;
 		
@@ -301,8 +298,6 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 	protected void validate(CampaignDto campaignDto) {
 		final List<CampaignDashboardElement> campaignDashboardElements = campaignDto.getCampaignDashboardElements();
-		
-		System.out.println(")))))))))))eeeeeeeeeeeeeeeeeeeeee(((((((((( "+campaignDto.getCampaignDashboardElements());
 		
 		
 		if (campaignDashboardElements != null) {
@@ -405,7 +400,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 	@Override
 	public CampaignDto getByUuid(String uuid) {
-		System.out.println("dddddddddddddddddddddddddddd111111111111111111111112222222222222222222222222");
+		//System.out.println("dddddddddddddddddddddddddddd111111111111111111111112222222222222222222222222");
 		return toDto(campaignService.getByUuid(uuid));
 	}
 

@@ -30,15 +30,18 @@ public class CampaignDiagramSeries implements Serializable {
 	private String caption;
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String color;
-
+	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	private String averageDefault;
+	
 	public CampaignDiagramSeries() {
 	}
 
-	public CampaignDiagramSeries(String fieldId, String formId, String referenceValue, String stack) {
+	public CampaignDiagramSeries(String fieldId, String formId, String referenceValue, String stack, String averageDefault) {
 		this.fieldId = fieldId;
 		this.formId = formId;
 		this.referenceValue = referenceValue;
 		this.stack = stack;
+		this.averageDefault = averageDefault;
 	}
 
 	public String getFieldId() {
@@ -106,7 +109,8 @@ public class CampaignDiagramSeries implements Serializable {
 			&& Objects.equals(stack, that.stack)
 			&& Objects.equals(caption, that.caption)
 			&& Objects.equals(color, that.color)
-			&& Objects.equals(populationGroup, that.populationGroup);
+			&& Objects.equals(populationGroup, that.populationGroup)
+			&& Objects.equals(averageDefault, that.averageDefault);
 	}
 
 	public AgeGroup getPopulationGroup() {
@@ -116,9 +120,19 @@ public class CampaignDiagramSeries implements Serializable {
 	public void setPopulationGroup(AgeGroup populationGroup) {
 		this.populationGroup = populationGroup;
 	}
+	
+	
+
+	public String getAverageDefault() {
+		return averageDefault;
+	}
+
+	public void setAverageDefault(String averageDefault) {
+	this.averageDefault = averageDefault;
+	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(fieldId, formId, referenceValue, stack, caption, color, populationGroup);
+		return Objects.hash(fieldId, formId, referenceValue, stack, caption, color, populationGroup, averageDefault);
 	}
 }

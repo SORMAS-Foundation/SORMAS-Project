@@ -141,8 +141,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	private DistrictFacadeEjb.DistrictFacadeEjbLocal districtFacadeEjb;
 
 	public CampaignFormData fromDto(@NotNull CampaignFormDataDto source, boolean checkChangeDate) {
-		CampaignFormData target = DtoHelper.fillOrBuildEntity(source,
-				campaignFormDataService.getByUuid(source.getUuid()), CampaignFormData::new, checkChangeDate);
+		CampaignFormData target = DtoHelper.fillOrBuildEntity(source, campaignFormDataService.getByUuid(source.getUuid()), CampaignFormData::new, checkChangeDate);
 
 		target.setFormValues(source.getFormValues());
 		target.setCampaign(campaignService.getByReferenceDto(source.getCampaign()));
@@ -254,13 +253,13 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 	@Override
 	public CampaignFormDataReferenceDto getReferenceByUuid(String uuid) {
-		System.out.println("sssssssdfgfsdfghjghfhjkssssddsssssssssssssssss");
+		//System.out.println("sssssssdfgfsdfghjghfhjkssssddsssssssssssssssss");
 		return toReferenceDto(campaignFormDataService.getByUuid(uuid));
 	}
 
 	@Override
 	public CampaignFormDataDto getExistingData(CampaignFormDataCriteria criteria) {
-		System.out.println("ssssssssssssddddddddddddsssssssssssssssssssddsssssssssssssssss");
+		//System.out.println("ssssssssssssddddddddddddsssssssssssssssssssddsssssssssssssssss");
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CampaignFormData> cq = cb.createQuery(CampaignFormData.class);
 		Root<CampaignFormData> root = cq.from(CampaignFormData.class);
@@ -281,7 +280,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	public List<CampaignFormDataIndexDto> getIndexList(CampaignFormDataCriteria criteria, Integer first, Integer max,
 			List<SortProperty> sortProperties) {
 
-		System.out.println("sdddddddddddddfdsyu876456uiuytrertyuyttyukldsssssssssssssssss formValues");
+		//System.out.println("sdddddddddddddfdsyu876456uiuytrertyuyttyukldsssssssssssssssss formValues");
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CampaignFormDataIndexDto> cq = cb.createQuery(CampaignFormDataIndexDto.class);
@@ -311,7 +310,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		if (filter != null) {
 			cq.where(filter);
 		} else {
-			System.out.println("DEBUGGER ASDHFUASDFHAS: Filter is null");
+			//System.out.println("DEBUGGER ASDHFUASDFHAS: Filter is null");
 		}
 
 		if (sortProperties != null && sortProperties.size() > 0) {
@@ -366,7 +365,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			cq.orderBy(cb.desc(root.get(CampaignFormData.CHANGE_DATE)));
 		}
 
-		System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf  " + SQLExtractor.from(em.createQuery(cq)));
+		//System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf  " + SQLExtractor.from(em.createQuery(cq)));
 		return QueryHelper.getResultList(em, cq, first, max);
 	}
 
@@ -416,7 +415,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		
 		
 		
-		//System.out.println("t"+resultData);
+		////System.out.println("t"+resultData);
 		
 		return resultData;
 	}
@@ -531,7 +530,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					district.getCaption(), diagramSeries.getFieldId(), diagramSeries.getFormId(), true));
 		}
 		
-		System.out.println("dddddddddddddddddddddd"+resultData);
+		//System.out.println("dddddddddddddddddddddd"+resultData);
 		return resultData;
 	}
 
@@ -548,12 +547,6 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		final DistrictReferenceDto district = campaignDiagramCriteria.getDistrict();
 		final CampaignReferenceDto campaign = campaignDiagramCriteria.getCampaign();
 
-		/*
-		 * String formType = campaignDiagramCriteria.getFormType();
-		 * 
-		 * if ("all phases".equals(formType)) { formType = null; }
-		 */
-
 		for (CampaignDiagramSeries series : diagramSeries) {
 			//@formatter:off
 
@@ -561,7 +554,6 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 				final String regionFilter = region != null ? " AND " + CampaignFormData.REGION + "." + Region.UUID + " = :regionUuid" : "";
 				final String districtFilter = district != null ? " AND " + CampaignFormData.DISTRICT + "." + District.UUID + " = :districtUuid" : "";
 				final String campaignFilter = campaign != null ? " AND " + Campaign.TABLE_NAME + "." + Campaign.UUID + " = :campaignUuid" : "";
-			//	final String campaignPhaseFilter = formType != null ? " AND " + CampaignFormData.CAMPAIGN_FORM_META + ".formtype = '"+formType+"'" : "";
 				//@formatter:on
 
 			// SELECT
@@ -570,9 +562,23 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					.append(".").append(CampaignFormMeta.FORM_ID).append(" as formId");
 
 			if (series.getFieldId() != null) {
-				selectBuilder.append(", jsonData->>'").append(CampaignFormDataEntry.ID)
-						.append("' as fieldId, jsonMeta->>'").append(CampaignFormElement.CAPTION)
-						.append("' as fieldCaption,").append("CASE WHEN ").append("((jsonMeta ->> '")
+				
+				selectBuilder.append(", jsonData->>'")
+				.append(CampaignFormDataEntry.ID)
+				.append("' as fieldId, jsonMeta->>'")
+				.append(CampaignFormElement.CAPTION)
+				.append("' as fieldCaption,");
+				
+				if(series.getReferenceValue() != null) {
+					//System.out.println("+==+ "+series.getReferenceValue());
+					selectBuilder.append("sum (CASE WHEN ").append("((jsonData->>'")
+					.append(CampaignFormDataEntry.VALUE)
+					.append("') = '").append(series.getReferenceValue())
+					.append("') THEN 1 ELSE 0 END)"); 
+				} else {
+						
+					//System.out.println("+==+ "+series.getReferenceValue());
+				selectBuilder.append(" CASE WHEN ((jsonMeta ->> '")
 						.append(CampaignFormElement.TYPE).append("') = '")
 						.append(CampaignFormElementType.NUMBER.toString() + "') OR")
 
@@ -580,13 +586,28 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 						.append(CampaignFormElementType.DECIMAL.toString() + "') OR")
 
 						.append("((jsonMeta ->> '").append(CampaignFormElement.TYPE).append("') = '")
-						.append(CampaignFormElementType.RANGE.toString() + "')")
+						.append(CampaignFormElementType.RANGE.toString() + "')");
 
-						.append("THEN round(SUM (CAST (jsonData->>'").append(CampaignFormDataEntry.VALUE)
-						.append("' AS NUMERIC)), 2) ELSE sum(CASE WHEN(jsonData->>'").append(CampaignFormDataEntry.VALUE)
-						.append("') = '").append(series.getReferenceValue())
-						.append("' THEN 1 ELSE 0 END) END as sumValue,"); 
-			} else {
+				if (series.getAverageDefault() != null && "true".equals(series.getAverageDefault())) {
+					selectBuilder.append(" THEN avg(cast_number(jsonData->>'");
+				} else {
+					selectBuilder.append(" THEN sum(cast_number(jsonData->>'");
+				}
+						
+				selectBuilder.append(CampaignFormDataEntry.VALUE)
+						.append("', 0)) ELSE sum(CASE WHEN(jsonData->>'").append(CampaignFormDataEntry.VALUE)
+					.append("') = '")//.append(series.getReferenceValue())
+					.append("' THEN 0 ELSE 1 END) END");
+					
+				}
+						selectBuilder.append(" as sumValue,");
+				
+						//.append("THEN round(SUM (CAST (jsonData->>'").append(CampaignFormDataEntry.VALUE)
+						//.append("' AS NUMERIC)), 2) ELSE sum(CASE WHEN(jsonData->>'").append(CampaignFormDataEntry.VALUE)
+						//.append("') = '").append(series.getReferenceValue())
+						//.append("' THEN 1 ELSE 0 END) END as sumValue,");
+			}
+		else {
 				selectBuilder.append(", null as fieldId, null as fieldCaption, count(formId) as sumValue,");
 			}
 
@@ -675,10 +696,8 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 			groupByBuilder.append(jurisdictionGrouping);
 
-			System.out.println("DEBUG SQL x selectBuilder == "+selectBuilder);
-			System.out.println(joinBuilder);
-			System.out.println(whereBuilder );
-			System.out.println(groupByBuilder);
+			System.out.println("getDataDiagram "+selectBuilder.toString() + " FROM " + CampaignFormData.TABLE_NAME +" "+ joinBuilder +" "+ whereBuilder +" "+ groupByBuilder);
+			
 			// +selectBuilder.toString() + " FROM " + CampaignFormData.TABLE_NAME +
 			// joinBuilder
 
@@ -704,7 +723,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			if (series.getFieldId() != null) {
 				seriesDataQuery.setParameter("campaignFormDataId", series.getFieldId());
 			}
-
+			
 			@SuppressWarnings("unchecked")
 			List<Object[]> resultList = seriesDataQuery.getResultList(); 
 			
@@ -712,13 +731,13 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 			resultData.addAll(resultList.stream()
 					.map((result) -> new CampaignDiagramDataDto((String) result[0], (String) result[1],
-							(String) result[2], (String) result[3], (Number) result[4], (String) result[5],
+							(String) result[2], (String) result[3], result[4].toString(), (String) result[5],
 							(String) result[6],
 							// (String) result[7],
 							series.getStack()))
 					.collect(Collectors.toList()));
 		}
-		System.out.println("resultData - "+ resultData.toString());//SQLExtractor.from(seriesDataQuery));
+		//System.out.println("resultData - "+ resultData.toString());//SQLExtractor.from(seriesDataQuery));
 		return resultData;
 	}
 
@@ -750,28 +769,46 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			//	final String campaignPhaseFilter = formType != null ? " AND " + CampaignFormData.CAMPAIGN_FORM_META + ".formtype = '"+formType+"'" : "";
 				//@formatter:on
 
-			// SELECT
-			StringBuilder selectBuilder = new StringBuilder("SELECT ").append(CampaignFormMeta.TABLE_NAME).append(".")
-					.append(CampaignFormMeta.UUID).append(" as formUuid,").append(CampaignFormMeta.TABLE_NAME)
-					.append(".").append(CampaignFormMeta.FORM_ID).append(" as formId");
+				StringBuilder selectBuilder = new StringBuilder("SELECT ").append(CampaignFormMeta.TABLE_NAME).append(".")
+						.append(CampaignFormMeta.UUID).append(" as formUuid,").append(CampaignFormMeta.TABLE_NAME)
+						.append(".").append(CampaignFormMeta.FORM_ID).append(" as formId");
 
-			if (series.getFieldId() != null) {
-				selectBuilder.append(", jsonData->>'").append(CampaignFormDataEntry.ID)
-						.append("' as fieldId, jsonMeta->>'").append(CampaignFormElement.CAPTION)
-						.append("' as fieldCaption,").append("CASE WHEN ").append("((jsonMeta ->> '")
-						.append(CampaignFormElement.TYPE).append("') = '")
-						.append(CampaignFormElementType.NUMBER.toString() + "') OR")
-
-						.append("((jsonMeta ->> '").append(CampaignFormElement.TYPE).append("') = '")
-						.append(CampaignFormElementType.DECIMAL.toString() + "') OR")
-
-						.append("((jsonMeta ->> '").append(CampaignFormElement.TYPE).append("') = '")
-						.append(CampaignFormElementType.RANGE.toString() + "')")
-
-						.append("THEN round(SUM (CAST (jsonData->>'").append(CampaignFormDataEntry.VALUE)
-						.append("' AS NUMERIC)), 2) ELSE sum(CASE WHEN(jsonData->>'").append(CampaignFormDataEntry.VALUE)
+				if (series.getFieldId() != null) {
+					
+					selectBuilder.append(", jsonData->>'")
+					.append(CampaignFormDataEntry.ID)
+					.append("' as fieldId, jsonMeta->>'")
+					.append(CampaignFormElement.CAPTION)
+					.append("' as fieldCaption,");
+					
+					if(series.getReferenceValue() != null) {
+						selectBuilder.append("sum (CASE WHEN ").append("((jsonData->>'")
+						.append(CampaignFormDataEntry.VALUE)
 						.append("') = '").append(series.getReferenceValue())
-						.append("' THEN 1 ELSE 0 END) END as sumValue");
+						.append("') THEN 1 ELSE 0 END)"); 
+					} else {
+					selectBuilder.append(" CASE WHEN ((jsonMeta ->> '")
+							.append(CampaignFormElement.TYPE).append("') = '")
+							.append(CampaignFormElementType.NUMBER.toString() + "') OR")
+
+							.append("((jsonMeta ->> '").append(CampaignFormElement.TYPE).append("') = '")
+							.append(CampaignFormElementType.DECIMAL.toString() + "') OR")
+
+							.append("((jsonMeta ->> '").append(CampaignFormElement.TYPE).append("') = '")
+							.append(CampaignFormElementType.RANGE.toString() + "')");
+
+					if(series.getAverageDefault() != null && "true".equals(series.getAverageDefault())){
+							selectBuilder.append(" THEN avg(cast_number(jsonData->>'");
+					}else{
+						selectBuilder.append(" THEN sum(cast_number(jsonData->>'");
+					}
+					selectBuilder.append(CampaignFormDataEntry.VALUE)
+							.append("', 0)) ELSE sum(CASE WHEN(jsonData->>'").append(CampaignFormDataEntry.VALUE)
+						.append("') = '")//.append(series.getReferenceValue())
+						.append("' THEN 0 ELSE 1 END) END");
+						
+					}
+							selectBuilder.append(" as sumValue");
 			} else {
 				selectBuilder.append(", null as fieldId, null as fieldCaption, count(formId) as sumValue");
 			}
@@ -837,37 +874,9 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			if (series.getFieldId() != null) {
 				groupByBuilder.append(", jsonData->>'").append(CampaignFormDataEntry.ID).append("', jsonMeta->>'")
 						.append(CampaignFormElement.CAPTION).append("', jsonMeta->>'").append(CampaignFormElement.TYPE)
-						.append("'");
+						.append("', campaigns.name");
 			}
 
-		/*	switch (campaignDiagramCriteria.getCampaignJurisdictionLevelGroupBy()) {
-			case REGION:
-				jurisdictionGrouping = ", " + Region.TABLE_NAME + "." + Region.UUID + ", " + Region.TABLE_NAME + "."
-						+ Region.NAME;
-				break;
-			case DISTRICT:
-				jurisdictionGrouping = ", " + District.TABLE_NAME + "." + District.UUID + ", " + District.TABLE_NAME
-						+ "." + District.NAME;
-				break;
-			case COMMUNITY:
-				jurisdictionGrouping = ", " + Community.TABLE_NAME + "." + Community.UUID + ", " + Community.TABLE_NAME
-						+ "." + Community.NAME;
-				break;
-			case AREA:
-			default:
-				jurisdictionGrouping = ", " + Area.TABLE_NAME + "." + Area.UUID + ", " + Area.TABLE_NAME + "."
-						+ Area.NAME;
-			}
-*/
-		//	groupByBuilder.append(jurisdictionGrouping);
-
-			/*System.out.println("DEBUG SQL x selectBuilder == "+selectBuilder);
-			System.out.println(joinBuilder);
-			System.out.println(whereBuilder );
-			System.out.println(groupByBuilder);
-			*/
-			// +selectBuilder.toString() + " FROM " + CampaignFormData.TABLE_NAME +
-			// joinBuilder
 
 			//@formatter:off
 			Query seriesDataQuery = em.createNativeQuery(
@@ -893,9 +902,8 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			}
 			
 
-			System.out.println(selectBuilder.toString() + " FROM " + CampaignFormData.TABLE_NAME +" / "+ joinBuilder +" / "+ whereBuilder +" / "+ groupByBuilder);
-			
-
+			System.out.println("getDiagramDataByGroups"+selectBuilder.toString() + " FROM " + CampaignFormData.TABLE_NAME +" "+ joinBuilder +" "+ whereBuilder +" "+ groupByBuilder);
+		
 			@SuppressWarnings("unchecked")
 			List<Object[]> resultList = seriesDataQuery.getResultList(); 
 			
@@ -903,7 +911,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 			resultData.addAll(resultList.stream()
 					.map((result) -> new CampaignDiagramDataDto((String) result[0], (String) result[1],
-							(String) result[2], (String) result[3], result[4].toString(), //(String) result[5],
+							(String) result[2], (String) result[3], result[4].toString(),// (String) result[5],
 							//(String) result[6],
 							// (String) result[7],
 							series.getStack()))

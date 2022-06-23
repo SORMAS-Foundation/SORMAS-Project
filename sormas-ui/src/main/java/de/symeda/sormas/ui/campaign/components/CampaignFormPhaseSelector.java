@@ -55,7 +55,7 @@ public class CampaignFormPhaseSelector extends HorizontalLayout {
 			//phaseComboBox.setEmptySelectionCaption(I18nProperties.getCaption(Captions.campaignAllForms));
 			
 		
-			System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ");
+			//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ");
 		
 			CssStyles.style(phaseComboBox, CssStyles.SOFT_REQUIRED);
 			addComponent(phaseComboBox);

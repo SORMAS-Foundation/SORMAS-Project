@@ -68,7 +68,9 @@ public class CampaignDiagramDataDto implements Serializable {
 		String formId,
 		boolean hasAgeGroupData) {
 		this.fieldCaption = fieldCaption;
+		
 		this.valueSum = valueSum;
+		
 		this.groupingKey = groupingKey;
 		this.groupingCaption = groupingCaption;
 		this.fieldId = fieldId;
@@ -82,7 +84,7 @@ public class CampaignDiagramDataDto implements Serializable {
 		String formId,
 		String fieldId,
 		String fieldCaption,
-		Number valueSum,
+		String valueSum,
 		Object groupingKey,
 		String groupingCaption,
 		String stack) {
@@ -90,7 +92,7 @@ public class CampaignDiagramDataDto implements Serializable {
 		this.formId = formId;
 		this.fieldId = fieldId;
 		this.fieldCaption = fieldCaption;
-		this.valueSum = valueSum;
+		this.valueSum = new BigDecimal(valueSum);
 		this.groupingKey = groupingKey;
 		this.groupingCaption = groupingCaption;
 		this.stack = stack;
@@ -110,9 +112,7 @@ public class CampaignDiagramDataDto implements Serializable {
 			this.formId = formId;
 			this.fieldId = fieldId;
 			this.fieldCaption = fieldCaption;
-			
 			this.valueSum = new BigDecimal(valueSum);
-			System.out.println("+++++++++++++++++++++++++++++++ "+this.valueSum);
 		//	this.groupingKey = groupingKey;
 			this.groupingCaption = "working";
 			this.stack = stack;
@@ -152,12 +152,10 @@ public class CampaignDiagramDataDto implements Serializable {
 	}
 
 	public Number getValueSum() {
-		System.out.println(valueSum);
 		return valueSum;
 	}
 
 	public void setValueSum(Number valueSum) {
-		System.out.println(valueSum);
 		this.valueSum = valueSum;
 	}
 

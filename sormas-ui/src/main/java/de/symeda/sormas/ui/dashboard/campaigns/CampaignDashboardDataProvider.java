@@ -168,7 +168,7 @@ public class CampaignDashboardDataProvider {
 	private void createCampaignDashboarDiagrams() {
 
 		campaignDashboardDiagrams.clear();
-		System.out.println("~~~~~~~444444444444444PATCHED4444444444444~~~~~~~~~~```    "+getFormType());
+	//	System.out.println("~~~~~~~444444444444444PATCHED4444444444444~~~~~~~~~~```    "+getFormType());
 
 		if (campaign != null) {
 			FacadeProvider.getCampaignFacade().validate(campaign, getFormType());
@@ -198,7 +198,7 @@ public class CampaignDashboardDataProvider {
 		getCampaignDashboardDiagrams().forEach(campaignDashboardDiagramDto -> {
 			final CampaignDashboardElement campaignDashboardElement = campaignDashboardDiagramDto.getCampaignDashboardElement();
 			if (campaignDashboardElement.getTabId().equals(tabId) && (subTabId == null || campaignDashboardElement.getSubTabId().equals(subTabId))) {
-				System.out.println(tabId+ "TAB_ID~~~~~~~~~~~~"+ subTabId +" = subTabId~~~~~~~~~~~~~~~~~~~~~"+campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getDiagramType() +"~~~~~~~~~~~~~~~~~```    "+getFormType());
+				//System.out.println(tabId+ "TAB_ID~~~~~~~~~~~~"+ subTabId +" = subTabId~~~~~~~~~~~~~~~~~~~~~"+campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getDiagramType() +"~~~~~~~~~~~~~~~~~```    "+getFormType());
 			
 				if(campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getDiagramType() == DiagramType.PIE || campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getDiagramType() == DiagramType.DOUGHNUT || campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getDiagramType() == DiagramType.CARD) {	
 					

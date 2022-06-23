@@ -66,7 +66,7 @@ public class CampaignFormsGridComponent extends AbstractEditableGrid<CampaignFor
 		if (event.getTabSheet().getSelectedTab().getCaption().equals("Pre-Campaign Phase")) {
 			gridItems = gridItemss;
 			gridItems.removeIf(n -> (n.getFormtype().contains("Pre-Campaign")));
-			System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  --  "+gridItems);
+			//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  --  "+gridItems);
 			
 			grid.setItems(gridItems);
 			
