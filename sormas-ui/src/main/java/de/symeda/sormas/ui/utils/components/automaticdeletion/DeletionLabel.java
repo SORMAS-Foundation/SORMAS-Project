@@ -40,22 +40,22 @@ public class DeletionLabel extends HorizontalLayout {
 		}
 	}
 
-	private void setDeleteLabel(DeletionInfoDto deletionInfoDto){
+	private void setDeleteLabel(DeletionInfoDto deletionInfoDto) {
 		setMargin(false);
 		setSpacing(false);
 
 		String infoIconDesciption = String.format(
-				I18nProperties.getString(Strings.infoAutomaticDeletionTooltip),
-				DateFormatHelper.formatDate(deletionInfoDto.getDeletionDate()),
-				DateFormatHelper.formatDate(deletionInfoDto.getEndOfProcessing()),
-				formatDeletionPeriod(deletionInfoDto.getDeletionPeriod()));
+			I18nProperties.getString(Strings.infoAutomaticDeletionTooltip),
+			DateFormatHelper.formatDate(deletionInfoDto.getDeletionDate()),
+			DateFormatHelper.formatDate(deletionInfoDto.getEndOfProcessing()),
+			formatDeletionPeriod(deletionInfoDto.getDeletionPeriod()));
 		Label infoIcon = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 		infoIcon.setDescription(infoIconDesciption, ContentMode.HTML);
 		infoIcon.addStyleNames(CssStyles.VSPACE_TOP_4, CssStyles.HSPACE_RIGHT_4);
 		addComponent(infoIcon);
 
-		String infoText = String
-				.format(I18nProperties.getString(Strings.infoAutomaticDeletion), DateFormatHelper.formatDate(deletionInfoDto.getDeletionDate()));
+		String infoText =
+			String.format(I18nProperties.getString(Strings.infoAutomaticDeletion), DateFormatHelper.formatDate(deletionInfoDto.getDeletionDate()));
 		Label infoTextLabel = new Label(infoText, ContentMode.HTML);
 		infoTextLabel.addStyleName(CssStyles.VSPACE_TOP_4);
 		addComponent(infoTextLabel);
