@@ -637,6 +637,12 @@ public class WebDriverHelpers {
     return baseSteps.getDriver().findElement(byObject).getText();
   }
 
+  public String getSrcFromWebElement(By byObject) {
+    waitUntilIdentifiedElementIsVisibleAndClickable(byObject);
+    scrollToElement(byObject);
+    return baseSteps.getDriver().findElement(byObject).getAttribute("src");
+  }
+
   public int getNumberOfElements(By byObject) {
     try {
       return baseSteps.getDriver().findElements(byObject).size();
