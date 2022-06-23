@@ -57,36 +57,44 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 @SuppressWarnings("serial")
 public class GridExportStreamResource {
 
-	public static StreamResource createStreamResource(Grid<?> grid, ExportEntityName entityName, String... excludePropertyIds) {
-		return new GridExportStreamResource(grid, null, entityName, Arrays.asList(excludePropertyIds), Collections.emptyList()).getStreamResource();
+	public static StreamResource createStreamResource(String formname, String campaign, Grid<?> grid, ExportEntityName entityName, String... excludePropertyIds) {
+		return new GridExportStreamResource(formname, campaign, grid, null, entityName, Arrays.asList(excludePropertyIds), Collections.emptyList()).getStreamResource();
 	}
 
 	public static StreamResource createStreamResourceWithSelectedItems(
+		String formname,
+		String campaign,
 		Grid<?> grid,
 		Supplier<Set<?>> getSelectedRows,
 		ExportEntityName entityName,
 		String... excludePropertyIds) {
-		return new GridExportStreamResource(grid, getSelectedRows, entityName, Arrays.asList(excludePropertyIds), Collections.emptyList())
+		return new GridExportStreamResource(formname, campaign, grid, getSelectedRows, entityName, Arrays.asList(excludePropertyIds), Collections.emptyList())
 			.getStreamResource();
 	}
 
 	public static StreamResource createStreamResource(
+		String formname,
+		String campaign,
 		Grid<?> grid,
 		ExportEntityName entityName,
 		List<String> excludePropertyIds,
 		List<String> includePropertyIds) {
-		return new GridExportStreamResource(grid, null, entityName, excludePropertyIds, includePropertyIds).getStreamResource();
+		return new GridExportStreamResource(formname, campaign, grid, null, entityName, excludePropertyIds, includePropertyIds).getStreamResource();
 	}
 
 	private final StreamResource streamResource;
 
+	
+	
 	private GridExportStreamResource(
+		String formname,
+		String campaign,
 		Grid<?> grid,
 		Supplier<Set<?>> getSelectedRows,
 		ExportEntityName entityName,
 		List<String> excludePropertyIds,
 		List<String> includePropertyIds) {
-		String filename = DownloadUtil.createFileNameWithCurrentDate(entityName, ".csv");
+		String filename = DownloadUtil.createFileNameWithCurrentDatex(formname, campaign, entityName, ".csv");
 		GridExportStreamSource streamSource = new GridExportStreamSource(grid, getSelectedRows, excludePropertyIds, includePropertyIds);
 		this.streamResource = new StreamResource(streamSource, filename);
 		this.streamResource.setMIMEType("text/csv");

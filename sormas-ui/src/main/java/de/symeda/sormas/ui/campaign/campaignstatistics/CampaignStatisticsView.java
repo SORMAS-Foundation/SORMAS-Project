@@ -25,7 +25,9 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
 import de.symeda.sormas.api.campaign.statistics.CampaignStatisticsCriteria;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UserProvider;
@@ -70,23 +72,47 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 				exportLayout.setWidth(250, Unit.PIXELS);
 			}
 
-			PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD,
-					exportLayout);
+			PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
 			addHeaderComponent(exportPopupButton);
+
 			{
-				StreamResource streamResource = GridExportStreamResource.createStreamResource(grid,
-						ExportEntityName.CAMPAIGN_STATISTICS, EDIT_BTN_ID);
-				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export,
-						Strings.infoBasicExport);
+				StreamResource streamResource = GridExportStreamResource.createStreamResource("","",grid, ExportEntityName.CAMPAIGN_STATISTICS, EDIT_BTN_ID);
+				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
+				
+				
 			}
+			
+			exportPopupButton.addClickListener(e -> {
+				exportLayout.removeAllComponents();
+				String formNamee = criteria.getCampaignFormMeta() == null ? "All_Forms" : criteria.getCampaignFormMeta().getCaption();
+				String camNamee = campaignSelector.getValue() == null ? "All_Campaigns" : campaignSelector.getValue().toString();
+				StreamResource streamResourcex = GridExportStreamResource.createStreamResource(camNamee+"_"+formNamee,"APMIS",grid, ExportEntityName.CAMPAIGN_STATISTICS, EDIT_BTN_ID);
+			//	streamResource = GridExportStreamResource.createStreamResource("", "", grid, ExportEntityName.CAMPAIGN_DATA, EDIT_BTN_ID);
+				addExportButton(streamResourcex, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
+			});
 		}
 
 		VerticalLayout mainLayout = new VerticalLayout();
-
+		JurisdictionLevel level = null;
 		HorizontalLayout jurisdictionLayout = new HorizontalLayout();
+		
 		JurisdictionSelector jurisdictionSelector = new JurisdictionSelector();
 		jurisdictionSelector.addValueChangeListener(e -> {
-			CampaignJurisdictionLevel groupingValue = (CampaignJurisdictionLevel) e.getValue();
+			CampaignJurisdictionLevel groupingValue = null;
+			String selectorValue = e.getValue().toString();
+			switch(selectorValue) {
+					
+				case "I18nProperties.getCaption(Captions.Campaign_area)":
+					groupingValue = CampaignJurisdictionLevel.getByJurisdictionLevel(level.AREA);
+				case "I18nProperties.getCaption(Captions.Campaign_region)":
+					groupingValue = CampaignJurisdictionLevel.getByJurisdictionLevel(level.REGION);
+				case "I18nProperties.getCaption(Captions.Campaign_district)":
+					groupingValue = CampaignJurisdictionLevel.getByJurisdictionLevel(level.DISTRICT);
+				case "I18nProperties.getCaption(Captions.Campaign_community)":
+					groupingValue = CampaignJurisdictionLevel.getByJurisdictionLevel(level.COMMUNITY);
+			}
+			
+			//CampaignJurisdictionLevel groupingValue = (CampaignJurisdictionLevel) e.getValue();
 			criteria.setGroupingLevel(groupingValue);
 			grid.setColumnsVisibility(groupingValue);
 			grid.reload();

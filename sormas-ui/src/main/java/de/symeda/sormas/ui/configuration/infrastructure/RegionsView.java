@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.configuration.infrastructure;
+package de.symeda.sormas.ui.configuration.infrastructure; 
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -122,7 +122,7 @@ public class RegionsView extends AbstractConfigurationView {
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.REGIONS, RegionsGrid.EDIT_BTN_ID);
+			StreamResource streamResource = GridExportStreamResource.createStreamResource("","",grid, ExportEntityName.REGIONS, RegionsGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}

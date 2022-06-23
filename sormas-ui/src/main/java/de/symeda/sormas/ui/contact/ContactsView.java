@@ -221,7 +221,7 @@ public class ContactsView extends AbstractView {
 			addHeaderComponent(exportButton);
 
 			{
-				StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+				StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems("","",
 					grid,
 					() -> this.viewConfiguration.isInEagerMode() ? this.grid.asMultiSelect().getSelectedItems() : Collections.emptySet(),
 					ExportEntityName.CONTACTS);

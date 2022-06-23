@@ -4,6 +4,9 @@ import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAUL
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.text.ParseException;
 
 import javax.validation.constraints.Size;
 
@@ -93,6 +96,29 @@ public class CampaignDiagramDataDto implements Serializable {
 		this.stack = stack;
 	}
 
+	
+	public CampaignDiagramDataDto(
+			String formMetaUuid,
+			String formId,
+			String fieldId,
+			String fieldCaption,
+			String valueSum,
+			//Object groupingKey,
+			//String groupingCaption,
+			String stack){
+			this.formMetaUuid = formMetaUuid;
+			this.formId = formId;
+			this.fieldId = fieldId;
+			this.fieldCaption = fieldCaption;
+			
+			this.valueSum = new BigDecimal(valueSum);
+			System.out.println("+++++++++++++++++++++++++++++++ "+this.valueSum);
+		//	this.groupingKey = groupingKey;
+			this.groupingCaption = "working";
+			this.stack = stack;
+		}
+	
+	
 	public String getFormMetaUuid() {
 		return formMetaUuid;
 	}
@@ -126,10 +152,12 @@ public class CampaignDiagramDataDto implements Serializable {
 	}
 
 	public Number getValueSum() {
+		System.out.println(valueSum);
 		return valueSum;
 	}
 
 	public void setValueSum(Number valueSum) {
+		System.out.println(valueSum);
 		this.valueSum = valueSum;
 	}
 

@@ -156,10 +156,24 @@ public class CampaignDataView extends AbstractCampaignView {
 			addHeaderComponent(exportPopupButton);
 
 			{
-				StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.CAMPAIGN_DATA, EDIT_BTN_ID);
+				StreamResource streamResource = GridExportStreamResource.createStreamResource("","",grid, ExportEntityName.CAMPAIGN_DATA, EDIT_BTN_ID);
 				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
+				
+				
 			}
+			
+			exportPopupButton.addClickListener(e -> {
+				exportLayout.removeAllComponents();
+				String formNamee = criteria.getCampaignFormMeta() == null ? "All_Forms" : criteria.getCampaignFormMeta().getCaption();
+				String camNamee = campaignSelector.getValue() == null ? "All_Campaigns" : campaignSelector.getValue().toString();
+				StreamResource streamResourcex = GridExportStreamResource.createStreamResource(camNamee+"_"+formNamee,"APMIS",grid, ExportEntityName.CAMPAIGN_DATA, EDIT_BTN_ID);
+			//	streamResource = GridExportStreamResource.createStreamResource("", "", grid, ExportEntityName.CAMPAIGN_DATA, EDIT_BTN_ID);
+				addExportButton(streamResourcex, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
+			});
+			
 		}
+		
+		
 
 		Panel newFormPanel = new Panel();
 		{

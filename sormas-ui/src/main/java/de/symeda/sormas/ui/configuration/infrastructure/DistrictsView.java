@@ -128,7 +128,7 @@ public class DistrictsView extends AbstractConfigurationView {
 			addHeaderComponent(exportButton);
 
 			StreamResource streamResource =
-				GridExportStreamResource.createStreamResource(grid, ExportEntityName.DISTRICTS, DistrictsGrid.EDIT_BTN_ID);
+				GridExportStreamResource.createStreamResource("","",grid, ExportEntityName.DISTRICTS, DistrictsGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}

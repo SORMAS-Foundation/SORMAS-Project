@@ -95,12 +95,14 @@ public class Region extends InfrastructureAdo {
 		this.growthRate = growthRate;
 	}
 
+	
+	//unsure... changed these to Id instead of ID...
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
-	public Long getExternalID() {
+	public Long getExternalId() {
 		return externalId;
 	}
 
-	public void setExternalID(Long externalId) {
+	public void setExternalId(Long externalId) {
 		this.externalId = externalId;
 	}
 

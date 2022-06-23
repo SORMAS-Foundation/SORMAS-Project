@@ -8,6 +8,7 @@ import com.vaadin.shared.data.sort.SortDirection;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.area.AreaCriteria;
 import de.symeda.sormas.api.infrastructure.area.AreaDto;
@@ -53,7 +54,7 @@ public class AreasGrid extends FilteredGrid<AreaDto, AreaCriteria> {
 			
 			column.setCaption(I18nProperties.getPrefixCaption(AreaDto.I18N_PREFIX, column.getId(), column.getCaption()));
 			if(column.getCaption().equalsIgnoreCase("Name")) {
-				column.setCaption("Region");
+				column.setCaption(I18nProperties.getCaption(Captions.region));
 			}
 			//write an if statement that checks if the column.getcaption = name and set it to region
 		}

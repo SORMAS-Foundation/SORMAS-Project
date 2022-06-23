@@ -13,7 +13,7 @@ public class JurisdictionSelector extends ComboBox {
 
 	public JurisdictionSelector() {
 		setCaption(I18nProperties.getCaption(Captions.Campaign_grouping));
-		setItems(AREA, REGION, DISTRICT, COMMUNITY);
+		setItems(I18nProperties.getCaption(Captions.Campaign_area), I18nProperties.getCaption(Captions.Campaign_region), I18nProperties.getCaption(Captions.Campaign_district), I18nProperties.getCaption(Captions.Campaign_community));
 		setEmptySelectionAllowed(false);
 		setValue(AREA);
 	}

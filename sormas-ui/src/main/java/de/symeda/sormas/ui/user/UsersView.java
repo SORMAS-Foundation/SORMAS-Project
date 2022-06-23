@@ -195,14 +195,14 @@ public class UsersView extends AbstractView {
 
 		HorizontalLayout filterLayout = new HorizontalLayout();
 		filterLayout.setMargin(false);
-		filterLayout.setSpacing(true);
-		filterLayout.setSizeUndefined();
+		filterLayout.setSpacing(true); 
+		filterLayout.setSizeUndefined(); 
 
 		activeFilter = ComboBoxHelper.createComboBoxV7();
-		activeFilter.setCaption(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_CAPTIONACTIVE));
+		activeFilter.setCaption(I18nProperties.getCaption(Captions.User_active)); 
 		activeFilter.setId(UserDto.ACTIVE);
 		activeFilter.setWidth(200, Unit.PIXELS);
-		activeFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.ACTIVE));
+		activeFilter.setInputPrompt(I18nProperties.getCaption(Captions.User_active));
 		activeFilter.addItems(ACTIVE_FILTER, INACTIVE_FILTER);
 		activeFilter.addValueChangeListener(e -> {
 			criteria.active(
@@ -254,8 +254,8 @@ public class UsersView extends AbstractView {
 
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(140, Unit.PIXELS);
-			regionFilter.setInputPrompt("Province");
-			regionFilter.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, "Province"));
+			regionFilter.setInputPrompt(I18nProperties.getCaption(Captions.region));
+			regionFilter.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, I18nProperties.getCaption(Captions.region)));
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(areaFilter.getId()));
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
@@ -296,9 +296,9 @@ public class UsersView extends AbstractView {
 		
 		districtFilter = ComboBoxHelper.createComboBoxV7();
 		districtFilter.setId(CaseDataDto.DISTRICT);
-		districtFilter.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
+		districtFilter.setCaption(I18nProperties.getCaption(Captions.district));
 		districtFilter.setWidth(140, Unit.PIXELS);
-		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
+		districtFilter.setInputPrompt(I18nProperties.getCaption(Captions.district));
 		districtFilter.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
 		districtFilter.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();

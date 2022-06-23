@@ -127,7 +127,7 @@ public class SubcontinentsView extends AbstractConfigurationView {
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource = GridExportStreamResource.createStreamResource(
+			StreamResource streamResource = GridExportStreamResource.createStreamResource("","",
 				grid,
 				ExportEntityName.SUBCONTINENTS,
 				Collections.singletonList(SubcontinentsGrid.EDIT_BTN_ID),

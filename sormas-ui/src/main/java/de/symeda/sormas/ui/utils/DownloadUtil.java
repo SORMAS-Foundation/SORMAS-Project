@@ -655,8 +655,16 @@ public final class DownloadUtil {
 		dialog.addCloseListener(closeListener);
 	}
 
+	public static String createFileNameWithCurrentDatex(String formname, String campaign, ExportEntityName entityName, String fileExtension) {
+		String instanceName = FacadeProvider.getConfigFacade().getSormasInstanceName().toLowerCase(); //The export is being prepared
+		String processedInstanceName = DataHelper.cleanStringForFileName(campaign);
+		String processedEntityName = DataHelper.cleanStringForFileName(entityName.getLocalizedNameInSystemLanguage());
+		String exportDate = DateHelper.formatDateForExport(new Date());
+		return String.join("_", processedInstanceName, formname, processedEntityName, exportDate, fileExtension);
+	}
+	
 	public static String createFileNameWithCurrentDate(ExportEntityName entityName, String fileExtension) {
-		String instanceName = FacadeProvider.getConfigFacade().getSormasInstanceName().toLowerCase();
+		String instanceName = FacadeProvider.getConfigFacade().getSormasInstanceName().toLowerCase(); //The export is being prepared
 		String processedInstanceName = DataHelper.cleanStringForFileName(instanceName);
 		String processedEntityName = DataHelper.cleanStringForFileName(entityName.getLocalizedNameInSystemLanguage());
 		String exportDate = DateHelper.formatDateForExport(new Date());

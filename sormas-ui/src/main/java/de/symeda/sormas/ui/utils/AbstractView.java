@@ -79,6 +79,7 @@ public abstract class AbstractView extends VerticalLayout implements View {
 
 			// note: splitting title and subtitle into labels does not work with the css
 			String viewTitle = I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", "."));
+			
 			String viewSubTitle = I18nProperties.getPrefixCaption("View", viewName.replaceAll("/", ".") + ".sub", "");
 			viewTitleLabel = new Label(viewTitle);
 			viewTitleLabel.setSizeUndefined();
@@ -99,6 +100,11 @@ public abstract class AbstractView extends VerticalLayout implements View {
 	protected void addHeaderComponent(Component c) {
 		viewHeader.addComponent(c);
 		viewHeader.setComponentAlignment(c, Alignment.MIDDLE_RIGHT);
+		
+	}
+	
+	protected void removeHeaderComponent(Component c) {
+		viewHeader.removeComponent(c);
 	}
 
 	protected void setMainHeaderComponent(Component c) {
@@ -206,6 +212,15 @@ public abstract class AbstractView extends VerticalLayout implements View {
 
 		new FileDownloader(streamResource).extend(exportButton);
 	}
+	
+	protected void removeExportButton(
+			
+			PopupButton exportPopupButton,
+			VerticalLayout exportLayout
+			) {
+			exportLayout.removeAllComponents();
+
+		}
 
 	/**
 	 * Iterates through the prefixes to determines the caption for the specified propertyId.

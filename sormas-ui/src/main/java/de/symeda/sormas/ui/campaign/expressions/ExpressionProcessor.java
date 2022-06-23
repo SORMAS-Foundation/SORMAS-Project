@@ -10,6 +10,7 @@ import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.math3.util.Precision;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.expression.MapAccessor;
@@ -92,10 +93,11 @@ public class ExpressionProcessor {
 			try {
 				final Expression expression = expressionParser.parseExpression(e.getExpression());
 				final Class<?> valueType = expression.getValueType(context);
-				final Object value = expression.getValue(context, valueType);
+				final Object value = expression.getValue(context, valueType); 
+				//final Object valx = Precision.round((double) value, 3);
 				final List <String> opt = null;
 				campaignFormBuilder
-					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), CampaignFormElementType.fromString(e.getType()), value, opt);
+					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), CampaignFormElementType.fromString(e.getType()), Precision.round((double) value, 2), opt);
 			} catch (SpelEvaluationException evaluationException) {
 				LOG.error("Error evaluating expression: {} / {}", evaluationException.getMessageCode(), evaluationException.getMessage());
 			}

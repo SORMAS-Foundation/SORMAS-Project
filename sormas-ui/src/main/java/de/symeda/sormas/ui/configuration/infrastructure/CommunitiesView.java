@@ -131,7 +131,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 			addHeaderComponent(exportButton);
 
 			StreamResource streamResource =
-				GridExportStreamResource.createStreamResource(grid, ExportEntityName.COMMUNITIES, CommunitiesGrid.EDIT_BTN_ID);
+				GridExportStreamResource.createStreamResource("","",grid, ExportEntityName.COMMUNITIES, CommunitiesGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}

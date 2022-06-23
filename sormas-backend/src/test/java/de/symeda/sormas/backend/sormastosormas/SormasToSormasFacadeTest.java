@@ -213,7 +213,7 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 
 	protected void mockDefaultServerAccess() {
 		File file = new File("src/test/java/de/symeda/sormas/backend/sormastosormas/serveraccessdefault");
-
+		
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_FILES_PATH, file.getAbsolutePath());
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_ID, DEFAULT_SERVER_ID);
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_KEYSTORE_NAME, "sormas_a.sormas2sormas.keystore.p12");
@@ -283,9 +283,9 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		PointOfEntry pointOfEntry = creator.createPointOfEntry(pointOfEntryName, region, district, pointOfEntryExternalId);
 
 		rdcf.localRdcf = new TestDataCreator.RDCF(
-			new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalID()),
-			new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalID()),
-			new CommunityReferenceDto(community.getUuid(), community.getName(), community.getExternalID()),
+			new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalId()),
+			new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalId()),
+			new CommunityReferenceDto(community.getUuid(), community.getName(), community.getExternalId()),
 			new FacilityReferenceDto(facility.getUuid(), facility.getName(), facility.getExternalID()),
 			new PointOfEntryReferenceDto(pointOfEntry.getUuid(), pointOfEntry.getName(), PointOfEntryType.AIRPORT, pointOfEntry.getExternalID()));
 

@@ -72,7 +72,7 @@ public class CampaignFormPhaseSelector extends HorizontalLayout {
 			addComponent(formPhaseLabel);
 			setComponentAlignment(formPhaseLabel, Alignment.MIDDLE_CENTER);
 
-			phaseComboBox = new ComboBox<>("CAMPAIGN PHASE");
+			phaseComboBox = new ComboBox<>(I18nProperties.getCaption(Captions.Campaign_phase));
 
            // phaseComboBox.setItems(CampaignPhase.values());
 			

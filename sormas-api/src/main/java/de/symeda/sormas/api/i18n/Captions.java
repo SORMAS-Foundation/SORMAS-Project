@@ -204,6 +204,8 @@ public interface Captions {
 	String bulkTaskPriority = "bulkTaskPriority";
 	String bulkTaskStatus = "bulkTaskStatus";
 	String Campaign = "Campaign";
+	String Campaigns = "Campaigns";
+	String Campaign_phase = "Campaign.phase";
 	String Campaign_area = "Campaign.area";
 	String Campaign_community = "Campaign.community";
 	String Campaign_creatingUser = "Campaign.creatingUser";
@@ -218,6 +220,8 @@ public interface Captions {
 	String Campaign_startDate = "Campaign.startDate";
 	String Campaign_formType = "Campaign.formType";
 	String Campaign_campaignTypes = "Campaign.campaignTypes";
+	String Campaign_statistics = "Campaign.statistics";
+	String Campaign_data = "Campaign.data";
 	String campaignActiveCampaigns = "campaignActiveCampaigns";
 	String campaignAdditionalChart = "campaignAdditionalChart";
 	String campaignAdditionalForm = "campaignAdditionalForm";

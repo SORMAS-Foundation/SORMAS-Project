@@ -296,7 +296,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 		if (entity == null) {
 			return null;
 		}
-		return new RegionReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
+		return new RegionReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalId());
 	}
 
 	public RegionDto toDto(Region entity) {
@@ -311,7 +311,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 		dto.setEpidCode(entity.getEpidCode());
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setArchived(entity.isArchived());
-		dto.setExternalID(entity.getExternalID());
+		dto.setExternalID(entity.getExternalId());
 		dto.setArea(AreaFacadeEjb.toReferenceDto(entity.getArea()));
 		dto.setCountry(CountryFacadeEjb.toReferenceDto(entity.getCountry()));
 
@@ -330,7 +330,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 		dto.setEpidCode(entity.getEpidCode());
 		dto.setPopulation(populationDataFacade.getRegionPopulation(dto.getUuid()));
 		dto.setGrowthRate(entity.getGrowthRate());
-		dto.setExternalID(entity.getExternalID());
+		dto.setExternalID(entity.getExternalId());
 		dto.setArea(AreaFacadeEjb.toReferenceDto(entity.getArea()));
 		dto.setCountry(CountryFacadeEjb.toReferenceDto(entity.getCountry()));
 
@@ -408,7 +408,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 		target.setEpidCode(source.getEpidCode());
 		target.setGrowthRate(source.getGrowthRate());
 		target.setArchived(source.isArchived());
-		target.setExternalID(source.getExternalID());
+		target.setExternalId(source.getExternalID());
 		target.setArea(areaService.getByReferenceDto(source.getArea()));
 		target.setCountry(countryService.getByReferenceDto(source.getCountry()));
 

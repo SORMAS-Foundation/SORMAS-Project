@@ -304,7 +304,7 @@ public class CaseContactsView extends AbstractCaseView {
 			if (!UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 				statusFilterLayout.setExpandRatio(exportButton, 1);
 			}
-			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems("","",
 				grid,
 				() -> viewConfiguration.isInEagerMode() ? this.grid.asMultiSelect().getSelectedItems() : null,
 				ExportEntityName.CONTACTS);

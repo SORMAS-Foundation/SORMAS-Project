@@ -87,7 +87,7 @@ public class TasksView extends AbstractView {
 			basicExportButton.setDescription(I18nProperties.getString(Strings.infoBasicExport));
 			basicExportButton.setWidth(100, Unit.PERCENTAGE);
 			exportLayout.addComponent(basicExportButton);
-			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems("","",
 				taskListComponent.getGrid(),
 				() -> viewConfiguration.isInEagerMode() ? taskListComponent.getGrid().asMultiSelect().getSelectedItems() : Collections.emptySet(),
 				ExportEntityName.TASKS,

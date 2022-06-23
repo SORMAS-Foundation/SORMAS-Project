@@ -90,7 +90,7 @@ public class AreasView extends AbstractConfigurationView {
 			btnExport.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(btnExport);
 
-			StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.AREAS, AreasGrid.EDIT_BTN_ID);
+			StreamResource streamResource = GridExportStreamResource.createStreamResource("","",grid, ExportEntityName.AREAS, AreasGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(btnExport);
 		}

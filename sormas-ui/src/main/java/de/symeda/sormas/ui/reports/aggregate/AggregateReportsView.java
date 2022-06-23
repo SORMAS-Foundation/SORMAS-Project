@@ -114,7 +114,7 @@ public class AggregateReportsView extends AbstractView {
 
 			addHeaderComponent(btnExport);
 
-			StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.AGGREGATE_REPORTS);
+			StreamResource streamResource = GridExportStreamResource.createStreamResource("","",grid, ExportEntityName.AGGREGATE_REPORTS);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(btnExport);
 		}

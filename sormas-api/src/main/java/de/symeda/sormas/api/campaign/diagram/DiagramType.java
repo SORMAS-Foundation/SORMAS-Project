@@ -7,5 +7,6 @@ public enum DiagramType {
     AREA,
     LINE,
     PIE,
-    DOUGHNUT
+    DOUGHNUT,
+    CARD
 }

@@ -47,7 +47,7 @@ public class District extends InfrastructureAdo {
 	public static final String RISK = "risk";
 	public static final String COMMUNITIES = "communities";
 	public static final String GROWTH_RATE = "growthRate";
-	public static final String EXTERNAL_ID = "externalID";
+	public static final String EXTERNAL_ID = "externalId";
 
 	private String name;
 	private Region region;
@@ -55,7 +55,7 @@ public class District extends InfrastructureAdo {
 	private String risk;
 	private List<Community> communities;
 	private Float growthRate;
-	private Long externalID;
+	private Long externalId;
 
 	public String getName() {
 		return name; 
@@ -110,12 +110,12 @@ public class District extends InfrastructureAdo {
 	}
 
 	//@Column(length = CHARACTER_LIMIT_DEFAULT)
-	public Long getExternalID() {
-		return externalID;
+	public Long getExternalId() {
+		return externalId;
 	}
 
-	public void setExternalID(Long externalID) {
-		this.externalID = externalID;
+	public void setExternalId(Long externalId) {
+		this.externalId = externalId;
 	}
 
 	@Override

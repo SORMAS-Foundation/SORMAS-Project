@@ -30,7 +30,7 @@ public class CampaignResource {
 	@POST
 	@Path("/query")
 	public List<CampaignDto> getByUuids(List<String> uuids) {
-		return FacadeProvider.getCampaignFacade().getByUuids(uuids);
+		return FacadeProvider.getCampaignFacade().getByUuids(uuids); 
 	}
 
 	@GET

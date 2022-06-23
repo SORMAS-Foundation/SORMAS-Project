@@ -29,7 +29,7 @@ public class GridTemplateAreaCreator {
 		oneHeightAreaPercentage = gcd(heights);
 		nrOfGridAreaColumns = 100 / oneWidthAreaPercentage;
 		widthsSum = widths.stream().reduce(0, Integer::sum);
-		nrOfGridAreaRows = (widthsSum / 100 + (widthsSum % 100 == 0 ? 0 : 1)) * 100 / gcd(heights);
+		nrOfGridAreaRows = (widthsSum / 100 + (widthsSum % 100 == 0 ? 0 : 1)) * 100 / gcd(heights); //grid-container
 
 		grid = new String[nrOfGridAreaColumns][nrOfGridAreaRows];
 

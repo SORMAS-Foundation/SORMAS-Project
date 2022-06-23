@@ -33,7 +33,10 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.Size;
 
+import org.apache.commons.math3.util.Precision;
+
 import com.google.common.collect.Sets;
+import com.vaadin.data.converter.StringToFloatConverter;
 import com.vaadin.server.Page;
 import com.vaadin.server.Page.Styles;
 import com.vaadin.server.Sizeable.Unit;
@@ -47,6 +50,8 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property.ReadOnlyException;
 import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.data.util.ObjectProperty;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.util.converter.Converter.ConversionException;
 import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.v7.ui.CheckBox;
@@ -256,10 +261,12 @@ public class CampaignFormBuilder {
 				UiFieldAccessCheckers.getNoop());
 
 		T field;
+
+		Converter converter = null;
 		if (type == CampaignFormElementType.YES_NO) {
 			field = fieldFactory.createField(Boolean.class, (Class<T>) NullableOptionGroup.class);
 		} else if (type == CampaignFormElementType.TEXT || type == CampaignFormElementType.NUMBER
-				|| type == CampaignFormElementType.DECIMAL || type == CampaignFormElementType.RANGE) {
+				|| type == CampaignFormElementType.RANGE || type == CampaignFormElementType.DECIMAL) {
 			field = fieldFactory.createField(String.class, (Class<T>) TextField.class);
 		} else if (type == CampaignFormElementType.TEXTBOX) {
 			field = fieldFactory.createField(String.class, (Class<T>) TextArea.class);
@@ -332,18 +339,23 @@ public class CampaignFormBuilder {
 						I18nProperties.getValidationError(Validations.onlyNumbersAllowed, caption)));
 			}
 			if (type == CampaignFormElementType.DECIMAL) {
+
+				((TextField) field).addValueChangeListener(e -> {
+					if (e.getProperty().getValue() != null && !e.getProperty().getValue().toString().contains(".")) {
+						e.getProperty().setValue(e.getProperty().getValue().toString() + ".0");
+					}
+				});
+
 				((TextField) field).addValidator(new NumberNumericValueValidator(
 						I18nProperties.getValidationError(Validations.onlyDecimalNumbersAllowed, caption), null, null,
 						true));
 			}
 
 			if (type == CampaignFormElementType.RANGE) {
-				((TextField) field)
-						.addValidator(
-								new NumberNumericValueValidator(
-										I18nProperties.getValidationError(Validations.numberNotInRange)+" i.e " + constrainsVal.getMin()
-												+ " and " + constrainsVal.getMax(),
-										constrainsVal.getMin(), constrainsVal.getMax()));
+				((TextField) field).addValidator(new NumberNumericValueValidator(
+						I18nProperties.getValidationError(Validations.numberNotInRange) + " i.e "
+								+ constrainsVal.getMin() + " and " + constrainsVal.getMax(),
+						constrainsVal.getMin(), constrainsVal.getMax()));
 			}
 			// TODO: ADD VALIDATOR TYPE TEXTBOX, LIMITING ALLOWED TEXT/CHAR
 
@@ -419,52 +431,50 @@ public class CampaignFormBuilder {
 			break;
 		case TEXT:
 		case NUMBER:
-		case DECIMAL:
 		case RANGE:
-if(value != null) {
-				
-				if(value.equals(true)) {
-					field.setEnabled(true);
-				} else if(value.equals(false)){
-					field.setEnabled(false);
-					//Notification.show("Warning:", "Expression resulted in wrong value please check your data 3", Notification.TYPE_WARNING_MESSAGE);
-				}
-			};
+
 			((TextField) field).setValue(value != null ? value.toString() : null);
 			break;
-		case TEXTBOX:
-if(value != null) {
+		case DECIMAL:
+			if (value != null) {
 				
-				if(value.equals(true)) {
+				((TextField) field).setValue(value != null ? value.toString()  : null);
+			}
+			break;
+		case TEXTBOX:
+			if (value != null) {
+
+				if (value.equals(true)) {
 					field.setEnabled(true);
-				} else if(value.equals(false)){
+				} else if (value.equals(false)) {
 					field.setEnabled(false);
-					//Notification.show("Warning:", Title "Expression resulted in wrong value please check your data 1", Notification.TYPE_WARNING_MESSAGE);
+					// Notification.show("Warning:", Title "Expression resulted in wrong value
+					// please check your data 1", Notification.TYPE_WARNING_MESSAGE);
 				}
-			};
+			}
+			;
 			((TextArea) field).setValue(value != null ? value.toString() : null);
 			break;
 		case DATE:
-			if(value != null) {
+			if (value != null) {
 				try {
-					
-					String vc = value+"";
-					Date dst = vc.contains("00:00:00") ? dateFormatter(value+"") : new Date((Long) value); ;
-					
-						((DateField) field).setValue(value != null ? dst : null);
-						
-						
-						
-						
-					} catch (ReadOnlyException | ConversionException e) {
-									// TODO Auto-generated catch block
+
+					String vc = value + "";
+					Date dst = vc.contains("00:00:00") ? dateFormatter(value + "") : new Date((Long) value);
+					;
+
+					((DateField) field).setValue(value != null ? dst : null);
+
+				} catch (ReadOnlyException | ConversionException e) {
+					// TODO Auto-generated catch block
 					((DateField) field).setValue(null);
 					e.printStackTrace();
 				} catch (ParseException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace(); 
-					}
-			};
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			;
 			break;
 		case RADIO:
 			((OptionGroup) field).select(Sets.newHashSet(value).toString().replace("[", "").replace("]", ""));
@@ -479,39 +489,41 @@ if(value != null) {
 				for (int i = 0; i < strArray.length; i++) {
 					((OptionGroup) field).select(strArray[i]);
 				}
-			};
+			}
+			;
 			break;
 		case CHECKBOXBASIC:
-			
+
 			if (value != null) {
 				String dcxs = value.toString().replace("[", "").replace("]", "").replaceAll(", ", ",");
 				String strArraxy[] = dcxs.split(",");
 				for (int i = 0; i < strArraxy.length; i++) {
 					((OptionGroup) field).select(strArraxy[i]);
 				}
-			};
+			}
+			;
 			break;
 		case DROPDOWN:
-			
-			if(value != null) {
-				
-				
-				
-				if(value.equals(true)) {
+
+			if (value != null) {
+
+				if (value.equals(true)) {
 					field.setEnabled(true);
-				} else if(value.equals(false)){
+				} else if (value.equals(false)) {
 					field.setEnabled(false);
-				//	Notification.show("Warning:", "Expression resulted in wrong value please check your data 4", Notification.TYPE_WARNING_MESSAGE);
+					// Notification.show("Warning:", "Expression resulted in wrong value please
+					// check your data 4", Notification.TYPE_WARNING_MESSAGE);
 				}
-			};
+			}
+			;
 			if (value != null) {
 				String dcxsq = value.toString().replace("[", "").replace("]", "").replaceAll(", ", ",");
 				String strArraxyq[] = dcxsq.split(",");
 				for (int i = 0; i < strArraxyq.length; i++) {
 					((ComboBox) field).select(strArraxyq[i]);
 				}
-			};
-			
+			}
+			;
 
 			break;
 		default:
@@ -521,23 +533,24 @@ if(value != null) {
 
 	private Date dateFormatter(String value) throws ParseException {
 		// TODO Auto-generated method stub
-	
-		 System.out.println(">>>>>>>>>>>>>>>>>>> daTE VALEUE to checked >>" +value);
-		 String dateStr = value;
-		 DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
-		 Date date;
-		
-			date = (Date)formatter.parse(dateStr);
-		
-		 System.out.println(date);        
 
-		 Calendar cal = Calendar.getInstance();
-		 cal.setTime(date);
-		 String formatedDate = cal.get(Calendar.DATE) + "/" + (cal.get(Calendar.MONTH) + 1) + "/" + cal.get(Calendar.YEAR);
-		 System.out.println("formatedDate : " + formatedDate); 
-		 
-		Date res = new Date(formatedDate+"");  
-		
+		System.out.println(">>>>>>>>>>>>>>>>>>> daTE VALEUE to checked >>" + value);
+		String dateStr = value;
+		DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
+		Date date;
+
+		date = (Date) formatter.parse(dateStr);
+
+		System.out.println(date);
+
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		String formatedDate = cal.get(Calendar.DATE) + "/" + (cal.get(Calendar.MONTH) + 1) + "/"
+				+ cal.get(Calendar.YEAR);
+		System.out.println("formatedDate : " + formatedDate);
+
+		Date res = new Date(formatedDate + "");
+
 		return res;
 	}
 
@@ -597,13 +610,18 @@ if(value != null) {
 			Field<?> field = fields.get(id);
 			if (field instanceof NullableOptionGroup) {
 				return new CampaignFormDataEntry(id, ((NullableOptionGroup) field).getNullableValue());
-			} else if (field instanceof DateField) {
-				
-				System.out.println("----xx: "+field.getValue());
-				
-			//	System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ field is date"+ dateFormat.format(((DateField) field).getDateFormat().format(field.getValue()+"", null)));
-				return new CampaignFormDataEntry(id, ((DateField) field).getDateFormat().format(field.getValue()+"", null));
-			}else {
+			} /*
+				 * else if (field instanceof DateField) {
+				 * 
+				 * System.out.println("----xx: "+field.getValue());
+				 * 
+				 * // Sys The number you entered is not valid.
+				 * println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ field is date"
+				 * + dateFormat.format(((DateField)
+				 * field).getDateFormat().format(field.getValue()+"", null))); return new
+				 * CampaignFormDataEntry(id, ((DateField)
+				 * field).getDateFormat().format(field.getValue()+"", null)); }
+				 */else {
 				return new CampaignFormDataEntry(id, field.getValue());
 			}
 		}).collect(Collectors.toList());

@@ -142,7 +142,7 @@ public class FacilitiesView extends AbstractConfigurationView {
 			addHeaderComponent(exportPopupButton);
 
 			StreamResource basicExportStreamResource =
-				GridExportStreamResource.createStreamResource(grid, ExportEntityName.FACILITIES, FacilitiesGrid.EDIT_BTN_ID);
+				GridExportStreamResource.createStreamResource("","",grid, ExportEntityName.FACILITIES, FacilitiesGrid.EDIT_BTN_ID);
 
 			addExportButton(
 				basicExportStreamResource,

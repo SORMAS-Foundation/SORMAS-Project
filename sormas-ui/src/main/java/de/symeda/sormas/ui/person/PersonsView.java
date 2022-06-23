@@ -86,7 +86,7 @@ public class PersonsView extends AbstractView {
 			basicExportButton.setWidth(100, Unit.PERCENTAGE);
 			exportLayout.addComponent(basicExportButton);
 			StreamResource streamResource =
-				GridExportStreamResource.createStreamResourceWithSelectedItems(grid, Collections::emptySet, ExportEntityName.PERSONS);
+				GridExportStreamResource.createStreamResourceWithSelectedItems("","",grid, Collections::emptySet, ExportEntityName.PERSONS);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(basicExportButton);
 

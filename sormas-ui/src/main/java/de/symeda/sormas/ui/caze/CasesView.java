@@ -287,7 +287,7 @@ public class CasesView extends AbstractView {
 			addHeaderComponent(exportPopupButton);
 
 			{
-				StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
+				StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems("","",
 					grid,
 					() -> this.viewConfiguration.isInEagerMode() ? this.grid.asMultiSelect().getSelectedItems() : Collections.emptySet(),
 					ExportEntityName.CASES);

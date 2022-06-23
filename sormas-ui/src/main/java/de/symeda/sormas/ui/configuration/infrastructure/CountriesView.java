@@ -132,7 +132,7 @@ public class CountriesView extends AbstractConfigurationView {
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource = GridExportStreamResource.createStreamResource(
+			StreamResource streamResource = GridExportStreamResource.createStreamResource("","",
 				grid,
 				ExportEntityName.COUNTRIES,
 				Collections.singletonList(CountriesGrid.EDIT_BTN_ID),
