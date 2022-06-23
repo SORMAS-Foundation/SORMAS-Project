@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -40,9 +39,10 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "TreatmentFacade")
-@RolesAllowed(UserRight._CASE_VIEW)
+@RightsAllowed(UserRight._CASE_VIEW)
 public class TreatmentFacadeEjb implements TreatmentFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -104,21 +104,21 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		TreatmentJoins joins = new TreatmentJoins(treatment);
 
 		cq.multiselect(
-				treatment.get(Treatment.UUID),
-				treatment.get(Treatment.TREATMENT_TYPE),
-				treatment.get(Treatment.TREATMENT_DETAILS),
-				treatment.get(Treatment.TYPE_OF_DRUG),
-				treatment.get(Treatment.TREATMENT_DATE_TIME),
-				treatment.get(Treatment.DOSE),
-				treatment.get(Treatment.ROUTE),
-				treatment.get(Treatment.ROUTE_DETAILS),
-				treatment.get(Treatment.EXECUTING_CLINICIAN),
-				JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaseJoins()))));
+			treatment.get(Treatment.UUID),
+			treatment.get(Treatment.TREATMENT_TYPE),
+			treatment.get(Treatment.TREATMENT_DETAILS),
+			treatment.get(Treatment.TYPE_OF_DRUG),
+			treatment.get(Treatment.TREATMENT_DATE_TIME),
+			treatment.get(Treatment.DOSE),
+			treatment.get(Treatment.ROUTE),
+			treatment.get(Treatment.ROUTE_DETAILS),
+			treatment.get(Treatment.EXECUTING_CLINICIAN),
+			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaseJoins()))));
 
 		Predicate filter = null;
 		filter = joins.getPrescription().get(Prescription.UUID).in(prescriptionUuids);
 
-		if(filter != null) {
+		if (filter != null) {
 			cq.where(filter);
 		}
 
@@ -141,7 +141,9 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 
 	@Override
-	@RolesAllowed({UserRight._TREATMENT_CREATE, UserRight._TREATMENT_EDIT})
+	@RightsAllowed({
+		UserRight._TREATMENT_CREATE,
+		UserRight._TREATMENT_EDIT })
 	public TreatmentDto saveTreatment(@Valid TreatmentDto source) {
 		Treatment existingTreatment = service.getByUuid(source.getUuid());
 		TreatmentDto existingDto = toDto(existingTreatment);
@@ -154,20 +156,21 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 
 	@Override
-	@RolesAllowed({UserRight._TREATMENT_EDIT})
-	public void unlinkPrescriptionFromTreatments(List<String> treatmentUuids){
+	@RightsAllowed({
+		UserRight._TREATMENT_EDIT })
+	public void unlinkPrescriptionFromTreatments(List<String> treatmentUuids) {
 		service.unlinkPrescriptionFromTreatments(treatmentUuids);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._TREATMENT_DELETE)
+	@RightsAllowed(UserRight._TREATMENT_DELETE)
 	public void deleteTreatment(String treatmentUuid) {
 		Treatment treatment = service.getByUuid(treatmentUuid);
 		service.deletePermanent(treatment);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._TREATMENT_DELETE)
+	@RightsAllowed(UserRight._TREATMENT_DELETE)
 	public void deleteTreatments(List<String> treatmentUuids) {
 		service.deletePermanentByUuids(treatmentUuids);
 	}

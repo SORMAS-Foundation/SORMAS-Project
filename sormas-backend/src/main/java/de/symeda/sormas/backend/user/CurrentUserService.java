@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.user;
 
 import javax.annotation.Resource;
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -27,6 +28,9 @@ public class CurrentUserService {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
+
+	@EJB
+	private UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 
 	private final UserCache userCache;
 
@@ -63,7 +67,10 @@ public class CurrentUserService {
 	}
 
 	public boolean hasUserRight(UserRight userRight) {
-		return context.isCallerInRole(userRight.name());
+		// this only works for user rights that are used in RolesAllowed or DeclareRoles annotations.
+		// return context.isCallerInRole(userRight.name());
+		// We don't want to have to do this for all the user rights, so we check against the user rights of the current user instead
+		return userRoleConfigFacade.hasUserRight(getCurrentUser().getUserRoles(), userRight); // would be better to cache this, but will be changed in 1.73 anyway
 	}
 
 	// We need a clean transaction as we do not want call potential entity listeners which would lead to recursion

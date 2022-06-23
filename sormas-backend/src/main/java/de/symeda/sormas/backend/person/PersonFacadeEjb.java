@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -171,9 +170,10 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "PersonFacade")
-@RolesAllowed(UserRight._PERSON_VIEW)
+@RightsAllowed(UserRight._PERSON_VIEW)
 public class PersonFacadeEjb implements PersonFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -256,7 +256,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._PERSON_VIEW,
 		UserRight._EXTERNAL_VISITS })
 	public Boolean isValidPersonUuid(String personUuid) {
@@ -285,7 +285,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._PERSON_EDIT)
+	@RightsAllowed(UserRight._PERSON_EDIT)
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		personService.updateExternalData(externalData);
 	}
@@ -310,7 +310,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._PERSON_VIEW,
 		UserRight._EXTERNAL_VISITS })
 	public PersonDto getPersonByUuid(String uuid) {
@@ -322,7 +322,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._PERSON_VIEW,
 		UserRight._EXTERNAL_VISITS,
 		UserRight._SYSTEM })
@@ -332,7 +332,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._PERSON_VIEW,
 		UserRight._EXTERNAL_VISITS,
 		UserRight._SYSTEM })
@@ -413,13 +413,13 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._PERSON_EDIT)
+	@RightsAllowed(UserRight._PERSON_EDIT)
 	public PersonDto savePerson(@Valid PersonDto source) throws ValidationRuntimeException {
 		return savePerson(source, true, true, false);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._PERSON_EDIT)
+	@RightsAllowed(UserRight._PERSON_EDIT)
 	public PersonDto savePerson(@Valid PersonDto source, boolean skipValidation) throws ValidationRuntimeException {
 		return savePerson(source, true, true, skipValidation);
 	}
@@ -491,7 +491,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	 *             if the passed source person to be saved contains invalid data
 	 */
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	@RolesAllowed(UserRight._PERSON_EDIT)
+	@RightsAllowed(UserRight._PERSON_EDIT)
 	public Pair<CaseClassification, PersonDto> savePersonWithoutNotifyingExternalJournal(@Valid PersonDto source) throws ValidationRuntimeException {
 		Person existingPerson = personService.getByUuid(source.getUuid());
 		PersonDto existingPersonDto = toDto(existingPerson);
@@ -651,7 +651,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	//@formatter:off
 	@Override
-	@RolesAllowed(UserRight._EXTERNAL_VISITS)
+	@RightsAllowed(UserRight._EXTERNAL_VISITS)
 	public List<PersonFollowUpEndDto> getLatestFollowUpEndDates(Date since, boolean forSymptomJournal) {
 		Stream<PersonFollowUpEndDto> contactLatestDates = getContactLatestFollowUpEndDates(since, forSymptomJournal);
 		boolean caseFollowupEnabled = featureConfigurationFacade.isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
@@ -876,7 +876,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._EXTERNAL_VISITS)
+	@RightsAllowed(UserRight._EXTERNAL_VISITS)
 	public boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status) {
 		PersonDto person = getPersonByUuid(personUuid);
 		person.setSymptomJournalStatus(status);
@@ -1059,7 +1059,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._PERSON_EDIT)
+	@RightsAllowed(UserRight._PERSON_EDIT)
 	public long setMissingGeoCoordinates(boolean overwriteExistingCoordinates) {
 
 		// The uuid-list is filtered by the users jurisdiction and retrieved in batches to avoid timeouts
@@ -1400,7 +1400,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._PERSON_EXPORT)
+	@RightsAllowed(UserRight._PERSON_EXPORT)
 	public List<PersonExportDto> getExportList(PersonCriteria criteria, int first, int max) {
 		long startTime = DateHelper.startTime();
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -1699,7 +1699,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._PERSON_EDIT)
+	@RightsAllowed(UserRight._PERSON_EDIT)
 	public void mergePerson(PersonDto leadPerson, PersonDto otherPerson) {
 		// Make sure the resulting person does not have multiple primary contact details
 		Set primaryContactDetailTypes = new HashSet<>();
