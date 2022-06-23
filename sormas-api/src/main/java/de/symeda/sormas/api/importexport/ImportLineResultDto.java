@@ -66,4 +66,8 @@ public class ImportLineResultDto<E> implements Serializable {
 	public static <E> ImportLineResultDto<E> duplicateResult(E entities) {
 		return new ImportLineResultDto<>(ImportLineResult.DUPLICATE, null, entities);
 	}
+
+	public static <E> ImportLineResultDto<E> skippedResult(String message) {
+		return new ImportLineResultDto<>(ImportLineResult.SKIPPED, message, null);
+	}
 }

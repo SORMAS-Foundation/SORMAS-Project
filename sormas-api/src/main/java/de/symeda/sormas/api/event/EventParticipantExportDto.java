@@ -401,6 +401,7 @@ public class EventParticipantExportDto implements Serializable {
 	@Order(23)
 	@ExportProperty(EventParticipantExportDto.BURIAL_INFO)
 	@ExportGroup(ExportGroupType.CORE)
+	@HideForCountries
 	public BurialInfoDto getBurialInfo() {
 		return burialInfo;
 	}

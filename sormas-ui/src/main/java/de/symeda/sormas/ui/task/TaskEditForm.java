@@ -54,7 +54,6 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -215,7 +214,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			// For facility users, this checks where the facility is located and considers the district & community of the faciliy the "higher level"
 			// For national users, there is no higher level
 			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ASSIGN_TASKS_TO_HIGHER_LEVEL)
-				&& UserRole.getJurisdictionLevel(userDto.getUserRoles()) != JurisdictionLevel.NATION) {
+				&& UserProvider.getCurrent().getJurisdictionLevel() != JurisdictionLevel.NATION) {
 
 				List<UserReferenceDto> superordinateUsers = FacadeProvider.getUserFacade().getUsersWithSuperiorJurisdiction(userDto);
 				if (superordinateUsers != null) {
@@ -329,10 +328,10 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			boolean creating = value.getCreationDate() == null;
 
 			UserDto user = UserProvider.getCurrent().getUser();
-			JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(user.getUserRoles());
+			JurisdictionLevel jurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
 			boolean creator = value.getCreatorUser() != null && user.getUuid().equals(value.getCreatorUser().getUuid());
 			boolean nationalOrAdmin = jurisdictionLevel == null || jurisdictionLevel == JurisdictionLevel.NATION;
-			boolean supervisor = UserRole.isSupervisor(user.getUserRoles());
+			boolean regional = jurisdictionLevel == JurisdictionLevel.REGION;
 			boolean assignee = user.equals(getFieldGroup().getField(TaskDto.ASSIGNEE_USER).getValue());
 			boolean freeEditingAllowed = FacadeProvider.getFeatureConfigurationFacade()
 				.isPropertyValueTrue(FeatureType.TASK_MANAGEMENT, FeatureTypeProperty.ALLOW_FREE_EDITING);
@@ -355,7 +354,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 					TaskDto.CREATOR_COMMENT,
 					TaskDto.OBSERVER_USERS);
 				setReadOnly(
-					!(freeEditingAllowed || creator || supervisor || nationalOrAdmin),
+					!(freeEditingAllowed || creator || regional || nationalOrAdmin),
 					TaskDto.PRIORITY,
 					TaskDto.SUGGESTED_START,
 					TaskDto.DUE_DATE,

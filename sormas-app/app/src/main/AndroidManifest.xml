@@ -26,6 +26,8 @@
         <uses-library android:name="android.test.runner"
             android:required="false" />
 
+        <uses-library android:name ="org.apache.http.legacy" android:required ="false"/>
+
         <activity android:name=".login.LoginActivity"
             android:theme="@style/LoginActivityTheme"
             android:screenOrientation="portrait"

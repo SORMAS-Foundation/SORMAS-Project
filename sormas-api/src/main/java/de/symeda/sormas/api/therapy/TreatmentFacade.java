@@ -14,11 +14,17 @@ public interface TreatmentFacade {
 
 	List<TreatmentIndexDto> getIndexList(TreatmentCriteria criteria);
 
+	List<TreatmentIndexDto> getTreatmentForPrescription(List<String> prescriptionUuids);
+
 	TreatmentDto getTreatmentByUuid(String uuid);
 
 	TreatmentDto saveTreatment(@Valid TreatmentDto treatment);
 
 	void deleteTreatment(String treatmentUuid);
+
+	void deleteTreatments(List<String> treatmentUuids);
+
+	void unlinkPrescriptionFromTreatments(List<String> treatmentUuids);
 
 	List<TreatmentDto> getAllActiveTreatmentsAfter(Date date);
 

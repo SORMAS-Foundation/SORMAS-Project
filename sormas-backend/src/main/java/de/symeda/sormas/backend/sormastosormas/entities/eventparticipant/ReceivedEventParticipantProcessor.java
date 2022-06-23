@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.eventparticipant;
 
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import java.util.Optional;
 
 import javax.ejb.LocalBean;
@@ -53,7 +54,7 @@ public class ReceivedEventParticipantProcessor
 	}
 
 	@Override
-	public void handleReceivedData(SormasToSormasEventParticipantDto sharedData, EventParticipant existingData) {
+	public void handleReceivedData(SormasToSormasEventParticipantDto sharedData, EventParticipant existingData, SormasToSormasOriginInfoDto originInfo) {
 		handleIgnoredProperties(
 			sharedData.getEntity().getPerson(),
 			Optional.ofNullable(existingData).map(c -> PersonFacadeEjb.toDto(c.getPerson())).orElse(null));

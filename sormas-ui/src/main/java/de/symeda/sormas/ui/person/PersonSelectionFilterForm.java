@@ -61,11 +61,7 @@ public class PersonSelectionFilterForm extends AbstractFilterForm<PersonSimilari
 	public boolean validateFields() {
 		String validationError = I18nProperties.getValidationError(Validations.nameOrAnyOtherFieldShouldBeFilled);
 
-		getFieldGroup().getFields().forEach(f -> {
-			if (AbstractField.class.isAssignableFrom(f.getClass())) {
-				((AbstractField<?>) f).setComponentError(null);
-			}
-		});
+		clearValidation();
 
 		if (getFieldGroup().getFields().stream().allMatch(Field::isEmpty)) {
 			getFieldGroup().getFields().forEach(f -> {
@@ -78,5 +74,13 @@ public class PersonSelectionFilterForm extends AbstractFilterForm<PersonSimilari
 		}
 
 		return true;
+	}
+
+	public void clearValidation() {
+		getFieldGroup().getFields().forEach(f -> {
+			if (AbstractField.class.isAssignableFrom(f.getClass())) {
+				((AbstractField<?>) f).setComponentError(null);
+			}
+		});
 	}
 }

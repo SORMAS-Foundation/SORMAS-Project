@@ -30,6 +30,7 @@ import javax.persistence.Persistence;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.hamcrest.Matchers;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
@@ -114,10 +115,22 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 		assertContinuousSchemaVersions(StartupShutdownService.AUDIT_SCHEMA);
 	}
 
+	/**
+	 * Test that the *_history tables have the same columns as the corresponding production tables
+	 *
+	 * TROUBLESHOOTING
+	 * - In case the container can't be started:
+	 * https://github.com/hzi-braunschweig/SORMAS-Project/issues/9177#issuecomment-1125130020
+	 *
+	 * @throws IOException
+	 *             if the resource(s) used in the test can't be read
+	 * @throws URISyntaxException
+	 *             if the path to a resource is not syntactically correct
+	 */
 	@Test
 	public void testHistoryTablesMatch() throws IOException, URISyntaxException {
 
-		SormasPostgresSQLContainer container = new SormasPostgresSQLContainer().withDatabaseName("sormas");
+		SormasPostgresSQLContainer container = new SormasPostgresSQLContainer();
 		container.start();
 
 		Map<String, String> properties = new HashMap<>();
@@ -130,6 +143,7 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 		properties.put("hibernate.jdbc.batch_size", "100");
 		properties.put("hibernate.order_inserts", "true");
 		properties.put("hibernate.order_updates", "true");
+		properties.put("hibernate.hbm2ddl.auto", "none");
 
 		EntityManagerFactory emf = Persistence.createEntityManagerFactory("beanTestPU", properties);
 		EntityManager em = emf.createEntityManager();
@@ -138,8 +152,12 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 			Files.readAllBytes(Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("checkHistoryTables.sql")).toURI())));
 		@SuppressWarnings("unchecked")
 		List<Object[]> results = (List<Object[]>) em.createNativeQuery(checkHistoryTablesSql).getResultList();
-		assertTrue(CollectionUtils.isEmpty(results));
-
+		StringBuilder result = new StringBuilder();
+		results.forEach(objects -> {
+			result.append("\n");
+			Arrays.stream(objects).forEach(o -> result.append((o != null ? o.toString() : "") + " "));
+		});
+		assertTrue(result.toString(), CollectionUtils.isEmpty(results));
 	}
 
 	/**
@@ -182,8 +200,6 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 
 	public static class SormasPostgresSQLContainer extends JdbcDatabaseContainer<SormasPostgresSQLContainer> {
 
-		private String databaseName;
-
 		public SormasPostgresSQLContainer() {
 			super(
 				new ImageFromDockerfile().withFileFromClasspath("setup_sormas_db.sh", "testcontainers/setup_sormas_db.sh")
@@ -195,6 +211,7 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 			addExposedPort(POSTGRESQL_PORT);
 			withEnv("POSTGRES_USER", getUsername());
 			withEnv("POSTGRES_PASSWORD", getPassword());
+			withEnv("POSTGRES_DB", getDatabaseName());
 		}
 
 		@Override
@@ -210,14 +227,8 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 		}
 
 		@Override
-		public SormasPostgresSQLContainer withDatabaseName(String dbName) {
-			this.databaseName = dbName;
-			return self();
-		}
-
-		@Override
 		public String getDatabaseName() {
-			return databaseName;
+			return "sormas";
 		}
 
 		@Override

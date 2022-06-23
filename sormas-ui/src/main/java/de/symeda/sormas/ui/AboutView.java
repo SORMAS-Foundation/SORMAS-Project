@@ -55,16 +55,18 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.ExportEntityName;
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
 
 @SuppressWarnings("serial")
 public class AboutView extends VerticalLayout implements View {
@@ -135,21 +137,17 @@ public class AboutView extends VerticalLayout implements View {
 
 		if (InfoProvider.get().isSnapshotVersion()) {
 			Link commitLink = new Link(
-				String.format(
-					"%s (%s)",
-					versionLabel.getValue(),
-					InfoProvider.get()
-						.getLastCommitShortId()),
+				String.format("%s (%s)", versionLabel.getValue(), InfoProvider.get().getLastCommitShortId()),
 				new ExternalResource(InfoProvider.get().getLastCommitHistoryUrl()));
 			commitLink.setTargetName("_blank");
 			CssStyles.style(commitLink, CssStyles.VSPACE_3);
 			infoLayout.replaceComponent(versionLabel, commitLink);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.LAB_MESSAGES)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EXTERNAL_MESSAGES)) {
 			addExternalServiceVersion(
-				Captions.aboutLabMessageAdapter,
-				() -> FacadeProvider.getLabMessageFacade().getLabMessagesAdapterVersion(),
+				Captions.aboutExternalMessageAdapter,
+				() -> FacadeProvider.getExternalMessageFacade().getExternalMessagesAdapterVersion(),
 				infoLayout);
 		}
 

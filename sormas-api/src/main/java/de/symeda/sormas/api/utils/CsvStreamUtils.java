@@ -132,8 +132,9 @@ public class CsvStreamUtils {
 			int startIndex = 0;
 			int stepSize = configFacade.getStepSizeForCsvExport();
 
-			List<T> exportRows = exportRowsSupplier.apply(startIndex, stepSize);
-			while (!exportRows.isEmpty()) {
+			List<T> exportRows;
+			do {
+				exportRows = exportRowsSupplier.apply(startIndex, stepSize);
 				try {
 					for (T exportRow : exportRows) {
 						for (int i = 0; i < readMethods.size(); i++) {
@@ -164,8 +165,8 @@ public class CsvStreamUtils {
 
 				writer.flush();
 				startIndex += stepSize;
-				exportRows = exportRowsSupplier.apply(startIndex, stepSize);
 			}
+			while (!(exportRows.size() < stepSize));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

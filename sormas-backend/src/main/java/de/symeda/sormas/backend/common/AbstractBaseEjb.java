@@ -18,7 +18,6 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AdoServiceWithUserFilter<ADO>, CRITERIA extends BaseCriteria>
@@ -68,6 +67,16 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 	@Override
 	public List<DTO> getAllAfter(Date date) {
 		return service.getAll((cb, root) -> service.createChangeDateFilter(cb, root, date)).stream().map(this::toDto).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<String> getObsoleteUuidsSince(Date since) {
+
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+
+		return service.getObsoleteUuidsSince(since);
 	}
 
 	// todo find a better name, it is not clear what it does

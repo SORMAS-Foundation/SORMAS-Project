@@ -29,6 +29,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.ui.utils.DeletableUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -36,8 +38,6 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -45,7 +45,6 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -57,13 +56,14 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -71,7 +71,6 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.HtmlHelper;
@@ -82,9 +81,9 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
 import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
+import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.NotificationHelper;
@@ -292,7 +291,7 @@ public class EventController {
 					personByUuid.get(caseDataDto.getPerson().getUuid()),
 					eventReferenceDto,
 					UserProvider.getCurrent().getUserReference());
-				FacadeProvider.getEventParticipantFacade().saveEventParticipant(ep);
+				FacadeProvider.getEventParticipantFacade().save(ep);
 			});
 		}
 
@@ -339,7 +338,7 @@ public class EventController {
 					personByUuid.get(contactDataDto.getPerson().getUuid()),
 					eventReferenceDto,
 					UserProvider.getCurrent().getUserReference());
-				FacadeProvider.getEventParticipantFacade().saveEventParticipant(ep);
+				FacadeProvider.getEventParticipantFacade().save(ep);
 			});
 		}
 
@@ -475,7 +474,7 @@ public class EventController {
 
 		EventParticipantDto eventParticipantDto = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
 		eventParticipantDto.setResultingCase(null);
-		FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipantDto);
+		FacadeProvider.getEventParticipantFacade().save(eventParticipantDto);
 
 		Notification.show(notificationMessage, Type.TRAY_NOTIFICATION);
 	}
@@ -501,7 +500,7 @@ public class EventController {
 			EventParticipantDto eventParticipant =
 				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
 			eventParticipant.setResultingCase(caseRef);
-			FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
+			FacadeProvider.getEventParticipantFacade().save(eventParticipant);
 			Notification notification =
 				new Notification(I18nProperties.getString(Strings.messagePersonAlreadyEventParticipant), "", Type.HUMANIZED_MESSAGE);
 			notification.setDelayMsec(10000);
@@ -553,6 +552,13 @@ public class EventController {
 	}
 
 	public void navigateTo(EventCriteria eventCriteria) {
+		navigateTo(eventCriteria, false);
+	}
+
+	public void navigateTo(EventCriteria eventCriteria, boolean changeToDefaultViewType) {
+		if (changeToDefaultViewType) {
+			ViewModelProviders.of(EventsView.class).remove(EventsViewConfiguration.class);
+		}
 		ViewModelProviders.of(EventsView.class).remove(EventCriteria.class);
 		String navigationState = AbstractView.buildNavigationState(EventsView.VIEW_NAME, eventCriteria);
 		SormasUI.get().getNavigator().navigateTo(navigationState);
@@ -750,6 +756,13 @@ public class EventController {
 			editView.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel(automaticDeletionInfoDto));
 		}
 
+		if (event.isDeleted()) {
+			editView.getWrappedComponent().getField(EventDto.DELETION_REASON).setVisible(true);
+			if (editView.getWrappedComponent().getField(EventDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
+				editView.getWrappedComponent().getField(EventDto.OTHER_DELETION_REASON).setVisible(true);
+			}
+		}
+
 		editView.addCommitListener(() -> {
 			if (!eventEditForm.getFieldGroup().isModified()) {
 				EventDto eventDto = eventEditForm.getValue();
@@ -781,11 +794,11 @@ public class EventController {
 		});
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_DELETE)) {
-			editView.addDeleteListener(() -> {
+			editView.addDeleteWithReasonListener((deleteDetails) -> {
 				if (!existEventParticipantsLinkedToEvent(event)) {
 					try {
-						FacadeProvider.getEventFacade().delete(event.getUuid());
-					} catch (ExternalSurveillanceToolException e) {
+						FacadeProvider.getEventFacade().delete(event.getUuid(), deleteDetails);
+					} catch (ExternalSurveillanceToolRuntimeException e) {
 						Notification.show(
 							String.format(
 								I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotDeleted),
@@ -804,38 +817,13 @@ public class EventController {
 
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
-			boolean archived = FacadeProvider.getEventFacade().isArchived(eventUuid);
-			Button archiveEventButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
-				if (editView.isModified()) {
-					editView.commit();
-				}
-
-				if (archived) {
-					ControllerProvider.getArchiveController()
-						.dearchiveEntity(
-							event,
-							FacadeProvider.getEventFacade(),
-							Strings.headingDearchiveEvent,
-							Strings.confirmationDearchiveEvent,
-							Strings.entityEvent,
-							Strings.messageEventDearchived,
-							() -> navigateToData(event.getUuid()));
-				} else {
-					ControllerProvider.getArchiveController()
-						.archiveEntity(
-							event,
-							FacadeProvider.getEventFacade(),
-							Strings.headingArchiveEvent,
-							Strings.confirmationArchiveEvent,
-							Strings.entityEvent,
-							Strings.messageEventArchived,
-							() -> navigateToData(event.getUuid()));
-				}
-
-			}, ValoTheme.BUTTON_LINK);
-
-			editView.getButtonsPanel().addComponentAsFirst(archiveEventButton);
-			editView.getButtonsPanel().setComponentAlignment(archiveEventButton, Alignment.BOTTOM_LEFT);
+			ControllerProvider.getArchiveController()
+				.addArchivingButton(
+					event,
+					FacadeProvider.getEventFacade(),
+					CoreEntityArchiveMessages.EVENT,
+					editView,
+					() -> navigateToData(event.getUuid()));
 		}
 
 		return editView;
@@ -877,41 +865,55 @@ public class EventController {
 			@Override
 			public void onCommit() {
 				EventDto updatedTempEvent = form.getValue();
-				for (EventIndexDto indexDto : selectedEvents) {
-					EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(indexDto.getUuid(), false);
-					if (form.getEventStatusCheckBox().getValue() == true) {
-						eventDto.setEventStatus(updatedTempEvent.getEventStatus());
-					}
 
-					if (form.getEventInvestigationStatusCheckbox().getValue() == true) {
-						eventDto.setEventInvestigationStatus(updatedTempEvent.getEventInvestigationStatus());
-					}
+				EventFacade eventFacade = FacadeProvider.getEventFacade();
+				boolean eventStatusChange = form.getEventStatusCheckBox().getValue();
+				boolean eventInvestigationStatusChange = form.getEventInvestigationStatusCheckbox().getValue();
+				boolean eventManagementStatusChange = form.getEventManagementStatusCheckbox().getValue();
 
-					if (form.getEventManagementStatusCheckbox().getValue() == true) {
-						eventDto.setEventManagementStatus(updatedTempEvent.getEventManagementStatus());
-					}
+				int changedEvents = bulkEdit(
+					selectedEvents,
+					updatedTempEvent,
+					eventFacade,
+					eventStatusChange,
+					eventInvestigationStatusChange,
+					eventManagementStatusChange);
 
-					FacadeProvider.getEventFacade().save(eventDto);
-				}
 				popupWindow.close();
 				navigateToIndex();
-				Notification.show(I18nProperties.getString(Strings.messageEventsEdited), Type.HUMANIZED_MESSAGE);
+
+				if (changedEvents == selectedEvents.size()) {
+					Notification.show(I18nProperties.getString(Strings.messageEventsEdited), Type.HUMANIZED_MESSAGE);
+				} else {
+					NotificationHelper.showNotification(
+						String.format(I18nProperties.getString(Strings.messageEventsEditedExceptArchived), selectedEvents.size(), changedEvents),
+						Type.HUMANIZED_MESSAGE,
+						-1);
+				}
 			}
 		});
 
 		editView.addDiscardListener(() -> popupWindow.close());
 	}
 
+	private int bulkEdit(
+		Collection<? extends EventIndexDto> selectedEvents,
+		EventDto updatedTempEvent,
+		EventFacade eventFacade,
+		boolean eventStatusChange,
+		boolean eventInvestigationStatusChange,
+		boolean eventManagementStatusChange) {
+
+		return eventFacade.saveBulkEvents(
+			selectedEvents.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()),
+			updatedTempEvent,
+			eventStatusChange,
+			eventInvestigationStatusChange,
+			eventManagementStatusChange);
+	}
+
 	public EventDto createNewEvent(Disease disease) {
-		EventDto event = EventDto.build();
-
-		event.getEventLocation().setCountry(FacadeProvider.getCountryFacade().getServerCountry());
-		event.getEventLocation().setRegion(UserProvider.getCurrent().getUser().getRegion());
-		UserReferenceDto userReference = UserProvider.getCurrent().getUserReference();
-		event.setReportingUser(userReference);
-		event.setDisease(disease);
-
-		return event;
+		return EventDto.build(FacadeProvider.getCountryFacade().getServerCountry(), UserProvider.getCurrent().getUser(), disease);
 	}
 
 	public void deleteAllSelectedItems(Collection<EventIndexDto> selectedRows, Runnable callback) {
@@ -923,8 +925,7 @@ public class EventController {
 				Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil
-				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteEvents), selectedRows.size()), () -> {
+			DeletableUtils.showDeleteWithReasonPopup(String.format(I18nProperties.getString(Strings.confirmationDeleteEvents), selectedRows.size()), (deleteDetails) -> {
 					StringBuilder nonDeletableEventsWithParticipants = new StringBuilder();
 					int countNotDeletedEventsWithParticipants = 0;
 					StringBuilder nonDeletableEventsFromExternalTool = new StringBuilder();
@@ -936,8 +937,8 @@ public class EventController {
 							nonDeletableEventsWithParticipants.append(selectedRow.getUuid(), 0, 6).append(", ");
 						} else {
 							try {
-								FacadeProvider.getEventFacade().delete(eventDto.getUuid());
-							} catch (ExternalSurveillanceToolException e) {
+								FacadeProvider.getEventFacade().delete(eventDto.getUuid(), deleteDetails);
+						} catch (ExternalSurveillanceToolRuntimeException e) {
 								countNotDeletedEventsFromExternalTool = countNotDeletedEventsFromExternalTool + 1;
 								nonDeletableEventsFromExternalTool.append(selectedRow.getUuid(), 0, 6).append(", ");
 							}

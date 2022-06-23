@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.task;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 import java.util.Set;
 
@@ -38,6 +40,7 @@ import de.symeda.sormas.api.utils.EmbeddedSensitiveData;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Required;
 
+@DependingOnFeatureType(featureType = FeatureType.TASK_MANAGEMENT)
 public class TaskDto extends EntityDto {
 
 	private static final long serialVersionUID = 2439546041916003653L;

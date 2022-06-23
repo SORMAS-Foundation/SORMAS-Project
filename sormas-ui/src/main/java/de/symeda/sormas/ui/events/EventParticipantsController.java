@@ -20,12 +20,8 @@ package de.symeda.sormas.ui.events;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.themes.ValoTheme;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.ui.contact.ContactDataView;
-import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.ui.utils.DeletableUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.Page;
@@ -57,6 +53,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
@@ -119,7 +116,7 @@ public class EventParticipantsController {
 										throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageAlreadyEventParticipant));
 									} else {
 										dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
-										EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
+										EventParticipantDto savedDto = eventParticipantFacade.save(dto);
 
 										Notification notification = new Notification(
 											I18nProperties.getString(Strings.messagePersonAddedAsEventParticipant),
@@ -142,7 +139,7 @@ public class EventParticipantsController {
 					if (FacadeProvider.getEventParticipantFacade().exists(dto.getPerson().getUuid(), eventRef.getUuid())) {
 						throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageAlreadyEventParticipant));
 					}
-					EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
+					EventParticipantDto savedDto = eventParticipantFacade.save(dto);
 					Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
 					if (navigateOnCommit) {
 						navigateToData(savedDto.getUuid());
@@ -174,11 +171,11 @@ public class EventParticipantsController {
 				Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(
+			DeletableUtils.showDeleteWithReasonPopup(
 				String.format(I18nProperties.getString(Strings.confirmationDeleteEventParticipants), selectedRows.size()),
-				() -> {
+				(deleteDetails) -> {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getEventParticipantFacade().delete(((EventParticipantIndexDto) selectedRow).getUuid());
+						FacadeProvider.getEventParticipantFacade().delete(((EventParticipantIndexDto) selectedRow).getUuid(), deleteDetails);
 					}
 					callback.run();
 					new Notification(
@@ -191,13 +188,13 @@ public class EventParticipantsController {
 	}
 
 	public void deleteEventParticipant(String eventUuid, String personUuid, Runnable callback) {
-		VaadinUiUtil.showDeleteConfirmationWindow(
+		DeletableUtils.showDeleteWithReasonPopup(
 			String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getString(Strings.entityEventParticipant)),
-			() -> {
+			(deleteDetails) -> {
 				EventParticipantReferenceDto eventParticipantRef =
 					FacadeProvider.getEventParticipantFacade().getReferenceByEventAndPerson(eventUuid, personUuid);
 				if (eventParticipantRef != null) {
-					FacadeProvider.getEventParticipantFacade().delete(eventParticipantRef.getUuid());
+					FacadeProvider.getEventParticipantFacade().delete(eventParticipantRef.getUuid(), deleteDetails);
 					callback.run();
 				} else {
 					Notification.show(I18nProperties.getString(Strings.errorOccurred), Type.ERROR_MESSAGE);
@@ -221,47 +218,29 @@ public class EventParticipantsController {
 			editComponent.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel(automaticDeletionInfoDto));
 		}
 
+		if (eventParticipant.isDeleted()) {
+			editComponent.getWrappedComponent().getField(EventParticipantDto.DELETION_REASON).setVisible(true);
+			if (editComponent.getWrappedComponent().getField(EventParticipantDto.DELETION_REASON).getValue() == DeletionReason.OTHER_REASON) {
+				editComponent.getWrappedComponent().getField(EventParticipantDto.OTHER_DELETION_REASON).setVisible(true);
+			}
+		}
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
-			editComponent.addDeleteListener(() -> {
-				FacadeProvider.getEventParticipantFacade().delete(eventParticipant.getUuid());
+			editComponent.addDeleteWithReasonListener((deleteDetails) -> {
+				FacadeProvider.getEventParticipantFacade().delete(eventParticipant.getUuid(), deleteDetails);
 				ControllerProvider.getEventController().navigateToParticipants(eventParticipant.getEvent().getUuid());
 			}, I18nProperties.getString(Strings.entityEventParticipant));
 		}
 
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_ARCHIVE)) {
-			boolean archived = FacadeProvider.getEventParticipantFacade().isArchived(eventParticipant.getUuid());
-			Button archiveButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
-				if (editComponent.isModified()) {
-					editComponent.commit();
-				}
-
-				if (archived) {
-					ControllerProvider.getArchiveController()
-						.dearchiveEntity(
-							eventParticipant,
-							FacadeProvider.getEventParticipantFacade(),
-							Strings.headingDearchiveEventParticipant,
-							Strings.confirmationDearchiveEventParticipant,
-							Strings.entityEventParticipant,
-							Strings.messageEventParticipantDearchived,
-							() -> navigateToData(eventParticipant.getUuid()));
-				} else {
-					ControllerProvider.getArchiveController()
-						.archiveEntity(
-							eventParticipant,
-							FacadeProvider.getEventParticipantFacade(),
-							Strings.headingArchiveEventParticipant,
-							Strings.confirmationArchiveEventParticipant,
-							Strings.entityEventParticipant,
-							Strings.messageEventParticipantArchived,
-							() -> navigateToData(eventParticipant.getUuid()));
-				}
-
-			}, ValoTheme.BUTTON_LINK);
-
-			editComponent.getButtonsPanel().addComponentAsFirst(archiveButton);
-			editComponent.getButtonsPanel().setComponentAlignment(archiveButton, Alignment.BOTTOM_LEFT);
+			ControllerProvider.getArchiveController()
+				.addArchivingButton(
+					eventParticipant,
+					FacadeProvider.getEventParticipantFacade(),
+					CoreEntityArchiveMessages.EVENT_PARTICIPANT,
+					editComponent,
+					() -> navigateToData(eventParticipant.getUuid()));
 		}
 
 		return editComponent;
@@ -338,7 +317,7 @@ public class EventParticipantsController {
 
 	private void savePersonAndEventParticipant(Consumer<EventParticipantReferenceDto> doneConsumer, EventParticipantDto dto) {
 		personFacade.savePerson(dto.getPerson());
-		eventParticipantFacade.saveEventParticipant(dto);
+		eventParticipantFacade.save(dto);
 		Notification.show(I18nProperties.getString(Strings.messageEventParticipantSaved), Type.WARNING_MESSAGE);
 		if (doneConsumer != null)
 			doneConsumer.accept(null);

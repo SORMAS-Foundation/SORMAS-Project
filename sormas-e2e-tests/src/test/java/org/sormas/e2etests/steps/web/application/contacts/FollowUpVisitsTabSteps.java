@@ -18,16 +18,19 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
+import static org.sormas.e2etests.pages.application.NavBarPage.LOGOUT_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.FollowUpVisitsTabPage.*;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import javax.inject.Inject;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.asserts.SoftAssert;
 
 public class FollowUpVisitsTabSteps implements En {
 
@@ -35,7 +38,10 @@ public class FollowUpVisitsTabSteps implements En {
 
   @Inject
   public FollowUpVisitsTabSteps(
-      WebDriverHelpers webDriverHelpers, ApiState apiState, EnvironmentManager environmentManager) {
+      WebDriverHelpers webDriverHelpers,
+      ApiState apiState,
+      RunningConfiguration runningConfiguration,
+      SoftAssert softly) {
 
     When(
         "^I am accessing the Follow-up visits tab using of created contact via api$",
@@ -44,7 +50,8 @@ public class FollowUpVisitsTabSteps implements En {
               NavBarPage.CONTACTS_BUTTON);
           String visitLinkPath = "/sormas-webdriver/#!contacts/visits/";
           String uuid = apiState.getCreatedContact().getUuid();
-          String URL = environmentManager.getEnvironmentUrlForMarket(locale) + visitLinkPath + uuid;
+          String URL =
+              runningConfiguration.getEnvironmentUrlForMarket(locale) + visitLinkPath + uuid;
           webDriverHelpers.accessWebSite(URL);
         });
 
@@ -56,6 +63,22 @@ public class FollowUpVisitsTabSteps implements En {
         "^I open the first displayed follow up$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_VISIT_BUTTON);
+        });
+
+    And(
+        "^I check that username is displayed in the Visit Origin column$",
+        () -> {
+          String currentUser = webDriverHelpers.getTextFromWebElement(LOGOUT_BUTTON);
+          String visitOrigin =
+              webDriverHelpers.getTextFromWebElement(LATEST_VISIT_ORIGIN).toLowerCase(Locale.ROOT);
+          currentUser =
+              currentUser
+                  .substring(currentUser.indexOf("(") + 1, currentUser.indexOf(")"))
+                  .toLowerCase(Locale.ROOT);
+          softly.assertTrue(
+              visitOrigin.contains(currentUser),
+              "Username is not correctly displayed in the Visit Origin column!");
+          softly.assertAll();
         });
   }
 }

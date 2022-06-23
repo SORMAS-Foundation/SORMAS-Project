@@ -248,6 +248,8 @@
                 <jvm-options>[9|]-Xbootclasspath/a:${com.sun.aas.installRoot}/lib/grizzly-npn-api.jar</jvm-options>
                 <jvm-options>-Xmx4096m</jvm-options>
                 <jvm-options>-Dlogback.configurationFile=${com.sun.aas.instanceRoot}/config/logback.xml</jvm-options>
+                <jvm-options>-Dcargo.glassfish.domain.debug=true</jvm-options>
+                <jvm-options>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=6009</jvm-options>
             </java-config>
             <availability-service>
                 <web-container-availability/>

@@ -28,21 +28,15 @@ import org.sormas.e2etests.entities.pojo.api.Person;
 import org.sormas.e2etests.entities.pojo.api.chunks.Address;
 import org.sormas.e2etests.entities.pojo.api.chunks.Country;
 import org.sormas.e2etests.entities.pojo.api.chunks.PersonContactDetails;
-import org.sormas.e2etests.enums.AreaTypeValues;
-import org.sormas.e2etests.enums.CommunityValues;
-import org.sormas.e2etests.enums.ContinentUUIDs;
-import org.sormas.e2etests.enums.CountryUUIDs;
-import org.sormas.e2etests.enums.DistrictsValues;
-import org.sormas.e2etests.enums.FacilityUUIDs;
-import org.sormas.e2etests.enums.GenderValues;
-import org.sormas.e2etests.enums.PresentCondition;
-import org.sormas.e2etests.enums.RegionsValues;
-import org.sormas.e2etests.enums.SubcontinentUUIDs;
+import org.sormas.e2etests.enums.*;
+import org.sormas.e2etests.helpers.RestAssuredClient;
+import org.sormas.e2etests.helpers.environmentdata.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.strings.ASCIIHelper;
 
 public class PersonApiService {
   private final Faker faker;
   private final Random random = new Random();
+  private RestAssuredClient restAssuredClient;
 
   private String firstName;
   private String lastName;
@@ -53,11 +47,13 @@ public class PersonApiService {
   private final String contactEmailDomain = "@PERSON-API-CONTACT.com";
 
   @Inject
-  public PersonApiService(Faker faker) {
+  public PersonApiService(Faker faker, RestAssuredClient restAssuredClient) {
+    this.restAssuredClient = restAssuredClient;
     this.faker = faker;
   }
 
   public Person buildGeneratedPerson() {
+    EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
     String personUUID = UUID.randomUUID().toString();
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();
@@ -68,18 +64,19 @@ public class PersonApiService {
         Address.builder()
             .latitude(48 + (random.nextInt(6)) + ThreadLocalRandom.current().nextDouble(0, 1))
             .longitude(8 + (random.nextInt(5)) + ThreadLocalRandom.current().nextDouble(0, 1))
-            .country(
-                Country.builder()
-                    .uuid(CountryUUIDs.Germany.toString())
-                    .caption("Deutschland")
-                    .externalId(null)
-                    .isoCode("DEU")
-                    .build())
-            .region(RegionsValues.VoreingestellteBundeslander.getUuid())
-            .continent(ContinentUUIDs.Europe.toString())
-            .subcontinent(SubcontinentUUIDs.WesternEurope.toString())
-            .district(DistrictsValues.VoreingestellterLandkreis.getUuid())
-            .community(CommunityValues.VoreingestellteGemeinde.getUuid())
+            .country(Country.builder().uuid(environmentManager.getCountryUUID("Germany")).build())
+            .region(
+                environmentManager.getRegionUUID(
+                    RegionsValues.VoreingestellteBundeslander.getName()))
+            .continent(environmentManager.getContinentUUID(ContinentUUIDs.Europe.name()))
+            .subcontinent(
+                environmentManager.geSubcontinentUUID(SubcontinentUUIDs.WesternEurope.getName()))
+            .district(
+                environmentManager.getDistrictUUID(
+                    DistrictsValues.VoreingestellterLandkreis.getName()))
+            .community(
+                environmentManager.getCommunityUUID(
+                    CommunityValues.VoreingestellteGemeinde.getName()))
             .city(faker.address().cityName())
             .areaType(AreaTypeValues.getRandomAreaType())
             .postalCode(faker.address().zipCode())

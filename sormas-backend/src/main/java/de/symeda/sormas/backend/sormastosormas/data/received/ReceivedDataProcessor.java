@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.sormastosormas.data.received;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
@@ -55,17 +56,17 @@ public abstract class ReceivedDataProcessor<ADO extends AbstractDomainObject, DT
 		this.validator = validator;
 	}
 
-	public ValidationErrors processReceivedData(SHARED sharedData, ENTITY existingData) {
+	public ValidationErrors processReceivedData(SHARED sharedData, ENTITY existingData, SormasToSormasOriginInfoDto originInfo) {
 		ValidationErrors uuidError = existsNotShared(sharedData.getEntity().getUuid());
 		if (uuidError.hasError()) {
 			return uuidError;
 		}
 
-		handleReceivedData(sharedData, existingData);
+		handleReceivedData(sharedData, existingData, originInfo);
 		return validator.validateIncoming(sharedData);
 	}
 
-	public abstract void handleReceivedData(SHARED sharedData, ENTITY existingData);
+	public abstract void handleReceivedData(SHARED sharedData, ENTITY existingData, SormasToSormasOriginInfoDto originInfo);
 
 	public ValidationErrors processReceivedPreview(PREVIEW sharedPreview) {
 		ValidationErrors uuidError = existsNotShared(sharedPreview.getUuid());

@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.task;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.mockito.Mockito.when;
@@ -42,8 +43,8 @@ import de.symeda.sormas.api.task.TaskExportDto;
 import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
@@ -62,12 +63,22 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		super.init();
 
 		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
-		user1 = creator
-			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off1", UserRole.SURVEILLANCE_OFFICER);
+		user1 = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			rdcf1.facility.getUuid(),
+			"Surv",
+			"Off1",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
-		user2 = creator
-			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
+		user2 = creator.createUser(
+			rdcf2.region.getUuid(),
+			rdcf2.district.getUuid(),
+			rdcf2.facility.getUuid(),
+			"Surv",
+			"Off2",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}
@@ -106,7 +117,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		TaskDto task = createContactTask(contact);
 
 		TaskDto savedTask = getTaskFacade().getByUuid(task.getUuid());
-		assertThat(savedTask.getContact().getCaption(), is("James SMITH to case John Doe"));
+		assertThat(savedTask.getContact().getCaption(), containsString("James SMITH to case John Doe"));
 	}
 
 	@Test
@@ -168,7 +179,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(index2.getCaze().getLastName(), isEmptyString());
 
 		TaskIndexDto index3 = indexList.stream().filter(t -> t.getUuid().equals(task3.getUuid())).findFirst().get();
-		assertThat(index3.getContact().getCaption(), is("John SMITH"));
+		assertThat(index3.getContact().getCaption(), containsString("John SMITH"));
 
 		TaskIndexDto index4 = indexList.stream().filter(t -> t.getUuid().equals(task4.getUuid())).findFirst().get();
 		assertThat(index4.getContact().getCaption(), is(DataHelper.getShortUuid(index4.getContact().getUuid())));
@@ -265,7 +276,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(active2.getCaze().getLastName(), isEmptyString());
 
 		TaskDto active3 = activeTasks.stream().filter(t -> t.getUuid().equals(task3.getUuid())).findFirst().get();
-		assertThat(active3.getContact().getCaption(), is("John SMITH"));
+		assertThat(active3.getContact().getCaption(), containsString("John SMITH"));
 
 		TaskDto active4 = activeTasks.stream().filter(t -> t.getUuid().equals(task4.getUuid())).findFirst().get();
 		assertThat(active4.getContact().getCaption(), is(DataHelper.getShortUuid(task4.getContact().getUuid())));
@@ -312,7 +323,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(active2.getCaze().getLastName(), isEmptyString());
 
 		TaskDto active3 = activeTasks.stream().filter(t -> t.getUuid().equals(task3.getUuid())).findFirst().get();
-		assertThat(active3.getContact().getCaption(), is("John SMITH"));
+		assertThat(active3.getContact().getCaption(), containsString("John SMITH"));
 
 		TaskDto active4 = activeTasks.stream().filter(t -> t.getUuid().equals(task4.getUuid())).findFirst().get();
 		assertThat(active4.getContact().getCaption(), is(DataHelper.getShortUuid(task4.getContact().getUuid())));
@@ -374,7 +385,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		List<TaskDto> contact1Tasks = getTaskFacade().getAllByContact(contact1.toReference());
 		TaskDto active1 = contact1Tasks.stream().filter(t -> t.getUuid().equals(task3.getUuid())).findFirst().get();
-		assertThat(active1.getContact().getCaption(), is("John SMITH"));
+		assertThat(active1.getContact().getCaption(), containsString("John SMITH"));
 
 		List<TaskDto> contact2Tasks = getTaskFacade().getAllByContact(contact2.toReference());
 		TaskDto active2 = contact2Tasks.stream().filter(t -> t.getUuid().equals(task4.getUuid())).findFirst().get();

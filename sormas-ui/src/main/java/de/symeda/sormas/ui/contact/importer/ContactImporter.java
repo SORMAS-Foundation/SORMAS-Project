@@ -83,7 +83,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
  */
 public class ContactImporter extends DataImporter {
 
-	private CaseDataDto caze;
+	private final CaseDataDto caze;
 	private UI currentUI;
 
 	public ContactImporter(File inputFile, UserDto currentUser, CaseDataDto caze, ValueSeparator csvSeparator) throws IOException {
@@ -138,24 +138,8 @@ public class ContactImporter extends DataImporter {
 
 		ImportRelatedObjectsMapper relatedMapper = relatedObjectsMapperBuilder.build();
 
-		boolean contactHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, true, importColumnInformation -> {
-			try {
-				if (!relatedMapper.map(importColumnInformation)) {
-					// If the cell entry is not empty, try to insert it into the current contact or person object
-					if (!StringUtils.isEmpty(importColumnInformation.getValue())) {
-						insertColumnEntryIntoData(
-							newContactTemp,
-							newPersonTemp,
-							importColumnInformation.getValue(),
-							importColumnInformation.getEntityPropertyPath());
-					}
-				}
-			} catch (ImportErrorException | InvalidColumnException e) {
-				return e;
-			}
-
-			return null;
-		});
+		boolean contactHasImportError =
+			insertRowDataIntoContactAndPerson(values, entityClasses, entityPropertyPaths, newPersonTemp, newContactTemp, relatedMapper);
 
 		// try to assign the contact to an existing case
 		if (caze == null && newContactTemp.getCaseIdExternalSystem() != null) {
@@ -177,10 +161,8 @@ public class ContactImporter extends DataImporter {
 			}
 		}
 
-		PersonDto newPerson = newPersonTemp;
-
 		// Sanitize non-HOME address
-		PersonHelper.sanitizeNonHomeAddress(newPerson);
+		PersonHelper.sanitizeNonHomeAddress(newPersonTemp);
 
 		// If the contact still does not have any import errors, search for persons similar to the contact person in the database and,
 		// if there are any, display a window to resolve the conflict to the user
@@ -190,12 +172,14 @@ public class ContactImporter extends DataImporter {
 				ImportSimilarityResultOption resultOption = null;
 
 				ContactImportLock personSelectLock = new ContactImportLock();
+
+				String selectedPersonUuid = null;
 				// We need to pause the current thread to prevent the import from continuing until the user has acted
 				synchronized (personSelectLock) {
 					// Call the logic that allows the user to handle the similarity; once this has been done, the LOCK should be notified
 					// to allow the importer to resume
 					handlePersonSimilarity(
-						newPerson,
+						newPersonTemp,
 						result -> consumer.onImportResult(result, personSelectLock),
 						(person, similarityResultOption) -> new ContactImportSimilarityResult(person, null, similarityResultOption),
 						Strings.infoSelectOrCreatePersonForImport,
@@ -216,7 +200,7 @@ public class ContactImporter extends DataImporter {
 
 					// If the user picked an existing person, override the contact person with it
 					if (ImportSimilarityResultOption.PICK.equals(resultOption)) {
-						newPerson = FacadeProvider.getPersonFacade().getPersonByUuid(consumer.result.getMatchingPerson().getUuid());
+						selectedPersonUuid = consumer.result.getMatchingPerson().getUuid();
 					}
 				}
 
@@ -226,15 +210,21 @@ public class ContactImporter extends DataImporter {
 					return ImportLineResult.SKIPPED;
 				} else {
 					boolean skipPersonValidation = ImportSimilarityResultOption.PICK.equals(resultOption);
-					final PersonDto savedPerson = FacadeProvider.getPersonFacade().savePerson(newPerson, skipPersonValidation);
-					newContactTemp.setPerson(savedPerson.toReference());
 
 					ContactDto newContact = newContactTemp;
+					PersonDto importPerson = newPersonTemp;
 
 					final ContactImportLock contactSelectLock = new ContactImportLock();
 					synchronized (contactSelectLock) {
 
-						handleContactSimilarity(newContactTemp, savedPerson, result -> consumer.onImportResult(result, contactSelectLock));
+						if (selectedPersonUuid != null) {
+							importPerson = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPersonUuid);
+						}
+
+						handleContactSimilarity(
+							newContactTemp,
+							importPerson.toReference(),
+							result -> consumer.onImportResult(result, contactSelectLock));
 
 						try {
 							if (!contactSelectLock.wasNotified) {
@@ -254,8 +244,17 @@ public class ContactImporter extends DataImporter {
 						}
 					}
 
+					PersonReferenceDto personReferenceDto;
+					if (selectedPersonUuid != null) {
+						// update selected person with data from the csv line
+						insertRowDataIntoContactAndPerson(values, entityClasses, entityPropertyPaths, importPerson, newContactTemp, relatedMapper);
+					}
+
+					personReferenceDto = FacadeProvider.getPersonFacade().savePerson(importPerson, skipPersonValidation).toReference();
+
 					// Workaround: Reset the change date to avoid OutdatedEntityExceptions
 					newContact.setChangeDate(new Date());
+					newContact.setPerson(personReferenceDto);
 					FacadeProvider.getContactFacade().save(newContact, true, false);
 
 					for (VaccinationDto vaccination : vaccinations) {
@@ -274,14 +273,39 @@ public class ContactImporter extends DataImporter {
 		}
 	}
 
-	protected void handleContactSimilarity(ContactDto newContact, PersonDto person, Consumer<ContactImportSimilarityResult> resultConsumer) {
+	private boolean insertRowDataIntoContactAndPerson(
+		String[] values,
+		String[] entityClasses,
+		String[][] entityPropertyPaths,
+		PersonDto newPersonTemp,
+		ContactDto newContactTemp,
+		ImportRelatedObjectsMapper relatedMapper)
+		throws IOException {
+		return insertRowIntoData(values, entityClasses, entityPropertyPaths, true, importColumnInformation -> {
+			try {
+				if (!relatedMapper.map(importColumnInformation)) {
+					// If the cell entry is not empty, try to insert it into the current contact or person object
+					if (!StringUtils.isEmpty(importColumnInformation.getValue())) {
+						insertColumnEntryIntoData(
+							newContactTemp,
+							newPersonTemp,
+							importColumnInformation.getValue(),
+							importColumnInformation.getEntityPropertyPath());
+					}
+				}
+			} catch (ImportErrorException | InvalidColumnException e) {
+				return e;
+			}
+
+			return null;
+		});
+	}
+
+	protected void handleContactSimilarity(ContactDto newContact, PersonReferenceDto person, Consumer<ContactImportSimilarityResult> resultConsumer) {
 
 		currentUI.accessSynchronously(() -> {
-			ContactSelectionField contactSelection = new ContactSelectionField(
-				newContact,
-				I18nProperties.getString(Strings.infoSelectOrCreateContactImport),
-				person.getFirstName(),
-				person.getLastName());
+			ContactSelectionField contactSelection =
+				new ContactSelectionField(newContact, person, I18nProperties.getString(Strings.infoSelectOrCreateContactImport));
 			contactSelection.setWidth(1024, Unit.PIXELS);
 
 			if (contactSelection.hasMatches()) {
@@ -298,9 +322,7 @@ public class ContactImporter extends DataImporter {
 				component.addDiscardListener(
 					() -> resultConsumer.accept(new ContactImportSimilarityResult(null, null, ImportSimilarityResultOption.SKIP)));
 
-				contactSelection.setSelectionChangeCallback((commitAllowed) -> {
-					component.getCommitButton().setEnabled(commitAllowed);
-				});
+				contactSelection.setSelectionChangeCallback((commitAllowed) -> component.getCommitButton().setEnabled(commitAllowed));
 
 				VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingPickOrCreateContact));
 

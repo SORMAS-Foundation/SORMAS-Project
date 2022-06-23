@@ -79,7 +79,6 @@ public class FollowUpStep implements En {
           selectSourceOfTemperature(visit.getSourceOfBodyTemperature());
           selectClearedToNo(visit.getSetClearToNo(), SET_CLEARED_TO_NO_BUTTON);
           selectChillsAndSweats(visit.getChillsAndSweats(), CHILLS_SWEATS_YES_BUTTON);
-          selectFeelingIll(visit.getFeelingIll(), FEELING_ILL_YES_BUTTON);
           selectFever(visit.getFever(), FEVER_YES_BUTTON);
           fillComments(visit.getComments(), SYMPTOMS_COMMENTS_INPUT);
           selectFirstSymptom(visit.getFirstSymptom(), FIRST_SYMPTOM_COMBOBOX);
@@ -91,7 +90,83 @@ public class FollowUpStep implements En {
         "^I validate all fields from Visit",
         () -> {
           final Visit actualVisit = collectTestResultsData();
-          ComparisonHelper.compareEqualEntities(visit, actualVisit);
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              visit,
+              actualVisit,
+              List.of(
+                  "personAvailableAndCooperative",
+                  "dateOfVisit",
+                  "timeOfVisit",
+                  "visitRemarks",
+                  "currentBodyTemperature",
+                  "sourceOfBodyTemperature",
+                  "setClearToNo",
+                  "chillsAndSweats",
+                  "fever",
+                  "comments",
+                  "firstSymptom",
+                  "dateOfSymptom"));
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(HEADACHE_OPTIONS), "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                  ABNORMAL_LUNG_XRAY_FINDINGS_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FATIGUE_WEAKNESS_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(COUGH_WITH_SPUTUM_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                  COUGH_WITH_HEAMOPTYSIS_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                  FLUID_IN_LUNG_CAVITY_AUSCULTATION_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                  FLUID_IN_LUNG_CAVITY_XRAY_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                  INDRAWING_OF_CHEST_WALL_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(ABDOMINAL_PAIN_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(VOMITING_OPTIONS), "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SKIN_ULCERS_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                  UNEXPLAINED_BLEEDING_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(COMA_OPTIONS), "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LYMPHADENOPATHY_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(INABILITY_TO_WALK_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SKIN_RASH_OPTIONS), "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                  CONFUSED_DISORIENTED_OPTIONS),
+              "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SEIZURES_OPTIONS), "NO");
+          softly.assertEquals(
+              webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                  OTHER_COMPLICATIONS_OPTIONS),
+              "NO");
+          softly.assertAll();
         });
 
     When(
@@ -156,7 +231,7 @@ public class FollowUpStep implements En {
     When(
         "I fill specific data of symptoms with ([^\"]*) option to all Clinical Signs and Symptoms",
         (String parameter) -> {
-          visit = followUpVisitService.buildTemperatureOnlySymptoms("36,6");
+          visit = followUpVisitService.buildTemperatureOnlySymptoms("36.6");
           selectCurrentTemperature(visit.getCurrentBodyTemperature());
           selectSourceOfTemperature(visit.getSourceOfBodyTemperature());
           webDriverHelpers.clickOnWebElementBySelector(CLEAR_ALL);
@@ -233,29 +308,42 @@ public class FollowUpStep implements En {
               followUpVisit,
               expectedVisitResults,
               List.of(
-                  "chillsOrSweats",
-                  "feelingIll",
                   "fever",
                   "headache",
                   "musclePain",
-                  "shivering",
                   "acuteRespiratoryDistressSyndrome",
                   "cough",
                   "difficultyBreathing",
-                  "oxygenSaturation94",
                   "pneumoniaClinicalRadiologic",
                   "rapidBreathing",
-                  "respiratoryDiseaseRequiringVentilation",
                   "runnyNose",
                   "soreThroatPharyngitis",
-                  "fastHeartRate",
                   "diarrhea",
                   "nausea",
                   "newLossOfSmell",
                   "newLossOfTaste",
                   "otherClinicalSymptoms",
                   "comments",
-                  "firstSymptom"));
+                  "firstSymptom",
+                  "fatigueWeakness",
+                  "jointPain",
+                  "abnormalLungXrayFindings",
+                  "coughWithHeamoptysis",
+                  "coughWithSputum",
+                  "fluidInLungCavityXray",
+                  "fluidInLungCavityAuscultation",
+                  "inDrawingOfChestWall",
+                  "abdominalPain",
+                  "vomiting",
+                  "skinUlcers",
+                  "unexplainedBleeding",
+                  "coma",
+                  "lymphadenopathy",
+                  "inabilityToWalk",
+                  "skinRash",
+                  "confusedDisoriented",
+                  "seizures",
+                  "otherComplications"));
         });
 
     When(
@@ -347,7 +435,6 @@ public class FollowUpStep implements En {
         .sourceOfBodyTemperature(getSourceOfBodyTemperature())
         .setClearToNo(visit.getSetClearToNo())
         .chillsAndSweats(getChillsAndSweats())
-        .feelingIll(getFeelingIll())
         .fever(getFever())
         .comments(getComments())
         .firstSymptom(getFirstSymptom())
@@ -367,30 +454,22 @@ public class FollowUpStep implements En {
     return FollowUpVisit.builder()
         .chillsOrSweats(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CHILLS_SWEATS_OPTIONS))
-        .feelingIll(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEELING_ILL_OPTIONS))
         .fever(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEVER_OPTIONS))
         .headache(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(HEADACHE_OPTIONS))
         .musclePain(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(MUSCLE_PAIN_OPTIONS))
-        .shivering(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SHIVERING_OPTIONS))
         .acuteRespiratoryDistressSyndrome(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(ACUTE_RESPIRATORY_OPTIONS))
         .cough(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(COUGH_OPTIONS))
         .difficultyBreathing(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
                 DIFFICULTY_BREATHING_OPTIONS))
-        .oxygenSaturation94(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(OXYGEN_SATURATION_OPTIONS))
         .pneumoniaClinicalRadiologic(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(PNEUMONIA_OPTIONS))
         .rapidBreathing(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RAPID_BREATHING_OPTIONS))
-        .respiratoryDiseaseRequiringVentilation(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RESPIRATORY_DISEASE_OPTIONS))
         .runnyNose(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RUNNY_NOSE_OPTIONS))
         .soreThroatPharyngitis(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SORE_THROAT_OPTIONS))
-        .fastHeartRate(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FAST_HEART_OPTIONS))
         .diarrhea(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(DIARRHEA_OPTIONS))
         .nausea(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(NAUSEA_OPTIONS))
         .newLossOfSmell(
@@ -399,17 +478,54 @@ public class FollowUpStep implements En {
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LOSS_OF_TASTE_OPTIONS))
         .otherClinicalSymptoms(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(OTHER_OPTIONS))
+        .abnormalLungXrayFindings(
+            (webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                ABNORMAL_LUNG_XRAY_FINDINGS_OPTIONS)))
+        .fatigueWeakness(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FATIGUE_WEAKNESS_OPTIONS))
+        .jointPain(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(JOINT_PAIN_OPTIONS))
+        .coughWithHeamoptysis(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                COUGH_WITH_HEAMOPTYSIS_OPTIONS))
+        .coughWithSputum(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(COUGH_WITH_SPUTUM_OPTIONS))
+        .fluidInLungCavityXray(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                FLUID_IN_LUNG_CAVITY_XRAY_OPTIONS))
+        .fluidInLungCavityAuscultation(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                FLUID_IN_LUNG_CAVITY_AUSCULTATION_OPTIONS))
+        .inDrawingOfChestWall(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                INDRAWING_OF_CHEST_WALL_OPTIONS))
+        .abdominalPain(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(ABDOMINAL_PAIN_OPTIONS))
+        .vomiting(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(VOMITING_OPTIONS))
+        .skinUlcers(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SKIN_ULCERS_OPTIONS))
+        .unexplainedBleeding(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                UNEXPLAINED_BLEEDING_OPTIONS))
+        .coma(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(COMA_OPTIONS))
+        .lymphadenopathy(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LYMPHADENOPATHY_OPTIONS))
+        .inabilityToWalk(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(INABILITY_TO_WALK_OPTIONS))
+        .skinRash(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SKIN_RASH_OPTIONS))
+        .confusedDisoriented(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                CONFUSED_DISORIENTED_OPTIONS))
+        .seizures(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SEIZURES_OPTIONS))
+        .otherComplications(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(OTHER_COMPLICATIONS_OPTIONS))
         .build();
   }
 
   private FollowUpVisit fillFollowUpVisitDataWithParameter(String parameter) {
     return FollowUpVisit.builder()
         .chillsOrSweats(parameter)
-        .feelingIll(parameter)
         .fever(parameter)
         .headache(parameter)
         .musclePain(parameter)
-        .shivering(parameter)
         .acuteRespiratoryDistressSyndrome(parameter)
         .cough(parameter)
         .difficultyBreathing(parameter)
@@ -424,6 +540,26 @@ public class FollowUpStep implements En {
         .nausea(parameter)
         .newLossOfSmell(parameter)
         .newLossOfTaste(parameter)
+        .otherClinicalSymptoms(parameter)
+        .abnormalLungXrayFindings(parameter)
+        .fatigueWeakness(parameter)
+        .jointPain(parameter)
+        .coughWithHeamoptysis(parameter)
+        .coughWithSputum(parameter)
+        .fluidInLungCavityXray(parameter)
+        .fluidInLungCavityAuscultation(parameter)
+        .inDrawingOfChestWall(parameter)
+        .abdominalPain(parameter)
+        .vomiting(parameter)
+        .skinUlcers(parameter)
+        .unexplainedBleeding(parameter)
+        .coma(parameter)
+        .lymphadenopathy(parameter)
+        .inabilityToWalk(parameter)
+        .skinRash(parameter)
+        .confusedDisoriented(parameter)
+        .seizures(parameter)
+        .otherComplications(parameter)
         .otherClinicalSymptoms(parameter)
         .build();
   }

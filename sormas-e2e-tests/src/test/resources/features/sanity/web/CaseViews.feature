@@ -1,7 +1,7 @@
 @UI @Sanity @CaseView
 Feature: Case view tests
 
-  @env_main @ignore
+  @env_main
   Scenario: Create a new Case and check details in Detailed view table
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -24,3 +24,14 @@ Feature: Case view tests
     Then I check the created data is correctly displayed on Edit case page for DE version
     Then I back to Case Directory using case list button
     And I check if Case date format displayed in Cases tab is correct for specified fields
+
+  @issue=SORDEV-8407 @env_main
+  Scenario: Person ID check for Case Directory
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    Then I check that Person ID column is between Investigation Status and First Name columns
+    When I click on the first Person ID from Case Directory
+    Then I check that I get navigated to the Edit Person page
+    When I click on the Cases button from navbar
+    And I click on the first Case ID from Case Directory
+    Then I check that I get navigated to the Edit Case page

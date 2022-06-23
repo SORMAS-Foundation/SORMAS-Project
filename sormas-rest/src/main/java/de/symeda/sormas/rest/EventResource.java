@@ -34,6 +34,8 @@ import javax.ws.rs.core.Response;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
@@ -55,7 +57,10 @@ public class EventResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
-	public List<EventDto> getAllEvents(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+	public List<EventDto> getAllEvents(
+		@PathParam("since") long since,
+		@PathParam("size") int size,
+		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
 		return FacadeProvider.getEventFacade().getAllAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
@@ -104,6 +109,12 @@ public class EventResource extends EntityDtoResource {
 		return FacadeProvider.getEventFacade().getDeletedUuidsSince(new Date(since));
 	}
 
+	@GET
+	@Path("/obsolete/{since}")
+	public List<String> getObsoleteUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getEventFacade().getObsoleteUuidsSince(new Date(since));
+	}
+
 	/**
 	 * 
 	 * @param criteriaWithSorting
@@ -135,12 +146,18 @@ public class EventResource extends EntityDtoResource {
 	@POST
 	@Path("/delete")
 	public List<String> delete(List<String> uuids) {
-		return FacadeProvider.getEventFacade().deleteEvents(uuids);
+		return FacadeProvider.getEventFacade().deleteEvents(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
 	}
 
 	@POST
 	@Path("/children")
 	public List<String> getChildrenUuids(List<String> uuids) {
 		return FacadeProvider.getEventFacade().getSubordinateEventUuids(uuids);
+	}
+
+	@GET
+	@Path("/specificEvent/{searchTerm}")
+	public String getSpecificCase(@PathParam("searchTerm") String searchTerm) {
+		return FacadeProvider.getEventFacade().getUuidByCaseUuidOrPersonUuid(searchTerm);
 	}
 }

@@ -112,11 +112,15 @@ public interface ConfigFacade {
 
 	PatientDiaryConfig getPatientDiaryConfig();
 
-	void validateExternalUrls();
+	void validateConfigUrls();
 
 	SormasToSormasConfig getS2SConfig();
 
+	Boolean isS2SConfigured();
+
 	String getExternalSurveillanceToolGatewayUrl();
+
+	boolean isExternalSurveillanceToolGatewayConfigured();
 
 	String getExternalSurveillanceToolVersionEndpoint();
 
@@ -145,4 +149,8 @@ public interface ConfigFacade {
 	String getAuditLoggerConfig();
 
 	String getAuditSourceSite();
+
+	void setRequestContext(RequestContextTO requestContext);
+
+	void resetRequestContext();
 }

@@ -1,15 +1,12 @@
 package de.symeda.sormas.backend;
 
-import java.sql.Types;
-
 import org.hibernate.dialect.H2Dialect;
 import org.hibernate.dialect.function.SQLFunctionTemplate;
 import org.hibernate.dialect.function.StandardSQLFunction;
-
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import org.hibernate.type.StandardBasicTypes;
 
 public class ExtendedH2Dialect extends H2Dialect {
+
 	public final static String UNACCENT = "unaccent";
 	public final static String ILIKE = "ilike";
 	public final static String WINDOW_FIRST_VALUE_DESC = "window_first_value_desc";
@@ -27,7 +24,6 @@ public class ExtendedH2Dialect extends H2Dialect {
 		registerFunction(ARRAY_TO_STRING, new StandardSQLFunction(ARRAY_TO_STRING));
 		registerFunction(CONCAT_FUNCTION, new StandardSQLFunction("concat"));
 		registerFunction(ARRAY_AGG, new StandardSQLFunction(ARRAY_AGG));
-		registerHibernateType(Types.OTHER, JsonBinaryType.class.getName());
 		// The function unaccent is specific to PostgreSQL
 		// With H2 let's make sure it wont fail by making the function "unaccent" do nothing
 		registerFunction(UNACCENT, new SQLFunctionTemplate(StandardBasicTypes.STRING, "?1"));
@@ -43,5 +39,13 @@ public class ExtendedH2Dialect extends H2Dialect {
 				StandardBasicTypes.LONG,
 				"COUNT(?1) OVER (PARTITION BY ?2 RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)"));
 		registerFunction(GREATEST, new StandardSQLFunction(GREATEST));
+	}
+
+	/**
+	 * Fixes <em>JdbcSQLSyntaxErrorException: Values of types "BOOLEAN" and "INTEGER" are not comparable</em>.
+	 */
+	@Override
+	public String toBooleanValueString(boolean bool) {
+		return bool ? "TRUE" : "FALSE";
 	}
 }

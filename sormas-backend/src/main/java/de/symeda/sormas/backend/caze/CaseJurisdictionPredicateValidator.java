@@ -36,18 +36,17 @@ import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
-import de.symeda.sormas.utils.CaseJoins;
 
 public class CaseJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
-	private final CaseJoins<?> joins;
+	private final CaseJoins joins;
 
 	private final CriteriaQuery<?> cq;
 
 	private CaseJurisdictionPredicateValidator(
 		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
-		CaseJoins<?> joins,
+		CaseJoins joins,
 		User user,
 		List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
 		super(cb, user, null, associatedJurisdictionValidators);
@@ -58,7 +57,7 @@ public class CaseJurisdictionPredicateValidator extends PredicateJurisdictionVal
 	private CaseJurisdictionPredicateValidator(
 		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
-		CaseJoins<?> joins,
+		CaseJoins joins,
 		Path userPath,
 		List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
 		super(cb, null, userPath, associatedJurisdictionValidators);
@@ -67,11 +66,11 @@ public class CaseJurisdictionPredicateValidator extends PredicateJurisdictionVal
 	}
 
 	public static CaseJurisdictionPredicateValidator of(CaseQueryContext qc, User user) {
-		return new CaseJurisdictionPredicateValidator(qc.getQuery(), qc.getCriteriaBuilder(), (CaseJoins<?>) qc.getJoins(), user, null);
+		return new CaseJurisdictionPredicateValidator(qc.getQuery(), qc.getCriteriaBuilder(), qc.getJoins(), user, null);
 	}
 
 	public static CaseJurisdictionPredicateValidator of(CaseQueryContext qc, Path userPath) {
-		return new CaseJurisdictionPredicateValidator(qc.getQuery(), qc.getCriteriaBuilder(), (CaseJoins<?>) qc.getJoins(), userPath, null);
+		return new CaseJurisdictionPredicateValidator(qc.getQuery(), qc.getCriteriaBuilder(), qc.getJoins(), userPath, null);
 	}
 
 	@Override

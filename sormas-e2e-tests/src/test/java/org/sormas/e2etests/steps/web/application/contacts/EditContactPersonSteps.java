@@ -110,15 +110,22 @@ public class EditContactPersonSteps implements En {
         "I complete all default empty fields from Contact Person tab",
         () -> {
           newGeneratedPerson = personService.buildGeneratedPerson();
-          fillSalutation(newGeneratedPerson.getSalutation());
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          // field no longer available
+          // fillSalutation(newGeneratedPerson.getSalutation());
           fillDateOfBirth(newGeneratedPerson.getDateOfBirth());
           selectSex(newGeneratedPerson.getSex());
           selectPresentConditionOfPerson(newGeneratedPerson.getPresentConditionOfPerson());
-          fillExternalId(newGeneratedPerson.getExternalId());
-          fillExternalToken(newGeneratedPerson.getExternalToken());
-          fillExternalToken(newGeneratedPerson.getExternalToken());
+          // field no longer available
+          //          fillExternalId(newGeneratedPerson.getExternalId());
+          // field no longer available
+          //          fillExternalToken(newGeneratedPerson.getExternalToken());
+          //          fillExternalToken(newGeneratedPerson.getExternalToken());
           selectTypeOfOccupation(newGeneratedPerson.getTypeOfOccupation());
-          selectStaffOfArmedForces(newGeneratedPerson.getStaffOfArmedForces());
+
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          // field no longer available
+          //          selectStaffOfArmedForces(newGeneratedPerson.getStaffOfArmedForces());
           selectRegion(newGeneratedPerson.getRegion());
           selectDistrict(newGeneratedPerson.getDistrict());
           selectCommunity(newGeneratedPerson.getCommunity());
@@ -134,8 +141,10 @@ public class EditContactPersonSteps implements En {
           selectAreaType(newGeneratedPerson.getAreaType());
           fillContactPersonFirstName(newGeneratedPerson.getContactPersonFirstName());
           fillContactPersonLastName(newGeneratedPerson.getContactPersonLastName());
-          fillBirthName(newGeneratedPerson.getBirthName());
-          fillNamesOfGuardians(newGeneratedPerson.getNameOfGuardians());
+          // field no longer available
+          //          fillBirthName(newGeneratedPerson.getBirthName());
+          // field no longer available
+          //          fillNamesOfGuardians(newGeneratedPerson.getNameOfGuardians());
         });
 
     Then(
@@ -149,7 +158,7 @@ public class EditContactPersonSteps implements En {
         "I click on save button from Contact Person tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
           Person contactInfo = getPersonInformation();
           fullyDetailedPerson =
               personService.updateExistentPerson(

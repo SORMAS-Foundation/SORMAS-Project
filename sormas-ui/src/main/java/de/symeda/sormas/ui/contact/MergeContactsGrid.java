@@ -57,6 +57,8 @@ public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, C
 			COLUMN_COMPLETENESS,
 			COLUMN_ACTIONS);
 
+		getColumn(COLUMN_ACTIONS).setMinimumWidth(280);
+
 		Language userLanguage = I18nProperties.getUserLanguage();
 		((Column<MergeContactIndexDto, Date>) getColumn(MergeContactIndexDto.REPORT_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(userLanguage)));

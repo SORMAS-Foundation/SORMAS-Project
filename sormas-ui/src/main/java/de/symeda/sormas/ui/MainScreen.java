@@ -19,6 +19,7 @@ package de.symeda.sormas.ui;
 
 import static de.symeda.sormas.ui.UiUtil.enabled;
 import static de.symeda.sormas.ui.UiUtil.permitted;
+import static java.util.Objects.nonNull;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,7 +50,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
@@ -75,8 +75,8 @@ import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.events.EventGroupDataView;
 import de.symeda.sormas.ui.events.EventParticipantDataView;
 import de.symeda.sormas.ui.events.EventsView;
+import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
 import de.symeda.sormas.ui.immunization.ImmunizationsView;
-import de.symeda.sormas.ui.labmessage.LabMessagesView;
 import de.symeda.sormas.ui.person.PersonsView;
 import de.symeda.sormas.ui.reports.ReportsView;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportsView;
@@ -158,6 +158,16 @@ public class MainScreen extends HorizontalLayout {
 		if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 			menu.addView(TasksView.class, TasksView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuTasks), VaadinIcons.TASKS);
 		}
+
+		if (permitted(FeatureType.EXTERNAL_MESSAGES, UserRight.EXTERNAL_MESSAGE_VIEW)) {
+			ControllerProvider.getExternalMessageController().registerViews(navigator);
+			menu.addView(
+				ExternalMessagesView.class,
+				ExternalMessagesView.VIEW_NAME,
+				I18nProperties.getCaption(Captions.mainMenuExternalMessages),
+				VaadinIcons.NOTEBOOK);
+		}
+
 		if (permitted(FeatureType.PERSON_MANAGEMENT, UserRight.PERSON_VIEW)) {
 			ControllerProvider.getPersonController().registerViews(navigator);
 			menu.addView(PersonsView.class, PersonsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuPersons), VaadinIcons.USER_CARD);
@@ -335,7 +345,7 @@ public class MainScreen extends HorizontalLayout {
 				ContinentsView.VIEW_NAME,
 				SubcontinentsView.VIEW_NAME,
 				CountriesView.VIEW_NAME,
-				LabMessagesView.VIEW_NAME,
+				ExternalMessagesView.VIEW_NAME,
 				TravelEntriesView.VIEW_NAME,
 				ImmunizationsView.VIEW_NAME));
 
@@ -397,7 +407,7 @@ public class MainScreen extends HorizontalLayout {
 					defaultView = ContactsDashboardView.VIEW_NAME;
 				} else if (enabled(FeatureType.DASHBOARD) && permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_VIEW)) {
 					defaultView = CampaignDashboardView.VIEW_NAME;
-				} else if (UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
+				} else if (nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasExternalLaboratoryJurisdictionLevel()) {
 					defaultView = SamplesView.VIEW_NAME;
 				} else if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 					defaultView = TasksView.VIEW_NAME;

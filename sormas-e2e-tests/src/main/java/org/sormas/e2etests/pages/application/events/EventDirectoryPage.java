@@ -48,6 +48,8 @@ public class EventDirectoryPage {
       By.cssSelector("[id='relevanceStatusFilter'] [class='v-filterselect-button']");
   public static final By FILTER_BY_DISEASE =
       By.cssSelector("[id='disease'] [class='v-filterselect-button']");
+  public static final By FILTER_BY_DISEASE_VARIANT =
+      By.cssSelector("[id='diseaseVariant'] [class='v-filterselect-button']");
   public static final By DISTRICT_COMBOBOX =
       By.cssSelector("[id='district'] [class='v-filterselect-button']");
   public static final By EVENT_SHOW_MORE_FILTERS = By.id("showHideMoreFilters");
@@ -69,7 +71,8 @@ public class EventDirectoryPage {
   public static final By EVENTS_TABLE_DATA = By.tagName("td");
   public static final By EVENT_PARTICIPANT_INPUT = By.id("freeTextEventParticipants");
   public static final By EVENT_GROUP_INPUT = By.id("freeTextEventGroups");
-
+  public static final By EVENT_GROUP_ID_NAME_INPUT = By.id("freeText");
+  public static final By EVENT_GROUP_FREE_TEXT_EVENT_INPUT = By.id("freeTextEvent");
   public static final By EVENTS_RADIO_BUTTON = By.cssSelector(".v-radiobutton");
   public static final By LINK_EVENT_BUTTON = By.id("Link event");
   public static final By LINK_EVENT_BUTTON_EDIT_PAGE = By.id("Link event group");
@@ -95,7 +98,57 @@ public class EventDirectoryPage {
       By.xpath("//th[@role='columnheader']//input[@type='checkbox']/../..");
   public static final By BULK_ACTIONS_EVENT_DIRECTORY = By.id("bulkActions-2");
   public static final By GROUP_EVENTS_EVENT_DIRECTORY = By.id("bulkActions-7");
+  public static final By BULK_EDIT_EVENT_DIRECTORY = By.id("bulkActions-3");
+  public static final By BULK_GROUP_EVENT_DIRECTORY = By.id("bulkActions-6");
+  public static final By BULK_ARCHIVE_EVENT_DIRECTORY = By.id("bulkActions-4");
+  public static final By CHANGE_EVENT_MANAGEMENT_STATUS_CHECKBOX =
+      By.xpath("//label[text()='Change event management status']");
+  public static final By TEXT_FROM_BULK_DELETE_EVENT_DIRECTORY =
+      By.xpath("//span[text()='Delete']");
+  public static final By EVENT_MANAGEMENT_STATUS_COMBOBOX =
+      By.cssSelector("#eventManagementStatus .v-select-option");
   public static final By GROUP_ID_COLUMN = By.xpath("(//td//a)[2]");
+  public static final By EXPORT_PARTICIPANT_BUTTON = By.id("export");
+  public static final By BASIC_EXPORT_PARTICIPANT_BUTTON = By.id("exportBasic");
+  public static final By CLOSE_POPUP_BUTTON = By.cssSelector(".v-window-closebox");
+  public static final By IMPORT_BUTTON = By.cssSelector("div#actionImport");
+  public static final By IMPORT_POPUP_BUTTON = By.cssSelector("[class='v-button']");
+  public static final By IMPORT_SUCCESS = By.xpath("//*[text()='Import successful!']");
+  public static final By IMPORT_POPUP_CLOSE_BUTTON = By.cssSelector(".popupContent #actionCancel");
+  public static final By IMPORT_WINDOW_CLOSE_BUTTON = By.cssSelector("[class='v-window-closebox']");
+  public static final By EVENT_REGION_COMBOBOX_INPUT = By.cssSelector("#region div");
+  public static final By EVENT_DISTRICT_COMBOBOX_INPUT = By.cssSelector("#district div");
+  public static final By EVENT_COMMUNITY_COMBOBOX_INPUT = By.cssSelector("#community div");
+  public static final By EVENT_STATUS_FILTER_COMBOBOX =
+      By.cssSelector("#relevanceStatusFilter div");
+  public static final By EVENT_GROUP_ID_SORT = By.xpath("//div[text()='Group id']");
+  public static final By EVENT_GROUP_NAME_SORT = By.xpath("//div[text()='Group name']");
+  public static final By EVENT_EXPORT_BUTTON = By.id("export");
+  public static final By EVENT_EXPORT_BASIC_BUTTON = By.id("exportBasic");
+  public static final By DETAILED_EXPORT_PARTICIPANT_BUTTON = By.id("exportDetailed");
+  public static final By IMPORT_PARTICIPANT_BUTTON = By.id("actionImport");
+  public static final By COMMIT_BUTTON = By.id("commit");
+  public static final By CUSTOM_EXPORT_PARTICIPANT_BUTTON = By.id("exportCustom");
+  public static final By DETAILED_EVENT_EXPORT_BUTTON = By.id("exportDetailed");
+  public static final By BASIC_EVENT_EXPORT_BUTTON = By.id("exportBasic");
+  public static final By CONFIRM_POPUP_BUTTON = By.cssSelector(".popupContent #actionConfirm");
+  public static final By RESPONSIBLE_USER_INFO_ICON =
+      By.xpath("//span[@class='v-icon v-icon-info_circle']");
+  public static final By RESPONSIBLE_USER_INFO_POPUP_TEXT =
+      By.xpath("//div[@class='v-tooltip-text']");
+  public static final By FIRST_GRID_UUID_RESULT = By.xpath("//table/tbody/tr[1]/td[1]");
+  public static final By FIRST_GRID_DATE_OF_EVENT = By.xpath("//table/tbody/tr[1]/td[10]");
+
+  public static By getCheckboxByIndex(String idx) {
+    return By.xpath(String.format("(//input[@type=\"checkbox\"])[%s]", idx));
+  }
+
+  public static By getCheckboxByUUID(String uuid) {
+    return By.xpath(
+        String.format(
+            "//td//a[text()=\"%s\"]/../preceding-sibling::td//input[@type=\"checkbox\"]",
+            uuid.substring(0, 6).toUpperCase()));
+  }
 
   public static By getByEventUuid(String eventUuid) {
     return By.xpath(String.format("//a[@title='%s']", eventUuid));

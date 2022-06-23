@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<!-- scan disabled as precaution for CVE-2021-42550 and similar -->
+<configuration scan="false" scanPeriod="30 seconds" debug="true">
+
+    <!-- TODO Configure EMAIL_ERROR appender for your server or STDOUT for your local development system  -->
+
+    <!-- allow JMX configuration (http://logback.qos.ch/manual/jmxConfig.html) -->
+    <!-- <jmxConfigurator /> -->
+
+    <property name="LOG_FOLDER" value="../logs" />
+
+    <appender name="FILE_DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FOLDER}/application.debug</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FOLDER}/application.%d{yyyy-ww}.debug</fileNamePattern>
+            <maxHistory>2</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%date %-5level %X{USER} %X{APP} %thread %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FOLDER}/application.info</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FOLDER}/application.%d{yyyy-ww}.info</fileNamePattern>
+            <maxHistory>5</maxHistory>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <encoder>
+            <pattern>%date %-5level %X{USER} %X{APP} %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE_WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FOLDER}/application.warn</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FOLDER}/application.%d{yyyy-ww}.warn</fileNamePattern>
+            <maxHistory>5</maxHistory>
+        </rollingPolicy>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+        <encoder>
+            <pattern>%date %-5level %X{USER} %X{APP} %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="EMAIL_ERROR" class="ch.qos.logback.classic.net.SMTPAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <cyclicBufferTracker class="ch.qos.logback.core.spi.CyclicBufferTracker">
+            <!-- send just 20 log entries per email -->
+            <bufferSize>20</bufferSize>
+        </cyclicBufferTracker>
+        <smtpHost>localhost</smtpHost>
+        <!-- <to>YOUR SUPPORT EMAIL ADRESS</to>  -->
+        <!-- <from>noreply@YOUR_SERVER_ADRESS</from>  -->
+        <subject>SORMAS: %logger{20} - %m</subject>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%date %-5level %X{USER} %X{APP} %logger{36} - %msg%n</pattern>
+        </layout>
+        <discriminator class="ch.qos.logback.classic.sift.MDCBasedDiscriminator">
+            <key>USER</key>
+            <defaultValue>SYSTEM</defaultValue>
+        </discriminator>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%.-1level%.10d{HHmmss.SSS}|%5.-5X{SORMAS}> %msg \(%C.java:%L\)%n
+            </Pattern>
+        </encoder>
+    </appender>
+
+    <!-- Don't log personal data when copying to/from dto -->
+    <logger name="org.apache.commons.beanutils.BeanUtils" level="INFO" />
+
+    <!-- Log only errors and warnings for document generation -->
+    <logger name="fr.opensagres.xdocreport" level="WARN" />
+
+	<!-- Lower this log level to DEBUG or TRACE to have EJB method invocations logged with duration in ms to find performance leaks -->
+	<logger name="de.symeda.sormas.backend.util.PerformanceLoggingInterceptor" level="INFO" />
+
+    <!-- Prevent the org.apache.http.impl.conn.Wire to log debug data which could contain plain Basic Auth credentials -->
+    <logger name="org.apache.http" level="INFO" />
+
+    <!-- Prevent the TLSManager and ClientGenerator from outputting sensitive information -->
+    <logger name="de.rki.demis.importer" level="INFO" />
+
+    <!-- Prevent unnecessary debug messages about code loading-->
+    <logger name="ca.uhn.fhir.context.ModelScanner" level="INFO" />
+
+
+    <root level="debug">
+        <appender-ref ref="FILE_DEBUG" />
+        <appender-ref ref="FILE_INFO" />
+        <appender-ref ref="FILE_WARN" />
+        <!-- <appender-ref ref="EMAIL_ERROR" /> -->
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>

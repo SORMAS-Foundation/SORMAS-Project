@@ -30,7 +30,7 @@ public class VaccinationDtoHelper extends AdoDtoHelper<Vaccination, VaccinationD
 	}
 
 	@Override
-	protected Call<List<VaccinationDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+	protected Call<List<VaccinationDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 
@@ -61,6 +61,7 @@ public class VaccinationDtoHelper extends AdoDtoHelper<Vaccination, VaccinationD
 		target.setVaccineInn(source.getVaccineInn());
 		target.setVaccineUniiCode(source.getVaccineUniiCode());
 		target.setVaccineAtcCode(source.getVaccineAtcCode());
+		target.setVaccineBatchNumber(source.getVaccineBatchNumber());
 		target.setVaccinationInfoSource(source.getVaccinationInfoSource());
 		target.setPregnant(source.getPregnant());
 		target.setTrimester(source.getTrimester());
@@ -102,6 +103,7 @@ public class VaccinationDtoHelper extends AdoDtoHelper<Vaccination, VaccinationD
 		target.setVaccineInn(source.getVaccineInn());
 		target.setVaccineUniiCode(source.getVaccineUniiCode());
 		target.setVaccineAtcCode(source.getVaccineAtcCode());
+		target.setVaccineBatchNumber(source.getVaccineBatchNumber());
 		target.setVaccinationInfoSource(source.getVaccinationInfoSource());
 		target.setPregnant(source.getPregnant());
 		target.setTrimester(source.getTrimester());
@@ -109,8 +111,8 @@ public class VaccinationDtoHelper extends AdoDtoHelper<Vaccination, VaccinationD
 		target.setPseudonymized(source.isPseudonymized());
 	}
 
-    @Override
-    protected long getApproximateJsonSizeInBytes() {
-        return 0;
-    }
+	@Override
+	protected long getApproximateJsonSizeInBytes() {
+		return 0;
+	}
 }

@@ -14,13 +14,10 @@
  */
 package de.symeda.sormas.ui.samples;
 
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
@@ -33,9 +30,6 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -102,7 +96,7 @@ public class SampleDataView extends AbstractSampleView {
 
 		Disease disease = null;
 		final CaseReferenceDto associatedCase = sampleDto.getAssociatedCase();
-		if (associatedCase != null) {
+		if (associatedCase != null && UserProvider.getCurrent().hasAllUserRights(UserRight.CASE_VIEW)) {
 			final CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
 			disease = caseDto.getDisease();
 
@@ -111,7 +105,7 @@ public class SampleDataView extends AbstractSampleView {
 			layout.addComponent(caseInfoLayout, CASE_LOC);
 		}
 		final ContactReferenceDto associatedContact = sampleDto.getAssociatedContact();
-		if (associatedContact != null) {
+		if (associatedContact != null && UserProvider.getCurrent().hasAllUserRights(UserRight.CONTACT_VIEW)) {
 			final ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(associatedContact.getUuid());
 
 			disease = contactDto.getDisease();
@@ -123,7 +117,7 @@ public class SampleDataView extends AbstractSampleView {
 
 		}
 		final EventParticipantReferenceDto associatedEventParticipant = sampleDto.getAssociatedEventParticipant();
-		if (associatedEventParticipant != null) {
+		if (associatedEventParticipant != null && UserProvider.getCurrent().hasAllUserRights(UserRight.EVENTPARTICIPANT_VIEW)) {
 			final EventParticipantDto eventParticipantDto =
 				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(associatedEventParticipant.getUuid());
 			final EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(eventParticipantDto.getEvent().getUuid(), false);
@@ -160,27 +154,8 @@ public class SampleDataView extends AbstractSampleView {
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, EDIT_LOC);
 
-		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest = (pathogenTestDto, callback) -> callback.run();
-
-		// why? if(sampleDto.getSamplePurpose() !=null && sampleDto.getSamplePurpose().equals(SamplePurpose.EXTERNAL)) {
-		Supplier<Boolean> createOrEditAllowedCallback = () -> editComponent.getWrappedComponent().getFieldGroup().isValid();
 		SampleReferenceDto sampleReferenceDto = getSampleRef();
-		PathogenTestListComponent pathogenTestListComponent = new PathogenTestListComponent(sampleReferenceDto);
-		pathogenTestListComponent.addSideComponentCreateEventListener(e -> showNavigationConfirmPopupIfDirty(() -> {
-			if (createOrEditAllowedCallback.get()) {
-				ControllerProvider.getPathogenTestController().create(sampleReferenceDto, 0, pathogenTestListComponent::reload, onSavedPathogenTest);
-			} else {
-				Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Notification.Type.ERROR_MESSAGE);
-			}
-		}));
-		pathogenTestListComponent.addSideComponentEditEventListener(e -> showNavigationConfirmPopupIfDirty(() -> {
-			String uuid = e.getUuid();
-			if (createOrEditAllowedCallback.get()) {
-				ControllerProvider.getPathogenTestController().edit(uuid, pathogenTestListComponent::reload, onSavedPathogenTest);
-			} else {
-				Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Notification.Type.ERROR_MESSAGE);
-			}
-		}));
+		PathogenTestListComponent pathogenTestListComponent = new PathogenTestListComponent(sampleReferenceDto, this::showUnsavedChangesPopup);
 		layout.addComponent(new SideComponentLayout(pathogenTestListComponent), PATHOGEN_TESTS_LOC);
 
 		if (UserProvider.getCurrent() != null
@@ -204,8 +179,6 @@ public class SampleDataView extends AbstractSampleView {
 
 			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
-
-		//}
 
 		setSampleEditPermission(container);
 	}

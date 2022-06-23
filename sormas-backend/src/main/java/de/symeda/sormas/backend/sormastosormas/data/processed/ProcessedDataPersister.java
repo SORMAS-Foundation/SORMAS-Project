@@ -37,7 +37,7 @@ public abstract class ProcessedDataPersister<T extends SormasToSormasShareableDt
 			processedData.getEntity().setSormasToSormasOriginInfo(originInfo);
 		}
 
-		// update existing share shares
+		// update existing shares
 		if (originInfo.isOwnershipHandedOver() && existingEntity != null && !existingEntity.getSormasToSormasShares().isEmpty()) {
 			existingEntity.getSormasToSormasShares().forEach(s -> {
 				s.setOwnershipHandedOver(false);

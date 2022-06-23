@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.backend.systemevent;
 
 import java.sql.Timestamp;
@@ -48,39 +63,41 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 	/**
 	 * 
 	 * @param type
+	 *            the type of the SystemEvent to be fetched
 	 * @return the latest SystemEvent of the specified type with SystemEventStatus == SUCCESS.
 	 */
 	@Override
 	public SystemEventDto getLatestSuccessByType(SystemEventType type) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SystemEvent> cq = cb.createQuery(SystemEvent.class);
 		Root<SystemEvent> systemEventRoot = cq.from(SystemEvent.class);
 
-		cq.where(cb.equal(systemEventRoot.get(SystemEvent.STATUS), SystemEventStatus.SUCCESS));
+		cq.where(cb.equal(systemEventRoot.get(SystemEvent.STATUS), SystemEventStatus.SUCCESS), cb.equal(systemEventRoot.get(SystemEvent.TYPE), type));
 		cq.orderBy(cb.desc(systemEventRoot.get(SystemEvent.START_DATE)));
 
 		return QueryHelper.getFirstResult(em, cq, this::toDto);
 	}
 
-
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void saveSystemEvent(@Valid SystemEventDto dto) {
-		SystemEvent systemEvent = systemEventService.getByUuid(dto.getUuid());
 
+		SystemEvent systemEvent = systemEventService.getByUuid(dto.getUuid());
 		systemEvent = fromDto(dto, systemEvent, true);
 		systemEventService.ensurePersisted(systemEvent);
-
 	}
 
 	@Override
 	public void reportSuccess(SystemEventDto systemEvent, String message, Date end) {
+
 		systemEvent.setAdditionalInfo(message);
 		reportSuccess(systemEvent, end);
 	}
 
 	@Override
 	public void reportSuccess(SystemEventDto systemEvent, Date end) {
+
 		systemEvent.setStatus(SystemEventStatus.SUCCESS);
 		systemEvent.setEndDate(end);
 		systemEvent.setChangeDate(new Date());
@@ -89,6 +106,7 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 
 	@Override
 	public void reportError(SystemEventDto systemEvent, String errorMessage, Date end) {
+
 		systemEvent.setStatus(SystemEventStatus.ERROR);
 		systemEvent.setAdditionalInfo(errorMessage);
 		systemEvent.setEndDate(end);
@@ -98,6 +116,7 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void markPreviouslyStartedAsUnclear(SystemEventType type) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<SystemEvent> cu = cb.createCriteriaUpdate(SystemEvent.class);
 		Root<SystemEvent> root = cu.from(SystemEvent.class);
@@ -117,7 +136,6 @@ public class SystemEventFacadeEjb implements SystemEventFacade {
 		target.setAdditionalInfo(source.getAdditionalInfo());
 
 		return target;
-
 	}
 
 	public SystemEventDto toDto(SystemEvent source) {

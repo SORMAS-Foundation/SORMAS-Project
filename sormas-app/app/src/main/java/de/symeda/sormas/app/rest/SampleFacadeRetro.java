@@ -43,7 +43,7 @@ public interface SampleFacadeRetro {
 	@GET("samples/uuids")
 	Call<List<String>> pullUuids();
 
-	@GET("samples/deleted/{since}")
-	Call<List<String>> pullDeletedUuidsSince(@Path("since") long since);
+	@GET("samples/obsolete/{since}")
+	Call<List<String>> pullObsoleteUuidsSince(@Path("since") long since);
 
 }

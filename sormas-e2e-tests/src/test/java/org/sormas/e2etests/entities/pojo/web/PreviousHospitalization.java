@@ -21,5 +21,7 @@ public class PreviousHospitalization {
   String stayInTheIntensiveCareUnit;
   LocalDate startOfStayDate;
   LocalDate endOfStayDate;
+  LocalDate dateOfIsolation;
   String description;
+  String wasPatientAdmittedAtTheFacilityAsAnInpatient;
 }

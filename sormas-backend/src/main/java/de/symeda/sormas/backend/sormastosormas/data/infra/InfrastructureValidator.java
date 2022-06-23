@@ -131,7 +131,7 @@ public class InfrastructureValidator {
 		} else {
 
 			Optional<PointOfEntryReferenceDto> localPointOfEntry = pointOfEntry.getExternalId() != null
-				? pointOfEntryFacade.getByExternalId(pointOfEntry.getExternalId(), false).stream().findFirst()
+				? pointOfEntryFacade.getReferencesByExternalId(pointOfEntry.getExternalId(), false).stream().findFirst()
 				: Optional.empty();
 
 			if (!localPointOfEntry.isPresent()) {

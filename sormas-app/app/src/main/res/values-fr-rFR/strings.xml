@@ -138,7 +138,7 @@
     <string name="caption_case_tasks">Tâches de cas</string>
     <string name="caption_case_events">Événements de cas</string>
     <string name="caption_case_immunizations">Immunité du cas</string>
-    <string name="caption_case_vaccinations">Case Vaccinations</string>
+    <string name="caption_case_vaccinations">Vaccinations du cas</string>
     <string name="caption_case_treatments">Traitements</string>
     <string name="caption_case_similarity_create">Créer un nouveau cas</string>
     <string name="caption_changed_data_lost">Données modifiées perdues lors de la re-synchronisation.</string>
@@ -155,7 +155,7 @@
     <string name="caption_contact_epidemiological_data">Informations épidémiologiques</string>
     <string name="caption_contact_visits">Informations de suivi</string>
     <string name="caption_contact_immunizations">Immunité du contact</string>
-    <string name="caption_contact_vaccinations">Contact Vaccinations</string>
+    <string name="caption_contact_vaccinations">Vaccinations de contact</string>
     <string name="caption_converted_to_case">Converti en cas</string>
     <string name="caption_date_of_birth">Date de naissance (année / mois / jour)</string>
     <string name="caption_date_of_sampling">Date de prélèvement de l\'échantillon</string>
@@ -169,7 +169,7 @@
     <string name="caption_event_information">Informations sur l\'événement</string>
     <string name="caption_event_participants">Personnes impliquées</string>
     <string name="caption_event_participant_immunizations">Immunité du participant à l\'événement</string>
-    <string name="caption_event_participant_vaccinations">Event participant Vaccinations</string>
+    <string name="caption_event_participant_vaccinations">Vaccinations du participant à l\'événement</string>
     <string name="caption_event_tasks">Tâches d\'événement</string>
     <string name="caption_executed_by">Exécuté par</string>
     <string name="caption_facility_or_home">Lieu du séjour</string>
@@ -542,6 +542,7 @@
     <string name="message_language_change_unsuccessful">La langue n\'a pas pu être modifiée en raison d\'une erreur interne.</string>
     <string name="message_Event_and_Case_disease_mismatch">Le nouvel événement à relier au cas a une maladie différente de la maladie de cas </string>
     <string name="message_Event_already_linked_to_Case">L\'événement a déjà été lié à ce cas </string>
+    <string name="message_EventParticipant_to_Case_Without_Event_Disease">It is not possible to create cases from an event participant if the disease of the event has not been set </string>
     <string name="notification_channel_tasks_name">Tâches nouvelles ou mises à jour</string>
     <string name="notification_channel_tasks_description">Recevoir une notification lorsqu\'une nouvelle tâche vous est attribuée ou lorsqu\'une tâche qui vous a été attribuée a été modifiée</string>
     <string name="notification_channel_case_changes_name">Changements importants de cas</string>
@@ -646,6 +647,6 @@
     <string name="caption_facility_type_group">Catégorie d\'établissement</string>
     <string name="caption_facility_type">Type d\'établissement</string>
     <string name="value_vaccine_date_unknown">Date de vaccination N/A</string>
-    <string name="value_vaccine_name_unknown">Vaccine N/A</string>
-    <string name="value_vaccine_manufacturer_unknown">Manufacturer N/A</string>
+    <string name="value_vaccine_name_unknown">Vaccin N/A</string>
+    <string name="value_vaccine_manufacturer_unknown">Fabricant N/A</string>
 </resources>

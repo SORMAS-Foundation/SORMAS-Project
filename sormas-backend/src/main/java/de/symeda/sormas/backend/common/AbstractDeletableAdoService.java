@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.common;
 
+import de.symeda.sormas.api.common.DeletionDetails;
+
 import java.sql.Timestamp;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -7,26 +9,19 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.backend.util.IterableHelper;
-
 public abstract class AbstractDeletableAdoService<ADO extends DeletableAdo> extends AdoServiceWithUserFilter<ADO> {
 
 	protected AbstractDeletableAdoService(Class<ADO> elementClass) {
 		super(elementClass);
 	}
 
-	public void delete(ADO ado) {
+	public void delete(ADO ado, DeletionDetails deletionDetails) {
 
+		ado.setDeletionReason(deletionDetails.getDeletionReason());
+		ado.setOtherDeletionReason(deletionDetails.getOtherDeletionReason());
 		ado.setDeleted(true);
 		em.persist(ado);
 		em.flush();
-	}
-
-	public void executePermanentDeletion(int batchSize) {
-		IterableHelper.executeBatched(
-				getAllUuids((cb, root) -> cb.isTrue(root.get(DeletableAdo.DELETED))),
-				batchSize,
-				batchedUuids -> deletePermanent(batchedUuids));
 	}
 
 	protected <C> Predicate changeDateFilter(CriteriaBuilder cb, Timestamp date, From<?, C> path, String... joinFields) {

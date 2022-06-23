@@ -2,6 +2,8 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_LIST_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_DATA_TITLE;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_INFORMATION_TITLE;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static recorders.StepsLogger.PROCESS_ID_STRING;
 
@@ -16,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.enums.CaseOutcome;
 import org.sormas.e2etests.enums.ContactOutcome;
@@ -23,7 +26,7 @@ import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.UserRoles;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -43,7 +46,7 @@ public class CaseDetailedTableViewSteps implements En {
       BaseSteps baseSteps,
       ApiState apiState,
       SoftAssert softly,
-      EnvironmentManager environmentManager) {
+      RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
 
@@ -53,7 +56,7 @@ public class CaseDetailedTableViewSteps implements En {
           List<Map<String, String>> tableRowsData = getTableRowsData();
           Map<String, String> detailedCaseDTableRow = tableRowsData.get(0);
           softly.assertEquals(
-              detailedCaseDTableRow.size(), 41, "Case table rows count is not correct");
+              detailedCaseDTableRow.size(), 39, "Case table rows count is not correct");
 
           softly.assertTrue(
               detailedCaseDTableRow
@@ -143,7 +146,9 @@ public class CaseDetailedTableViewSteps implements En {
           }
           softly.assertEquals(
               detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.REPORTING_USER.toString()),
-              environmentManager.getUserByRole(locale, UserRoles.RestUser.getRole()).getUserRole(),
+              runningConfiguration
+                  .getUserByRole(locale, UserRoles.RestUser.getRole())
+                  .getUserRole(),
               "Reporting user is not correct");
           softly.assertAll();
         });
@@ -167,6 +172,49 @@ public class CaseDetailedTableViewSteps implements En {
               checkDateFormatDE(detailedCaseDTableRow, "MELDEDATUM"),
               "Date format is invalid in MELDEDATUM field");
           softly.assertAll();
+        });
+
+    When(
+        "I check that Person ID column is between Investigation Status and First Name columns",
+        () -> {
+          Map<String, Integer> headers = extractColumnHeadersHashMap();
+          Integer investigationStatusKey = headers.get("INVESTIGATION STATUS");
+          Integer personIDKey = headers.get("PERSON ID");
+          Integer firstNameKey = headers.get("FIRST NAME");
+          softly.assertTrue(
+              investigationStatusKey == personIDKey - 1 && firstNameKey == personIDKey + 1);
+          softly.assertAll();
+        });
+
+    When(
+        "I click on the first Person ID from Case Directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_PERSON_ID);
+        });
+
+    When(
+        "I check that I get navigated to the Edit Person page",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(PERSON_INFORMATION_TITLE);
+        });
+
+    When(
+        "I check that I get navigated to the Edit Case page",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_DATA_TITLE);
+        });
+
+    When(
+        "I click on the first Case ID from Case Directory",
+        () -> {
+          if (webDriverHelpers.isElementVisibleWithTimeout(
+              By.xpath("//*[contains(text(),'Confirm navigation')]"), 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(By.id("actionCancel"));
+            webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          }
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID);
         });
   }
 
@@ -238,9 +286,9 @@ public class CaseDetailedTableViewSteps implements En {
   */
 
   private String getDateOfReportDateTime(String dateTimeString) {
-    SimpleDateFormat outputFormat = new SimpleDateFormat("M/dd/yyyy h:mm a");
+    SimpleDateFormat outputFormat = new SimpleDateFormat("M/dd/yyyy h:mm a", Locale.ENGLISH);
     // because API request is sending local GMT and UI displays GMT+2 (server GMT)
-    outputFormat.setTimeZone(TimeZone.getTimeZone("GMT+1"));
+    outputFormat.setTimeZone(TimeZone.getDefault());
 
     // inputFormat is the format of teh dateTime as read from API created case
     DateFormat inputFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);

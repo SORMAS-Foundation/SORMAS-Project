@@ -15,6 +15,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless
@@ -61,6 +62,13 @@ public class CurrentUserService {
 		}
 	}
 
+	public boolean hasUserRight(UserRight userRight) {
+		// this only works for user rights that are used in RolesAllowed or DeclareRoles annotations.
+		// return context.isCallerInRole(userRight.name());
+		// We don't want to have to do this for all the user rights, so we check against the user rights of the current user instead
+		return getCurrentUser().getUserRoles().stream().anyMatch(userRole -> userRole.getUserRights().contains(userRight)); // TODO cache?
+	}
+
 	// We need a clean transaction as we do not want call potential entity listeners which would lead to recursion
 	@Transactional(Transactional.TxType.REQUIRES_NEW)
 	User fetchUser(String userName) {
@@ -72,6 +80,7 @@ public class CurrentUserService {
 		// do eager loading in this case
 		final Root<User> user = cq.from(User.class);
 		user.fetch(User.ADDRESS);
+		user.fetch(User.USER_ROLES);
 
 		final Predicate equal = cb.equal(cb.lower(user.get(User.USER_NAME)), userNameParam);
 		cq.select(user).distinct(true);

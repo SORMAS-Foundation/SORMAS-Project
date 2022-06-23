@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.api.person;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Strings;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
@@ -54,6 +57,10 @@ import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
+@DependingOnFeatureType(featureType = {
+	FeatureType.CASE_SURVEILANCE,
+	FeatureType.CONTACT_TRACING,
+	FeatureType.EVENT_SURVEILLANCE })
 public class PersonDto extends PseudonymizableDto {
 
 	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 42953;
@@ -156,17 +163,23 @@ public class PersonDto extends PseudonymizableDto {
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_FRANCE })
 	private String mothersName;
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
-	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_FRANCE })
 	private String mothersMaidenName;
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_FRANCE })
 	private String fathersName;
 	@PersonalData
 	@SensitiveData
@@ -263,10 +276,10 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.GUINEA_WORM,
 		Disease.LASSA,
 		Disease.POLIO,
-		Disease.CORONAVIRUS,
 		Disease.UNSPECIFIED_VHF,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@HideForCountries
 	private Date burialDate;
 	@Diseases({
 		Disease.AFP,
@@ -274,12 +287,12 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.GUINEA_WORM,
 		Disease.LASSA,
 		Disease.POLIO,
-		Disease.CORONAVIRUS,
 		Disease.UNSPECIFIED_VHF,
 		Disease.UNDEFINED,
 		Disease.OTHER })
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@HideForCountries
 	private String burialPlaceDescription;
 	@Diseases({
 		Disease.AFP,
@@ -287,21 +300,25 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.GUINEA_WORM,
 		Disease.LASSA,
 		Disease.POLIO,
-		Disease.CORONAVIRUS,
 		Disease.UNSPECIFIED_VHF,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@HideForCountries
 	private BurialConductor burialConductor;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
 	@Valid
 	private LocationDto address;
 
-	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_FRANCE })
 	private EducationType educationType;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
-	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_FRANCE })
 	private String educationDetails;
 
 	private OccupationType occupationType;
@@ -313,7 +330,9 @@ public class PersonDto extends PseudonymizableDto {
 	private ArmedForcesRelationType armedForcesRelationType;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
-	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_FRANCE })
 	private String passportNumber;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
@@ -365,7 +384,20 @@ public class PersonDto extends PseudonymizableDto {
 	}
 
 	public static String buildCaption(String firstName, String lastName) {
-		return DataHelper.toStringNullable(firstName) + " " + DataHelper.toStringNullable(lastName).toUpperCase();
+		return DataHelper.toStringNullable(firstName) + " " + DataHelper.toStringNullable(replaceGermanChars(lastName)).toUpperCase();
+	}
+
+	/*
+	 * Since there is a common problem in jdk when we call 'ß'.toUpperCase() => 'SS' , the simple workaround is to
+	 * replace all 'ß' (lower-case) with the 'ẞ' (upper-case) using chars unicodes.
+	 * - ß (lowercase) 00DF
+	 * - ẞ (capital) 1E9E
+	 */
+	private static String replaceGermanChars(String value) {
+		if (Strings.isNullOrEmpty(value)) {
+			return value;
+		}
+		return value.replaceAll("\u00DF", "\u1E9E");
 	}
 
 	public static PersonDto build() {
@@ -588,6 +620,7 @@ public class PersonDto extends PseudonymizableDto {
 	 * @param phone
 	 *            is automatically set as primary phone number, removing the primary status from another phone number if necessary.
 	 */
+	@JsonIgnore
 	public void setPhone(String phone) {
 		setPersonContactInformation(phone, PersonContactDetailType.PHONE, true);
 	}
@@ -596,6 +629,7 @@ public class PersonDto extends PseudonymizableDto {
 	 * @param phone
 	 *            is set as an additional non-primary phone number
 	 */
+	@JsonIgnore
 	public void setAdditionalPhone(String phone) {
 		setPersonContactInformation(phone, PersonContactDetailType.PHONE, false);
 	}
@@ -654,6 +688,7 @@ public class PersonDto extends PseudonymizableDto {
 	 * @param email
 	 *            is automatically set as primary email address, removing the primary status from another email address if necessary.
 	 */
+	@JsonIgnore
 	public void setEmailAddress(String email) {
 		setPersonContactInformation(email, PersonContactDetailType.EMAIL, true);
 	}

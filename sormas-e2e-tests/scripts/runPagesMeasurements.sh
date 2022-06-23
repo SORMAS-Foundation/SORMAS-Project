@@ -25,11 +25,11 @@ date +"%T"
 echo "Deleting allure report folder..."
 rm -rf ./allureReports
 echo "Deleting custom report"
-rm -rf ./customReports/customReport.html
+rm -rf ./customReports/pagesMeasurements/customReport.html
 eho "Deleting BarChart image"
-rm -rf ./customReports/images/BarChart.jpeg
+rm -rf ./customReports/pagesMeasurements/images/BarChart.jpeg
 echo "Cleaning old results from results.txt file"
-cat /dev/null > ./customReports/data/results.txt
+cat /dev/null > ./customReports/pagesMeasurements/data/results.txt
 echo "Executing gradle clean..."
 ./gradlew clean goJF
 echo "Starting all BDD tests under @PagesMeasurements tag..."

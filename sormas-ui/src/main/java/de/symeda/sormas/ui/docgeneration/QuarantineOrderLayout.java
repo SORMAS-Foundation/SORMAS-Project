@@ -214,9 +214,15 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 		boolean showVaccinationSelector = documentVariables.isUsedEntity(RootEntityType.ROOT_VACCINATION.getEntityName());
 		if (showSampleSelector || showPathogenTestSelector || showVaccinationSelector) {
 			showAdditionalParameters();
-			sampleSelector.setVisible(showSampleSelector);
-			pathogenTestSelector.setVisible(showPathogenTestSelector);
-			vaccinationSelector.setVisible(showVaccinationSelector);
+			if (sampleSelector != null) {
+				sampleSelector.setVisible(showSampleSelector);
+			}
+			if (pathogenTestSelector != null) {
+				pathogenTestSelector.setVisible(showPathogenTestSelector);
+			}
+			if (vaccinationSelector != null) {
+				vaccinationSelector.setVisible(showVaccinationSelector);
+			}
 		} else {
 			hideAdditionalParameters();
 		}

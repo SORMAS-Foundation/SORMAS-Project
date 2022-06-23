@@ -542,6 +542,7 @@
     <string name="message_language_change_unsuccessful">اندرونی خرابی کی وجہ سے زبان کو تبدیل نہیں کیا جا سکا۔</string>
     <string name="message_Event_and_Case_disease_mismatch">نئی تقریب جس کوکیس سےمنسلک کرناہے، کیس کی بیماری سے مختلف بیماری ہے</string>
     <string name="message_Event_already_linked_to_Case">اس تقریب کو پہلے ہی اس کیس سے جوڑا جا چکا ہے۔</string>
+    <string name="message_EventParticipant_to_Case_Without_Event_Disease">اگر تقریب کی بیماری کا تعین نہ کیا گیا ہو تو تقریب کے شریک سے کیس بنانا ممکن نہیں ہے</string>
     <string name="notification_channel_tasks_name">نئے یا اپ ڈیٹ کردہ کام</string>
     <string name="notification_channel_tasks_description">ایک اطلاع موصول کریں، جب آپ کو کوئی نیا کام دیا جائے یا آپ کو دیا ہوےکام میں ترمیم کی گئی ہو</string>
     <string name="notification_channel_case_changes_name">کیس میں اہم تبدیلیاں</string>

@@ -92,6 +92,10 @@
     <!-- Prevent the TLSManager and ClientGenerator from outputting sensitive information -->
     <logger name="de.rki.demis.importer" level="INFO" />
 
+    <!-- Prevent unnecessary debug messages about code loading-->
+    <logger name="ca.uhn.fhir.context.ModelScanner" level="INFO" />
+
+
     <root level="debug">
             <appender-ref ref="FILE_DEBUG" />
             <appender-ref ref="FILE_INFO" />

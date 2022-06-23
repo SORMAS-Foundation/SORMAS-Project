@@ -45,11 +45,50 @@ public class TravelEntryService {
   }
 
   public TravelEntry buildGeneratedEntryDE() {
+    firstName = faker.name().firstName() + "a";
+    lastName = faker.name().lastName() + "b";
+
+    return TravelEntry.builder()
+        .reportDate(LocalDate.now())
+        .dateOfArrival(LocalDate.now())
+        .firstName(firstName)
+        .lastName(lastName)
+        .sex(GenderValues.getRandomGenderDE())
+        .reportDate(LocalDate.now())
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .disease("COVID-19")
+        .pointOfEntry(getRandomPointOfEntryDE())
+        .pointOfEntryDetails("Automated test dummy description")
+        .build();
+  }
+
+  public TravelEntry buildGeneratedEntryWithParametrizedPersonDataDE(
+      String firstName, String lastName, String sex) {
+    return TravelEntry.builder()
+        .reportDate(LocalDate.now())
+        .dateOfArrival(LocalDate.now())
+        .firstName(firstName)
+        .lastName(lastName)
+        .sex(sex)
+        .reportDate(LocalDate.now())
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .disease("COVID-19")
+        .pointOfEntry(getRandomPointOfEntryDE())
+        .pointOfEntryDetails("Automated test dummy description")
+        .build();
+  }
+
+  public TravelEntry buildGeneratedEntryWithPointOfEntryDetailsDE(String pointOfEntry) {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();
 
     return TravelEntry.builder()
         .reportDate(LocalDate.now())
+        .dateOfArrival(LocalDate.now())
         .firstName(firstName)
         .lastName(lastName)
         .sex(GenderValues.getRandomGenderDE())
@@ -59,6 +98,28 @@ public class TravelEntryService {
         .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
         .disease(getRandomDiseaseCaptionDE())
         .pointOfEntry(getRandomPointOfEntryDE())
+        .pointOfEntryDetails(pointOfEntry)
+        .build();
+  }
+
+  public TravelEntry buildGeneratedEntryWithDifferentPointOfEntryDE() {
+    firstName = faker.name().firstName() + "a";
+    lastName = faker.name().lastName() + "b";
+
+    return TravelEntry.builder()
+        .reportDate(LocalDate.now())
+        .dateOfArrival(LocalDate.now())
+        .firstName(firstName)
+        .lastName(lastName)
+        .sex(GenderValues.getRandomGenderDE())
+        .reportDate(LocalDate.now())
+        .pointOfEntryRegion("Berlin")
+        .pointOfEntryDistrict("SK Berlin Mitte")
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .disease("COVID-19")
+        .pointOfEntry("Anderer Einreiseort")
         .pointOfEntryDetails("Automated test dummy description")
         .build();
   }

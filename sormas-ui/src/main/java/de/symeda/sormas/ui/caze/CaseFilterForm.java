@@ -5,11 +5,14 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.symeda.sormas.api.person.PresentCondition;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.server.Sizeable;
@@ -29,6 +32,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -49,7 +53,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -139,7 +142,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	@Override
 	protected void addFields() {
 
-		if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+		if (!UserProvider.getCurrent().isPortHealthUser()) {
 			addField(getContent(), FieldConfiguration.pixelSized(CaseDataDto.CASE_ORIGIN, 140));
 		}
 		addFields(FieldConfiguration.pixelSized(CaseDataDto.OUTCOME, 140), FieldConfiguration.pixelSized(CaseDataDto.DISEASE, 140));
@@ -187,7 +190,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.COMMUNITY, 140));
 
-		if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+		if (!UserProvider.getCurrent().isPortHealthUser()) {
 
 			ComboBox typeGroup = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.FACILITY_TYPE_GROUP, 140));
 			typeGroup.setInputPrompt(I18nProperties.getCaption(Captions.Facility_typeGroup));
@@ -208,7 +211,9 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		}
 
 		ComboBox officerField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.SURVEILLANCE_OFFICER, 140));
-		officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.SURVEILLANCE_OFFICER));
+		Disease selectedDisease = (Disease) getField(CaseIndexDto.DISEASE).getValue();
+		officerField
+			.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), selectedDisease, UserRight.CASE_RESPONSIBLE));
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP)) {
 			Field<?> followUpUntilTo = addField(
@@ -298,8 +303,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CheckBox.class,
 			FieldConfiguration.withCaptionAndStyle(
 				CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER,
-				I18nProperties.getCaption(Captions.caseFilterWithoutResponsibleOfficer),
-				I18nProperties.getDescription(Descriptions.descCaseFilterWithoutResponsibleOfficer),
+				I18nProperties.getCaption(Captions.caseFilterWithoutResponsibleUser),
+				I18nProperties.getDescription(Descriptions.descCaseFilterWithoutResponsibleUser),
 				CssStyles.CHECKBOX_FILTER_INLINE));
 
 		addField(
@@ -367,7 +372,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 
-		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
+		final JurisdictionLevel userJurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
 		if (userJurisdictionLevel != JurisdictionLevel.NATION && userJurisdictionLevel != JurisdictionLevel.NONE) {
 			addField(
 				moreFiltersContainer,
@@ -496,8 +501,9 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 							pointOfEntryField,
 							FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(newDistrict.getUuid(), true));
 					}
-
-					officerField.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(newDistrict, false, UserRole.SURVEILLANCE_OFFICER));
+					Disease selectedDisease = (Disease) getField(CaseIndexDto.DISEASE).getValue();
+					officerField
+						.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(newDistrict, selectedDisease, UserRight.CASE_RESPONSIBLE));
 				} else {
 					clearAndDisableFields(communityField, pointOfEntryField, facilityField, facilityTypeField, facilityTypeGroupField);
 
@@ -598,23 +604,37 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			break;
 		}
 		case CaseDataDto.DISEASE: {
-			ComboBox field = getField(CaseDataDto.DISEASE_VARIANT);
+			ComboBox diseaseVariantField = getField(CaseDataDto.DISEASE_VARIANT);
+			ComboBox presentConditionField = getField(PersonDto.PRESENT_CONDITION);
 			Disease disease = (Disease) event.getProperty().getValue();
 			if (disease == null) {
-				FieldHelper.updateItems(field, Collections.emptyList());
-				FieldHelper.setEnabled(false, field);
+				FieldHelper.updateItems(diseaseVariantField, Collections.emptyList());
+				FieldHelper.setEnabled(false, diseaseVariantField);
+				FieldHelper.updateEnumData(presentConditionField, Arrays.asList(PresentCondition.values()));
 			} else {
 				List<DiseaseVariant> diseaseVariants =
 					FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
-				FieldHelper.updateItems(field, diseaseVariants);
-				FieldHelper.setEnabled(CollectionUtils.isNotEmpty(diseaseVariants), field);
+				FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
+				FieldHelper.setEnabled(CollectionUtils.isNotEmpty(diseaseVariants), diseaseVariantField);
+
+				FieldVisibilityCheckers fieldVisibilityCheckers = FieldVisibilityCheckers.withDisease(disease);
+				List<PresentCondition> validValues = Arrays.stream(PresentCondition.values())
+						.filter(c -> fieldVisibilityCheckers.isVisible(PresentCondition.class, c.name()))
+						.collect(Collectors.toList());
+				PresentCondition currentValue = (PresentCondition) presentConditionField.getValue();
+				if (currentValue != null && !validValues.contains(currentValue)) {
+					validValues.add(currentValue);
+				}
+				FieldHelper.updateEnumData(presentConditionField, validValues);
 			}
+
 		}
 		}
 	}
 
 	private void addOfficers(ComboBox officerField, RegionReferenceDto region) {
-		officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.SURVEILLANCE_OFFICER));
+		Disease selectedDisease = (Disease) getField(CaseIndexDto.DISEASE).getValue();
+		officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(region, selectedDisease, UserRight.CASE_RESPONSIBLE));
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -632,7 +652,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	protected void applyDependenciesOnNewValue(CaseCriteria criteria) {
 
 		final UserDto user = currentUserDto();
-		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
+		final JurisdictionLevel userJurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
 
 		final ComboBox districtField = getField(CaseDataDto.DISTRICT);
 		final ComboBox communityField = getField(CaseDataDto.COMMUNITY);

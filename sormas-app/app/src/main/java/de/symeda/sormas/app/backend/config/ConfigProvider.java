@@ -37,7 +37,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -58,12 +57,11 @@ import android.util.Base64;
 import android.util.Log;
 
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.backend.user.UserRoleConfig;
+import de.symeda.sormas.app.backend.user.UserRole;
 import de.symeda.sormas.app.lbds.LbdsKeyHelper;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.SormasProperties;
@@ -77,8 +75,7 @@ public final class ConfigProvider {
 	private static String KEY_ACCESS_GRANTED = "accessGranted";
 	private static String KEY_REPULL_NEEDED = "repullNeeded";
 	private static String LAST_NOTIFICATION_DATE = "lastNotificationDate";
-	private static String LAST_ARCHIVED_SYNC_DATE = "lastArchivedSyncDate";
-	private static String LAST_DELETED_SYNC_DATE = "lastDeletedSyncDate";
+	private static final String LAST_OBSOLETE_UUIDS_SYNC_DATE = "lastObsoleteUuidsSyncDate";
 	private static String CURRENT_APP_DOWNLOAD_ID = "currentAppDownloadId";
 	private static String SERVER_LOCALE = "locale";
 	private static String SERVER_COUNTRY_NAME = "countryname";
@@ -114,8 +111,7 @@ public final class ConfigProvider {
 	private User user;
 	private Set<UserRight> userRights; // just a cache
 	private Date lastNotificationDate;
-	private Date lastArchivedSyncDate;
-	private Date lastDeletedSyncDate;
+	private Date lastObsoleteUuidsSyncDate;
 	private Long currentAppDownloadId;
 	private Boolean accessGranted;
 	private String serverLocale;
@@ -183,7 +179,7 @@ public final class ConfigProvider {
 				String username = getUsername();
 				String password = getPassword(); // needed to not automatically "login" again on logout with missing server connection
 				if (username != null && password != null) {
-					instance.user = DatabaseHelper.getUserDao().getByUsername(username);
+					instance.user = DatabaseHelper.getUserDao().getByUsername(username, true);
 				}
 			}
 			return instance.user;
@@ -195,25 +191,16 @@ public final class ConfigProvider {
 			if (instance.userRights == null) {
 				User user = getUser();
 				if (user != null) {
-					instance.userRights = new HashSet<>();
-
+					Set<UserRight> userRights = new HashSet();
 					for (UserRole userRole : user.getUserRoles()) {
-						List<UserRoleConfig> userRoleConfigs = DatabaseHelper.getUserRoleConfigDao().queryForEq(UserRoleConfig.USER_ROLE, userRole);
-						if (userRoleConfigs.size() > 0) {
-							instance.userRights.addAll(userRoleConfigs.get(0).getUserRights());
-						} else {
-							instance.userRights.addAll(userRole.getDefaultUserRights());
-						}
+						userRights.addAll(userRole.getUserRights());
 					}
+					instance.userRights = userRights;
+				} else {
+					return new HashSet();
 				}
 			}
 			return instance.userRights;
-		}
-	}
-
-	public static void onUserRolesConfigChanged() {
-		synchronized (ConfigProvider.class) {
-			instance.userRights = null;
 		}
 	}
 
@@ -270,10 +257,10 @@ public final class ConfigProvider {
 			// instance.username = null;
 
 			instance.user = null;
-			instance.userRights = null;
 			instance.accessGranted = null;
 			instance.lastNotificationDate = null;
-			instance.lastArchivedSyncDate = null;
+			instance.lastObsoleteUuidsSyncDate = null;
+			instance.userRights = null;
 
 			// old credentials are no longer valid
 			RetroProvider.disconnect();
@@ -554,54 +541,31 @@ public final class ConfigProvider {
 		saveConfigEntry(LAST_NOTIFICATION_DATE, lastNotificationDate != null ? String.valueOf(lastNotificationDate.getTime()) : null);
 	}
 
-	public static Date getLastArchivedSyncDate() {
-		if (instance.lastArchivedSyncDate == null) {
+	public static Date getLastObsoleteUuidsSyncDate() {
+		if (instance.lastObsoleteUuidsSyncDate == null) {
 			synchronized (ConfigProvider.class) {
-				if (instance.lastArchivedSyncDate == null) {
-					Config config = DatabaseHelper.getConfigDao().queryForId(LAST_ARCHIVED_SYNC_DATE);
+				if (instance.lastObsoleteUuidsSyncDate == null) {
+					Config config = DatabaseHelper.getConfigDao().queryForId(LAST_OBSOLETE_UUIDS_SYNC_DATE);
 					if (config != null) {
-						instance.lastArchivedSyncDate = new Date(Long.parseLong(config.getValue()));
+						instance.lastObsoleteUuidsSyncDate = new Date(Long.parseLong(config.getValue()));
 					}
 
 				}
 			}
 		}
 
-		return instance.lastArchivedSyncDate;
+		return instance.lastObsoleteUuidsSyncDate;
 	}
 
-	public static void setLastArchivedSyncDate(Date lastArchivedSyncDate) {
-		if (lastArchivedSyncDate != null && lastArchivedSyncDate.equals(instance.lastArchivedSyncDate)) {
+	public static void setLastObsoleteUuidsSyncDate(Date lastObsoleteUuidsSyncDate) {
+		if (lastObsoleteUuidsSyncDate != null && lastObsoleteUuidsSyncDate.equals(instance.lastObsoleteUuidsSyncDate)) {
 			return;
 		}
 
-		instance.lastArchivedSyncDate = lastArchivedSyncDate;
-		saveConfigEntry(LAST_ARCHIVED_SYNC_DATE, lastArchivedSyncDate != null ? String.valueOf(lastArchivedSyncDate.getTime()) : null);
-	}
-
-	public static Date getLastDeletedSyncDate() {
-		if (instance.lastDeletedSyncDate == null) {
-			synchronized (ConfigProvider.class) {
-				if (instance.lastDeletedSyncDate == null) {
-					Config config = DatabaseHelper.getConfigDao().queryForId(LAST_DELETED_SYNC_DATE);
-					if (config != null) {
-						instance.lastDeletedSyncDate = new Date(Long.parseLong(config.getValue()));
-					}
-
-				}
-			}
-		}
-
-		return instance.lastDeletedSyncDate;
-	}
-
-	public static void setLastDeletedSyncDate(Date lastDeletedSyncDate) {
-		if (lastDeletedSyncDate != null && lastDeletedSyncDate.equals(instance.lastDeletedSyncDate)) {
-			return;
-		}
-
-		instance.lastDeletedSyncDate = lastDeletedSyncDate;
-		saveConfigEntry(LAST_DELETED_SYNC_DATE, lastDeletedSyncDate != null ? String.valueOf(lastDeletedSyncDate.getTime()) : null);
+		instance.lastObsoleteUuidsSyncDate = lastObsoleteUuidsSyncDate;
+		saveConfigEntry(
+			LAST_OBSOLETE_UUIDS_SYNC_DATE,
+			lastObsoleteUuidsSyncDate != null ? String.valueOf(lastObsoleteUuidsSyncDate.getTime()) : null);
 	}
 
 	public static Long getCurrentAppDownloadId() {

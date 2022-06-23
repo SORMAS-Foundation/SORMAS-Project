@@ -99,7 +99,7 @@ public class EventParticipantResource extends EntityDtoResource {
 	@Path("/push")
 	public List<PushResult> postEventParticipants(@Valid List<EventParticipantDto> dtos) {
 
-		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getEventParticipantFacade()::saveEventParticipant);
+		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getEventParticipantFacade()::save);
 		return result;
 	}
 
@@ -120,8 +120,20 @@ public class EventParticipantResource extends EntityDtoResource {
 	}
 
 	@GET
+	@Path("/archived/{since}")
+	public List<String> getArchivedUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getEventParticipantFacade().getArchivedUuidsSince(new Date(since));
+	}
+
+	@GET
 	@Path("/deleted/{since}")
 	public List<String> getDeletedUuidsSince(@PathParam("since") long since) {
 		return FacadeProvider.getEventParticipantFacade().getDeletedUuidsSince(new Date(since));
+	}
+
+	@GET
+	@Path("/obsolete/{since}")
+	public List<String> getObsoleteUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getEventParticipantFacade().getObsoleteUuidsSince(new Date(since));
 	}
 }

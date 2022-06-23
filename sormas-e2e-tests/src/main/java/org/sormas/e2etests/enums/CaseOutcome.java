@@ -24,37 +24,40 @@ import lombok.SneakyThrows;
 
 @Getter
 public enum CaseOutcome {
-  NO_OUTCOME("No Outcome Yet"),
-  NOT_YET_CLASSIFIED("Not yet classified"),
-  INVESTIGATION_PENDING("Investigation pending"),
-  INVESTIGATION_DONE("Investigation done"),
-  INVESTIGATION_DISCARDED("Investigation discarded"),
-  DECEASED("Deceased"),
-  RECOVERED("Recovered"),
-  UNKNOWN("Unknown"),
-  SEQUELAE_YES("Yes"),
-  SEQUELAE_NO("No"),
-  SEQUELAE_UNKNOWN("Unknown"),
-  PLACE_OF_STAY_HOME("Home"),
-  PLACE_OF_STAY_FACILITY("Facility"),
-  FACILITY_STANDARD_EINRICHTUNG("Standard Einrichtung"),
-  FACILITY_VOREINGESTELLTE_GESUNDHEITSEINRICHTUNG("Voreingestellte Gesundheitseinrichtung"),
-  FACILITY_OTHER("Other facility"),
-  QUARANTINE_HOME("Home"),
-  QUARANTINE_INSTITUTIONAL("Institutional"),
-  QUARANTINE_NONE("None"),
-  QUARANTINE_UNKNOWN("Unknown"),
-  QUARANTINE_OTHER("Other"),
-  VACCINATED_STATUS_VACCINATED("Vaccinated"),
-  VACCINATED_STATUS_UNVACCINATED("Unvaccinated"),
-  VACCINATED_STATUS_UNKNOWN("Unknown");
+  NO_OUTCOME("No Outcome Yet", "Noch kein Ergebnis bekannt"),
+  NOT_YET_CLASSIFIED("Not yet classified", "0. Nicht klassifiziert"),
+  INVESTIGATION_PENDING("Investigation pending", "Untersuchung ausstehend"),
+  INVESTIGATION_DONE("Investigation done", "Untersuchung durchgef\u00FChrt"),
+  INVESTIGATION_DISCARDED("Investigation discarded", "Untersuchung verworfen"),
+  DECEASED("Deceased", "Verstorben"),
+  RECOVERED("Recovered", "Genesen"),
+  UNKNOWN("Unknown", "Unbekannt"),
+  SEQUELAE_YES("Yes", "Ja"),
+  SEQUELAE_NO("No", "Nein"),
+  SEQUELAE_UNKNOWN("Unknown", "Unbekannt"),
+  PLACE_OF_STAY_HOME("Home", "Zuhause"),
+  PLACE_OF_STAY_FACILITY("Facility", "Einrichtung"),
+  FACILITY_STANDARD_EINRICHTUNG("Standard Einrichtung", "Standard Einrichtung"),
+  FACILITY_VOREINGESTELLTE_GESUNDHEITSEINRICHTUNG(
+      "Voreingestellte Gesundheitseinrichtung", "Voreingestellte Gesundheitseinrichtung"),
+  FACILITY_OTHER("Other facility", "Andere Einrichtung"),
+  QUARANTINE_HOME("Home", "H\u00E4uslich"),
+  QUARANTINE_INSTITUTIONAL("Institutional", "Institutionell"),
+  QUARANTINE_NONE("None", "Keine"),
+  QUARANTINE_UNKNOWN("Unknown", "Unbekannt"),
+  QUARANTINE_OTHER("Other", "Sonstiges"),
+  VACCINATED_STATUS_VACCINATED("Vaccinated", "Geimpft"),
+  VACCINATED_STATUS_UNVACCINATED("Unvaccinated", "Ungeimpft"),
+  VACCINATED_STATUS_UNKNOWN("Unknown", "Unbekannt");
 
   // TODO refactor all these values to cover UI values and API values to have a common Enum for both
 
   private final String name;
+  private final String nameDE;
 
-  CaseOutcome(String name) {
+  CaseOutcome(String name, String nameDE) {
     this.name = name;
+    this.nameDE = nameDE;
   }
 
   public static String getRandomOutcome() {
@@ -67,6 +70,15 @@ public enum CaseOutcome {
     CaseOutcome[] caseOutcomeOptions = CaseOutcome.values();
     for (CaseOutcome value : caseOutcomeOptions) {
       if (value.getName().equalsIgnoreCase(option)) return value.getName();
+    }
+    throw new Exception("Unable to find " + option + " value in CaseOutcome Enum");
+  }
+
+  @SneakyThrows
+  public static String getValueForDE(String option) {
+    CaseOutcome[] caseOutcomeOptions = CaseOutcome.values();
+    for (CaseOutcome value : caseOutcomeOptions) {
+      if (value.getNameDE().equalsIgnoreCase(option)) return value.getNameDE();
     }
     throw new Exception("Unable to find " + option + " value in CaseOutcome Enum");
   }

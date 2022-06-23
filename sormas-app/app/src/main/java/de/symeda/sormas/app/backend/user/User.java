@@ -15,25 +15,20 @@
 
 package de.symeda.sormas.app.backend.user;
 
-import java.lang.reflect.Type;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
@@ -41,6 +36,7 @@ import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.util.MetaProperty;
 
 @Entity(name = User.TABLE_NAME)
 @DatabaseTable(tableName = User.TABLE_NAME)
@@ -66,6 +62,7 @@ public class User extends AbstractDomainObject {
 	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
 	public static final String USER_ROLES_JSON = "userRole";
 	public static final String LANGUAGE = "language";
+	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
 
 	@Column(nullable = false)
 	private String userName;
@@ -102,11 +99,11 @@ public class User extends AbstractDomainObject {
 	@Enumerated(EnumType.STRING)
 	private Disease limitedDisease;
 
-	@Column(name = "userRole")
-	private String userRolesJson;
-
 	// initialized from userRolesJson
 	private Set<UserRole> userRoles = null;
+
+	@Enumerated(EnumType.STRING)
+	private JurisdictionLevel jurisdictionLevel;
 
 	public String getUserName() {
 		return userName;
@@ -228,49 +225,44 @@ public class User extends AbstractDomainObject {
 		this.language = language;
 	}
 
-	public String getUserRolesJson() {
-		return userRolesJson;
-	}
-
-	public void setUserRolesJson(String userRolesJson) {
-		this.userRolesJson = userRolesJson;
-		userRoles = null;
-	}
-
-	@Transient // Needed for merge logic
+	@MetaProperty
 	public Set<UserRole> getUserRoles() {
-		if (userRoles == null) {
-			Gson gson = new Gson();
-			Type type = new TypeToken<Set<UserRole>>() {
-			}.getType();
-			userRoles = gson.fromJson(userRolesJson, type);
-			if (userRoles == null) {
-				userRoles = new HashSet<>();
-			}
-		}
 		return userRoles;
 	}
 
 	public void setUserRoles(Set<UserRole> userRoles) {
 		this.userRoles = userRoles;
-		Gson gson = new Gson();
-		userRolesJson = gson.toJson(userRoles);
 	}
 
 	public boolean hasUserRole(UserRole userRole) {
-		return getUserRoles().contains(userRole);
+		return userRoles != null && userRoles.contains(userRole);
 	}
 
 	public String getUserRolesString() {
 
 		StringBuilder result = new StringBuilder();
-		for (UserRole userRole : getUserRoles()) {
-			if (result.length() > 0) {
-				result.append(", ");
+		if (userRoles != null) {
+			for (UserRole userRole : userRoles) {
+				if (result.length() > 0) {
+					result.append(", ");
+				}
+				result.append(userRole.getCaption());
 			}
-			result.append(userRole.toString());
 		}
 		return result.toString();
+	}
+
+	public JurisdictionLevel getJurisdictionLevel() {
+		return jurisdictionLevel;
+	}
+
+	public void setJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
+		this.jurisdictionLevel = jurisdictionLevel;
+	}
+
+	public boolean hasJurisdictionLevel(JurisdictionLevel... jurisdictionLevels) {
+		JurisdictionLevel userJurisdictionLevel = getJurisdictionLevel();
+		return Arrays.asList(jurisdictionLevels).contains(userJurisdictionLevel);
 	}
 
 	@Override
@@ -278,7 +270,7 @@ public class User extends AbstractDomainObject {
 
 		StringBuilder result = new StringBuilder();
 		result.append(getFirstName()).append(" ").append(getLastName().toUpperCase());
-		if (getUserRoles().size() > 0) {
+		if (getUserRoles() != null && getUserRoles().size() > 0) {
 			result.append(" - ");
 			result.append(getUserRolesString());
 		}

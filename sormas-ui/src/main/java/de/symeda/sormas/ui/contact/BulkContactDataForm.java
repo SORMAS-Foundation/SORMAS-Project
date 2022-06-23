@@ -22,18 +22,24 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.contact.ContactBulkEditData;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
@@ -56,10 +62,12 @@ public class BulkContactDataForm extends AbstractEditForm<ContactBulkEditData> {
 
 	private CheckBox classificationCheckBox;
 	private CheckBox contactOfficerCheckBox;
+	private Collection<? extends ContactIndexDto> selectedContacts;
 
-	public BulkContactDataForm(DistrictReferenceDto singleSelectedDistrict) {
+	public BulkContactDataForm(DistrictReferenceDto singleSelectedDistrict, Collection<? extends ContactIndexDto> selectedContacts) {
 		super(ContactBulkEditData.class, ContactDto.I18N_PREFIX);
 		this.singleSelectedDistrict = singleSelectedDistrict;
+		this.selectedContacts = selectedContacts;
 		setWidth(680, Unit.PIXELS);
 		hideValidationUntilNextCommit();
 		initialized = true;
@@ -89,8 +97,18 @@ public class BulkContactDataForm extends AbstractEditForm<ContactBulkEditData> {
 				Arrays.asList(ContactBulkEditData.CONTACT_OFFICER),
 				Arrays.asList(true),
 				null);
-			List<UserReferenceDto> assignableContactOfficers =
-				FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, false, UserRole.CONTACT_OFFICER);
+
+			Set<Disease> selectedDiseases = this.selectedContacts.stream().map(c -> c.getDisease()).collect(Collectors.toSet());
+			List<UserReferenceDto> assignableContactOfficers = null;
+			if (selectedDiseases.size() == 1) {
+				Disease selectedDisease = selectedDiseases.iterator().next();
+				assignableContactOfficers =
+					FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, selectedDisease, UserRight.CONTACT_RESPONSIBLE);
+			} else {
+				assignableContactOfficers =
+					FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, true, UserRight.CONTACT_RESPONSIBLE);
+			}
+
 			FieldHelper.updateItems(contactOfficer, assignableContactOfficers);
 
 			contactOfficerCheckBox.addValueChangeListener(e -> {

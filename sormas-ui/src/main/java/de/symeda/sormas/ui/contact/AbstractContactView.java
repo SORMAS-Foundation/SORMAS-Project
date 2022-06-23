@@ -23,6 +23,7 @@ import java.util.List;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -39,7 +40,7 @@ import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseContactsView;
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
-import de.symeda.sormas.ui.labmessage.LabMessagesView;
+import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.DirtyStateComponent;
 import de.symeda.sormas.ui.utils.ExternalJournalUtil;
@@ -72,10 +73,10 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 		menu.removeAllViews();
 		menu.addView(ContactsView.VIEW_NAME, I18nProperties.getCaption(Captions.contactContactsList));
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.LAB_MESSAGES)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.LAB_MESSAGES)
-			&& FacadeProvider.getLabMessageFacade().existsLabMessageForEntity(getReference())) {
-			menu.addView(LabMessagesView.VIEW_NAME, I18nProperties.getCaption(Captions.labMessageLabMessagesList));
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EXTERNAL_MESSAGES)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_MESSAGE_VIEW)
+			&& FacadeProvider.getExternalMessageFacade().existsExternalMessageForEntity(getReference())) {
+			menu.addView(ExternalMessagesView.VIEW_NAME, I18nProperties.getCaption(Captions.externalMessagesList));
 		}
 
 		if (contact.getCaze() != null) {
@@ -139,13 +140,12 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 	}
 
 	public void setContactEditPermission(Component component) {
-		boolean isContactEditAllowed = isContactEditAllowed();
-		if (!isContactEditAllowed) {
+		if (!isContactEditAllowed()) {
 			getComponent(getComponentIndex(component)).setEnabled(false);
 		}
 	}
 
 	protected boolean isContactEditAllowed() {
-		return FacadeProvider.getContactFacade().isContactEditAllowed(getContactRef().getUuid());
+		return FacadeProvider.getContactFacade().isContactEditAllowed(getContactRef().getUuid()).equals(EditPermissionType.ALLOWED);
 	}
 }

@@ -1,7 +1,7 @@
 @UI @Sanity @Persons
 Feature: Edit Persons
 
-  @env_main @check
+  @env_main @issue=SORQA-110
   Scenario: Edit existent person
     Given I log in with National User
     When I click on the Contacts button from navbar
@@ -139,3 +139,8 @@ Feature: Edit Persons
     And I click on Edit Immunization button for Immunization created through API from Immunization card on Edit Person page
     Then I navigate to the last created via api Person page via URL
 
+  @issue=SORDEV-8467 @env_main
+  Scenario: Test column structure in Person directory
+    Given I log in with National User
+    And I click on the Persons button from navbar
+    Then I check that the Person table structure is correct

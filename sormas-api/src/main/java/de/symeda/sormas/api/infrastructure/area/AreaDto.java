@@ -1,5 +1,7 @@
 package de.symeda.sormas.api.infrastructure.area;
 
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.i18n.Validations;
@@ -7,6 +9,7 @@ import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
+@DependingOnFeatureType(featureType = FeatureType.INFRASTRUCTURE_TYPE_AREA)
 public class AreaDto extends InfrastructureDto {
 
 	public static final String I18N_PREFIX = "Area";

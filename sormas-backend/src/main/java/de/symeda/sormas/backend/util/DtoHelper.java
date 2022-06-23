@@ -27,6 +27,9 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Maps;
 
 import de.symeda.sormas.api.EntityDto;
@@ -76,7 +79,7 @@ public final class DtoHelper {
 
 			for (PropertyDescriptor pd : pds) {
 				// Skip properties without a read or write method
-				if (pd.getReadMethod() == null || pd.getWriteMethod() == null) {
+				if (pd.getReadMethod() == null || pd.getWriteMethod() == null || pd.getWriteMethod().isAnnotationPresent(JsonIgnore.class)) {
 					continue;
 				}
 
@@ -148,7 +151,12 @@ public final class DtoHelper {
 								targetMap.put(sourceKey, ((Map) sourceValue).get(sourceKey));
 							}
 						}
-					} else if (targetValue == null || override) {
+					} else if (targetValue == null
+						|| override
+						|| (pd.getPropertyType().equals(String.class)
+							&& StringUtils.isBlank((String) targetValue)
+							&& StringUtils.isNotBlank((String) sourceValue))
+						|| (pd.getPropertyType().equals(boolean.class) && ((boolean) sourceValue) && !((boolean) targetValue))) {
 						if (DataHelper.isValueType(pd.getPropertyType()) || ReferenceDto.class.isAssignableFrom(pd.getPropertyType())) {
 							pd.getWriteMethod().invoke(target, sourceValue);
 						} else {

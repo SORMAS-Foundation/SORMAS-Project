@@ -41,27 +41,38 @@ import org.apache.commons.lang3.reflect.TypeUtils;
 
 public enum EntityColumn {
 
-	FIELD_ID(256 * 30, EntityColumn::getFieldId, false),
-	FIELD(256 * 30, EntityColumn::getFieldName, false),
-	TYPE(256 * 30, EntityColumn::getFieldType, true),
-	DATA_PROTECTION(256 * 30, EntityColumn::getDataProtection, false),
-	CAPTION(256 * 30, EntityColumn::getCaption, false),
-	DESCRIPTION(256 * 60, EntityColumn::getDescription, true),
-	REQUIRED(256 * 10, EntityColumn::getRequired, false),
-	NEW_DISEASE(256 * 8, EntityColumn::getNewDisease, false),
-	DISEASES(256 * 45, EntityColumn::getDiseases, true),
-	OUTBREAKS(256 * 10, EntityColumn::getOutbreaks, false),
-	IGNORED_COUNTRIES(256 * 20, EntityColumn::getIgnoredCountries, false),
-	EXCLUSIVE_COUNTRIES(256 * 20, EntityColumn::getExclusiveCountries, false);
+	ENTITY(256 * 30, EntityColumn::getEntity, false, true, true),
+	FIELD_ID(256 * 30, EntityColumn::getFieldId, false, true, false),
+	FIELD(256 * 30, EntityColumn::getFieldName, false, true, false),
+	TYPE(256 * 30, EntityColumn::getFieldType, true, true, false),
+	DATA_PROTECTION(256 * 30, EntityColumn::getDataProtection, false, true, false),
+	CAPTION(256 * 30, EntityColumn::getCaption, false, true, false),
+	DESCRIPTION(256 * 60, EntityColumn::getDescription, true, true, false),
+	REQUIRED(256 * 10, EntityColumn::getRequired, false, true, false),
+	NEW_DISEASE(256 * 8, EntityColumn::getNewDisease, false, true, false),
+	DISEASES(256 * 45, EntityColumn::getDiseases, true, true, false),
+	OUTBREAKS(256 * 10, EntityColumn::getOutbreaks, false, true, false),
+	IGNORED_COUNTRIES(256 * 20, EntityColumn::getIgnoredCountries, false, false, false),
+	EXCLUSIVE_COUNTRIES(256 * 20, EntityColumn::getExclusiveCountries, false, false, false);
 
 	private final int width;
 	private final Function<FieldData, String> getValueFromField;
 	private final boolean hasDefaultStyle;
+	private final boolean isDataProtectionColumn;
+	private final boolean isColumnForAllFieldsSheet;
 
-	EntityColumn(int width, Function<FieldData, String> getValueFromField, boolean hasDefaultStyle) {
+	EntityColumn(
+		int width,
+		Function<FieldData, String> getValueFromField,
+		boolean hasDefaultStyle,
+		boolean isDataProtectionColumn,
+		boolean isColumnForAllFieldsSheet) {
+
 		this.width = width;
 		this.getValueFromField = getValueFromField;
 		this.hasDefaultStyle = hasDefaultStyle;
+		this.isDataProtectionColumn = isDataProtectionColumn;
+		this.isColumnForAllFieldsSheet = isColumnForAllFieldsSheet;
 	}
 
 	public int getWidth() {
@@ -76,8 +87,20 @@ public enum EntityColumn {
 		return hasDefaultStyle;
 	}
 
+	public boolean isDataProtectionColumn() {
+		return isDataProtectionColumn;
+	}
+
+	public boolean isColumnForAllFieldsSheet() {
+		return isColumnForAllFieldsSheet;
+	}
+
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
+	}
+
+	private static String getEntity(FieldData fieldData) {
+		return DataHelper.getHumanClassName(fieldData.getEntityClass());
 	}
 
 	private static String getFieldId(FieldData fieldData) {

@@ -67,11 +67,11 @@ public class ContactService {
             ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
         .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
         .returningTraveler("NEIN")
-        .reportDate(LocalDate.now().minusDays(random.nextInt(10)))
+        .reportDate(LocalDate.now().minusDays(random.nextInt(5)))
         .diseaseOfSourceCase("COVID-19")
         .caseIdInExternalSystem(UUID.randomUUID().toString())
-        .dateOfFirstContact(LocalDate.now().minusDays(5))
-        .dateOfLastContact(LocalDate.now().minusDays(3))
+        .dateOfFirstContact(LocalDate.now().minusDays(9))
+        .dateOfLastContact(LocalDate.now().minusDays(6))
         .caseOrEventInformation("Automated test dummy description")
         .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
         .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
@@ -82,6 +82,66 @@ public class ContactService {
         .contactCategory("Kontaktperson der Kategorie III")
         .relationshipWithCase("Arbeiten in der gleichen Umgebung")
         .descriptionOfHowContactTookPlace("Automated test dummy description")
+        .build();
+  }
+
+  public Contact buildGeneratedContactWithParametrizedPersonDataDE(
+      String firstName, String lastName, LocalDate dateOfBirth, String sex) {
+
+    return Contact.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .dateOfBirth(dateOfBirth)
+        .sex(sex)
+        .primaryEmailAddress(
+            ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
+        .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
+        .returningTraveler("NEIN")
+        .reportDate(LocalDate.now().minusDays(random.nextInt(5)))
+        .diseaseOfSourceCase("COVID-19")
+        .caseIdInExternalSystem(UUID.randomUUID().toString())
+        .dateOfFirstContact(LocalDate.now().minusDays(9))
+        .dateOfLastContact(LocalDate.now().minusDays(6))
+        .caseOrEventInformation("Automated test dummy description")
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .additionalInformationOnContactType("Automated test dummy description")
+        .typeOfContact(
+            "Personen mit direktem Kontakt zu Sekreten oder K\u00F6rperfl\u00FCssigkeiten")
+        .contactCategory("Kontaktperson der Kategorie III")
+        .relationshipWithCase("Arbeiten in der gleichen Umgebung")
+        .descriptionOfHowContactTookPlace("Automated test dummy description")
+        .build();
+  }
+
+  public Contact buildGeneratedContactWithParametrizedPersonData(
+      String firstName, String lastName, LocalDate dateOfBirth) {
+    return Contact.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .dateOfBirth(dateOfBirth)
+        .sex(GenderValues.getRandomGender())
+        .primaryEmailAddress(
+            ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
+        .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
+        .returningTraveler("NO")
+        .reportDate(LocalDate.now())
+        .diseaseOfSourceCase("COVID-19")
+        .caseIdInExternalSystem(UUID.randomUUID().toString())
+        .dateOfFirstContact(LocalDate.now().minusDays(15))
+        .dateOfLastContact(LocalDate.now().minusDays(13))
+        .caseOrEventInformation("Automated test dummy description")
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .additionalInformationOnContactType(
+            "Automated test dummy description " + System.currentTimeMillis())
+        .typeOfContact("Touched fluid of source case")
+        .contactCategory("Low risk contact")
+        .relationshipWithCase("Work in the same environment")
+        .descriptionOfHowContactTookPlace(
+            "Automated test dummy description " + System.currentTimeMillis())
         .build();
   }
 
@@ -105,8 +165,8 @@ public class ContactService {
         .reportDate(LocalDate.now().minusDays(random.nextInt(10)))
         .diseaseOfSourceCase("COVID-19")
         .caseIdInExternalSystem(UUID.randomUUID().toString())
-        .dateOfFirstContact(LocalDate.now().minusDays(5))
-        .dateOfLastContact(LocalDate.now().minusDays(3))
+        .dateOfFirstContact(LocalDate.now().minusDays(15))
+        .dateOfLastContact(LocalDate.now().minusDays(13))
         .caseOrEventInformation("Automated test dummy description")
         .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
         .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
@@ -236,11 +296,59 @@ public class ContactService {
         .facilityCategory(FacilityCategory.ACCOMMODATION.getFacility())
         .facilityType(FacilityType.CAMPSITE.getType())
         .facility("Other facility")
-        .facilityDetails(faker.book().title())
+        .facilityDetails("Other facility")
         .contactPersonFirstName(firstName)
         .contactPersonLastName(lastName)
         .contactPersonPhone(faker.phoneNumber().phoneNumber())
         .contactPersonEmail(firstName + lastName + emailDomain)
+        .build();
+  }
+
+  public Exposure buildGeneratedExposureDataContactForRandomInputsDE() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+    return Exposure.builder()
+        .startOfExposure(LocalDate.now().minusDays(3))
+        .endOfExposure(LocalDate.now().minusDays(1))
+        .exposureDescription(faker.medical().symptoms())
+        .typeOfActivity(TypeOfActivityExposure.VISIT)
+        .exposureDetailsRole(ExposureDetailsRole.MEDICAL_STAFF)
+        .riskArea(YesNoUnknownOptions.NO)
+        .indoors(YesNoUnknownOptions.YES)
+        .outdoors(YesNoUnknownOptions.NO)
+        .wearingMask(YesNoUnknownOptions.NO)
+        .wearingPpe(YesNoUnknownOptions.NO)
+        .otherProtectiveMeasures(YesNoUnknownOptions.NO)
+        .shortDistance(YesNoUnknownOptions.YES)
+        .longFaceToFaceContact(YesNoUnknownOptions.YES)
+        .percutaneous(YesNoUnknownOptions.NO)
+        .contactToBodyFluids(YesNoUnknownOptions.NO)
+        .handlingSamples(YesNoUnknownOptions.NO)
+        .typeOfPlace(TypeOfPlace.HOME)
+        .typeOfPlaceDetails(faker.address().fullAddress())
+        .continent("Europa")
+        .subcontinent("Westeuropa")
+        .country("Deutschland")
+        .exposureRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
+        .community(CommunityValues.VoreingestellteGemeinde.getName())
+        .street(faker.address().streetAddress())
+        .houseNumber(String.valueOf(faker.number().numberBetween(1, 99)))
+        .additionalInformation(faker.address().streetAddress())
+        .postalCode(faker.address().zipCode())
+        .city(faker.address().cityName())
+        .areaType("St\u00E4dtisch")
+        .latitude(faker.address().latitude())
+        .longitude(faker.address().longitude())
+        .latLonAccuracy(faker.address().latitude())
+        .facilityCategory(FacilityCategory.ACCOMMODATION.getFacilityDE())
+        .facilityType(FacilityType.CAMPSITE.getTypeDE())
+        .facility(faker.book().title())
+        .facilityDetails("Andere Einrichtung")
+        .contactPersonFirstName(firstName)
+        .contactPersonLastName(lastName)
+        .contactPersonPhone(faker.phoneNumber().phoneNumber())
+        .contactPersonEmail(firstName + "." + lastName + emailDomain)
         .build();
   }
 }

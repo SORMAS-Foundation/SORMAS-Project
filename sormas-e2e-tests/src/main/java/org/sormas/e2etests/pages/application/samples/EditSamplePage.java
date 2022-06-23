@@ -23,6 +23,8 @@ import org.openqa.selenium.By;
 public class EditSamplePage {
 
   public static final By PATHOGEN_NEW_TEST_RESULT_BUTTON = By.cssSelector("[id='New test result']");
+  public static final By ADDIITONAL_NEW_TEST_RESULT_BUTTON =
+      By.cssSelector("[id='additionalTestNewTest']");
   public static final By NEW_TEST_RESULT_DE = By.cssSelector("[id='Neues Testresultat']");
   public static final By COLLECTED_DATE_TIME_COMBOBOX =
       By.cssSelector("[id='sampleDateTime_time'] [class='v-filterselect-button']");
@@ -64,4 +66,9 @@ public class EditSamplePage {
   public static final By SAMPLE_DELETION_POPUP = By.cssSelector(".v-window .popupContent");
   public static final By SAMPLE_DELETION_POPUP_YES_BUTTON = By.id("actionConfirm");
   public static final By SAVE_SAMPLE_BUTTON = By.id("commit");
+  public static final By DELETE_SAMPLE_REASON_POPUP =
+      By.xpath(
+          "//div[@class='popupContent']//*[text()='Reason for deletion']/../following-sibling::div//div");
+  public static final By EDIT_PATHOGEN_TEST =
+      By.cssSelector(".v-align-right.v-slot.v-slot-compact.v-slot-link > div[role='button']");
 }

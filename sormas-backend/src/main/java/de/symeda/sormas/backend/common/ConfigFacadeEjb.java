@@ -28,6 +28,8 @@ import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.RequestContextHolder;
+import de.symeda.sormas.api.RequestContextTO;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
@@ -152,6 +154,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String SORMAS2SORMAS_ETCD_KEY_PREFIX = "sormas2sormas.etcd.keyPrefix";
 
+	private static final String SORMAS2SORMAS_DISTRICT_EXTERNAL_ID = "sormas2sormas.districtExternalId";
+
 	private static final String EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL = "survnet.url";
 	private static final String EXTERNAL_SURVEILLANCE_TOOL_VERSION_ENDPOINT = "survnet.versionEndpoint";
 
@@ -166,7 +170,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String STEP_SIZE_FOR_CSV_EXPORT = "stepSizeForCsvExport";
 
 	private static final String UI_URL = "ui.url";
-	private static final String SORMAS_STATS_URL = "sormasStats.url";
+	public static final String SORMAS_STATS_URL = "sormasStats.url";
 
 	private static final String DOCUMENT_UPLOAD_SIZE_LIMIT_MB = "documentUploadSizeLimitMb";
 	public static final int DEFAULT_DOCUMENT_UPLOAD_SIZE_LIMIT_MB = 20;
@@ -531,7 +535,13 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		config.setOidcClientSecret(getProperty(SORMAS2SORMAS_OIDC_CLIENT_SECRET, null));
 		config.setKeyPrefix(getProperty(SORMAS2SORMAS_ETCD_KEY_PREFIX, null));
 		config.getIgnoreProperties().putAll(getS2SIgnoreProperties());
+		config.setDistrictExternalId(getProperty(SORMAS2SORMAS_DISTRICT_EXTERNAL_ID, null));
 		return config;
+	}
+
+	@Override
+	public Boolean isS2SConfigured() {
+		return !StringUtils.isEmpty(getS2SConfig().getPath());
 	}
 
 	private Map<String, Boolean> getS2SIgnoreProperties() {
@@ -548,46 +558,84 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
+	public boolean isExternalSurveillanceToolGatewayConfigured() {
+		return StringUtils.isNoneBlank(getExternalSurveillanceToolGatewayUrl());
+	}
+
+	@Override
 	public String getExternalSurveillanceToolVersionEndpoint() {
 		return getProperty(EXTERNAL_SURVEILLANCE_TOOL_VERSION_ENDPOINT, "version");
 	}
 
 	@Override
-	public void validateExternalUrls() {
-
-		List<String> urls = Lists.newArrayList(
-			getSymptomJournalConfig().getUrl(),
-			getSymptomJournalConfig().getAuthUrl(),
-			getPatientDiaryConfig().getUrl(),
-			getPatientDiaryConfig().getProbandsUrl(),
-			getPatientDiaryConfig().getAuthUrl(),
-			getPatientDiaryConfig().getFrontendAuthUrl(),
-			getSormasStatsUrl());
-
+	public void validateConfigUrls() {
 		SormasToSormasConfig s2sConfig = getS2SConfig();
+		SymptomJournalConfig symptomJournalConfig = getSymptomJournalConfig();
+		PatientDiaryConfig patientDiaryConfig = getPatientDiaryConfig();
 
-		if (s2sConfig.getOidcServer() != null && s2sConfig.getOidcRealm() != null) {
-			urls.add(s2sConfig.getOidcRealmCertEndpoint());
-			urls.add(s2sConfig.getOidcRealmTokenEndpoint());
-			urls.add(s2sConfig.getOidcRealmUrl());
-			urls.add(s2sConfig.getOidcServer());
+		List<String> enforceHttps = Lists.newArrayList(
+			s2sConfig.getOidcServer(),
+			symptomJournalConfig.getUrl(),
+			symptomJournalConfig.getAuthUrl(),
+			patientDiaryConfig.getUrl(),
+			patientDiaryConfig.getProbandsUrl(),
+			patientDiaryConfig.getAuthUrl(),
+			patientDiaryConfig.getFrontendAuthUrl(),
+			getAppUrl(),
+			getUiUrl());
+
+		List<String> allowHttp = Lists.newArrayList(getExternalSurveillanceToolGatewayUrl(), getSormasStatsUrl());
+
+		// separately as they are interpolated
+		if (!StringUtils.isBlank(s2sConfig.getOidcServer())) {
+
+			enforceHttps.add(s2sConfig.getOidcRealmCertEndpoint());
+			enforceHttps.add(s2sConfig.getOidcRealmTokenEndpoint());
+
+			if (!StringUtils.isBlank(s2sConfig.getOidcRealm())) {
+				enforceHttps.add(s2sConfig.getOidcRealmUrl());
+			}
 		}
 
-		UrlValidator urlValidator = new UrlValidator(
+		UrlValidator enforceHttpsValidator = new UrlValidator(
 			new String[] {
-				"http",
 				"https" },
 			UrlValidator.ALLOW_LOCAL_URLS);
 
-		urls.forEach(url -> {
-			if (StringUtils.isBlank(url)) {
-				return;
-			}
+		List<String> invalidHttpsUrls =
+			enforceHttps.stream().filter(u -> !StringUtils.isBlank(u)).filter(u -> !enforceHttpsValidator.isValid(u)).collect(Collectors.toList());
+		if (!invalidHttpsUrls.isEmpty()) {
+			String invalid = String.join(",\n\t", invalidHttpsUrls);
+			throw new IllegalArgumentException(String.format("Invalid URLs for which HTTPS is enforced in property file:\n\t%s", invalid));
+		}
 
-			if (!urlValidator.isValid(url)) {
-				throw new IllegalArgumentException("'" + url + "' is not a valid URL");
+		UrlValidator allowHttpValidator = new UrlValidator(
+			new String[] {
+				"https",
+				"http" },
+			UrlValidator.ALLOW_LOCAL_URLS);
+
+		List<String> invalidUrls =
+			allowHttp.stream().filter(u -> !StringUtils.isBlank(u)).filter(u -> !allowHttpValidator.isValid(u)).collect(Collectors.toList());
+		if (!invalidUrls.isEmpty()) {
+			String invalid = String.join(",\n\t", invalidUrls);
+			throw new IllegalArgumentException(String.format("Invalid URLs in property file:\n\t%s", invalid));
+		}
+
+		String geocodingUrl = getGeocodingServiceUrlTemplate();
+		if (!StringUtils.isBlank(geocodingUrl)) {
+			if (!geocodingUrl.startsWith("https://")) {
+				throw new IllegalArgumentException("geocodingServiceUrlTemplate property is required to be HTTPS");
 			}
-		});
+		}
+
+		String mapTilersUrl = getMapTilersUrl();
+		if (!StringUtils.isBlank(mapTilersUrl)) {
+			if (!mapTilersUrl.startsWith("https://")) {
+				throw new IllegalArgumentException("map.tiles.url property is required to be HTTPS");
+			}
+		}
+
 	}
 
 	@Override
@@ -688,13 +736,13 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public String getAuditLoggerConfig(){
-		return getProperty(AUDIT_LOGGER_CONFIG,"");
+	public String getAuditLoggerConfig() {
+		return getProperty(AUDIT_LOGGER_CONFIG, "");
 	}
 
 	@Override
-	public String getAuditSourceSite(){
-		return getProperty(AUDIT_SOURCE_SITE,"");
+	public String getAuditSourceSite() {
+		return getProperty(AUDIT_SOURCE_SITE, "");
 	}
 
 	@Override
@@ -720,6 +768,14 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public long getImportFileSizeLimitMb() {
 		return getLong(IMPORT_FILE_SIZE_LIMIT_MB, DEFAULT_IMPOR_FILE_SIZE_LIMIT_MB);
+	}
+
+	@Override public void setRequestContext(RequestContextTO requestContext) {
+		RequestContextHolder.setRequestContext(requestContext);
+	}
+
+	@Override public void resetRequestContext() {
+		RequestContextHolder.reset();
 	}
 
 	@LocalBean

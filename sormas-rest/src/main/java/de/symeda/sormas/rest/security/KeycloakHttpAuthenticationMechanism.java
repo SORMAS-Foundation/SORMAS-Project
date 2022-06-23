@@ -56,9 +56,10 @@ public class KeycloakHttpAuthenticationMechanism implements HttpAuthenticationMe
 		if (result.getStatus() == CredentialValidationResult.Status.VALID) {
 			KeycloakAccount keycloakAccount = (KeycloakAccount) request.getAttribute(KeycloakAccount.class.getName());
 			keycloakAccount.getRoles().addAll(result.getCallerGroups());
+
+			httpMessageContext.setRegisterSession(result.getCallerPrincipal().getName(), result.getCallerGroups());
 		}
 
-		httpMessageContext.setRegisterSession(result.getCallerPrincipal().getName(), result.getCallerGroups());
 		return httpMessageContext.notifyContainerAboutLogin(result);
 	}
 

@@ -7,7 +7,9 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -234,6 +236,81 @@ public final class QueryHelper {
 		default:
 			throw new NonUniqueResultException("More than one Entity found. Query was: '" + typedQuery + "'.");
 		}
+	}
+
+	/**
+	 * Loads at most one entity based on the restriction on a WHERE clause.
+	 *
+	 * @param <E>
+	 *            Entity type.
+	 * @param em
+	 *            The entity manager to use.
+	 * @param clazz
+	 *            Class used as the query root.
+	 * @param propertyName
+	 *            Attribute name in dot notation starting from clazz.
+	 * @param propertyValue
+	 *            This value will be inserted into the WHERE clause.
+	 * @throws NonUniqueResultException
+	 *             In case there's more than one entity in the result.
+	 * @return The requested entity or {@code null}.
+	 * @see #simpleQuery(EntityManager, Class, String, Object)
+	 * @see #single(TypedQuery)
+	 */
+	public static <E> E simpleSingleQuery(EntityManager em, Class<E> clazz, String propertyName, Object propertyValue) {
+		return single(simpleQuery(em, clazz, propertyName, propertyValue));
+	}
+
+	/**
+	 * Loads at most one entity based on the specified query.
+	 *
+	 * @param <V>
+	 *            Return type of the {@code query}.
+	 * @param query
+	 * @return <code>null</code> if there is no entity adhering to the specified query.
+	 * @throws NonUniqueResultException
+	 *             In case there's more than one entity in the result.
+	 */
+	public static <V> V single(TypedQuery<V> query) {
+		// Query loads at most two elements to decide whether the query returns a non-unique result.
+		final int maxResults = 2;
+		List<V> list = query.setMaxResults(maxResults).getResultList();
+		switch (list.size()) {
+		case 0:
+			return null;
+		case 1:
+			return list.get(0);
+		default:
+			throw new NonUniqueResultException("More than one Entity found. Query was: " + query + ".");
+		}
+	}
+
+	/**
+	 * Creates a query with a WHERE clause.
+	 *
+	 * @param <E>
+	 *            Entity type.
+	 * @param em
+	 *            The entity manager to use.
+	 * @param clazz
+	 *            Class used as the query root.
+	 * @param propertyName
+	 *            Attribute name in dot notation starting from clazz.
+	 * @param propertyValue
+	 *            This value will be inserted into the WHERE clause.
+	 * @return Query with WHERE clause based on the given parameter.
+	 */
+	public static <E> TypedQuery<E> simpleQuery(EntityManager em, Class<E> clazz, String propertyName, Object propertyValue) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<E> cq = cb.createQuery(clazz);
+		Root<E> root = cq.from(clazz);
+		if (propertyValue == null) {
+			cq.where(cb.isNull(root.get(propertyName)));
+		} else {
+			cq.where(cb.equal(root.get(propertyName), propertyValue));
+		}
+		TypedQuery<E> query = em.createQuery(cq);
+		return query;
 	}
 
 }

@@ -22,7 +22,7 @@ import org.openqa.selenium.By;
 
 public class ContactDirectoryPage {
   public static final By NEW_CONTACT_PAGE_BUTTON = By.id("contactNewContact");
-  public static final By LINE_LISTING = By.cssSelector("[id='lineListing']");
+  public static final By LINE_LISTING = By.id("lineListing");
   public static final By MULTIPLE_OPTIONS_SEARCH_INPUT = By.cssSelector("#contactOrCaseLike");
   public static final By PERSON_LIKE_SEARCH_INPUT = By.cssSelector("#personLike");
   public static final By APPLY_FILTERS_BUTTON = By.id("actionApplyFilters");
@@ -34,14 +34,16 @@ public class ContactDirectoryPage {
       By.cssSelector("input#contactOrCaseLike");
   public static final By CONTACTS_DETAILED_COLUMN_HEADERS =
       By.cssSelector("thead .v-grid-column-default-header-content");
+  public static final By CONTACTS_COLUMN_HEADERS =
+      By.cssSelector("thead .v-grid-column-default-header-content");
   public static final By CONTACTS_DETAILED_FIRST_TABLE_ROW =
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By CONTACTS_DETAILED_TABLE_DATA = By.cssSelector("[role=gridcell]");
-  public static final By DISEASE_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(5)");
-  public static final By FIRST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(9)");
-  public static final By LAST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(10)");
+  public static final By DISEASE_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(3)");
+  public static final By FIRST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(7)");
+  public static final By LAST_NAME_COLUMNS = By.cssSelector("[role=rowgroup] tr>td:nth-child(8)");
   public static final By TYPE_OF_CONTACT_COLUMNS =
-      By.cssSelector("[role=rowgroup] tr>td:nth-child(12)");
+      By.cssSelector("[role=rowgroup] tr>td:nth-child(9)");
   public static final By FOLLOW_UP_VISITS_BUTTON =
       By.cssSelector("#contactsViewSwitcher span:nth-child(3)");
   public static final By FROM_INPUT = By.cssSelector("#fromReferenceDateField input");
@@ -51,6 +53,8 @@ public class ContactDirectoryPage {
   public static final By EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-contacts-epidata");
   public static final By CONTACT_DISEASE_FILTER_COMBOBOX =
       By.cssSelector("[id='disease'] [class='v-filterselect-button']");
+  public static final By CONTACT_DISEASE_VARIANT_FILTER_COMBOBOX =
+      By.cssSelector("[id='diseaseVariant'] [class='v-filterselect-button']");
   public static final By CONTACT_CLASSIFICATION_FILTER_COMBOBOX =
       By.cssSelector("[id='contactClassification'] [class='v-filterselect-button']");
   public static final By CONTACT_CASE_CLASSIFICATION_FILTER_COMBOBOX =
@@ -81,7 +85,21 @@ public class ContactDirectoryPage {
   public static final By CONVERTED_TO_CASE_BUTTON = By.id("status-Converted to case");
   public static final By DROPPED_BUTTON = By.id("status-Dropped");
   public static final By BULK_ACTIONS_CONTACT_VALUES = By.id("bulkActions-9");
+  public static final By CONTACT_DATA_TAB = By.cssSelector("#tab-contacts-data");
   public static final By NEW_ENTRY_EPIDEMIOLOGICAL_DATA = By.id("actionNewEntry");
+  public static final By FIRST_PERSON_ID = By.xpath("//td[6]//a");
+  public static final By FIRST_CONTACT_ID = By.xpath("//td[1]//a");
+  public static final By BULK_CREATE_QUARANTINE_ORDER = By.id("bulkActions-8");
+  public static final By CONTACT_MERGE_DUPLICATES = By.id("contactMergeDuplicates");
+  public static final By CONTACT_DISPLAY_FILTER_COMBOBOX =
+      By.cssSelector("[id='relevanceStatus'] [class='v-filterselect-button']");
+
+  public static By getCheckboxByUUID(String uuid) {
+    return By.xpath(
+        String.format(
+            "//td//a[text()=\"%s\"]/../preceding-sibling::td//input[@type=\"checkbox\"]",
+            uuid.substring(0, 6).toUpperCase()));
+  }
   public static final By IMPORT_BUTTON = By.id("actionImport");
   public static final By EXPORT_BUTTON = By.id("export");
   public static final By MORE_BUTTON = By.id("more");

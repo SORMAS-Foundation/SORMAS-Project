@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -74,7 +75,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -152,12 +153,15 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 					loc(EventDto.MEANS_OF_TRANSPORT_DETAILS) +
 					fluidRowLocs(4, EventDto.CONNECTION_NUMBER, 4, EventDto.TRAVEL_DATE) +
 					fluidRowLocs(EventDto.EVENT_LOCATION) +
-					fluidRowLocs("", EventDto.RESPONSIBLE_USER);
+					fluidRowLocs("", EventDto.RESPONSIBLE_USER) +
+					fluidRowLocs(CaseDataDto.DELETION_REASON) +
+					fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
 	//@formatter:on
 
 	private final Boolean isCreateForm;
 	private final boolean isPseudonymized;
-	private List<UserReferenceDto> responsibleUserSurveillanceSupervisors;
+	private List<UserReferenceDto> regionEventResponsibles = new ArrayList<>();
+	private List<UserReferenceDto> districtEventResponsibles = new ArrayList<>();
 	private EpidemiologicalEvidenceCheckBoxTree epidemiologicalEvidenceCheckBoxTree;
 	private LaboratoryDiagnosticEvidenceCheckBoxTree laboratoryDiagnosticEvidenceCheckBoxTree;
 	private LocationEditForm locationForm;
@@ -388,6 +392,10 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		ComboBox responsibleUserField = addField(EventDto.RESPONSIBLE_USER, ComboBox.class);
 		responsibleUserField.setNullSelectionAllowed(true);
 
+		addField(EventDto.DELETION_REASON);
+		addField(EventDto.OTHER_DELETION_REASON, TextArea.class).setRows(3);
+		setVisible(false, EventDto.DELETION_REASON, EventDto.OTHER_DELETION_REASON);
+
 		if (isCreateForm) {
 			locationForm.hideValidationUntilNextCommit();
 		}
@@ -453,6 +461,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 				true,
 				false,
 				I18nProperties.getValidationError(Validations.beforeDate, startDate.getCaption(), reportDate.getCaption())));
+
+		reportDate.addValueChangeListener(e -> startDate.setValidationVisible(!startDate.isValid()));
+		startDate.addValueChangeListener(e -> reportDate.setValidationVisible(!reportDate.isValid()));
 
 		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.END_DATE, EventDto.MULTI_DAY_EVENT, Collections.singletonList(true), true);
 		FieldHelper.setCaptionWhen(
@@ -555,27 +566,23 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		regionField.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) regionField.getValue();
 			if (region != null) {
-				responsibleUserSurveillanceSupervisors =
-					FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.SURVEILLANCE_SUPERVISOR);
+				regionEventResponsibles =
+					FacadeProvider.getUserFacade().getUsersByRegionAndRights(region, getValue().getDisease(), UserRight.EVENT_RESPONSIBLE);
 			} else {
-				responsibleUserSurveillanceSupervisors.clear();
+				regionEventResponsibles.clear();
 			}
+			addRegionAndDistrict(responsibleUserField);
 		});
 
 		districtField.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) districtField.getValue();
 			if (district != null) {
-				List<UserReferenceDto> currentDistrictSurveillanceOfficers =
-					FacadeProvider.getUserFacade().getUserRefsByDistrict(district, false, UserRole.SURVEILLANCE_OFFICER);
-
-				List<UserReferenceDto> responsibleUsers = new ArrayList<>();
-				responsibleUsers.addAll(currentDistrictSurveillanceOfficers);
-				responsibleUsers.addAll(responsibleUserSurveillanceSupervisors);
-
-				FieldHelper.updateItems(responsibleUserField, responsibleUsers);
+				districtEventResponsibles =
+					FacadeProvider.getUserFacade().getUserRefsByDistrict(district, getValue().getDisease(), UserRight.EVENT_RESPONSIBLE);
 			} else {
-				responsibleUserField.removeAllItems();
+				districtEventResponsibles.clear();
 			}
+			addRegionAndDistrict(responsibleUserField);
 		});
 
 		FieldHelper.addSoftRequiredStyle(
@@ -621,6 +628,14 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 				specificRiskField.setVisible(isVisibleAllowed(EventDto.SPECIFIC_RISK) && CollectionUtils.isNotEmpty(specificRiskValues));
 			}
 		});
+	}
+
+	private void addRegionAndDistrict(ComboBox responsibleUserField) {
+		List<UserReferenceDto> responsibleUsers = new ArrayList<>();
+		responsibleUsers.addAll(regionEventResponsibles);
+		responsibleUsers.addAll(districtEventResponsibles);
+
+		FieldHelper.updateItems(responsibleUserField, responsibleUsers);
 	}
 
 	private CheckBoxTree.CheckBoxElement<EpidemiologicalEvidenceDetail> epidemiologicalEvidenceDetailToCheckBoxElement(
@@ -705,5 +720,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		}
 
 		super.setValue(newFieldValue);
+
+		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
+		// this hopefully resets everything to its correct value
+		locationForm.discard();
 	}
 }

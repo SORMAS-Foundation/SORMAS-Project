@@ -15,7 +15,6 @@ public class ExtendedH2Dialect extends H2Dialect {
 	public final static String WINDOW_FIRST_VALUE_DESC = "window_first_value_desc";
 	public final static String WINDOW_COUNT = "window_count";
 
-
 	public ExtendedH2Dialect() {
 		super();
 		// needed because of hibernate bug: https://hibernate.atlassian.net/browse/HHH-11938
@@ -38,5 +37,13 @@ public class ExtendedH2Dialect extends H2Dialect {
 			new SQLFunctionTemplate(
 				StandardBasicTypes.LONG,
 				"COUNT(?1) OVER (PARTITION BY ?2 RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)"));
+	}
+
+	/**
+	 * Fixes <em>JdbcSQLSyntaxErrorException: Values of types "BOOLEAN" and "INTEGER" are not comparable</em>.
+	 */
+	@Override
+	public String toBooleanValueString(boolean bool) {
+		return bool ? "TRUE" : "FALSE";
 	}
 }

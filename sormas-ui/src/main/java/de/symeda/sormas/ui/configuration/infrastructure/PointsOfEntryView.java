@@ -35,10 +35,11 @@ import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryCriteria;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -60,13 +61,13 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class PointsOfEntryView extends AbstractConfigurationView {
 
-	private static final long serialVersionUID = 169878675780777319L;
-
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/pointsofentry";
-
+	private static final long serialVersionUID = 169878675780777319L;
+	protected PointsOfEntryGrid grid;
+	protected Button createButton;
+	protected Button exportButton;
 	private PointOfEntryCriteria criteria;
 	private ViewConfiguration viewConfiguration;
-
 	// Filters
 	private SearchField searchField;
 	private ComboBox countryFilter;
@@ -76,12 +77,8 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 	private ComboBox activeFilter;
 	private ComboBox relevanceStatusFilter;
 	private Button resetButton;
-
 	private HorizontalLayout filterLayout;
 	private VerticalLayout gridLayout;
-	protected PointsOfEntryGrid grid;
-	protected Button createButton;
-	protected Button exportButton;
 	private MenuBar bulkOperationsDropdown;
 
 	public PointsOfEntryView() {
@@ -190,6 +187,15 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 			criteria.country(country);
 			grid.reload();
 		}, regionFilter);
+		countryFilter.addValueChangeListener(country -> {
+			CountryReferenceDto countryReferenceDto = (CountryReferenceDto) country.getProperty().getValue();
+			criteria.country(countryReferenceDto);
+			navigateTo(criteria);
+			FieldHelper.updateItems(
+				regionFilter,
+				countryReferenceDto != null ? FacadeProvider.getRegionFacade().getAllActiveByCountry(countryReferenceDto.getUuid()) : null);
+
+		});
 
 		regionFilter = ComboBoxHelper.createComboBoxV7();
 		regionFilter.setId(PointOfEntryDto.REGION);
@@ -273,22 +279,30 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, selectedItem -> {
-							ControllerProvider.getInfrastructureController()
-								.archiveOrDearchiveAllSelectedItems(
-									true,
-									grid.asMultiSelect().getSelectedItems(),
-									InfrastructureType.POINT_OF_ENTRY,
-									() -> navigateTo(criteria));
-						}, EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, selectedItem -> {
-							ControllerProvider.getInfrastructureController()
-								.archiveOrDearchiveAllSelectedItems(
-									false,
-									grid.asMultiSelect().getSelectedItems(),
-									InfrastructureType.POINT_OF_ENTRY,
-									() -> navigateTo(criteria));
-						}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.actionArchiveInfrastructure),
+							VaadinIcons.ARCHIVE,
+							selectedItem -> {
+								ControllerProvider.getInfrastructureController()
+									.archiveOrDearchiveAllSelectedItems(
+										true,
+										grid.asMultiSelect().getSelectedItems(),
+										InfrastructureType.POINT_OF_ENTRY,
+										() -> navigateTo(criteria));
+							},
+							EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.actionDearchiveInfrastructure),
+							VaadinIcons.ARCHIVE,
+							selectedItem -> {
+								ControllerProvider.getInfrastructureController()
+									.archiveOrDearchiveAllSelectedItems(
+										false,
+										grid.asMultiSelect().getSelectedItems(),
+										InfrastructureType.POINT_OF_ENTRY,
+										() -> navigateTo(criteria));
+							},
+							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
 					bulkOperationsDropdown
 						.setVisible(viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus()));

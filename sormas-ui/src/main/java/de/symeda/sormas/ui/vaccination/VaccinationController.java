@@ -67,6 +67,21 @@ public class VaccinationController {
 		boolean doSave,
 		Consumer<VaccinationDto> commitCallback) {
 
+		final CommitDiscardWrapperComponent<VaccinationEditForm> cdwComponent =
+			getVaccinationCreateComponent(immunization, region, district, person, disease, fieldAccessCheckers, doSave, commitCallback);
+
+		VaadinUiUtil.showModalPopupWindow(cdwComponent, I18nProperties.getCaption(VaccinationDto.I18N_PREFIX));
+	}
+
+	public CommitDiscardWrapperComponent<VaccinationEditForm> getVaccinationCreateComponent(
+		ImmunizationReferenceDto immunization,
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		PersonReferenceDto person,
+		Disease disease,
+		UiFieldAccessCheckers fieldAccessCheckers,
+		boolean doSave,
+		Consumer<VaccinationDto> commitCallback) {
 		VaccinationEditForm form = new VaccinationEditForm(true, disease, fieldAccessCheckers);
 		VaccinationDto vaccination = VaccinationDto.build(UserProvider.getCurrent().getUserReference());
 		if (immunization != null) {
@@ -77,8 +92,6 @@ public class VaccinationController {
 		final CommitDiscardWrapperComponent<VaccinationEditForm> cdwComponent =
 			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_CREATE), form.getFieldGroup());
 		cdwComponent.getCommitButton().setCaption(doSave ? I18nProperties.getCaption(Captions.actionSave) : I18nProperties.getString(Strings.done));
-
-		VaadinUiUtil.showModalPopupWindow(cdwComponent, I18nProperties.getCaption(VaccinationDto.I18N_PREFIX));
 
 		cdwComponent.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
@@ -93,6 +106,8 @@ public class VaccinationController {
 				}
 			}
 		});
+
+		return cdwComponent;
 	}
 
 	public void edit(
@@ -106,13 +121,38 @@ public class VaccinationController {
 		VaccinationEditForm form = new VaccinationEditForm(true, disease, fieldAccessCheckers);
 		form.setValue(vaccination);
 
-		final CommitDiscardWrapperComponent<VaccinationEditForm> cdwComponent =
+		final CommitDiscardWrapperComponent<VaccinationEditForm> createComponent =
+			getVaccinationEditComponent(vaccination, disease, fieldAccessCheckers, doSave, commitCallback);
+		Window popupWindow = VaadinUiUtil.showModalPopupWindow(createComponent, I18nProperties.getCaption(VaccinationDto.I18N_PREFIX));
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
+			createComponent.addDeleteWithReasonListener((deleteDetails) -> {
+				popupWindow.close();
+				if (doSave) {
+					FacadeProvider.getVaccinationFacade().deleteWithImmunization(vaccination.getUuid(), deleteDetails);
+				}
+				if (deleteCallback != null) {
+					deleteCallback.run();
+				}
+			}, I18nProperties.getCaption(VaccinationDto.I18N_PREFIX));
+		}
+	}
+
+	public CommitDiscardWrapperComponent<VaccinationEditForm> getVaccinationEditComponent(
+		VaccinationDto vaccination,
+		Disease disease,
+		UiFieldAccessCheckers fieldAccessCheckers,
+		boolean doSave,
+		Consumer<VaccinationDto> commitCallback) {
+
+		VaccinationEditForm form = new VaccinationEditForm(true, disease, fieldAccessCheckers);
+		form.setValue(vaccination);
+
+		final CommitDiscardWrapperComponent<VaccinationEditForm> editComponent =
 			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_EDIT), form.getFieldGroup());
-		cdwComponent.getCommitButton().setCaption(doSave ? I18nProperties.getCaption(Captions.actionSave) : I18nProperties.getString(Strings.done));
+		editComponent.getCommitButton().setCaption(doSave ? I18nProperties.getCaption(Captions.actionSave) : I18nProperties.getString(Strings.done));
 
-		Window popupWindow = VaadinUiUtil.showModalPopupWindow(cdwComponent, I18nProperties.getCaption(VaccinationDto.I18N_PREFIX));
-
-		cdwComponent.addCommitListener(() -> {
+		editComponent.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
 				if (doSave) {
 					FacadeProvider.getVaccinationFacade().save(form.getValue());
@@ -123,17 +163,7 @@ public class VaccinationController {
 			}
 		});
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
-			cdwComponent.addDeleteListener(() -> {
-				popupWindow.close();
-				if (doSave) {
-					FacadeProvider.getVaccinationFacade().deleteWithImmunization(vaccination.getUuid());
-				}
-				if (deleteCallback != null) {
-					deleteCallback.run();
-				}
-			}, I18nProperties.getCaption(VaccinationDto.I18N_PREFIX));
-		}
+		return editComponent;
 	}
 
 }

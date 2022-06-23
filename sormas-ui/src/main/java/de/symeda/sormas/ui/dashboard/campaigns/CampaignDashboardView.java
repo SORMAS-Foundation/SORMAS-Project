@@ -138,7 +138,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		subTabLayout.setExpandRatio(subTabSwitcherLayout, 0);
 		subTabSwitcherLayout.addStyleNames("statistics-sublayout", CssStyles.VSPACE_3);
 
-		subTabs.forEach(subTabId -> subTabSwitcher.addView(subTabId, subTabId, (e) -> {
+		subTabs.forEach(subTabId -> subTabSwitcher.addView(subTabId, subTabId, () -> {
 			subTabLayout.removeComponent(currentDiagramsWrapper);
 			if (lastSubTabIdForTabIdAndCampaign.containsKey(dataProvider.getCampaign())) {
 				lastSubTabIdForTabIdAndCampaign.get(dataProvider.getCampaign()).put(tabId, subTabId);
@@ -148,6 +148,8 @@ public class CampaignDashboardView extends AbstractDashboardView {
 				lastSubTabIdForTabIdAndCampaign.put(dataProvider.getCampaign(), subTabMap);
 			}
 			refreshDiagrams(page, subTabLayout, tabId, subTabId);
+
+			return true;
 		}));
 		if (!(subTabs.size() > 1)) {
 			subTabSwitcherLayout.setVisible(false);

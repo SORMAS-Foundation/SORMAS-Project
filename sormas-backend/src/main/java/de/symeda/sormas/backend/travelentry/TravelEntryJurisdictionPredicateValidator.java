@@ -20,12 +20,12 @@ import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 
 public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
-	private final TravelEntryJoins<?> joins;
+	private final TravelEntryJoins joins;
 
 	private TravelEntryJurisdictionPredicateValidator(
 		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
-		TravelEntryJoins<?> joins,
+		TravelEntryJoins joins,
 		User user,
 		List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
 		super(cb, user, null, associatedJurisdictionValidators);
@@ -35,7 +35,7 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 	private TravelEntryJurisdictionPredicateValidator(
 		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
-		TravelEntryJoins<?> joins,
+		TravelEntryJoins joins,
 		Path userPath,
 		List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
 		super(cb, null, userPath, associatedJurisdictionValidators);
@@ -46,24 +46,23 @@ public class TravelEntryJurisdictionPredicateValidator extends PredicateJurisdic
 		return new TravelEntryJurisdictionPredicateValidator(
 			qc.getQuery(),
 			qc.getCriteriaBuilder(),
-			(TravelEntryJoins<?>) qc.getJoins(),
+			qc.getJoins(),
 			user,
 			Collections.singletonList(
-				CaseJurisdictionPredicateValidator.of(
-					new CaseQueryContext<>(qc.getCriteriaBuilder(), qc.getQuery(), ((TravelEntryJoins) qc.getJoins()).getResultingCase()),
-					user)));
+				CaseJurisdictionPredicateValidator
+					.of(new CaseQueryContext(qc.getCriteriaBuilder(), qc.getQuery(), ((TravelEntryJoins) qc.getJoins()).getResultingCase()), user)));
 	}
-	
+
 	public static TravelEntryJurisdictionPredicateValidator of(TravelEntryQueryContext qc, Path userPath) {
 		return new TravelEntryJurisdictionPredicateValidator(
 			qc.getQuery(),
 			qc.getCriteriaBuilder(),
-			(TravelEntryJoins<?>) qc.getJoins(),
+			qc.getJoins(),
 			userPath,
 			Collections.singletonList(
 				CaseJurisdictionPredicateValidator.of(
-					new CaseQueryContext<>(qc.getCriteriaBuilder(), qc.getQuery(), ((TravelEntryJoins) qc.getJoins()).getResultingCase()),
-						userPath)));
+					new CaseQueryContext(qc.getCriteriaBuilder(), qc.getQuery(), ((TravelEntryJoins) qc.getJoins()).getResultingCase()),
+					userPath)));
 	}
 
 	@Override

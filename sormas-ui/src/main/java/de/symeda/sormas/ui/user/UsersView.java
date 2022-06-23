@@ -20,7 +20,6 @@ package de.symeda.sormas.ui.user;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Collections;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.LoggerFactory;
@@ -52,7 +51,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -138,7 +137,7 @@ public class UsersView extends AbstractView {
 
 			new FileDownloader(new StreamResource(() -> new DownloadUtil.DelayedInputStream((out) -> {
 				try {
-					String documentPath = FacadeProvider.getUserRightsFacade().generateUserRightsDocument(true);
+					String documentPath = FacadeProvider.getUserRightsFacade().generateUserRightsDocument();
 					IOUtils.copy(Files.newInputStream(new File(documentPath).toPath()), out);
 				} catch (IOException e) {
 					LoggerFactory.getLogger(DownloadUtil.class).error(e.getMessage(), e);
@@ -214,9 +213,9 @@ public class UsersView extends AbstractView {
 		userRolesFilter.setId(UserDto.USER_ROLES);
 		userRolesFilter.setWidth(200, Unit.PIXELS);
 		userRolesFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
-		userRolesFilter.addItems(UserUiHelper.getAssignableRoles(Collections.emptySet()));
+		userRolesFilter.addItems(FacadeProvider.getUserRoleFacade().getAllActiveAsReference());
 		userRolesFilter.addValueChangeListener(e -> {
-			criteria.userRole((UserRole) e.getProperty().getValue());
+			criteria.userRole((UserRoleReferenceDto) e.getProperty().getValue());
 			navigateTo(criteria);
 		});
 		filterLayout.addComponent(userRolesFilter);

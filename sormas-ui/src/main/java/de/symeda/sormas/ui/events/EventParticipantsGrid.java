@@ -58,7 +58,7 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 		setCriteria(criteria);
 		setEagerDataProvider();
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT)) {
 			setSelectionMode(SelectionMode.MULTI);
 		} else {
 			setSelectionMode(SelectionMode.NONE);
