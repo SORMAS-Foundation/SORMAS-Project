@@ -999,9 +999,9 @@ public class ContactDirectorySteps implements En {
         });
 
     When(
-        "I set Relationship with case on ([^\"]*)",
+        "^I set Relationship with case on ([^\"]*)$",
         (String option) -> {
-          webDriverHelpers.selectFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX, option);
+          webDriverHelpers.selectFromComboboxEqual(RELATIONSHIP_WITH_CASE_COMBOBOX, option);
         });
 
     When(

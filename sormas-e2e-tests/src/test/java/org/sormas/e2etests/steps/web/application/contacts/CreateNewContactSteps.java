@@ -239,7 +239,7 @@ public class CreateNewContactSteps implements En {
           fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
           selectResponsibleRegion(contact.getResponsibleRegion());
           selectResponsibleDistrict(contact.getResponsibleDistrict());
-          fillRelationshipWithCase(option);
+          fillRelationshipWithCaseEqual(option);
         });
 
     When(
@@ -492,6 +492,10 @@ public class CreateNewContactSteps implements En {
 
   private void fillRelationshipWithCase(String relationshipWithCase) {
     webDriverHelpers.selectFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX, relationshipWithCase);
+  }
+
+  private void fillRelationshipWithCaseEqual(String relationshipWithCase) {
+    webDriverHelpers.selectFromComboboxEqual(RELATIONSHIP_WITH_CASE_COMBOBOX, relationshipWithCase);
   }
 
   private void fillDescriptionOfHowContactTookPlace(String descriptionOfHowContactTookPlace) {

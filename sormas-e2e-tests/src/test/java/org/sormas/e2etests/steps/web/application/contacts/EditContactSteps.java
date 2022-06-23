@@ -1012,15 +1012,15 @@ public class EditContactSteps implements En {
               webDriverHelpers.getValueFromWebElement(UUID_INPUT),
               aContact.getUuid(),
               "UUIDs are not equal");
-            softly.assertAll();
+          softly.assertAll();
         });
 
     When(
-        "I check if relationship with case is set to ([^\"]*)",
+        "^I check if relationship with case is set to ([^\"]*)$",
         (String option) -> {
           webDriverHelpers.scrollToElement(RELATIONSHIP_WITH_CASE_INPUT);
           softly.assertEquals(
-              webDriverHelpers.getTextFromWebElement(RELATIONSHIP_WITH_CASE_INPUT),
+              webDriverHelpers.getValueFromWebElement(RELATIONSHIP_WITH_CASE_INPUT),
               option,
               "Relationships with case are not equal");
           softly.assertAll();
