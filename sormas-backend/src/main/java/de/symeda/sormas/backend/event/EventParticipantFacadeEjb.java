@@ -32,7 +32,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -51,7 +50,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.common.DeletionDetails;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -65,6 +63,7 @@ import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
 import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
@@ -136,12 +135,13 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.vaccination.VaccinationService;
 
 @Stateless(name = "EventParticipantFacade")
-@RolesAllowed(UserRight._EVENTPARTICIPANT_VIEW)
+@RightsAllowed(UserRight._EVENTPARTICIPANT_VIEW)
 public class EventParticipantFacadeEjb
 	extends
 	AbstractCoreFacadeEjb<EventParticipant, EventParticipantDto, EventParticipantIndexDto, EventParticipantReferenceDto, EventParticipantService, EventParticipantCriteria>
@@ -252,7 +252,7 @@ public class EventParticipantFacadeEjb
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	@RolesAllowed(UserRight._SYSTEM)
+	@RightsAllowed(UserRight._SYSTEM)
 	public void archiveAllArchivableEventParticipants(int daysAfterEventParticipantGetsArchived) {
 		archiveAllArchivableEventParticipants(daysAfterEventParticipantGetsArchived, LocalDate.now());
 	}
@@ -324,14 +324,14 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._EVENTPARTICIPANT_CREATE,
 		UserRight._EVENTPARTICIPANT_EDIT })
 	public EventParticipantDto save(@Valid @NotNull EventParticipantDto dto) {
 		return saveEventParticipant(dto, true, true);
 	}
 
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._EVENTPARTICIPANT_CREATE,
 		UserRight._EVENTPARTICIPANT_EDIT })
 	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto, boolean checkChangeDate, boolean internal) {
@@ -456,7 +456,7 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed(UserRight._EVENTPARTICIPANT_DELETE)
+	@RightsAllowed(UserRight._EVENTPARTICIPANT_DELETE)
 	public void delete(String uuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
 		EventParticipant eventParticipant = service.getByUuid(uuid);
 		service.delete(eventParticipant, deletionDetails);
@@ -1140,13 +1140,13 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed(UserRight._EVENTPARTICIPANT_ARCHIVE)
+	@RightsAllowed(UserRight._EVENTPARTICIPANT_ARCHIVE)
 	public void archive(String entityUuid, Date endOfProcessingDate) {
 		super.archive(entityUuid, endOfProcessingDate);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._EVENTPARTICIPANT_ARCHIVE)
+	@RightsAllowed(UserRight._EVENTPARTICIPANT_ARCHIVE)
 	public void dearchive(List<String> entityUuids, String dearchiveReason) {
 		super.dearchive(entityUuids, dearchiveReason);
 	}
