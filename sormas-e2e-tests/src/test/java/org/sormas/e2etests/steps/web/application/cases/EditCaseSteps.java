@@ -46,6 +46,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONF
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONTACTS_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EPIDEMIOLOGICAL_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_NO_POPUP_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PLACE_OF_STAY_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CONFIRM;
@@ -2535,6 +2536,114 @@ public class EditCaseSteps implements En {
       return LocalDate.parse(dateOfReport, DATE_FORMATTER_DE);
     }
     return null;
+
+    And(
+        "^I check the created data for different place of stay region and district are correctly displayed on Edit case page$",
+        () -> {
+          aCase = collectCasePersonDataWithDifferentPlaceOfStay();
+          System.out.print(collectCasePersonDataWithDifferentPlaceOfStay().getPlaceOfStayRegion());
+          System.out.print(
+              collectCasePersonDataWithDifferentPlaceOfStay().getPlaceOfStayDistrict());
+          createdCase = CreateNewCaseSteps.caze;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              aCase,
+              createdCase,
+              List.of(
+                  "dateOfReport",
+                  "disease",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "placeOfStay",
+                  "placeOfStayRegion",
+                  "placeOfStayDistrict",
+                  "placeDescription",
+                  "firstName",
+                  "lastName",
+                  "dateOfBirth"));
+        });
+
+    And(
+        "^I check that the responsible jurisdiction region is different from the place of stay region$",
+        () -> {
+          softly.assertNotEquals(
+              collectCasePersonDataWithDifferentPlaceOfStay().getPlaceOfStayRegion(),
+              collectCasePersonDataWithDifferentPlaceOfStay().getResponsibleRegion(),
+              "The responsible jurisdiction region is not different from the place of stay region!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check that the responsible jurisdiction district is different from the place of stay district$",
+        () -> {
+          softly.assertNotEquals(
+              collectCasePersonDataWithDifferentPlaceOfStay().getPlaceOfStayDistrict(),
+              collectCasePersonDataWithDifferentPlaceOfStay().getResponsibleDistrict(),
+              "The responsible jurisdiction district is not different from the place of stay district!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check the facility and place of stay created data are correctly displayed on Edit case page$",
+        () -> {
+          aCase = collectCasePersonDataWithFacilityAndDifferentPlaceOfStay();
+          createdCase = CreateNewCaseSteps.caze;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              aCase,
+              createdCase,
+              List.of(
+                  "dateOfReport",
+                  "disease",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "placeOfStay",
+                  "placeOfStayRegion",
+                  "placeOfStayDistrict",
+                  "facility",
+                  "firstName",
+                  "lastName",
+                  "dateOfBirth"));
+        });
+  }
+
+  private Case collectCasePersonDataWithFacilityAndDifferentPlaceOfStay() {
+    Case userInfo = getUserInformation();
+
+    return Case.builder()
+        .dateOfReport(getDateOfReport())
+        .firstName(userInfo.getFirstName())
+        .lastName(userInfo.getLastName())
+        .dateOfBirth(userInfo.getDateOfBirth())
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
+        .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
+        .responsibleDistrict(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
+        .responsibleCommunity(webDriverHelpers.getValueFromWebElement(COMMUNITY_INPUT))
+        .placeOfStay(webDriverHelpers.getTextFromWebElement(PLACE_OF_STAY_SELECTED_VALUE))
+        .placeOfStayRegion(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_REGION_INPUT))
+        .placeOfStayDistrict(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_DISTRICT_INPUT))
+        .facility(webDriverHelpers.getValueFromWebElement(FACILITY_HEALTH_INPUT))
+        .build();
+  }
+
+  private Case collectCasePersonDataWithDifferentPlaceOfStay() {
+    Case userInfo = getUserInformation();
+
+    return Case.builder()
+        .dateOfReport(getDateOfReport())
+        .firstName(userInfo.getFirstName())
+        .lastName(userInfo.getLastName())
+        .dateOfBirth(userInfo.getDateOfBirth())
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
+        .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
+        .responsibleDistrict(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
+        .responsibleCommunity(webDriverHelpers.getValueFromWebElement(COMMUNITY_INPUT))
+        .placeOfStay(webDriverHelpers.getTextFromWebElement(PLACE_OF_STAY_SELECTED_VALUE))
+        .placeDescription(webDriverHelpers.getValueFromWebElement(PLACE_DESCRIPTION_INPUT))
+        .placeOfStayRegion(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_REGION_INPUT))
+        .placeOfStayDistrict(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_DISTRICT_INPUT))
+        .build();
   }
 
   private Case collectCasePersonDataWithFacilityAndDifferentPlaceOfStay() {
