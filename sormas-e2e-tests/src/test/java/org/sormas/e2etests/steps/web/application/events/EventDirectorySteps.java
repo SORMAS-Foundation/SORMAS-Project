@@ -40,7 +40,9 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.AP
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BASIC_EVENT_EXPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BASIC_EXPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ARCHIVE_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_EDIT_EVENT_DIRECTORY;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_GROUP_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CHANGE_EVENT_MANAGEMENT_STATUS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CLOSE_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.COMMIT_BUTTON;
@@ -105,6 +107,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RE
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SAVE_BUTTON_IN_LINK_FORM;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SEARCH_EVENT_BY_FREE_TEXT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SEARCH_EVENT_BY_FREE_TEXT_INPUT;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.TEXT_FROM_BULK_DELETE_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.TOTAL_EVENTS_COUNTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.UNLINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
@@ -132,6 +135,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.common.DataOperations;
@@ -551,7 +555,51 @@ public class EventDirectorySteps implements En {
         (String dV) -> {
           webDriverHelpers.selectFromCombobox(FILTER_BY_DISEASE_VARIANT, dV);
         });
+    When(
+        "I check that ([^\"]*) option is visible in Bulk Actions dropdown",
+        (String option) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          By selector = null;
+          Boolean elementVisible = true;
+          switch (option) {
+            case "Edit":
+              selector = BULK_EDIT_EVENT_DIRECTORY;
+              break;
+            case "Archive":
+              selector = BULK_ARCHIVE_EVENT_DIRECTORY;
+              break;
+            case "Group":
+              selector = BULK_GROUP_EVENT_DIRECTORY;
+              break;
+          }
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(selector);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertTrue(elementVisible, option + " is not visible!");
+          softly.assertAll();
+        });
 
+    When(
+        "I check that ([^\"]*) option is not visible in Bulk Actions dropdown",
+        (String option) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          By selector = null;
+          Boolean elementVisible = true;
+          switch (option) {
+            case "Delete":
+              selector = TEXT_FROM_BULK_DELETE_EVENT_DIRECTORY;
+              break;
+          }
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(selector);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertFalse(elementVisible, option + " is visible!");
+          softly.assertAll();
+        });
     When(
         "I select Disease filter value different than the disease value of the last created via API case in Event Directory",
         () -> {
