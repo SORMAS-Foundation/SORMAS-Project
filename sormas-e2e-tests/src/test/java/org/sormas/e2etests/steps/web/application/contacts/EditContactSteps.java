@@ -1012,6 +1012,7 @@ public class EditContactSteps implements En {
               webDriverHelpers.getValueFromWebElement(UUID_INPUT),
               aContact.getUuid(),
               "UUIDs are not equal");
+            softly.assertAll();
         });
 
     When(
@@ -1022,6 +1023,7 @@ public class EditContactSteps implements En {
               webDriverHelpers.getTextFromWebElement(RELATIONSHIP_WITH_CASE_INPUT),
               option,
               "Relationships with case are not equal");
+          softly.assertAll();
         });
   }
 
