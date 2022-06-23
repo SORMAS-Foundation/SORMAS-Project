@@ -745,7 +745,7 @@ Feature: Contacts end to end tests
     Then I check that National Health ID is not visible in Person search popup
     And I check that Passport Number is not visible in Person search popup
     And I check that Nickname is not visible in Person search popup
-    
+
   @issue=SORDEV-9946 @env_de
   Scenario: Test Hide country specific fields in the 'Pick or create person' form of the duplicate detection pop-up, in German and French systems
     Given I log in as a Admin User
@@ -855,3 +855,24 @@ Feature: Contacts end to end tests
     And I choose Other task as described in comments option from task type combobox in the New task form
     Then I check that Comments on task field is mandatory in the New task form
 
+
+
+  @issue=SORDEV-5478 @env_main
+  Scenario: Upload Contact CSV
+    Given I log in as a Admin User
+    And I click on the Contacts button from navbar
+    And I apply filter ID to "UXEMTD"
+    And I click APPLY BUTTON in Contact Directory Page
+    And I click on Export button from Contacts directory
+    And I click on Detailed Export button from Contacts directory
+    And I close popup after export in Contacts directory
+    And I click on the More button from Contacts directory
+    When I click on the Import button from Contacts directory
+    And I select the contact CSV file in the file picker
+    And I click on the "START DATA IMPORT" button from the Import Contact popup
+    And I select to create new person from the Import Contact popup
+    And I confirm the save Contact Import popup
+    And I select to create new contact from the Import Contact popup
+    And I confirm the save Contact Import popup
+    Then I check that an import success notification appears in the Import Contact popup
+    And I delete exported file from Contact Directory

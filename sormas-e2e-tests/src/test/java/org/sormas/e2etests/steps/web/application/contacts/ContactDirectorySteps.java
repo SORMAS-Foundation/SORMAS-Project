@@ -66,12 +66,14 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.TYPE_OF_PLACE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.WEARING_MASK_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.WEARING_PPE_OPTIONS;
+import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ACTIVE_CONTACT_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ALL_BUTTON_CONTACT;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.BULK_ACTIONS_CONTACT_VALUES;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.BULK_CREATE_QUARANTINE_ORDER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_COLUMN_HEADERS;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CLOSE_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_FROM_OTHER_INSTANCES_CHECKBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_ONLY_HIGH_PRIOROTY_CHECKBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_WITH_EXTENDED_QUARANTINE_CHECKBOX;
@@ -93,14 +95,22 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_MERGE_DUPLICATES;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONVERTED_TO_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.DETAILED_EXPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.DROPPED_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.EPIDEMIOLOGICAL_DATA_TAB;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.EXPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.FIRST_CONTACT_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.GRID_HEADERS;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.GRID_RESULTS_COUNTER_CONTACT_DIRECTORY;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.IMPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.IMPORT_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.IMPORT_SUCCESS;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.LINE_LISTING;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.MORE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.MULTIPLE_OPTIONS_SEARCH_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.NEW_CONTACT_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.NEW_ENTRY_EPIDEMIOLOGICAL_DATA;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.NEW_PERSON_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.PERSON_LIKE_SEARCH_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.RESULTS_GRID_HEADER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.getCheckboxByUUID;
@@ -125,11 +135,13 @@ import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPag
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_DETAILS;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_PLACE_DETAILS;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.contacts.EditContactSteps.collectedContact;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
+import java.io.File;
 import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -168,6 +180,7 @@ public class ContactDirectorySteps implements En {
 
   public static String contactID1;
   public static String contactID2;
+  public static final String userDirPath = System.getProperty("user.dir");
 
   @Inject
   public ContactDirectorySteps(
@@ -299,6 +312,12 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(uuidLocator);
         });
+    When(
+        "I apply filter ID to {string}",
+        (String contactUuid) -> {
+          webDriverHelpers.fillAndSubmitInWebElement(
+              CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, contactUuid);
+        });
 
     When(
         "I apply Id of last api created Contact on Contact Directory Page",
@@ -327,6 +346,12 @@ public class ContactDirectorySteps implements En {
     And(
         "I click on Link to Event from Bulk Actions combobox on Contact Directory Page",
         () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS_CONTACT_VALUES));
+
+    When(
+        "I click Enter Bulk Edit Mode on Contact directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE);
+        });
 
     When(
         "I click checkbox to choose all Contact results on Contact Directory Page",
@@ -681,6 +706,9 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
     And(
+        "I click on Bulk Actions combobox on Contact Directory Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS));
+    And(
         "I filter by mocked ContactID on Contact directory page",
         () -> {
           String partialUuid =
@@ -804,11 +832,14 @@ public class ContactDirectorySteps implements En {
         });
     When(
         "^I click on Line Listing button$",
-        () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LINE_LISTING);
-          webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING);
-        });
+        () -> webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING));
 
+    When(
+        "I click on the Epidemiological Data button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EPIDEMIOLOGICAL_DATA_TAB);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
     And(
         "I click on All button in Contact Directory Page",
         () -> {
@@ -994,6 +1025,73 @@ public class ContactDirectorySteps implements En {
               contactID1,
               getContactIDByIndex(2),
               "Edited contact do not move previous first contact to second place on list.");
+        });
+    When(
+        "I click on the Import button from Contacts directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(IMPORT_BUTTON);
+        });
+    When(
+        "I click on Export button from Contacts directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EXPORT_BUTTON);
+        });
+    When(
+        "I click on Detailed Export button from Contacts directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DETAILED_EXPORT_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CLOSE_POPUP_BUTTON);
+          TimeUnit.SECONDS.sleep(5); // time for file to be downloaded
+        });
+    When(
+        "I close popup after export in Contacts directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CLOSE_POPUP_BUTTON);
+        });
+    When(
+        "I click on the More button from Contacts directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(MORE_BUTTON);
+        });
+    When(
+        "I select the contact CSV file in the file picker",
+        () -> {
+          TimeUnit.SECONDS.sleep(3);
+          webDriverHelpers.sendFile(
+              FILE_PICKER, userDirPath + "/downloads/sormas_contacts_" + LocalDate.now() + "_.csv");
+        });
+    When(
+        "I click on the {string} button from the Import Contact popup",
+        (String buttonName) -> {
+          webDriverHelpers.clickWebElementByText(IMPORT_POPUP_BUTTON, buttonName);
+        });
+    When(
+        "I delete exported file from Contact Directory",
+        () -> {
+          File toDelete =
+              new File(userDirPath + "/downloads/sormas_contacts_" + LocalDate.now() + "_.csv");
+          toDelete.deleteOnExit();
+        });
+    When(
+        "I check that an import success notification appears in the Import Contact popup",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(IMPORT_SUCCESS);
+        });
+    When(
+        "I select to create new person from the Import Contact popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(NEW_PERSON_RADIOBUTTON);
+        });
+    When(
+        "I select to create new contact from the Import Contact popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(NEW_CONTACT_RADIOBUTTON);
+        });
+
+    When(
+        "I confirm the save Contact Import popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(COMMIT_BUTTON);
         });
   }
 
