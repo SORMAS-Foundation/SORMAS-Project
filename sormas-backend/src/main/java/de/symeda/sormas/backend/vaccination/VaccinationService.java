@@ -127,12 +127,13 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 	}
 
 	public boolean isVaccinationRelevant(Event event, Vaccination vaccination) {
-		Date relevantVaccinationDate =
-			vaccination.getVaccinationDate() != null ? vaccination.getVaccinationDate() : DateHelper.subtractDays(vaccination.getReportDate(), 14);
 		if (event.getStartDate() != null) {
-			return DateHelper.getEndOfDay(relevantVaccinationDate).before(event.getStartDate());
+			return isVaccinationRelevant(vaccination, event.getStartDate(), null);
+
+		} else {
+			return isVaccinationRelevant(vaccination, event.getEndDate(), event.getReportDateTime());
 		}
-		return isVaccinationRelevant(vaccination, event.getEndDate(), event.getReportDateTime());
+
 	}
 
 	private boolean isVaccinationRelevant(Vaccination vaccination, Date primaryDate, Date fallbackDate) {
