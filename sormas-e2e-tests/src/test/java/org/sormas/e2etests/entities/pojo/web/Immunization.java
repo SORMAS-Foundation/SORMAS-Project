@@ -32,4 +32,5 @@ public class Immunization {
   String presentConditionOfPerson;
   String primaryPhoneNumber;
   String primaryEmailAddress;
+  String uuid;
 }

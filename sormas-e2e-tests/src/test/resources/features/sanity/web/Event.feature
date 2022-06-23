@@ -925,3 +925,58 @@ Feature: Create events
     Then I log in with National User
     Then I am accessing the event tab using the created event via api
     Then I check if editable fields are read only for an archived event
+
+  @issue=SORDEV-7094 @env_main
+  Scenario Outline: Test Event identification source fields
+    Given I log in with National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with event identification source "<name>"
+    And I back to the Event tab
+    Then I check that checkbox Event Identification source with selected "<name>" have HTML value: "checked"
+
+    Examples:
+      | name             |
+      | UNKNOWN          |
+      | BACKWARD-TRACING |
+      | FORWARD-TRACING  |
+
+  @issue=SORDEV-7095 @env_main
+  Scenario: Test Addition of a Variant field in the "EVENT" part
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When I log in with National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    When I create a new event with specific data
+    And I click on the Events button from navbar
+    And I fill EVENT ID filter by API
+    Then I select random Disease filter among the filter options from API
+    And I select "B.1.617.3" Disease Variant filter on Event Directory Page
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 1
+    And I select "B.1.617.1" Disease Variant filter on Event Directory Page
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 0
+    And I select "B.1.617.3" Disease Variant filter on Event Directory Page
+    And I apply on the APPLY FILTERS button from Event
+
+  @issue=SORDEV-7467 @env_main
+  Scenario Outline: Test Allow surveillance supervisors and contact supervisors to access bulk-edition in the event directory
+    Given I log in as a <user>
+    Then I click on the Events button from navbar
+    And I click on the More button on Event directory page
+    And I click Enter Bulk Edit Mode on Event directory page
+    And I click on Bulk Actions combobox on Event Directory Page
+    And I check that Edit option is visible in Bulk Actions dropdown
+    And I check that Group option is visible in Bulk Actions dropdown
+    And I check that Archive option is visible in Bulk Actions dropdown
+    And I check that Delete option is not visible in Bulk Actions dropdown
+
+    Examples:
+      | user                      |
+      | Contact Supervisor        |
+      | Surveillance Supervisor   |
+
+

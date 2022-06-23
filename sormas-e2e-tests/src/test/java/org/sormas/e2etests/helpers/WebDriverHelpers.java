@@ -15,6 +15,20 @@
 
 package org.sormas.e2etests.helpers;
 
+import static com.google.common.truth.Truth.assertWithMessage;
+import static java.time.Duration.ofSeconds;
+import static org.awaitility.Awaitility.await;
+import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.core.ConditionTimeoutException;
@@ -31,21 +45,6 @@ import org.openqa.selenium.interactions.Actions;
 import org.sormas.e2etests.common.TimerLite;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
-
-import javax.inject.Inject;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import static com.google.common.truth.Truth.assertWithMessage;
-import static java.time.Duration.ofSeconds;
-import static org.awaitility.Awaitility.await;
-import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
 
 @Slf4j
 public class WebDriverHelpers {
@@ -638,6 +637,12 @@ public class WebDriverHelpers {
     return baseSteps.getDriver().findElement(byObject).getText();
   }
 
+  public String getSrcFromWebElement(By byObject) {
+    waitUntilIdentifiedElementIsVisibleAndClickable(byObject);
+    scrollToElement(byObject);
+    return baseSteps.getDriver().findElement(byObject).getAttribute("src");
+  }
+
   public int getNumberOfElements(By byObject) {
     try {
       return baseSteps.getDriver().findElements(byObject).size();
@@ -794,6 +799,18 @@ public class WebDriverHelpers {
       return baseSteps.getDriver().findElement(checkbox).findElement(CHECKBOX_TEXT_LABEL).getText();
     } else {
       throw new Error(String.format("checked was found as NULL for %s: ", checkbox));
+    }
+  }
+
+  public boolean checkCheckboxIsCheckedByHTMLFromParent(
+      final By selector, final String text, final String expected) {
+    try {
+      return getWebElementBySelectorAndText(selector, text)
+          .findElement((By.xpath("./..")))
+          .getAttribute("outerHTML")
+          .contains(expected);
+    } catch (ConditionTimeoutException ignored) {
+      throw new NoSuchElementException(String.format("Element: %s not found", selector));
     }
   }
 

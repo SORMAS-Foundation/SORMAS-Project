@@ -107,6 +107,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.getContactIDPathByIndex;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.AREA_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.CONTACT_PERSON_EMAIL_ADRESS;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.CONTACT_PERSON_FIRST_NAME;
@@ -151,6 +152,7 @@ import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.Assert;
 
@@ -163,6 +165,9 @@ public class ContactDirectorySteps implements En {
   public static EpidemiologicalData dataSavedFromCheckbox;
   public static EpidemiologicalData specificCaseData;
   public static Contact contact;
+
+  public static String contactID1;
+  public static String contactID2;
 
   @Inject
   public ContactDirectorySteps(
@@ -967,6 +972,29 @@ public class ContactDirectorySteps implements En {
           TimeUnit.SECONDS.sleep(3); // wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+
+    Then(
+        "I get two last contacts ID from cases list",
+        () -> {
+          contactID1 = getContactIDByIndex(1);
+          contactID2 = getContactIDByIndex(2);
+        });
+    And(
+        "I open {int} contact in order from list",
+        (Integer index) -> {
+          webDriverHelpers.getWebElement(getContactIDPathByIndex(index)).click();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              EditContactPage.GENERAL_COMMENT_TEXT_AREA);
+        });
+
+    Then(
+        "I compare previous first contact ID on the list with actually second contact ID on list",
+        () -> {
+          Assert.assertEquals(
+              contactID1,
+              getContactIDByIndex(2),
+              "Edited contact do not move previous first contact to second place on list.");
+        });
   }
 
   private void searchAfterContactByMultipleOptions(String idPhoneNameEmail) {
@@ -1151,5 +1179,9 @@ public class ContactDirectorySteps implements En {
                 webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
                     RESIDING_OR_TRAVELING_DETAILS_KNOWN_OPTIONS)))
         .build();
+  }
+
+  private String getContactIDByIndex(int index) {
+    return webDriverHelpers.getTextFromWebElement(getContactIDPathByIndex(index));
   }
 }
