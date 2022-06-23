@@ -118,20 +118,11 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 	}
 
 	public boolean isVaccinationRelevant(Case caze, Vaccination vaccination) {
-		Date relevantVaccinationDate =
-			vaccination.getVaccinationDate() != null ? vaccination.getVaccinationDate() : DateHelper.subtractDays(vaccination.getReportDate(), 14);
-		return (caze.getSymptoms().getOnsetDate() != null
-			? DateHelper.getEndOfDay(relevantVaccinationDate).before(caze.getSymptoms().getOnsetDate())
-			: DateHelper.getEndOfDay(relevantVaccinationDate).before(caze.getReportDate()));
-
+		return isVaccinationRelevant(vaccination, caze.getSymptoms().getOnsetDate(), caze.getReportDate());
 	}
 
 	public boolean isVaccinationRelevant(Contact contact, Vaccination vaccination) {
-		Date relevantVaccinationDate =
-			vaccination.getVaccinationDate() != null ? vaccination.getVaccinationDate() : DateHelper.subtractDays(vaccination.getReportDate(), 14);
-		return (contact.getLastContactDate() != null
-			? DateHelper.getEndOfDay(relevantVaccinationDate).before(contact.getLastContactDate())
-			: DateHelper.getEndOfDay(relevantVaccinationDate).before(contact.getReportDateTime()));
+		return isVaccinationRelevant(vaccination, contact.getLastContactDate(), contact.getReportDateTime());
 
 	}
 
@@ -141,8 +132,14 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 		if (event.getStartDate() != null) {
 			return DateHelper.getEndOfDay(relevantVaccinationDate).before(event.getStartDate());
 		}
-		return event.getEndDate() != null
-			? DateHelper.getEndOfDay(relevantVaccinationDate).before(event.getEndDate())
-			: DateHelper.getEndOfDay(relevantVaccinationDate).before(event.getReportDateTime());
+		return isVaccinationRelevant(vaccination, event.getEndDate(), event.getReportDateTime());
+	}
+
+	private boolean isVaccinationRelevant(Vaccination vaccination, Date primaryDate, Date fallbackDate) {
+		Date relevantVaccinationDate =
+			vaccination.getVaccinationDate() != null ? vaccination.getVaccinationDate() : DateHelper.subtractDays(vaccination.getReportDate(), 14);
+		return primaryDate != null
+			? DateHelper.getEndOfDay(relevantVaccinationDate).before(primaryDate)
+			: DateHelper.getEndOfDay(relevantVaccinationDate).before(fallbackDate);
 	}
 }
