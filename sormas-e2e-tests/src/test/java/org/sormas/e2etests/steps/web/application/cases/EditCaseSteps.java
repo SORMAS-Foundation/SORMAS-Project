@@ -186,10 +186,10 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.FOL
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EVENT_PARTICIPANTS_DATA_TAB;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
-import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.DISCARD_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.contacts.ContactDirectorySteps.exposureData;
 
@@ -1780,6 +1780,12 @@ public class EditCaseSteps implements En {
               true,
               "Delete button is not editable state but it should be since archived entities default value is true!");
           softly.assertAll();
+        });
+
+    And(
+        "I fill general comment in case edit page with ([^\"]*)",
+        (String comment) -> {
+          webDriverHelpers.fillInWebElement(EditContactPage.GENERAL_COMMENT_TEXT, comment);
         });
 
     When(

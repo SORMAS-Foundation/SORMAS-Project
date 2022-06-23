@@ -1307,3 +1307,22 @@ Feature: Case end to end tests
     Then I log in with National User
     Then I open last edited case by API via URL navigation
     Then I check if editable fields are read only for an archived case
+
+  @env_main @issue=SORDEV-7453
+  Scenario: Check cases order after case edit
+    Given I log in as a National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data
+    When I click on save button in the case popup
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data
+    When I click on save button in the case popup
+    And I click on the Cases button from navbar
+    Then I get two last cases ID from cases list
+    And I open 2 case in order from list
+    And I fill general comment in case edit page with EDITED
+    When I click on save button in the case popup
+    And I click on the Cases button from navbar
+    Then I compare previous first case ID on the list with actually second case ID on list

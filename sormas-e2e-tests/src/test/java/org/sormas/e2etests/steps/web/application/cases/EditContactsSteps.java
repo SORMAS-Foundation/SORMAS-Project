@@ -99,6 +99,7 @@ import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.services.ContactService;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
 
@@ -441,6 +442,12 @@ public class EditContactsSteps implements En {
               true,
               "Delete button is not editable state but it should be since archived entities default value is true!");
           softly.assertAll();
+        });
+
+    And(
+        "I fill general comment in contact edit page with ([^\"]*)",
+        (String comment) -> {
+          webDriverHelpers.fillInWebElement(EditContactPage.GENERAL_COMMENT_TEXT, comment);
         });
 
     When(
