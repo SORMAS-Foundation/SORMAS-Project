@@ -1,4 +1,4 @@
-@Sanity @API
+@Sanity @API @precon
 Feature: Check basic POSTs RestApi endpoints
 
   @env_main
