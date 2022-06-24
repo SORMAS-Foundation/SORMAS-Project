@@ -877,8 +877,7 @@ Feature: Create events
     Then I click on edit button for the last searched facility
     And I archive facility
 
-    #this testcase needs to be changed when bug 9212 is fixed
-    @env_main @#8556 @ignore
+    @env_main @#8556
   Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of an Event Participant
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -897,16 +896,14 @@ Feature: Create events
     Then I click on New Sample and discard changes is asked
     Then I collect the sample UUID displayed on create new sample page
     Then I create a new Sample with positive test result with COVID-19 as disease
-    Then I confirm last popup window when there are multiple ones
-#    Then I confirm the Create case from event participant with positive test result
-    Then I create a new case with specific data for positive pathogen test result
-    Then I confirm last popup window when there are multiple ones
+    Then I confirm popup window
+    Then I pick a new case in pick or create a case popup
     Then I click on edit Sample
-    Then I confirm last popup window when there are multiple ones
     Then I click on new test result for pathogen tests
     Then I create a new pathogen test result with Cholera as disease
     Then I confirm the Create case from contact with positive test result
     Then I create a new case with specific data for positive pathogen test result
+    Then I save the new case
     Then I navigate to a specific Event Participant of an Event based on UUID
     Then I validate only one sample is created with two pathogen tests
     Then I click on edit Sample
