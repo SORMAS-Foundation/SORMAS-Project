@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.user;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -65,8 +66,8 @@ public class UserRole extends AbstractDomainObject {
 	private boolean hasAssociatedDistrictUser;
 	private boolean portHealthUser;
 	private JurisdictionLevel jurisdictionLevel;
-	private List<NotificationType> emailNotificationTypes;
-	private List<NotificationType> smsNotificationTypes;
+	private List<NotificationType> emailNotificationTypes = new ArrayList<>();
+	private List<NotificationType> smsNotificationTypes = new ArrayList<>();
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Enumerated(EnumType.STRING)

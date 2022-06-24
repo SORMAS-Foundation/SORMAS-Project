@@ -25,20 +25,29 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
+
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleFacade;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "UserRoleFacade")
@@ -80,11 +89,49 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	}
 
 	@Override
-	public UserRoleDto saveUserRole(@Valid UserRoleDto dto) {
+	public UserRoleDto saveUserRole(@Valid UserRoleDto dto, UserRoleReferenceDto templateUserRole) {
+
+		if (templateUserRole != null) {
+			applyTemplateData(dto, templateUserRole);
+		}
+
+		validate(dto);
 
 		UserRole entity = fromDto(dto, true);
+
 		userRoleService.ensurePersisted(entity);
 		return toDto(entity);
+	}
+
+	private void applyTemplateData(UserRoleDto dto, UserRoleReferenceDto templateUserRole) {
+		UserRoleDto template = null;
+		if (templateUserRole.isDefault()) {
+			DefaultUserRole defaultUserRole = DefaultUserRole.forName(templateUserRole.getUuid());
+			if (defaultUserRole != null) {
+				template = UserRoleDto.build();
+				defaultUserRole.toUserRole(template);
+			}
+		} else {
+			template = getByUuid(templateUserRole.getUuid());
+		}
+
+		if (template != null) {
+			dto.setUserRights(template.getUserRights());
+			dto.setEmailNotificationTypes(template.getEmailNotificationTypes());
+			dto.setSmsNotificationTypes(template.getSmsNotificationTypes());
+		}
+	}
+
+	private void validate(UserRoleDto source) {
+		if (StringUtils.isBlank(source.getCaption())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyCaption));
+		}
+		if (Objects.isNull(source.getJurisdictionLevel())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyJurisdictionLevel));
+		}
+		if (!userService.isCaptionUnique(source.getUuid(), source.getCaption())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.captionNotUnique));
+		}
 	}
 
 	@Override
@@ -128,8 +175,8 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		target.setEnabled(source.isEnabled());
 		target.setCaption(source.getCaption());
 		target.setDescription(source.getDescription());
-		target.setHasOptionalHealthFacility(source.hasOptionalHealthFacility());
-		target.setHasAssociatedDistrictUser(source.hasAssociatedDistrictUser());
+		target.setHasOptionalHealthFacility(source.getHasOptionalHealthFacility());
+		target.setHasAssociatedDistrictUser(source.getHasAssociatedDistrictUser());
 		target.setPortHealthUser(source.isPortHealthUser());
 		target.setEmailNotificationTypes(source.getEmailNotificationTypes());
 		target.setSmsNotificationTypes(source.getSmsNotificationTypes());
@@ -192,12 +239,12 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 
 	@Override
 	public boolean hasAssociatedDistrictUser(Set<UserRoleDto> userRoles) {
-		return userRoles.stream().filter(userRoleDto -> userRoleDto.hasAssociatedDistrictUser()).findFirst().orElse(null) != null;
+		return userRoles.stream().filter(UserRoleDto::getHasAssociatedDistrictUser).findFirst().orElse(null) != null;
 	}
 
 	@Override
 	public boolean hasOptionalHealthFacility(Set<UserRoleDto> userRoles) {
-		return userRoles.stream().filter(userRoleDto -> userRoleDto.hasOptionalHealthFacility()).findFirst().orElse(null) != null;
+		return userRoles.stream().filter(UserRoleDto::getHasOptionalHealthFacility).findFirst().orElse(null) != null;
 	}
 
 	public static UserRoleReferenceDto toReferenceDto(UserRole entity) {
@@ -252,6 +299,13 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		getAll().forEach(c -> map.put(c, c.getUserRights()));
 
 		return map;
+	}
+
+	@Override
+	public Set<UserRoleReferenceDto> getDefaultsAsReference() {
+		return Stream.of(DefaultUserRole.values())
+			.map(r -> new UserRoleReferenceDto(r.name(), I18nProperties.getEnumCaption(r), true))
+			.collect(Collectors.toSet());
 	}
 
 	@LocalBean

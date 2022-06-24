@@ -41,7 +41,7 @@ public interface UserRoleFacade {
 
 	UserRoleDto getByUuid(String uuid);
 
-	UserRoleDto saveUserRole(@Valid UserRoleDto dto);
+	UserRoleDto saveUserRole(@Valid UserRoleDto dto, UserRoleReferenceDto templateUserRole);
 
 	void deleteUserRole(UserRoleDto dto);
 
@@ -66,4 +66,6 @@ public interface UserRoleFacade {
 	UserRoleReferenceDto getUserRoleReferenceById(long id);
 
 	Map<UserRoleDto, Set<UserRight>> getUserRoleRights();
+
+	Set<UserRoleReferenceDto> getDefaultsAsReference();
 }

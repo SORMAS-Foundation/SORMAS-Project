@@ -17,6 +17,9 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.utils.FieldConstraints;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,15 +32,19 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 public class UserRoleDto extends EntityDto {
 
 	private static final long serialVersionUID = -547459523041494446L;
 
-	public static final String I18N_PREFIX = "UserRoleDto";
+	public static final String I18N_PREFIX = "UserRole";
 
 	public static final String USER_RIGHTS = "userRights";
 	public static final String CAPTION = "caption";
+	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
 	public static final String DESCRIPTION = "description";
 	public static final String HAS_OPTIONAL_HEALTH_FACILITY = "hasOptionalHealthFacility";
 	public static final String HAS_ASSOCIATED_DISTRICT_USER = "hasAssociatedDistrictUser";
@@ -45,14 +52,17 @@ public class UserRoleDto extends EntityDto {
 
 	private Set<UserRight> userRights;
 	private boolean enabled;
+
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String caption;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String description;
 	private boolean hasOptionalHealthFacility = true;
 	private boolean hasAssociatedDistrictUser = true;
 	private boolean portHealthUser = true;
 	private JurisdictionLevel jurisdictionLevel;
-	private List<NotificationType> emailNotificationTypes;
-	private List<NotificationType> smsNotificationTypes;
+	private List<NotificationType> emailNotificationTypes = new ArrayList<>();
+	private List<NotificationType> smsNotificationTypes = new ArrayList<>();
 
 	public static UserRoleDto build(UserRight... userRights) {
 
@@ -96,7 +106,7 @@ public class UserRoleDto extends EntityDto {
 		this.description = description;
 	}
 
-	public boolean hasOptionalHealthFacility() {
+	public boolean getHasOptionalHealthFacility() {
 		return hasOptionalHealthFacility;
 	}
 
@@ -104,7 +114,7 @@ public class UserRoleDto extends EntityDto {
 		this.hasOptionalHealthFacility = hasOptionalHealthFacility;
 	}
 
-	public boolean hasAssociatedDistrictUser() {
+	public boolean getHasAssociatedDistrictUser() {
 		return hasAssociatedDistrictUser;
 	}
 

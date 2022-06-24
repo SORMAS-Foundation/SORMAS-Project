@@ -5,10 +5,23 @@ import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 
 public class UserRoleReferenceDto extends ReferenceDto implements StatisticsGroupingKey {
 
-	public UserRoleReferenceDto() { super(); }
+	private boolean isDefault;
+
+	public UserRoleReferenceDto() {
+		super();
+	}
 
 	public UserRoleReferenceDto(String uuid, String caption) {
+		this(uuid, caption, false);
+	}
+
+	public UserRoleReferenceDto(String uuid, String caption, boolean isDefault) {
 		super(uuid, caption);
+		this.isDefault = isDefault;
+	}
+
+	public boolean isDefault() {
+		return isDefault;
 	}
 
 	@Override

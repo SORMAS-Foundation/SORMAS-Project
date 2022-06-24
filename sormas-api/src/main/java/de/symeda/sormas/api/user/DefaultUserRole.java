@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
+import java.util.stream.Stream;
 
 /**
  * These are also used as user groups in the server realm
@@ -1622,5 +1623,21 @@ public enum DefaultUserRole {
 
 	public String toShortString() {
 		return I18nProperties.getEnumCaptionShort(this);
+	}
+
+	public static DefaultUserRole forName(String name) {
+		return Stream.of(values()).filter(v -> v.name().equals(name)).findFirst().orElse(null);
+	}
+
+	public void toUserRole(UserRoleDto userRole) {
+		userRole.setCaption(I18nProperties.getEnumCaption(this));
+		userRole.setPortHealthUser(isPortHealthUser());
+		userRole.setHasAssociatedDistrictUser(hasAssociatedDistrictUser());
+		userRole.setHasOptionalHealthFacility(DefaultUserRole.hasOptionalHealthFacility(Collections.singleton(this)));
+		userRole.setEnabled(true);
+		userRole.setJurisdictionLevel(getJurisdictionLevel());
+		userRole.setSmsNotificationTypes(getSmsNotificationTypes());
+		userRole.setEmailNotificationTypes(getEmailNotificationTypes());
+		userRole.setUserRights(getDefaultUserRights());
 	}
 }

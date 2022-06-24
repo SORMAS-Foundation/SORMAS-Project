@@ -257,6 +257,7 @@ public interface Captions {
 	String campaignValidateForms = "campaignValidateForms";
 	String cancelExternalFollowUpButton = "cancelExternalFollowUpButton";
 	String cancelExternalFollowUpPopupTitle = "cancelExternalFollowUpPopupTitle";
+	String captionDefault = "captionDefault";
 	String caseActiveCases = "caseActiveCases";
 	String caseAllCases = "caseAllCases";
 	String caseArchivedCases = "caseArchivedCases";
@@ -2416,6 +2417,7 @@ public interface Captions {
 	String UserRole_jurisdictionLevel = "UserRole.jurisdictionLevel";
 	String UserRole_portHealthUser = "UserRole.portHealthUser";
 	String UserRole_smsNotificationTypes = "UserRole.smsNotificationTypes";
+	String UserRole_templateUserRole = "UserRole.templateUserRole";
 	String UserRole_userRights = "UserRole.userRights";
 	String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";
 	String Vaccination = "Vaccination";

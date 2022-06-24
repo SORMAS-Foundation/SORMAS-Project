@@ -83,6 +83,8 @@ public class SormasErrorHandler implements ErrorHandler {
 			} else {
 				logger.warn(t.getMessage(), t);
 			}
+
+			t.printStackTrace();
 		}
 
 		// finds the original source of the error/exception
