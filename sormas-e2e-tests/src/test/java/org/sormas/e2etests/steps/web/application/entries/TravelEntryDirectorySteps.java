@@ -448,7 +448,7 @@ public class TravelEntryDirectorySteps implements En {
         "I check if import Travel Entry popup has not import option in DE version",
         () -> {
           softly.assertFalse(
-              webDriverHelpers.isElementVisibleWithTimeout(ENTRY_IMPORT_TEMPLATE_LABEL, 1));
+              webDriverHelpers.isElementVisibleWithTimeout(ENTRY_IMPORT_TEMPLATE_LABEL, 1), "Download import template option is available but it shouldn't");
           softly.assertAll();
         });
 
@@ -477,7 +477,7 @@ public class TravelEntryDirectorySteps implements En {
         () -> {
           softly.assertTrue(
               webDriverHelpers.isElementVisibleWithTimeout(
-                  TRAVEL_ENTRIES_IMPORT_SUCCESSFUL_HEADER_DE, 20));
+                  TRAVEL_ENTRIES_IMPORT_SUCCESSFUL_HEADER_DE, 20), "CSV file has been not imported");
           softly.assertAll();
         });
 
