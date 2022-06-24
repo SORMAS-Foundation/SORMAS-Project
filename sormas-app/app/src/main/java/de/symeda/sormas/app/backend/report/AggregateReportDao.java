@@ -1,11 +1,8 @@
 package de.symeda.sormas.app.backend.report;
 
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 
 import com.j256.ormlite.dao.Dao;
@@ -40,31 +37,6 @@ public class AggregateReportDao extends AbstractAdoDao<AggregateReport> {
 	@Override
 	public String getTableName() {
 		return AggregateReport.TABLE_NAME;
-	}
-
-	public List<AggregateReport> getReportsByEpiWeekAndUser(EpiWeek epiWeek, User user) {
-		try {
-			QueryBuilder builder = queryBuilder();
-			Where where = builder.where();
-			where.and(
-				where.eq(AbstractDomainObject.SNAPSHOT, false),
-				where.eq(AggregateReport.REPORTING_USER + "_id", user),
-				where.eq(AggregateReport.YEAR, epiWeek.getYear()),
-				where.eq(AggregateReport.EPI_WEEK, epiWeek.getWeek()));
-
-			List<AggregateReport> reports = builder.query();
-			Set<Disease> diseasesWithReports = new HashSet<>();
-			for (AggregateReport report : reports) {
-				diseasesWithReports.add(report.getDisease());
-			}
-
-			sortAggregateReports(reports);
-
-			return reports;
-		} catch (SQLException e) {
-			Log.e(getTableName(), "Could not perform getReportsByEpiWeekAndUser");
-			throw new RuntimeException(e);
-		}
 	}
 
 	public List<AggregateReport> getReportsByEpiWeek(EpiWeek epiWeek) {
@@ -107,8 +79,8 @@ public class AggregateReportDao extends AbstractAdoDao<AggregateReport> {
 	public void sortAggregateReports(List<AggregateReport> reports) {
 		Function<AggregateReport, String> diseaseComparator = r -> r.getDisease().toString();
 		Comparator<AggregateReport> comparator =
-			Comparator.comparing(diseaseComparator).thenComparing(report -> report.getAgeGroup(), AgeGroupUtils.getComparator());
-		Collections.sort(reports, comparator);
+			Comparator.comparing(diseaseComparator).thenComparing(AggregateReport::getAgeGroup, AgeGroupUtils.getComparator());
+		reports.sort(comparator);
 	}
 
 	public AggregateReport build(Disease disease, EpiWeek epiWeek, InfrastructureAdo infrastructure) {

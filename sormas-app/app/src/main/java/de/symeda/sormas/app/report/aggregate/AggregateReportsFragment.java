@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 
 import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableArrayList;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
@@ -148,6 +147,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 	}
 
 	private void updateByEpiWeek() {
+
 		EpiWeek epiWeek = (EpiWeek) contentBinding.aggregateReportsWeek.getValue();
 
 		if (DataHelper.equal(epiWeek, lastUpdateEpiWeek)) {
@@ -189,148 +189,10 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 			.collect(Collectors.toList());
 
 		addJurisdictionsWithoutReports(reportUserInfo);
-		reportUserInfo.sort((r1, r2) -> {
-			if (r1.isCurrentUserReport()) {
-				return -1;
-			} else if (r2.isCurrentUserReport()) {
-				return 1;
-			} else if (r1.district != null && (r1.user == null || r2.district == null)) {
-				return -1;
-			} else if (r2.district != null && (r2.user == null || r1.district == null)) {
-				return 1;
-			} else if (r1.district != null) {
-				return r1.user.getUserName().compareTo(r2.user.getUserName());
-			} else if (r1.facility != null && (r1.user == null || r2.facility == null)) {
-				return -1;
-			} else if (r2.facility != null && (r2.user == null || r1.facility == null)) {
-				return 1;
-			} else if (r1.facility != null) {
-				return r1.user.getUserName().compareTo(r2.user.getUserName());
-			} else if (r1.pointOfEntry != null && (r1.user == null || r2.pointOfEntry == null)) {
-				return -1;
-			} else if (r2.pointOfEntry != null && (r2.user == null || r1.pointOfEntry == null)) {
-				return 1;
-			} else if (r1.pointOfEntry != null) {
-				return r1.user.getUserName().compareTo(r2.user.getUserName());
-			} else {
-				return 0;
-			}
-		});
+		sortReportUserInfo(reportUserInfo);
 
-		List<Item> reportItems = reportUserInfo.stream().map(r -> new Item(r.getCaption(), r)).collect(Collectors.toList());
-
-		contentBinding.aggregateReportsReport.setSpinnerData(reportItems);
-	}
-
-	private class ReportUserInfo {
-
-		public User user;
-		public District district;
-		public Facility facility;
-		public PointOfEntry pointOfEntry;
-
-		public ReportUserInfo(User user, District district, Facility facility, PointOfEntry pointOfEntry) {
-
-			this.user = user;
-			this.district = district;
-			this.facility = facility;
-			this.pointOfEntry = pointOfEntry;
-		}
-
-		public String getCaption() {
-
-			return getInfrastructure().toString() + (user != null ? " - " + user.getUserName() : "");
-		}
-
-		public boolean isCurrentUserReport() {
-
-			User currentUser = ConfigProvider.getUser();
-			return currentUser.equals(user) && (facility != null && facility.equals(currentUser.getHealthFacility()))
-				|| (pointOfEntry != null && pointOfEntry.equals(currentUser.getPointOfEntry()))
-				|| (facility == null && pointOfEntry == null && district != null && district.equals(currentUser.getDistrict()));
-		}
-
-		public InfrastructureAdo getInfrastructure() {
-			return facility != null ? facility : pointOfEntry != null ? pointOfEntry : district;
-		}
-
-		public boolean hasInfrastructure(InfrastructureAdo infrastructure) {
-			return (infrastructure instanceof Facility && facility.getUuid().equals(infrastructure.getUuid()))
-				|| (infrastructure instanceof PointOfEntry && pointOfEntry.getUuid().equals(infrastructure.getUuid()))
-				|| district.getUuid().equals(infrastructure.getUuid());
-		}
-
-		@Override
-		public boolean equals(Object o) {
-
-			if (this == o)
-				return true;
-			if (o == null || getClass() != o.getClass())
-				return false;
-			ReportUserInfo that = (ReportUserInfo) o;
-			return Objects.equals(user, that.user)
-				&& Objects.equals(district, that.district)
-				&& Objects.equals(facility, that.facility)
-				&& Objects.equals(pointOfEntry, that.pointOfEntry);
-		}
-
-		@Override
-		public int hashCode() {
-
-			return Objects.hash(user, district, facility, pointOfEntry);
-		}
-	}
-
-	private void addJurisdictionsWithoutReports(List<ReportUserInfo> reportUserInfoList) {
-
-		User user = ConfigProvider.getUser();
-		JurisdictionLevel jurisdictionLevel = user.getJurisdictionLevel();
-
-		if (jurisdictionLevel == JurisdictionLevel.DISTRICT) {
-			if (reports.stream()
-				.noneMatch(
-					r -> user.getDistrict().equals(r.getDistrict())
-						&& r.getHealthFacility() == null
-						&& r.getPointOfEntry() == null
-						&& r.getReportingUser().equals(user))) {
-				reportUserInfoList.add(new ReportUserInfo(user, user.getDistrict(), user.getHealthFacility(), user.getPointOfEntry()));
-			}
-
-			DatabaseHelper.getFacilityDao()
-				.getActiveHealthFacilitiesByDistrictAndType(user.getDistrict(), FacilityType.HOSPITAL, false, false)
-				.stream()
-				.filter(f -> reports.stream().noneMatch(r -> f.equals(r.getHealthFacility())))
-				.collect(Collectors.toList())
-				.forEach(f -> {
-					reportUserInfoList.add(new ReportUserInfo(null, null, f, null));
-				});
-
-			DatabaseHelper.getPointOfEntryDao()
-				.getActiveByDistrict(user.getDistrict(), false)
-				.stream()
-				.filter(p -> reports.stream().noneMatch(r -> p.equals(r.getPointOfEntry())))
-				.collect(Collectors.toList())
-				.forEach(p -> {
-					reportUserInfoList.add(new ReportUserInfo(null, null, null, p));
-				});
-		} else if (jurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY
-			&& reports.stream().noneMatch(r -> user.getHealthFacility().equals(r.getHealthFacility()) && r.getReportingUser().equals(user))) {
-			reportUserInfoList.add(new ReportUserInfo(user, user.getDistrict(), user.getHealthFacility(), user.getPointOfEntry()));
-		} else if (jurisdictionLevel == JurisdictionLevel.POINT_OF_ENTRY
-			&& reports.stream().noneMatch(r -> user.getPointOfEntry().equals(r.getPointOfEntry()) && r.getReportingUser().equals(user))) {
-			reportUserInfoList.add(new ReportUserInfo(user, user.getDistrict(), user.getHealthFacility(), user.getPointOfEntry()));
-		}
-	}
-
-	private boolean isSameInfrastructure(AggregateReport report, InfrastructureAdo infrastructure) {
-
-		return infrastructure instanceof Facility
-			? report.getHealthFacility() != null && infrastructure.getUuid().equals(report.getHealthFacility().getUuid())
-			: infrastructure instanceof PointOfEntry
-				? report.getPointOfEntry() != null && infrastructure.getUuid().equals(report.getPointOfEntry().getUuid())
-				: report.getHealthFacility() == null
-					&& report.getPointOfEntry() == null
-					&& infrastructure.getUuid().equals(report.getDistrict().getUuid());
+		contentBinding.aggregateReportsReport
+			.setSpinnerData(reportUserInfo.stream().map(r -> new Item<>(r.getCaption(), r)).collect(Collectors.toList()));
 	}
 
 	private void showReportData() {
@@ -549,6 +411,89 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 		confirmationDialog.show();
 	}
 
+	private void sortReportUserInfo(List<ReportUserInfo> reportUserInfo) {
+
+		reportUserInfo.sort((r1, r2) -> {
+			if (r1.isCurrentUserReport()) {
+				return -1;
+			} else if (r2.isCurrentUserReport()) {
+				return 1;
+			} else if (r1.district != null && (r1.user == null || r2.district == null)) {
+				return -1;
+			} else if (r2.district != null && (r2.user == null || r1.district == null)) {
+				return 1;
+			} else if (r1.district != null) {
+				return r1.user.getUserName().compareTo(r2.user.getUserName());
+			} else if (r1.facility != null && (r1.user == null || r2.facility == null)) {
+				return -1;
+			} else if (r2.facility != null && (r2.user == null || r1.facility == null)) {
+				return 1;
+			} else if (r1.facility != null) {
+				return r1.user.getUserName().compareTo(r2.user.getUserName());
+			} else if (r1.pointOfEntry != null && (r1.user == null || r2.pointOfEntry == null)) {
+				return -1;
+			} else if (r2.pointOfEntry != null && (r2.user == null || r1.pointOfEntry == null)) {
+				return 1;
+			} else if (r1.pointOfEntry != null) {
+				return r1.user.getUserName().compareTo(r2.user.getUserName());
+			} else {
+				return 0;
+			}
+		});
+	}
+
+	private void addJurisdictionsWithoutReports(List<ReportUserInfo> reportUserInfoList) {
+
+		User user = ConfigProvider.getUser();
+		JurisdictionLevel jurisdictionLevel = user.getJurisdictionLevel();
+
+		if (jurisdictionLevel == JurisdictionLevel.DISTRICT) {
+			if (reports.stream()
+				.noneMatch(
+					r -> user.getDistrict().equals(r.getDistrict())
+						&& r.getHealthFacility() == null
+						&& r.getPointOfEntry() == null
+						&& r.getReportingUser().equals(user))) {
+				reportUserInfoList.add(new ReportUserInfo(user, user.getDistrict(), user.getHealthFacility(), user.getPointOfEntry()));
+			}
+
+			DatabaseHelper.getFacilityDao()
+				.getActiveHealthFacilitiesByDistrictAndType(user.getDistrict(), FacilityType.HOSPITAL, false, false)
+				.stream()
+				.filter(f -> reports.stream().noneMatch(r -> f.equals(r.getHealthFacility())))
+				.collect(Collectors.toList())
+				.forEach(f -> {
+					reportUserInfoList.add(new ReportUserInfo(null, null, f, null));
+				});
+
+			DatabaseHelper.getPointOfEntryDao()
+				.getActiveByDistrict(user.getDistrict(), false)
+				.stream()
+				.filter(p -> reports.stream().noneMatch(r -> p.equals(r.getPointOfEntry())))
+				.collect(Collectors.toList())
+				.forEach(p -> {
+					reportUserInfoList.add(new ReportUserInfo(null, null, null, p));
+				});
+		} else if (jurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY
+			&& reports.stream().noneMatch(r -> user.getHealthFacility().equals(r.getHealthFacility()) && r.getReportingUser().equals(user))) {
+			reportUserInfoList.add(new ReportUserInfo(user, user.getDistrict(), user.getHealthFacility(), user.getPointOfEntry()));
+		} else if (jurisdictionLevel == JurisdictionLevel.POINT_OF_ENTRY
+			&& reports.stream().noneMatch(r -> user.getPointOfEntry().equals(r.getPointOfEntry()) && r.getReportingUser().equals(user))) {
+			reportUserInfoList.add(new ReportUserInfo(user, user.getDistrict(), user.getHealthFacility(), user.getPointOfEntry()));
+		}
+	}
+
+	private boolean isSameInfrastructure(AggregateReport report, InfrastructureAdo infrastructure) {
+
+		return infrastructure instanceof Facility
+			? report.getHealthFacility() != null && infrastructure.getUuid().equals(report.getHealthFacility().getUuid())
+			: infrastructure instanceof PointOfEntry
+				? report.getPointOfEntry() != null && infrastructure.getUuid().equals(report.getPointOfEntry().getUuid())
+				: report.getHealthFacility() == null
+					&& report.getPointOfEntry() == null
+					&& infrastructure.getUuid().equals(report.getDistrict().getUuid());
+	}
+
 	@Override
 	protected int getReportLayout() {
 		return R.layout.fragment_reports_aggregate_layout;
@@ -563,9 +508,57 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 		}
 	}
 
-	private ObservableArrayList makeObservable(List<AggregateReport> reports) {
-		ObservableArrayList<AggregateReport> newList = new ObservableArrayList<>();
-		newList.addAll(reports);
-		return newList;
+	private static class ReportUserInfo {
+
+		public User user;
+		public District district;
+		public Facility facility;
+		public PointOfEntry pointOfEntry;
+
+		public ReportUserInfo(User user, District district, Facility facility, PointOfEntry pointOfEntry) {
+
+			this.user = user;
+			this.district = district;
+			this.facility = facility;
+			this.pointOfEntry = pointOfEntry;
+		}
+
+		public String getCaption() {
+
+			return getInfrastructure().toString() + (user != null ? " - " + user.getUserName() : "");
+		}
+
+		public boolean isCurrentUserReport() {
+
+			User currentUser = ConfigProvider.getUser();
+			return currentUser.equals(user) && (facility != null && facility.equals(currentUser.getHealthFacility()))
+				|| (pointOfEntry != null && pointOfEntry.equals(currentUser.getPointOfEntry()))
+				|| (facility == null && pointOfEntry == null && district != null && district.equals(currentUser.getDistrict()));
+		}
+
+		public InfrastructureAdo getInfrastructure() {
+
+			return facility != null ? facility : pointOfEntry != null ? pointOfEntry : district;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+
+			if (this == o)
+				return true;
+			if (o == null || getClass() != o.getClass())
+				return false;
+			ReportUserInfo that = (ReportUserInfo) o;
+			return Objects.equals(user, that.user)
+				&& Objects.equals(district, that.district)
+				&& Objects.equals(facility, that.facility)
+				&& Objects.equals(pointOfEntry, that.pointOfEntry);
+		}
+
+		@Override
+		public int hashCode() {
+
+			return Objects.hash(user, district, facility, pointOfEntry);
+		}
 	}
 }
