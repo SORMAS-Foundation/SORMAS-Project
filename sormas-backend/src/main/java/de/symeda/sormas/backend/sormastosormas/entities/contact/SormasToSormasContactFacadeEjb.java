@@ -107,7 +107,11 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 	}
 
 	@Override
-	protected void validateEntitiesBeforeShare(List<Contact> entities, boolean handOverOwnership, String targetOrganizationId)
+	protected void validateEntitiesBeforeShare(
+		List<Contact> entities,
+		boolean handOverOwnership,
+		String targetOrganizationId,
+		boolean pendingRequestAllowed)
 		throws SormasToSormasException {
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 		for (Contact contact : entities) {
@@ -159,17 +163,20 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 				}
 			}
 
-			SormasToSormasShareInfo shareInfo = shareInfoService.getByContactAndOrganization(contact.getUuid(), targetOrganizationId);
-			if (shareInfo != null) {
-				ShareRequestInfo latestShare = ShareInfoHelper.getLatestRequest(shareInfo.getRequests().stream()).orElseGet(ShareRequestInfo::new);
+			if (!pendingRequestAllowed) {
+				SormasToSormasShareInfo shareInfo = shareInfoService.getByContactAndOrganization(contact.getUuid(), targetOrganizationId);
+				if (shareInfo != null) {
+					ShareRequestInfo latestShare =
+						ShareInfoHelper.getLatestRequest(shareInfo.getRequests().stream()).orElseGet(ShareRequestInfo::new);
 
-				if (latestShare.getRequestStatus() == ShareRequestStatus.PENDING) {
-					validationErrors.add(
-						new ValidationErrors(
-							buildContactValidationGroupName(contact),
-							ValidationErrors.create(
-								new ValidationErrorGroup(Captions.Contact),
-								new ValidationErrorMessage(Validations.sormasToSormasExistingPendingRequest))));
+					if (latestShare.getRequestStatus() == ShareRequestStatus.PENDING) {
+						validationErrors.add(
+							new ValidationErrors(
+								buildContactValidationGroupName(contact),
+								ValidationErrors.create(
+									new ValidationErrorGroup(Captions.Contact),
+									new ValidationErrorMessage(Validations.sormasToSormasExistingPendingRequest))));
+					}
 				}
 			}
 		}
@@ -180,11 +187,12 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 	}
 
 	@Override
-	protected void validateEntitiesBeforeShare(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {
+	protected void validateEntitiesBeforeSend(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {
 		validateEntitiesBeforeShare(
 			shares.stream().map(SormasToSormasShareInfo::getContact).filter(Objects::nonNull).collect(Collectors.toList()),
 			shares.get(0).isOwnershipHandedOver(),
-			shares.get(0).getOrganizationId());
+			shares.get(0).getOrganizationId(),
+			true);
 	}
 
 	@Override

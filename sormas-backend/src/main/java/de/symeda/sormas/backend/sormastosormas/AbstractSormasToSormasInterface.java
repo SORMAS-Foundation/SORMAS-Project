@@ -229,7 +229,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			ensureConsistentOptions(options);
 		}
 
-		validateEntitiesBeforeShare(entities, options.isHandOverOwnership(), options.getOrganization().getId());
+		validateEntitiesBeforeShare(entities, options.isHandOverOwnership(), options.getOrganization().getId(), false);
 
 		String requestUuid = DataHelper.createUuid();
 
@@ -303,7 +303,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		String requestUuid = sormasToSormasEncryptionEjb.decryptAndVerify(encryptedRequestUuid, String.class);
 		ShareRequestInfo requestInfo = shareRequestInfoService.getByUuid(requestUuid);
 
-		validateEntitiesBeforeShare(requestInfo.getShares());
+		validateEntitiesBeforeSend(requestInfo.getShares());
 
 		SormasToSormasDto shareData = shareDataBuilder.buildShareDataForRequest(requestInfo, currentUser);
 
@@ -314,7 +314,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		User currentUser = userService.getCurrentUser();
 		List<ADO> entities = getEntityService().getByUuids(entityUuids);
 
-		validateEntitiesBeforeShare(entities, options.isHandOverOwnership(), options.getOrganization().getId());
+		validateEntitiesBeforeShare(entities, options.isHandOverOwnership(), options.getOrganization().getId(), false);
 		ensureConsistentOptions(options);
 
 		String requestUuid = DataHelper.createUuid();
@@ -525,10 +525,14 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	protected abstract Class<S[]> getShareDataClass();
 
-	protected abstract void validateEntitiesBeforeShare(List<ADO> entities, boolean handOverOwnership, String targetOrganizationId)
+	protected abstract void validateEntitiesBeforeShare(
+		List<ADO> entities,
+		boolean handOverOwnership,
+		String targetOrganizationId,
+		boolean pendingRequestAllowed)
 		throws SormasToSormasException;
 
-	protected abstract void validateEntitiesBeforeShare(List<SormasToSormasShareInfo> shares) throws SormasToSormasException;
+	protected abstract void validateEntitiesBeforeSend(List<SormasToSormasShareInfo> shares) throws SormasToSormasException;
 
 	protected abstract void validateShareRequestBeforeAccept(SormasToSormasShareRequestDto shareRequest) throws SormasToSormasException;
 

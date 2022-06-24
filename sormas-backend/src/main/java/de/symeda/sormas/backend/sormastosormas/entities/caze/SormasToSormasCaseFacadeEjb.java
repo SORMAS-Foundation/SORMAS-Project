@@ -20,9 +20,6 @@ import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.CAS
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
 
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -49,6 +46,8 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
@@ -64,6 +63,7 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
@@ -111,7 +111,11 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	}
 
 	@Override
-	protected void validateEntitiesBeforeShare(List<Case> entities, boolean handOverOwnership, String targetOrganizationId)
+	protected void validateEntitiesBeforeShare(
+		List<Case> entities,
+		boolean handOverOwnership,
+		String targetOrganizationId,
+		boolean pendingRequestAllowed)
 		throws SormasToSormasException {
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 		for (Case caze : entities) {
@@ -131,17 +135,20 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 							new ValidationErrorMessage(Validations.sormasToSormasPersonEnrolled))));
 			}
 
-			SormasToSormasShareInfo shareInfo = shareInfoService.getByCaseAndOrganization(caze.getUuid(), targetOrganizationId);
-			if (shareInfo != null) {
-				ShareRequestInfo latestShare = ShareInfoHelper.getLatestRequest(shareInfo.getRequests().stream()).orElseGet(ShareRequestInfo::new);
+			if (!pendingRequestAllowed) {
+				SormasToSormasShareInfo shareInfo = shareInfoService.getByCaseAndOrganization(caze.getUuid(), targetOrganizationId);
+				if (shareInfo != null) {
+					ShareRequestInfo latestShare =
+						ShareInfoHelper.getLatestRequest(shareInfo.getRequests().stream()).orElseGet(ShareRequestInfo::new);
 
-				if (latestShare.getRequestStatus() == ShareRequestStatus.PENDING) {
-					validationErrors.add(
-						new ValidationErrors(
-							buildCaseValidationGroupName(caze),
-							ValidationErrors.create(
-								new ValidationErrorGroup(Captions.CaseData),
-								new ValidationErrorMessage(Validations.sormasToSormasExistingPendingRequest))));
+					if (latestShare.getRequestStatus() == ShareRequestStatus.PENDING) {
+						validationErrors.add(
+							new ValidationErrors(
+								buildCaseValidationGroupName(caze),
+								ValidationErrors.create(
+									new ValidationErrorGroup(Captions.CaseData),
+									new ValidationErrorMessage(Validations.sormasToSormasExistingPendingRequest))));
+					}
 				}
 			}
 		}
@@ -152,11 +159,12 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	}
 
 	@Override
-	protected void validateEntitiesBeforeShare(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {
+	protected void validateEntitiesBeforeSend(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {
 		validateEntitiesBeforeShare(
 			shares.stream().map(SormasToSormasShareInfo::getCaze).filter(Objects::nonNull).collect(Collectors.toList()),
 			shares.get(0).isOwnershipHandedOver(),
-			shares.get(0).getOrganizationId());
+			shares.get(0).getOrganizationId(),
+			true);
 	}
 
 	@Override
