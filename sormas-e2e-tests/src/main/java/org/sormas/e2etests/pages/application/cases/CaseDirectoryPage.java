@@ -172,6 +172,8 @@ public class CaseDirectoryPage {
   public static final By CLOSE_FORM_BUTTON = By.xpath("//div[@class='v-window-closebox']");
   public static final By REINFECTION_STATUS_COMBOBOX =
       By.cssSelector("[id='reinfectionStatus'] [class='v-filterselect-button']");
+  public static final By CREATE_NEW_PERSON_CHECKBOX_DE =
+      By.xpath("//label[text()='Eine neue Person anlegen']");
 
   public static By getCheckboxByIndex(String idx) {
     return By.xpath(String.format("(//input[@type=\"checkbox\"])[%s]", idx));

@@ -18,6 +18,8 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
+import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.EMAIL_PRIMARY;
+import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.TELEPHONE_PRIMARY;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.*;
 import static org.sormas.e2etests.pages.application.contacts.PersonContactDetailsPage.PERSON_CONTACT_DETAILS_POPUP;
 
@@ -29,6 +31,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.pojo.web.Person;
 import org.sormas.e2etests.entities.services.PersonService;
@@ -169,6 +172,28 @@ public class EditContactPersonSteps implements En {
                   CreateNewContactSteps.contact.getPrimaryEmailAddress(),
                   CreateNewContactSteps.contact.getPrimaryPhoneNumber());
         });
+      When(
+              "I check that ([^\"]*) is visible on Edit Contact Person Page",
+              (String option) -> {
+                  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+                  By selector = null;
+                  Boolean elementVisible = true;
+                  switch (option) {
+                      case "Primary telephone":
+                          selector = TELEPHONE_PRIMARY;
+                          break;
+                      case "Primary email address":
+                          selector = EMAIL_PRIMARY;
+                          break;
+                  }
+                  try {
+                      webDriverHelpers.scrollToElementUntilIsVisible(selector);
+                  } catch (Throwable ignored) {
+                      elementVisible = false;
+                  }
+                  softly.assertTrue(elementVisible, option + " is not visible!");
+                  softly.assertAll();
+              });
   }
 
   private void fillSalutation(String salutation) {

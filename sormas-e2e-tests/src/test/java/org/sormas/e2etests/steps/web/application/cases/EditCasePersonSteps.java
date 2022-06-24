@@ -230,6 +230,28 @@ public class EditCasePersonSteps implements En {
         (String sex) -> {
           webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);
         });
+    When(
+        "I check that ([^\"]*) is visible on Edit Case Person Page",
+        (String option) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          By selector = null;
+          Boolean elementVisible = true;
+          switch (option) {
+            case "Primary telephone":
+              selector = TELEPHONE_PRIMARY;
+              break;
+            case "Primary email address":
+              selector = EMAIL_PRIMARY;
+              break;
+          }
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(selector);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertTrue(elementVisible, option + " is not visible!");
+          softly.assertAll();
+        });
 
     When(
         "I check that ([^\"]*) is not visible",
