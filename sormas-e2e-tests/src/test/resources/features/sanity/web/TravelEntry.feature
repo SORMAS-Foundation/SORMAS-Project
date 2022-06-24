@@ -345,7 +345,7 @@ Feature: Create travel entries
       And I click on the Entries button from navbar
       When I click on the Import button from Travel Entries directory
       Then I check if import Travel Entry popup has not import option in DE version
-      And I select the specific German travel entry CSV file in the file picker with travelEntries_testImport file name
+      And I select the specific German travel entry CSV file in the file picker with "travelEntries_testImport.csv" file name
       And I click on the START DATA IMPORT button from the Import Travel Entries popup
       Then I check Pick an existing case in Pick or create person popup in travel entry
       And I select to create new person from the Import Travel Entries popup DE and Save popup if needed

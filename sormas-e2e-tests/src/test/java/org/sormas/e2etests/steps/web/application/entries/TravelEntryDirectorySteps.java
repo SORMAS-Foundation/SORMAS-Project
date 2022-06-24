@@ -448,14 +448,15 @@ public class TravelEntryDirectorySteps implements En {
         "I check if import Travel Entry popup has not import option in DE version",
         () -> {
           softly.assertFalse(
-              webDriverHelpers.isElementVisibleWithTimeout(ENTRY_IMPORT_TEMPLATE_LABEL, 1), "Download import template option is available but it shouldn't");
+              webDriverHelpers.isElementVisibleWithTimeout(ENTRY_IMPORT_TEMPLATE_LABEL, 1),
+              "Download import template option is available but it shouldn't");
           softly.assertAll();
         });
 
     When(
-        "I select the specific German travel entry CSV file in the file picker with ([^\"]*) file name",
+        "I select the specific German travel entry CSV file in the file picker with {string} file name",
         (String fileName) -> {
-          webDriverHelpers.sendFile(FILE_PICKER, userDirPath + "/uploads/" + fileName + ".csv");
+          webDriverHelpers.sendFile(FILE_PICKER, userDirPath + "/uploads/" + fileName);
         });
 
     When(
@@ -477,7 +478,8 @@ public class TravelEntryDirectorySteps implements En {
         () -> {
           softly.assertTrue(
               webDriverHelpers.isElementVisibleWithTimeout(
-                  TRAVEL_ENTRIES_IMPORT_SUCCESSFUL_HEADER_DE, 20), "CSV file has been not imported");
+                  TRAVEL_ENTRIES_IMPORT_SUCCESSFUL_HEADER_DE, 20),
+              "CSV file has been not imported");
           softly.assertAll();
         });
 
