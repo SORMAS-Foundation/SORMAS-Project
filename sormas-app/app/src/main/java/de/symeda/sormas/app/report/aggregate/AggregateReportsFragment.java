@@ -287,7 +287,12 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 		JurisdictionLevel jurisdictionLevel = user.getJurisdictionLevel();
 
 		if (jurisdictionLevel == JurisdictionLevel.DISTRICT) {
-			if (reports.stream().noneMatch(r -> r.getDistrict() == user.getDistrict() && r.getReportingUser().equals(user))) {
+			if (reports.stream()
+				.noneMatch(
+					r -> user.getDistrict().equals(r.getDistrict())
+						&& r.getHealthFacility() == null
+						&& r.getPointOfEntry() == null
+						&& r.getReportingUser().equals(user))) {
 				reportUserInfoList.add(new ReportUserInfo(user, user.getDistrict(), user.getHealthFacility(), user.getPointOfEntry()));
 			}
 
@@ -309,10 +314,10 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 					reportUserInfoList.add(new ReportUserInfo(null, null, null, p));
 				});
 		} else if (jurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY
-			&& reports.stream().noneMatch(r -> r.getHealthFacility() == user.getHealthFacility() && r.getReportingUser().equals(user))) {
+			&& reports.stream().noneMatch(r -> user.getHealthFacility().equals(r.getHealthFacility()) && r.getReportingUser().equals(user))) {
 			reportUserInfoList.add(new ReportUserInfo(user, user.getDistrict(), user.getHealthFacility(), user.getPointOfEntry()));
 		} else if (jurisdictionLevel == JurisdictionLevel.POINT_OF_ENTRY
-			&& reports.stream().noneMatch(r -> r.getPointOfEntry() == user.getPointOfEntry() && r.getReportingUser().equals(user))) {
+			&& reports.stream().noneMatch(r -> user.getPointOfEntry().equals(r.getPointOfEntry()) && r.getReportingUser().equals(user))) {
 			reportUserInfoList.add(new ReportUserInfo(user, user.getDistrict(), user.getHealthFacility(), user.getPointOfEntry()));
 		}
 	}
@@ -320,9 +325,9 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 	private boolean isSameInfrastructure(AggregateReport report, InfrastructureAdo infrastructure) {
 
 		return infrastructure instanceof Facility
-			? infrastructure.getUuid().equals(report.getHealthFacility().getUuid())
+			? report.getHealthFacility() != null && infrastructure.getUuid().equals(report.getHealthFacility().getUuid())
 			: infrastructure instanceof PointOfEntry
-				? infrastructure.getUuid().equals(report.getPointOfEntry().getUuid())
+				? report.getPointOfEntry() != null && infrastructure.getUuid().equals(report.getPointOfEntry().getUuid())
 				: report.getHealthFacility() == null
 					&& report.getPointOfEntry() == null
 					&& infrastructure.getUuid().equals(report.getDistrict().getUuid());
@@ -405,6 +410,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 				binding.aggregateReportDeaths.setEnabled(enabled);
 				binding.aggregateReportLabConfirmations.setEnabled(enabled);
 				binding.aggregateReportNewCases.setEnabled(enabled);
+				contentBinding.submitReport.setEnabled(enabled);
 				AggregateReport report = aggregateReports.get(0);
 				binding.setData(report);
 				if (latestLocalChangeDate == null
@@ -422,6 +428,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 					binding.aggregateReportDeaths.setEnabled(enabled);
 					binding.aggregateReportLabConfirmations.setEnabled(enabled);
 					binding.aggregateReportNewCases.setEnabled(enabled);
+					contentBinding.submitReport.setEnabled(enabled);
 					String ageGroup = report.getAgeGroup();
 					if (ageGroup != null) {
 						report.setAgeGroup(ageGroup);
@@ -445,6 +452,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 				binding.aggregateReportDeaths.setEnabled(enabled);
 				binding.aggregateReportLabConfirmations.setEnabled(enabled);
 				binding.aggregateReportNewCases.setEnabled(enabled);
+				contentBinding.submitReport.setEnabled(enabled);
 				AggregateReport data = DatabaseHelper.getAggregateReportDao().build(diseaseEnum, epiWeek, selectedInfrastructure);
 				binding.setData(data);
 				userReports.add(data);
@@ -460,6 +468,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 					binding.aggregateReportDeaths.setEnabled(enabled);
 					binding.aggregateReportLabConfirmations.setEnabled(enabled);
 					binding.aggregateReportNewCases.setEnabled(enabled);
+					contentBinding.submitReport.setEnabled(enabled);
 					AggregateReport data = DatabaseHelper.getAggregateReportDao().build(diseaseEnum, epiWeek, selectedInfrastructure);
 					data.setAgeGroup(ageGroup);
 					binding.setData(data);
