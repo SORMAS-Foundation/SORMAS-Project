@@ -17,25 +17,23 @@ import de.symeda.sormas.ui.utils.DateFormatHelper;
 public class DeletionLabel extends HorizontalLayout {
 
 	public DeletionLabel(DeletionInfoDto deletionInfoDto) {
-		if(deletionInfoDto != null) {
+		if (deletionInfoDto != null) {
 			setDeleteLabel(deletionInfoDto);
 		}
 	}
 
-	public DeletionLabel(DeletionInfoDto automaticDeletionInfoDto, DeletionInfoDto manuallyDeletionInfoDto, boolean entityDeleted){
-		if(manuallyDeletionInfoDto != null && entityDeleted) {
-			if(automaticDeletionInfoDto != null) {
-				if (manuallyDeletionInfoDto.getDeletionDate().before(automaticDeletionInfoDto.getDeletionDate())){
+	public DeletionLabel(DeletionInfoDto automaticDeletionInfoDto, DeletionInfoDto manuallyDeletionInfoDto, boolean entityDeleted) {
+		if (manuallyDeletionInfoDto != null && entityDeleted) {
+			if (automaticDeletionInfoDto != null) {
+				if (manuallyDeletionInfoDto.getDeletionDate().before(automaticDeletionInfoDto.getDeletionDate())) {
 					setDeleteLabel(manuallyDeletionInfoDto);
-				}
-				else {
+				} else {
 					setDeleteLabel(automaticDeletionInfoDto);
 				}
-			}
-			else{
+			} else {
 				setDeleteLabel(manuallyDeletionInfoDto);
 			}
-		} else if (automaticDeletionInfoDto != null){
+		} else if (automaticDeletionInfoDto != null) {
 			setDeleteLabel(automaticDeletionInfoDto);
 		}
 	}
