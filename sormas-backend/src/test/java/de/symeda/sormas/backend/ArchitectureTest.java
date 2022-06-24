@@ -11,6 +11,7 @@ import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.util.RightsAllowed;
 import org.junit.runner.RunWith;
 
 import com.tngtech.archunit.base.DescribedPredicate;
@@ -269,19 +270,19 @@ public class ArchitectureTest {
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, AuthMode authMode, @NotNull List<String> exceptedMethods, JavaClasses classes) {
 		if (authMode != AuthMode.METHODS_ONLY) {
-			ArchRuleDefinition.theClass(facadeEjbClass).should().beAnnotatedWith(RolesAllowed.class).check(classes);
+			ArchRuleDefinition.theClass(facadeEjbClass).should().beAnnotatedWith(RightsAllowed.class).check(classes);
 		}
 
 		GivenMethodsConjunction methods = ArchRuleDefinition.methods().that().areDeclaredIn(facadeEjbClass).and().arePublic();
 		String exceptedMethodsMatcher = "^(" + String.join("|", exceptedMethods) + ")$";
 
 		if (authMode == AuthMode.CLASS_ONLY) {
-			methods.and().haveNameNotMatching(exceptedMethodsMatcher).should().notBeAnnotatedWith(RolesAllowed.class).check(classes);
-			methods.and().haveNameMatching(exceptedMethodsMatcher).should().beAnnotatedWith(RolesAllowed.class).check(classes);
+			methods.and().haveNameNotMatching(exceptedMethodsMatcher).should().notBeAnnotatedWith(RightsAllowed.class).check(classes);
+			methods.and().haveNameMatching(exceptedMethodsMatcher).should().beAnnotatedWith(RightsAllowed.class).check(classes);
 		} else {
 			// TODO - add exceptedMethods handling when needed
 
-			MethodsShouldConjunction methodChecks = methods.should().beAnnotatedWith(RolesAllowed.class).orShould().beAnnotatedWith(PermitAll.class);
+			MethodsShouldConjunction methodChecks = methods.should().beAnnotatedWith(RightsAllowed.class).orShould().beAnnotatedWith(PermitAll.class);
 
 			if (authMode == AuthMode.CLASS_AND_METHODS) {
 				methodChecks = methodChecks.orShould()
@@ -290,6 +291,14 @@ public class ArchitectureTest {
 			}
 
 			methodChecks.check(classes);
+		}
+
+		// don't use RolesAllowed anymore, until performance problem is fixed
+		if (authMode != AuthMode.METHODS_ONLY) {
+			ArchRuleDefinition.theClass(facadeEjbClass).should().notBeAnnotatedWith(RolesAllowed.class).check(classes);
+		}
+		if (authMode != AuthMode.CLASS_ONLY) {
+			methods.should().notBeAnnotatedWith(RolesAllowed.class).check(classes);
 		}
 	}
 

@@ -34,7 +34,7 @@ import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.backend.user.CurrentUserService;
 
 /**
- * Implementation for @RightsAllowed annotation to mimic @RolesAllowed
+ * Implementation for @RightsAllowed annotation to mimic @RightsAllowed
  */
 public class RightsAllowedInterceptor {
 

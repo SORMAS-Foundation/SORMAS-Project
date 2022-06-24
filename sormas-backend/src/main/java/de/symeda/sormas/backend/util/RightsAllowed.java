@@ -9,7 +9,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Mimics behaviour of @RolesAllowed to workaround performance problem.
+ * Mimics behaviour of @RightsAllowed to workaround performance problem.
  */
 @Documented
 @Retention(RUNTIME)

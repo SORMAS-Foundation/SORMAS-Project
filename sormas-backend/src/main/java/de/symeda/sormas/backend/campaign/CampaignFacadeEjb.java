@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -25,7 +24,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.common.DeletionDetails;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -38,6 +36,7 @@ import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -56,9 +55,10 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "CampaignFacade")
-@RolesAllowed(UserRight._CAMPAIGN_VIEW)
+@RightsAllowed(UserRight._CAMPAIGN_VIEW)
 public class CampaignFacadeEjb
 	extends AbstractCoreFacadeEjb<Campaign, CampaignDto, CampaignIndexDto, CampaignReferenceDto, CampaignService, CampaignCriteria>
 	implements CampaignFacade {
@@ -167,7 +167,7 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CAMPAIGN_EDIT)
+	@RightsAllowed(UserRight._CAMPAIGN_EDIT)
 	public CampaignDto save(@Valid @NotNull CampaignDto dto) {
 		validate(dto);
 		Campaign campaign = fillOrBuildEntity(dto, service.getByUuid(dto.getUuid()), true);
@@ -357,7 +357,7 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CAMPAIGN_DELETE)
+	@RightsAllowed(UserRight._CAMPAIGN_DELETE)
 	public void delete(String campaignUuid, DeletionDetails deletionDetails) {
 
 		service.delete(service.getByUuid(campaignUuid), deletionDetails);
@@ -422,19 +422,19 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CAMPAIGN_ARCHIVE)
+	@RightsAllowed(UserRight._CAMPAIGN_ARCHIVE)
 	public void archive(String entityUuid, Date endOfProcessingDate) {
 		super.archive(entityUuid, endOfProcessingDate);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CAMPAIGN_ARCHIVE)
+	@RightsAllowed(UserRight._CAMPAIGN_ARCHIVE)
 	public void archive(List<String> entityUuids) {
 		super.archive(entityUuids);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CAMPAIGN_ARCHIVE)
+	@RightsAllowed(UserRight._CAMPAIGN_ARCHIVE)
 	public void dearchive(List<String> entityUuids, String dearchiveReason) {
 		super.dearchive(entityUuids, dearchiveReason);
 	}
