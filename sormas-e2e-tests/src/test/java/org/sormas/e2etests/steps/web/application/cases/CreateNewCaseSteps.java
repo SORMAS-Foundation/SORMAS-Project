@@ -401,6 +401,14 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
+        "^I save the new case$",
+        () -> {
+          webDriverHelpers.scrollToElement(CONFIRM_BUTTON_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
+
+    When(
         "I save a new case",
         () -> {
           webDriverHelpers.scrollToElement(CONTACT_CASE_SAVE_BUTTON);
@@ -606,6 +614,15 @@ public class CreateNewCaseSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(PICK_A_EXISTING_CASE_LABEL_DE);
             webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           }
+        });
+
+    When(
+        "^I pick a new case in pick or create a case popup$",
+        () -> {
+          // webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_CASE_CONFIRMATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(PICK_AN_EXISTING_CASE_CONFIRMATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
 
     When(

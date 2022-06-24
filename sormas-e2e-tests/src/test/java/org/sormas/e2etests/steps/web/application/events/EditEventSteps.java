@@ -18,6 +18,50 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
+import com.github.javafaker.Faker;
+import cucumber.api.java8.En;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Event;
+import org.sormas.e2etests.entities.pojo.web.EventGroup;
+import org.sormas.e2etests.entities.pojo.web.EventHandout;
+import org.sormas.e2etests.entities.pojo.web.EventParticipant;
+import org.sormas.e2etests.entities.pojo.web.Person;
+import org.sormas.e2etests.entities.services.EventDocumentService;
+import org.sormas.e2etests.entities.services.EventGroupService;
+import org.sormas.e2etests.entities.services.EventParticipantService;
+import org.sormas.e2etests.entities.services.EventService;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.GenderValues;
+import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
+import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.events.EditEventPage;
+import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps;
+import org.sormas.e2etests.steps.web.application.contacts.EditContactSteps;
+import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
+import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+
 import static org.sormas.e2etests.pages.application.actions.CreateNewActionPage.NEW_ACTION_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
@@ -156,49 +200,6 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SECON
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_EVENTS_FOR_PERSON;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
-
-import com.github.javafaker.Faker;
-import cucumber.api.java8.En;
-import java.io.File;
-import java.io.FileInputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
-import org.apache.poi.openxml4j.opc.OPCPackage;
-import org.apache.poi.xwpf.usermodel.XWPFDocument;
-import org.apache.poi.xwpf.usermodel.XWPFParagraph;
-import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.entities.pojo.web.Event;
-import org.sormas.e2etests.entities.pojo.web.EventGroup;
-import org.sormas.e2etests.entities.pojo.web.EventHandout;
-import org.sormas.e2etests.entities.pojo.web.EventParticipant;
-import org.sormas.e2etests.entities.pojo.web.Person;
-import org.sormas.e2etests.entities.services.EventDocumentService;
-import org.sormas.e2etests.entities.services.EventGroupService;
-import org.sormas.e2etests.entities.services.EventParticipantService;
-import org.sormas.e2etests.entities.services.EventService;
-import org.sormas.e2etests.enums.DistrictsValues;
-import org.sormas.e2etests.enums.GenderValues;
-import org.sormas.e2etests.enums.RegionsValues;
-import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
-import org.sormas.e2etests.helpers.AssertHelpers;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.events.EditEventPage;
-import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps;
-import org.sormas.e2etests.steps.web.application.contacts.EditContactSteps;
-import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
-import org.testng.Assert;
-import org.testng.asserts.SoftAssert;
 
 public class EditEventSteps implements En {
 
@@ -1192,17 +1193,9 @@ public class EditEventSteps implements En {
               CONFIRM_BUTTON_FOR_SELECT_PERSON_FROM_ADD_PARTICIPANTS_WINDOW);
           TimeUnit.SECONDS.sleep(1);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          TimeUnit.SECONDS.sleep(3);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          if (webDriverHelpers.isElementVisibleWithTimeout(POPUP_DISCARD_CHANGES_BUTTON, 30)) {
-            webDriverHelpers.clickOnWebElementBySelector(POPUP_DISCARD_CHANGES_BUTTON);
-          }
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
           TimeUnit.SECONDS.sleep(2);
-          if (webDriverHelpers.isElementVisibleWithTimeout(POPUP_DISCARD_CHANGES_BUTTON, 30)) {
-            webDriverHelpers.clickOnWebElementBySelector(POPUP_DISCARD_CHANGES_BUTTON);
-          }
         });
 
     When(
@@ -1380,29 +1373,13 @@ public class EditEventSteps implements En {
         "^I click on New Sample and discard changes is asked$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(NEW_SAMPLE_BUTTON);
-          if (webDriverHelpers.isElementVisibleWithTimeout(POPUP_DISCARD_CHANGES_BUTTON, 30)) {
-            webDriverHelpers.clickOnWebElementBySelector(POPUP_DISCARD_CHANGES_BUTTON);
-          }
         });
 
     When(
-        "^I confirm all actions until unsaved changes popup window disappears$",
+        "^I confirm popup window$",
         () -> {
-          //          do {
-          //            WebElement element =
-          //                webDriverHelpers.returnTheVisibleAndClickableElement(CONFIRM_ACTION);
-          //            webDriverHelpers.clickOnWebElement(element);
-          //          } while (webDriverHelpers.isElementVisibleWithTimeout(CONFIRM_ACTION, 30));
-        });
-
-    When(
-        "^I confirm last popup window when there are multiple ones$",
-        () -> {
-          do {
-            int numberOfElements = webDriverHelpers.getNumberOfElements(CONFIRM_ACTION);
-            webDriverHelpers.clickOnWebElementBySelectorAndIndex(
-                CONFIRM_ACTION, numberOfElements - 1);
-          } while (webDriverHelpers.isElementVisibleWithTimeout(CONFIRM_ACTION, 30));
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_ACTION);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
 
     When(
