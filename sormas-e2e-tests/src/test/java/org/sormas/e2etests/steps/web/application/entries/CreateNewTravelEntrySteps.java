@@ -62,15 +62,21 @@ import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CREATE_CASE_FROM_TRAVEL_ENTRY;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CREATE_DOCUMENT_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CREATE_DOCUMENT_POPUP_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DELETE_TASK_BUTTON;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISCARD_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISEASE_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.EDIT_TASK_DE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.FIRST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.GENERATED_DOCUMENT_NAME_DE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.INFO_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.LAST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.NEW_TASK_DE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.PERSON_ID_LABEL;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.POINT_OF_ENTRY_CASE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.SAVE_EDIT_TRAVEL_PAGE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.SAVE_NEW_CASE_FOR_TRAVEL_ENTRY_POPUP;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.SAVE_TASK_BUTTON;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TASK_STATUS_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TRAVEL_ENTRY_PERSON_TAB;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TRAVEL_ENTRY_TAB;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE;
@@ -411,6 +417,56 @@ public class CreateNewTravelEntrySteps implements En {
                   "responsibleCommunity",
                   "pointOfEntry",
                   "pointOfEntryDetails"));
+        });
+    When(
+        "I click NEW TASK in Edit Travel Entry page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(NEW_TASK_DE);
+        });
+    When(
+        "I check if new task is displayed in Task tab on Edit Travel Entry page",
+        () -> {
+          boolean elementVisible = true;
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(EDIT_TASK_DE);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertTrue(elementVisible, "Task is not visible!");
+          softly.assertAll();
+        });
+    When(
+        "I check that ([^\"]*) option is visible in Edit Task form on Edit Travel Entry page",
+        (String option) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          By selector = null;
+          Boolean elementVisible = true;
+          switch (option) {
+            case "Discard":
+              selector = DISCARD_TASK_BUTTON;
+              break;
+            case "Save":
+              selector = SAVE_TASK_BUTTON;
+              break;
+            case "Delete":
+              selector = DELETE_TASK_BUTTON;
+              break;
+            case "Task status":
+              selector = TASK_STATUS_RADIOBUTTON;
+              break;
+          }
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(selector);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertTrue(elementVisible, option + " is not visible!");
+          softly.assertAll();
+        });
+    When(
+        "I click on Discard button in Task form",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_TASK_BUTTON);
         });
 
     And(
@@ -849,6 +905,7 @@ public class CreateNewTravelEntrySteps implements En {
   }
 
   private TravelEntry collectTravelEntryData() {
+    System.out.println(webDriverHelpers.getValueFromWebElement(UUID_INPUT));
     return TravelEntry.builder()
         .disease(webDriverHelpers.getValueFromCombobox(EditTravelEntryPage.DISEASE_COMBOBOX))
         .responsibleRegion(
@@ -890,7 +947,7 @@ public class CreateNewTravelEntrySteps implements En {
         .firstName(webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT))
         .lastName(webDriverHelpers.getValueFromWebElement(LAST_NAME_INPUT))
         .sex(webDriverHelpers.getValueFromCombobox(EditTravelEntryPage.SEX_COMBOBOX))
-        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .personUuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .build();
   }
 

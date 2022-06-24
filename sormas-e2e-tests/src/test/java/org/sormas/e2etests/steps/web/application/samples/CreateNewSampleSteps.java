@@ -634,6 +634,19 @@ public class CreateNewSampleSteps implements En {
           softly.assertEquals(disease, testedDisease, "Diseases are not equal");
           softly.assertAll();
         });
+
+    When(
+        "I set Test Disease as ([^\"]*) in new pathogen result",
+        (String disease) -> webDriverHelpers.selectFromCombobox(TESTED_DISEASE_COMBOBOX, disease));
+
+    When(
+        "I check if Type of test in new pathogen results has no ([^\"]*) option",
+        (String typeOfTest) -> {
+          softly.assertFalse(
+              webDriverHelpers.checkIfElementExistsInCombobox(TYPE_OF_TEST_COMBOBOX, typeOfTest),
+              "Type of test is incorrect");
+          softly.assertAll();
+        });
   }
 
   private void selectPurposeOfSample(String samplePurpose, By element) {

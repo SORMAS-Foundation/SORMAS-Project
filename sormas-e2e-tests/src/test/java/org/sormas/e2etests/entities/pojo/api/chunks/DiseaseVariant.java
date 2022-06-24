@@ -15,36 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.entities.pojo.web;
+package org.sormas.e2etests.entities.pojo.api.chunks;
 
-import java.time.LocalDate;
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.Value;
 
 @Value
 @AllArgsConstructor
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
-public class Event {
-  String uuid;
-  String eventStatus;
-  String diseaseVariant;
-  String investigationStatus;
-  String eventManagementStatus;
-  String title;
-  LocalDate eventDate;
-  LocalDate eventEvolutionDate;
-  LocalDate reportDate;
-  String eventLocation;
-  String reportingUser;
-  String riskLevel;
-  String disease;
-  String description;
-  String region;
-  String district;
-  String community;
-  String sourceType;
-  String responsibleUser;
-  String facility;
-  String facilityCategory;
-  String facilityType;
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class DiseaseVariant {
+  String value;
+  String caption;
+  boolean hasDetails;
 }
