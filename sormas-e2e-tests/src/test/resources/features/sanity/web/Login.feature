@@ -1,4 +1,4 @@
-@UI @Sanity @Login
+@UI @Sanity @Login @precon
 Feature: Login with different type of users
 
   @env_main @LoginMain
@@ -24,7 +24,7 @@ Feature: Login with different type of users
       | Admin User                |
       | Rest AUTOMATION           |
 
-  @env_de @LoginDe
+  @env_de @LoginDe @precon
   Scenario Outline: Login with <user> user on German Environment
     Given I navigate to SORMAS login page
     Then I log in as a <user>
