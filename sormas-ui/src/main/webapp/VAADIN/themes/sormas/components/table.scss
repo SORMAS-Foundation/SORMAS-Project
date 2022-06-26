@@ -119,7 +119,7 @@ $v-table-border-width: 1px;
     border-collapse: collapse;
     border-spacing: 0;
     background: white;
-    min-width: 100%;
+    min-width: 25%;
     margin-top: 10px;
     font-family: sans-serif;
     font-size: 0.9em;
@@ -127,11 +127,11 @@ $v-table-border-width: 1px;
     // display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
   z-index: 99999999; /* Sit on top */
-  padding-top: 100px; /* Location of the box */
+  //padding-top: 100px; /* Location of the box */
   left: 0;
   top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
+ // width: 100%; /* Full width */
+ // height: 100%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
   background-color: rgb(0,0,0); /* Fallback color */
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */

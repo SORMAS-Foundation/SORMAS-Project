@@ -419,6 +419,11 @@ public class CampaignController {
 		String navigationState = CampaignFormDataView.VIEW_NAME + "/" + uuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
+	
+	public void navigateToFormDataView(String camPuuid, String formUUID) {
+		String navigationState = CampaignFormDataView.VIEW_NAME + "/"+camPuuid+","+formUUID;
+		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
 
 	public void navigateToCampaignData(String campaignUuid) {
 		String navigationState = CampaignDataView.VIEW_NAME + "/?" + CampaignFormDataDto.CAMPAIGN + "=" + campaignUuid;

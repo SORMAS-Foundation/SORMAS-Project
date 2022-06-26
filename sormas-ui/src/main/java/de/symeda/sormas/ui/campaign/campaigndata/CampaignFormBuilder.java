@@ -37,16 +37,23 @@ import org.apache.commons.math3.util.Precision;
 
 import com.google.common.collect.Sets;
 import com.vaadin.data.converter.StringToFloatConverter;
+import com.vaadin.flow.component.Html;
 import com.vaadin.server.Page;
 import com.vaadin.server.Page.Styles;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Accordion;
 import com.vaadin.ui.CheckBoxGroup;
+import com.vaadin.ui.Component;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.CustomField;
 import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property.ReadOnlyException;
 import com.vaadin.v7.data.Validator;
@@ -85,13 +92,12 @@ import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.NumberNumericValueValidator;
 import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
 
-import de.symeda.sormas.ui.utils.TestPojo;
 
 public class CampaignFormBuilder {
 
 	private final List<CampaignFormElement> formElements;
 	private final Map<String, Object> formValuesMap;
-	private final GridLayout campaignFormLayout;
+	private final VerticalLayout campaignFormLayout;
 	private final Locale userLocale;
 	private Map<String, String> userTranslations = null;
 	Map<String, Field<?>> fields;
@@ -99,7 +105,7 @@ public class CampaignFormBuilder {
 	private List<String> constraints;
 
 	public CampaignFormBuilder(List<CampaignFormElement> formElements, List<CampaignFormDataEntry> formValues,
-			GridLayout campaignFormLayout, List<CampaignFormTranslations> translations) {
+			VerticalLayout campaignFormLayout, List<CampaignFormTranslations> translations) {
 		this.formElements = formElements;
 		if (formValues != null) {
 			this.formValuesMap = new HashMap<>();
@@ -120,10 +126,31 @@ public class CampaignFormBuilder {
 
 	public void buildForm() {
 		int currentCol = -1;
-		GridLayout currentLayout = campaignFormLayout;
+		//GridLayout currentLayout = campaignFormLayout;
 		int sectionCount = 0;
+		
+		int ii=0;
+		System.out.println("Got one____");
+		VerticalLayout vertical = new VerticalLayout ();
+		vertical.setSizeFull();
+		vertical.setWidthFull();
+		vertical.setHeightFull();
+		vertical.setSpacing(false);
+		
+		TabSheet accrd = new TabSheet();
+		accrd.setHeight(750, Unit.PIXELS);
+		//accrd.addStyleName(ValoTheme.TABSHEET_FRAMED);
+		//accrd.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
+        
+		//accrd.setHeight(750, Unit.PIXELS);
+		int accrd_count = 0;
+		//campaignFormLayout.addComponent(accrd);
+		
 		for (CampaignFormElement formElement : formElements) {
+			System.out.println("Gotint it..."+ ii++);
 			CampaignFormElementType type = CampaignFormElementType.fromString(formElement.getType());
+			
+			
 			List<CampaignFormElementStyle> styles;
 			// List<CampaignFormElementOptions> options;
 			if (formElement.getStyles() != null) {
@@ -139,22 +166,6 @@ public class CampaignFormBuilder {
 				optionsValues = (List) Arrays.stream(formElement.getOptions()).collect(Collectors.toList());
 				ListIterator<String> lstItems = optionsValues.listIterator();
 				int i = 1;
-				/*
-				 * while (lstItems.hasNext()) { switch (i) { case 1:
-				 * campaignFormElementOptions.setOpt1(lstItems.next()); break; case 2:
-				 * campaignFormElementOptions.setOpt2(lstItems.next()); break; case 3:
-				 * campaignFormElementOptions.setOpt3(lstItems.next()); break; case 4:
-				 * campaignFormElementOptions.setOpt4(lstItems.next()); break; case 5:
-				 * campaignFormElementOptions.setOpt5(lstItems.next()); break; case 6:
-				 * campaignFormElementOptions.setOpt6(lstItems.next()); break; case 7:
-				 * campaignFormElementOptions.setOpt7(lstItems.next()); break; case 8:
-				 * campaignFormElementOptions.setOpt8(lstItems.next()); break; case 9:
-				 * campaignFormElementOptions.setOpt9(lstItems.next()); break; case 10:
-				 * campaignFormElementOptions.setOpt10(lstItems.next()); break;
-				 * 
-				 * } i++; }
-				 */
-
 				campaignFormElementOptions.setOptionsListValues(optionsValues);
 			} else {
 				optionsValues = new ArrayList<>();
@@ -176,6 +187,8 @@ public class CampaignFormBuilder {
 				}
 
 			}
+			
+		
 
 			String dependingOnId = formElement.getDependingOn();
 			Object[] dependingOnValues = formElement.getDependingOnValues();
@@ -183,49 +196,79 @@ public class CampaignFormBuilder {
 			Object value = formValuesMap.get(formElement.getId());
 
 			int occupiedColumns = getOccupiedColumns(type, styles);
-
-			if (type == CampaignFormElementType.SECTION) {
+			
+			
+			
+	
+			if (type == CampaignFormElementType.DAYWISE) {
+				accrd_count++;
+				if(accrd_count > 1){
+					
+					 final VerticalLayout layout = new VerticalLayout(vertical);
+					 layout.setMargin(true);
+					// layout.addComponent(label);
+					 int temp = accrd_count;
+					 temp = temp-1;
+					 layout.setStyleName("daywise_background_"+temp); //.addStyleName(dependingOnId);
+					 accrd.addTab(layout, "Day " + temp);
+					 
+					 
+					 vertical = new VerticalLayout ();
+						vertical.setSizeFull();
+						vertical.setWidthFull();
+						vertical.setHeightFull();
+						vertical.setSpacing(false);
+					 
+				}
+			}else if (type == CampaignFormElementType.SECTION) {
 				sectionCount++;
-				GridLayout sectionLayout = new GridLayout(12, 1);
-				sectionLayout.setMargin(new MarginInfo(true, true));
-				CssStyles.style(sectionLayout, CssStyles.GRID_LAYOUT_SECTION,
+				//vertical = new HorizontalLayout ();
+				//vertical.addComponent(new TextField("sectionCount"));
+			//	GridLayout sectionLayout = new GridLayout(12, 1);
+			//	sectionLayout.setMargin(new MarginInfo(true, true));
+				CssStyles.style(vertical, CssStyles.GRID_LAYOUT_SECTION,
 						sectionCount % 2 == 0 ? CssStyles.GRID_LAYOUT_EVEN : CssStyles.GRID_LAYOUT_ODD);
-				sectionLayout.setWidth(100, Unit.PERCENTAGE);
-				currentLayout = sectionLayout;
+				vertical.setId("dkjfaihsodjkfaldfhlasdf-"+sectionCount);
+				//vertical.setWidth(100, Unit.PERCENTAGE);
+			//	currentLayout = sectionLayout;
 
-				campaignFormLayout.addComponent(sectionLayout, 0, campaignFormLayout.getRows() - 1, 11,
-						campaignFormLayout.getRows() - 1);
-				campaignFormLayout.insertRow(campaignFormLayout.getRows());
+			//	campaignFormLayout.addComponent(sectionLayout, 0, campaignFormLayout.getRows() - 1, 11,
+			//			campaignFormLayout.getRows() - 1);
+			//	campaignFormLayout.insertRow(campaignFormLayout.getRows());
+				//Html html = new Html("<fieldset id='ddddddddddddddddddddddddddddddnn'>");
+				
+			//	vertical.addComponent((Component) html);
+				
 			} else if (type == CampaignFormElementType.LABEL) {
-				if ((currentCol + 1) + (occupiedColumns - 1) > 11
+			/*	if ((currentCol + 1) + (occupiedColumns - 1) > 11
 						|| currentCol > -1 && styles.contains(CampaignFormElementStyle.FIRST)) {
 					currentLayout.insertRow(currentLayout.getRows());
 					currentCol = -1;
-				}
+				}*/
 
 				Label field = new Label(get18nCaption(formElement.getId(), formElement.getCaption()));
 				field.setId(formElement.getId());
 				prepareComponent(field, formElement.getId(), formElement.getCaption(), type, styles);
 
-				currentLayout.addComponent(field, (currentCol + 1), currentLayout.getRows() - 1,
-						(currentCol + 1) + (occupiedColumns - 1), currentLayout.getRows() - 1);
+				vertical.addComponent(field);//, (currentCol + 1), currentLayout.getRows() - 1,
+						//(currentCol + 1) + (occupiedColumns - 1), currentLayout.getRows() - 1);
 
-				if (styles.contains(CampaignFormElementStyle.INLINE)) {
-					currentCol += occupiedColumns;
-				} else {
-					currentLayout.insertRow(currentLayout.getRows());
-					currentCol = -1;
-				}
+				//if (styles.contains(CampaignFormElementStyle.INLINE)) {
+				//	currentCol += occupiedColumns;
+			//	} else {
+			//		currentLayout.insertRow(currentLayout.getRows());
+				//	currentCol = -1;
+				//}
 
 				if (dependingOnId != null && dependingOnValues != null) {
 					setVisibilityDependency(field, dependingOnId, dependingOnValues);
 				}
 			} else {
-				if ((currentCol + 1) + (occupiedColumns - 1) > 11
-						|| currentCol > -1 && styles.contains(CampaignFormElementStyle.FIRST)) {
-					currentLayout.insertRow(currentLayout.getRows());
-					currentCol = -1;
-				}
+				//if ((currentCol + 1) + (occupiedColumns - 1) > 11
+				//		|| currentCol > -1 && styles.contains(CampaignFormElementStyle.FIRST)) {
+				//	currentLayout.insertRow(currentLayout.getRows());
+				//	currentCol = -1;
+				//}
 
 				Field<?> field = createField(formElement.getId(), formElement.getCaption(), type, styles,
 						optionsValues);
@@ -234,16 +277,17 @@ public class CampaignFormBuilder {
 				field.setId(formElement.getId());
 				field.setCaption(get18nCaption(formElement.getId(), formElement.getCaption()));
 				field.setSizeFull();
+				field.setRequired(formElement.isImportant());
 
-				currentLayout.addComponent(field, (currentCol + 1), currentLayout.getRows() - 1,
-						(currentCol + 1) + (occupiedColumns - 1), currentLayout.getRows() - 1);
+				vertical.addComponent(field);//, (currentCol + 1), currentLayout.getRows() - 1,
+					//	(currentCol + 1) + (occupiedColumns - 1), currentLayout.getRows() - 1);
 
-				if (styles.contains(CampaignFormElementStyle.ROW)) {
-					currentLayout.insertRow(currentLayout.getRows());
-					currentCol = -1;
-				} else {
-					currentCol += occupiedColumns;
-				}
+				//if (styles.contains(CampaignFormElementStyle.ROW)) {
+				//	currentLayout.insertRow(currentLayout.getRows());
+				//	currentCol = -1;
+				//} else {
+				//	currentCol += occupiedColumns;
+				//}
 
 				fields.put(formElement.getId(), field);
 
@@ -251,6 +295,18 @@ public class CampaignFormBuilder {
 					setVisibilityDependency((AbstractComponent) field, dependingOnId, dependingOnValues);
 				}
 			}
+		//	verticalx.addComponent(vertical);
+			
+			if(accrd_count == 0) {
+				
+				campaignFormLayout.addComponent(vertical);
+			}else {
+				
+				campaignFormLayout.addComponent(accrd);
+			}
+			
+			
+			//
 		}
 	}
 
@@ -322,8 +378,8 @@ public class CampaignFormBuilder {
 				|| type == CampaignFormElementType.RADIO || type == CampaignFormElementType.DATE
 				|| type == CampaignFormElementType.DROPDOWN) {
 			if (!styles.contains(CampaignFormElementStyle.INLINE)) {
-				CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE,
-						CssStyles.FLOAT_RIGHT);
+			//	CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE,
+			//			CssStyles.FLOAT_RIGHT);
 			}
 			CssStyles.style(field, CssStyles.OPTIONGROUP_GRID_LAYOUT);
 		} else if (type == CampaignFormElementType.TEXT || type == CampaignFormElementType.TEXTBOX
@@ -331,7 +387,7 @@ public class CampaignFormBuilder {
 				|| type == CampaignFormElementType.ARRAY || type == CampaignFormElementType.RANGE
 				|| type == CampaignFormElementType.DATE) {
 			if (styles.contains(CampaignFormElementStyle.ROW)) {
-				CssStyles.style(field, CssStyles.TEXTFIELD_ROW, CssStyles.TEXTFIELD_CAPTION_INLINE);
+			//	CssStyles.style(field, CssStyles.TEXTFIELD_ROW, CssStyles.TEXTFIELD_CAPTION_INLINE);
 			}
 
 			if (type == CampaignFormElementType.NUMBER) {
@@ -377,7 +433,7 @@ public class CampaignFormBuilder {
 				|| type == CampaignFormElementType.TEXTBOX && !styles.contains(CampaignFormElementStyle.INLINE)
 				|| (type == CampaignFormElementType.TEXT || type == CampaignFormElementType.DATE
 						|| type == CampaignFormElementType.NUMBER || type == CampaignFormElementType.DECIMAL
-						|| type == CampaignFormElementType.RANGE) && styles.contains(CampaignFormElementStyle.ROW)) {
+						|| type == CampaignFormElementType.RANGE)){// && styles.contains(CampaignFormElementStyle.ROW)) {
 			return 12;
 		}
 
@@ -409,13 +465,16 @@ public class CampaignFormBuilder {
 				|| (type == CampaignFormElementType.TEXT || type == CampaignFormElementType.NUMBER
 						|| type == CampaignFormElementType.DECIMAL || type == CampaignFormElementType.RANGE
 						|| type == CampaignFormElementType.DATE || type == CampaignFormElementType.TEXTBOX)
-						&& !styles.contains(CampaignFormElementStyle.ROW)
+						//&& !styles.contains(CampaignFormElementStyle.ROW)
 				|| type == CampaignFormElementType.LABEL || type == CampaignFormElementType.SECTION) {
 			return 100f;
 		}
-
+		if(1 == 1) {
+		return 100f;
+		}
+		
 		if (colStyles.isEmpty()) {
-			return 33.3f;
+		//	return 33.3f;
 		}
 
 		// Multiple col styles are not supported; use the first one

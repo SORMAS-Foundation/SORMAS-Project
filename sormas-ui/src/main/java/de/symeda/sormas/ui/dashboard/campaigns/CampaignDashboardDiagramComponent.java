@@ -103,9 +103,11 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 				diagramDataBySeriesAndXAxis.put(seriesKey, new HashMap<>());
 			}
 			Map<Object, CampaignDiagramDataDto> objectCampaignDiagramDataDtoMap = diagramDataBySeriesAndXAxis.get(seriesKey);
-			if (objectCampaignDiagramDataDtoMap.containsKey(groupingKey)) {
-				throw new RuntimeException("Campaign diagram data map already contains grouping");
-			}
+			if(!pieChart) {
+				if (objectCampaignDiagramDataDtoMap.containsKey(groupingKey)) {
+					throw new RuntimeException("Campaign diagram data map already contains grouping");
+				}
+				}
 			objectCampaignDiagramDataDtoMap.put(groupingKey, diagramData);
 		}
 
@@ -239,11 +241,17 @@ public class CampaignDashboardDiagramComponent extends VerticalLayout {
 				}
 			}
 		}
-
+if(pieChart) {
 		hcjs.append(" exporting: {\n"
 				+ "        showTable: false,"
 				+ "togglePercentages: false\n"
 				+ "    }, \nxAxis: {");
+}else {
+	hcjs.append("xAxis: {");
+	
+}
+		
+		
 		if (Objects.nonNull(diagramDefinition.getCampaignSeriesTotal())) {
 			Optional<CampaignDiagramSeries> isPopulationGroupUsed =
 				diagramDefinition.getCampaignSeriesTotal().stream().filter(series -> Objects.nonNull(series.getPopulationGroup())).findFirst();

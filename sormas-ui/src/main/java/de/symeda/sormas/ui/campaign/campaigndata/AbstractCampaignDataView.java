@@ -57,7 +57,7 @@ public abstract class AbstractCampaignDataView extends AbstractDetailView<Campai
 		if (FacadeProvider.getCampaignFormDataFacade().exists(uuid)) {
 			reference = FacadeProvider.getCampaignFormDataFacade().getReferenceByUuid(uuid);
 		} else {
-			reference = null;
+			reference = new CampaignFormDataReferenceDto();
 		}
 		return reference;
 	}

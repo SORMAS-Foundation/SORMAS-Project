@@ -21,6 +21,8 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import java.util.Objects;
 
 import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.ComboBox;
@@ -235,9 +237,11 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 	}
 
 	private void buildCampaignForm(CampaignFormDataDto campaignFormData) {
-		GridLayout campaignFormLayout = new GridLayout(12, 1);
-		campaignFormLayout.setWidth(100, Unit.PERCENTAGE);
-		CssStyles.style(campaignFormLayout, CssStyles.VSPACE_3);
+		VerticalLayout campaignFormLayout = new VerticalLayout();
+		campaignFormLayout.setWidthFull();
+		campaignFormLayout.setHeightFull();
+		//campaignFormLayout.setWidth(100f, Unit.PERCENTAGE);
+		//CssStyles.style(campaignFormLayout, CssStyles.VSPACE_3);
 
 		CampaignFormMetaDto campaignForm =
 			FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetaByUuid(campaignFormData.getCampaignFormMeta().getUuid());

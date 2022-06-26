@@ -20,7 +20,9 @@ import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
 import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -48,31 +50,58 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 		container.setMargin(true);
 		setSubComponent(container);
 
-		CampaignFormDataDto campaignFormData = FacadeProvider.getCampaignFormDataFacade().getCampaignFormDataByUuid(getReference().getUuid());
-		editComponent = ControllerProvider.getCampaignController()
-			.getCampaignFormDataComponent(
-				campaignFormData,
-				campaignFormData.getCampaign(),
-				campaignFormData.getCampaignFormMeta(),
-				true,
-				true,
-				() -> {
-					SormasUI.refreshView();
-					Notification.show(
-						String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignFormData.getCampaignFormMeta().toString()),
-						TRAY_NOTIFICATION);
-				},
-				null,
-				null,
-				true);
-		editComponent.setMargin(false);
-		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
-		editComponent.setHeightUndefined();
-		editComponent.addStyleName(CssStyles.ROOT_COMPONENT);
-		editComponent.setWidth(100, Unit.PERCENTAGE);
+		if (params.contains(",")) {
+			String[] paraObj = params.split(",");
+			System.out.println(paraObj[0]
+					+ ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+					+ paraObj[1]);
+			// CampaignFormDataDto campaignFormData =
+			// FacadeProvider.getCampaignFormDataFacade().getCampaignFormDataByUuid(getReference().getUuid());
+			CampaignReferenceDto camref = FacadeProvider.getCampaignFacade().getReferenceByUuid((String) paraObj[0]);
+			CampaignFormMetaReferenceDto amformmeta = FacadeProvider.getCampaignFormMetaFacade()
+					.getCampaignFormMetaReferenceByUuid((String) paraObj[1]);
+			editComponent = ControllerProvider.getCampaignController().getCampaignFormDataComponent(null, camref,
+					amformmeta,
+					// campaignFormData.getCampaign(),
+					// campaignFormData.getCampaignFormMeta(),
+					false, false, () -> {
+						SormasUI.refreshView();
+						Notification.show(""
+						// String.format(I18nProperties.getString(Strings.messageCampaignFormSaved),
+						// campaignFormData.getCampaignFormMeta().toString()),
+						// TRAY_NOTIFICATION
+						);
+					}, null, null, true);
+			editComponent.setMargin(false);
+			editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
+			editComponent.setHeightUndefined();
+			editComponent.addStyleName(CssStyles.ROOT_COMPONENT);
+			editComponent.setWidth(100, Unit.PERCENTAGE);
 
-		container.addComponent(editComponent);
+			container.addComponent(editComponent);
 
-		getViewTitleLabel().setValue(campaignFormData.getCampaignFormMeta().toString());
+			getViewTitleLabel().setValue(amformmeta.getCaption());// campaignFormData.getCampaignFormMeta().toString());
+
+		} else {
+
+			CampaignFormDataDto campaignFormData = FacadeProvider.getCampaignFormDataFacade()
+					.getCampaignFormDataByUuid(getReference().getUuid());
+			editComponent = ControllerProvider.getCampaignController().getCampaignFormDataComponent(campaignFormData,
+					campaignFormData.getCampaign(), campaignFormData.getCampaignFormMeta(), true, true, () -> {
+						SormasUI.refreshView();
+						Notification.show(String.format(I18nProperties.getString(Strings.messageCampaignFormSaved),
+								campaignFormData.getCampaignFormMeta().toString()), TRAY_NOTIFICATION);
+					}, null, null, true);
+			editComponent.setMargin(false);
+			editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
+			editComponent.setHeightUndefined();
+			editComponent.addStyleName(CssStyles.ROOT_COMPONENT);
+			editComponent.setWidth(100, Unit.PERCENTAGE);
+
+			container.addComponent(editComponent);
+
+			getViewTitleLabel().setValue(campaignFormData.getCampaignFormMeta().toString());
+
+		}
 	}
 }

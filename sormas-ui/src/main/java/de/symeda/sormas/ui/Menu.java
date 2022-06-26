@@ -74,16 +74,17 @@ public class Menu extends CssLayout {
 		this.navigator = navigator;
 		setPrimaryStyleName(ValoTheme.MENU_ROOT);
 		menuPart = new CssLayout();
-		menuPart.setPrimaryStyleName(VALO_MENUITEMS);
+		menuPart.addStyleName(ValoTheme.MENU_PART);
 
 		// header of the menu
 		final HorizontalLayout top = new HorizontalLayout();
 		top.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 		top.addStyleName(ValoTheme.MENU_TITLE);
 		top.setSpacing(true);
-		// Label title = new
-		// Label(FacadeProvider.getConfigFacade().getSormasInstanceName());
-		// title.setSizeUndefined();
+		
+		 Label title = new
+		 Label("APMIS");
+		 title.setSizeUndefined();
 
 		Image image;
 		if (FacadeProvider.getConfigFacade().isCustomBranding()
@@ -91,13 +92,12 @@ public class Menu extends CssLayout {
 			Path logoPath = Paths.get(FacadeProvider.getConfigFacade().getCustomBrandingLogoPath());
 			image = new Image(null, new FileResource(logoPath.toFile()));
 		} else {
-			image = new Image(null, new ThemeResource("img/sormsasd-logo.png"));
+			image = new Image(null, new ThemeResource("img/apmis-logo.png"));
 		}
 		CssStyles.style(image, ValoTheme.MENU_LOGO, ValoTheme.BUTTON_LINK);
 		top.addComponent(image);
-		// top.addComponent(title);
-		top.addLayoutClickListener(
-				listener -> SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME));
+		top.addComponent(title);
+		top.addLayoutClickListener(listener -> SormasUI.get().getNavigator().navigateTo(SurveillanceDashboardView.VIEW_NAME));
 		menuPart.addComponent(top);
 
 		// button for toggling the visibility of the menu when on a small screen
@@ -114,8 +114,7 @@ public class Menu extends CssLayout {
 		// container for the navigation buttons, which are added by addView()
 		menuItemsLayout = new CssLayout();
 		menuItemsLayout.setPrimaryStyleName(VALO_MENUITEMS);
-		
-		
+		//menuPart.addComponent(menuItemsLayout);
 
 		// settings menu item
 		MenuBar settingsMenu = new MenuBar();

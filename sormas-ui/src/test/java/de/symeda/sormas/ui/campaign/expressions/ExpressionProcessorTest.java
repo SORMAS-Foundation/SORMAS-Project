@@ -25,6 +25,7 @@ import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ui.PageState;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
@@ -51,7 +52,7 @@ public class ExpressionProcessorTest {
 
 	@Before
 	public void setup() throws IOException {
-		GridLayout campaignFormLayout = new GridLayout(12, 1);
+		VerticalLayout campaignFormLayout = new VerticalLayout();
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		List<CampaignFormElement> campaignFormElements =

@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.protobuf.TextFormat.ParseException;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
@@ -140,6 +141,17 @@ System.out.println("dssssssssssssssefaasdgasdgasdgasdfasdfasdfasfeasfdasdfs " +s
 	public CampaignFormMetaDto getCampaignFormMetaByUuid(String campaignFormUuid) {
 		return toDto(service.getByUuid(campaignFormUuid));
 	}
+	
+	@Override
+	public CampaignFormMetaReferenceDto getCampaignFormMetaReferenceByUuid(String campaignFormUuid) {
+		return toReferenceDto(service.getByUuid(campaignFormUuid));
+	}
+	
+	
+	/*@Override
+	public CampaignReferenceDto getReferenceByUuid(String uuid) {
+		return toReferenceDto(campaignService.getByUuid(uuid));
+	}*/
 
 	@Override
 	public List<CampaignFormMetaDto> getAllAfter(Date date) {

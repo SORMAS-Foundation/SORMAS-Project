@@ -26,12 +26,15 @@ import java.util.function.Consumer;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
+import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -41,6 +44,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.campaign.data.translation.TranslationElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
@@ -63,9 +67,12 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 @SuppressWarnings("serial")
+@com.vaadin.annotations.JavaScript("jquerymini.js")
+@CssImport("w3c.css")
 public class CampaignDataView extends AbstractCampaignView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/campaigndata";
@@ -257,6 +264,20 @@ public class CampaignDataView extends AbstractCampaignView {
 		}
 
 		addComponent(mainLayout);
+		
+		JavaScript js = Page.getCurrent().getJavaScript();
+		js.execute("$(document).ready(function() {\n"
+				+ "	if ($(window).width() <= 825) {\n"
+				+ "document.querySelector(\".v-label.v-widget.h1.v-label-h1.vspace-none.v-label-vspace-none.v-label-undef-w\").style.display='none';\n"
+				+ "document.querySelector(\".v-horizontallayout-view-headerxxxx :nth-child(9)\").style.display='none';\n"
+				+ "document.querySelector(\".v-horizontallayout-view-headerxxxx :nth-child(12)\").style.display='none';"
+				+ "document.querySelector(\".v-horizontallayout-view-headerxxxx :nth-child(13)\").style.display='none';"
+				+ "	}"
+				 
+				+ "});");
+		
+		
+		
 	}
 
 	private void fillImportDropdown(Panel containerPanel) {
@@ -306,9 +327,13 @@ public class CampaignDataView extends AbstractCampaignView {
 			System.out.println(campaignReferenceDtx.getUuid() + " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>___________"+campaignReferenceDto+"____________>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  "+ campagaignFormReferences);
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
 				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), el -> {
-					ControllerProvider.getCampaignController().createCampaignDataForm(criteria.getCampaign(), campaignForm);
+					ControllerProvider.getCampaignController().navigateToFormDataView(criteria.getCampaign().getUuid(), campaignForm.getUuid());
 					newFormButton.setPopupVisible(false);
 				});
+				//ControllerProvider.getCampaignController().createCampaignDataForm(criteria.getCampaign(), campaignForm);
+				
+				// e -> ControllerProvider.getCampaignController().navigateToFormDataView(e.getUuid())));
+
 				campaignFormButton.setWidth(100, Unit.PERCENTAGE);
 				//campaignFormButton.removeStyleName(VIEW_NAME);
 				campaignFormButton.removeStyleName("v-button");  

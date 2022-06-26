@@ -110,22 +110,22 @@ display: none;
     }
   }
 
-.view-headerxxx[width-range~="0-800px"] {
+//.view-headerxxx[width-range~="0-800px"] {
 	
-	width: inherit !important;
+	//width: inherit !important;
 	//background-color: black !important;
 	// !important;
-}
+//}
 
-.view-headerxxxx[width-range~="801px-"] {
+//.view-headerxxxx[width-range~="801px-"] {
 	
-	width: 100% !important;
+	//width: 100% !important;
 	//background-color: black !important;
 	// !important;
-}
+//}
 
 .v-slot-view-headerxxxx{
-	width: fit-content!important;
+	width: 100%!important;
 }
 
     
@@ -160,3 +160,29 @@ display: none;
 .default-height-720px{
 	height: 720px !important;
 }
+
+.daywise_background_1{
+	background-color: #FCFCFC;
+}
+.daywise_background_2{
+	background-color: #EEEEEE;
+}
+.daywise_background_3{
+	background-color: #f2e8e7;
+}
+.daywise_background_4{
+	background-color: #e7f2e7;
+}
+.daywise_background_5{
+	background-color: #f2e7e7;
+}
+.daywise_background_6{
+	background-color: #dcdded;
+}
+.daywise_background_7{
+	background-color: #eddcea;
+}
+.daywise_background_8{
+	background-color: #dcedeb;
+}
+
