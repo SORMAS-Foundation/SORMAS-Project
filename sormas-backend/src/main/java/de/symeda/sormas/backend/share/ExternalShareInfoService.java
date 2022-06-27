@@ -108,15 +108,15 @@ public class ExternalShareInfoService extends AdoServiceWithUserFilter<ExternalS
 		return em.createQuery(cq).getResultList();
 	}
 
-    public List<ExternalShareInfo> getShareInfoByEvent(String eventUuid) {
+	public List<ExternalShareInfo> getShareInfoByEvent(String eventUuid) {
 
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<ExternalShareInfo> cq = cb.createQuery(ExternalShareInfo.class);
-        Root<ExternalShareInfo> root = cq.from(ExternalShareInfo.class);
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ExternalShareInfo> cq = cb.createQuery(ExternalShareInfo.class);
+		Root<ExternalShareInfo> root = cq.from(ExternalShareInfo.class);
 
-        cq.where(buildCriteriaFilter(new ExternalShareInfoCriteria().event(new EventReferenceDto(eventUuid)), cb, root));
-        return em.createQuery(cq).getResultList();
-    }
+		cq.where(buildCriteriaFilter(new ExternalShareInfoCriteria().event(new EventReferenceDto(eventUuid)), cb, root));
+		return em.createQuery(cq).getResultList();
+	}
 
 	private <T> void createAndPersistShareInfo(ExternalShareStatus status, T associatedEntity, BiConsumer<ExternalShareInfo, T> setAssociatedEntity) {
 		ExternalShareInfo shareInfo = new ExternalShareInfo();
@@ -148,7 +148,7 @@ public class ExternalShareInfoService extends AdoServiceWithUserFilter<ExternalS
 		return getSharedEntityUuidsWithoutDeletedStatus(eventUuids, ExternalShareInfo.EVENT);
 	}
 
-    public List<ExternalShareInfoCountAndLatestDate> getShareCountAndLatestDate(List<Long> ids, String associatedObjectName) {
+	public List<ExternalShareInfoCountAndLatestDate> getShareCountAndLatestDate(List<Long> ids, String associatedObjectName) {
 		if (ids.size() == 0) {
 			return Collections.emptyList();
 		}

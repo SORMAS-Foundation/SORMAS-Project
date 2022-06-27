@@ -48,8 +48,7 @@ public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 	default void setArchiveInExternalSurveillanceToolForEntity(String uuid, boolean archived) throws ExternalSurveillanceToolException {
 	};
 
-	default void setArchiveInExternalSurveillanceToolForEntities(List<String> uuid, boolean archived)
-		throws ExternalSurveillanceToolException {
+	default void setArchiveInExternalSurveillanceToolForEntities(List<String> uuid, boolean archived) throws ExternalSurveillanceToolException {
 	};
 
 	Date calculateEndOfProcessingDate(String entityUuids);

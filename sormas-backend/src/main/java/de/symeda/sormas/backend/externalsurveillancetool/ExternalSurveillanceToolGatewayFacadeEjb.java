@@ -48,6 +48,7 @@ import de.symeda.sormas.backend.share.ExternalShareInfoService;
 
 @Stateless(name = "ExternalSurveillanceToolFacade")
 public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveillanceToolFacade {
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
@@ -200,7 +201,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 		try {
 			Response response =
-					ClientBuilder.newBuilder().connectTimeout(30, TimeUnit.SECONDS).build().target(serviceUrl).path(versionEndpoint).request().get();
+				ClientBuilder.newBuilder().connectTimeout(30, TimeUnit.SECONDS).build().target(serviceUrl).path(versionEndpoint).request().get();
 			int status = response.getStatus();
 
 			if (status != HttpServletResponse.SC_OK) {
@@ -209,13 +210,14 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 			ExternalSurveillanceToolResponse entity = response.readEntity(ExternalSurveillanceToolResponse.class);
 			return entity.getMessage();
-		} catch (Exception e){
+		} catch (Exception e) {
 			logger.error("Couldn't get version of external surveillance tool at {}{}", serviceUrl, versionEndpoint, e);
 			throw new ExternalSurveillanceToolException(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_versionRequestError));
 		}
 	}
 
 	public static class ExportParameters {
+
 		private List<String> caseUuids;
 		private List<String> eventUuids;
 		private boolean archived;

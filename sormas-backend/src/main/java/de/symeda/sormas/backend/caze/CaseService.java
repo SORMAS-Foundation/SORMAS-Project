@@ -1008,7 +1008,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) {
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
 			try {
-				externalSurveillanceToolGatewayFacade.sendCases(externalShareInfoService.getSharedCaseUuidsWithoutDeletedStatus(entityUuids), archived);
+				externalSurveillanceToolGatewayFacade
+					.sendCases(externalShareInfoService.getSharedCaseUuidsWithoutDeletedStatus(entityUuids), archived);
 			} catch (ExternalSurveillanceToolException e) {
 				throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
 			}
@@ -1028,11 +1029,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}
 	}
 
-    public boolean hasShareInfoWithDeletedStatus(String entityUuid) {
-        List<ExternalShareInfo> result = externalShareInfoService.getShareInfoByCase(entityUuid);
-        return result.stream().anyMatch(info -> info.getStatus().equals(ExternalShareStatus.DELETED));
-    }
-	
+	public boolean hasShareInfoWithDeletedStatus(String entityUuid) {
+		List<ExternalShareInfo> result = externalShareInfoService.getShareInfoByCase(entityUuid);
+		return result.stream().anyMatch(info -> info.getStatus().equals(ExternalShareStatus.DELETED));
+	}
+
 	@Override
 	public void delete(Case caze, DeletionDetails deletionDetails) {
 
