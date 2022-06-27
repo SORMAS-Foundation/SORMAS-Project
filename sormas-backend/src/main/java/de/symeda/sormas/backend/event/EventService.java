@@ -115,10 +115,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private ExternalShareInfoService externalShareInfoService;
-    @EJB
-    private EventFacadeEjb.EventFacadeEjbLocal eventFacade;
-    @EJB
-    private ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
+	@EJB
+	private ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
 
 	public EventService() {
 		super(Event.class);

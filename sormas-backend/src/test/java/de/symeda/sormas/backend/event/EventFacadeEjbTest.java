@@ -83,22 +83,23 @@ import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 
 public class EventFacadeEjbTest extends AbstractBeanTest {
-    private static final int WIREMOCK_TESTING_PORT = 8888;
-    private ExternalSurveillanceToolFacade subjectUnderTest;
 
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule(options().port(WIREMOCK_TESTING_PORT), false);
+	private static final int WIREMOCK_TESTING_PORT = 8888;
+	private ExternalSurveillanceToolFacade subjectUnderTest;
 
-    @Before
-    public void setup() {
-        configureExternalSurvToolUrlForWireMock();
-        subjectUnderTest = getExternalSurveillanceToolGatewayFacade();
-    }
+	@Rule
+	public WireMockRule wireMockRule = new WireMockRule(options().port(WIREMOCK_TESTING_PORT), false);
 
-    @After
-    public void teardown() {
-        clearExternalSurvToolUrlForWireMock();
-    }
+	@Before
+	public void setup() {
+		configureExternalSurvToolUrlForWireMock();
+		subjectUnderTest = getExternalSurveillanceToolGatewayFacade();
+	}
+
+	@After
+	public void teardown() {
+		clearExternalSurvToolUrlForWireMock();
+	}
 
 	@Test
 	public void testEventDeletion() throws ExternalSurveillanceToolRuntimeException {
@@ -421,8 +422,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		EventDto event = new EventDto();
 		event.setEventStatus(EventStatus.EVENT);
 		event.setReportDateTime(new Date());
-		event
-			.setReportingUser(creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference());
+		event.setReportingUser(creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference());
 		event.setEventTitle("Test event");
 		event.setEventLocation(new LocationDto());
 
@@ -588,12 +588,8 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			"National User",
 			Disease.CORONAVIRUS,
 			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
-		UserDto limitedDengueNationalUser = creator.createUser(
-			rdcf,
-			"Limited Disease Dengue",
-			"National User",
-			Disease.DENGUE,
-			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto limitedDengueNationalUser = creator
+			.createUser(rdcf, "Limited Disease Dengue", "National User", Disease.DENGUE, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUsersHavingEventInJurisdiction(event.toReference());
 		Assert.assertNotNull(userReferenceDtos);
@@ -602,11 +598,11 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
 	}
 
-    private void configureExternalSurvToolUrlForWireMock() {
-        MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", WIREMOCK_TESTING_PORT));
-    }
+	private void configureExternalSurvToolUrlForWireMock() {
+		MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", WIREMOCK_TESTING_PORT));
+	}
 
-    private void clearExternalSurvToolUrlForWireMock() {
-        MockProducer.getProperties().setProperty("survnet.url", "");
-    }
+	private void clearExternalSurvToolUrlForWireMock() {
+		MockProducer.getProperties().setProperty("survnet.url", "");
+	}
 }

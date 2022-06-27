@@ -86,8 +86,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 	@Test
 	public void testSendingCasesOk() throws ExternalSurveillanceToolException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserReferenceDto user =
-			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto case1 = creator.createCase(user, rdcf, null);
 		CaseDataDto case2 = creator.createCase(user, rdcf, null);
 
@@ -111,7 +110,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
 		try {
-			subjectUnderTest.sendCases(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "test-not-found"),  true);
+			subjectUnderTest.sendCases(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "test-not-found"), true);
 		} catch (ExternalSurveillanceToolException e) {
 			assertThat(e.getMessage(), Matchers.is(I18nProperties.getString("ExternalSurveillanceToolGateway.notificationErrorSending")));
 		}
@@ -124,7 +123,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 				.withRequestBody(containing("VXAERX-5RCKFA-G5DVXH-DPHPCAFB"))
 				.withRequestBody(containing("eventUuids"))
 				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
-		subjectUnderTest.sendEvents(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "VXAERX-5RCKFA-G5DVXH-DPHPCAFB"),  true);
+		subjectUnderTest.sendEvents(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "VXAERX-5RCKFA-G5DVXH-DPHPCAFB"), true);
 
 		assertThat(getBean(ExternalShareInfoService.class).getAll(), hasSize(2));
 	}

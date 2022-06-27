@@ -188,25 +188,26 @@ import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 public class CaseFacadeEjbTest extends AbstractBeanTest {
-    private static final int WIREMOCK_TESTING_PORT = 8888;
-    private ExternalSurveillanceToolFacade subjectUnderTest;
 
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule(options().port(WIREMOCK_TESTING_PORT), false);
+	private static final int WIREMOCK_TESTING_PORT = 8888;
+	private ExternalSurveillanceToolFacade subjectUnderTest;
 
-    @Rule
-    public final ExpectedException exception = ExpectedException.none();
+	@Rule
+	public WireMockRule wireMockRule = new WireMockRule(options().port(WIREMOCK_TESTING_PORT), false);
 
-    @Before
-    public void setup() {
-        configureExternalSurvToolUrlForWireMock();
-        subjectUnderTest = getExternalSurveillanceToolGatewayFacade();
-    }
+	@Rule
+	public final ExpectedException exception = ExpectedException.none();
 
-    @After
-    public void teardown() {
-        clearExternalSurvToolUrlForWireMock();
-    }
+	@Before
+	public void setup() {
+		configureExternalSurvToolUrlForWireMock();
+		subjectUnderTest = getExternalSurveillanceToolGatewayFacade();
+	}
+
+	@After
+	public void teardown() {
+		clearExternalSurvToolUrlForWireMock();
+	}
 
 	@Test
 	public void testFilterByResponsibleRegionAndDistrictOfCase() {
@@ -1501,13 +1502,13 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(null).size());
 		assertEquals(1, getCaseFacade().getAllActiveUuids().size());
 
-        stubFor(
-                post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
-                        .withRequestBody(containing("caseUuids"))
-                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-        Case case1 = getCaseService().getByUuid(caze.getUuid());
-        getExternalShareInfoService().createAndPersistShareInfo(case1, ExternalShareStatus.SHARED);
+		Case case1 = getCaseService().getByUuid(caze.getUuid());
+		getExternalShareInfoService().createAndPersistShareInfo(case1, ExternalShareStatus.SHARED);
 		getCaseFacade().archive(caze.getUuid(), null);
 
 		// getAllActiveCases and getAllUuids should return length 0
@@ -2099,47 +2100,47 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		getCaseFacade().doesEpidNumberExist("NIE-08034912345", "not-a-uuid", Disease.OTHER);
 	}
 
-    @Test
-    public void testArchiveAllArchivableCases() {
+	@Test
+	public void testArchiveAllArchivableCases() {
 
-        RDCFEntities rdcf = creator.createRDCFEntities();
-        UserReferenceDto user = creator.createUser(rdcf).toReference();
-        PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
+		RDCFEntities rdcf = creator.createRDCFEntities();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
 
-        // One archived case
-        CaseDataDto case1 = creator.createCase(user, person, rdcf);
-        Case caze1 = getCaseService().getByUuid(case1.getUuid());
-        getExternalShareInfoService().createAndPersistShareInfo(caze1, ExternalShareStatus.SHARED);
+		// One archived case
+		CaseDataDto case1 = creator.createCase(user, person, rdcf);
+		Case caze1 = getCaseService().getByUuid(case1.getUuid());
+		getExternalShareInfoService().createAndPersistShareInfo(caze1, ExternalShareStatus.SHARED);
 
-        CaseFacadeEjbLocal cut = getBean(CaseFacadeEjbLocal.class);
-        stubFor(
-                post(urlEqualTo("/export")).withRequestBody(containing(case1.getUuid()))
-                        .withRequestBody(containing("caseUuids"))
-                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
-        cut.archive(case1.getUuid(), null);
-        assertTrue(cut.isArchived(case1.getUuid()));
+		CaseFacadeEjbLocal cut = getBean(CaseFacadeEjbLocal.class);
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(case1.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+		cut.archive(case1.getUuid(), null);
+		assertTrue(cut.isArchived(case1.getUuid()));
 
-        // One other case
-        CaseDataDto case2 = creator.createCase(user, person, rdcf);
-        Case caze2 = getCaseService().getByUuid(case2.getUuid());
-        getExternalShareInfoService().createAndPersistShareInfo(caze2, ExternalShareStatus.SHARED);
-        assertFalse(cut.isArchived(case2.getUuid()));
+		// One other case
+		CaseDataDto case2 = creator.createCase(user, person, rdcf);
+		Case caze2 = getCaseService().getByUuid(case2.getUuid());
+		getExternalShareInfoService().createAndPersistShareInfo(caze2, ExternalShareStatus.SHARED);
+		assertFalse(cut.isArchived(case2.getUuid()));
 
-        stubFor(
-                post(urlEqualTo("/export")).withRequestBody(containing(case2.getUuid()))
-                        .withRequestBody(containing("caseUuids"))
-                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(case2.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-       // Case of "today" shouldn't be archived
-        cut.archiveAllArchivableCases(70, LocalDate.now().plusDays(69));
-        assertTrue(cut.isArchived(case1.getUuid()));
-        assertFalse(cut.isArchived(case2.getUuid()));
+		// Case of "today" shouldn't be archived
+		cut.archiveAllArchivableCases(70, LocalDate.now().plusDays(69));
+		assertTrue(cut.isArchived(case1.getUuid()));
+		assertFalse(cut.isArchived(case2.getUuid()));
 
-        // Case of "yesterday" should be archived
-        cut.archiveAllArchivableCases(70, LocalDate.now().plusDays(71));
-        assertTrue(cut.isArchived(case1.getUuid()));
-        assertTrue(cut.isArchived(case2.getUuid()));
-    }
+		// Case of "yesterday" should be archived
+		cut.archiveAllArchivableCases(70, LocalDate.now().plusDays(71));
+		assertTrue(cut.isArchived(case1.getUuid()));
+		assertTrue(cut.isArchived(case2.getUuid()));
+	}
 
 	@Test
 	public void testCreateInvestigationTask() {
@@ -2950,11 +2951,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcfEntities);
 	}
 
-    private void configureExternalSurvToolUrlForWireMock() {
-        MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", WIREMOCK_TESTING_PORT));
-    }
+	private void configureExternalSurvToolUrlForWireMock() {
+		MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", WIREMOCK_TESTING_PORT));
+	}
 
-    private void clearExternalSurvToolUrlForWireMock() {
-        MockProducer.getProperties().setProperty("survnet.url", "");
-    }
+	private void clearExternalSurvToolUrlForWireMock() {
+		MockProducer.getProperties().setProperty("survnet.url", "");
+	}
 }

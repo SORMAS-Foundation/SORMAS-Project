@@ -107,10 +107,10 @@ public class ExternalSurveillanceServiceGateway {
 		sendToExternalSurveillanceTool(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_confirmSendCases), () -> {
 			FacadeProvider.getExternalSurveillanceToolFacade().sendCases(uuids, false);
 			new Notification(
-					I18nProperties.getString(Strings.headingCasesSentToExternalSurveillanceTool),
-					I18nProperties.getString(Strings.messageCasesSentToExternalSurveillanceTool),
-					Notification.Type.HUMANIZED_MESSAGE,
-					false).show(Page.getCurrent());
+				I18nProperties.getString(Strings.headingCasesSentToExternalSurveillanceTool),
+				I18nProperties.getString(Strings.messageCasesSentToExternalSurveillanceTool),
+				Notification.Type.HUMANIZED_MESSAGE,
+				false).show(Page.getCurrent());
 
 		}, I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntriesSent), callback, shouldConfirm);
 	}

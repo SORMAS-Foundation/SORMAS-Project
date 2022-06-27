@@ -29,106 +29,107 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
 public class CaseServiceTest extends AbstractBeanTest {
-    private static final int WIREMOCK_TESTING_PORT = 8888;
-    private ExternalSurveillanceToolFacade subjectUnderTest;
 
-    private TestDataCreator.RDCF rdcf;
-    private UserDto nationalUser;
+	private static final int WIREMOCK_TESTING_PORT = 8888;
+	private ExternalSurveillanceToolFacade subjectUnderTest;
 
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule(options().port(WIREMOCK_TESTING_PORT), false);
+	private TestDataCreator.RDCF rdcf;
+	private UserDto nationalUser;
 
-    @Before
-    public void setup() {
-        configureExternalSurvToolUrlForWireMock();
-        subjectUnderTest = getExternalSurveillanceToolGatewayFacade();
-    }
+	@Rule
+	public WireMockRule wireMockRule = new WireMockRule(options().port(WIREMOCK_TESTING_PORT), false);
 
-    @After
-    public void teardown() {
-        clearExternalSurvToolUrlForWireMock();
-    }
+	@Before
+	public void setup() {
+		configureExternalSurvToolUrlForWireMock();
+		subjectUnderTest = getExternalSurveillanceToolGatewayFacade();
+	}
 
-    @Override
-    public void init() {
+	@After
+	public void teardown() {
+		clearExternalSurvToolUrlForWireMock();
+	}
 
-        super.init();
-        rdcf = creator.createRDCF("Region", "District", "Community", "Facility", "Point of entry");
-        nationalUser = creator.createUser(
-                rdcf.region.getUuid(),
-                rdcf.district.getUuid(),
-                rdcf.community.getUuid(),
-                rdcf.facility.getUuid(),
-                "Nat",
-                "User",
-                creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
-    }
+	@Override
+	public void init() {
 
-    @Test
-    public void testSetArchiveInExternalSurveillanceToolForEntity_WithProperEntity() throws ExternalSurveillanceToolException {
-        TestDataCreator.RDCF rdcf = creator.createRDCF();
-        UserReferenceDto user = creator.createUser(rdcf).toReference();
-        PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
+		super.init();
+		rdcf = creator.createRDCF("Region", "District", "Community", "Facility", "Point of entry");
+		nationalUser = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.community.getUuid(),
+			rdcf.facility.getUuid(),
+			"Nat",
+			"User",
+			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+	}
 
-        CaseDataDto caze = creator.createCase(user, person, rdcf);
-        Case case1 = getCaseService().getByUuid(caze.getUuid());
-        getExternalShareInfoService().createAndPersistShareInfo(case1, ExternalShareStatus.SHARED);
-        CaseService caseService = getBean(CaseService.class);
+	@Test
+	public void testSetArchiveInExternalSurveillanceToolForEntity_WithProperEntity() throws ExternalSurveillanceToolException {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
 
-        stubFor(
-                post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
-                        .withRequestBody(containing("caseUuids"))
-                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+		CaseDataDto caze = creator.createCase(user, person, rdcf);
+		Case case1 = getCaseService().getByUuid(caze.getUuid());
+		getExternalShareInfoService().createAndPersistShareInfo(case1, ExternalShareStatus.SHARED);
+		CaseService caseService = getBean(CaseService.class);
 
-        caseService.setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true);
-        wireMockRule.verify(exactly(1), postRequestedFor(urlEqualTo("/export")));
-    }
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-    @Test
-    public void testSetArchiveInExternalSurveillanceToolForEntity_WithoutProperEntity() throws ExternalSurveillanceToolException {
-        TestDataCreator.RDCF rdcf = creator.createRDCF();
-        UserReferenceDto user = creator.createUser(rdcf).toReference();
-        PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
+		caseService.setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true);
+		wireMockRule.verify(exactly(1), postRequestedFor(urlEqualTo("/export")));
+	}
 
-        CaseDataDto caze = creator.createCase(user,person, rdcf);
-        CaseService caseService = getBean(CaseService.class);
+	@Test
+	public void testSetArchiveInExternalSurveillanceToolForEntity_WithoutProperEntity() throws ExternalSurveillanceToolException {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
 
-        stubFor(
-                post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
-                        .withRequestBody(containing("caseUuids"))
-                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+		CaseDataDto caze = creator.createCase(user, person, rdcf);
+		CaseService caseService = getBean(CaseService.class);
 
-        //the case does not have an externalId set and after the filtering the sendCases will not be called
-        caseService.setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true);
-        wireMockRule.verify(exactly(0), postRequestedFor(urlEqualTo("/export")));
-    }
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
-    @Test(expected = ExternalSurveillanceToolRuntimeException.class)
-    public void testSetArchiveInExternalSurveillanceToolForEntity_Exception() throws ExternalSurveillanceToolException {
-        TestDataCreator.RDCF rdcf = creator.createRDCF();
-        UserReferenceDto user = creator.createUser(rdcf).toReference();
-        PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
+		//the case does not have an externalId set and after the filtering the sendCases will not be called
+		caseService.setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true);
+		wireMockRule.verify(exactly(0), postRequestedFor(urlEqualTo("/export")));
+	}
 
-        CaseDataDto caseDataDto = creator.createCase(user, person, rdcf);
-        Case caze = getCaseService().getByUuid(caseDataDto.getUuid());
-        getExternalShareInfoService().createAndPersistShareInfo(caze, ExternalShareStatus.SHARED);
+	@Test(expected = ExternalSurveillanceToolRuntimeException.class)
+	public void testSetArchiveInExternalSurveillanceToolForEntity_Exception() throws ExternalSurveillanceToolException {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		PersonReferenceDto person = creator.createPerson("Walter", "Schuster").toReference();
 
-        CaseService caseService = getBean(CaseService.class);
+		CaseDataDto caseDataDto = creator.createCase(user, person, rdcf);
+		Case caze = getCaseService().getByUuid(caseDataDto.getUuid());
+		getExternalShareInfoService().createAndPersistShareInfo(caze, ExternalShareStatus.SHARED);
 
-        stubFor(
-                post(urlEqualTo("/export")).withRequestBody(containing(caseDataDto.getUuid()))
-                        .withRequestBody(containing("caseUuids"))
-                        .willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
+		CaseService caseService = getBean(CaseService.class);
 
-        caseService.setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(),true);
-    }
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(caseDataDto.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_BAD_REQUEST)));
 
-    private void configureExternalSurvToolUrlForWireMock() {
-        MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", WIREMOCK_TESTING_PORT));
-    }
+		caseService.setArchiveInExternalSurveillanceToolForEntity(caze.getUuid(), true);
+	}
 
-    private void clearExternalSurvToolUrlForWireMock() {
-        MockProducer.getProperties().setProperty("survnet.url", "");
-    }
+	private void configureExternalSurvToolUrlForWireMock() {
+		MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", WIREMOCK_TESTING_PORT));
+	}
+
+	private void clearExternalSurvToolUrlForWireMock() {
+		MockProducer.getProperties().setProperty("survnet.url", "");
+	}
 
 }
