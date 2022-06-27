@@ -360,7 +360,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorSampleNotEditable));
 		}
 
-		validate(dto);
+		validate(dto, true);
 
 		SampleDto existingSampleDto = toDto(existingSample);
 
@@ -430,32 +430,11 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public void validate(SampleDto sample) throws ValidationRuntimeException {
+	public void validate(SampleDto sample, boolean checkAssociatedEntities) throws ValidationRuntimeException {
 
 		if (sample.getAssociatedCase() == null && sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCaseContactOrEventParticipant));
 		}
-		else {
-			if (sample.getAssociatedCase() != null) {
-				Case caze = caseService.getByUuid(sample.getAssociatedCase().getUuid());
-				if (caze == null) {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCaseContactOrEventParticipant));
-				}
-			}
-			if (sample.getAssociatedContact() != null) {
-				Contact contact = contactService.getByUuid(sample.getAssociatedContact().getUuid());
-				if (contact == null) {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCaseContactOrEventParticipant));
-				}
-			}
-			if (sample.getAssociatedEventParticipant() != null) {
-				EventParticipant eventParticipant = eventParticipantService.getByUuid(sample.getAssociatedEventParticipant().getUuid());
-				if (eventParticipant == null) {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCaseContactOrEventParticipant));
-				}
-			}
-		}
-
 		if (sample.getSampleDateTime() == null) {
 			throw new ValidationRuntimeException(
 				I18nProperties
@@ -476,19 +455,36 @@ public class SampleFacadeEjb implements SampleFacade {
 				I18nProperties
 					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.SAMPLE_PURPOSE)));
 		}
-
-		Facility facility = facilityService.getByUuid(sample.getLab().getUuid());
-		if (sample.getSamplePurpose() == SamplePurpose.EXTERNAL && sample.getLab() == null && facility == null) {
+		if (sample.getSamplePurpose() == SamplePurpose.EXTERNAL && sample.getLab() == null) {
 			throw new ValidationRuntimeException(
 				I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.LAB)));
 		}
 
-		User reportingUser = userService.getByUuid(sample.getReportingUser().getUuid());
-		if(reportingUser == null) {
-			throw new ValidationRuntimeException(
-					I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.REPORTING_USER)));
+		if(checkAssociatedEntities){
+			validateSampleAssociatedEntities(sample);
 		}
 
+	}
+
+	private void validateSampleAssociatedEntities(SampleDto sample) {
+		if (sample.getAssociatedCase() != null && !caseService.exists(sample.getAssociatedCase().getUuid())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCaseContactOrEventParticipant));
+		}
+		if (sample.getAssociatedContact() != null && !contactService.exists(sample.getAssociatedContact().getUuid())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCaseContactOrEventParticipant));
+		}
+		if (sample.getAssociatedEventParticipant() != null && !eventParticipantService.exists(sample.getAssociatedEventParticipant().getUuid())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCaseContactOrEventParticipant));
+		}
+		if (sample.getLab() != null && !facilityService.exists(sample.getLab().getUuid())) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.LAB)));
+		}
+		if (!userService.exists(sample.getReportingUser().getUuid())) {
+			throw new ValidationRuntimeException(
+				I18nProperties
+					.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.REPORTING_USER)));
+		}
 	}
 
 	private List<SampleExportDto> getExportList(
