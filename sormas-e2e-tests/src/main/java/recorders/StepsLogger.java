@@ -24,8 +24,11 @@ import io.qameta.allure.listener.StepLifecycleListener;
 import io.qameta.allure.model.StepResult;
 import java.io.FileInputStream;
 import java.lang.management.ManagementFactory;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.OutputType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 @Slf4j
@@ -35,6 +38,7 @@ public class StepsLogger implements StepLifecycleListener {
   public static final String PROCESS_ID_STRING = String.format("[PROCESS_ID:%s] ->", PROCESS_ID);
   private static RemoteWebDriver driver;
   private static boolean isScreenshotEnabled = true;
+  private static boolean takeScreenshotAfterStep = false;
 
   public static void setRemoteWebDriver(RemoteWebDriver remoteWebDriver) {
     driver = remoteWebDriver;
@@ -51,6 +55,9 @@ public class StepsLogger implements StepLifecycleListener {
 
   @Override
   public void afterStepUpdate(final StepResult result) {
+    if (takeScreenshotAfterStep) {
+      takeScreenshot();
+    }
     if (isScreenshotEnabled && driver != null) {
       if (!result.getStatus().value().contains("pass")) {
         attachConsoleLog();
@@ -70,5 +77,17 @@ public class StepsLogger implements StepLifecycleListener {
     } catch (Exception any) {
       log.error("Failed to attach logs to Allure report due to: {}", any.getCause());
     }
+  }
+
+  @Attachment(value = "After step screenshot", type = "image/png")
+  public void takeScreenshot() {
+    byte[] screenShot = driver.getScreenshotAs(OutputType.BYTES);
+    Allure.getLifecycle()
+        .addAttachment(
+            "Screenshot at :"
+                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MMM-yy hh:mm:ss")),
+            "image/png",
+            "png",
+            screenShot);
   }
 }
