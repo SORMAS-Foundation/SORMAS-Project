@@ -322,6 +322,31 @@ public class CaseService {
         .build();
   }
 
+  public Case buildCaseWithPointOfEntryAndDifferentPlaceOfStay() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
+    return Case.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .caseOrigin("POINT OF ENTRY")
+        .dateOfReport(LocalDate.now().minusDays(1))
+        .externalId(UUID.randomUUID().toString())
+        .disease("COVID-19")
+        .responsibleRegion("Berlin")
+        .responsibleDistrict("SK Berlin Mitte")
+        .placeOfStayRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .placeOfStayDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .pointOfEntry("Voreingestellter Einreiseort1")
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .sex(GenderValues.getRandomGender())
+        .build();
+  }
+
   public Case buildGeneratedCaseDE() {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();
