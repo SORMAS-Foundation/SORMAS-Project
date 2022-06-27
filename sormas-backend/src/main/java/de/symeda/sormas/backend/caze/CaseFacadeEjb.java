@@ -21,7 +21,6 @@ import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -142,6 +141,7 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
@@ -1636,8 +1636,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		service.ensurePersisted(caze);
 		if (handleChanges) {
 			updateCaseVisitAssociations(existingCaseDto, caze);
-			service.updateFollowUpDetails(caze, existingCaseDto != null && caze.getFollowUpStatus() != existingCaseDto.getFollowUpStatus());
-
 			onCaseChanged(existingCaseDto, caze, syncShares);
 		}
 	}
@@ -2063,6 +2061,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				contactService.udpateContactStatus(contact);
 			}
 		}
+
+		// Update follow-up
+		service.updateFollowUpDetails(newCase, existingCase != null && newCase.getFollowUpStatus() != existingCase.getFollowUpStatus());
 
 		updateTasksOnCaseChanged(newCase, existingCase);
 

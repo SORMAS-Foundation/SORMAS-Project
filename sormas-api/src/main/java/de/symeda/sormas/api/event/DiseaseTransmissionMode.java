@@ -26,8 +26,8 @@ public enum DiseaseTransmissionMode {
 	VECTOR_BORNE,
 	UNKNOWN;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-
 }

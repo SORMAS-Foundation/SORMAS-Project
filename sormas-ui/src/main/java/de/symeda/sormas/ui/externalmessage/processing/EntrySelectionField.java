@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.externalmessage.processing;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,6 +49,8 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 
+	private static final long serialVersionUID = 5315286409460459687L;
+
 	private VerticalLayout mainLayout;
 	private final ExternalMessageDto externalMessageDto;
 	private final Options selectableOptions;
@@ -66,6 +69,16 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 		this.selectableOptions = selectableOptions;
 	}
 
+	private static void createAndAddLabel(Object value, String property, HorizontalLayout layout) {
+		Label label = new Label();
+		if (value != null) {
+			label.setValue(value.toString());
+		}
+		label.setCaption(I18nProperties.getPrefixCaption(ExternalMessageDto.I18N_PREFIX, property));
+		label.setWidthUndefined();
+		layout.addComponent(label);
+	}
+
 	@Override
 	protected Component initContent() {
 		// Main layout
@@ -77,7 +90,7 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 		addInfoComponent();
 		addLabMessageComponent();
 
-		for (Option<?> option : selectableOptions.options) {
+		for (Option<?> option : selectableOptions.selectableOptions) {
 			switch (option.type) {
 			case SELECT_CASE: {
 				if (CollectionUtils.isNotEmpty(option.selectableItems)) {
@@ -112,7 +125,7 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 	private void addEventParticipantGrid(List<SimilarEventParticipantDto> eventParticipants) {
 		eventParticipantGrid = new EventParticipantSelectionGrid(eventParticipants);
 		eventParticipantGrid.addSelectionListener(e -> {
-			if (e.getSelected().size() > 0) {
+			if (!e.getSelected().isEmpty()) {
 				onRadioSelected(rbSelectEventParticipant);
 			}
 
@@ -122,21 +135,6 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 		});
 		eventParticipantGrid.setEnabled(false);
 		mainLayout.addComponent(eventParticipantGrid);
-	}
-
-	private void addContactGrid(List<SimilarContactDto> contacts) {
-		contactGrid = new ContactSelectionGrid(contacts);
-		contactGrid.addSelectionListener(e -> {
-			if (e.getSelected().size() > 0) {
-				onRadioSelected(rbSelectContact);
-			}
-
-			if (selectionChangeCallback != null) {
-				selectionChangeCallback.accept(!e.getSelected().isEmpty());
-			}
-		});
-		contactGrid.setEnabled(false);
-		mainLayout.addComponent(contactGrid);
 	}
 
 	private void addCreateEntityRadio(OptionType creationOptionType) {
@@ -178,10 +176,25 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 			.forEach(rb -> rb.setValue(null));
 	}
 
+	private void addContactGrid(List<SimilarContactDto> contacts) {
+		contactGrid = new ContactSelectionGrid(contacts);
+		contactGrid.addSelectionListener(e -> {
+			if (!e.getSelected().isEmpty()) {
+				onRadioSelected(rbSelectContact);
+			}
+
+			if (selectionChangeCallback != null) {
+				selectionChangeCallback.accept(!e.getSelected().isEmpty());
+			}
+		});
+		contactGrid.setEnabled(false);
+		mainLayout.addComponent(contactGrid);
+	}
+
 	private void addCaseGrid(List<CaseSelectionDto> cases) {
 		caseGrid = new CaseSelectionGrid(cases);
 		caseGrid.addSelectionListener(e -> {
-			if (e.getSelected().size() > 0) {
+			if (!e.getSelected().isEmpty()) {
 				onRadioSelected(rbSelectCase);
 			}
 
@@ -196,7 +209,7 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 	private void addSelectEventParticipantRadioGroup() {
 		rbSelectEventParticipant = new RadioButtonGroup<>();
 		rbSelectEventParticipant.setItems(OptionType.SELECT_EVENT_PARTICIPANT);
-		rbSelectEventParticipant.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.eventParticipantSelect));
+		rbSelectEventParticipant.setItemCaptionGenerator(item -> I18nProperties.getCaption(Captions.eventParticipantSelect));
 		CssStyles.style(rbSelectEventParticipant, CssStyles.VSPACE_NONE);
 		rbSelectEventParticipant.addValueChangeListener(e -> {
 			if (e.getValue() != null) {
@@ -218,7 +231,7 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 	private void addSelectContactRadioGroup() {
 		rbSelectContact = new RadioButtonGroup<>();
 		rbSelectContact.setItems(OptionType.SELECT_CONTACT);
-		rbSelectContact.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.contactSelect));
+		rbSelectContact.setItemCaptionGenerator(item -> I18nProperties.getCaption(Captions.contactSelect));
 		CssStyles.style(rbSelectContact, CssStyles.VSPACE_NONE);
 		rbSelectContact.addValueChangeListener(e -> {
 			if (e.getValue() != null) {
@@ -237,10 +250,26 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 		mainLayout.addComponent(rbSelectContact);
 	}
 
+	private void addLabMessageComponent() {
+		HorizontalLayout labMessageLayout = new HorizontalLayout();
+		labMessageLayout.setSpacing(true);
+
+		createAndAddLabel(externalMessageDto.getMessageDateTime(), ExternalMessageDto.MESSAGE_DATE_TIME, labMessageLayout);
+		createAndAddLabel(externalMessageDto.getSampleDateTime(), ExternalMessageDto.SAMPLE_DATE_TIME, labMessageLayout);
+		createAndAddLabel(externalMessageDto.getPersonFirstName(), ExternalMessageDto.PERSON_FIRST_NAME, labMessageLayout);
+		createAndAddLabel(externalMessageDto.getPersonLastName(), ExternalMessageDto.PERSON_LAST_NAME, labMessageLayout);
+		createAndAddLabel(externalMessageDto.getPersonBirthDateDD(), ExternalMessageDto.PERSON_BIRTH_DATE_DD, labMessageLayout);
+		createAndAddLabel(externalMessageDto.getPersonBirthDateMM(), ExternalMessageDto.PERSON_BIRTH_DATE_MM, labMessageLayout);
+		createAndAddLabel(externalMessageDto.getPersonBirthDateYYYY(), ExternalMessageDto.PERSON_BIRTH_DATE_YYYY, labMessageLayout);
+		createAndAddLabel(externalMessageDto.getPersonSex(), ExternalMessageDto.PERSON_SEX, labMessageLayout);
+
+		mainLayout.addComponent(labMessageLayout);
+	}
+
 	private void addSelectCaseRadioGroup() {
 		rbSelectCase = new RadioButtonGroup<>();
 		rbSelectCase.setItems(OptionType.SELECT_CASE);
-		rbSelectCase.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.caseSelect));
+		rbSelectCase.setItemCaptionGenerator(item -> I18nProperties.getCaption(Captions.caseSelect));
 		CssStyles.style(rbSelectCase, CssStyles.VSPACE_NONE);
 		rbSelectCase.addValueChangeListener(e -> {
 			if (e.getValue() != null) {
@@ -259,32 +288,6 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 		mainLayout.addComponent(rbSelectCase);
 	}
 
-	private void addLabMessageComponent() {
-		HorizontalLayout labMessageLayout = new HorizontalLayout();
-		labMessageLayout.setSpacing(true);
-
-		createAndAddLabel(externalMessageDto.getMessageDateTime(), ExternalMessageDto.MESSAGE_DATE_TIME, labMessageLayout);
-		createAndAddLabel(externalMessageDto.getSampleDateTime(), ExternalMessageDto.SAMPLE_DATE_TIME, labMessageLayout);
-		createAndAddLabel(externalMessageDto.getPersonFirstName(), ExternalMessageDto.PERSON_FIRST_NAME, labMessageLayout);
-		createAndAddLabel(externalMessageDto.getPersonLastName(), ExternalMessageDto.PERSON_LAST_NAME, labMessageLayout);
-		createAndAddLabel(externalMessageDto.getPersonBirthDateDD(), ExternalMessageDto.PERSON_BIRTH_DATE_DD, labMessageLayout);
-		createAndAddLabel(externalMessageDto.getPersonBirthDateMM(), ExternalMessageDto.PERSON_BIRTH_DATE_MM, labMessageLayout);
-		createAndAddLabel(externalMessageDto.getPersonBirthDateYYYY(), ExternalMessageDto.PERSON_BIRTH_DATE_YYYY, labMessageLayout);
-		createAndAddLabel(externalMessageDto.getPersonSex(), ExternalMessageDto.PERSON_SEX, labMessageLayout);
-
-		mainLayout.addComponent(labMessageLayout);
-	}
-
-	private void createAndAddLabel(Object value, String property, HorizontalLayout layout) {
-		Label label = new Label();
-		if (value != null) {
-			label.setValue(value.toString());
-		}
-		label.setCaption(I18nProperties.getPrefixCaption(ExternalMessageDto.I18N_PREFIX, property));
-		label.setWidthUndefined();
-		layout.addComponent(label);
-	}
-
 	private void addInfoComponent() {
 		if (CollectionUtils.isNotEmpty(getSelectableItems(OptionType.SELECT_CASE))
 			|| CollectionUtils.isNotEmpty(getSelectableItems(OptionType.SELECT_CONTACT))
@@ -296,7 +299,7 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 	}
 
 	private List<?> getSelectableItems(OptionType optionType) {
-		return selectableOptions.options.stream()
+		return selectableOptions.selectableOptions.stream()
 			.filter(o -> o.type == optionType)
 			.map(o -> o.selectableItems)
 			.findFirst()
@@ -364,10 +367,12 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 		SELECT_EVENT_PARTICIPANT;
 	}
 
-	private static class Option<T> {
+	private static final class Option<T extends Serializable> implements Serializable {
 
-		private OptionType type;
-		private List<T> selectableItems;
+		private static final long serialVersionUID = -3866850428669683952L;
+
+		private final OptionType type;
+		private final List<T> selectableItems;
 
 		private Option(OptionType type, List<T> selectableItems) {
 			this.type = type;
@@ -375,12 +380,14 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 		}
 	}
 
-	public static class Options {
+	public static final class Options implements Serializable {
 
-		private final List<Option<?>> options;
+		private static final long serialVersionUID = 5824346382436184226L;
 
-		private Options(List<Option<?>> options) {
-			this.options = options;
+		private final List<Option<?>> selectableOptions;
+
+		private Options(List<Option<?>> selectableOptions) {
+			this.selectableOptions = selectableOptions;
 		}
 
 		public static class Builder {
@@ -407,7 +414,7 @@ public class EntrySelectionField extends CustomField<PickOrCreateEntryResult> {
 				return add(optionType, null);
 			}
 
-			private Builder add(OptionType optionType, List<?> selectableOptions) {
+			private Builder add(OptionType optionType, List<? extends Serializable> selectableOptions) {
 				options.add(new Option<>(optionType, selectableOptions));
 
 				return this;

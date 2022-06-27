@@ -18,25 +18,67 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
-import static org.sormas.e2etests.pages.application.cases.EditContactsPage.*;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISCARD_BUTTON_POPUP;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CASE_CONTACT_EXPORT;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CLOSE_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.COMMIT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CONTACTS_TAB_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CONTACT_RESULTS_UUID_LOCATOR;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.DETAILED_EXPORT_CASE_CONTACT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.FIRST_RESULT_IN_GRID_IMPORT_POPUP;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.IMPORT_CASE_CONTACTS_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.IMPORT_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.IMPORT_SUCCESS;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.NEW_CONTACT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RELATIONSHIP_WITH_CASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RELATIONSHIP_WITH_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_COMMUNITY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_COMMUNITY_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_DISTRICT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_REGION_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESULTS_IN_GRID_IMPORT_POPUP;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.getContactByUUID;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
-import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.*;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.DATE_OF_BIRTH_DAY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.DATE_OF_BIRTH_MONTH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.DATE_OF_BIRTH_YEAR_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.DATE_OF_LAST_CONTACT_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.DATE_OF_REPORT_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.LAST_NAME_OF_CONTACT_PERSON_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.PRIMARY_EMAIL_ADDRESS_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.PRIMARY_PHONE_NUMBER_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SEX_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.TYPE_OF_CONTACT_TRAVELER;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.ARCHIVE_CONTACT_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CASE_ID_IN_EXTERNAL_SYSTEM_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CASE_OR_EVENT_INFORMATION_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACTS_LIST;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_CATEGORY_OPTIONS;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_CLASSIFICATION_OPTIONS;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_CREATED_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.LAST_CONTACT_DATE;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.POPUP_YES_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.REPORT_DATE;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.RETURNING_TRAVELER_OPTIONS;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SAVE_EDIT_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.TYPE_OF_CONTACT_OPTIONS;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.USER_INFORMATION;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CREATE_NEW_PERSON_RADIO_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_CONTACT_POPUP;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_PERSON_POPUP;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_POPUP_SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK_TYPE_COMBOBOX;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
@@ -57,6 +99,7 @@ import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.services.ContactService;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
 
@@ -335,6 +378,94 @@ public class EditContactsSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(getContactByUUID(contactsUUIDList.get(1)));
         });
+    When(
+        "I open last edited contact by API via URL navigation",
+        () -> {
+          String contactLinkPath = "/sormas-ui/#!contacts/data/";
+          String uuid = apiState.getCreatedContact().getUuid();
+          webDriverHelpers.accessWebSite(
+              runningConfiguration.getEnvironmentUrlForMarket(locale) + contactLinkPath + uuid);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
+        });
+    When(
+        "I click on the Archive contact button and confirm popup",
+        () -> {
+          webDriverHelpers.scrollToElement(ARCHIVE_CONTACT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_CONTACT_BUTTON);
+          webDriverHelpers.scrollToElement(POPUP_YES_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_YES_BUTTON);
+        });
+    When(
+        "I check if editable fields are read only for an archived contact",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          TimeUnit.SECONDS.sleep(15);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONTACTS_LIST);
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(CONTACT_CLASSIFICATION_OPTIONS),
+              true,
+              "Contact classification option is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(REPORT_DATE),
+              true,
+              "Report date is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RESPONSIBLE_DISTRICT_INPUT),
+              true,
+              "Responsible district input is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RESPONSIBLE_REGION_INPUT),
+              true,
+              "Responsible region input is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RESPONSIBLE_COMMUNITY_INPUT),
+              true,
+              "Responsible community input is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RELATIONSHIP_WITH_CASE_INPUT),
+              true,
+              "Relationship with case input is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX),
+              true,
+              "Vaccination status combobox is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(SAVE_EDIT_BUTTON),
+              true,
+              "Save button is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DISCARD_BUTTON),
+              true,
+              "Discard button is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DELETE_BUTTON),
+              true,
+              "Delete button is not editable state but it should be since archived entities default value is true!");
+          softly.assertAll();
+        });
+
+    And(
+        "I fill general comment in contact edit page with ([^\"]*)",
+        (String comment) -> {
+          webDriverHelpers.fillInWebElement(EditContactPage.GENERAL_COMMENT_TEXT, comment);
+        });
+
+    When(
+        "I check if Task Type has not a ([^\"]*) option",
+        (String option) -> {
+          softly.assertFalse(
+              webDriverHelpers.checkIfElementExistsInCombobox(TASK_TYPE_COMBOBOX, option),
+              "Task type is incorrect");
+          softly.assertAll();
+        });
+
+    When(
+        "I click on discard button from new task",
+        () -> webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON_POPUP));
+
+    When(
+        "I click on the contacts list button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CONTACTS_LIST));
   }
 
   private void fillFirstName(String firstName) {

@@ -30,8 +30,8 @@ public enum ActionMeasure {
 	POPULATION_INFORMATION,
 	OTHER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-
 }

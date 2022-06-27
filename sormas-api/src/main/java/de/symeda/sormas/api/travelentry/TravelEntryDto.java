@@ -102,7 +102,7 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private RegionReferenceDto pointOfEntryRegion;
 	private DistrictReferenceDto pointOfEntryDistrict;
 	private PointOfEntryReferenceDto pointOfEntry;
-	@SensitiveData
+	@SensitiveData(mandatoryField = true)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String pointOfEntryDetails;
 	@EmbeddedPersonalData

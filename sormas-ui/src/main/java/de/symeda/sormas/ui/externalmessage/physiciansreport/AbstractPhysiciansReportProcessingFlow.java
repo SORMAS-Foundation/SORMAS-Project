@@ -98,7 +98,7 @@ public abstract class AbstractPhysiciansReportProcessingFlow extends AbstractPro
 		HandlerCallback<CaseDataDto> callback);
 
 	private CompletionStage<ProcessingResult<CaseDataDto>> updateCase(CaseSelectionDto selectedCase, ExternalMessageDto externalMessage) {
-		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(selectedCase.getUuid());;
+		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(selectedCase.getUuid());
 
 		return updateCase(caze, externalMessage);
 	}

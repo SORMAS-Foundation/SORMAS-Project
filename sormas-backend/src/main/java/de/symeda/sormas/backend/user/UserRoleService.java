@@ -67,15 +67,6 @@ public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
 		return entity;
 	}
 
-	public UserRole getByUuidEager(String uuid) {
-		UserRole userRole = getByUuid(uuid);
-		if (userRole != null) {
-			userRole.getEmailNotificationTypes().size();
-			userRole.getSmsNotificationTypes().size();
-		}
-		return userRole;
-	}
-
 	public List<String> getDeletedUuids(Date since) {
 
 		String queryString = "SELECT " + AbstractDomainObject.UUID + " FROM " + UserRole.TABLE_NAME + AbstractDomainObject.HISTORY_TABLE_SUFFIX + " h"

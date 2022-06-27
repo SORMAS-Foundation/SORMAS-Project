@@ -24,6 +24,7 @@ public enum SpecimenCondition {
 	ADEQUATE,
 	NOT_ADEQUATE;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

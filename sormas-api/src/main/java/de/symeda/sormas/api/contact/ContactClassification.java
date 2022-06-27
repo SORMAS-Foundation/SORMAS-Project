@@ -25,6 +25,7 @@ public enum ContactClassification {
 	CONFIRMED,
 	NO_CONTACT;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

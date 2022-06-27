@@ -44,6 +44,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_INFO_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONTACTS_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EPIDEMIOLOGICAL_DATA_TAB;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CONFIRM;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_CASE_BUTTON;
@@ -52,7 +53,6 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.BLOOD_ORG
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_CLASSIFICATION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_CLASSIFICATION_SPAN;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_IDENTIFICATION_SOURCE_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_ORIGIN;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_PERSON_TAB;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_TAB;
@@ -115,8 +115,6 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_SELECTED_VALUE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.POINT_OF_ENTRY_DETAILS;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.POINT_OF_ENTRY_TEXT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.POPUPS_INPUTS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PREGNANCY_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PROHIBITION_TO_WORK_OPTIONS;
@@ -137,11 +135,6 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTIN
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_TYPE_DETAILS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE_DEFINITION_TEXT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY_DISTRICT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY_POPUP_DE;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY_REGION;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFER_CASE_FROM_POINT_OF_ENTRY_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REGION_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REINFECTION_OPTIONS;
@@ -193,7 +186,9 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.FOL
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EVENT_PARTICIPANTS_DATA_TAB;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.contacts.ContactDirectorySteps.exposureData;
@@ -234,6 +229,7 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
+import org.sormas.e2etests.pages.application.events.EditEventPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
 import org.testng.Assert;
@@ -1723,6 +1719,81 @@ public class EditCaseSteps implements En {
               "Automated test dummy description",
               "Point of entry details are not correct");
 
+          softly.assertAll();
+        });
+    When(
+        "I click on the Archive case button and confirm popup",
+        () -> {
+          webDriverHelpers.scrollToElement(ARCHIVE_CASE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_CASE_BUTTON);
+          webDriverHelpers.scrollToElement(CONFIRM_ACTION);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_ACTION);
+        });
+    When(
+        "I check if editable fields are read only for an archived case",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          TimeUnit.SECONDS.sleep(15);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(BACK_TO_CASES_LIST_BUTTON);
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(INVESTIGATION_STATUS_OPTIONS),
+              true,
+              "Investigation status option is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DISEASE_COMBOBOX),
+              true,
+              "Disease combobox is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(OUTCOME_OF_CASE_OPTIONS),
+              true,
+              "Outcome of case is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(FACILITY_CATEGORY_COMBOBOX),
+              true,
+              "Facility category is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RESPONSIBLE_COMMUNITY_COMBOBOX),
+              true,
+              "Responsible community combobox is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RESPONSIBLE_DISTRICT_COMBOBOX),
+              true,
+              "Responsible district is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RESPONSIBLE_REGION_COMBOBOX),
+              true,
+              "Responsible region combobox is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(FACILITY_TYPE_COMBOBOX),
+              true,
+              "Facility type combobox is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(EditEventPage.SAVE_BUTTON),
+              true,
+              "Save button is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DISCARD_BUTTON),
+              true,
+              "Discard button is not editable state but it should be since archived entities default value is true!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DELETE_BUTTON),
+              true,
+              "Delete button is not editable state but it should be since archived entities default value is true!");
+          softly.assertAll();
+        });
+
+    And(
+        "I fill general comment in case edit page with ([^\"]*)",
+        (String comment) -> {
+          webDriverHelpers.fillInWebElement(EditContactPage.GENERAL_COMMENT_TEXT, comment);
+        });
+
+    When(
+        "I check if Type of sample has not a ([^\"]*) option",
+        (String option) -> {
+          softly.assertFalse(
+              webDriverHelpers.checkIfElementExistsInCombobox(SAMPLE_TYPE_COMBOBOX, option),
+              "Type of sample is incorrect");
           softly.assertAll();
         });
   }

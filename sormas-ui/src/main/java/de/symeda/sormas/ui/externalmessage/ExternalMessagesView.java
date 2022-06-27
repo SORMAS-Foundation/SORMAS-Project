@@ -223,13 +223,14 @@ public class ExternalMessagesView extends AbstractView {
 				activeStatusButton = b;
 			}
 		});
+		ExternalMessageStatus activeStatus = null;
 		if (activeStatusButton != null) {
 			CssStyles.removeStyles(activeStatusButton, CssStyles.BUTTON_FILTER_LIGHT);
 			activeStatusButton
 				.setCaption(statusButtons.get(activeStatusButton) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
+			activeStatus = (ExternalMessageStatus) activeStatusButton.getData();
 		}
 
-		ExternalMessageStatus activeStatus = (ExternalMessageStatus) activeStatusButton.getData();
 		grid.updateProcessColumnVisibility(activeStatus == null || activeStatus.isProcessable());
 	}
 

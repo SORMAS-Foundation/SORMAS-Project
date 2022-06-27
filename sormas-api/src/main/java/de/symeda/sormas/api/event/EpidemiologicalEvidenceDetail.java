@@ -44,7 +44,8 @@ public enum EpidemiologicalEvidenceDetail {
         return parent;
     }
 
-    public String toString() {
-        return I18nProperties.getEnumCaption(this);
-    }
+	@Override
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
+	}
 }

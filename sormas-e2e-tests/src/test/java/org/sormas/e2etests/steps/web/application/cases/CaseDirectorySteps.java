@@ -105,6 +105,7 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE_DEFINITION_TEXT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.getCaseIDPathByIndex;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_OPTIONS;
@@ -151,6 +152,9 @@ public class CaseDirectorySteps implements En {
   public static final String userDirPath = System.getProperty("user.dir");
   private final DateTimeFormatter formatterDataDictionary =
       DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+  public static String caseID1;
+  public static String caseID2;
 
   @Inject
   public CaseDirectorySteps(
@@ -1025,6 +1029,29 @@ public class CaseDirectorySteps implements En {
           TimeUnit.SECONDS.sleep(3); // wait for response after confirm
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+
+    Then(
+        "I get two last cases ID from cases list",
+        () -> {
+          caseID1 = getCaseIDByIndex(1);
+          caseID2 = getCaseIDByIndex(2);
+        });
+    And(
+        "I open {int} case in order from list",
+        (Integer index) -> {
+          webDriverHelpers.getWebElement(getCaseIDPathByIndex(index)).click();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              EditContactPage.GENERAL_COMMENT_TEXT_AREA);
+        });
+
+    Then(
+        "I compare previous first case ID on the list with actually second case ID on list",
+        () -> {
+          Assert.assertEquals(
+              caseID1,
+              getCaseIDByIndex(2),
+              "Edited case do not move previous first case to second place on list.");
+        });
   }
 
   private Number getRandomNumberForBirthDateDifferentThanCreated(Number created, int min, int max) {
@@ -1033,5 +1060,9 @@ public class CaseDirectorySteps implements En {
       replacement = faker.number().numberBetween(min, max);
     }
     return replacement;
+  }
+
+  private String getCaseIDByIndex(int index) {
+    return webDriverHelpers.getTextFromWebElement(getCaseIDPathByIndex(index));
   }
 }

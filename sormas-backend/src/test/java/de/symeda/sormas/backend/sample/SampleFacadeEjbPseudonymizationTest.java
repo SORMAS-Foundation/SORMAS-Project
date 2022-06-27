@@ -465,7 +465,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(sample.getReportLon(), is(nullValue()));
 		assertThat(sample.getReportLatLonAccuracy(), is(10F));
 		assertThat(sample.getLab().getCaption(), is(labName));
-		assertThat(sample.getLabDetails(), isEmptyString());
+		assertThat(sample.getLabDetails(), is("Test lab details"));
 		assertThat(sample.getShipmentDetails(), isEmptyString());
 		assertThat(sample.getComment(), isEmptyString());
 	}

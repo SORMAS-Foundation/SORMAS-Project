@@ -373,6 +373,9 @@ public final class I18nProperties {
 	 * remove spaces und everything in brackets following (e.g. "Australia (Continent)" => "AUSTRALIA") for use with i18n-files
 	 */
 	private static String cleanContinentOrSubcontinentDefaultName(String defaultName) {
+		if(defaultName == null) {
+			return null;
+		}
 		return defaultName.substring(0, defaultName.contains("(") ? defaultName.indexOf("(") : defaultName.length())
 			.trim()
 			.replace(" ", "_")
@@ -387,6 +390,7 @@ public final class I18nProperties {
 
 		private static final char LOCALE_SEP = '-';
 
+		@Override
 		public java.util.ResourceBundle newBundle(String baseName, Locale locale, String format, ClassLoader loader, boolean reload)
 			throws IllegalAccessException, InstantiationException, IOException {
 

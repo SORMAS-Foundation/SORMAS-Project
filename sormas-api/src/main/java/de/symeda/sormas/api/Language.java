@@ -25,7 +25,8 @@ public enum Language {
 	FI(new Locale("fi", "FI"), "dd.MM.yyyy", "dd.MM.yyyy H.mm", "dd.MM"),
 	PS(new Locale("ps", "AF"), "dd/MM/yyyy", "dd/MM/yyyy HH:mm", "dd/MM"),
 	FA(new Locale("fa", "AF"), "dd/MM/yyyy", "dd/MM/yyyy HH:mm", "dd/MM"),
-	CZ(new Locale("cs", "CZ"), "dd.MM.yyyy", "dd.MM.yyyy HH:mm", "dd.MM.");
+	CZ(new Locale("cs", "CZ"), "dd.MM.yyyy", "dd.MM.yyyy HH:mm", "dd.MM."),
+	UR_PK(new Locale("ur", "PK"), "dd/MM/yyyy", "dd/MM/yyyy HH:mm", "dd/MM");
 
 	/**
 	 * Links locale strings to Languages
@@ -58,6 +59,7 @@ public enum Language {
 		this.dayMonthFormat = dayMonthFormat;
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
