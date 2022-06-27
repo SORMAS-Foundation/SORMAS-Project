@@ -150,7 +150,7 @@ public class ImmunizationController {
 		};
 
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getImmunizationFacade().getAutomaticDeletionInfo(immunizationDto.getUuid());
-		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getCaseFacade().getManuallyDeletionInfo(immunizationDto.getUuid());
+		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getImmunizationFacade().getManuallyDeletionInfo(immunizationDto.getUuid());
 
 		editComponent.getButtonsPanel()
 			.addComponentAsFirst(new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, immunizationDto.isDeleted()));
