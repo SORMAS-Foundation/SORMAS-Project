@@ -29,8 +29,8 @@ public enum GatheringType {
 	SPORTING_EVENT,
 	OTHER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-
 }

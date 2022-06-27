@@ -390,6 +390,7 @@ public final class I18nProperties {
 
 		private static final char LOCALE_SEP = '-';
 
+		@Override
 		public java.util.ResourceBundle newBundle(String baseName, Locale locale, String format, ClassLoader loader, boolean reload)
 			throws IllegalAccessException, InstantiationException, IOException {
 

@@ -9,6 +9,7 @@ public enum PhoneNumberType {
 	WORK,
 	OTHER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

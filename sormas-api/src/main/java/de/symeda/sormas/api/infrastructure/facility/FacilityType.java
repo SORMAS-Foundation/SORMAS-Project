@@ -185,6 +185,7 @@ public enum FacilityType {
 		MOBILE_NURSING_SERVICE,
 		VISITING_AMBULATORY_AID);
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

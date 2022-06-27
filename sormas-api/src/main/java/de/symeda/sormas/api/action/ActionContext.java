@@ -24,9 +24,9 @@ import de.symeda.sormas.api.i18n.I18nProperties;
  */
 public enum ActionContext {
 
-	// XXX: add here new contexts (case, contact, …)
 	EVENT;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

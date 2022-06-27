@@ -26,6 +26,7 @@ public enum VaccinationInfoSource {
 	NO_EVIDENCE,
 	UNKNOWN;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

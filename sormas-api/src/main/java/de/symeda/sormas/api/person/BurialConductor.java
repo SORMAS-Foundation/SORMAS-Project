@@ -24,6 +24,7 @@ public enum BurialConductor {
 	FAMILY_COMMUNITY,
 	OUTBREAK_TEAM;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

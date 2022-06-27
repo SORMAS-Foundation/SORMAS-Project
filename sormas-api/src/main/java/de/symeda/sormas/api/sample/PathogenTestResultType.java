@@ -27,6 +27,7 @@ public enum PathogenTestResultType {
 	POSITIVE,
 	NOT_DONE;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

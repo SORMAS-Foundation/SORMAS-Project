@@ -34,6 +34,7 @@ public enum PresentCondition {
 		return this == DEAD || this == BURIED;
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

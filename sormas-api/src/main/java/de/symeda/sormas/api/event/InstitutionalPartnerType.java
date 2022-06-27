@@ -26,6 +26,7 @@ public enum InstitutionalPartnerType {
 	MEDICO_SOCIAL_ESTABLISHMENTS,
 	OTHER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

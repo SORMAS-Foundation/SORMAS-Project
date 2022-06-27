@@ -58,6 +58,7 @@ public enum PathogenTestType {
 	DNA_MICROARRAY,
 	OTHER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

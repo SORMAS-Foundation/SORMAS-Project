@@ -173,6 +173,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		eventSearchField.setNullRepresentation("");
 	}
 
+	@Override
 	public void addMoreFilters(CustomLayout moreFiltersContainer) {
 
 		ComboBox presentConditionField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.PRESENT_CONDITION, 140));

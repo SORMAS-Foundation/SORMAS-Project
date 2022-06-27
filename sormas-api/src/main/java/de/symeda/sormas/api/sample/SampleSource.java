@@ -25,6 +25,7 @@ public enum SampleSource {
 	ANIMAL,
 	ENVIRONMENT;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
