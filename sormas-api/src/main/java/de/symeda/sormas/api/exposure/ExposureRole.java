@@ -37,6 +37,7 @@ public enum ExposureRole {
 	UNKNOWN,
 	OTHER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

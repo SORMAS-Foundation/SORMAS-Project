@@ -113,6 +113,7 @@ public enum Disease
 		this.defaultExtendedClassificationMulti = defaultExtendedClassificationMulti;
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
@@ -130,6 +131,7 @@ public enum Disease
 		switch (this) {
 		case CSM:
 			return true;
+		//$CASES-OMITTED$
 		default:
 			return false;
 		}

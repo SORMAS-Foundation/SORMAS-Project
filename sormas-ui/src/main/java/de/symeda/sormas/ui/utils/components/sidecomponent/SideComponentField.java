@@ -13,6 +13,8 @@ import de.symeda.sormas.ui.utils.CssStyles;
 
 public class SideComponentField extends HorizontalLayout {
 
+	private static final long serialVersionUID = -7617896760817891457L;
+
 	private final VerticalLayout mainLayout;
 
 	public SideComponentField() {
@@ -42,6 +44,7 @@ public class SideComponentField extends HorizontalLayout {
 		setExpandRatio(editButton, 0);
 	}
 
+	@Override
 	public void setEnabled(boolean enabled) {
 		mainLayout.setEnabled(enabled);
 	}

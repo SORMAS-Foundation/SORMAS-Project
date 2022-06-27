@@ -67,4 +67,12 @@ public class TravelEntryPage {
       By.xpath("//div[@class='popupContent']//div[@class='v-filterselect-button']");
   public static final By ENTRY_DETAILED_COLUMN_HEADERS =
       By.cssSelector("thead .v-grid-column-default-header-content");
+  public static final By ENTRY_IMPORT_TEMPLATE_LABEL =
+      By.xpath("//div[contains(text(),'Importvorlage herunterladen')]");
+  public static final By PICK_OR_CREATE_PERSON_HEADER_DE =
+      By.xpath("//*[contains(text(),'Person ausw\u00E4hlen oder erstellen')]");
+  public static final By TRAVEL_ENTRIES_IMPORT_SUCCESSFUL_HEADER_DE =
+      By.xpath("//div/b[text()='Import erfolgreich!']");
+  public static final By CLOSE_IMPORT_TRAVEL_ENTRY_POPUP =
+      By.cssSelector(".popupContent .v-window-closebox");
 }

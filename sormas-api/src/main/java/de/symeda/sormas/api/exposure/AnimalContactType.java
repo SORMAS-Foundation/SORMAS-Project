@@ -25,8 +25,8 @@ public enum AnimalContactType {
 	LICK,
 	OTHER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-
 }

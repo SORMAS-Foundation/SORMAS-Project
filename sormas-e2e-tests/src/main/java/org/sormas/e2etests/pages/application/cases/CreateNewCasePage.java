@@ -44,6 +44,7 @@ public class CreateNewCasePage {
   public static final By SEX_COMBOBOX =
       By.cssSelector(".v-window [location='sex'] div[role='combobox'] div");
   public static final By SAVE_BUTTON = By.id("commit");
+  public static final By CONFIRM_BUTTON_POPUP = By.cssSelector(".popupContent #commit");
   public static final By CASE_ORIGIN_OPTIONS =
       By.cssSelector(".popupContent #caseOrigin .v-select-option");
   public static final By EXTERNAL_ID_INPUT = By.cssSelector(".popupContent #externalID");
@@ -78,6 +79,8 @@ public class CreateNewCasePage {
   public static final By PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON = By.id("actionSearch");
   public static final By CREATE_A_NEW_CASE_CONFIRMATION_BUTTON =
       By.xpath("//*[text()='Create a new case']");
+  public static final By PICK_AN_EXISTING_CASE_CONFIRMATION_BUTTON =
+      By.xpath("//*[text()='Pick an existing case']");
   public static final By CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON =
       By.xpath("//*[text()='Create a new person']");
   public static final By SELECT_PERSON_WINDOW_CONFIRM_BUTTON =

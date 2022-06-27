@@ -53,12 +53,12 @@ public class ArchivingController<F extends CoreFacade> {
 			e -> {
 				if (Boolean.TRUE.equals(e)) {
 					doArchive(entityFacade, coreEntityDto.getUuid(), DateHelper8.toDate(endOfProcessingDate.getValue()));
-
 					Notification.show(
 						String.format(
 							I18nProperties.getString(archiveMessages.getMessageEntityArchived()),
 							I18nProperties.getString(archiveMessages.getEntityName())),
 						Notification.Type.ASSISTIVE_NOTIFICATION);
+
 					callback.run();
 				}
 			});
@@ -157,7 +157,6 @@ public class ArchivingController<F extends CoreFacade> {
 				e -> {
 					if (Boolean.TRUE.equals(e)) {
 						doArchive(entityFacade, entityUuids);
-
 						callback.run();
 						new Notification(
 							I18nProperties.getString(archivedHeading),

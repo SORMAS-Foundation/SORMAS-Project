@@ -7,8 +7,8 @@ public enum ExternalMessageType {
 	LAB_MESSAGE,
 	PHYSICIANS_REPORT;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-
 }

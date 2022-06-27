@@ -25,6 +25,7 @@ public enum EventCriteriaDateType
 	EVENT_DATE,
 	REPORT_DATE;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

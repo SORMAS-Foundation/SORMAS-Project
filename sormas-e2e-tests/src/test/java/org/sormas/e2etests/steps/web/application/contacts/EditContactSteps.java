@@ -41,6 +41,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFO
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RELATIONSHIP_WITH_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
@@ -1002,6 +1003,27 @@ public class EditContactSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(COMMENTS_ON_TASK_TITLE);
           webDriverHelpers.checkWebElementContainsText(COMMENTS_ON_TASK_TITLE, "*");
+        });
+
+    When(
+        "I check if collected contact UUID is the same in opened contact",
+        () -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(UUID_INPUT),
+              aContact.getUuid(),
+              "UUIDs are not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "^I check if relationship with case is set to ([^\"]*)$",
+        (String option) -> {
+          webDriverHelpers.scrollToElement(RELATIONSHIP_WITH_CASE_INPUT);
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(RELATIONSHIP_WITH_CASE_INPUT),
+              option,
+              "Relationships with case are not equal");
+          softly.assertAll();
         });
   }
 

@@ -93,6 +93,7 @@ public class ContactDirectoryPage {
   public static final By CONTACT_MERGE_DUPLICATES = By.id("contactMergeDuplicates");
   public static final By CONTACT_DISPLAY_FILTER_COMBOBOX =
       By.cssSelector("[id='relevanceStatus'] [class='v-filterselect-button']");
+  public static final By RELATIONSHIP_WITH_CASE_COMBOBOX = By.cssSelector("#relationToCase div");
 
   public static By getCheckboxByUUID(String uuid) {
     return By.xpath(

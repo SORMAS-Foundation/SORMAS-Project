@@ -24,8 +24,8 @@ public enum CauseOfDeath {
 	EPIDEMIC_DISEASE,
 	OTHER_CAUSE;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-
 }

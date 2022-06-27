@@ -24,6 +24,7 @@ public enum MapCaseClassificationOption {
 	ALL_CASES,
 	CONFIRMED_CASES_ONLY;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

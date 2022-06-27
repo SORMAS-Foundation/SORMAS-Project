@@ -26,6 +26,7 @@ public enum AnimalCondition {
 	PROCESSED,
 	UNKNOWN;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
