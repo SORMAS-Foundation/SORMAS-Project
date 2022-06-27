@@ -37,6 +37,7 @@ public enum Month
 	NOVEMBER,
 	DECEMBER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

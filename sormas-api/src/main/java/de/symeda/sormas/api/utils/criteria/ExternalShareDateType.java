@@ -23,6 +23,7 @@ public enum ExternalShareDateType
 
 	LAST_EXTERNAL_SURVEILLANCE_TOOL_SHARE;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

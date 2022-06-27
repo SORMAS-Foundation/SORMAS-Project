@@ -59,6 +59,7 @@ public enum Language {
 		this.dayMonthFormat = dayMonthFormat;
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

@@ -25,6 +25,7 @@ public enum DashboardType {
 	CONTACTS,
 	CAMPAIGNS;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

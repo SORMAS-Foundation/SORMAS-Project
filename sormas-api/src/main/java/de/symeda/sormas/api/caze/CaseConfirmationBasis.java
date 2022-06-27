@@ -8,6 +8,7 @@ public enum CaseConfirmationBasis {
 	EPIDEMIOLOGICAL_CONFIRMATION,
 	LABORATORY_DIAGNOSTIC_CONFIRMATION;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

@@ -4,9 +4,11 @@ import java.io.Serializable;
 
 public class ExternalMessageFetchResult implements Serializable {
 
-	boolean success;
-	NewMessagesState newMessagesState;
-	String error;
+	private static final long serialVersionUID = -8759739371441385454L;
+
+	private boolean success;
+	private NewMessagesState newMessagesState;
+	private String error;
 
 	public ExternalMessageFetchResult() {
 	}

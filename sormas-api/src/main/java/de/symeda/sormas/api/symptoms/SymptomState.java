@@ -25,6 +25,7 @@ public enum SymptomState {
 	NO,
 	UNKNOWN;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

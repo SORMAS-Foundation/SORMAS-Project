@@ -23,6 +23,7 @@ public enum ContactTracingContactType {
 	SMS,
 	EMAIL;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

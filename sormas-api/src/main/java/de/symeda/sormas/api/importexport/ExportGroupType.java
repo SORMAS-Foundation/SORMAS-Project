@@ -19,6 +19,7 @@ public enum ExportGroupType {
 	EVENT_GROUP,
 	EVENT_SOURCE;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

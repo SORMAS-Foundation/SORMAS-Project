@@ -172,6 +172,7 @@ public enum DatabaseTable {
 		this.enabledSupplier = enabledSupplier;
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
