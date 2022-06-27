@@ -15,6 +15,11 @@
 
 package org.sormas.e2etests.steps.web.application.dashboard.surveillance;
 
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONFIRMED_COUNTER_LABEL_ON_SURVEILLANCE_DASHBOARD;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONFIRMED_COUNTER_LABEL_ON_SURVEILLANCE_DASHBOARD_DE;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONFIRMED_COUNTER_ON_SURVEILLANCE_DASHBOARD;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONFIRMED_COUNTER_ON_SURVEILLANCE_DASHBOARD_DE;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONFIRMED_CURVE_ON_SURVEILLANCE_DASHBOARD;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.DATE_TYPE;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.REFERENCE_DEFINITION_FULFILLED_CASES_NUMBER;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.REGION_COMBOBOX;
@@ -28,6 +33,7 @@ import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
+import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 public class SurveillanceDashboardSteps implements En {
@@ -38,6 +44,8 @@ public class SurveillanceDashboardSteps implements En {
   private int covid19DiseaseCounterAfter;
   private int newCasesCounterBefore;
   private int newCasesCounterAfter;
+  public static String confirmedCases_EN;
+  public static String confirmedCases_DE;
 
   @Inject
   public SurveillanceDashboardSteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
@@ -1031,6 +1039,38 @@ public class SurveillanceDashboardSteps implements En {
               webDriverHelpers.getValueFromWebElement(DATE_TYPE),
               "Most relevant date",
               "Default value of date type combobox should be Most relevant date");
+        });
+    Then(
+        "I get Confirmed labels and value from Surveillance Dashboard with English language",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              CONFIRMED_COUNTER_LABEL_ON_SURVEILLANCE_DASHBOARD);
+          webDriverHelpers.getWebElement(CONFIRMED_COUNTER_LABEL_ON_SURVEILLANCE_DASHBOARD);
+          confirmedCases_EN =
+              webDriverHelpers.getWebElement(CONFIRMED_COUNTER_ON_SURVEILLANCE_DASHBOARD).getText();
+          // System.out.println(confirmedCases);
+
+          webDriverHelpers.getWebElement(CONFIRMED_CURVE_ON_SURVEILLANCE_DASHBOARD);
+        });
+
+    Then(
+        "I get Confirmed labels and value from Surveillance Dashboard with Deutsch language",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              CONFIRMED_COUNTER_LABEL_ON_SURVEILLANCE_DASHBOARD_DE);
+          webDriverHelpers.getWebElement(CONFIRMED_COUNTER_LABEL_ON_SURVEILLANCE_DASHBOARD_DE);
+          confirmedCases_DE =
+              webDriverHelpers
+                  .getWebElement(CONFIRMED_COUNTER_ON_SURVEILLANCE_DASHBOARD_DE)
+                  .getText();
+          // System.out.println(confirmedCases);
+
+          webDriverHelpers.getWebElement(CONFIRMED_CURVE_ON_SURVEILLANCE_DASHBOARD);
+        });
+    And(
+        "I compare English and German confirmed counter",
+        () -> {
+          Assert.assertEquals(confirmedCases_EN, confirmedCases_DE, "Counters not equal!");
         });
   }
 }

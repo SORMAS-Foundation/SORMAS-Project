@@ -19,6 +19,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.NEW_CONTACT_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.NEW_CONTACT_PAGE_BUTTON;
 import static org.sormas.e2etests.pages.application.dashboard.Contacts.ContactsDashboardPage.CONTACTS_DASHBOARD_NAME;
+import static org.sormas.e2etests.pages.application.dashboard.Contacts.ContactsDashboardPage.CONTACTS_DASHBOARD_NAME_DE;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONTACTS_BUTTON;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.SURVEILLANCE_DASHBOARD_NAME;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.NEW_EVENT_BUTTON;
@@ -171,7 +172,12 @@ public class NavBarSteps implements En {
         "^I click on the Dashboard button from navbar and access Surveillance Dashboard$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NavBarPage.DASHBOARD_BUTTON);
+          Thread.sleep(10000);
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NavBarPage.DASHBOARD_BUTTON);
+
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
         });
 
@@ -197,6 +203,20 @@ public class NavBarSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               CONTACTS_DASHBOARD_NAME, 10);
+          startTime = ZonedDateTime.now().toInstant().toEpochMilli();
+        });
+    When(
+        "^I click on the Dashboard button from navbar and access Contacts Dashboard with Deutsch language$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONTACTS_BUTTON);
+          TimeUnit.SECONDS.sleep(10); // mandatory due to loading time issue
+          webDriverHelpers.clickOnWebElementBySelector(CONTACTS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              CONTACTS_DASHBOARD_NAME_DE, 10);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
         });
 
@@ -313,6 +333,13 @@ public class NavBarSteps implements En {
           }
           log.info("Adding page [ {} ] loading results to report", page);
           TableDataManager.addPagesRowEntity(page + " page", elapsedTime);
+        });
+    When(
+        "^I click on the Dashboard button from navbar",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
+          startTime = ZonedDateTime.now().toInstant().toEpochMilli();
         });
   }
 }
