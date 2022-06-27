@@ -373,6 +373,9 @@ public final class I18nProperties {
 	 * remove spaces und everything in brackets following (e.g. "Australia (Continent)" => "AUSTRALIA") for use with i18n-files
 	 */
 	private static String cleanContinentOrSubcontinentDefaultName(String defaultName) {
+		if(defaultName == null) {
+			return null;
+		}
 		return defaultName.substring(0, defaultName.contains("(") ? defaultName.indexOf("(") : defaultName.length())
 			.trim()
 			.replace(" ", "_")

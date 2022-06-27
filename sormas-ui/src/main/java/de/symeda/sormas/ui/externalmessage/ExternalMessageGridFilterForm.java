@@ -73,7 +73,7 @@ public class ExternalMessageGridFilterForm extends AbstractFilterForm<ExternalMe
 		searchField.setNullRepresentation("");
 
 		ComboBoxWithPlaceholder assignee = addField(ExternalMessageCriteria.ASSIGNEE, ComboBoxWithPlaceholder.class);
-		assignee.addItem(new UserReferenceDto(ReferenceDto.NO_REFERENCE_UUID, I18nProperties.getCaption(Captions.unassigned), "", null));
+		assignee.addItem(new UserReferenceDto(ReferenceDto.NO_REFERENCE_UUID, "", "", I18nProperties.getCaption(Captions.unassigned)));
 		assignee.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), null, UserRight.EXTERNAL_MESSAGE_PROCESS));
 		assignee.setNullSelectionAllowed(true);
 
