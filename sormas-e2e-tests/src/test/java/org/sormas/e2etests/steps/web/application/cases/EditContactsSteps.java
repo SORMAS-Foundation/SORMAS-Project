@@ -462,6 +462,10 @@ public class EditContactsSteps implements En {
     When(
         "I click on discard button from new task",
         () -> webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON_POPUP));
+
+    When(
+        "I click on the contacts list button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CONTACTS_LIST));
   }
 
   private void fillFirstName(String firstName) {

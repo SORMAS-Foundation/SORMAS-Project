@@ -1192,17 +1192,9 @@ public class EditEventSteps implements En {
               CONFIRM_BUTTON_FOR_SELECT_PERSON_FROM_ADD_PARTICIPANTS_WINDOW);
           TimeUnit.SECONDS.sleep(1);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          TimeUnit.SECONDS.sleep(3);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          if (webDriverHelpers.isElementVisibleWithTimeout(POPUP_DISCARD_CHANGES_BUTTON, 30)) {
-            webDriverHelpers.clickOnWebElementBySelector(POPUP_DISCARD_CHANGES_BUTTON);
-          }
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
           TimeUnit.SECONDS.sleep(2);
-          if (webDriverHelpers.isElementVisibleWithTimeout(POPUP_DISCARD_CHANGES_BUTTON, 30)) {
-            webDriverHelpers.clickOnWebElementBySelector(POPUP_DISCARD_CHANGES_BUTTON);
-          }
         });
 
     When(
@@ -1380,29 +1372,13 @@ public class EditEventSteps implements En {
         "^I click on New Sample and discard changes is asked$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(NEW_SAMPLE_BUTTON);
-          if (webDriverHelpers.isElementVisibleWithTimeout(POPUP_DISCARD_CHANGES_BUTTON, 30)) {
-            webDriverHelpers.clickOnWebElementBySelector(POPUP_DISCARD_CHANGES_BUTTON);
-          }
         });
 
     When(
-        "^I confirm all actions until unsaved changes popup window disappears$",
+        "^I confirm popup window$",
         () -> {
-          //          do {
-          //            WebElement element =
-          //                webDriverHelpers.returnTheVisibleAndClickableElement(CONFIRM_ACTION);
-          //            webDriverHelpers.clickOnWebElement(element);
-          //          } while (webDriverHelpers.isElementVisibleWithTimeout(CONFIRM_ACTION, 30));
-        });
-
-    When(
-        "^I confirm last popup window when there are multiple ones$",
-        () -> {
-          do {
-            int numberOfElements = webDriverHelpers.getNumberOfElements(CONFIRM_ACTION);
-            webDriverHelpers.clickOnWebElementBySelectorAndIndex(
-                CONFIRM_ACTION, numberOfElements - 1);
-          } while (webDriverHelpers.isElementVisibleWithTimeout(CONFIRM_ACTION, 30));
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_ACTION);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
 
     When(

@@ -338,3 +338,19 @@ Feature: Create travel entries
     And I click on Travel Entry aggrgation button in Person Directory for DE specific
     And I click on first person in person directory
     Then I check if data of created Travel Entry is in Travel Entry tab on Edit Person Page for De specific
+
+    @issue=SORDEV-7161 @env_de
+    Scenario: Test DEA TravelEntry import
+      Given I log in as a Admin User
+      And I click on the Entries button from navbar
+      When I click on the Import button from Travel Entries directory
+      Then I check if import Travel Entry popup has not import option in DE version
+      And I select the specific German travel entry CSV file in the file picker with "travelEntries_testImport.csv" file name
+      And I click on the START DATA IMPORT button from the Import Travel Entries popup
+      Then I check Pick an existing case in Pick or create person popup in travel entry
+      And I select to create new person from the Import Travel Entries popup DE and Save popup if needed
+      And I select to create new person from the Import Travel Entries popup DE and Save popup if needed
+      Then I check if csv file for travel entry is imported successfully
+      And I close Data import popup for Travel Entries
+      Then I close import popup in Travel Entry
+      Then I check if the New Travel Entry button is displayed in Travel Entries directory
