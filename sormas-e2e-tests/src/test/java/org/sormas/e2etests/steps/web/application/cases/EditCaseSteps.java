@@ -2400,6 +2400,27 @@ public class EditCaseSteps implements En {
                   "lastName",
                   "dateOfBirth"));
         });
+
+    And(
+        "^I check the point of entry and place of stay created data are correctly displayed on Edit case page$",
+        () -> {
+          aCase = collectCasePersonDataWithPointOfEntryAndDifferentPlaceOfStay();
+          createdCase = CreateNewCaseSteps.caze;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              aCase,
+              createdCase,
+              List.of(
+                  "dateOfReport",
+                  "disease",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "placeOfStayRegion",
+                  "placeOfStayDistrict",
+                  "pointOfEntry",
+                  "firstName",
+                  "lastName",
+                  "dateOfBirth"));
+        });
   }
 
   private Case collectCasePersonDataWithFacilityAndDifferentPlaceOfStay() {
@@ -2419,6 +2440,24 @@ public class EditCaseSteps implements En {
         .placeOfStayRegion(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_REGION_INPUT))
         .placeOfStayDistrict(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_DISTRICT_INPUT))
         .facility(webDriverHelpers.getValueFromWebElement(FACILITY_HEALTH_INPUT))
+        .build();
+  }
+
+  private Case collectCasePersonDataWithPointOfEntryAndDifferentPlaceOfStay() {
+    Case userInfo = getUserInformation();
+
+    return Case.builder()
+        .dateOfReport(getDateOfReport())
+        .firstName(userInfo.getFirstName())
+        .lastName(userInfo.getLastName())
+        .dateOfBirth(userInfo.getDateOfBirth())
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
+        .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
+        .responsibleDistrict(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
+        .placeOfStayRegion(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_REGION_INPUT))
+        .placeOfStayDistrict(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_DISTRICT_INPUT))
+        .pointOfEntry(webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_TEXT))
         .build();
   }
 

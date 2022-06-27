@@ -1234,6 +1234,15 @@ public class CreateNewCaseSteps implements En {
         (String pointOfEntryOption) -> {
           webDriverHelpers.selectFromCombobox(POINT_OF_ENTRY_COMBOBOX, pointOfEntryOption);
         });
+
+    And(
+        "^I create a new case with different place of stay and Point of entry as a Case origin$",
+        () -> {
+          caze = caseService.buildCaseWithPointOfEntryAndDifferentPlaceOfStay();
+          fillAllCaseFieldsForPointOfEntryAndDifferentPlaceOfStay(caze);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
   }
 
   private void selectPlaceOfStayDistrict(String placeOfStayDistrict) {
@@ -1422,6 +1431,21 @@ public class CreateNewCaseSteps implements En {
     selectSex(caze.getSex());
     fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
     selectFacility(caze.getFacility());
+  }
+
+  private void fillAllCaseFieldsForPointOfEntryAndDifferentPlaceOfStay(Case caze) {
+    selectCaseOrigin(caze.getCaseOrigin());
+    fillDisease(caze.getDisease());
+    selectResponsibleRegion(caze.getResponsibleRegion());
+    selectResponsibleDistrict(caze.getResponsibleDistrict());
+    selectPlaceOfStayRegion(caze.getPlaceOfStayRegion());
+    selectPlaceOfStayDistrict(caze.getPlaceOfStayDistrict());
+    fillFirstName(caze.getFirstName());
+    fillLastName(caze.getLastName());
+    fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
+    selectSex(caze.getSex());
+    fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+    selectPointOfEntry(caze.getPointOfEntry());
   }
 
   private List<WebElement> getTableRows() {
