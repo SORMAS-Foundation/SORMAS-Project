@@ -57,8 +57,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.common.DeletionDetails;
-import de.symeda.sormas.api.share.ExternalShareStatus;
-import de.symeda.sormas.backend.share.ExternalShareInfo;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -162,8 +160,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
 	@EJB
 	private EventParticipantService eventParticipantService;
-	@EJB
-	private EventService eventService;
 	@Resource
 	private ManagedScheduledExecutorService executorService;
 

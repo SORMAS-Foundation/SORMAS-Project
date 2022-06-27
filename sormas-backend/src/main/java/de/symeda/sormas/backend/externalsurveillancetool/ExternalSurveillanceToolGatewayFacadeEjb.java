@@ -67,30 +67,30 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 	@Override
 	public void sendCases(List<String> caseUuids, boolean archived) throws ExternalSurveillanceToolException {
-        ExportParameters params = new ExportParameters();
-        params.setCaseUuids(caseUuids);
-        params.setArchived(archived);
+		ExportParameters params = new ExportParameters();
+		params.setCaseUuids(caseUuids);
+		params.setArchived(archived);
 
-        sendRequest(params);
+		sendRequest(params);
 
-        caseUuids.forEach(uuid -> {
-            Case caze = caseService.getByUuid(uuid);
-            shareInfoService.createAndPersistShareInfo(caze, ExternalShareStatus.SHARED);
-        });
+		caseUuids.forEach(uuid -> {
+			Case caze = caseService.getByUuid(uuid);
+			shareInfoService.createAndPersistShareInfo(caze, ExternalShareStatus.SHARED);
+		});
 	}
 
 	@Override
 	public void sendEvents(List<String> eventUuids, boolean archived) throws ExternalSurveillanceToolException {
-        ExportParameters params = new ExportParameters();
-        params.setEventUuids(eventUuids);
-        params.setArchived(archived);
+		ExportParameters params = new ExportParameters();
+		params.setEventUuids(eventUuids);
+		params.setArchived(archived);
 
-        sendRequest(params);
+		sendRequest(params);
 
-        eventUuids.forEach(uuid -> {
-            Event event = eventService.getByUuid(uuid);
-            shareInfoService.createAndPersistShareInfo(event, ExternalShareStatus.SHARED);
-        });
+		eventUuids.forEach(uuid -> {
+			Event event = eventService.getByUuid(uuid);
+			shareInfoService.createAndPersistShareInfo(event, ExternalShareStatus.SHARED);
+		});
 	}
 
 	private void sendRequest(ExportParameters params) throws ExternalSurveillanceToolException {
