@@ -84,6 +84,7 @@ public class EventService {
         .investigationStatus("INVESTIGATION PENDING") // change back to ongoing after bug fix 5547
         .eventManagementStatus("ONGOING")
         .disease("COVID-19")
+        .diseaseVariant("B.1.617.3")
         .title("EVENT_AUTOMATION_" + timestamp + faker.address().city())
         .eventDate(LocalDate.now().minusDays(1))
         .reportDate(LocalDate.now())

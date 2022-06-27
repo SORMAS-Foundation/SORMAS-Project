@@ -186,17 +186,32 @@ Feature: Sample Functionalities
     Then I create a new Sample with positive test result with COVID-19 as disease
     Then I confirm the Create case from contact with positive test result
     Then I create a new case with specific data for positive pathogen test result
-    Then I save a new case
+    Then I save the new case
     Then I navigate to the last created contact via the url
     Then I click on edit Sample
     Then I click on new test result for pathogen tests
     Then I create a new pathogen test result with Anthrax as disease
     Then I confirm the Create case from contact with positive test result
     Then I create a new case with specific data for positive pathogen test result
-    Then I save a new case
+    Then I save the new case
     Then I navigate to the last created contact via the url
     Then I validate only one sample is created with two pathogen tests
     Then I click on edit Sample
     Then I validate the existence of two pathogen tests
 
-
+  @env_main @#8560
+  Scenario: Display date and time for pathogen test result on sample card
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When I log in with National User
+    Then I navigate to the last created contact via the url
+    Then I click on New Sample
+    Then I collect the sample UUID displayed on create new sample page
+    Then I create a new Sample with positive test result with COVID-19 as disease
+    Then I confirm creating a new case
+    Then I navigate to the last created contact via the url
+    Then I validate date and time is present on sample card

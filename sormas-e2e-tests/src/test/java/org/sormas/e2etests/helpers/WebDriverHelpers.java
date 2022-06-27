@@ -291,6 +291,43 @@ public class WebDriverHelpers {
   }
 
   @SneakyThrows
+  public void selectFromComboboxEqual(By selector, String text) {
+    clickOnWebElementBySelector(selector);
+    WebElement comboboxInput =
+        baseSteps
+            .getDriver()
+            .findElement(selector)
+            .findElement(By.xpath("preceding-sibling::input"));
+    String comboBoxItemWithText =
+        "//td[@role='listitem']/span[text()='"
+            + text
+            + "' or starts-with(text(), '\" + text + \"') ]";
+    waitUntilIdentifiedElementIsVisibleAndClickable(comboboxInput);
+    comboboxInput.sendKeys(text);
+    waitUntilElementIsVisibleAndClickable(By.className("v-filterselect-suggestmenu"));
+    waitUntilANumberOfElementsAreVisibleAndClickable(By.xpath("//td[@role='listitem']/span"), 1);
+    By dropDownValueXpath = By.xpath(comboBoxItemWithText);
+    TimeUnit.MILLISECONDS.sleep(700);
+    clickOnWebElementBySelector(dropDownValueXpath);
+    await()
+        .pollInterval(ONE_HUNDRED_MILLISECONDS)
+        .ignoreExceptions()
+        .catchUncaughtExceptions()
+        .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
+        .untilAsserted(
+            () -> {
+              Assert.assertTrue(
+                  baseSteps
+                      .getDriver()
+                      .findElement(selector)
+                      .findElement(By.xpath("preceding-sibling::input"))
+                      .getAttribute("value")
+                      .contains(text),
+                  String.format("Option %s wasn't selected from dropdown %s", text, selector));
+            });
+  }
+
+  @SneakyThrows
   public boolean checkIfElementExistsInCombobox(By selector, String text) {
     clickOnWebElementBySelector(selector);
     WebElement comboboxInput =
@@ -637,6 +674,12 @@ public class WebDriverHelpers {
     return baseSteps.getDriver().findElement(byObject).getText();
   }
 
+  public String getSrcFromWebElement(By byObject) {
+    waitUntilIdentifiedElementIsVisibleAndClickable(byObject);
+    scrollToElement(byObject);
+    return baseSteps.getDriver().findElement(byObject).getAttribute("src");
+  }
+
   public int getNumberOfElements(By byObject) {
     try {
       return baseSteps.getDriver().findElements(byObject).size();
@@ -793,6 +836,18 @@ public class WebDriverHelpers {
       return baseSteps.getDriver().findElement(checkbox).findElement(CHECKBOX_TEXT_LABEL).getText();
     } else {
       throw new Error(String.format("checked was found as NULL for %s: ", checkbox));
+    }
+  }
+
+  public boolean checkCheckboxIsCheckedByHTMLFromParent(
+      final By selector, final String text, final String expected) {
+    try {
+      return getWebElementBySelectorAndText(selector, text)
+          .findElement((By.xpath("./..")))
+          .getAttribute("outerHTML")
+          .contains(expected);
+    } catch (ConditionTimeoutException ignored) {
+      throw new NoSuchElementException(String.format("Element: %s not found", selector));
     }
   }
 

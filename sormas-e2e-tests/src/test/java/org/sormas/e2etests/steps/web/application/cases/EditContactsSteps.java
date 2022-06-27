@@ -19,6 +19,7 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISCARD_BUTTON_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CASE_CONTACT_EXPORT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CLOSE_POPUP_BUTTON;
@@ -77,6 +78,7 @@ import static org.sormas.e2etests.pages.application.events.EventParticipantsPage
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_CONTACT_POPUP;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_PERSON_POPUP;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_POPUP_SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK_TYPE_COMBOBOX;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
@@ -97,6 +99,7 @@ import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.services.ContactService;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
 
@@ -440,6 +443,29 @@ public class EditContactsSteps implements En {
               "Delete button is not editable state but it should be since archived entities default value is true!");
           softly.assertAll();
         });
+
+    And(
+        "I fill general comment in contact edit page with ([^\"]*)",
+        (String comment) -> {
+          webDriverHelpers.fillInWebElement(EditContactPage.GENERAL_COMMENT_TEXT, comment);
+        });
+
+    When(
+        "I check if Task Type has not a ([^\"]*) option",
+        (String option) -> {
+          softly.assertFalse(
+              webDriverHelpers.checkIfElementExistsInCombobox(TASK_TYPE_COMBOBOX, option),
+              "Task type is incorrect");
+          softly.assertAll();
+        });
+
+    When(
+        "I click on discard button from new task",
+        () -> webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON_POPUP));
+
+    When(
+        "I click on the contacts list button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CONTACTS_LIST));
   }
 
   private void fillFirstName(String firstName) {

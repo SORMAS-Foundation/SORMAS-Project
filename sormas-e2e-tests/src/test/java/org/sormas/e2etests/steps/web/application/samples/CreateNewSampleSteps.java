@@ -38,6 +38,7 @@ import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.COMMENT_AREA_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CONJ_BILIRUBIN_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CREATININE_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_AND_TIME_OF_RESULTS;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_OF_RESULT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_SAMPLE_COLLECTED;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_SAMPLE_RECEIVED;
@@ -234,6 +235,8 @@ public class CreateNewSampleSteps implements En {
           selectTestedDisease(sample.getTestedDisease());
           selectTypeOfTest(sample.getTypeOfTest());
           selectTestResult(sample.getSampleTestResults());
+          fillDateOfResult(sample.getDateOfResult(), Locale.ENGLISH);
+          fillTimeOfResult(sample.getTimeOfResult());
           selectLaboratory(sample.getLaboratory());
           selectResultVerifiedByLabSupervisor(
               sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
@@ -254,6 +257,25 @@ public class CreateNewSampleSteps implements En {
               sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
           selectTestResult(sample.getTestResults());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "^I validate date and time is present on sample card$",
+        () -> {
+          String dateAndTimeVisible =
+              webDriverHelpers.getTextFromWebElement(DATE_AND_TIME_OF_RESULTS);
+          LocalDate date = sample.getDateOfResult();
+          LocalTime time = sample.getTimeOfResult();
+          DateTimeFormatter dateFormater = DateTimeFormatter.ofPattern("M/d/yyyy");
+          DateTimeFormatter timeFormater = DateTimeFormatter.ofPattern("hh:mm a");
+          softly.assertEquals(
+              "Date and time of result: "
+                  + dateFormater.format(date)
+                  + " "
+                  + timeFormater.format(time),
+              dateAndTimeVisible,
+              "Date or time is not equal");
+          softly.assertAll();
         });
 
     When(
@@ -632,6 +654,19 @@ public class CreateNewSampleSteps implements En {
         (String disease) -> {
           String testedDisease = webDriverHelpers.getValueFromCombobox(TESTED_DISEASE_COMBOBOX);
           softly.assertEquals(disease, testedDisease, "Diseases are not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "I set Test Disease as ([^\"]*) in new pathogen result",
+        (String disease) -> webDriverHelpers.selectFromCombobox(TESTED_DISEASE_COMBOBOX, disease));
+
+    When(
+        "I check if Type of test in new pathogen results has no ([^\"]*) option",
+        (String typeOfTest) -> {
+          softly.assertFalse(
+              webDriverHelpers.checkIfElementExistsInCombobox(TYPE_OF_TEST_COMBOBOX, typeOfTest),
+              "Type of test is incorrect");
           softly.assertAll();
         });
   }

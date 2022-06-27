@@ -96,6 +96,8 @@ public class EditContactPage {
   public static final By RESPONSIBLE_STATUS_OFFICER_COMBOBOX =
       By.cssSelector(".v-verticallayout [location='contactOfficer'] [role='combobox'] div");
   public static final By GENERAL_COMMENT_TEXT = By.id("additionalDetails");
+  public static final By GENERAL_COMMENT_TEXT_AREA =
+      By.xpath("//textarea[@id='additionalDetails']");
   public static final By SAVE_EDIT_BUTTON = By.id("commit");
   public static final By DISCARD_POPUP_BUTTON = By.cssSelector(".popupContent #discard");
   public static final By FOLLOW_UP_VISITS = By.id("tab-contacts-visits");
@@ -152,16 +154,6 @@ public class EditContactPage {
       By.xpath("//div[@class='popupContent']//div[@class='v-filterselect-button']");
   public static final By ADD_A_PARTICIPANT_HEADER =
       By.xpath("//*[contains(text(),'Add new event participant')]");
-
-  public static By getByEventIndex(int index) {
-    return By.xpath(
-        String.format("//*[contains(text(),'Pick or create event')]//..//..//../tr[%s]", index));
-  }
-
-  public static final By NUMBER_OF_TESTS_IN_SAMPLES =
-      By.cssSelector("div:nth-of-type(7) > .v-label.v-label-undef-w.v-widget");
-
-  public static final By CONTACTS_LIST = By.id("tab-contacts");
   public static final By CREATE_NEW_TASK_FORM_HEADER = By.xpath("//div[@class='v-window-header']");
   public static final By TASK_TYPE_COMBOBOX = By.cssSelector(".v-window #taskType div");
   public static final By NEW_TASK_DUE_DATE = By.cssSelector("#dueDate_date input");
@@ -173,4 +165,22 @@ public class EditContactPage {
   public static final By INPUT_DATA_ERROR_POPUP =
       By.xpath(
           "//div[@class='v-Notification error v-Notification-error']//div[contains(@class,'popupContent')]");
+
+  public static By getByEventIndex(int index) {
+    return By.xpath(
+        String.format("//*[contains(text(),'Pick or create event')]//..//..//../tr[%s]", index));
+  }
+
+  public static By getUuidByEventIndex(int index) {
+    return By.xpath(String.format("//table/tbody/tr[%s]/td[1]", index));
+  }
+
+  public static final By NUMBER_OF_TESTS_IN_SAMPLES =
+      By.cssSelector("div:nth-of-type(7) > .v-label.v-label-undef-w.v-widget");
+
+  public static final By CONTACTS_LIST = By.id("tab-contacts");
+
+  public static By getContactIDPathByIndex(int index) {
+    return By.xpath(String.format("//table/tbody/tr[%s]/td[1]/a", index));
+  }
 }
