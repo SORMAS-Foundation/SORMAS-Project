@@ -172,11 +172,14 @@ public class NavBarSteps implements En {
         "^I click on the Dashboard button from navbar and access Surveillance Dashboard$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NavBarPage.DASHBOARD_BUTTON);
-          Thread.sleep(10000);
+          TimeUnit.SECONDS.sleep(15); // mandatory due to loading time issue
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              NavBarPage.DASHBOARD_BUTTON, 30);
+
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
           webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NavBarPage.DASHBOARD_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              NavBarPage.DASHBOARD_BUTTON, 30);
 
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
         });
@@ -200,7 +203,7 @@ public class NavBarSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONTACTS_BUTTON);
           TimeUnit.SECONDS.sleep(10); // mandatory due to loading time issue
           webDriverHelpers.clickOnWebElementBySelector(CONTACTS_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(90);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               CONTACTS_DASHBOARD_NAME, 10);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
