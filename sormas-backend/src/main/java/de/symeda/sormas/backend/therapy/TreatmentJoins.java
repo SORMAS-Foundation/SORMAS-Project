@@ -33,6 +33,7 @@ import de.symeda.sormas.backend.user.User;
 public class TreatmentJoins extends QueryJoins<Treatment> {
 
 	private Join<Treatment, Therapy> therapy;
+	private Join<Treatment, Prescription> prescription;
 	private Join<Therapy, Case> caze;
 	private CaseJoins caseJoins;
 
@@ -46,6 +47,14 @@ public class TreatmentJoins extends QueryJoins<Treatment> {
 
 	private void setTherapy(Join<Treatment, Therapy> therapy) {
 		this.therapy = therapy;
+	}
+
+	public Join<Treatment, Prescription> getPrescription() {
+		return getOrCreate(prescription, Treatment.PRESCRIPTION, JoinType.LEFT, this::setPrescription);
+	}
+
+	public void setPrescription(Join<Treatment, Prescription> prescription) {
+		this.prescription = prescription;
 	}
 
 	public Join<Therapy, Case> getCaze() {

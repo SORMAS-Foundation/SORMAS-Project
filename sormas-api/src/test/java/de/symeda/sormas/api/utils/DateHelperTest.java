@@ -17,13 +17,16 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -107,6 +110,60 @@ public class DateHelperTest {
 
 		assertEquals(new Integer(1), epiWeek.getWeek());
 		assertEquals(new Integer(2019), epiWeek.getYear());
+	}
+
+	@Test
+	public void testGetSameEpiWeek() {
+
+		EpiWeek selectedEpiWeek = DateHelper.getEpiWeek(DateHelper.getDateZero(2022, Calendar.JANUARY, 17));
+
+		// 0. Edge cases concerning null/empty
+		{
+			assertNull(DateHelper.getSameEpiWeek(null, null));
+			assertNull(DateHelper.getSameEpiWeek(null, Collections.emptyList()));
+			assertNull(DateHelper.getSameEpiWeek(selectedEpiWeek, null));
+			assertNull(DateHelper.getSameEpiWeek(selectedEpiWeek, Collections.emptyList()));
+		}
+
+		int otherYear = 2021;
+
+		// 1a. Get another year with begin of year
+		{
+			EpiWeek result = DateHelper.getSameEpiWeek(selectedEpiWeek, DateHelper.createEpiWeekList(otherYear));
+			assertThat(selectedEpiWeek.getWeek(), equalTo(4));
+			assertThat(result.getWeek(), equalTo(selectedEpiWeek.getWeek()));
+			assertThat(result.getYear(), equalTo(otherYear));
+		}
+
+		selectedEpiWeek = DateHelper.getEpiWeek(DateHelper.getDateZero(2022, Calendar.DECEMBER, 24));
+
+		// 1b. Get another year with end of year
+		{
+			EpiWeek result = DateHelper.getSameEpiWeek(selectedEpiWeek, DateHelper.createEpiWeekList(otherYear));
+			assertThat(selectedEpiWeek.getWeek(), equalTo(52));
+			assertThat(result.getWeek(), equalTo(selectedEpiWeek.getWeek()));
+			assertThat(result.getYear(), equalTo(otherYear));
+		}
+
+		otherYear = 2023;
+
+		// 3. Get another year with 53 epiWeeks
+		{
+			EpiWeek result = DateHelper.getSameEpiWeek(selectedEpiWeek, DateHelper.createEpiWeekList(otherYear));
+			assertThat(selectedEpiWeek.getWeek(), equalTo(52));
+			assertThat(result.getWeek(), equalTo(selectedEpiWeek.getWeek()));
+			assertThat(result.getYear(), equalTo(otherYear));
+		}
+
+		otherYear = 2022;
+		selectedEpiWeek = DateHelper.getEpiWeek(DateHelper.getDateZero(2023, Calendar.DECEMBER, 26));
+
+		// 3. Get from year with 53 epiWeeks
+		{
+			EpiWeek result = DateHelper.getSameEpiWeek(selectedEpiWeek, DateHelper.createEpiWeekList(otherYear));
+			assertThat(selectedEpiWeek.getWeek(), equalTo(53));
+			assertNull(result);
+		}
 	}
 
 	@Test

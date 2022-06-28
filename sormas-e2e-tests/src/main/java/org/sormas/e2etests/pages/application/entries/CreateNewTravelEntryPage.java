@@ -34,7 +34,11 @@ public class CreateNewTravelEntryPage {
       By.cssSelector(".v-window #responsibleDistrict div");
   public static final By RESPONSIBLE_COMMUNITY_COMBOBOX =
       By.cssSelector(".v-window #responsibleCommunity div");
+  public static final By DISEASE_COMBOBOX_DISABLED =
+      By.xpath(
+          "//div[@class='popupContent']//div[contains(@class,'v-disabled') and @id='disease']");
   public static final By DISEASE_COMBOBOX = By.cssSelector(" #disease div");
+  public static final By DISEASE_VARIANT_COMBOBOX = By.cssSelector("#diseaseVariant div");
   public static final By POINT_OF_ENTRY_COMBOBOX = By.cssSelector(".v-window #pointOfEntry div");
   public static final By POINT_OF_ENTRY_DETAILS_INPUT =
       By.cssSelector(".v-window #pointOfEntryDetails");
@@ -47,4 +51,25 @@ public class CreateNewTravelEntryPage {
   public static final By PICK_A_EXISTING_CASE_LABEL_DE =
       By.xpath("//*[text()='Einen vorhandenen Fall w\u00E4hlen']");
   public static final By ARRIVAL_DATE = By.cssSelector("#dateOfArrival input");
+  public static final By REPORT_DATE = By.cssSelector("#reportDate input");
+  public static final By DATE_OF_ARRIVAL_POPUP_CLOSE =
+      By.xpath(
+          "//div[@class='v-Notification error v-Notification-error']//div[@class='popupContent']");
+  public static final By DATE_OF_ARRIVAL_LABEL_DE =
+      By.xpath("//div[@location='dateOfArrival']//div/div/div[@class='v-captiontext']");
+  public static final By FIRST_TRAVEL_ENTRY_ID_BUTTON =
+      By.cssSelector(".v-grid-row-has-data a[title]");
+  public static final By OPEN_CASE_OF_THIS_TRAVEL_ENTRY_BUTTON_DE =
+      By.xpath(
+          "//div[@location='case']//span[contains(text(),'Fall zu dieser Einreise \u00F6ffnen')]");
+  public static final By FIRST_UUID_TABLE_TRAVEL_ENTRIES = By.xpath("//table//td[1]");
+  public static final By EXTERNAL_ID_INPUT = By.cssSelector("#externalId");
+  public static final By DIFFERENT_POINT_OF_ENTRY_CHECKBOX =
+      By.cssSelector("#differentPointOfEntryJurisdiction");
+  public static final By POINT_OF_ENTRY_REGION_INPUT = By.cssSelector("#pointOfEntryRegion input");
+  public static final By POINT_OF_ENTRY_DISTRICT_INPUT =
+      By.cssSelector("#pointOfEntryDistrict input");
+  public static final By INPUT_DATA_ERROR_POPUP =
+      By.xpath(
+          "//div[@class='v-Notification error v-Notification-error']//div[contains(@class,'popupContent')]");
 }

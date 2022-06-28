@@ -22,7 +22,9 @@ import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -263,6 +265,43 @@ public class WebDriverHelpers {
         "//td[@role='listitem']/span[ contains(text(), '"
             + text
             + "') or starts-with(text(), '\" + text + \"') ]";
+    waitUntilIdentifiedElementIsVisibleAndClickable(comboboxInput);
+    comboboxInput.sendKeys(text);
+    waitUntilElementIsVisibleAndClickable(By.className("v-filterselect-suggestmenu"));
+    waitUntilANumberOfElementsAreVisibleAndClickable(By.xpath("//td[@role='listitem']/span"), 1);
+    By dropDownValueXpath = By.xpath(comboBoxItemWithText);
+    TimeUnit.MILLISECONDS.sleep(700);
+    clickOnWebElementBySelector(dropDownValueXpath);
+    await()
+        .pollInterval(ONE_HUNDRED_MILLISECONDS)
+        .ignoreExceptions()
+        .catchUncaughtExceptions()
+        .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
+        .untilAsserted(
+            () -> {
+              Assert.assertTrue(
+                  baseSteps
+                      .getDriver()
+                      .findElement(selector)
+                      .findElement(By.xpath("preceding-sibling::input"))
+                      .getAttribute("value")
+                      .contains(text),
+                  String.format("Option %s wasn't selected from dropdown %s", text, selector));
+            });
+  }
+
+  @SneakyThrows
+  public void selectFromComboboxEqual(By selector, String text) {
+    clickOnWebElementBySelector(selector);
+    WebElement comboboxInput =
+        baseSteps
+            .getDriver()
+            .findElement(selector)
+            .findElement(By.xpath("preceding-sibling::input"));
+    String comboBoxItemWithText =
+        "//td[@role='listitem']/span[text()='"
+            + text
+            + "' or starts-with(text(), '\" + text + \"') ]";
     waitUntilIdentifiedElementIsVisibleAndClickable(comboboxInput);
     comboboxInput.sendKeys(text);
     waitUntilElementIsVisibleAndClickable(By.className("v-filterselect-suggestmenu"));
@@ -635,6 +674,12 @@ public class WebDriverHelpers {
     return baseSteps.getDriver().findElement(byObject).getText();
   }
 
+  public String getSrcFromWebElement(By byObject) {
+    waitUntilIdentifiedElementIsVisibleAndClickable(byObject);
+    scrollToElement(byObject);
+    return baseSteps.getDriver().findElement(byObject).getAttribute("src");
+  }
+
   public int getNumberOfElements(By byObject) {
     try {
       return baseSteps.getDriver().findElements(byObject).size();
@@ -794,6 +839,18 @@ public class WebDriverHelpers {
     }
   }
 
+  public boolean checkCheckboxIsCheckedByHTMLFromParent(
+      final By selector, final String text, final String expected) {
+    try {
+      return getWebElementBySelectorAndText(selector, text)
+          .findElement((By.xpath("./..")))
+          .getAttribute("outerHTML")
+          .contains(expected);
+    } catch (ConditionTimeoutException ignored) {
+      throw new NoSuchElementException(String.format("Element: %s not found", selector));
+    }
+  }
+
   public boolean isElementDisplayedIn20SecondsOrThrowException(Object selector) {
     if (selector instanceof WebElement) {
       try {
@@ -894,7 +951,7 @@ public class WebDriverHelpers {
           .pollInterval(ONE_HUNDRED_MILLISECONDS)
           .ignoreExceptions()
           .catchUncaughtExceptions()
-          .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
+          .timeout(ofSeconds(60))
           .until(
               () ->
                   baseSteps.getDriver().findElement(selector).isDisplayed()
@@ -903,7 +960,7 @@ public class WebDriverHelpers {
     } catch (ConditionTimeoutException ignored) {
       throw new NoSuchElementException(
           String.format(
-              "Element: %s is not visible under 20 seconds or loading spinner didn't finished",
+              "Element: %s is not visible under 60 seconds or loading spinner didn't finished",
               selector));
     }
   }
@@ -916,5 +973,35 @@ public class WebDriverHelpers {
             + ").getPropertyValue('content')";
     String content = javascriptExecutor.executeScript(script).toString();
     return content;
+  }
+
+  public String returnURL() {
+    return baseSteps.getDriver().getCurrentUrl();
+  }
+
+  public void switchToOtherWindow() {
+    String parent = baseSteps.getDriver().getWindowHandle();
+    Set<String> S = baseSteps.getDriver().getWindowHandles();
+    if (S.size() > 1) {
+      for (String actual : S) {
+        if (!actual.equalsIgnoreCase(parent)) {
+          baseSteps.getDriver().switchTo().window(actual);
+          break;
+        }
+      }
+    } else {
+      throw new NotFoundException("Cannot switch window because only one is available!");
+    }
+  }
+
+  public void closeActiveWindow() {
+    var tabs = new ArrayList<>(baseSteps.getDriver().getWindowHandles());
+    if (tabs.size() > 1) {
+      baseSteps.getDriver().close();
+      baseSteps.getDriver().switchTo().window(tabs.get(0));
+    } else {
+      throw new NotFoundException(
+          "Cannot close active window and switch to parent window because only one is available!");
+    }
   }
 }

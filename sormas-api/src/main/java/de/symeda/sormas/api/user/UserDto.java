@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
+import de.symeda.sormas.api.utils.FeatureIndependent;
 import java.util.Set;
 
 import javax.validation.Valid;
@@ -35,11 +36,12 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
+@FeatureIndependent
 public class UserDto extends EntityDto {
 
 	private static final long serialVersionUID = -8558187171374254398L;
 
-	public static final String COLUMN_NAME_USERROLE = "userrole";
+	public static final String COLUMN_NAME_USERROLE = "userrole_id";
 	public static final String COLUMN_NAME_USER_ID = "user_id";
 
 	public static final String I18N_PREFIX = "User";
@@ -63,6 +65,7 @@ public class UserDto extends EntityDto {
 	public static final String LIMITED_DISEASE = "limitedDisease";
 	public static final String LANGUAGE = "language";
 	public static final String HAS_CONSENTED_TO_GDPR = "hasConsentedToGdpr";
+	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
 
 	private boolean active = true;
 
@@ -80,7 +83,7 @@ public class UserDto extends EntityDto {
 	@Valid
 	private LocationDto address;
 
-	private Set<UserRole> userRoles;
+	private Set<UserRoleReferenceDto> userRoles;
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -100,6 +103,8 @@ public class UserDto extends EntityDto {
 	private Language language;
 
 	private boolean hasConsentedToGdpr;
+
+	private JurisdictionLevel jurisdictionLevel;
 
 	public static UserDto build() {
 		UserDto user = new UserDto();
@@ -168,17 +173,17 @@ public class UserDto extends EntityDto {
 		this.address = address;
 	}
 
-	public Set<UserRole> getUserRoles() {
+	public Set<UserRoleReferenceDto> getUserRoles() {
 		return userRoles;
 	}
 
-	public void setUserRoles(Set<UserRole> userRoles) {
+	public void setUserRoles(Set<UserRoleReferenceDto> userRoles) {
 		this.userRoles = userRoles;
 	}
 
 	@Override
 	public String toString() {
-		return UserReferenceDto.buildCaption(firstName, lastName, userRoles);
+		return UserReferenceDto.buildCaption(firstName, lastName);
 	}
 
 	public UserReferenceDto getAssociatedOfficer() {
@@ -238,7 +243,7 @@ public class UserDto extends EntityDto {
 	}
 
 	public UserReferenceDto toReference() {
-		return new UserReferenceDto(getUuid(), getFirstName(), getLastName(), getUserRoles());
+		return new UserReferenceDto(getUuid(), getFirstName(), getLastName());
 	}
 
 	public Disease getLimitedDisease() {
@@ -263,5 +268,13 @@ public class UserDto extends EntityDto {
 
 	public void setHasConsentedToGdpr(boolean hasConsentedToGdpr) {
 		this.hasConsentedToGdpr = hasConsentedToGdpr;
+	}
+
+	public JurisdictionLevel getJurisdictionLevel() {
+		return jurisdictionLevel;
+	}
+
+	public void setJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
+		this.jurisdictionLevel = jurisdictionLevel;
 	}
 }

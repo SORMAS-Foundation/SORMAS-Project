@@ -118,10 +118,10 @@ public class EventJurisdictionPredicateValidator extends PredicateJurisdictionVa
 	@Override
 	protected Predicate whenLaboratoryLevel() {
 		if (user != null) {
-			return EventParticipantJurisdictionPredicateValidator.of(new EventParticipantQueryContext(cb, cq, joins.getEventParticipants()), user)
+			return EventParticipantJurisdictionPredicateValidator.of(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins()), user)
 				.whenLaboratoryLevel();
 		} else {
-			return EventParticipantJurisdictionPredicateValidator.of(new EventParticipantQueryContext(cb, cq, joins.getEventParticipants()), userPath)
+			return EventParticipantJurisdictionPredicateValidator.of(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins()), userPath)
 				.whenLaboratoryLevel();
 		}
 	}

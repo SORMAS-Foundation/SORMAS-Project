@@ -18,47 +18,21 @@ package de.symeda.sormas.api.sample;
 import java.io.Serializable;
 import java.util.Date;
 
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.event.EventParticipantReferenceDto;
-
 public class SampleSimilarityCriteria implements Serializable {
 
 	private static final long serialVersionUID = -2051359287159310211L;
 
-	private CaseReferenceDto caze;
-	private ContactReferenceDto contact;
-	private EventParticipantReferenceDto eventParticipant;
+	private SampleCriteria sampleCriteria;
 	private String labSampleId;
 	private Date sampleDateTime;
 	private SampleMaterial sampleMaterial;
 
-	public CaseReferenceDto getCaze() {
-		return caze;
+	public SampleCriteria getSampleCriteria() {
+		return sampleCriteria;
 	}
 
-	public SampleSimilarityCriteria caze(CaseReferenceDto caze) {
-		this.caze = caze;
-
-		return this;
-	}
-
-	public ContactReferenceDto getContact() {
-		return contact;
-	}
-
-	public SampleSimilarityCriteria contact(ContactReferenceDto contact) {
-		this.contact = contact;
-
-		return this;
-	}
-
-	public EventParticipantReferenceDto getEventParticipant() {
-		return eventParticipant;
-	}
-
-	public SampleSimilarityCriteria eventParticipant(EventParticipantReferenceDto eventParticipant) {
-		this.eventParticipant = eventParticipant;
+	public SampleSimilarityCriteria sampleCriteria(SampleCriteria sampleCriteria) {
+		this.sampleCriteria = sampleCriteria;
 
 		return this;
 	}

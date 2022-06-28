@@ -21,6 +21,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
 
@@ -56,8 +57,8 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -79,17 +80,28 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		super.init();
 
 		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
-		user1 = creator
-			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off1", UserRole.SURVEILLANCE_OFFICER);
+		user1 = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			rdcf1.facility.getUuid(),
+			"Surv",
+			"Off1",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
-		user2 = creator
-			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
+		user2 = creator.createUser(
+			rdcf2.region.getUuid(),
+			rdcf2.district.getUuid(),
+			rdcf2.facility.getUuid(),
+			"Surv",
+			"Off2",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 		rdcf2NewCommunity = creator.createCommunity("New community", rdcf2.district);
 		rdcf2NewFacility = creator.createFacility("New facility", rdcf2.region, rdcf2.district, rdcf2NewCommunity.toReference());
 		rdcf2NewPointOfEntry = creator.createPointOfEntry("New point of entry", rdcf2.region, rdcf2.district);
 
-		observerUser = creator.createUser(null, null, null, null, "National", "Observer", UserRole.NATIONAL_OBSERVER);
+		observerUser =
+			creator.createUser(null, null, null, null, "National", "Observer", creator.getUserRoleReference(DefaultUserRole.NATIONAL_OBSERVER));
 
 		loginWith(user2);
 	}
@@ -238,6 +250,8 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	@Test
 	public void testUpdatePseudonymizedCase() {
+
+		loginWith(user1);
 		CaseDataDto caze = createCase(rdcf1, user1);
 		loginWith(observerUser);
 		updateCase(caze, observerUser);
@@ -312,7 +326,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			user1.toReference(),
 			person,
 			Disease.CORONAVIRUS,
-			CaseClassification.PROBABLE,
+			CaseClassification.NOT_CLASSIFIED,
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcf,
@@ -409,9 +423,9 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(caze.getRegion(), is(rdcf1.region));
 		assertThat(caze.getDistrict(), is(rdcf1.district));
 		assertThat(caze.getCommunity(), is(nullValue()));
-		assertThat(caze.getHealthFacility(), is(nullValue()));
+		assertThat(caze.getHealthFacility(), notNullValue());
 		assertThat(caze.getHealthFacilityDetails(), is(isEmptyString()));
-		assertThat(caze.getPointOfEntry(), is(nullValue()));
+		assertThat(caze.getPointOfEntry(), notNullValue());
 		assertThat(caze.getPointOfEntryDetails(), is(isEmptyString()));
 		assertThat(caze.getPerson().getFirstName(), is(isEmptyString()));
 		assertThat(caze.getPerson().getLastName(), is(isEmptyString()));

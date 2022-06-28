@@ -51,7 +51,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.vaccination.VaccinationService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -65,6 +64,7 @@ import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
 import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
@@ -76,7 +76,7 @@ import de.symeda.sormas.api.event.EventParticipantListEntryDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -138,6 +138,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 
 @Stateless(name = "EventParticipantFacade")
 @RolesAllowed(UserRight._EVENTPARTICIPANT_VIEW)
@@ -456,9 +457,9 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	@RolesAllowed(UserRight._EVENTPARTICIPANT_DELETE)
-	public void delete(String uuid) throws ExternalSurveillanceToolException {
+	public void delete(String uuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolRuntimeException {
 		EventParticipant eventParticipant = service.getByUuid(uuid);
-		service.delete(eventParticipant);
+		service.delete(eventParticipant, deletionDetails);
 	}
 
 	@Override
@@ -637,7 +638,7 @@ public class EventParticipantFacadeEjb
 
 		Join<EventParticipant, Person> person = joins.getPerson();
 
-		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, joins.getPersonJoins());
 
 		Join<Person, Location> address = joins.getAddress();
 		Join<Person, Country> birthCountry = person.join(Person.BIRTH_COUNTRY, JoinType.LEFT);
@@ -805,8 +806,9 @@ public class EventParticipantFacadeEjb
 						Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
 						Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
 
-						List<Vaccination> relevantSortedVaccinations =
-							getRelevantSortedVaccinations(exportDto.getEventUuid(), mostRecentImmunization.getVaccinations());
+						List<Vaccination> relevantSortedVaccinations = getRelevantSortedVaccinations(
+							exportDto.getEventUuid(),
+							filteredImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList()));
 						Vaccination firstVaccination = null;
 						Vaccination lastVaccination = null;
 
@@ -961,6 +963,10 @@ public class EventParticipantFacadeEjb
 			target.setSormasToSormasOriginInfo(sormasToSormasOriginInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
 		}
 
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -1012,6 +1018,10 @@ public class EventParticipantFacadeEjb
 		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
 		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
+
 		return target;
 	}
 
@@ -1049,13 +1059,12 @@ public class EventParticipantFacadeEjb
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<SimilarEventParticipantDto> cq = cb.createQuery(SimilarEventParticipantDto.class);
 		final Root<EventParticipant> eventParticipantRoot = cq.from(EventParticipant.class);
-		cq.distinct(true);
 
-		Join<Object, Object> personJoin = eventParticipantRoot.join(EventParticipant.PERSON, JoinType.LEFT);
-		Join<Object, Object> eventJoin = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT);
+		EventParticipantQueryContext eventParticipantQueryContext = new EventParticipantQueryContext(cb, cq, eventParticipantRoot);
+		Join<EventParticipant, Person> personJoin = eventParticipantQueryContext.getJoins().getPerson();
+		Join<EventParticipant, Event> eventJoin = eventParticipantQueryContext.getJoins().getEvent();
 
-		Expression<Object> jurisdictionSelector =
-			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(new EventParticipantQueryContext(cb, cq, eventParticipantRoot)));
+		Expression<Object> jurisdictionSelector = JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(eventParticipantQueryContext));
 		cq.multiselect(
 			eventParticipantRoot.get(EventParticipant.UUID),
 			personJoin.get(Person.FIRST_NAME),
@@ -1066,19 +1075,10 @@ public class EventParticipantFacadeEjb
 			eventJoin.get(Event.EVENT_TITLE),
 			eventJoin.get(Event.START_DATE),
 			jurisdictionSelector);
-		cq.groupBy(
-			eventParticipantRoot.get(EventParticipant.UUID),
-			personJoin.get(Person.FIRST_NAME),
-			personJoin.get(Person.LAST_NAME),
-			eventParticipantRoot.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
-			eventJoin.get(Event.UUID),
-			eventJoin.get(Event.EVENT_STATUS),
-			eventJoin.get(Event.EVENT_TITLE),
-			eventJoin.get(Event.START_DATE),
-			jurisdictionSelector);
+		cq.distinct(true);
 
 		final Predicate defaultFilter = service.createDefaultFilter(cb, eventParticipantRoot);
-		final Predicate userFilter = service.createUserFilter(cb, cq, eventParticipantRoot);
+		final Predicate userFilter = service.createUserFilter(eventParticipantQueryContext);
 
 		final PersonReferenceDto person = criteria.getPerson();
 		final Predicate samePersonFilter = person != null ? cb.equal(personJoin.get(Person.UUID), person.getUuid()) : null;

@@ -15,7 +15,7 @@
 
 package org.sormas.e2etests.steps.web.application.configuration;
 
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NAME_UUID_EPID_NUMBER_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_ORIGIN_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DISEASE_COMBOBOX;
@@ -30,12 +30,15 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_PERSON_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISTRICT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTERNAL_ID_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_SELECTED_VALUE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REGION_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REPORT_DATE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.ARCHIVE_COMMUNITY_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITIES_NEW_ENTRY_BUTTON;
@@ -113,6 +116,11 @@ public class CommunitiesSteps implements En {
           caze = caseService.buildGeneratedCase();
           fillSpecificCaseFields(caze, communities);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP_HEADER, 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+            TimeUnit.SECONDS.sleep(1);
+          }
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
@@ -172,10 +180,11 @@ public class CommunitiesSteps implements En {
         });
 
     When(
-        "I filter last created Case by external ID",
+        "I filter last created Case by first and last name",
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(
-              NAME_UUID_EPID_NUMBER_LIKE_INPUT, caze.getExternalId());
+              PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
+              caze.getFirstName() + " " + caze.getLastName());
           TimeUnit.SECONDS.sleep(2); // wait for filter
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
@@ -231,7 +240,8 @@ public class CommunitiesSteps implements En {
   private void fillSpecificCaseFields(Case caze, Communities communities) {
     selectCaseOrigin(caze.getCaseOrigin());
     fillDisease(caze.getDisease());
-    fillExternalId(caze.getExternalId());
+    // field that is no longer available
+    // fillExternalId(caze.getExternalId());
     selectResponsibleRegion(communities.getRegion());
     selectResponsibleDistrict(communities.getDistrict());
     selectResponsibleCommunity(communities.getCommunityName());
@@ -252,7 +262,8 @@ public class CommunitiesSteps implements En {
         .firstName(userInfo.getFirstName())
         .lastName(userInfo.getLastName())
         .dateOfBirth(userInfo.getDateOfBirth())
-        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
+        // field that is no longer available
+        // .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
         .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
         .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))

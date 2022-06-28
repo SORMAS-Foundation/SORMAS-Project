@@ -20,7 +20,9 @@ package de.symeda.sormas.ui;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import de.symeda.sormas.api.Disease;
@@ -44,6 +46,7 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
@@ -55,7 +58,6 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
@@ -70,29 +72,48 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRoleDto;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 
 public class TestDataCreator {
 
+	private final Map<DefaultUserRole, UserRoleReferenceDto> userRoleDtoMap = new HashMap<>();
+
 	public TestDataCreator() {
 
 	}
 
-	public UserDto createUser(RDCF rdcf, UserRole... roles) {
+	public UserDto createUser(RDCF rdcf, UserRoleReferenceDto... roles) {
 		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
 	}
 
-	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName, String lastName, UserRole... roles) {
+	public UserDto createUser(
+		String regionUuid,
+		String districtUuid,
+		String facilityUuid,
+		String firstName,
+		String lastName,
+		UserRoleReferenceDto... roles) {
 		return createUser(regionUuid, districtUuid, facilityUuid, null, firstName, lastName, Language.EN, roles);
 	}
 
 	public UserDto createPointOfEntryUser(String regionUuid, String districtUuid, String pointOfEntryUuid) {
-		return createUser(regionUuid, districtUuid, null, pointOfEntryUuid, "POE", "User", Language.EN, UserRole.POE_INFORMANT);
+		return createUser(
+			regionUuid,
+			districtUuid,
+			null,
+			pointOfEntryUuid,
+			"POE",
+			"User",
+			Language.EN,
+			userRoleDtoMap.get(DefaultUserRole.POE_INFORMANT));
 	}
 
 	public UserDto createUser(
@@ -103,13 +124,13 @@ public class TestDataCreator {
 		String firstName,
 		String lastName,
 		Language language,
-		UserRole... roles) {
+		UserRoleReferenceDto... roles) {
 
 		UserDto user = UserDto.build();
 		user.setFirstName(firstName);
 		user.setLastName(lastName);
 		user.setUserName(firstName + lastName);
-		user.setUserRoles(new HashSet<UserRole>(Arrays.asList(roles)));
+		user.setUserRoles(new HashSet<>(Arrays.asList(roles)));
 		user.setRegion(FacadeProvider.getRegionFacade().getReferenceByUuid(regionUuid));
 		user.setDistrict(FacadeProvider.getDistrictFacade().getReferenceByUuid(districtUuid));
 		user.setHealthFacility(FacadeProvider.getFacilityFacade().getReferenceByUuid(facilityUuid));
@@ -256,22 +277,6 @@ public class TestDataCreator {
 		contact = FacadeProviderMock.getContactFacade().save(contact);
 
 		return contact;
-	}
-
-	public CaseDataDto createUnclassifiedCase(Disease disease) {
-
-		RDCF rdcf = createRDCF("Region", "District", "Community", "Facility");
-		UserDto user =
-			createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = createPerson("Case", "Person");
-		return createCase(
-			user.toReference(),
-			cazePerson.toReference(),
-			disease,
-			CaseClassification.NOT_CLASSIFIED,
-			InvestigationStatus.PENDING,
-			new Date(),
-			rdcf);
 	}
 
 	public CaseDataDto createCase(
@@ -555,6 +560,17 @@ public class TestDataCreator {
 		UserReferenceDto reportingUser,
 		SampleMaterial sampleMaterial,
 		FacilityReferenceDto lab) {
+		return createSample(associatedEventParticipant, sampleDateTime, reportDateTime, reportingUser, sampleMaterial, lab, null);
+	}
+
+	public SampleDto createSample(
+		EventParticipantReferenceDto associatedEventParticipant,
+		Date sampleDateTime,
+		Date reportDateTime,
+		UserReferenceDto reportingUser,
+		SampleMaterial sampleMaterial,
+		FacilityReferenceDto lab,
+		Consumer<SampleDto> customConfig) {
 
 		SampleDto sample = SampleDto.build(reportingUser, associatedEventParticipant);
 		sample.setSampleDateTime(sampleDateTime);
@@ -562,6 +578,10 @@ public class TestDataCreator {
 		sample.setSampleMaterial(sampleMaterial);
 		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
 		sample.setLab(lab);
+
+		if (customConfig != null) {
+			customConfig.accept(sample);
+		}
 
 		sample = FacadeProvider.getSampleFacade().saveSample(sample);
 		return sample;
@@ -691,12 +711,12 @@ public class TestDataCreator {
 		return campaignForm;
 	}
 
-	public LabMessageDto createLabMessage(Consumer<LabMessageDto> config) {
-		LabMessageDto labMessage = LabMessageDto.build();
+	public ExternalMessageDto createLabMessage(Consumer<ExternalMessageDto> config) {
+		ExternalMessageDto labMessage = ExternalMessageDto.build();
 
 		config.accept(labMessage);
 
-		labMessage = FacadeProvider.getLabMessageFacade().save(labMessage);
+		labMessage = FacadeProvider.getExternalMessageFacade().save(labMessage);
 
 		return labMessage;
 	}
@@ -742,4 +762,27 @@ public class TestDataCreator {
 		}
 	}
 
+	private void createUserRoles() {
+		Arrays.stream(DefaultUserRole.values()).forEach(defaultUserRole -> {
+			UserRoleDto userRoleDto =
+				UserRoleDto.build(defaultUserRole.getDefaultUserRights().toArray(new UserRight[defaultUserRole.getDefaultUserRights().size()]));
+			userRoleDto.setCaption(defaultUserRole.toString());
+			userRoleDto.setEnabled(true);
+			userRoleDto.setPortHealthUser(defaultUserRole.isPortHealthUser());
+			userRoleDto.setHasAssociatedDistrictUser(defaultUserRole.hasAssociatedDistrictUser());
+			userRoleDto.setHasOptionalHealthFacility(defaultUserRole.hasOptionalHealthFacility());
+			userRoleDto.setEmailNotificationTypes(defaultUserRole.getEmailNotificationTypes());
+			userRoleDto.setSmsNotificationTypes(defaultUserRole.getSmsNotificationTypes());
+			userRoleDto.setJurisdictionLevel(defaultUserRole.getJurisdictionLevel());
+			FacadeProvider.getUserRoleFacade().saveUserRole(userRoleDto);
+			userRoleDtoMap.put(defaultUserRole, userRoleDto.toReference());
+		});
+	}
+
+	public UserRoleReferenceDto getUserRoleReference(DefaultUserRole userRole) {
+		if (userRoleDtoMap.isEmpty()) {
+			createUserRoles();
+		}
+		return userRoleDtoMap.get(userRole);
+	}
 }

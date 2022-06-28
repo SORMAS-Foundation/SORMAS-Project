@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.campaign.importer;
 
-import de.symeda.sormas.api.importexport.ImportErrorException;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
@@ -39,6 +38,7 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.importexport.ValueSeparator;
@@ -48,7 +48,6 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataSelectionField;
 import de.symeda.sormas.ui.importer.DataImporter;
@@ -180,11 +179,9 @@ public class CampaignFormDataImporter extends DataImporter {
 						entry[i],
 						new String[] {
 							propertyPath })) {
-						final UserDto currentUserDto = userFacade.getByUuid(currentUser.getUuid());
-						final JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(currentUserDto.getUserRoles());
-
+						final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 						if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
-							if (jurisdictionLevel == JurisdictionLevel.DISTRICT && !currentUserDto.getDistrict().getCaption().equals(entry[i])) {
+							if (jurisdictionLevel == JurisdictionLevel.DISTRICT && !currentUser.getDistrict().getCaption().equals(entry[i])) {
 								throw new ImportErrorException(
 									I18nProperties.getValidationError(Validations.importEntryDistrictNotInUsersJurisdiction, entry[i], propertyPath));
 							}
@@ -200,7 +197,7 @@ public class CampaignFormDataImporter extends DataImporter {
 								propertyDescriptor.getWriteMethod().invoke(campaignFormData, district.get(0));
 							}
 						} else if (propertyType.isAssignableFrom(CommunityReferenceDto.class)) {
-							if (jurisdictionLevel == JurisdictionLevel.COMMUNITY && !currentUserDto.getCommunity().getCaption().equals(entry[i])) {
+							if (jurisdictionLevel == JurisdictionLevel.COMMUNITY && !currentUser.getCommunity().getCaption().equals(entry[i])) {
 								throw new ImportErrorException(
 									I18nProperties
 										.getValidationError(Validations.importEntryCommunityNotInUsersJurisdiction, entry[i], propertyPath));
@@ -281,9 +278,8 @@ public class CampaignFormDataImporter extends DataImporter {
 		final boolean invokingSuccessful = super.executeDefaultInvoke(pd, element, entry, entryHeaderPath);
 		final Class<?> propertyType = pd.getPropertyType();
 		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
-			final UserDto currentUserDto = userFacade.getByUuid(currentUser.getUuid());
-			final JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(currentUserDto.getUserRoles());
-			if (jurisdictionLevel == JurisdictionLevel.REGION && !currentUserDto.getRegion().getCaption().equals(entry)) {
+			final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+			if (jurisdictionLevel == JurisdictionLevel.REGION && !currentUser.getRegion().getCaption().equals(entry)) {
 				throw new ImportErrorException(
 					I18nProperties
 						.getValidationError(Validations.importEntryRegionNotInUsersJurisdiction, entry, buildEntityProperty(entryHeaderPath)));

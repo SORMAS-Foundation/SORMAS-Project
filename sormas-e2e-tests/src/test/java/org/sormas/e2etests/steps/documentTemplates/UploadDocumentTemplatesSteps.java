@@ -82,6 +82,12 @@ public class UploadDocumentTemplatesSteps implements En {
             webDriverHelpers.sendFile(
                 FILE_PICKER,
                 userDirPath + "/uploads/ExampleDocumentTemplateEventParticipant.docx"));
+    When(
+        "I pick the {string} file",
+        (String filename) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FILE_PICKER);
+          webDriverHelpers.sendFile(FILE_PICKER, userDirPath + "/uploads/" + filename);
+        });
 
     When(
         "I pick the travel entry document template file",
@@ -105,6 +111,14 @@ public class UploadDocumentTemplatesSteps implements En {
 
     Then(
         "I check that an upload success notification appears",
-        () -> webDriverHelpers.waitUntilIdentifiedElementIsPresent(UPLOAD_SUCCESS_POPUP));
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UPLOAD_SUCCESS_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(UPLOAD_SUCCESS_POPUP);
+        });
+    Then(
+        "I click to close UPLOAD TEMPLATE popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CLOSE_POPUP);
+        });
   }
 }

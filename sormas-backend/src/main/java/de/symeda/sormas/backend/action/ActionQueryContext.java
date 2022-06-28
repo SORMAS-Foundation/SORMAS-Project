@@ -9,12 +9,16 @@ import de.symeda.sormas.backend.common.QueryContext;
 
 public class ActionQueryContext extends QueryContext<Action, ActionJoins> {
 
-	public ActionQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Action> root) {
-        super(cb, query, root, new ActionJoins(root));
-    }
+	protected ActionQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Action> root) {
+		this(cb, query, new ActionJoins(root));
+	}
 
-    @Override
-    protected Expression<?> createExpression(String name) {
-        return null;
-    }
+	public ActionQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, ActionJoins joins) {
+		super(cb, query, joins.getRoot(), joins);
+	}
+
+	@Override
+	protected Expression<?> createExpression(String name) {
+		return null;
+	}
 }

@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.backend.event;
 
+import java.util.Objects;
+
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -35,7 +37,7 @@ public class EventJoins extends QueryJoins<Event> {
 	private Join<Event, User> reportingUser;
 	private Join<Event, User> responsibleUser;
 	private Join<Event, Location> location;
-	private Join<Event, EventParticipant> eventParticipants;
+	private From<?, EventParticipant> eventParticipants;
 	private Join<Event, EventGroup> eventGroup;
 	private Join<Event, Event> superordinateEvent;
 
@@ -44,6 +46,15 @@ public class EventJoins extends QueryJoins<Event> {
 
 	public EventJoins(From<?, Event> event) {
 		super(event);
+	}
+
+	/**
+	 * For use cases where the EventParticipant is the origin for the query
+	 */
+	public EventJoins(From<?, EventParticipant> eventParticipants, From<?, Event> event) {
+		this(event);
+		Objects.requireNonNull(eventParticipants);
+		this.eventParticipants = eventParticipants;
 	}
 
 	public Join<Event, User> getReportingUser() {
@@ -86,11 +97,15 @@ public class EventJoins extends QueryJoins<Event> {
 		return getLocationJoins().getFacility();
 	}
 
-	public Join<Event, EventParticipant> getEventParticipants() {
-		return getOrCreate(eventParticipants, Event.EVENT_PERSONS, JoinType.LEFT, this::setEventParticipants);
+	public From<?, EventParticipant> getEventParticipants() {
+
+		if (eventParticipants == null) {
+			setEventParticipants(getRoot().join(Event.EVENT_PERSONS, JoinType.LEFT));
+		}
+		return eventParticipants;
 	}
 
-	private void setEventParticipants(Join<Event, EventParticipant> eventParticipants) {
+	private void setEventParticipants(From<?, EventParticipant> eventParticipants) {
 		this.eventParticipants = eventParticipants;
 	}
 

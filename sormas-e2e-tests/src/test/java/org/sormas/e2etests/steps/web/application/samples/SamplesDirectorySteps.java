@@ -64,14 +64,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.entities.pojo.web.Sample;
 import org.sormas.e2etests.enums.CaseClassification;
 import org.sormas.e2etests.enums.DiseasesValues;
-import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.LaboratoryValues;
 import org.sormas.e2etests.enums.PathogenTestResults;
-import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.SpecimenConditions;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.environmentdata.manager.EnvironmentManager;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 import org.testng.Assert;
@@ -83,9 +83,10 @@ public class SamplesDirectorySteps implements En {
   @Inject
   public SamplesDirectorySteps(
       WebDriverHelpers webDriverHelpers,
-      EnvironmentManager environmentManager,
+      RunningConfiguration runningConfiguration,
       ApiState apiState,
       AssertHelpers assertHelpers,
+      RestAssuredClient restAssuredClient,
       SoftAssert softly) {
 
     When(
@@ -121,6 +122,17 @@ public class SamplesDirectorySteps implements En {
         });
 
     When(
+        "I select Test result filter value with the value for pathogen test result of last created via API Sample in Sample Directory for DE version",
+        () -> {
+          String testResult =
+              PathogenTestResults.valueOf(apiState.getCreatedSample().getPathogenTestResult())
+                  .getPathogenResultsDE();
+          webDriverHelpers.selectFromCombobox(
+              TEST_RESULTS_SEARCH_COMBOBOX,
+              testResult.substring(0, 1).toUpperCase() + testResult.substring(1).toLowerCase());
+        });
+
+    When(
         "I select a Test result value different than the test result of the last created via API Sample Pathogen test result",
         () -> {
           String apiTestResult = apiState.getCreatedSample().getPathogenTestResult();
@@ -130,11 +142,30 @@ public class SamplesDirectorySteps implements En {
         });
 
     When(
+        "I select a Test result value different than the test result of the last created via API Sample Pathogen test result for DE version",
+        () -> {
+          String apiTestResult = apiState.getCreatedSample().getPathogenTestResult();
+          webDriverHelpers.selectFromCombobox(
+              TEST_RESULTS_SEARCH_COMBOBOX,
+              PathogenTestResults.geRandomResultNameDifferentThanDE(apiTestResult));
+        });
+
+    When(
         "I select Specimen condition filter value with value for specimen condition of the last created via API Sample in Sample Directory",
         () -> {
           String specimenCondition = apiState.getCreatedSample().getSpecimenCondition();
           webDriverHelpers.selectFromCombobox(
               SPECIMEN_CONDITION_SEARCH_COMBOBOX, SpecimenConditions.getForName(specimenCondition));
+        });
+
+    When(
+        "I select Specimen condition filter value with value for specimen condition of the last created via API Sample in Sample Directory for De version",
+        () -> {
+          String specimenCondition =
+              SpecimenConditions.valueOf(apiState.getCreatedSample().getSpecimenCondition())
+                  .getConditionDE();
+          webDriverHelpers.selectFromCombobox(
+              SPECIMEN_CONDITION_SEARCH_COMBOBOX, specimenCondition);
         });
 
     When(
@@ -154,6 +185,16 @@ public class SamplesDirectorySteps implements En {
         });
 
     When(
+        "I select Case classification filter value with value for case classification of the last created via API Case in Sample Directory for DE version",
+        () -> {
+          String caseClassification =
+              CaseClassification.valueOf(apiState.getCreatedCase().getCaseClassification())
+                  .getClassificationUIvalueDE();
+          webDriverHelpers.selectFromCombobox(
+              SAMPLE_CLASIFICATION_SEARCH_COMBOBOX, caseClassification);
+        });
+
+    When(
         "I select a Case classification value different than the case classification value of last created via API Case in Sample Directory",
         () -> {
           String apiCaseSpecification = apiState.getCreatedCase().getCaseClassification();
@@ -163,9 +204,28 @@ public class SamplesDirectorySteps implements En {
         });
 
     When(
+        "I select a Case classification value different than the case classification value of last created via API Case in Sample Directory for DE version",
+        () -> {
+          String apiCaseSpecification = apiState.getCreatedCase().getCaseClassification();
+          webDriverHelpers.selectFromCombobox(
+              SAMPLE_CLASIFICATION_SEARCH_COMBOBOX,
+              CaseClassification.getRandomUIClassificationDifferentThanDE(apiCaseSpecification));
+        });
+
+    When(
         "I set Disease filter to disease value of last created via API Case in Sample Directory",
         () -> {
           String disease = apiState.getCreatedCase().getDisease();
+          webDriverHelpers.selectFromCombobox(
+              SAMPLE_DISEASE_SEARCH_COMBOBOX, DiseasesValues.getCaptionForName(disease));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+        });
+
+    When(
+        "I set Disease filter to disease value of last created via API Case in Sample Directory for De version",
+        () -> {
+          String disease =
+              DiseasesValues.valueOf(apiState.getCreatedCase().getDisease()).getDiseaseCaptionDE();
           webDriverHelpers.selectFromCombobox(
               SAMPLE_DISEASE_SEARCH_COMBOBOX, DiseasesValues.getCaptionForName(disease));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
@@ -183,9 +243,10 @@ public class SamplesDirectorySteps implements En {
     When(
         "I select Region filter value with the region value of the last created via API Case in Sample Directory",
         () -> {
-          String region = apiState.getCreatedCase().getRegion().getUuid();
-          webDriverHelpers.selectFromCombobox(
-              SAMPLE_REGION_SEARCH_COMBOBOX, RegionsValues.getNameValueForUuid(region));
+          String regionUUID = apiState.getCreatedCase().getRegion().getUuid();
+          EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
+          String regionName = environmentManager.getRegionName(regionUUID);
+          webDriverHelpers.selectFromCombobox(SAMPLE_REGION_SEARCH_COMBOBOX, regionName);
         });
 
     When(
@@ -197,9 +258,10 @@ public class SamplesDirectorySteps implements En {
     When(
         "I select District filter value with the district value of the last created via API Case in Sample Directory",
         () -> {
-          String district = apiState.getCreatedCase().getDistrict().getUuid();
-          webDriverHelpers.selectFromCombobox(
-              SAMPLE_DISTRICT_SEARCH_COMBOBOX, DistrictsValues.getNameValueForUuid(district));
+          String districtUUID = apiState.getCreatedCase().getDistrict().getUuid();
+          EnvironmentManager environmentManager = new EnvironmentManager(restAssuredClient);
+          String districtName = environmentManager.getDistrictName(districtUUID);
+          webDriverHelpers.selectFromCombobox(SAMPLE_DISTRICT_SEARCH_COMBOBOX, districtName);
         });
 
     When(
@@ -247,7 +309,7 @@ public class SamplesDirectorySteps implements En {
         "I am opening the last created via API Sample by url navigation",
         () -> {
           String CREATED_SAMPLE_VIA_API_URL =
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!samples/data/"
                   + apiState.getCreatedSample().getUuid();
           webDriverHelpers.accessWebSite(CREATED_SAMPLE_VIA_API_URL);
@@ -290,6 +352,29 @@ public class SamplesDirectorySteps implements En {
               webDriverHelpers.clickOnWebElementBySelector(SAMPLE_RECEIVED);
               break;
             case "Referred to other lab":
+              webDriverHelpers.clickOnWebElementBySelector(SAMPLE_REFFERED_TO_OTHER_LAB);
+              break;
+          }
+        });
+
+    Then(
+        "I select {string} filter from quick filter for DE version",
+        (String searchCriteria) -> {
+          switch (searchCriteria) {
+            case "Nicht versendet":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAMPLE_NOT_SHIPPED);
+              webDriverHelpers.clickOnWebElementBySelector(SAMPLE_NOT_SHIPPED);
+              break;
+            case "Versandt":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAMPLE_SHIPPED);
+              webDriverHelpers.clickOnWebElementBySelector(SAMPLE_SHIPPED);
+              break;
+            case "Erhalten":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAMPLE_RECEIVED);
+              webDriverHelpers.clickOnWebElementBySelector(SAMPLE_RECEIVED);
+              break;
+            case "An ein anderes Labor weitergeleitet":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAMPLE_REFFERED_TO_OTHER_LAB);
               webDriverHelpers.clickOnWebElementBySelector(SAMPLE_REFFERED_TO_OTHER_LAB);
               break;
           }
@@ -418,7 +503,7 @@ public class SamplesDirectorySteps implements En {
     When(
         "I check if downloaded data generated by basic export option is correct",
         () -> {
-          String file = userDirPath + "/downloads/sormas_proben_" + LocalDate.now() + "_.csv";
+          String file = userDirPath + "/downloads/sormas_samples_" + LocalDate.now() + "_.csv";
           Sample reader = parseBasicSampleExport(file);
           Path path = Paths.get(file);
           Files.delete(path);
@@ -431,7 +516,7 @@ public class SamplesDirectorySteps implements En {
     When(
         "I check if downloaded data generated by detailed export option is correct",
         () -> {
-          String file = userDirPath + "/downloads/sormas_proben_" + LocalDate.now() + "_.csv";
+          String file = userDirPath + "/downloads/sormas_samples_" + LocalDate.now() + "_.csv";
           Sample reader = parseDetailedSampleExport(file);
           Path path = Paths.get(file);
           Files.delete(path);
@@ -445,7 +530,7 @@ public class SamplesDirectorySteps implements En {
         "I delete exported file from Sample Directory",
         () -> {
           File toDelete =
-              new File(userDirPath + "/downloads/sormas_proben_" + LocalDate.now() + "_.csv");
+              new File(userDirPath + "/downloads/sormas_samples_" + LocalDate.now() + "_.csv");
           toDelete.deleteOnExit();
         });
   }
@@ -454,7 +539,7 @@ public class SamplesDirectorySteps implements En {
     List<String[]> r = null;
     String[] values = new String[] {};
     Sample builder = null;
-    CSVParser csvParser = new CSVParserBuilder().withSeparator(';').build();
+    CSVParser csvParser = new CSVParserBuilder().withSeparator(',').build();
     try (CSVReader reader =
         new CSVReaderBuilder(new FileReader(fileName))
             .withCSVParser(csvParser)
@@ -481,7 +566,7 @@ public class SamplesDirectorySteps implements En {
     List<String[]> r = null;
     String[] values = new String[] {};
     Sample builder = null;
-    CSVParser csvParser = new CSVParserBuilder().withSeparator(';').build();
+    CSVParser csvParser = new CSVParserBuilder().withSeparator(',').build();
     try (CSVReader reader =
         new CSVReaderBuilder(new FileReader(fileName))
             .withCSVParser(csvParser)

@@ -19,23 +19,20 @@ package de.symeda.sormas.backend.user;
 
 import java.util.Set;
 
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
 
-import de.symeda.sormas.api.user.JurisdictionLevel;
 import org.hibernate.annotations.Immutable;
 
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 /**
@@ -85,14 +82,8 @@ public class UserReference extends AbstractDomainObject {
 		this.lastName = lastName;
 	}
 
-	@Enumerated(EnumType.STRING)
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name = User.TABLE_NAME_USERROLES,
-		joinColumns = @JoinColumn(name = "user_id", referencedColumnName = User.ID, nullable = false),
-		uniqueConstraints = @UniqueConstraint(columnNames = {
-			"user_id",
-			"userrole" }))
-	@Column(name = "userrole", nullable = false)
+	@ManyToMany(cascade = {}, fetch = FetchType.EAGER)
+	@JoinTable(name = User.TABLE_NAME_USERROLES, joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "userrole_id"))
 	public Set<UserRole> getUserRoles() {
 		return userRoles;
 	}

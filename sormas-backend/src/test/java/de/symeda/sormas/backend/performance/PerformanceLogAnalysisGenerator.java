@@ -180,7 +180,7 @@ public class PerformanceLogAnalysisGenerator {
 		stringBuilder.append("<table>\n");
 		stringBuilder.append("<tr><th>method</th></tr>\n");
 
-		Set<String> unfinishedMethods = new HashSet<String>();
+		Set<String> unfinishedMethods = new HashSet<>();
 		for (Stack<String> stack : callstacks.values()) {
 			while (!stack.isEmpty()) {
 				unfinishedMethods.add(stack.pop());
@@ -249,7 +249,7 @@ public class PerformanceLogAnalysisGenerator {
 		}
 
 		public long meanTime() {
-			return totalTime / calls;
+			return totalTime / Math.max(1, calls);
 		}
 
 		public String toString() {

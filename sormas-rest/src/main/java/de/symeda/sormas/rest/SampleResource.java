@@ -33,6 +33,8 @@ import javax.ws.rs.core.MediaType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -52,7 +54,10 @@ public class SampleResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
-	public List<SampleDto> getAllSamples(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+	public List<SampleDto> getAllSamples(
+		@PathParam("since") long since,
+		@PathParam("size") int size,
+		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
 		return FacadeProvider.getSampleFacade().getAllActiveSamplesAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
@@ -95,6 +100,12 @@ public class SampleResource extends EntityDtoResource {
 		return FacadeProvider.getSampleFacade().getDeletedUuidsSince(new Date(since));
 	}
 
+	@GET
+	@Path("/obsolete/{since}")
+	public List<String> getObsoleteUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getSampleFacade().getObsoleteUuidsSince(new Date(since));
+	}
+
 	@POST
 	@Path("/indexList")
 	public Page<SampleIndexDto> getIndexList(
@@ -108,7 +119,7 @@ public class SampleResource extends EntityDtoResource {
 	@POST
 	@Path("/delete")
 	public List<String> delete(List<String> uuids) {
-		return FacadeProvider.getSampleFacade().deleteSamples(uuids);
+		return FacadeProvider.getSampleFacade().deleteSamples(uuids, new DeletionDetails(DeletionReason.OTHER_REASON, "Deleted via ReST call"));
 	}
 
 }

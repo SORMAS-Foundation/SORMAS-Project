@@ -47,8 +47,8 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleExportDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
@@ -70,17 +70,28 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		super.init();
 
 		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
-		user1 = creator
-			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off1", UserRole.SURVEILLANCE_OFFICER);
+		user1 = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			rdcf1.facility.getUuid(),
+			"Surv",
+			"Off1",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
-		user2 = creator
-			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
-		labUser = creator.createUser(null, null, null, "Lab", "Off", UserRole.LAB_USER);
+		user2 = creator.createUser(
+			rdcf2.region.getUuid(),
+			rdcf2.district.getUuid(),
+			rdcf2.facility.getUuid(),
+			"Surv",
+			"Off2",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		labUser = creator.createUser(null, null, null, "Lab", "Off", creator.getUserRoleReference(DefaultUserRole.LAB_USER));
 		labUser.setLaboratory(rdcf1.facility);
 		getUserFacade().saveUser(labUser);
 
-		observerUser = creator.createUser(null, null, null, null, "National", "Observer", UserRole.NATIONAL_OBSERVER);
+		observerUser = creator
+			.createUser(null, null, null, null, "National", "Observer", creator.getUserRoleReference(DefaultUserRole.NATIONAL_OBSERVER));
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}
@@ -362,7 +373,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		sample.setReportLat(null);
 		sample.setReportLon(null);
 		sample.setReportLatLonAccuracy(20F);
-		sample.setLab(null);
+		sample.setLab(rdcf1.facility);
 
 		getSampleFacade().saveSample(sample);
 
@@ -371,7 +382,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(updatedSample.getReportLat(), is(46.432));
 		assertThat(updatedSample.getReportLon(), is(23.234));
 		assertThat(updatedSample.getReportLatLonAccuracy(), is(20F));
-		assertThat(updatedSample.getLab(), is(nullValue()));
+		assertThat(updatedSample.getLab().getUuid(), is(rdcf1.facility.getUuid()));
 	}
 
 	@Test
@@ -383,7 +394,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		sample.setReportLat(null);
 		sample.setReportLon(null);
 		sample.setReportLatLonAccuracy(20F);
-		sample.setLab(null);
+		sample.setLab(rdcf2.facility);
 
 		getSampleFacade().saveSample(sample);
 
@@ -392,7 +403,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(updatedSample.getReportLat(), is(46.432));
 		assertThat(updatedSample.getReportLon(), is(23.234));
 		assertThat(updatedSample.getReportLatLonAccuracy(), is(20F));
-		assertThat(updatedSample.getLab(), is(nullValue()));
+		assertThat(updatedSample.getLab().getUuid(), is(rdcf2.facility.getUuid()));
 	}
 
 	private SampleDto createCaseSample(CaseDataDto caze, UserDto reportingUser) {
@@ -454,7 +465,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(sample.getReportLon(), is(nullValue()));
 		assertThat(sample.getReportLatLonAccuracy(), is(10F));
 		assertThat(sample.getLab().getCaption(), is(labName));
-		assertThat(sample.getLabDetails(), isEmptyString());
+		assertThat(sample.getLabDetails(), is("Test lab details"));
 		assertThat(sample.getShipmentDetails(), isEmptyString());
 		assertThat(sample.getComment(), isEmptyString());
 	}

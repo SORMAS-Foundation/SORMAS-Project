@@ -58,15 +58,15 @@ public class CaseDirectoryPage {
   public static final By LINE_LISTING_BUTTON = By.id("lineListing");
   public static final By GRID_HEADERS = By.xpath("//thead//tr//th");
   public static final By GRID_RESULTS_DISEASE =
-      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(5)");
+      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(4)");
   public static final By GRID_RESULTS_FIRST_NAME =
-      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(11)");
+      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(10)");
   public static final By GRID_RESULTS_LAST_NAME =
-      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(12)");
+      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(11)");
   public static final By GRID_RESULTS_DISTRICT =
-      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(13)");
+      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(12)");
   public static final By GRID_RESULTS_HEALTH_FACILITY =
-      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(14)");
+      By.cssSelector("tr:nth-of-type(1) > td:nth-of-type(13)");
   public static final By CASE_CLASSIFICATION_COLUMNS =
       By.cssSelector("[role=rowgroup] tr>td:nth-child(7)");
   public static final String RESULTS_GRID_HEADER = "//div[contains(text(), '%s')]";
@@ -97,10 +97,14 @@ public class CaseDirectoryPage {
       By.cssSelector("[id='reinfectionStatus'] [class='v-filterselect-button']");
   public static final By CASE_DATA_TYPE_FILTER_COMBOBOX =
       By.cssSelector("[id='dateType'] [class='v-filterselect-button']");
+  public static final By DATE_TYPE_FILTER_COMBOBOX =
+      By.cssSelector("[id='newCaseDateType'] [class='v-filterselect-button']");
   public static final By CASE_DISPLAY_FILTER_COMBOBOX =
       By.cssSelector("[id='relevanceStatus'] [class='v-filterselect-button']");
   public static final By BULK_ACTIONS = By.id("bulkActions-2");
   public static final By BULK_ACTIONS_VALUES = By.id("bulkActions-10");
+  public static final By BULK_ACTIONS_ARCHIVE = By.id("bulkActions-5");
+  public static final By BULK_CREATE_QUARANTINE_ORDER = By.id("bulkActions-9");
   public static final By CASE_REPORTING_USER_FILTER = By.cssSelector("[id='reportingUserLike']");
   public static final By CASE_YEAR_FILTER =
       By.cssSelector("[id='birthdateYYYY'] [class='v-filterselect-button']");
@@ -132,9 +136,13 @@ public class CaseDirectoryPage {
   public static final By INVESTIGATION_DONE_BUTTON = By.id("Investigation done");
   public static final By INVESTIGATION_DISCARDED_BUTTON = By.id("Investigation discarded");
   public static final By DATE_FROM_COMBOBOX = By.cssSelector("#dateFrom input");
+  public static final By NEW_CASE_DATE_FROM_COMBOBOX = By.cssSelector("#newCaseDateFrom input");
   public static final By DATE_TO_COMBOBOX = By.cssSelector("#dateTo input");
   public static final By MORE_BUTTON = By.id("more");
+  public static final By ACTION_OKAY = By.id("actionOkay");
+  public static final By MERGE_DUPLICATES_BUTTON = By.id("caseMergeDuplicates");
   public static final By ENTER_BULK_EDIT_MODE = By.id("actionEnterBulkEditMode");
+  public static final By LEAVE_BULK_EDIT_MODE = By.id("actionLeaveBulkEditMode");
   public static final By ALL_RESULTS_CHECKBOX =
       By.xpath("//th[@role='columnheader']//input[@type='checkbox']/../..");
   public static final By NEW_EVENT_CHECKBOX = By.xpath("//*[contains(text(),'New event')]/..");
@@ -143,7 +151,8 @@ public class CaseDirectoryPage {
   public static final By SEARCH_BUTTON = By.id("search");
   public static final By CASE_EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-cases-epidata");
   public static final By EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-cases-epidata");
-  public static final By FIRST_PERSON_ID = By.xpath("//td[10]//a");
+  public static final By CONTACTS_DATA_TAB = By.cssSelector("#tab-cases-contacts");
+  public static final By FIRST_PERSON_ID = By.xpath("//td[9]//a");
   public static final By FIRST_CASE_ID = By.xpath("//td[1]//a");
   public static final By IMPORT_BUTTON = By.id("actionImport");
   public static final By DETAILED_IMPORT_BUTTON = By.id("importDetailed");
@@ -158,6 +167,15 @@ public class CaseDirectoryPage {
   public static final By CASE_SEAT_NUMBER = By.id("seatNumber");
   public static final By CASE_ACTION_CONFIRM = By.id("actionConfirm");
   public static final By CASE_ACTION_CANCEL = By.id("actionCancel");
+  public static final By UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX =
+      By.xpath("//label[text()='Also upload the generated documents to the selected entities']");
+  public static final By CLOSE_FORM_BUTTON = By.xpath("//div[@class='v-window-closebox']");
+  public static final By REINFECTION_STATUS_COMBOBOX =
+      By.cssSelector("[id='reinfectionStatus'] [class='v-filterselect-button']");
+
+  public static By getCheckboxByIndex(String idx) {
+    return By.xpath(String.format("(//input[@type=\"checkbox\"])[%s]", idx));
+  }
 
   public static By getResultByIndex(String rowNumber) {
     return By.xpath(String.format("//tr[%s]//a", rowNumber));
@@ -167,4 +185,12 @@ public class CaseDirectoryPage {
       By.xpath("//div[contains(@class,'v-window-closebox')]");
   public static final By CASE_INFO_BUTTON = By.cssSelector("[id='info']");
   // TODO refactor the other headers based on the last one added
+  public static By getMergeDuplicatesButtonById(String uuid) {
+    return By.xpath(
+        String.format(
+            "//td//a//span[text()='%s']/../../../../../../preceding-sibling::tr//div[@id=\"actionMerge\"]",
+            uuid.substring(0, 6).toUpperCase()));
+  }
+
+  public static By CONFIRM_POPUP = By.cssSelector(".popupContent #actionConfirm");
 }

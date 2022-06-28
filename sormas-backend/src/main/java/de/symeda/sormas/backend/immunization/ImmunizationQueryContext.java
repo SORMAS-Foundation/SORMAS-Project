@@ -25,8 +25,12 @@ import de.symeda.sormas.backend.immunization.entity.Immunization;
 
 public class ImmunizationQueryContext extends QueryContext<Immunization, ImmunizationJoins> {
 
-	public ImmunizationQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Immunization> root) {
-		super(cb, query, root, new ImmunizationJoins(root));
+	protected ImmunizationQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Immunization> root) {
+		this(cb, query, new ImmunizationJoins(root));
+	}
+
+	public ImmunizationQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, ImmunizationJoins joins) {
+		super(cb, query, joins.getRoot(), joins);
 	}
 
 	@Override

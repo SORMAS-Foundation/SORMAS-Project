@@ -34,15 +34,15 @@ import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.ContactListComponent;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
+import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
-import de.symeda.sormas.ui.labmessage.LabMessagesView;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponentLayout;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
@@ -51,6 +51,7 @@ import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
+import de.symeda.sormas.ui.utils.DirtyStateComponent;
 import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 import de.symeda.sormas.ui.vaccination.list.VaccinationListComponent;
@@ -119,8 +120,14 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		container.setMargin(true);
 		setSubComponent(container);
 
-		LayoutWithSidePanel layout =
-			new LayoutWithSidePanel(editComponent, SAMPLES_LOC, CONTACTS_LOC, IMMUNIZATION_LOC, VACCINATIONS_LOC, QUARANTINE_LOC, SORMAS_TO_SORMAS_LOC);
+		LayoutWithSidePanel layout = new LayoutWithSidePanel(
+			editComponent,
+			SAMPLES_LOC,
+			CONTACTS_LOC,
+			IMMUNIZATION_LOC,
+			VACCINATIONS_LOC,
+			QUARANTINE_LOC,
+			SORMAS_TO_SORMAS_LOC);
 
 		container.addComponent(layout);
 
@@ -128,11 +135,11 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 
 		SampleCriteria sampleCriteria = new SampleCriteria().eventParticipant(eventParticipantRef);
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
-			SampleListComponent sampleList = new SampleListComponent(sampleCriteria.sampleAssociationType(SampleAssociationType.EVENT_PARTICIPANT));
-			sampleList.addSideComponentCreateEventListener(
-				e -> showNavigationConfirmPopupIfDirty(
-					() -> ControllerProvider.getSampleController().create(eventParticipantRef, event.getDisease(), SormasUI::refreshView)));
-
+			SampleListComponent sampleList = new SampleListComponent(
+				sampleCriteria.eventParticipant(eventParticipantRef)
+					.disease(event.getDisease())
+					.sampleAssociationType(SampleAssociationType.EVENT_PARTICIPANT),
+				this::showUnsavedChangesPopup);
 			SampleListComponentLayout sampleListComponentLayout =
 				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesEventParticipant));
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
@@ -143,7 +150,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			contactsLayout.setMargin(false);
 			contactsLayout.setSpacing(false);
 
-			ContactListComponent contactList = new ContactListComponent(eventParticipantRef);
+			ContactListComponent contactList = new ContactListComponent(eventParticipantRef, this::showUnsavedChangesPopup);
 			contactList.addStyleName(CssStyles.SIDE_COMPONENT);
 			contactsLayout.addComponent(contactList);
 
@@ -179,17 +186,16 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 				final ImmunizationListCriteria immunizationListCriteria =
 					new ImmunizationListCriteria.Builder(eventParticipant.getPerson().toReference()).wihDisease(event.getDisease()).build();
-				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
-			} else {
-				VaccinationListCriteria criteria = vaccinationCriteria;
 				layout.addSidePanelComponent(
-					new SideComponentLayout(
-						new VaccinationListComponent(
-							getReference(),
-							criteria,
-							eventParticipant.getRegion() != null ? eventParticipant.getRegion() : event.getEventLocation().getRegion(),
-							eventParticipant.getDistrict() != null ? eventParticipant.getDistrict() : event.getEventLocation().getDistrict(),
-							this)),
+					new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria, this::showUnsavedChangesPopup)),
+					IMMUNIZATION_LOC);
+			} else {
+				VaccinationListCriteria criteria = vaccinationCriteria.vaccinationAssociationType(VaccinationAssociationType.EVENT_PARTICIPANT)
+					.eventParticipantReference(getReference())
+					.region(eventParticipant.getRegion() != null ? eventParticipant.getRegion() : event.getEventLocation().getRegion())
+					.district(eventParticipant.getDistrict() != null ? eventParticipant.getDistrict() : event.getEventLocation().getDistrict());
+				layout.addSidePanelComponent(
+					new SideComponentLayout(new VaccinationListComponent(criteria, this::showUnsavedChangesPopup)),
 					VACCINATIONS_LOC);
 			}
 		}
@@ -220,14 +226,25 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			eventParticipantDto.getEvent().getUuid(),
 			true);
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.LAB_MESSAGES)
-			&& UserProvider.getCurrent().hasUserRight(UserRight.LAB_MESSAGES)
-			&& FacadeProvider.getLabMessageFacade().existsLabMessageForEntity(getReference())) {
-			menu.addView(LabMessagesView.VIEW_NAME, I18nProperties.getCaption(Captions.labMessageLabMessagesList));
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EXTERNAL_MESSAGES)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.EXTERNAL_MESSAGE_VIEW)
+			&& FacadeProvider.getExternalMessageFacade().existsExternalMessageForEntity(getReference())) {
+			menu.addView(ExternalMessagesView.VIEW_NAME, I18nProperties.getCaption(Captions.externalMessagesList));
 		}
 
 		menu.addView(EventParticipantDataView.VIEW_NAME, I18nProperties.getCaption(EventParticipantDto.I18N_PREFIX), params);
 
 		setMainHeaderComponent(ControllerProvider.getEventParticipantController().getEventParticipantViewTitleLayout(eventParticipantDto));
+	}
+
+	@Override
+	protected void setSubComponent(DirtyStateComponent newComponent) {
+		super.setSubComponent(newComponent);
+
+		EventParticipantDto eventParticipant = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(getReference().getUuid());
+		if (eventParticipant.isDeleted()) {
+			newComponent.setEnabled(false);
+		}
+
 	}
 }

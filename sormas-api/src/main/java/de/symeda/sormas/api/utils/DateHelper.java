@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -756,6 +757,25 @@ public final class DateHelper {
 	}
 
 	/**
+	 * @return The same {@link EpiWeek} within the the given {@code options} (first matching week number),
+	 *         {@code null} if no option matches.
+	 */
+	public static EpiWeek getSameEpiWeek(EpiWeek epiWeek, List<EpiWeek> options) {
+
+		EpiWeek result = null;
+		if (epiWeek != null && CollectionUtils.isNotEmpty(options)) {
+			for (EpiWeek option : options) {
+				if (epiWeek.getWeek().equals(option.getWeek())) {
+					result = option;
+					break;
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
 	 * Returns the maximum possible number of EpiWeeks in a year
 	 */
 	public static int getMaximumEpiWeekNumber() {
@@ -798,6 +818,43 @@ public final class DateHelper {
 		}
 		for (int epiWeek = 1; epiWeek <= calendar.get(Calendar.WEEK_OF_YEAR); epiWeek++) {
 			epiWeekList.add(new EpiWeek(year, epiWeek));
+		}
+
+		return epiWeekList;
+	}
+
+	public static List<EpiWeek> createEpiWeekListFromInterval(EpiWeek startEpiweek, EpiWeek endEpiweek) {
+		List<EpiWeek> epiWeekList = new ArrayList<>();
+		int startYear = startEpiweek.getYear();
+		int endYear = endEpiweek.getYear();
+
+		if (endYear != startYear) {
+			Calendar startYearCalendar = getEpiCalendar();
+			startYearCalendar.set(Calendar.YEAR, startYear);
+			startYearCalendar.set(Calendar.WEEK_OF_YEAR, startEpiweek.getWeek());
+
+			Calendar endYearCalendar = getEpiCalendar();
+			endYearCalendar.set(Calendar.YEAR, endYear);
+			endYearCalendar.set(Calendar.WEEK_OF_YEAR, endEpiweek.getWeek());
+
+			for (int epiWeek = startYearCalendar.get(Calendar.WEEK_OF_YEAR);
+				epiWeek <= startYearCalendar.getActualMaximum(Calendar.WEEK_OF_YEAR);
+				epiWeek++) {
+				epiWeekList.add(new EpiWeek(startYear, epiWeek));
+			}
+
+			for (int year = startYear + 1; year < endYear; year++) {
+				epiWeekList.addAll(createEpiWeekList(year));
+			}
+
+			for (int epiWeek = 1; epiWeek <= endYearCalendar.get(Calendar.WEEK_OF_YEAR); epiWeek++) {
+				epiWeekList.add(new EpiWeek(endYear, epiWeek));
+			}
+
+		} else {
+			for (int epiWeek = startEpiweek.getWeek(); epiWeek <= endEpiweek.getWeek(); epiWeek++) {
+				epiWeekList.add(new EpiWeek(startYear, epiWeek));
+			}
 		}
 
 		return epiWeekList;

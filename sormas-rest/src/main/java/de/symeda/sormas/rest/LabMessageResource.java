@@ -11,9 +11,9 @@ import javax.ws.rs.core.MediaType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.labmessage.LabMessageCriteria;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageIndexDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Path("/labmessages")
@@ -22,17 +22,17 @@ public class LabMessageResource extends EntityDtoResource {
 
 	@GET
 	@Path("/{uuid}")
-	public LabMessageDto getByUuid(@PathParam("uuid") String uuid) {
-		return FacadeProvider.getLabMessageFacade().getByUuid(uuid);
+	public ExternalMessageDto getByUuid(@PathParam("uuid") String uuid) {
+		return FacadeProvider.getExternalMessageFacade().getByUuid(uuid);
 	}
 
 	@POST
 	@Path("/indexList")
-	public Page<LabMessageIndexDto> getIndexList(
-		@RequestBody CriteriaWithSorting<LabMessageCriteria> criteriaWithSorting,
+	public Page<ExternalMessageIndexDto> getIndexList(
+		@RequestBody CriteriaWithSorting<ExternalMessageCriteria> criteriaWithSorting,
 		@QueryParam("offset") int offset,
 		@QueryParam("size") int size) {
-		return FacadeProvider.getLabMessageFacade()
+		return FacadeProvider.getExternalMessageFacade()
 			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 

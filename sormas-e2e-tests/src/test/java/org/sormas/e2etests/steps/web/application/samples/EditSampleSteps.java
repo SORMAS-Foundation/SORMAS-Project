@@ -31,7 +31,7 @@ import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Sample;
 import org.sormas.e2etests.entities.services.SampleService;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 
@@ -45,7 +45,7 @@ public class EditSampleSteps implements En {
   @Inject
   public EditSampleSteps(
       WebDriverHelpers webDriverHelpers,
-      EnvironmentManager environmentManager,
+      RunningConfiguration runningConfiguration,
       SampleService sampleService,
       ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
@@ -54,7 +54,7 @@ public class EditSampleSteps implements En {
         "I open the last created sample via API",
         () -> {
           String LAST_CREATED_SAMPLE_URL =
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!samples/data/"
                   + apiState.getCreatedSample().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_SAMPLE_URL);
@@ -65,7 +65,8 @@ public class EditSampleSteps implements En {
         () -> {
           webDriverHelpers.scrollToElement(DELETE_SAMPLE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_SAMPLE_BUTTON);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SAMPLE_DELETION_POPUP);
+          webDriverHelpers.selectFromCombobox(
+              DELETE_SAMPLE_REASON_POPUP, "Entity created without legal reason");
           webDriverHelpers.clickOnWebElementBySelector(SAMPLE_DELETION_POPUP_YES_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(SAMPLE_SEARCH_INPUT);
         });
@@ -161,6 +162,8 @@ public class EditSampleSteps implements En {
         "I delete the Pathogen test",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(DELETE_PATHOGEN_TEST_RESULT);
+          webDriverHelpers.selectFromCombobox(
+              DELETE_SAMPLE_REASON_POPUP, "Entity created without legal reason");
           webDriverHelpers.clickOnWebElementBySelector(SAMPLE_DELETION_POPUP_YES_BUTTON);
         });
   }

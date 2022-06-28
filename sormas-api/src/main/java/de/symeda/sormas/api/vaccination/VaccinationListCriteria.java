@@ -15,10 +15,16 @@
 
 package de.symeda.sormas.api.vaccination;
 
+import java.util.List;
+
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
-import java.util.List;
 
 public class VaccinationListCriteria extends BaseCriteria {
 
@@ -27,6 +33,12 @@ public class VaccinationListCriteria extends BaseCriteria {
 	private final PersonReferenceDto personReferenceDto;
 	private final List<PersonReferenceDto> personReferences;
 	private final Disease disease;
+	private VaccinationAssociationType vaccinationAssociationType;
+	private CaseReferenceDto caseReference;
+	private ContactReferenceDto contactReference;
+	private EventParticipantReferenceDto eventParticipantReference;
+	private RegionReferenceDto region;
+	private DistrictReferenceDto district;
 
 	public static class Builder {
 
@@ -70,5 +82,59 @@ public class VaccinationListCriteria extends BaseCriteria {
 
 	public List<PersonReferenceDto> getPersons() {
 		return personReferences;
+	}
+
+	public VaccinationAssociationType getVaccinationAssociationType() {
+		return vaccinationAssociationType;
+	}
+
+	public VaccinationListCriteria vaccinationAssociationType(VaccinationAssociationType vaccinationAssociationType) {
+		this.vaccinationAssociationType = vaccinationAssociationType;
+		return this;
+	}
+
+	public CaseReferenceDto getCaseReference() {
+		return caseReference;
+	}
+
+	public VaccinationListCriteria caseReference(CaseReferenceDto caseReference) {
+		this.caseReference = caseReference;
+		return this;
+	}
+
+	public ContactReferenceDto getContactReference() {
+		return contactReference;
+	}
+
+	public VaccinationListCriteria contactReference(ContactReferenceDto contactReference) {
+		this.contactReference = contactReference;
+		return this;
+	}
+
+	public EventParticipantReferenceDto getEventParticipantReference() {
+		return eventParticipantReference;
+	}
+
+	public VaccinationListCriteria eventParticipantReference(EventParticipantReferenceDto eventParticipantReference) {
+		this.eventParticipantReference = eventParticipantReference;
+		return this;
+	}
+
+	public RegionReferenceDto getRegion() {
+		return region;
+	}
+
+	public VaccinationListCriteria region(RegionReferenceDto region) {
+		this.region = region;
+		return this;
+	}
+
+	public DistrictReferenceDto getDistrict() {
+		return district;
+	}
+
+	public VaccinationListCriteria district(DistrictReferenceDto district) {
+		this.district = district;
+		return this;
 	}
 }

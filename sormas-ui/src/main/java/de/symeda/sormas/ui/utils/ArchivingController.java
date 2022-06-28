@@ -249,14 +249,17 @@ public class ArchivingController<F extends CoreFacade> {
 			ARCHIVE_DEARCHIVE_BUTTON_ID,
 			I18nProperties.getCaption(archived ? Captions.actionDearchiveCoreEntity : Captions.actionArchiveCoreEntity),
 			e -> {
+				boolean isCommitSuccessFul = true;
 				if (editView.isModified()) {
-					editView.commit();
+					isCommitSuccessFul = editView.commitAndHandle();
 				}
 
-				if (archived) {
-					dearchiveEntity(entityDto, coreFacade, archiveMessages, callback);
-				} else {
-					archiveEntity(entityDto, coreFacade, archiveMessages, callback);
+				if (isCommitSuccessFul) {
+					if (archived) {
+						dearchiveEntity(entityDto, coreFacade, archiveMessages, callback);
+					} else {
+						archiveEntity(entityDto, coreFacade, archiveMessages, callback);
+					}
 				}
 			},
 			ValoTheme.BUTTON_LINK);

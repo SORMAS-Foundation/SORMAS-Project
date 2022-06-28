@@ -220,7 +220,7 @@ Feature: Epidemiological data coverage
     Then I check if data is correctly displayed in Exposures table in Epidemiological data tab
 
 
-  @issue=SORDEV-5524 @env_main
+  @issue=SORDEV-5524 @env_main @ignore
   Scenario: Enter an activity as case in Epidemiological data tab in Cases
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -263,3 +263,38 @@ Feature: Epidemiological data coverage
     And I am checking all Location data in Activity as Case are saved and displayed
     And I click on save button in Exposure for Epidemiological data tab in Cases
     And I check that edit Activity as Case vision button is visible and clickable
+
+  @issue=SORDEV-5563 @env_de
+  Scenario: Add contact person details to facilities case exposure investigation and activity as case
+    Given I log in as a Admin User
+    Then I click on the Configuration button from navbar
+    And I navigate to facilities tab in Configuration
+    And I click on New Entry button in Facilities tab in Configuration
+    Then I set name, region and district in Facilities tab in Configuration
+    And I set Facility Category to "Medizinische Einrichtung" and Facility Type to "Krankenhaus" in Facilities tab in Configuration
+    And I set Facility Contact person first and last name with email address and phone number
+    Then I click on Save Button in new Facility form
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data using created facility
+    Then I click on save case button
+    And I navigate to epidemiological data tab in Edit case page
+    And I click on Exposure details known with JA option
+    Then I click on New Entry in Exposure Details Known in Cases directory
+    And I set Type of place to Einrichtung in Exposure New Entry popup
+    Then I set all needed data in Exposure popup to check if created facility is connected
+    And I check if data for created facility is automatically imported to the correct fields
+    Then I click on discard button from Epidemiological Data Exposure popup
+    And I click on Exposure details known with NEIN option
+    And I click on Activity details known with JA option
+    Then I click on New Entry in Activity as Case in Cases directory
+    Then I set all needed data in Activity as Case popup to check if created facility is connected
+    And I check if data for created facility is automatically imported to the correct fields
+    And I click on discard button from Activity as Case popup
+    And I click on Activity details known with NEIN option
+    Then I click on the Configuration button from navbar
+    Then I click yes on the DISCARD UNSAVED CHANGES popup if it appears
+    And I navigate to facilities tab in Configuration
+    Then I search last created facility
+    Then I click on edit button for the last searched facility
+    And I archive facility

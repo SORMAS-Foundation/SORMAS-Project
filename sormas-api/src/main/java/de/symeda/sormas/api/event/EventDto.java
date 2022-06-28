@@ -15,6 +15,11 @@
 
 package de.symeda.sormas.api.event;
 
+import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 import java.util.Map;
 
@@ -41,6 +46,7 @@ import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 
+@DependingOnFeatureType(featureType = FeatureType.EVENT_SURVEILLANCE)
 public class EventDto extends SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = 2430932452606853497L;
@@ -110,6 +116,8 @@ public class EventDto extends SormasToSormasShareableDto {
 	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String EVENT_GROUP = "eventGroup";
 	public static final String EVENT_IDENTIFICATION_SOURCE = "eventIdentificationSource";
+	public static final String DELETION_REASON = "deletionReason";
+	public static final String OTHER_DELETION_REASON = "otherDeletionReason";
 
 	private EventReferenceDto superordinateEvent;
 
@@ -217,6 +225,10 @@ public class EventDto extends SormasToSormasShareableDto {
 	private String internalToken;
 
 	private EventIdentificationSource eventIdentificationSource;
+	private boolean deleted;
+	private DeletionReason deletionReason;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	private String otherDeletionReason;
 
 	public static EventDto build() {
 		EventDto event = new EventDto();
@@ -226,6 +238,17 @@ public class EventDto extends SormasToSormasShareableDto {
 		event.setEventInvestigationStatus(EventInvestigationStatus.PENDING);
 		event.setEventLocation(LocationDto.build());
 		event.setReportDateTime(new Date());
+
+		return event;
+	}
+
+	public static EventDto build(CountryReferenceDto country, UserDto user, Disease disease) {
+		EventDto event = build();
+
+		event.getEventLocation().setCountry(country);
+		event.getEventLocation().setRegion(user.getRegion());
+		event.setReportingUser(user.toReference());
+		event.setDisease(disease);
 
 		return event;
 	}
@@ -700,5 +723,29 @@ public class EventDto extends SormasToSormasShareableDto {
 
 	public EventReferenceDto toReference() {
 		return new EventReferenceDto(getUuid());
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public DeletionReason getDeletionReason() {
+		return deletionReason;
+	}
+
+	public void setDeletionReason(DeletionReason deletionReason) {
+		this.deletionReason = deletionReason;
+	}
+
+	public String getOtherDeletionReason() {
+		return otherDeletionReason;
+	}
+
+	public void setOtherDeletionReason(String otherDeletionReason) {
+		this.otherDeletionReason = otherDeletionReason;
 	}
 }

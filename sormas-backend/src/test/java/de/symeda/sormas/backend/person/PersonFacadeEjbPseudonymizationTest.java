@@ -46,8 +46,8 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonExportDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -68,12 +68,22 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		super.init();
 
 		rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1");
-		districtUser1 = creator
-			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off1", UserRole.SURVEILLANCE_OFFICER);
+		districtUser1 = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			rdcf1.facility.getUuid(),
+			"Surv",
+			"Off1",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2");
-		districtUser2 = creator
-			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
+		districtUser2 = creator.createUser(
+			rdcf2.region.getUuid(),
+			rdcf2.district.getUuid(),
+			rdcf2.facility.getUuid(),
+			"Surv",
+			"Off2",
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		regionUser2 = creator.createUser(
 			rdcf2.region.getUuid(),
@@ -82,7 +92,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			rdcf2.facility.getUuid(),
 			"Surv",
 			"Sup2",
-			UserRole.SURVEILLANCE_SUPERVISOR);
+			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		communityUser2 = creator.createUser(
 			rdcf2.region.getUuid(),
 			rdcf2.district.getUuid(),
@@ -90,7 +100,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			rdcf2.facility.getUuid(),
 			"Comm",
 			"Off2",
-			UserRole.COMMUNITY_OFFICER);
+			creator.getUserRoleReference(DefaultUserRole.COMMUNITY_OFFICER));
 		facilityUser2 = creator.createUser(
 			rdcf2.region.getUuid(),
 			rdcf2.district.getUuid(),
@@ -98,7 +108,7 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			rdcf2.facility.getUuid(),
 			"Hosp",
 			"Inf2",
-			UserRole.HOSPITAL_INFORMANT);
+			creator.getUserRoleReference(DefaultUserRole.HOSPITAL_INFORMANT));
 	}
 
 	@Test
@@ -504,8 +514,8 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	private void assertPseudonymised(PersonDto person) {
 
 		assertThat(person.isPseudonymized(), is(true));
-		assertThat(person.getFirstName(), isEmptyString());
-		assertThat(person.getLastName(), isEmptyString());
+		assertThat(person.getFirstName(), is("James"));
+		assertThat(person.getLastName(), is("Smith"));
 		assertThat(person.getBirthdateDD(), is(nullValue()));
 
 		assertThat(person.getAddress().getRegion().getCaption(), is("Region 1"));

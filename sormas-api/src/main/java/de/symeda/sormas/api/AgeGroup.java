@@ -22,6 +22,7 @@ public enum AgeGroup {
 	AGE_75_79,
 	AGE_80_PLUS;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

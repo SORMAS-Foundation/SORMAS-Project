@@ -1,30 +1,5 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
-import cucumber.api.java8.En;
-import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.entities.pojo.web.EpidemiologicalData;
-import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Activity;
-import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
-import org.sormas.e2etests.entities.services.EpidemiologicalDataService;
-import org.sormas.e2etests.enums.DiseasesValues;
-import org.sormas.e2etests.enums.YesNoUnknownOptions;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.ActivityAsCaseType;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfGathering;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.state.ApiState;
-import org.testng.asserts.SoftAssert;
-
-import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_CONTINENT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_COUNTRY_COMBOBOX;
@@ -44,9 +19,12 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTACT_WITH_SOURCE_CASE_KNOWN;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTINENT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.COUNTRY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DATE_EXPOSURE_TABLE;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DONE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EDIT_TRAVEL_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.END_OF_EXPOSURE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EPIDEMIOLOGICAL_DATA_ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EXPOSURE_ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EXPOSURE_ACTION_CONFIRM;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EXPOSURE_CHOOSE_CASE_BUTTON;
@@ -84,12 +62,40 @@ import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPag
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_WINDOW_CONTACT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.ANIMAL_CONTACT_LABEL;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_ACTIVITY_DETAILS;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_DETAILS;
+import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.END_DATA_TIME;
+import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.START_DATA_TIME;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.cases.FollowUpStep.faker;
 import static org.sormas.e2etests.steps.web.application.contacts.ContactsLineListingSteps.DATE_FORMATTER_DE;
+
+import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.EpidemiologicalData;
+import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Activity;
+import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
+import org.sormas.e2etests.entities.services.EpidemiologicalDataService;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.YesNoUnknownOptions;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.ActivityAsCaseType;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfGathering;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.state.ApiState;
+import org.testng.asserts.SoftAssert;
 
 public class EpidemiologicalDataCaseSteps implements En {
 
@@ -98,18 +104,28 @@ public class EpidemiologicalDataCaseSteps implements En {
   private static EpidemiologicalData epidemiologicalData;
   private static EpidemiologicalData specificCaseData;
   private static EpidemiologicalData epidemiologialDataSavedFromFields;
+  public static String DateExposure;
 
   @Inject
   public EpidemiologicalDataCaseSteps(
       WebDriverHelpers webDriverHelpers,
       ApiState apiState,
       EpidemiologicalDataService epidemiologicalDataService,
-      EnvironmentManager environmentManager,
+      RunningConfiguration runningConfiguration,
       SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
         "I set Start and End of activity by current date in Activity as Case form",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              START_OF_EXPOSURE_INPUT, formatter.format(LocalDate.now()));
+          webDriverHelpers.fillInWebElement(
+              END_OF_EXPOSURE_INPUT, formatter.format(LocalDate.now()));
+        });
+
+    When(
+        "I set Start and End of activity by current date in Exposure form",
         () -> {
           webDriverHelpers.fillInWebElement(
               START_OF_EXPOSURE_INPUT, formatter.format(LocalDate.now()));
@@ -161,10 +177,9 @@ public class EpidemiologicalDataCaseSteps implements En {
         () -> {
           String uuid = apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!cases/epidata/"
                   + uuid);
-          webDriverHelpers.waitForPageLoaded();
         });
 
     When(
@@ -183,6 +198,10 @@ public class EpidemiologicalDataCaseSteps implements En {
         "I click on Activity details known with ([^\"]*) option",
         (String option) ->
             webDriverHelpers.clickWebElementByText(ACTIVITY_DETAILS_KNOWN_OPTIONS, option));
+
+    When(
+        "I set Type of place to ([^\"]*) in Exposure New Entry popup",
+        (String option) -> webDriverHelpers.selectFromCombobox(TYPE_OF_PLACE_COMBOBOX, option));
 
     When(
         "I click on Residing or working in an area with high risk of transmission of the disease with ([^\"]*) option",
@@ -270,6 +289,9 @@ public class EpidemiologicalDataCaseSteps implements En {
     When(
         "I click on SAVE button in create contact form",
         () -> webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_DONE_BUTTON));
+    When(
+        "I click on SAVE button in Exposure form",
+        () -> webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_DONE_BUTTON));
 
     When(
         "I search and chose the last case uuid created via API in the CHOOSE CASE Contact window",
@@ -309,6 +331,13 @@ public class EpidemiologicalDataCaseSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EXPOSURE_DETAILS_NEW_ENTRY_BUTTON);
         });
+
+    When(
+        "I click on New Entry in Activity as Case in Cases directory",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(
+                EPIDEMIOLOGICAL_DATA_ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON));
+
     When(
         "I select from Combobox all options in Type of activity field in Exposure for Epidemiological data tab for Cases",
         () -> {
@@ -326,7 +355,21 @@ public class EpidemiologicalDataCaseSteps implements En {
               TypeOfActivityExposure.ListOfTypeOfActivityExposureDE;
           for (String value : ListOfTypeOfActivityExposure) {
             webDriverHelpers.selectFromCombobox(TYPE_OF_ACTIVITY_COMBOBOX, value);
+            webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           }
+        });
+    When(
+        "I check if added travel Entry appeared in Epi Data tab",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          Boolean elementVisible = true;
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(EDIT_TRAVEL_ENTRY_BUTTON);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertTrue(elementVisible, "Travel Entry isn't visible");
+          softly.assertAll();
         });
     When(
         "I select from Combobox all Type of gathering in Exposure for Epidemiological data tab in Cases",
@@ -406,6 +449,26 @@ public class EpidemiologicalDataCaseSteps implements En {
           webDriverHelpers.fillInWebElement(TYPE_OF_ACTIVITY_DETAILS, faker.book().title());
         });
 
+    When(
+        "I collect the Date of Start and End Exposure from Exposure page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_EXPOSURE_BUTTON);
+          String startOfExposure = webDriverHelpers.getValueFromWebElement(START_OF_EXPOSURE_INPUT);
+          String endOfExposure = webDriverHelpers.getValueFromWebElement(END_OF_EXPOSURE_INPUT);
+          String startDataTime =
+              LocalTime.parse(
+                      webDriverHelpers.getValueFromCombobox(START_DATA_TIME),
+                      DateTimeFormatter.ofPattern("HH:mm"))
+                  .format(DateTimeFormatter.ofPattern("hh:mm a"));
+          String endDataTime =
+              LocalTime.parse(
+                      webDriverHelpers.getValueFromCombobox(END_DATA_TIME),
+                      DateTimeFormatter.ofPattern("HH:mm"))
+                  .format(DateTimeFormatter.ofPattern("hh:mm a"));
+          DateExposure =
+              startOfExposure + " " + startDataTime + " - " + endOfExposure + " " + endDataTime;
+          webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
+        });
     Then(
         "I create a new Exposure for Epidemiological data tab and fill all the data",
         () -> {
@@ -419,7 +482,6 @@ public class EpidemiologicalDataCaseSteps implements En {
                       .getCreatedCase()
                       .getDisease()
                       .equalsIgnoreCase(DiseasesValues.CORONAVIRUS.getDiseaseName()));
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickWebElementByText(
               EXPOSURE_DETAILS_KNOWN_OPTIONS,
               epidemiologicalData.getExposureDetailsKnown().toString());
@@ -477,8 +539,27 @@ public class EpidemiologicalDataCaseSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON));
 
     Then(
+        "I click on discard button from Activity as Case popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON);
+        });
+
+    Then(
         "I open saved activity from Epidemiological Data",
         () -> webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_ACTIVITY_BUTTON));
+
+    Then(
+        "I check that Date field displays start date and end date in table Exposure on Epidemiological data tab",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(OPEN_SAVED_EXPOSURE_BUTTON);
+          String dateOfEventfromTableGrid =
+              webDriverHelpers.getTextFromWebElement(DATE_EXPOSURE_TABLE);
+          softly.assertEquals(
+              dateOfEventfromTableGrid,
+              DateExposure,
+              "The value from table grid in Date of Event field not include start date, time, end date, time values");
+          softly.assertAll();
+        });
 
     When(
         "I am checking all Activity data is saved and displayed",
@@ -580,6 +661,24 @@ public class EpidemiologicalDataCaseSteps implements En {
               generatedExposureData.getExposureDescription(),
               values.get(5),
               "Exposure descriptions are not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if Exposure Type of activity has not a ([^\"]*) option",
+        (String option) -> {
+          softly.assertFalse(
+              webDriverHelpers.checkIfElementExistsInCombobox(TYPE_OF_ACTIVITY_COMBOBOX, option),
+              "Exposure type is incorrect");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if Exposure details has a ([^\"]*) option",
+        (String option) -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(ANIMAL_CONTACT_LABEL, 1),
+              "Exposure details has a incorrect option");
           softly.assertAll();
         });
   }

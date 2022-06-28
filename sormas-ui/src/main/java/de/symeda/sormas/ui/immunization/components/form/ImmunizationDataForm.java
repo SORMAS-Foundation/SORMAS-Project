@@ -27,6 +27,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -46,6 +47,7 @@ import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
@@ -112,7 +114,9 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		+ fluidRowLocs(ImmunizationDto.VACCINATIONS)
 		+ fluidRowLocs(RECOVERY_HEADING_LOC)
 		+ fluidRowLocs(ImmunizationDto.POSITIVE_TEST_RESULT_DATE, ImmunizationDto.RECOVERY_DATE, LINK_IMMUNIZATION_TO_CASE_BTN_LOC)
-		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.COUNTRY));
+		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.COUNTRY))
+		+ fluidRowLocs(CaseDataDto.DELETION_REASON)
+		+ fluidRowLocs(CaseDataDto.OTHER_DELETION_REASON);
 	//@formatter:on
 
 	private final CaseReferenceDto relatedCase;
@@ -120,8 +124,9 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 	private MeansOfImmunization previousMeansOfImmunization;
 	private CheckBox overwriteImmunizationManagementStatus;
 	private ComboBox facilityTypeGroup;
+	private final Consumer<Runnable> actionCallback;
 
-	public ImmunizationDataForm(boolean isPseudonymized, CaseReferenceDto relatedCase) {
+	public ImmunizationDataForm(boolean isPseudonymized, CaseReferenceDto relatedCase, Consumer<Runnable> actionCallback) {
 		super(
 			ImmunizationDto.class,
 			ImmunizationDto.I18N_PREFIX,
@@ -129,6 +134,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
 			UiFieldAccessCheckers.getDefault(isPseudonymized));
 		this.relatedCase = relatedCase;
+		this.actionCallback = actionCallback;
 		addFields();
 	}
 
@@ -247,6 +253,10 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 		DateField recoveryDate = addField(ImmunizationDto.RECOVERY_DATE, DateField.class);
 
+		addField(ImmunizationDto.DELETION_REASON);
+		addField(ImmunizationDto.OTHER_DELETION_REASON, TextArea.class).setRows(3);
+		setVisible(false, ImmunizationDto.DELETION_REASON, ImmunizationDto.OTHER_DELETION_REASON);
+
 		Button linkImmunizationToCaseButton;
 		if (relatedCase != null) {
 			linkImmunizationToCaseButton = ButtonHelper.createButton(
@@ -255,11 +265,17 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 				ValoTheme.BUTTON_PRIMARY,
 				FORCE_CAPTION);
 		} else {
-			linkImmunizationToCaseButton = ButtonHelper.createButton(
-				Captions.linkImmunizationToCaseButton,
-				e -> buildAndOpenSearchSpecificCaseWindow(),
-				ValoTheme.BUTTON_PRIMARY,
-				FORCE_CAPTION);
+			linkImmunizationToCaseButton = ButtonHelper.createButton(Captions.linkImmunizationToCaseButton, e -> {
+				if (this.isModified()) {
+					actionCallback.accept(() -> {
+						ImmunizationDto immunizationDto = FacadeProvider.getImmunizationFacade().getByUuid(getValue().getUuid());
+						buildAndOpenSearchSpecificCaseWindow(immunizationDto);
+					});
+				} else {
+					buildAndOpenSearchSpecificCaseWindow(this.getValue());
+				}
+
+			}, ValoTheme.BUTTON_PRIMARY, FORCE_CAPTION);
 		}
 		getContent().addComponent(linkImmunizationToCaseButton, LINK_IMMUNIZATION_TO_CASE_BTN_LOC);
 		linkImmunizationToCaseButton.setVisible(shouldShowRecoveryFields(meansOfImmunizationValue));
@@ -474,17 +490,18 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		});
 	}
 
-	private void buildAndOpenSearchSpecificCaseWindow() {
+	private void buildAndOpenSearchSpecificCaseWindow(ImmunizationDto immunizationDto) {
+
 		Window window = VaadinUiUtil.createPopupWindow();
 		window.setCaption(I18nProperties.getCaption(Captions.caseSearchSpecificCase));
 		window.setWidth(768, Unit.PIXELS);
 
-		SearchSpecificLayout layout = buildSearchSpecificLayout(window);
+		SearchSpecificLayout layout = buildSearchSpecificLayout(window, immunizationDto);
 		window.setContent(layout);
 		UI.getCurrent().addWindow(window);
 	}
 
-	private SearchSpecificLayout buildSearchSpecificLayout(Window window) {
+	private SearchSpecificLayout buildSearchSpecificLayout(Window window, ImmunizationDto immunizationDto) {
 
 		String description = I18nProperties.getString(Strings.infoSpecificCaseSearch);
 		String confirmCaption = I18nProperties.getCaption(Captions.caseSearchCase);
@@ -493,7 +510,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		Runnable confirmCallback = () -> {
 
 			boolean foundCase =
-				FacadeProvider.getImmunizationFacade().linkRecoveryImmunizationToSearchedCase(searchField.getValue(), this.getValue());
+				FacadeProvider.getImmunizationFacade().linkRecoveryImmunizationToSearchedCase(searchField.getValue(), immunizationDto);
 
 			if (foundCase) {
 				VaadinUiUtil

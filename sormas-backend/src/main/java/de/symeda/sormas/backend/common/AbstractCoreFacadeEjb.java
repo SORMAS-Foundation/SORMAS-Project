@@ -38,7 +38,9 @@ import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.common.CoreEntityType;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -50,9 +52,7 @@ import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import de.symeda.sormas.backend.util.QueryHelper;
 
 public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AbstractCoreAdoService<ADO>, CRITERIA extends BaseCriteria>
 	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA>
@@ -121,9 +121,9 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	}
 
 	@DenyAll
-	public void delete(String uuid) {
+	public void delete(String uuid, DeletionDetails deletionDetails) {
 		ADO ado = service.getByUuid(uuid);
-		service.delete(ado);
+		service.delete(ado, deletionDetails);
 	}
 
 	public boolean isArchived(String uuid) {
@@ -137,10 +137,10 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		return dto;
 	}
 
-	public void executeAutomaticDeletion(DeletionConfiguration entityConfig, boolean deletePermanent, int batchSize) {
+	public List<String> getUuidsForAutomaticDeletion(DeletionConfiguration entityConfig) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<ADO> cq = cb.createQuery(adoClass);
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<ADO> from = cq.from(adoClass);
 
 		Date referenceDeletionDate = DateHelper.subtractDays(new Date(), entityConfig.getDeletionPeriod());
@@ -151,25 +151,28 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		}
 		cq.where(filter);
 
-		List<ADO> toDeleteEntities = QueryHelper.getResultList(em, cq, null, null);
+		cq.select(from.get(DeletableAdo.UUID));
+		cq.distinct(true);
 
-		IterableHelper.executeBatched(toDeleteEntities, batchSize, batchedEntities -> doAutomaticDeletion(batchedEntities, deletePermanent));
+		List<String> toDeleteUuids = em.createQuery(cq).getResultList();
+		return toDeleteUuids;
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	private void doAutomaticDeletion(List<ADO> toDeleteEntities, boolean deletePermanent) {
+	public void doAutomaticDeletion(List<String> toDeleteUuids, boolean deletePermanent) {
 
-		toDeleteEntities.forEach(ado -> {
+		toDeleteUuids.forEach(uuid -> {
+			ADO ado = service.getByUuid(uuid);
 			if (deletePermanent) {
 				service.deletePermanent(ado);
 			} else {
-				service.delete(ado);
+				service.delete(ado, new DeletionDetails(DeletionReason.OTHER_REASON, I18nProperties.getString(Strings.entityAutomaticSoftDeletion)));
 			}
 		});
 	}
 
 	@Override
-	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
+	public DeletionInfoDto getAutomaticDeletionInfo(String uuid) {
 
 		DeletionConfiguration deletionConfiguration = deletionConfigurationService.getCoreEntityTypeConfig(getCoreEntityType());
 
@@ -182,7 +185,24 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		Object[] deletionData = getDeletionData(uuid, deletionConfiguration);
 		Date referenceDate = (Date) deletionData[0];
 		Date deletiondate = DateHelper.addDays(referenceDate, deletionConfiguration.getDeletionPeriod());
-		return new AutomaticDeletionInfoDto(deletiondate, (Date) deletionData[1], deletionConfiguration.getDeletionPeriod());
+		return new DeletionInfoDto(deletiondate, (Date) deletionData[1], deletionConfiguration.getDeletionPeriod());
+	}
+
+	@Override
+	public DeletionInfoDto getManuallyDeletionInfo(String uuid) {
+
+		DeletionConfiguration deletionConfiguration = deletionConfigurationService.getCoreEntityTypeManualDeletionConfig(getCoreEntityType());
+
+		if (deletionConfiguration == null
+			|| deletionConfiguration.getDeletionPeriod() == null
+			|| deletionConfiguration.getDeletionReference() == null) {
+			return null;
+		}
+
+		Object[] deletionData = getDeletionData(uuid, deletionConfiguration);
+		Date referenceDate = (Date) deletionData[0];
+		Date deletiondate = DateHelper.addDays(referenceDate, deletionConfiguration.getDeletionPeriod());
+		return new DeletionInfoDto(deletiondate, (Date) deletionData[1], deletionConfiguration.getDeletionPeriod());
 	}
 
 	protected String getDeleteReferenceField(DeletionReference deletionReference) {

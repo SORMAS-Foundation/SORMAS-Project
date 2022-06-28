@@ -20,8 +20,8 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -48,23 +48,22 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRightsFacade;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.util.XssfHelper;
 
 @Stateless(name = "UserRightsFacade")
 public class UserRightsFacadeEjb implements UserRightsFacade {
 
 	@EJB
-	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	private UserRoleFacadeEjb.UserRoleFacadeEjbLocal userRoleFacade;
 
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	@Override
-	public String generateUserRightsDocument(boolean withDbOverrides) throws IOException {
+	public String generateUserRightsDocument() throws IOException {
 		Path documentPath = generateUserRightsDocumentTempPath();
 
 		if (Files.exists(documentPath)) {
@@ -72,7 +71,7 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 		}
 
 		try (OutputStream fos = Files.newOutputStream(documentPath)) {
-			generateUserRightsDocument(withDbOverrides ? userRoleConfigFacade.getUserRoleRights() : new HashMap<>(0), fos);
+			generateUserRightsDocument(userRoleFacade.getUserRoleRights(), fos);
 		} catch (IOException e) {
 			Files.deleteIfExists(documentPath);
 			throw e;
@@ -81,7 +80,7 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 		return documentPath.toString();
 	}
 
-	private void generateUserRightsDocument(Map<UserRole, Set<UserRight>> userRoleRights, OutputStream outStream) throws IOException {
+	private void generateUserRightsDocument(Map<UserRoleDto, Set<UserRight>> userRoleRights, OutputStream outStream) throws IOException {
 		XSSFWorkbook workbook = new XSSFWorkbook();
 
 		// Create User Rights sheet
@@ -140,13 +139,15 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 		sheet.setColumnWidth(0, 256 * 35);
 		sheet.setColumnWidth(1, 256 * 50);
 		sheet.setColumnWidth(2, 256 * 75);
-		sheet.createFreezePane(2,2,2,2);
-		for (UserRole userRole : UserRole.values()) {
+		sheet.createFreezePane(2, 2, 2, 2);
+		int columnIndex = 3;
+		for (UserRoleDto userRole : userRoleRights.keySet()) {
 			String columnCaption = userRole.toString();
-			Cell headerCell = headerRow.createCell(userRole.ordinal() + 3);
+			Cell headerCell = headerRow.createCell(columnIndex);
 			headerCell.setCellValue(columnCaption);
 			headerCell.setCellStyle(boldStyle);
-			sheet.setColumnWidth(userRole.ordinal() + 3, 256 * 14);
+			sheet.setColumnWidth(columnIndex, 256 * 14);
+			columnIndex++;
 		}
 
 		// Jurisdiction row (header)
@@ -157,11 +158,14 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 		final Cell jurDescHeadlineCell = jurisdictionRow.createCell(1);
 		jurDescHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRight_jurisdictionOfRole));
 		jurDescHeadlineCell.setCellStyle(boldStyle);
-		for (UserRole userRole : UserRole.values()) {
+
+		columnIndex = 3;
+		for (UserRoleDto userRole : userRoleRights.keySet()) {
 			final String columnCaption = userRole.getJurisdictionLevel().toString();
-			final Cell headerCell = jurisdictionRow.createCell(userRole.ordinal() + 3);
+			final Cell headerCell = jurisdictionRow.createCell(columnIndex);
 			headerCell.setCellValue(columnCaption);
 			headerCell.setCellStyle(boldStyle);
+			columnIndex++;
 		}
 
 		// User right rows
@@ -182,15 +186,17 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 			descCell.setCellValue(userRight.getDescription());
 
 			// Add styled cells for all user roles
-			for (UserRole userRole : UserRole.values()) {
-				Cell roleRightCell = row.createCell(userRole.ordinal() + 3);
-				if (userRoleRights.containsKey(userRole) && userRoleRights.get(userRole).contains(userRight) || userRole.hasDefaultRight(userRight)) {
+			columnIndex = 3;
+			for (UserRoleDto userRole : userRoleRights.keySet()) {
+				Cell roleRightCell = row.createCell(columnIndex);
+				if (userRoleFacade.hasUserRight(Collections.singletonList(userRole), userRight)) {
 					roleRightCell.setCellStyle(authorizedStyle);
 					roleRightCell.setCellValue(I18nProperties.getString(Strings.yes));
 				} else {
 					roleRightCell.setCellStyle(unauthorizedStyle);
 					roleRightCell.setCellValue(I18nProperties.getString(Strings.no));
 				}
+				columnIndex++;
 			}
 		}
 

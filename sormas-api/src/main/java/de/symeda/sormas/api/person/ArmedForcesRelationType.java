@@ -10,8 +10,8 @@ public enum ArmedForcesRelationType {
 	CIVIL,
 	SOLDIER_OR_RELATIVE;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-
 }

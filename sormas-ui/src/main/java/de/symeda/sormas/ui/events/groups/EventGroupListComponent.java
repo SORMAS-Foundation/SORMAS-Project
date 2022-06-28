@@ -20,19 +20,26 @@
 
 package de.symeda.sormas.ui.events.groups;
 
+import java.util.function.Consumer;
+
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class EventGroupListComponent extends SideComponent {
 
-	public EventGroupListComponent(EventReferenceDto eventReference) {
+	public EventGroupListComponent(EventReferenceDto eventReference, Consumer<Runnable> actionCallback) {
 
-		super(I18nProperties.getCaption(Captions.eventGroups));
+		super(I18nProperties.getCaption(Captions.eventGroups), actionCallback);
 
-		addCreateButton(I18nProperties.getCaption(Captions.linkEventGroup), UserRight.EVENTGROUP_CREATE, UserRight.EVENTGROUP_LINK);
+		addCreateButton(
+			I18nProperties.getCaption(Captions.linkEventGroup),
+			() -> ControllerProvider.getEventGroupController().create(eventReference),
+			UserRight.EVENTGROUP_CREATE,
+			UserRight.EVENTGROUP_LINK);
 
 		EventGroupList eventList = new EventGroupList(eventReference);
 		addComponent(eventList);

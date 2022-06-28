@@ -15,21 +15,20 @@
 
 package org.sormas.e2etests.steps.web.application.dashboard.surveillance;
 
-import cucumber.api.java8.En;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.NavBarPage;
-import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
-import org.testng.asserts.SoftAssert;
-
-import javax.inject.Inject;
-import java.util.concurrent.TimeUnit;
-
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.DATE_TYPE;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.REFERENCE_DEFINITION_FULFILLED_CASES_NUMBER;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.REGION_COMBOBOX_DROPDOWN;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.TIME_PERIOD_COMBOBOX;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.TIME_PERIOD_YESTERDAY_BUTTON;
+
+import cucumber.api.java8.En;
+import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.NavBarPage;
+import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
+import org.testng.asserts.SoftAssert;
 
 public class SurveillanceDashboardSteps implements En {
 
@@ -622,10 +621,12 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.CASES_METRICS_NOT_A_CASE_BOX);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.CASES_METRICS_CONFIRMED_BOX);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
-              SurveillanceDashboardPage.CASES_METRICS_CONFIRMED_NO_SYMPTOMS_BOX);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
-              SurveillanceDashboardPage.CASES_METRICS_CONFIRMED_UNKNOWN_SYMPTOMS_BOX);
+          // field no longer available
+          //          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+          //              SurveillanceDashboardPage.CASES_METRICS_CONFIRMED_NO_SYMPTOMS_BOX);
+          // field no longer available
+          //          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+          //              SurveillanceDashboardPage.CASES_METRICS_CONFIRMED_UNKNOWN_SYMPTOMS_BOX);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.CASES_METRICS_PROBABLE_BOX);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
@@ -755,10 +756,12 @@ public class SurveillanceDashboardSteps implements En {
           TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.LEGEND_CHART_CASE_STATUS_CONFIRMED);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
-              SurveillanceDashboardPage.LEGEND_CHART_CASE_STATUS_CONFIRMED_NO_SYMPTOMS);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
-              SurveillanceDashboardPage.LEGEND_CHART_CASE_STATUS_CONFIRMED_UNKNOWN_SYMPTOMS);
+          // fields no longer available
+          //          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+          //              SurveillanceDashboardPage.LEGEND_CHART_CASE_STATUS_CONFIRMED_NO_SYMPTOMS);
+          //          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+          //
+          // SurveillanceDashboardPage.LEGEND_CHART_CASE_STATUS_CONFIRMED_UNKNOWN_SYMPTOMS);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.LEGEND_CHART_CASE_STATUS_NOT_YET_CLASSIFIED);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(

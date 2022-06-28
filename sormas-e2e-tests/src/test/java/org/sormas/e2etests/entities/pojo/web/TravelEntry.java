@@ -42,4 +42,7 @@ public class TravelEntry {
   String firstName;
   String lastName;
   String sex;
+  String personUuid;
+  String pointOfEntryRegion;
+  String pointOfEntryDistrict;
 }

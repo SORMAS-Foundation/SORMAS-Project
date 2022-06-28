@@ -45,7 +45,7 @@ public class SormasToSormasApiConstants {
 
 	public static final String EVENT_SYNC_ENDPOINT = "/events/sync";
 
-	public static final String LAB_MESSAGE_ENDPOINT = "/labmessages";
+	public static final String EXTERNAL_MESSAGE_ENDPOINT = "/externalmessages";
 
 	public static final String REJECT_REQUESTS_ENDPOINT = "/reject-requests";
 

@@ -10,6 +10,7 @@ public enum SymptomJournalStatus {
 	REJECTED,
 	DELETED;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

@@ -52,6 +52,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -230,6 +231,10 @@ public class ImmunizationFacadeEjb
 		dto.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(entity.getSormasToSormasOriginInfo()));
 		dto.setOwnershipHandedOver(entity.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
 
+		dto.setDeleted(entity.isDeleted());
+		dto.setDeletionReason(entity.getDeletionReason());
+		dto.setOtherDeletionReason(entity.getOtherDeletionReason());
+
 		return dto;
 	}
 
@@ -290,9 +295,9 @@ public class ImmunizationFacadeEjb
 
 	@Override
 	@RolesAllowed(UserRight._IMMUNIZATION_DELETE)
-	public void delete(String uuid) {
+	public void delete(String uuid, DeletionDetails deletionDetails) {
 		Immunization immunization = service.getByUuid(uuid);
-		service.delete(immunization);
+		service.delete(immunization, deletionDetails);
 	}
 
 	@Override
@@ -446,12 +451,12 @@ public class ImmunizationFacadeEjb
 	}
 
 	@RolesAllowed(UserRight._IMMUNIZATION_DELETE)
-	public List<String> deleteImmunizations(List<String> immunizationUuids) {
+	public List<String> deleteImmunizations(List<String> immunizationUuids, DeletionDetails deletionDetails) {
 		List<String> deletedImmunizationUuids = new ArrayList<>();
 		List<Immunization> immunizationsToBeDeleted = service.getByUuids(immunizationUuids);
 		if (immunizationsToBeDeleted != null) {
 			immunizationsToBeDeleted.forEach(immunizationToBeDeleted -> {
-				service.delete(immunizationToBeDeleted);
+				service.delete(immunizationToBeDeleted, deletionDetails);
 				deletedImmunizationUuids.add(immunizationToBeDeleted.getUuid());
 			});
 		}
@@ -521,6 +526,10 @@ public class ImmunizationFacadeEjb
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(originInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
 		}
+
+		target.setDeleted(source.isDeleted());
+		target.setDeletionReason(source.getDeletionReason());
+		target.setOtherDeletionReason(source.getOtherDeletionReason());
 
 		return target;
 	}
@@ -637,7 +646,8 @@ public class ImmunizationFacadeEjb
 	@RolesAllowed({
 		UserRight._IMMUNIZATION_CREATE,
 		UserRight._PERSON_EDIT })
-	public void copyImmunizationsToLeadPerson(ImmunizationDto immunizationDto, PersonDto leadPerson) {
+	public void copyImmunizationToLeadPerson(ImmunizationDto immunizationDto, PersonDto leadPerson, List<VaccinationDto> leadPersonVaccinations) {
+
 		Immunization newImmunization = new Immunization();
 		newImmunization.setUuid(DataHelper.createUuid());
 
@@ -646,7 +656,8 @@ public class ImmunizationFacadeEjb
 		newImmunization.setPerson(personService.getByReferenceDto(leadPerson.toReference()));
 		service.persist(newImmunization);
 
-		vaccinationFacade.copyExistingVaccinationsToNewImmunization(immunizationDto, newImmunization);
+		vaccinationFacade.copyOrMergeVaccinations(immunizationDto, newImmunization, leadPersonVaccinations);
+
 		service.ensurePersisted(newImmunization);
 	}
 

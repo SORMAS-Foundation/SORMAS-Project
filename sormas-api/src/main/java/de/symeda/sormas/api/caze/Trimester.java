@@ -9,6 +9,7 @@ public enum Trimester {
 	THIRD,
 	UNKNOWN;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

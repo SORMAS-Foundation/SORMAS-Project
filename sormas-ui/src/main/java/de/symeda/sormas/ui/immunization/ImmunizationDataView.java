@@ -37,7 +37,7 @@ public class ImmunizationDataView extends AbstractImmunizationView {
 
 		ImmunizationDto immunization = FacadeProvider.getImmunizationFacade().getByUuid(getReference().getUuid());
 
-		editComponent = ControllerProvider.getImmunizationController().getImmunizationDataEditComponent(immunization);
+		editComponent = ControllerProvider.getImmunizationController().getImmunizationDataEditComponent(immunization, this::showUnsavedChangesPopup);
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);

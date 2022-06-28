@@ -20,6 +20,7 @@ package org.sormas.e2etests.entities.pojo.api;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.Date;
 import lombok.*;
+import org.sormas.e2etests.entities.pojo.api.chunks.DiseaseVariant;
 
 @Value
 @AllArgsConstructor
@@ -28,6 +29,7 @@ import lombok.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Event {
   String disease;
+  DiseaseVariant diseaseVariant;
   String eventTitle;
   EventLocation eventLocation;
   String eventStatus;

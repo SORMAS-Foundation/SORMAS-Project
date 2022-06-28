@@ -25,8 +25,6 @@ public interface DashboardFacade {
 
 	String getLastReportedDistrictName(DashboardCriteria dashboardCriteria);
 
-	Map<PathogenTestResultType, Long> getTestResultCountByResultType(List<DashboardCaseDto> cases);
-
 	long countCasesConvertedFromContacts(DashboardCriteria dashboardCriteria);
 
 	Map<PresentCondition, Integer> getCasesCountPerPersonCondition(DashboardCriteria dashboardCriteria);
