@@ -708,7 +708,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		Sample sample = sampleService.getByReferenceDto(sampleRef);
 		sampleService.delete(sample, deletionDetails);
 
-		handleAssotiatedObjectChanges(sample, true);
+		handleAssociatedEntityChanges(sample, true);
 	}
 
 	@Override
@@ -937,7 +937,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			}
 		}
 
-		handleAssotiatedObjectChanges(newSample, syncShares);
+		handleAssociatedEntityChanges(newSample, syncShares);
 
 		// Send an email to the lab user when a sample has been shipped to their lab
 		if (newSample.isShipped()
@@ -979,17 +979,18 @@ public class SampleFacadeEjb implements SampleFacade {
 		return messageContent;
 	}
 
-	private void handleAssotiatedObjectChanges(Sample newSample, boolean syncShares) {
-		if (newSample.getAssociatedCase() != null) {
+	private void handleAssociatedEntityChanges(Sample newSample, boolean syncShares) {
+
+		if (newSample.getAssociatedCase() != null && userService.hasRight(UserRight.CASE_EDIT)) {
 			caseFacade.onCaseChanged(caseFacade.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase(), syncShares);
 		}
 
-		if (newSample.getAssociatedContact() != null) {
+		if (newSample.getAssociatedContact() != null && userService.hasRight(UserRight.CONTACT_EDIT)) {
 			contactFacade.onContactChanged(contactFacade.toDto(newSample.getAssociatedContact()), syncShares);
 		}
 
 		EventParticipant associatedEventParticipant = newSample.getAssociatedEventParticipant();
-		if (associatedEventParticipant != null) {
+		if (associatedEventParticipant != null && userService.hasRight(UserRight.EVENTPARTICIPANT_EDIT)) {
 			eventParticipantFacade.onEventParticipantChanged(
 				eventFacade.toDto(associatedEventParticipant.getEvent()),
 				eventParticipantFacade.toDto(associatedEventParticipant),
