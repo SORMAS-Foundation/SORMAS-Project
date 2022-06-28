@@ -373,7 +373,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 				jurisdictionLevel = baseInfrastructure instanceof Facility && ((Facility) baseInfrastructure).getCommunity() != null
 					? JurisdictionLevel.COMMUNITY
 					: InfrastructureHelper.getSuperordinateJurisdiction(jurisdictionLevel);
-				if (jurisdictionLevel.getOrder() > 1) {
+				if (jurisdictionLevel.getOrder() > 1 && baseInfrastructure != null) {
 					baseInfrastructure = JurisdictionHelper.getParentInfrastructure(baseInfrastructure, jurisdictionLevel);
 				}
 			} else {
