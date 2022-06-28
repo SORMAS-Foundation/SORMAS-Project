@@ -1779,3 +1779,19 @@ Feature: Case end to end tests
      And I click on the Shares button from navbar
      Then I click on the The Eye Icon located in the Shares Page
      And I check if received case id is equal with sent
+
+  @env_main @issue=SORDEV-10230
+    Scenario: Test Archived entities should always be read-only
+      Then I log in as a Surveillance Officer
+      And I click on the Cases button from navbar
+      And I click on the NEW CASE button
+      When I create a new case with specific data
+      Then I check the created data is correctly displayed on Edit case page
+      And I collect uuid of the case
+      Then I click on the Cases button from navbar
+      And I apply "Active cases" to combobox on Case Directory Page
+      Then I filter with first Case ID
+      And I click on the first Case ID from Case Directory
+      Then I click on the Archive case button
+
+
