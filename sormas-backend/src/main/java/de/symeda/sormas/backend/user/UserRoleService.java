@@ -121,7 +121,7 @@ public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
 	}
 
 	public boolean isCaptionUnique(String uuid, String caption) {
-		UserRole userRole = getByCaption(caption);
+		UserRole userRole = getByCaption(caption.trim());
 		return userRole == null || userRole.getUuid().equals(uuid);
 	}
 }

@@ -774,7 +774,7 @@ public class TestDataCreator {
 			userRoleDto.setEmailNotificationTypes(defaultUserRole.getEmailNotificationTypes());
 			userRoleDto.setSmsNotificationTypes(defaultUserRole.getSmsNotificationTypes());
 			userRoleDto.setJurisdictionLevel(defaultUserRole.getJurisdictionLevel());
-			FacadeProvider.getUserRoleFacade().saveUserRole(userRoleDto, null);
+			FacadeProvider.getUserRoleFacade().saveUserRole(userRoleDto);
 			userRoleDtoMap.put(defaultUserRole, userRoleDto.toReference());
 		});
 	}

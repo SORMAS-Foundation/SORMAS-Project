@@ -250,6 +250,8 @@ public class MainScreen extends HorizontalLayout {
 				VaadinIcons.BAR_CHART);
 		}
 		if (permitted(UserRight.USER_VIEW)) {
+			ControllerProvider.getUserRoleController().registerViews(navigator);
+
 			menu.addView(UsersView.class, UsersView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers), VaadinIcons.USERS);
 		}
 		if (UserProvider.getCurrent().hasConfigurationAccess()) {

@@ -89,11 +89,12 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	}
 
 	@Override
-	public UserRoleDto saveUserRole(@Valid UserRoleDto dto, UserRoleReferenceDto templateUserRole) {
+	public UserRoleReferenceDto getReferenceByUuid(String uuid) {
+		return toReferenceDto(userRoleService.getByUuid(uuid));
+	}
 
-		if (templateUserRole != null) {
-			applyTemplateData(dto, templateUserRole);
-		}
+	@Override
+	public UserRoleDto saveUserRole(@Valid UserRoleDto dto) {
 
 		validate(dto);
 
@@ -103,25 +104,6 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		return toDto(entity);
 	}
 
-	private void applyTemplateData(UserRoleDto dto, UserRoleReferenceDto templateUserRole) {
-		UserRoleDto template = null;
-		if (templateUserRole.isDefault()) {
-			DefaultUserRole defaultUserRole = DefaultUserRole.forName(templateUserRole.getUuid());
-			if (defaultUserRole != null) {
-				template = UserRoleDto.build();
-				defaultUserRole.toUserRole(template);
-			}
-		} else {
-			template = getByUuid(templateUserRole.getUuid());
-		}
-
-		if (template != null) {
-			dto.setUserRights(template.getUserRights());
-			dto.setEmailNotificationTypes(template.getEmailNotificationTypes());
-			dto.setSmsNotificationTypes(template.getSmsNotificationTypes());
-		}
-	}
-
 	private void validate(UserRoleDto source) {
 		if (StringUtils.isBlank(source.getCaption())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyCaption));
@@ -129,7 +111,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		if (Objects.isNull(source.getJurisdictionLevel())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyJurisdictionLevel));
 		}
-		if (!userService.isCaptionUnique(source.getUuid(), source.getCaption())) {
+		if (!userRoleService.isCaptionUnique(source.getUuid(), source.getCaption())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.captionNotUnique));
 		}
 	}
@@ -288,7 +270,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	}
 
 	@Override
-	public UserRoleReferenceDto getUserRoleReferenceById(long id) {
+	public UserRoleReferenceDto getReferenceById(long id) {
 		return toReferenceDto(userRoleService.getById(id));
 	}
 
@@ -302,9 +284,13 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	}
 
 	@Override
-	public Set<UserRoleReferenceDto> getDefaultsAsReference() {
+	public Set<UserRoleDto> getDefaultUserRolesAsDto() {
 		return Stream.of(DefaultUserRole.values())
-			.map(r -> new UserRoleReferenceDto(r.name(), I18nProperties.getEnumCaption(r), true))
+			.map(r -> {
+				UserRoleDto role = UserRoleDto.build();
+				r.toUserRole(role);
+				return role;
+			})
 			.collect(Collectors.toSet());
 	}
 

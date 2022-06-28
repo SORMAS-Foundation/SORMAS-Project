@@ -15,21 +15,25 @@
 
 package de.symeda.sormas.ui.user;
 
+import com.vaadin.navigator.Navigator;
+import com.vaadin.ui.Notification;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.contact.ContactDataView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-import static de.symeda.sormas.ui.SormasUI.refreshView;
-
 public class UserRoleController {
+
+	public void registerViews(Navigator navigator) {
+		navigator.addView(UserRoleView.VIEW_NAME, UserRoleView.class);
+	}
 
 	public void create() {
 		CommitDiscardWrapperComponent<UserRoleCreateForm> userCreateComponent = getUserRoleCreateComponent();
@@ -40,7 +44,7 @@ public class UserRoleController {
 
 		UserRoleCreateForm createForm = new UserRoleCreateForm();
 		createForm.setValue(UserRoleDto.build());
-		final CommitDiscardWrapperComponent<UserRoleCreateForm> editView = new CommitDiscardWrapperComponent<UserRoleCreateForm>(
+		final CommitDiscardWrapperComponent<UserRoleCreateForm> editView = new CommitDiscardWrapperComponent<>(
 			createForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE),
 			createForm.getFieldGroup());
@@ -48,7 +52,7 @@ public class UserRoleController {
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
 				UserRoleDto dto = createForm.getValue();
-				FacadeProvider.getUserRoleFacade().saveUserRole(dto, createForm.getSelectedTemplateRole());
+				FacadeProvider.getUserRoleFacade().saveUserRole(dto);
 
 				editData(dto.getUuid());
 			}
@@ -58,7 +62,30 @@ public class UserRoleController {
 	}
 
 	public void editData(String userRoleUuid) {
-		String navigationState = ContactDataView.VIEW_NAME + "/" + userRoleUuid;
+		String navigationState = UserRoleView.VIEW_NAME + "/" + userRoleUuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
+	}
+
+	public CommitDiscardWrapperComponent<UserRoleDataForm> getUserRoleEditComponent(UserRoleReferenceDto userRoleRef) {
+		UserRoleDataForm form = new UserRoleDataForm();
+		form.setValue(UserRoleDto.build());
+		final CommitDiscardWrapperComponent<UserRoleDataForm> editView =
+			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE), form.getFieldGroup());
+
+		editView.addCommitListener(() -> {
+			if (!form.getFieldGroup().isModified()) {
+				UserRoleDto dto = form.getValue();
+				FacadeProvider.getUserRoleFacade().saveUserRole(dto);
+
+				Notification.show(I18nProperties.getString(Strings.messageUserRoleSaved), Notification.Type.WARNING_MESSAGE);
+				SormasUI.refreshView();
+
+			}
+		});
+
+		UserRoleDto userRole = FacadeProvider.getUserRoleFacade().getByUuid(userRoleRef.getUuid());
+		form.setValue(userRole);
+
+		return editView;
 	}
 }

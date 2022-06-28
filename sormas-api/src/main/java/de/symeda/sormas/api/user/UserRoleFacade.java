@@ -41,7 +41,9 @@ public interface UserRoleFacade {
 
 	UserRoleDto getByUuid(String uuid);
 
-	UserRoleDto saveUserRole(@Valid UserRoleDto dto, UserRoleReferenceDto templateUserRole);
+	UserRoleReferenceDto getReferenceByUuid(String uuid);
+
+	UserRoleDto saveUserRole(@Valid UserRoleDto dto);
 
 	void deleteUserRole(UserRoleDto dto);
 
@@ -63,9 +65,9 @@ public interface UserRoleFacade {
 
 	void validateUserRoleCombination(Collection<UserRoleDto> roles) throws UserRoleDto.UserRoleValidationException;
 
-	UserRoleReferenceDto getUserRoleReferenceById(long id);
+	UserRoleReferenceDto getReferenceById(long id);
 
 	Map<UserRoleDto, Set<UserRight>> getUserRoleRights();
 
-	Set<UserRoleReferenceDto> getDefaultsAsReference();
+	Set<UserRoleDto> getDefaultUserRolesAsDto();
 }

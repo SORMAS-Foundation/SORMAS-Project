@@ -18,9 +18,12 @@ package de.symeda.sormas.ui.user;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
@@ -32,28 +35,35 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.components.CheckboxGroup;
 
-public class UserRoleCreateForm extends AbstractEditForm<UserRoleDto> {
+public class UserRoleDataForm extends AbstractEditForm<UserRoleDto> {
 
 	private static final long serialVersionUID = 8099247063020818190L;
 
+	private static final String USER_RIGHTS_LABEL_LOC = "userRightsLabel";
 	private static final String TEMPLATE_INFO_LOC = "templateInfo";
 	private static final String TEMPLATE_USER_ROLE = "templateUserRole";
 
-	private static final String HTML_LAYOUT = fluidRowLocs(TEMPLATE_INFO_LOC)
-		+ fluidRowLocs(TEMPLATE_USER_ROLE, "")
-		+ fluidRowLocs(UserRoleDto.CAPTION, UserRoleDto.JURISDICTION_LEVEL)
+	private final static List<String> defaultRightsOrder = Arrays.asList("_VIEW", "_EDIT", "_CREATE");
+
+	private static final String HTML_LAYOUT = fluidRowLocs(UserRoleDto.CAPTION, TEMPLATE_USER_ROLE)
+		+ fluidRowLocs(UserRoleDto.JURISDICTION_LEVEL, "")
 		+ fluidRowLocs(UserRoleDto.DESCRIPTION)
 		+ fluidRowLocs(UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY)
 		+ fluidRowLocs(UserRoleDto.HAS_ASSOCIATED_DISTRICT_USER)
-		+ fluidRowLocs(UserRoleDto.PORT_HEALTH_USER);
+		+ fluidRowLocs(UserRoleDto.PORT_HEALTH_USER)
+		+ fluidRowLocs(USER_RIGHTS_LABEL_LOC)
+		+ fluidRowLocs(TEMPLATE_INFO_LOC)
+		+ fluidRowLocs(UserRoleDto.USER_RIGHTS);
 
-	protected UserRoleCreateForm() {
+	protected UserRoleDataForm() {
 		super(UserRoleDto.class, UserRoleDto.I18N_PREFIX);
 	}
 
@@ -64,10 +74,6 @@ public class UserRoleCreateForm extends AbstractEditForm<UserRoleDto> {
 
 	@Override
 	protected void addFields() {
-		getContent().addComponent(
-			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getDescription(Descriptions.userRoleTemplate), ContentMode.HTML),
-			TEMPLATE_INFO_LOC);
-
 		ComboBox templateRoleCombo = addCustomField(TEMPLATE_USER_ROLE, UserRoleReferenceDto.class, ComboBox.class);
 		setSoftRequired(true, TEMPLATE_USER_ROLE);
 		List<UserRoleDto> existingUserRoles = FacadeProvider.getUserRoleFacade().getAll();
@@ -87,22 +93,46 @@ public class UserRoleCreateForm extends AbstractEditForm<UserRoleDto> {
 
 		addField(UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY).addStyleName(CssStyles.VSPACE_TOP_3);
 		addField(UserRoleDto.HAS_ASSOCIATED_DISTRICT_USER).addStyleName(CssStyles.VSPACE_TOP_3);
-		addField(UserRoleDto.PORT_HEALTH_USER).addStyleName(CssStyles.VSPACE_TOP_3);
+		addField(UserRoleDto.PORT_HEALTH_USER).addStyleNames(CssStyles.VSPACE_TOP_3, CssStyles.VSPACE_3);
+
+		Label userRightsLabel = new Label(I18nProperties.getCaption(Captions.UserRole_userRights), ContentMode.HTML);
+		userRightsLabel.addStyleNames(CssStyles.H2);
+		getContent().addComponent(userRightsLabel, USER_RIGHTS_LABEL_LOC);
+
+		Label templateInfoLabel =
+			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getDescription(Descriptions.userRoleTemplate), ContentMode.HTML);
+		getContent().addComponent(templateInfoLabel, TEMPLATE_INFO_LOC);
+
+		CheckboxGroup<UserRight> userRightCbGroup = addField(UserRoleDto.USER_RIGHTS, CheckboxGroup.class);
+		userRightCbGroup.setCaption(null);
+		userRightCbGroup.setItems(getSortedUserRights(), r -> r.getUserRightGroup().toString());
 
 		UserRoleFormHelper.createFieldDependencies(this);
+	}
+
+	private List<UserRight> getSortedUserRights() {
+		return Stream.of(UserRight.values()).sorted((r1, r2) -> {
+			int groupOrder1 = r1.getUserRightGroup().ordinal();
+			int groupOrder2 = r2.getUserRightGroup().ordinal();
+
+			int rightOrder1 = IntStream.range(0, defaultRightsOrder.size())
+				.filter(i -> r1.name().endsWith(defaultRightsOrder.get(i)))
+				.findFirst()
+				.orElse(defaultRightsOrder.size());
+			int rightOrder2 = IntStream.range(0, defaultRightsOrder.size())
+				.filter(i -> r2.name().endsWith(defaultRightsOrder.get(i)))
+				.findFirst()
+				.orElse(defaultRightsOrder.size());
+
+			return groupOrder1 != groupOrder2 ? groupOrder1 - groupOrder2 : rightOrder1 - rightOrder2;
+		}).collect(Collectors.toList());
 	}
 
 	private void applyTemplateData(UserRoleDto templateRole) {
 		UserRoleDto userRole = getValue();
 
-		if (templateRole == null) {
-			userRole.setUserRights(Collections.emptySet());
-			userRole.setEmailNotificationTypes(Collections.emptyList());
-			userRole.setSmsNotificationTypes(Collections.emptyList());
-		} else {
-			userRole.setUserRights(templateRole.getUserRights());
-			userRole.setEmailNotificationTypes(templateRole.getEmailNotificationTypes());
-			userRole.setSmsNotificationTypes(templateRole.getSmsNotificationTypes());
+		if (templateRole != null) {
+			// todo modify checkboxes
 		}
 	}
 }

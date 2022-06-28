@@ -229,7 +229,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 		}
 
 		final ComboBox healthFacility = (ComboBox) getFieldGroup().getField(UserDto.HEALTH_FACILITY);
-		healthFacility.setVisible(hasOptionalHealthFacility || useHealthFacility);
+		healthFacility.setVisible(useHealthFacility || hasOptionalHealthFacility);
 		setRequired(useHealthFacility, UserDto.HEALTH_FACILITY);
 		if (!healthFacility.isVisible()) {
 			healthFacility.clear();
@@ -250,7 +250,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 		}
 
 		final ComboBox district = (ComboBox) getFieldGroup().getField(UserDto.DISTRICT);
-		district.setVisible(useDistrict);
+		district.setVisible(useDistrict || hasOptionalHealthFacility);
 		setRequired(useDistrict, UserDto.DISTRICT);
 		if (!useDistrict) {
 			district.clear();
