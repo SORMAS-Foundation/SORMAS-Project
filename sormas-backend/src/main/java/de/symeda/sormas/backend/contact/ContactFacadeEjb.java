@@ -401,11 +401,8 @@ public class ContactFacadeEjb
 					entity,
 					I18nProperties
 						.getString(convertedToCase ? Strings.messageSystemFollowUpCanceled : Strings.messageSystemFollowUpCanceledByDropping));
-			} else {
-				service.updateFollowUpDetails(
-					entity,
-					existingContactDto != null && entity.getFollowUpStatus() != existingContactDto.getFollowUpStatus());
 			}
+
 			service.udpateContactStatus(entity);
 
 			if (handleCaseChanges && entity.getCaze() != null) {
@@ -431,6 +428,7 @@ public class ContactFacadeEjb
 		if (existingContact == null) {
 			vaccinationFacade.updateVaccinationStatuses(contact);
 		}
+		service.updateFollowUpDetails(contact, existingContact != null && contact.getFollowUpStatus() != existingContact.getFollowUpStatus());
 
 		onContactChanged(toDto(contact), syncShares);
 
