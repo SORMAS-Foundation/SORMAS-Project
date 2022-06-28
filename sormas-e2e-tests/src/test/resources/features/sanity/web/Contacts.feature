@@ -835,10 +835,6 @@ Feature: Contacts end to end tests
     And I click on the Contacts button from navbar
     Then I compare previous first contact ID on the list with actually second contact ID on list
 
-
-
-
-
   @issue=SORDEV-6461 @env_main
   Scenario: Test the task type in the contact's new task form
     Given I log in as a National User
@@ -854,4 +850,32 @@ Feature: Contacts end to end tests
     And I check that values listed in the task type combobox are correct
     And I choose Other task as described in comments option from task type combobox in the New task form
     Then I check that Comments on task field is mandatory in the New task form
+
+  @issue=SORDEV-11753 @env_main
+  Scenario: Duplicate detection for vaccinations when merging contacts
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Surveillance Officer
+    When I click on the Contacts button from navbar
+    Then I click on Line Listing button
+    And I click CHOOSE CASE button
+    And I search for the last case uuid in the CHOOSE SOURCE Contact window
+    And I open the first found result in the CHOOSE SOURCE Contact window
+
+    And I create a new Contact with specific data through Line Listing with duplicated data
+    And I save the new contact using line listing feature
+    Then I click on the Contacts button from navbar
+    Then I click on Line Listing button
+    And I click CHOOSE CASE button
+    And I search for the last case uuid in the CHOOSE SOURCE Contact window
+    And I open the first found result in the CHOOSE SOURCE Contact window
+
+    And I create a new Contact with specific data through Line Listing with duplicated data
+    And I save the new contact using line listing feature
+    And I Pick a new person in Pick or create person popup during case creation
+    And I click on New Sample
 

@@ -63,6 +63,7 @@ public class ContactsLineListingSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   private final WebDriverHelpers webDriverHelpers;
   public static ContactsLineListing contactsLineListing;
+  public static ContactsLineListing duplicatedContactLineListing;
 
   @Inject
   public ContactsLineListingSteps(
@@ -71,7 +72,7 @@ public class ContactsLineListingSteps implements En {
       SoftAssert softly,
       ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
-
+    duplicatedContactLineListing = contactsLineListingService.buildGeneratedLineListingContacts();
     When(
         "^I create a new Contact with specific data for DE version through Line Listing$",
         () -> {
@@ -86,6 +87,23 @@ public class ContactsLineListingSteps implements En {
           fillLastName(contactsLineListing.getLastName());
           filldateOfBirth(contactsLineListing.getDateOfBirth(), Locale.GERMAN);
           selectSex(contactsLineListing.getSex());
+        });
+    When(
+        "^I create a new Contact with specific data through Line Listing with duplicated data$",
+        () -> {
+          selectRegion(duplicatedContactLineListing.getRegion());
+          selectDistrict(duplicatedContactLineListing.getDistrict());
+          fillDateOfReport(duplicatedContactLineListing.getDateOfReport(), Locale.ENGLISH);
+          fillDateOfLastContact(
+              duplicatedContactLineListing.getDateOfLastContact(), Locale.ENGLISH);
+          selectTypeOfContact(duplicatedContactLineListing.getTypeOfContact());
+          selectRelationshipWithCase(duplicatedContactLineListing.getRelationshipWithCase());
+          fillFirstName(duplicatedContactLineListing.getFirstName());
+          fillLastName(duplicatedContactLineListing.getLastName());
+          selectBirthYear(duplicatedContactLineListing.getBirthYear());
+          selectBirthMonth(duplicatedContactLineListing.getBirthMonth());
+          selectBirthDay(duplicatedContactLineListing.getBirthDay());
+          selectSex(duplicatedContactLineListing.getSex());
         });
 
     When(
