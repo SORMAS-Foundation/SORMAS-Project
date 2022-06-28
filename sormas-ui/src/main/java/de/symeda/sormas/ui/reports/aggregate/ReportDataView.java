@@ -155,7 +155,7 @@ public class ReportDataView extends AbstractAggregateReportsView {
 		});
 
 		aggregateReportsFilterForm.addApplyHandler(e -> {
-			if (epiWeekFilterBarDataValidation()) {
+			if (isEpiWeekFilterValid()) {
 				grid.reload();
 			} else {
 				NotificationHelper.showNotification(
@@ -170,7 +170,7 @@ public class ReportDataView extends AbstractAggregateReportsView {
 		return filterLayout;
 	}
 
-	private boolean epiWeekFilterBarDataValidation() {
+	private boolean isEpiWeekFilterValid() {
 		return criteria.getEpiWeekTo() != null && criteria.getEpiWeekFrom() != null;
 	}
 
