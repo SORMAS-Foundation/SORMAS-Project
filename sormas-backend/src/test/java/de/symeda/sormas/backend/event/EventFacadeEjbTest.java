@@ -15,6 +15,12 @@
 
 package de.symeda.sormas.backend.event;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -36,11 +42,18 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
+import de.symeda.sormas.backend.MockProducer;
+import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -70,6 +83,23 @@ import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 
 public class EventFacadeEjbTest extends AbstractBeanTest {
+
+	private static final int WIREMOCK_TESTING_PORT = 8888;
+	private ExternalSurveillanceToolFacade subjectUnderTest;
+
+	@Rule
+	public WireMockRule wireMockRule = new WireMockRule(options().port(WIREMOCK_TESTING_PORT), false);
+
+	@Before
+	public void setup() {
+		configureExternalSurvToolUrlForWireMock();
+		subjectUnderTest = getExternalSurveillanceToolGatewayFacade();
+	}
+
+	@After
+	public void teardown() {
+		clearExternalSurvToolUrlForWireMock();
+	}
 
 	@Test
 	public void testEventDeletion() throws ExternalSurveillanceToolRuntimeException {
@@ -256,7 +286,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			"Surv",
 			"Sup",
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
-		EventDto event = creator.createEvent(
+		EventDto eventDto = creator.createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
 			"Title",
@@ -272,7 +302,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			Disease.EVD,
 			rdcf.district);
 		PersonDto eventPerson = creator.createPerson("Event", "Person");
-		creator.createEventParticipant(event.toReference(), eventPerson, "Description", user.toReference());
+		creator.createEventParticipant(eventDto.toReference(), eventPerson, "Description", user.toReference());
 		Date testStartDate = new Date();
 
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 1
@@ -281,7 +311,15 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getEventParticipantFacade().getAllActiveEventParticipantsAfter(null).size());
 		assertEquals(1, getEventParticipantFacade().getAllActiveUuids().size());
 
-		getEventFacade().archive(event.getUuid(), null);
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(eventDto.getUuid()))
+				.withRequestBody(containing("eventUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+		Event event1 = getEventService().getByUuid(eventDto.getUuid());
+		getExternalShareInfoService().createAndPersistShareInfo(event1, ExternalShareStatus.SHARED);
+
+		getEventFacade().archive(eventDto.getUuid(), null);
 
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 0
 		assertEquals(0, getEventFacade().getAllAfter(null).size());
@@ -292,7 +330,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		// getArchivedUuidsSince should return length 1
 		assertEquals(1, getEventFacade().getArchivedUuidsSince(testStartDate).size());
 
-		getEventFacade().dearchive(Collections.singletonList(event.getUuid()), null);
+		getEventFacade().dearchive(Collections.singletonList(eventDto.getUuid()), null);
 
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 1
 		assertEquals(1, getEventFacade().getAllAfter(null).size());
@@ -312,7 +350,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		UserReferenceDto user = creator.createUser(rdcfEntities).toReference();
 
 		// One archived event
-		EventDto event1 = creator.createEvent(
+		EventDto eventDto1 = creator.createEvent(
 			EventStatus.EVENT,
 			EventInvestigationStatus.PENDING,
 			"",
@@ -327,11 +365,20 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			user,
 			Disease.ANTHRAX,
 			rdcf.district);
+
+		Event event1 = getEventService().getByUuid(eventDto1.getUuid());
+		getExternalShareInfoService().createAndPersistShareInfo(event1, ExternalShareStatus.SHARED);
 		EventFacadeEjbLocal cut = getBean(EventFacadeEjbLocal.class);
-		cut.archive(event1.getUuid(), null);
+
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(eventDto1.getUuid()))
+				.withRequestBody(containing("eventUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+		cut.archive(eventDto1.getUuid(), null);
 
 		// One other event
-		EventDto event2 = creator.createEvent(
+		EventDto eventDto2 = creator.createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
 			"",
@@ -347,18 +394,26 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			Disease.DENGUE,
 			rdcf.district);
 
-		assertTrue(cut.isArchived(event1.getUuid()));
-		assertFalse(cut.isArchived(event2.getUuid()));
+		assertTrue(cut.isArchived(eventDto1.getUuid()));
+		assertFalse(cut.isArchived(eventDto2.getUuid()));
+
+		Event event2 = getEventService().getByUuid(eventDto2.getUuid());
+		getExternalShareInfoService().createAndPersistShareInfo(event2, ExternalShareStatus.SHARED);
+
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(eventDto2.getUuid()))
+				.withRequestBody(containing("eventUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
 		// Event of "today" shouldn't be archived
 		cut.archiveAllArchivableEvents(70, LocalDate.now().plusDays(69));
-		assertTrue(cut.isArchived(event1.getUuid()));
-		assertFalse(cut.isArchived(event2.getUuid()));
+		assertTrue(cut.isArchived(eventDto1.getUuid()));
+		assertFalse(cut.isArchived(eventDto2.getUuid()));
 
 		// Event of "yesterday" should be archived
 		cut.archiveAllArchivableEvents(70, LocalDate.now().plusDays(71));
-		assertTrue(cut.isArchived(event1.getUuid()));
-		assertTrue(cut.isArchived(event2.getUuid()));
+		assertTrue(cut.isArchived(eventDto1.getUuid()));
+		assertTrue(cut.isArchived(eventDto2.getUuid()));
 	}
 
 	@Test
@@ -367,8 +422,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		EventDto event = new EventDto();
 		event.setEventStatus(EventStatus.EVENT);
 		event.setReportDateTime(new Date());
-		event
-			.setReportingUser(creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference());
+		event.setReportingUser(creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference());
 		event.setEventTitle("Test event");
 		event.setEventLocation(new LocationDto());
 
@@ -534,17 +588,21 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			"National User",
 			Disease.CORONAVIRUS,
 			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
-		UserDto limitedDengueNationalUser = creator.createUser(
-			rdcf,
-			"Limited Disease Dengue",
-			"National User",
-			Disease.DENGUE,
-			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto limitedDengueNationalUser = creator
+			.createUser(rdcf, "Limited Disease Dengue", "National User", Disease.DENGUE, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUsersHavingEventInJurisdiction(event.toReference());
 		Assert.assertNotNull(userReferenceDtos);
 		Assert.assertTrue(userReferenceDtos.contains(userDto));
 		Assert.assertTrue(userReferenceDtos.contains(limitedCovidNationalUser));
 		Assert.assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
+	}
+
+	private void configureExternalSurvToolUrlForWireMock() {
+		MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", WIREMOCK_TESTING_PORT));
+	}
+
+	private void clearExternalSurvToolUrlForWireMock() {
+		MockProducer.getProperties().setProperty("survnet.url", "");
 	}
 }

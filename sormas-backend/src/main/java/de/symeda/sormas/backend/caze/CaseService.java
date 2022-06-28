@@ -50,6 +50,8 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.share.ExternalShareStatus;
+import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -203,6 +205,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private SurveillanceReportService surveillanceReportService;
 	@EJB
 	private DocumentService documentService;
+	@EJB
+	private ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
 
 	public CaseService() {
 		super(Case.class);
@@ -981,6 +985,53 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		deleteCaseLinks(caze);
 
 		super.deletePermanent(caze);
+	}
+
+	@Override
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		super.archive(entityUuid, endOfProcessingDate);
+		setArchiveInExternalSurveillanceToolForEntity(entityUuid, true);
+	}
+
+	@Override
+	public void archive(List<String> entityUuids) {
+		super.archive(entityUuids);
+		setArchiveInExternalSurveillanceToolForEntities(entityUuids, true);
+	}
+
+	@Override
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		super.dearchive(entityUuids, dearchiveReason);
+		setArchiveInExternalSurveillanceToolForEntities(entityUuids, false);
+	}
+
+	public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) {
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
+			try {
+				externalSurveillanceToolGatewayFacade
+					.sendCases(externalShareInfoService.getSharedCaseUuidsWithoutDeletedStatus(entityUuids), archived);
+			} catch (ExternalSurveillanceToolException e) {
+				throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+			}
+		}
+	}
+
+	public void setArchiveInExternalSurveillanceToolForEntity(String entityUuid, boolean archived) {
+		Case caze = getByUuid(entityUuid);
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()
+			&& externalShareInfoService.isCaseShared(caze.getId())
+			&& !hasShareInfoWithDeletedStatus(entityUuid)) {
+			try {
+				externalSurveillanceToolGatewayFacade.sendCases(Collections.singletonList(entityUuid), archived);
+			} catch (ExternalSurveillanceToolException e) {
+				throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+			}
+		}
+	}
+
+	public boolean hasShareInfoWithDeletedStatus(String entityUuid) {
+		List<ExternalShareInfo> result = externalShareInfoService.getShareInfoByCase(entityUuid);
+		return result.stream().anyMatch(info -> info.getStatus().equals(ExternalShareStatus.DELETED));
 	}
 
 	@Override

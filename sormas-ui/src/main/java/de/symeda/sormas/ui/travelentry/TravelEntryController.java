@@ -129,7 +129,7 @@ public class TravelEntryController {
 
 		TravelEntryDto travelEntry = findTravelEntry(travelEntryUuid);
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getTravelEntryFacade().getAutomaticDeletionInfo(travelEntryUuid);
-		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getCaseFacade().getManuallyDeletionInfo(travelEntryUuid);
+		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getTravelEntryFacade().getManuallyDeletionInfo(travelEntryUuid);
 
 		TravelEntryDataForm travelEntryEditForm = new TravelEntryDataForm(travelEntryUuid, travelEntry.isPseudonymized());
 		travelEntryEditForm.setValue(travelEntry);
