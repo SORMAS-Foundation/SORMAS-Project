@@ -989,6 +989,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 
 		if (newSample.getAssociatedContact() != null) {
+			contactService.updateFollowUpDetails(newSample.getAssociatedContact(), false);
 			contactFacade.onContactChanged(contactFacade.toDto(newSample.getAssociatedContact()), newSample.getAssociatedContact(), syncShares);
 		}
 

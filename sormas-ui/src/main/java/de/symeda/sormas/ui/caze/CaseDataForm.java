@@ -937,7 +937,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 		if (cbOverwriteFollowUpUntil != null) {
 			cbOverwriteFollowUpUntil.addValueChangeListener(e -> {
-				if (e.getProperty().getValue() != Boolean.TRUE) {
+				if (!Boolean.TRUE.equals(e.getProperty().getValue())) {
 					dfFollowUpUntil.discard();
 					if (expectedFollowUpPeriodDto != null && expectedFollowUpPeriodDto.getFollowUpEndDate() != null) {
 						dfFollowUpUntil.setValue(expectedFollowUpPeriodDto.getFollowUpEndDate());

@@ -452,13 +452,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		dfFollowUpUntil.addValueChangeListener(v -> onFollowUpUntilChanged(v, dfQuarantineTo, cbQuarantineExtended, cbQuarantineReduced));
 		cbOverwriteFollowUpUntil = addField(ContactDto.OVERWRITE_FOLLOW_UP_UNTIL, CheckBox.class);
 		cbOverwriteFollowUpUntil.addValueChangeListener(e -> {
-			updateFollowUpStatusComponents();
-			if (e.getProperty().getValue() != Boolean.TRUE) {
-				dfFollowUpUntil.discard();
-				if (expectedFollowUpPeriodDto != null && expectedFollowUpPeriodDto.getFollowUpEndDate() != null && !dfFollowUpUntil.isReadOnly()) {
-					dfFollowUpUntil.setValue(expectedFollowUpPeriodDto.getFollowUpEndDate());
-				}
-			}
+			updateOverwriteFollowUpUntil();
 		});
 		dfQuarantineTo.addValueChangeListener(e -> onQuarantineEndChange());
 		addValueChangeListener(e -> {
@@ -714,6 +708,18 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		FieldHelper.addSoftRequiredStyle(firstContactDate, lastContactDate, contactProximity, relationToCase);
 	}
 
+	private void updateOverwriteFollowUpUntil() {
+		if (!Boolean.TRUE.equals(cbOverwriteFollowUpUntil.getValue())) {
+			boolean readOnly = dfFollowUpUntil.isReadOnly();
+			dfFollowUpUntil.setReadOnly(false);
+			dfFollowUpUntil.discard();
+			if (expectedFollowUpPeriodDto != null && expectedFollowUpPeriodDto.getFollowUpEndDate() != null) {
+				dfFollowUpUntil.setValue(expectedFollowUpPeriodDto.getFollowUpEndDate());
+			}
+			dfFollowUpUntil.setReadOnly(readOnly);
+		}
+	}
+
 	/*
 	 * Only used for Systems in Germany. Follows specific rules for german systems.
 	 */
@@ -766,7 +772,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			tfExpectedFollowUpUntilDate.setVisible(followUpStatus != FollowUpStatus.NO_FOLLOW_UP);
 			boolean followUpCanceledOrLost = followUpStatus == FollowUpStatus.CANCELED || followUpStatus == FollowUpStatus.LOST;
 			cbOverwriteFollowUpUntil.setReadOnly(followUpCanceledOrLost);
-			dfFollowUpUntil.setReadOnly(followUpCanceledOrLost || Boolean.TRUE != cbOverwriteFollowUpUntil.getValue());
+			dfFollowUpUntil.setReadOnly(followUpCanceledOrLost || !Boolean.TRUE.equals(cbOverwriteFollowUpUntil.getValue()));
 			if (followUpStatus == FollowUpStatus.FOLLOW_UP) {
 
 				Button cancelButton = ButtonHelper.createButton(Captions.contactCancelFollowUp, event -> {
@@ -1023,7 +1029,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		DateComparisonValidator.addStartEndValidators(lastContactDate, reportDate);
 
-		if (firstContactDate.isVisible() || multiDayContact.getValue() == Boolean.TRUE) {
+		if (firstContactDate.isVisible() || Boolean.TRUE.equals(multiDayContact.getValue())) {
 			DateComparisonValidator.addStartEndValidators(firstContactDate, lastContactDate);
 			DateComparisonValidator.addStartEndValidators(firstContactDate, reportDate);
 		}
@@ -1042,6 +1048,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				I18nProperties.getString(Strings.infoExpectedFollowUpUntilDateContact),
 				expectedFollowUpPeriodDto.getFollowUpStartDateType(),
 				DateHelper.formatLocalDate(expectedFollowUpPeriodDto.getFollowUpStartDate(), I18nProperties.getUserLanguage())));
+		updateOverwriteFollowUpUntil();
+		updateFollowUpStatusComponents();
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value
