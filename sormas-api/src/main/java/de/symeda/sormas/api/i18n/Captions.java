@@ -170,8 +170,6 @@ public interface Captions {
 	String AggregateReport_labConfirmations = "AggregateReport.labConfirmations";
 	String AggregateReport_newCases = "AggregateReport.newCases";
 	String AggregateReport_pointOfEntry = "AggregateReport.pointOfEntry";
-	String aggregateReport_AggregateReportingView = "aggregateReport_AggregateReportingView";
-	String aggregateReport_ReportDataView = "aggregateReport_ReportDataView";
 	String aggregateReportDeathsShort = "aggregateReportDeathsShort";
 	String aggregateReportDiscardSelection = "aggregateReportDiscardSelection";
 	String aggregateReportEditAggregateReport = "aggregateReportEditAggregateReport";
@@ -2445,6 +2443,8 @@ public interface Captions {
 	String versionIsMissing = "versionIsMissing";
 	String View_actions = "View.actions";
 	String View_aggregatereports = "View.aggregatereports";
+	String View_aggregatereports_aggregatereporting = "View.aggregatereports.aggregatereporting";
+	String View_aggregatereports_reportdata = "View.aggregatereports.reportdata";
 	String View_aggregatereports_sub = "View.aggregatereports.sub";
 	String View_campaign_campaigndata = "View.campaign.campaigndata";
 	String View_campaign_campaigndata_dataform = "View.campaign.campaigndata.dataform";

@@ -22,7 +22,7 @@ public class ReportDataGrid extends FilteredGrid<AggregateReportDto, AggregateRe
 		addDefaultColumns();
 
 		setStyleGenerator(aggregateReportDto -> {
-			if (aggregateReportDto.getDuplicate()) {
+			if (aggregateReportDto.isDuplicate()) {
 				return CssStyles.BACKGROUND_DUPLICATE_AGGREGATE_REPORT;
 			}
 			return "";
@@ -48,8 +48,8 @@ public class ReportDataGrid extends FilteredGrid<AggregateReportDto, AggregateRe
 	}
 
 	public void reload() {
-		ListDataProvider<AggregateReportDto> dataProvider = DataProvider
-			.fromStream(FacadeProvider.getAggregateReportFacade().getDuplicateAggregateReports(getCriteria()).stream().map(aggregatedReportDto -> {
+		ListDataProvider<AggregateReportDto> dataProvider =
+			DataProvider.fromStream(FacadeProvider.getAggregateReportFacade().getAggregateReports(getCriteria()).stream().map(aggregatedReportDto -> {
 				if (aggregatedReportDto.getAgeGroup() != null) {
 					aggregatedReportDto.setAgeGroup(AgeGroupUtils.createCaption(aggregatedReportDto.getAgeGroup()));
 				}

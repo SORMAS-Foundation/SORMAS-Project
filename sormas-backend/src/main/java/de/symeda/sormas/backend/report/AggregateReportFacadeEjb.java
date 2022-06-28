@@ -6,9 +6,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -311,7 +313,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 
 	@Override
-	public List<AggregateReportDto> getDuplicateAggregateReports(AggregateReportCriteria criteria) {
+	public List<AggregateReportDto> getAggregateReports(AggregateReportCriteria criteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<AggregateReport> cq = cb.createQuery(AggregateReport.class);
@@ -332,45 +334,42 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		List<AggregateReportDto> aggregateReportDtoList =
 			resultList.stream().map(aggregateReport -> toDto(aggregateReport)).collect(Collectors.toList());
 
-		aggregateReportDtoList.sort(
-			Comparator.comparing(AggregateReportDto::getDisease, Comparator.nullsFirst(Comparator.comparing(Disease::toString)))
-				.thenComparing(AggregateReportDto::getYear, Comparator.nullsFirst(Comparator.naturalOrder()))
-				.thenComparing(AggregateReportDto::getEpiWeek, Comparator.nullsFirst(Comparator.naturalOrder()))
-				.thenComparing(
-					r -> r.getAgeGroup() != null
-						? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
-						: StringUtils.EMPTY)
-				.thenComparing(
-					r -> r.getAgeGroup() != null ? Integer.parseInt(r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0)
-				.thenComparing(AggregateReportDto::getRegion, Comparator.nullsFirst(Comparator.naturalOrder()))
-				.thenComparing(AggregateReportDto::getDistrict, Comparator.nullsFirst(Comparator.naturalOrder()))
-				.thenComparing(AggregateReportDto::getHealthFacility, Comparator.nullsFirst(Comparator.naturalOrder()))
-				.thenComparing(AggregateReportDto::getPointOfEntry, Comparator.nullsFirst(Comparator.naturalOrder())));
+		Set<AggregateReportDto> onlyDuplicatesReturnList = new HashSet<>();
 
-		List<AggregateReportDto> onlyDuplicatesReturnList = new ArrayList<>();
-
-		aggregateReportDtoList.forEach(aggregateReportDto -> {
-			List<AggregateReportDto> duplicateReports = aggregateReportDtoList.stream()
-				.filter(duplicateCandidat -> isDuplicate(aggregateReportDto, duplicateCandidat))
-				.collect(Collectors.toList());
-
-			if (duplicateReports.size() > 1) {
-				AggregateReportDto lastCreatedReport =
-					duplicateReports.stream().max(Comparator.comparing(AggregateReportDto::getChangeDate)).orElse(null);
-				if (lastCreatedReport.getChangeDate().after(aggregateReportDto.getChangeDate())) {
-					aggregateReportDto.setDuplicate(true);
-				}
-				onlyDuplicatesReturnList.add(aggregateReportDto);
+		aggregateReportDtoList.forEach(r -> {
+			List<AggregateReportDto> duplicateReports =
+				aggregateReportDtoList.stream().filter(r2 -> !r.equals(r2) && isDuplicate(r, r2)).collect(Collectors.toList());
+			if (duplicateReports.stream().anyMatch(r2 -> r.getChangeDate().before(r2.getChangeDate()))) {
+				r.setDuplicate(true);
+				onlyDuplicatesReturnList.add(r);
 			}
-
-			duplicateReports.clear();
+			onlyDuplicatesReturnList.addAll(duplicateReports);
 		});
 
 		if (criteria != null && criteria.getShowOnlyDuplicates()) {
-			return onlyDuplicatesReturnList;
+			List<AggregateReportDto> aggregateReportDtos = new ArrayList<>(onlyDuplicatesReturnList);
+			aggregateReportDtos.sort(getAggregateReportsComparator());
+			return aggregateReportDtos;
 		}
 
+		aggregateReportDtoList.sort(getAggregateReportsComparator());
 		return aggregateReportDtoList;
+	}
+
+	private Comparator<AggregateReportDto> getAggregateReportsComparator() {
+		return Comparator.comparing(AggregateReportDto::getDisease, Comparator.nullsFirst(Comparator.comparing(Disease::toString)))
+			.thenComparing(AggregateReportDto::getYear, Comparator.nullsFirst(Comparator.naturalOrder()))
+			.thenComparing(AggregateReportDto::getEpiWeek, Comparator.nullsFirst(Comparator.naturalOrder()))
+			.thenComparing(
+				r -> r.getAgeGroup() != null
+					? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
+					: StringUtils.EMPTY)
+			.thenComparing(r -> r.getAgeGroup() != null ? Integer.parseInt(r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0)
+			.thenComparing(AggregateReportDto::getRegion, Comparator.nullsFirst(Comparator.naturalOrder()))
+			.thenComparing(AggregateReportDto::getDistrict, Comparator.nullsFirst(Comparator.naturalOrder()))
+			.thenComparing(AggregateReportDto::getHealthFacility, Comparator.nullsFirst(Comparator.naturalOrder()))
+			.thenComparing(AggregateReportDto::getPointOfEntry, Comparator.nullsFirst(Comparator.naturalOrder()))
+			.thenComparing(AggregateReportDto::getChangeDate);
 	}
 
 	private boolean isDuplicate(AggregateReportDto aggregateReportDto, AggregateReportDto duplicateCandidate) {
