@@ -122,5 +122,10 @@ public class LoginSteps implements En {
           Assert.assertEquals(
               "Selected language is not correct", expectedLanguageText, selectedLanguageText);
         });
+    And(
+        "I click on logout button",
+        () -> {
+          webDriverHelpers.getWebElement(LOGOUT_BUTTON);
+        });
   }
 }
