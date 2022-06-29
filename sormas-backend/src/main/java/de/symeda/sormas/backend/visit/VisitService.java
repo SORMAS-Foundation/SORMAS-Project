@@ -236,13 +236,15 @@ public class VisitService extends BaseAdoService<Visit> {
 	public void deletePersonVisits(List<String> personUuids) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Visit> cq = cb.createQuery(Visit.class);
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Visit> visitRoot = cq.from(Visit.class);
 		Join<Visit, Person> visitPersonJoin = visitRoot.join(Visit.PERSON, JoinType.LEFT);
 
 		cq.where(visitPersonJoin.get(AbstractDomainObject.UUID).in(personUuids));
+		cq.select(visitRoot.get(Visit.UUID));
 
-		em.createQuery(cq).getResultList().forEach(this::deletePermanent);
+		List<String> uuids = em.createQuery(cq).getResultList();
+		deletePermanentByUuids(uuids);
 	}
 
 	/**
