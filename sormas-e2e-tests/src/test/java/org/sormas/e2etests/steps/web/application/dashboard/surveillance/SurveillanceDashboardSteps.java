@@ -1048,7 +1048,6 @@ public class SurveillanceDashboardSteps implements En {
           webDriverHelpers.getWebElement(CONFIRMED_COUNTER_LABEL_ON_SURVEILLANCE_DASHBOARD);
           confirmedCases_EN =
               webDriverHelpers.getWebElement(CONFIRMED_COUNTER_ON_SURVEILLANCE_DASHBOARD).getText();
-          // System.out.println(confirmedCases);
 
           webDriverHelpers.getWebElement(CONFIRMED_CURVE_ON_SURVEILLANCE_DASHBOARD);
         });
@@ -1063,7 +1062,6 @@ public class SurveillanceDashboardSteps implements En {
               webDriverHelpers
                   .getWebElement(CONFIRMED_COUNTER_ON_SURVEILLANCE_DASHBOARD_DE)
                   .getText();
-          // System.out.println(confirmedCases);
 
           webDriverHelpers.getWebElement(CONFIRMED_CURVE_ON_SURVEILLANCE_DASHBOARD);
         });

@@ -171,11 +171,10 @@ public class NavBarSteps implements En {
     When(
         "^I click on the Dashboard button from navbar and access Surveillance Dashboard$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
-          TimeUnit.SECONDS.sleep(15); // mandatory due to loading time issue
+          TimeUnit.SECONDS.sleep(1);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               NavBarPage.DASHBOARD_BUTTON, 30);
-
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
