@@ -7,6 +7,7 @@ public enum ContactDateType {
 	REPORT_DATE,
 	LAST_CONTACT_DATE;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

@@ -36,6 +36,8 @@ import org.testng.asserts.SoftAssert;
 public class CreateNewTaskSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
   public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+  public static final DateTimeFormatter DATE_FORMATTER_DE =
+      DateTimeFormatter.ofPattern("dd.MM.yyyy");
   public static Task task;
   public static String user;
   private final WebDriverHelpers webDriverHelpers;
@@ -58,6 +60,12 @@ public class CreateNewTaskSteps implements En {
         () -> {
           task = taskService.buildGeneratedTask();
           fillAllFields(task);
+        });
+    When(
+        "^I fill a new task form with specific data for DE version$",
+        () -> {
+          task = taskService.buildGeneratedTaskDE();
+          fillAllFieldsDE(task);
         });
     When(
         "^I add observers to a task$",
@@ -168,6 +176,17 @@ public class CreateNewTaskSteps implements En {
     fillCommentsOnExecution(task.getCommentsOnExecution());
   }
 
+  private void fillAllFieldsDE(Task task) {
+    selectTaskType(task.getTaskType());
+    fillSuggestedStartDateDE(task.getSuggestedStartDate());
+    fillSuggestedStartTime(task.getSuggestedStartTime());
+    fillDueDateDateDE(task.getDueDateDate());
+    fillDueDateTime(task.getDueDateTime());
+    selectAssignedTo(task.getAssignedTo());
+    selectPriority(task.getPriority());
+    fillCommentsOnTask(task.getCommentsOnTask());
+  }
+
   private void selectTaskType(String taskType) {
     webDriverHelpers.selectFromCombobox(TASK_TYPE_COMBOBOX, taskType);
   }
@@ -175,6 +194,11 @@ public class CreateNewTaskSteps implements En {
   private void fillSuggestedStartDate(LocalDate suggestedStartDate) {
     webDriverHelpers.clearAndFillInWebElement(
         SUGGESTED_START_DATE_INPUT, DATE_FORMATTER.format(suggestedStartDate));
+  }
+
+  private void fillSuggestedStartDateDE(LocalDate suggestedStartDate) {
+    webDriverHelpers.clearAndFillInWebElement(
+        SUGGESTED_START_DATE_INPUT, DATE_FORMATTER_DE.format(suggestedStartDate));
   }
 
   private void fillSuggestedStartTime(LocalTime suggestedStartTime) {
@@ -185,6 +209,11 @@ public class CreateNewTaskSteps implements En {
   private void fillDueDateDate(LocalDate dueDateDate) {
     webDriverHelpers.clearAndFillInWebElement(
         DUE_DATE_DATE_INPUT, DATE_FORMATTER.format(dueDateDate));
+  }
+
+  private void fillDueDateDateDE(LocalDate dueDateDate) {
+    webDriverHelpers.clearAndFillInWebElement(
+        DUE_DATE_DATE_INPUT, DATE_FORMATTER_DE.format(dueDateDate));
   }
 
   private void fillDueDateTime(LocalTime dueDateTime) {

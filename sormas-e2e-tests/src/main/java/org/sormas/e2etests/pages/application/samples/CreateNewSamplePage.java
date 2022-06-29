@@ -131,4 +131,10 @@ public class CreateNewSamplePage {
   public static final By PATHOGEN_CARD_TEST_RESULT =
       By.xpath(
           "//div[@class='v-slot v-slot-side-component']//div[@class='v-label v-widget bold v-label-bold uppercase v-label-uppercase critical v-label-critical v-label-undef-w']");
+  public static final By NEW_TEST_RESULTS_BUTTON_FOR_PATHOGEN_TESTS =
+      By.cssSelector("[id='New test result']");
+  public static final By ADD_PATHOGEN_TEST =
+      By.cssSelector(".v-window-contents .v-slot:nth-of-type(1) .v-button");
+  public static final By DATE_AND_TIME_OF_RESULTS =
+      By.xpath("//div[contains(text(),'Date and time of result:')]");
 }

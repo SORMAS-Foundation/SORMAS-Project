@@ -4,6 +4,7 @@ import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,6 +16,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -22,8 +24,13 @@ import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.externalmessage.ExternalMessage;
 
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+
+
 @Entity(name = TestReport.TABLE_NAME)
 @Audited
+@TypeDef(name = "list-array", typeClass = ListArrayType.class)
 public class TestReport extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -9164498173635523905L;
@@ -32,7 +39,7 @@ public class TestReport extends AbstractDomainObject {
 
 	public static final String LAB_MESSAGE = "labMessage";
 	public static final String TEST_LAB_NAME = "testLabName";
-	public static final String TEST_LAB_EXTERNAL_ID = "testLabExternalId";
+	public static final String TEST_LAB_EXTERNAL_IDS = "testLabExternalIds";
 	public static final String TEST_LAB_POSTAL_CODE = "testLabPostalCode";
 	public static final String TEST_LAB_CITY = "testLabCity";
 	public static final String TEST_TYPE = "testType";
@@ -44,7 +51,7 @@ public class TestReport extends AbstractDomainObject {
 
 	private ExternalMessage labMessage;
 	private String testLabName;
-	private String testLabExternalId;
+	private List<String> testLabExternalIds;
 	private String testLabPostalCode;
 	private String testLabCity;
 
@@ -80,13 +87,17 @@ public class TestReport extends AbstractDomainObject {
 		this.testLabName = testLabName;
 	}
 
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
-	public String getTestLabExternalId() {
-		return testLabExternalId;
+	@Type(type = "list-array")
+	@Column(
+			name = "testlabexternalids",
+			columnDefinition = "VARCHAR(255) ARRAY"
+	)
+	public List<String> getTestLabExternalIds() {
+		return testLabExternalIds;
 	}
 
-	public void setTestLabExternalId(String testLabExternalId) {
-		this.testLabExternalId = testLabExternalId;
+	public void setTestLabExternalIds(List<String> testLabExternalIds) {
+		this.testLabExternalIds = testLabExternalIds;
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)

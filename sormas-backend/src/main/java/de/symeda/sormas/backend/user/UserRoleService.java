@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.user;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -66,15 +67,6 @@ public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
 		return entity;
 	}
 
-	public UserRole getByUuidEager(String uuid) {
-		UserRole userRole = getByUuid(uuid);
-		if (userRole != null) {
-			userRole.getEmailNotificationTypes().size();
-			userRole.getSmsNotificationTypes().size();
-		}
-		return userRole;
-	}
-
 	public List<String> getDeletedUuids(Date since) {
 
 		String queryString = "SELECT " + AbstractDomainObject.UUID + " FROM " + UserRole.TABLE_NAME + AbstractDomainObject.HISTORY_TABLE_SUFFIX + " h"
@@ -83,7 +75,7 @@ public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
 		Query nativeQuery = em.createNativeQuery(queryString);
 		nativeQuery.setParameter(1, since);
 		@SuppressWarnings("unchecked")
-		List<String> results = (List<String>) nativeQuery.getResultList();
+		List<String> results = nativeQuery.getResultList();
 		return results;
 	}
 
@@ -112,18 +104,17 @@ public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
 	}
 
 	public boolean hasUserRight(Collection<UserRole> userRoles, UserRight userRight) {
-		for (UserRole userRole : userRoles) {
-			if (userRole.getUserRights().contains(userRight))
-				return true;
-		}
-		return false;
+
+		return hasAnyUserRight(userRoles, Collections.singleton(userRight));
 	}
 
 	public boolean hasAnyUserRight(Collection<UserRole> userRoles, Collection<UserRight> userRights) {
+
 		for (UserRole userRole : userRoles) {
 			for (UserRight userRight : userRights) {
-				if (userRole.getUserRights().contains(userRight))
+				if (userRole.getUserRights().contains(userRight)) {
 					return true;
+				}
 			}
 		}
 		return false;

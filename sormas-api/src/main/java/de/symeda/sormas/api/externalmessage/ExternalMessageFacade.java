@@ -38,7 +38,7 @@ public interface ExternalMessageFacade {
 	 *            of the externalMessage
 	 * @return true if the externalMessage is marked processed in the database, false otherwise.
 	 */
-	Boolean isProcessed(String uuid);
+	boolean isProcessed(String uuid);
 
 	long count(ExternalMessageCriteria criteria);
 

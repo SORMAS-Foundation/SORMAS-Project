@@ -25,6 +25,7 @@ public enum ContactsEpiCurveMode {
 	CONTACT_CLASSIFICATION,
 	FOLLOW_UP_UNTIL;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

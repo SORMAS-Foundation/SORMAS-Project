@@ -25,6 +25,7 @@ public enum MedicallyAssociatedTransmissionMode {
 	DIALYSIS,
 	INJECTION_FOR_MEDICAL_PURPOSES;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

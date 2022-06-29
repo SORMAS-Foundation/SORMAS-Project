@@ -31,6 +31,7 @@ public enum ReportingType {
 	NOT_RAISED,
 	OTHER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

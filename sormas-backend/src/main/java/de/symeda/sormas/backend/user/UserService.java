@@ -268,7 +268,16 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		}
 		if (CollectionUtils.isNotEmpty(districtUuids)) {
 			Join<User, District> districtJoin = userRoot.join(User.DISTRICT, JoinType.LEFT);
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.in(districtJoin.get(AbstractDomainObject.UUID)).value(districtUuids));
+			Join<User, Region> userRegionJoin = userRoot.join(User.REGION, JoinType.LEFT);
+			Join<Region, District> districtRegionJoin = userRegionJoin.join(Region.DISTRICTS, JoinType.LEFT);
+
+			Predicate districtFilter = cb.or(
+				cb.in(districtJoin.get(AbstractDomainObject.UUID)).value(districtUuids),
+				cb.and(
+					cb.in(districtRegionJoin.get(AbstractDomainObject.UUID)).value(districtUuids),
+					cb.equal(root.get(UserReference.JURISDICTION_LEVEL), JurisdictionLevel.REGION)));
+
+			filter = CriteriaBuilderHelper.and(cb, filter, districtFilter);
 			userEntityJoinUsed = true;
 		}
 		if (filterByJurisdiction) {
@@ -430,10 +439,13 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 				cb.equal(joins.getDistrict().get(District.UUID), infrastructureUuid));
 			break;
 		case REGION:
-			predicate = cb.and(cb.isNull(joins.getDistrict()), cb.equal(joins.getRegion().get(Region.UUID), infrastructureUuid));
+			predicate = cb.and(
+				cb.isNull(joins.getDistrict()),
+				cb.isNull(joins.getLaboratory()),
+				cb.equal(joins.getRegion().get(Region.UUID), infrastructureUuid));
 			break;
 		case NATION:
-			predicate = cb.isNull(joins.getRegion());
+			predicate = cb.and(cb.isNull(joins.getRegion()), cb.isNull(joins.getLaboratory()));
 			break;
 		default:
 			break;
@@ -820,20 +832,6 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			return false;
 		}
 		return currentUser.getRegion().getUuid().equals(regionReference.getUuid());
-	}
-
-	/**
-	 * Make sure lazy loaded roles are loaded
-	 */
-	public User loadRoles(User user) {
-		if (!em.contains(user)) {
-			user = em.merge(user);
-		}
-		for (UserRole userRole : user.getUserRoles()) {
-			userRole.getEmailNotificationTypes().size();
-			userRole.getSmsNotificationTypes().size();
-		}
-		return user;
 	}
 
 	/**

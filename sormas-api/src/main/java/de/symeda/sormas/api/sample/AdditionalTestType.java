@@ -47,6 +47,7 @@ public enum AdditionalTestType {
 		return sampleMaterial;
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

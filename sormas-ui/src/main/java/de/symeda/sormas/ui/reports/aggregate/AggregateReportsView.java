@@ -25,7 +25,6 @@ import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
-import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.ExportEntityName;
@@ -33,11 +32,9 @@ import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 
 @SuppressWarnings("serial")
-public class AggregateReportsView extends AbstractView {
+public class AggregateReportsView extends AbstractAggregateReportsView {
 
-	public static final String VIEW_NAME = "aggregatereports";
-
-	private AggregateReportCriteria criteria;
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/aggregatereporting";
 
 	private AggregateReportsGrid grid;
 	private VerticalLayout gridLayout;
@@ -56,15 +53,20 @@ public class AggregateReportsView extends AbstractView {
 
 		boolean criteriaUninitialized = !ViewModelProviders.of(AggregateReportsView.class).has(AggregateReportCriteria.class);
 		criteria = ViewModelProviders.of(AggregateReportsView.class).get(AggregateReportCriteria.class);
-		if (criteriaUninitialized) {
+		if (criteriaUninitialized || criteria.getEpiWeekFrom() == null || criteria.getEpiWeekTo() == null) {
 			criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
 		}
 
-		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.REGION);
-		grid = new AggregateReportsGrid(criteria);
+		criteria.setAggregateReportGroupingLevel(
+			criteria.getAggregateReportGroupingLevel() != null ? criteria.getAggregateReportGroupingLevel() : AggregateReportGroupingLevel.REGION);
+
 		gridLayout = new VerticalLayout();
+
 		gridLayout.addComponent(createGroupingBar());
+
 		gridLayout.addComponent(createFilterBar(user));
+
+		grid = new AggregateReportsGrid(criteria);
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -107,6 +109,8 @@ public class AggregateReportsView extends AbstractView {
 	private HorizontalLayout createGroupingBar() {
 		HorizontalLayout jurisdictionLayout = new HorizontalLayout();
 		AggregateReportGroupingSelector aggregateReportGroupingSelector = new AggregateReportGroupingSelector();
+		aggregateReportGroupingSelector.setValue(criteria.getAggregateReportGroupingLevel());
+
 		aggregateReportGroupingSelector.addValueChangeListener(e -> {
 			AggregateReportGroupingLevel groupingValue = (AggregateReportGroupingLevel) e.getValue();
 			criteria.setAggregateReportGroupingLevel(groupingValue);
@@ -119,7 +123,8 @@ public class AggregateReportsView extends AbstractView {
 		showZeroRowsGrouping.setId(AggregateReportCriteria.SHOW_ZERO_ROWS_FOR_GROUPING);
 		showZeroRowsGrouping.setCaption(I18nProperties.getCaption(Captions.aggregateReportShowZeroRowsForGrouping));
 		showZeroRowsGrouping.addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
-		showZeroRowsGrouping.setValue(false);
+
+		showZeroRowsGrouping.setValue(criteria.getShowZeroRowsForGrouping());
 
 		showZeroRowsGrouping.addValueChangeListener(e -> {
 			criteria.setShowZeroRowsForGrouping(e.getValue());
@@ -137,10 +142,21 @@ public class AggregateReportsView extends AbstractView {
 		filterLayout.setMargin(false);
 		filterLayout.setWidth(100, Unit.PERCENTAGE);
 
-		criteria.setRegion(user.getRegion());
-		criteria.setDistrict(user.getDistrict());
-		criteria.setHealthFacility(user.getHealthFacility());
-		criteria.setPointOfEntry(user.getPointOfEntry());
+		if (criteria.getRegion() == null) {
+			criteria.setRegion(user.getRegion());
+		}
+
+		if (criteria.getDistrict() == null) {
+			criteria.setDistrict(user.getDistrict());
+		}
+
+		if (criteria.getHealthFacility() == null) {
+			criteria.setHealthFacility(user.getHealthFacility());
+		}
+
+		if (criteria.getPointOfEntry() == null) {
+			criteria.setPointOfEntry(user.getPointOfEntry());
+		}
 
 		aggregateReportsFilterForm = new AggregateReportsFilterForm();
 		aggregateReportsFilterForm.setValue(criteria);
@@ -153,9 +169,8 @@ public class AggregateReportsView extends AbstractView {
 
 		aggregateReportsFilterForm.addResetHandler(e -> {
 			ViewModelProviders.of(AggregateReportsView.class).remove(AggregateReportCriteria.class);
-			criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
-			criteria.setDisease(null);
-			navigateTo(criteria, true);
+			AggregateReportCriteria emptyCriteria = new AggregateReportCriteria();
+			navigateTo(emptyCriteria, true);
 		});
 
 		aggregateReportsFilterForm.addApplyHandler(e -> {
@@ -180,26 +195,18 @@ public class AggregateReportsView extends AbstractView {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
+		super.enter(event);
 		EpiWeek epiWeekFrom = criteria.getEpiWeekFrom();
 		EpiWeek epiWeekTo = criteria.getEpiWeekTo();
 
-		String params = event.getParameters().trim();
-		if (params.startsWith("?")) {
-			params = params.substring(1);
-			criteria.fromUrlParams(params);
-		}
-
 		if (criteria.getEpiWeekFrom() == null) {
-			criteria.setEpiWeekFrom(epiWeekFrom);
+			criteria.setEpiWeekFrom(epiWeekFrom != null ? epiWeekFrom : DateHelper.getEpiWeek(new Date()));
 		}
 		if (criteria.getEpiWeekTo() == null) {
-			criteria.setEpiWeekTo(epiWeekTo);
+			criteria.setEpiWeekTo(epiWeekTo != null ? epiWeekTo : DateHelper.getEpiWeek(new Date()));
 		}
 
 		grid.reload();
 	}
 
-	AggregateReportCriteria getCriteria() {
-		return criteria;
-	}
 }

@@ -796,3 +796,62 @@ Feature: Contacts end to end tests
     Then I search last created facility
     Then I click on edit button for the last searched facility
     And I archive facility
+
+  @env_main @#8565
+  Scenario: Check an archived contact if its read only
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I open last edited contact by API via URL navigation
+    Then I click on the Archive contact button and confirm popup
+    Then I click on logout button from navbar
+    Then I log in with National User
+    Then I open last edited contact by API via URL navigation
+    Then I check if editable fields are read only for an archived contact
+
+  @env_main @issue=SORDEV-7453
+  Scenario: Check contacts order after contact edit
+    Given I log in as a National User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click on SAVE new contact button
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click on SAVE new contact button
+    And I click on the Contacts button from navbar
+    Then I get two last contacts ID from cases list
+    And I open 2 contact in order from list
+    And I fill general comment in contact edit page with EDITED
+    And I click SAVE button on Edit Contact Page
+    And I click on the Contacts button from navbar
+    Then I compare previous first contact ID on the list with actually second contact ID on list
+
+
+
+
+
+  @issue=SORDEV-6461 @env_main
+  Scenario: Test the task type in the contact's new task form
+    Given I log in as a National User
+    Then I click on the Contacts button from navbar
+    And I open the first contact from contacts list
+    And I click on the NEW TASK button
+    And I check if New task form is displayed correctly
+    And I check that required fields are marked as mandatory
+    And I clear Due Date field in the New task form
+    And I click SAVE button on New Task form
+    Then I check that all required fields are mandatory in the New task form
+    When I close input data error popup in Contact Directory
+    And I check that values listed in the task type combobox are correct
+    And I choose Other task as described in comments option from task type combobox in the New task form
+    Then I check that Comments on task field is mandatory in the New task form
+

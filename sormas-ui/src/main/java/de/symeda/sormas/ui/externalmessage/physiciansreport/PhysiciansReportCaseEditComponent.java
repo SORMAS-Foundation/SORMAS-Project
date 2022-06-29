@@ -128,7 +128,7 @@ public class PhysiciansReportCaseEditComponent extends CommitDiscardWrapperCompo
 	private void setActiveTab(String tabCaptionTag) {
 		tabsMenu.setActiveView(tabCaptionTag);
 		TabConfig tabConfig = tabConfigs.stream()
-			.filter(c -> c.captionTag == tabCaptionTag)
+			.filter(c -> c.captionTag.equals(tabCaptionTag))
 			.findFirst()
 			.orElseThrow(() -> new RuntimeException("Tab [" + tabCaptionTag + "] not found"));
 

@@ -14,7 +14,7 @@ Feature: About end to end tests
     Then I click on the User Settings button from navbar
     And I set on default language as English in User settings
 
-  @issue=SORQA-219 @env_main
+  @issue=SORQA-219 @env_main @precon
   Scenario: Check current Sormas version is show
     Given I log in with National User
     And I click on the About button from navbar

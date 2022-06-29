@@ -18,16 +18,97 @@
 
 package org.sormas.e2etests.steps.web.application.samples;
 
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_DATE_AND_TIME_OF_RESULT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_DATE_OF_COLLECTED_SAMPLE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_LABORATORY;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_NUMBER_OF_TESTS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_TEST_TYPE;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.NUMBER_OF_TESTS_IN_SAMPLES;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_ACTIONS_TABLE_ROW;
-import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.*;
-import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ADD_PATHOGEN_TEST;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ADD_PATHOGEN_TEST_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ANTIGEN_DETECTION_TEST_OPTION_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CELLS_IN_URINE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CELLS_IN_URINE_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.COLLECTED_DATE_TIME_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.COLLECTED_DATE_TIME_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.COMMENT_AREA_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CONJ_BILIRUBIN_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CREATININE_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_AND_TIME_OF_RESULTS;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_OF_RESULT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_SAMPLE_COLLECTED;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_SAMPLE_RECEIVED;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_TEST_REPORT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.FIELD_SAMPLE_ID_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.FINAL_LABORATORY_RESULT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.HAEMOGLOBIN_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.HAEMOGLOBIN_IN_URINE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.HAEMOGLOBIN_IN_URINE_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.HCO3_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ISOLATION_TEST_OPTION_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.LABORATORY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.LABORATORY_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.LABORATORY_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.LABORATORY_NAME_POPUP_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.LAB_SAMPLE_ID_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.NEW_TEST_RESULTS_BUTTON_FOR_PATHOGEN_TESTS;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.OTHER_TESTS_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.OXYGEN_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.PAO2_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.PATHOGEN_CARD_DATE_OF_RESULT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.PATHOGEN_CARD_DISEASE;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.PATHOGEN_CARD_TEST_RESULT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.PATHOGEN_CARD_TEST_RESULT_COMMENT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.PATHOGEN_CARD_TYPE_OF_TEST;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.PATHOGEN_LABORATORY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.PATHOGEN_LABORATORY_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.PATHOGEN_TEST_RESULT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.PATHOGEN_TEST_RESULT_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.PCO2_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.PCR_RTP_PCR_TEST_OPTION_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.PH_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.PLATELETS_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.POTASSIUM_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.PROTEIN_IN_URINE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.PROTEIN_IN_URINE_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.PROTHROMBIN_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.REASON_FOR_SAMPLING_TESTING_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.REASON_FOR_SAMPLING_TESTING_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.RECEIVED_OPTION_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.REQUEST_PATHOGEN_OPTION_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_PURPOSE_OPTIONS;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_TEST_RESULT_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_TYPE_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_UUID;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAVE_SAMPLE_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SGOT_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SGPT_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SPECIMEN_CONDITION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SPECIMEN_CONDITION_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.TESTED_DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.TESTED_DISEASE_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.TEST_RESULTS_COMMENT_AREA_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.TIME_OF_RESULT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.TIME_OF_RESULT_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.TOTAL_BILIRUBIN_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.TYPE_OF_TEST_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.TYPE_OF_TEST_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.UREA_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.WBC_INPUT;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.EDIT_PATHOGEN_TEST;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.CONFIRM_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.CREATE_CASE_POSITIVE_TEST_RESULT_LABEL;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.EDIT_ADDITIONAL_TEST_RESULTS_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.EDIT_PATHOGEN_TEST_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.EDIT_TEST_RESULTS_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.RESULT_VERIFIED_BY_LAB_SUPERVISOR_EDIT_OPTIONS;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_EDIT_PURPOSE_OPTIONS;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -136,6 +217,94 @@ public class CreateNewSampleSteps implements En {
           softly.assertFalse(
               webDriverHelpers.checkIfElementExistsInCombobox(
                   SAMPLE_TYPE_COMBOBOX, sampleMaterial));
+          softly.assertAll();
+        });
+
+    When(
+        "^I create a new Sample with positive test result with ([^\"]*) as disease$",
+        (String diseaseType) -> {
+          sample = sampleService.buildAlternateSampleWithSelectableDisease(diseaseType);
+          selectPurposeOfSample(sample.getPurposeOfTheSample(), SAMPLE_PURPOSE_OPTIONS);
+          fillDateOfCollection(sample.getDateOfCollection());
+          fillTimeOfCollection(sample.getTimeOfCollection());
+          selectSampleType(sample.getSampleType());
+          selectReasonForSample(sample.getReasonForSample());
+          fillSampleID(sample.getSampleID());
+          fillCommentsOnSample(sample.getCommentsOnSample());
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST);
+          selectTestedDisease(sample.getTestedDisease());
+          selectTypeOfTest(sample.getTypeOfTest());
+          selectTestResult(sample.getSampleTestResults());
+          fillDateOfResult(sample.getDateOfResult(), Locale.ENGLISH);
+          fillTimeOfResult(sample.getTimeOfResult());
+          selectLaboratory(sample.getLaboratory());
+          selectResultVerifiedByLabSupervisor(
+              sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+          selectTestResult(sample.getTestResults());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+        });
+
+    When(
+        "^I create a new pathogen test result with ([^\"]*) as disease$",
+        (String diseaseType) -> {
+          sample = sampleService.buildAlternateSampleWithSelectableDisease(diseaseType);
+          selectTypeOfTest(sample.getTypeOfTest());
+          selectTestedDisease(sample.getTestedDisease());
+          selectTestResult(sample.getSampleTestResults());
+          selectLaboratory(sample.getLaboratory());
+          selectResultVerifiedByLabSupervisor(
+              sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+          selectTestResult(sample.getTestResults());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "^I validate date and time is present on sample card$",
+        () -> {
+          String dateAndTimeVisible =
+              webDriverHelpers.getTextFromWebElement(DATE_AND_TIME_OF_RESULTS);
+          LocalDate date = sample.getDateOfResult();
+          LocalTime time = sample.getTimeOfResult();
+          DateTimeFormatter dateFormater = DateTimeFormatter.ofPattern("M/d/yyyy");
+          DateTimeFormatter timeFormater = DateTimeFormatter.ofPattern("hh:mm a");
+          softly.assertEquals(
+              "Date and time of result: "
+                  + dateFormater.format(date)
+                  + " "
+                  + timeFormater.format(time),
+              dateAndTimeVisible,
+              "Date or time is not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "^I click on new test result for pathogen tests",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(NEW_TEST_RESULTS_BUTTON_FOR_PATHOGEN_TESTS);
+        });
+
+    When(
+        "^I validate only one sample is created with two pathogen tests",
+        () -> {
+          softly.assertEquals(
+              webDriverHelpers.getNumberOfElements(EDIT_SAMPLE_BUTTON),
+              1,
+              "Number of samples is not correct");
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(NUMBER_OF_TESTS_IN_SAMPLES),
+              "Number of tests: 2",
+              "Number of tests is correct!");
+          softly.assertAll();
+        });
+
+    When(
+        "^I validate the existence of two pathogen tests",
+        () -> {
+          softly.assertEquals(
+              webDriverHelpers.getNumberOfElements(EDIT_PATHOGEN_TEST),
+              2,
+              "Number of pathogen tests is not correct");
           softly.assertAll();
         });
 
@@ -485,6 +654,19 @@ public class CreateNewSampleSteps implements En {
         (String disease) -> {
           String testedDisease = webDriverHelpers.getValueFromCombobox(TESTED_DISEASE_COMBOBOX);
           softly.assertEquals(disease, testedDisease, "Diseases are not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "I set Test Disease as ([^\"]*) in new pathogen result",
+        (String disease) -> webDriverHelpers.selectFromCombobox(TESTED_DISEASE_COMBOBOX, disease));
+
+    When(
+        "I check if Type of test in new pathogen results has no ([^\"]*) option",
+        (String typeOfTest) -> {
+          softly.assertFalse(
+              webDriverHelpers.checkIfElementExistsInCombobox(TYPE_OF_TEST_COMBOBOX, typeOfTest),
+              "Type of test is incorrect");
           softly.assertAll();
         });
   }

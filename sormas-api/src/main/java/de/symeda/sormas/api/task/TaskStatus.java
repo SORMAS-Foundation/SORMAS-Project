@@ -26,6 +26,7 @@ public enum TaskStatus {
 	REMOVED,
 	NOT_EXECUTABLE;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

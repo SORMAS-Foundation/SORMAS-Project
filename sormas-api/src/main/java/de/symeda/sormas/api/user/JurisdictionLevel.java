@@ -24,6 +24,7 @@ public enum JurisdictionLevel {
 		return order;
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

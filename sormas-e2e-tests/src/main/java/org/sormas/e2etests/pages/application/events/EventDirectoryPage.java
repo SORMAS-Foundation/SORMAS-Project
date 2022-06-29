@@ -48,6 +48,8 @@ public class EventDirectoryPage {
       By.cssSelector("[id='relevanceStatusFilter'] [class='v-filterselect-button']");
   public static final By FILTER_BY_DISEASE =
       By.cssSelector("[id='disease'] [class='v-filterselect-button']");
+  public static final By FILTER_BY_DISEASE_VARIANT =
+      By.cssSelector("[id='diseaseVariant'] [class='v-filterselect-button']");
   public static final By DISTRICT_COMBOBOX =
       By.cssSelector("[id='district'] [class='v-filterselect-button']");
   public static final By EVENT_SHOW_MORE_FILTERS = By.id("showHideMoreFilters");
@@ -97,8 +99,12 @@ public class EventDirectoryPage {
   public static final By BULK_ACTIONS_EVENT_DIRECTORY = By.id("bulkActions-2");
   public static final By GROUP_EVENTS_EVENT_DIRECTORY = By.id("bulkActions-7");
   public static final By BULK_EDIT_EVENT_DIRECTORY = By.id("bulkActions-3");
+  public static final By BULK_GROUP_EVENT_DIRECTORY = By.id("bulkActions-6");
+  public static final By BULK_ARCHIVE_EVENT_DIRECTORY = By.id("bulkActions-4");
   public static final By CHANGE_EVENT_MANAGEMENT_STATUS_CHECKBOX =
       By.xpath("//label[text()='Change event management status']");
+  public static final By TEXT_FROM_BULK_DELETE_EVENT_DIRECTORY =
+      By.xpath("//span[text()='Delete']");
   public static final By EVENT_MANAGEMENT_STATUS_COMBOBOX =
       By.cssSelector("#eventManagementStatus .v-select-option");
   public static final By GROUP_ID_COLUMN = By.xpath("(//td//a)[2]");

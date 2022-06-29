@@ -127,8 +127,6 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 	 * @throws URISyntaxException
 	 *             if the path to a resource is not syntactically correct
 	 */
-	// TODO #9446: Fix failing test
-	@Ignore
 
 	@Test
 	public void testHistoryTablesMatch() throws IOException, URISyntaxException {

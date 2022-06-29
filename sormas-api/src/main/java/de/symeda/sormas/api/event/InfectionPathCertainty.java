@@ -24,6 +24,7 @@ public enum InfectionPathCertainty {
 	CONFIRMED,
 	UNKNOWN;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
