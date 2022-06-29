@@ -50,6 +50,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CO
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BLOOD_ORGAN_TISSUE_DONATION_IN_THE_LAST_6_MONTHS_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CANCEL_FOLLOW_UP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_CLASSIFICATION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_CLASSIFICATION_SPAN;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_IDENTIFICATION_SOURCE_COMBOBOX;
@@ -66,6 +67,8 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DO
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_QUARANTINE_ORDER_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CURRENT_HOSPITALIZATION_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_OFFICIAL_QUARANTINE_ORDER_WAS_SENT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_OF_FOLLOW_UP_STATUS_CHANGE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_OF_FOLLOW_UP_STATUS_CHANGE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_OF_OUTCOME;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_OF_OUTCOME_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_OF_THE_VERBAL_ORDER;
@@ -84,6 +87,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_SAMP
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_TRAVEL_ENTRY_FROM_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EPIDEMIOLOGICAL_CONFIRMATION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXPECTED_FOLLOW_UP_UNTIL_DATE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTERNAL_ID_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTERNAL_TOKEN_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTRA_COMMENT_INPUT;
@@ -92,7 +96,10 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_HEALTH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_HEALTH_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.FOLLOW_UP_COMMENT_FIELD;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.FOLLOW_UP_STATUS_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.FOLLOW_UP_TAB;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.FOLLOW_UP_UNTIL_DATE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERAL_COMMENT_TEXTAREA;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.HOME_BASED_QUARANTINE_POSSIBLE_OPTIONS;
@@ -101,6 +108,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.INFRASTRU
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.INVESTIGATED_DATE_FIELD;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.INVESTIGATION_STATUS_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.LABORATORY_DIAGNOSTIC_CONFIRMATION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.LOST_TO_FOLLOW_UP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_SAMPLE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_TASK_BUTTON;
@@ -108,6 +116,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_TRAVE
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.OFFICIAL_QUARANTINE_ORDER_SENT_CHECKBOX_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.OFFICIAL_QUARANTINE_ORDER_SENT_CHECKBOX_LABEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.OUTCOME_OF_CASE_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.OVERWRITE_FOLLOW_UP_UNTIL_DATE_LABEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_DESCRIPTION_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_CHECKBOX_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_CHECKBOX_LABEL;
@@ -146,6 +155,9 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESPONSIB
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESPONSIBLE_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESPONSIBLE_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESPONSIBLE_SURVEILLANCE_OFFICER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESPONSIBLE_USER_FOR_FOLLOW_UP_STATUS_CHANGE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESPONSIBLE_USER_FOR_FOLLOW_UP_STATUS_CHANGE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESUME_FOLLOW_UP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_AND_OPEN_HOSPITALIZATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SEQUELAE_DETAILS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SEQUELAE_OPTIONS;
@@ -1627,6 +1639,86 @@ public class EditCaseSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
+    Then(
+        "^I check that follow-up status is set to Under follow-up in German on Edit case page$",
+        () -> {
+          String caseFollowUpStatus =
+              webDriverHelpers.getValueFromWebElement(FOLLOW_UP_STATUS_INPUT);
+          softly.assertEquals(
+              caseFollowUpStatus, "In der Nachverfolgung", "The follow-up status is incorrect!");
+          softly.assertAll();
+        });
+
+    When(
+        "^I click on the Cancel Follow-up button from Edit case page$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CANCEL_FOLLOW_UP_BUTTON));
+
+    Then(
+        "^I check that Date of Follow-up Status Change and Responsible User are correctly displayed on Edit case page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DATE_OF_FOLLOW_UP_STATUS_CHANGE);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              RESPONSIBLE_USER_FOR_FOLLOW_UP_STATUS_CHANGE);
+          String responsibleUserForFollowUpStatusChange;
+          responsibleUserForFollowUpStatusChange =
+              webDriverHelpers.getValueFromWebElement(
+                  RESPONSIBLE_USER_FOR_FOLLOW_UP_STATUS_CHANGE_INPUT);
+          softly.assertEquals(
+              getDateOfFollowUpStatusChangeDE(),
+              LocalDate.now(),
+              "Date of follow-up status change is invalid!");
+
+          softly.assertEquals(
+              responsibleUserForFollowUpStatusChange,
+              "Autoation NATIONAL",
+              "Responsible User is invalid!");
+
+          softly.assertAll();
+        });
+
+    Then(
+        "^I provide follow-up status comment from Edit case page$",
+        () -> fillFollowUpStatusComment("Follow-up status comment"));
+
+    When(
+        "^I click on the Resume Follow-up button from Edit case page$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(RESUME_FOLLOW_UP_BUTTON));
+
+    And(
+        "^I click on the Lost to Follow-up button from Edit case page$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(LOST_TO_FOLLOW_UP_BUTTON));
+
+    And(
+        "^I check that Expected Follow-up Until Date is correctly displayed on Edit case page$",
+        () -> {
+          LocalDate calculatedExpectedFollowUpDate = getDateOfReportDE().plusDays(14);
+
+          softly.assertEquals(
+              getExpectedFollowUpUntilDateDE(),
+              calculatedExpectedFollowUpDate,
+              "Expected follow-up until date is invalid!");
+          softly.assertAll();
+        });
+
+    When(
+        "^I select Overwrite Follow-up Until Date checkbox on Edit case page$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(OVERWRITE_FOLLOW_UP_UNTIL_DATE_LABEL));
+
+    And(
+        "^I set the Follow-up Until Date to exceed the Expected Follow-up Until Date on Edit case page$",
+        () -> {
+          LocalDate dateExceedingExpectedDate = getExpectedFollowUpUntilDateDE().plusDays(7);
+          fillFollowUpUntilDateDE(dateExceedingExpectedDate);
+        });
+
+    Then(
+        "^I check if the Follow-up Until Date is correctly displayed on Edit case page$",
+        () -> {
+          LocalDate dateExceedingExpectedDate = getExpectedFollowUpUntilDateDE().plusDays(7);
+          softly.assertEquals(
+              getFollowUpUntilDateDE(),
+              dateExceedingExpectedDate,
+              "Follow-up until date is invalid!");
     When(
         "^I check that Point Of Entry information is displayed as read-only on Edit case page$",
         () -> {
@@ -2068,8 +2160,30 @@ public class EditCaseSteps implements En {
         .build();
   }
 
+  private LocalDate getDateOfFollowUpStatusChangeDE() {
+    String dateOfFollowUpStatusChange =
+        webDriverHelpers.getValueFromWebElement(DATE_OF_FOLLOW_UP_STATUS_CHANGE_INPUT);
+    return LocalDate.parse(dateOfFollowUpStatusChange, DATE_FORMATTER_DE);
+  }
+
+  private LocalDate getExpectedFollowUpUntilDateDE() {
+    String expectedFollowUpUntilDate =
+        webDriverHelpers.getValueFromWebElement(EXPECTED_FOLLOW_UP_UNTIL_DATE_INPUT);
+    return LocalDate.parse(expectedFollowUpUntilDate, DATE_FORMATTER_DE);
+  }
+
+  private LocalDate getFollowUpUntilDateDE() {
+    String followUpUntilDate = webDriverHelpers.getValueFromWebElement(FOLLOW_UP_UNTIL_DATE_INPUT);
+    return LocalDate.parse(followUpUntilDate, DATE_FORMATTER_DE);
+  }
+
   private void fillDateOfReport(LocalDate date) {
     webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, DATE_FORMATTER.format(date));
+  }
+
+  private void fillFollowUpUntilDateDE(LocalDate newDate) {
+    webDriverHelpers.fillInWebElement(
+        FOLLOW_UP_UNTIL_DATE_INPUT, DATE_FORMATTER_DE.format(newDate));
   }
 
   private void selectCaseClassification(String caseClassification) {
@@ -2100,6 +2214,10 @@ public class EditCaseSteps implements En {
 
   private void fillExternalToken(String externalToken) {
     webDriverHelpers.fillInWebElement(EXTERNAL_TOKEN_INPUT, externalToken);
+  }
+
+  private void fillFollowUpStatusComment(String comment) {
+    webDriverHelpers.fillInWebElement(FOLLOW_UP_COMMENT_FIELD, comment);
   }
 
   private void selectDisease(String disease) {
