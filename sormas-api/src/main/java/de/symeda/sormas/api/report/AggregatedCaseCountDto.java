@@ -1,6 +1,7 @@
 package de.symeda.sormas.api.report;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
 
 import de.symeda.sormas.api.Disease;
@@ -41,13 +42,14 @@ public class AggregatedCaseCountDto implements Serializable {
 	private long newCases;
 	private long labConfirmations;
 	private long deaths;
-	private AggregateReportGroupingDto aggregateReportGroupingDto;
 	private String ageGroup;
+	private Date changeDate;
 
 	public AggregatedCaseCountDto() {
 	}
 
-	public AggregatedCaseCountDto(Disease disease, long newCases, long labConfirmations, long deaths, int year, int epiWeek, String ageGroup) {
+	public AggregatedCaseCountDto(
+		Disease disease, long newCases, long labConfirmations, long deaths, int year, int epiWeek, String ageGroup, Date changeDate) {
 
 		this.disease = disease;
 		this.newCases = newCases;
@@ -56,6 +58,7 @@ public class AggregatedCaseCountDto implements Serializable {
 		this.year = year;
 		this.epiWeek = epiWeek;
 		this.ageGroup = ageGroup;
+		this.changeDate = changeDate;
 	}
 
 	public AggregatedCaseCountDto(
@@ -67,8 +70,8 @@ public class AggregatedCaseCountDto implements Serializable {
 		Integer epiWeek,
 		String ageGroup,
 		String regionName,
-		Long regionId) {
-		this(disease, newCases, labConfirmations, deaths, year, epiWeek, ageGroup);
+		Long regionId, Date changeDate) {
+		this(disease, newCases, labConfirmations, deaths, year, epiWeek, ageGroup, changeDate);
 		this.regionName = regionName;
 		this.regionId = regionId;
 	}
@@ -84,8 +87,8 @@ public class AggregatedCaseCountDto implements Serializable {
 		String regionName,
 		Long regionId,
 		String districtName,
-		Long districtId) {
-		this(disease, newCases, labConfirmations, deaths, year, epiWeek, ageGroup, regionName, regionId);
+		Long districtId, Date changeDate) {
+		this(disease, newCases, labConfirmations, deaths, year, epiWeek, ageGroup, regionName, regionId, changeDate);
 		this.districtName = districtName;
 		this.districtId = districtId;
 	}
@@ -103,16 +106,15 @@ public class AggregatedCaseCountDto implements Serializable {
 		String districtName,
 		Long districtId,
 		String healthFacilityName,
-		Long healthFacilityId) {
-		this(disease, newCases, labConfirmations, deaths, year, epiWeek, ageGroup, regionName, regionId, districtName, districtId);
+		Long healthFacilityId, Date changeDate) {
+		this(disease, newCases, labConfirmations, deaths, year, epiWeek, ageGroup, regionName, regionId, districtName, districtId, changeDate);
 		this.healthFacilityName = healthFacilityName;
 		this.healthFacilityId = healthFacilityId;
 	}
 
 	/**
 	 * constructor created for Point of Entry grouping
-	 * 
-	 * @param disease
+	 *  @param disease
 	 * @param newCases
 	 * @param labConfirmations
 	 * @param deaths
@@ -123,6 +125,7 @@ public class AggregatedCaseCountDto implements Serializable {
 	 * @param districtId
 	 * @param pointOfEntryId
 	 * @param pointOfEntryName
+	 * @param changeDate
 	 */
 	public AggregatedCaseCountDto(
 		Disease disease,
@@ -137,8 +140,8 @@ public class AggregatedCaseCountDto implements Serializable {
 		String districtName,
 		Long districtId,
 		Long pointOfEntryId,
-		String pointOfEntryName) {
-		this(disease, newCases, labConfirmations, deaths, year, epiWeek, ageGroup, regionName, regionId, districtName, districtId);
+		String pointOfEntryName, Date changeDate) {
+		this(disease, newCases, labConfirmations, deaths, year, epiWeek, ageGroup, regionName, regionId, districtName, districtId, changeDate);
 		this.pointOfEntryName = pointOfEntryName;
 		this.pointOfEntryId = pointOfEntryId;
 	}
@@ -154,13 +157,36 @@ public class AggregatedCaseCountDto implements Serializable {
 		String regionName,
 		String districtName,
 		String healthFacilityName,
-		String pointOfEntryName) {
-		this(disease, newCases, labConfirmations, deaths, year, epiWeek, ageGroup);
+		String pointOfEntryName, Date changeDate) {
+		this(disease, newCases, labConfirmations, deaths, year, epiWeek, ageGroup, changeDate);
 
 		this.regionName = regionName;
 		this.districtName = districtName;
 		this.healthFacilityName = healthFacilityName;
 		this.pointOfEntryName = pointOfEntryName;
+	}
+
+
+	public AggregatedCaseCountDto(
+		Disease disease,
+		long newCases,
+		long labConfirmations,
+		long deaths,
+		int year,
+		Integer epiWeek,
+		String ageGroup,
+		String regionName,
+		Long regionId,
+		String districtName,
+		Long districtId,
+		String healthFacilityName,
+		Long healthFacilityId,
+		Long pointOfEntryId,
+		String pointOfEntryName,
+		Date changeDate) {
+		this(disease, newCases, labConfirmations, deaths, year, epiWeek, ageGroup, regionName, regionId, districtName, districtId, changeDate);
+		this.healthFacilityName = healthFacilityName;
+		this.healthFacilityId = healthFacilityId;
 	}
 
 	public String getRegionName() {
@@ -267,14 +293,6 @@ public class AggregatedCaseCountDto implements Serializable {
 		this.ageGroup = ageGroup;
 	}
 
-	public AggregateReportGroupingDto getAggregateReportGroupingDto() {
-		return aggregateReportGroupingDto;
-	}
-
-	public void setAggregateReportGroupingDto(AggregateReportGroupingDto aggregateReportGroupingDto) {
-		this.aggregateReportGroupingDto = aggregateReportGroupingDto;
-	}
-
 	public int getYear() {
 		return year;
 	}
@@ -291,39 +309,153 @@ public class AggregatedCaseCountDto implements Serializable {
 		this.epiWeek = epiWeek;
 	}
 
+	public Date getChangeDate() {
+		return changeDate;
+	}
+
+	public void setChangeDate(Date changeDate) {
+		this.changeDate = changeDate;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		AggregatedCaseCountDto that = (AggregatedCaseCountDto) o;
+		return year == that.year
+			&& epiWeek == that.epiWeek
+			&& newCases == that.newCases
+			&& labConfirmations == that.labConfirmations
+			&& deaths == that.deaths
+			&& Objects.equals(regionName, that.regionName)
+			&& Objects.equals(regionId, that.regionId)
+			&& Objects.equals(districtName, that.districtName)
+			&& Objects.equals(districtId, that.districtId)
+			&& Objects.equals(healthFacilityName, that.healthFacilityName)
+			&& Objects.equals(healthFacilityId, that.healthFacilityId)
+			&& Objects.equals(pointOfEntryName, that.pointOfEntryName)
+			&& Objects.equals(pointOfEntryId, that.pointOfEntryId)
+			&& disease == that.disease
+			&& Objects.equals(ageGroup, that.ageGroup);
+	}
+
 	@Override
 	public int hashCode() {
-
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (int) deaths;
-		result = prime * result + ((disease == null) ? 0 : disease.hashCode());
-		result = prime * result + (int) labConfirmations;
-		result = prime * result + (int) newCases;
-		result = prime * result + ((ageGroup == null) ? 0 : ageGroup.hashCode());
-		return result;
+		return Objects.hash(
+			regionName,
+			regionId,
+			districtName,
+			districtId,
+			healthFacilityName,
+			healthFacilityId,
+			pointOfEntryName,
+			pointOfEntryId,
+			year,
+			epiWeek,
+			disease,
+			newCases,
+			labConfirmations,
+			deaths,
+			ageGroup);
 	}
 
-	@Override
-	public boolean equals(Object obj) {
+	public boolean similar(Object o, AggregateReportGroupingLevel groupingLevel) {
 
-		if (this == obj)
+		if (this == o)
 			return true;
-		if (obj == null)
+		if (o == null || getClass() != o.getClass())
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		AggregatedCaseCountDto other = (AggregatedCaseCountDto) obj;
-		if (deaths != other.deaths)
-			return false;
-		if (disease != other.disease)
-			return false;
-		if (labConfirmations != other.labConfirmations)
-			return false;
-		if (newCases != other.newCases)
-			return false;
-		if (!Objects.equals(ageGroup, other.ageGroup))
-			return false;
-		return true;
+		AggregatedCaseCountDto that = (AggregatedCaseCountDto) o;
+		boolean similar = year == that.year && epiWeek == that.epiWeek && disease == that.disease && Objects.equals(ageGroup, that.ageGroup);
+		if (groupingLevel != null) {
+			switch (groupingLevel) {
+
+			case REGION:
+				similar = similar && Objects.equals(regionName, that.regionName) && Objects.equals(regionId, that.regionId);
+				break;
+			case DISTRICT:
+				similar = similar && Objects.equals(districtName, that.districtName) && Objects.equals(districtId, that.districtId);
+				break;
+			case HEALTH_FACILITY:
+				similar = similar && Objects.equals(healthFacilityName, that.healthFacilityName) && Objects.equals(healthFacilityId, that.healthFacilityId);
+				break;
+			case POINT_OF_ENTRY:
+				similar = similar && Objects.equals(pointOfEntryName, that.pointOfEntryName) && Objects.equals(pointOfEntryId, that.pointOfEntryId);
+				break;
+			default:
+			}
+		}
+		return similar;
 	}
+
+	public boolean equalJurisdiction(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		AggregatedCaseCountDto that = (AggregatedCaseCountDto) o;
+		return Objects.equals(regionName, that.regionName)
+			&& Objects.equals(regionId, that.regionId)
+			&& Objects.equals(districtName, that.districtName)
+			&& Objects.equals(districtId, that.districtId)
+			&& Objects.equals(healthFacilityName, that.healthFacilityName)
+			&& Objects.equals(healthFacilityId, that.healthFacilityId)
+			&& Objects.equals(pointOfEntryName, that.pointOfEntryName)
+			&& Objects.equals(pointOfEntryId, that.pointOfEntryId);
+	}
+
+	public boolean higherJurisdictionLevel(Object o) {
+
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		AggregatedCaseCountDto that = (AggregatedCaseCountDto) o;
+
+		if (regionId == null && that.regionId != null) {
+			return true;
+		}
+		if (districtId == null && that.districtId != null) {
+			return true;
+		}
+		if (healthFacilityId == null && that.healthFacilityId != null && pointOfEntryId == null && that.pointOfEntryId == null) {
+			return true;
+		}
+		if (pointOfEntryId == null && that.pointOfEntryId != null && healthFacilityId == null && that.healthFacilityId != null) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean sameJurisdictionLevel(Object o) {
+
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		AggregatedCaseCountDto that = (AggregatedCaseCountDto) o;
+
+		if (regionId == null && that.regionId == null) {
+			return true;
+		}
+		if (districtId == null && that.districtId == null) {
+			return true;
+		}
+		if (healthFacilityId != null && that.healthFacilityId != null && pointOfEntryId == null && that.pointOfEntryId == null) {
+			return true;
+		}
+		if (healthFacilityId == null && that.healthFacilityId == null && pointOfEntryId != null && that.pointOfEntryId != null) {
+			return true;
+		}
+		if (healthFacilityId == null && that.healthFacilityId == null && pointOfEntryId == null && that.pointOfEntryId == null) {
+			return true;
+		}
+		if ((healthFacilityId != null || pointOfEntryId != null) && (that.healthFacilityId != null && that.pointOfEntryId != null)) {
+			return true;
+		}
+		return false;
+	}
+
 }

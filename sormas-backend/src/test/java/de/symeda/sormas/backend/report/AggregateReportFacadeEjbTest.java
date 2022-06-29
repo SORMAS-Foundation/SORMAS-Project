@@ -18,13 +18,19 @@ package de.symeda.sormas.backend.report;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
+import de.symeda.sormas.api.report.AggregateReportGroupingLevel;
 import de.symeda.sormas.api.report.AggregatedCaseCountDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
@@ -36,6 +42,7 @@ import de.symeda.sormas.backend.TestDataCreator;
 public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 
 	TestDataCreator.RDCF rdcf;
+	FacilityDto facility2;
 	private UserDto officer;
 	private UserDto informant1;
 	private UserDto informant2;
@@ -43,7 +50,8 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 	@Before
 	public void setupData() {
 
-		rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		rdcf = creator.createRDCF("Region", "District", "Community", "Facility", "PointOfEntry");
+		facility2 = creator.createFacility("Facility2", rdcf.region, rdcf.district, rdcf.community);
 		officer = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),
@@ -134,19 +142,85 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals("61Y", indexList.get(12).getAgeGroup());
 	}
 
-	private void createAggregateReport(EpiWeek epiWeek, String ageGroup) {
+	private AggregateReportDto createAggregateReport(EpiWeek epiWeek, String ageGroup) {
+		return createAggregateReport(epiWeek, ageGroup, rdcf.region, rdcf.district, rdcf.facility, rdcf.pointOfEntry, 1, 3, 2);
+	}
+
+	private AggregateReportDto createAggregateReport(
+		Integer cases,
+		Integer deaths,
+		Integer labConfirmations,
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		FacilityReferenceDto facility,
+		PointOfEntryReferenceDto pointOfEntry) {
+		return createAggregateReport(
+			DateHelper.getEpiWeek(new Date()),
+			"1Y_100Y",
+			region,
+			district,
+			facility,
+			pointOfEntry,
+			cases,
+			deaths,
+			labConfirmations);
+	}
+
+	private AggregateReportDto createAggregateReport(
+		EpiWeek epiWeek,
+		String ageGroup,
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		FacilityReferenceDto facility,
+		PointOfEntryReferenceDto pointOfEntry, int newCases, int deaths, int labConfirmations) {
 		AggregateReportDto aggregateReportDto = AggregateReportDto.build();
 		aggregateReportDto.setDisease(Disease.HIV);
 		aggregateReportDto.setReportingUser(informant1.toReference());
-		aggregateReportDto.setNewCases(1);
-		aggregateReportDto.setDeaths(3);
-		aggregateReportDto.setLabConfirmations(2);
+		aggregateReportDto.setNewCases(newCases);
+		aggregateReportDto.setDeaths(deaths);
+		aggregateReportDto.setLabConfirmations(labConfirmations);
 		aggregateReportDto.setYear(epiWeek.getYear());
 		aggregateReportDto.setEpiWeek(epiWeek.getWeek());
-		aggregateReportDto.setRegion(rdcf.region);
-		aggregateReportDto.setDistrict(rdcf.district);
-		aggregateReportDto.setHealthFacility(rdcf.facility);
+		aggregateReportDto.setRegion(region);
+		aggregateReportDto.setDistrict(district);
+		aggregateReportDto.setHealthFacility(facility);
+		aggregateReportDto.setPointOfEntry(pointOfEntry);
 		aggregateReportDto.setAgeGroup(ageGroup);
-		getAggregateReportFacade().saveAggregateReport(aggregateReportDto);
+		return getAggregateReportFacade().saveAggregateReport(aggregateReportDto);
+	}
+
+	@Test
+	public void testAggregateReportsSummarize() {
+		loginWith(informant1);
+
+		createAggregateReport(1, 1, 1, rdcf.region, rdcf.district, null, null);
+		createAggregateReport(2, 2, 2, rdcf.region, rdcf.district, null, null);
+		createAggregateReport(3, 3, 3, rdcf.region, rdcf.district, rdcf.facility, rdcf.pointOfEntry);
+
+		AggregateReportCriteria criteria = new AggregateReportCriteria();
+		criteria.setShowZeroRowsForGrouping(false);
+		criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
+
+		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.DISTRICT);
+		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
+		Assert.assertEquals(1, indexList.size());
+		Assert.assertEquals(2, indexList.get(0).getNewCases());
+	}
+
+	@Test
+	public void testAggregateReportsSummarizeMultipleSubJurisdictions() {
+		loginWith(informant1);
+
+		createAggregateReport(1, 1, 1, rdcf.region, rdcf.district, facility2.toReference(), null);
+		createAggregateReport(2, 2, 2, rdcf.region, rdcf.district, rdcf.facility, null);
+
+		AggregateReportCriteria criteria = new AggregateReportCriteria();
+		criteria.setShowZeroRowsForGrouping(false);
+		criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
+
+		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.DISTRICT);
+		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
+		Assert.assertEquals(1, indexList.size());
+		Assert.assertEquals(3, indexList.get(0).getNewCases());
 	}
 }
