@@ -52,7 +52,6 @@ public class CaseDetailedTableViewSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
 
-
     Then(
         "^I am checking if all the fields are correctly displayed in the Case directory Detailed table$",
         () -> {
@@ -228,18 +227,6 @@ public class CaseDetailedTableViewSteps implements En {
           String headers = headersMap.toString();
           softly.assertTrue(
               headers.contains("INTERNAL TOKEN"), "The INTERNAL TOKEN column is not displayed!");
-          softly.assertAll();
-        });
-
-    When(
-        "I check that the German Internal Token column is present",
-        () -> {
-          TimeUnit.SECONDS.sleep(3); // For preventing premature data collection
-          headersMap = extractColumnHeadersHashMap();
-          String headers = headersMap.toString();
-          softly.assertTrue(
-              headers.contains("HERDKENNUNG (INTERNES AKTENZEICHEN)"),
-              "The German INTERNAL TOKEN column is not displayed!");
           softly.assertAll();
         });
 
