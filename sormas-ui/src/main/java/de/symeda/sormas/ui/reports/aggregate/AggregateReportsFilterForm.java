@@ -3,11 +3,13 @@ package de.symeda.sormas.ui.reports.aggregate;
 import static com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory.CAPTION_PROPERTY_ID;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.Disease;
@@ -103,11 +105,13 @@ public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateRepo
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(userRegion.getUuid()));
 			if (userDistrict != null) {
 				districtFilter.setEnabled(false);
-				facilityFilter.addItems(FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(userDistrict, false));
-				pointOfEntryFilter.addItems(FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(userDistrict.getUuid(), false));
+				Optional.ofNullable(facilityFilter)
+					.ifPresent(f -> f.addItems(FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(userDistrict, false)));
+				Optional.ofNullable(pointOfEntryFilter)
+					.ifPresent(p -> p.addItems(FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(userDistrict.getUuid(), false)));
 				if (userFacility != null || userPointOfEntry != null) {
-					facilityFilter.setEnabled(false);
-					pointOfEntryFilter.setEnabled(false);
+					Optional.ofNullable(facilityFilter).ifPresent(f -> f.setEnabled(false));
+					Optional.ofNullable(pointOfEntryFilter).ifPresent(p -> p.setEnabled(false));
 				}
 			}
 		}
@@ -124,11 +128,8 @@ public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateRepo
 
 	@Override
 	protected void applyDependenciesOnFieldChange(String propertyId, Property.ValueChangeEvent event) {
-		super.applyDependenciesOnFieldChange(propertyId, event);
 
-		final ComboBox districtField = getField(AggregateReportCriteria.DISTRICT);
-		final ComboBox facilityField = getField(AggregateReportCriteria.HEALTH_FACILITY);
-		final ComboBox pointOfEntryField = getField(AggregateReportCriteria.POINT_OF_ENTRY);
+		super.applyDependenciesOnFieldChange(propertyId, event);
 
 		final UserDto user = currentUserDto();
 
@@ -136,12 +137,14 @@ public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateRepo
 		case AggregateReportCriteria.REGION: {
 			final RegionReferenceDto region = user.getRegion() != null ? user.getRegion() : (RegionReferenceDto) event.getProperty().getValue();
 			if (region != null) {
-				enableFields(districtField);
-				FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
-				facilityField.clear();
-				pointOfEntryField.clear();
+				boolean districtFieldEnabled = districtFilter.isEnabled();
+				enableFields(districtFilter);
+				FieldHelper.updateItems(districtFilter, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+				Optional.ofNullable(facilityFilter).ifPresent(AbstractField::clear);
+				Optional.ofNullable(pointOfEntryFilter).ifPresent(AbstractField::clear);
+				districtFilter.setEnabled(districtFieldEnabled);
 			} else {
-				clearAndDisableFields(districtField, facilityField, pointOfEntryField);
+				clearAndDisableFields(districtFilter, facilityFilter, pointOfEntryFilter);
 			}
 			break;
 		}
@@ -149,13 +152,17 @@ public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateRepo
 		case AggregateReportCriteria.DISTRICT: {
 			final DistrictReferenceDto newDistrict = (DistrictReferenceDto) event.getProperty().getValue();
 			if (newDistrict != null) {
-				clearAndDisableFields(facilityField, pointOfEntryField);
-				enableFields(facilityField, pointOfEntryField);
-				FieldHelper.updateItems(facilityField, FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(newDistrict, false));
-				FieldHelper
-					.updateItems(pointOfEntryField, FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(newDistrict.getUuid(), false));
+				clearAndDisableFields(facilityFilter, pointOfEntryFilter);
+				enableFields(facilityFilter, pointOfEntryFilter);
+				if (facilityFilter != null) {
+					FieldHelper.updateItems(facilityFilter, FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(newDistrict, false));
+				}
+				if (pointOfEntryFilter != null) {
+					FieldHelper
+						.updateItems(pointOfEntryFilter, FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(newDistrict.getUuid(), false));
+				}
 			} else {
-				clearAndDisableFields(facilityField, pointOfEntryField);
+				clearAndDisableFields(facilityFilter, pointOfEntryFilter);
 			}
 			break;
 		}
@@ -163,9 +170,9 @@ public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateRepo
 			final FacilityReferenceDto facility = (FacilityReferenceDto) event.getProperty().getValue();
 
 			if (facility != null) {
-				clearAndDisableFields(pointOfEntryField);
+				clearAndDisableFields(pointOfEntryFilter);
 			} else {
-				enableFields(pointOfEntryField);
+				enableFields(pointOfEntryFilter);
 			}
 			break;
 		}
@@ -173,9 +180,9 @@ public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateRepo
 			final PointOfEntryReferenceDto pointOfEntry = (PointOfEntryReferenceDto) event.getProperty().getValue();
 
 			if (pointOfEntry != null) {
-				clearAndDisableFields(facilityField);
+				clearAndDisableFields(facilityFilter);
 			} else {
-				enableFields(facilityField);
+				enableFields(facilityFilter);
 			}
 			break;
 		}
@@ -197,17 +204,13 @@ public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateRepo
 		cbFromYearFilter.addValueChangeListener(e -> clearFilterIfEmpty(cbFromYearFilter, cbFromEpiWeekFilter));
 		cbFromEpiWeekFilter = new com.vaadin.ui.ComboBox<>();
 		cbFromEpiWeekFilter.setId(AggregateReportCriteria.EPI_WEEK_FROM);
-		cbFromEpiWeekFilter.addValueChangeListener(e -> {
-			getValue().setEpiWeekFrom(e.getValue());
-		});
+		cbFromEpiWeekFilter.addValueChangeListener(e -> getValue().setEpiWeekFrom(e.getValue()));
 		cbToYearFilter = new com.vaadin.ui.ComboBox<>();
 		cbToYearFilter.setId("yearTo");
 		cbToYearFilter.addValueChangeListener(e -> clearFilterIfEmpty(cbFromYearFilter, cbToEpiWeekFilter));
 		cbToEpiWeekFilter = new com.vaadin.ui.ComboBox<>();
 		cbToEpiWeekFilter.setId(AggregateReportCriteria.EPI_WEEK_TO);
-		cbToEpiWeekFilter.addValueChangeListener(e -> {
-			getValue().setEpiWeekTo(e.getValue());
-		});
+		cbToEpiWeekFilter.addValueChangeListener(e -> getValue().setEpiWeekTo(e.getValue()));
 
 		cbFromYearFilter.setWidth(140, Unit.PIXELS);
 		cbFromYearFilter.setPlaceholder(I18nProperties.getString(Strings.year));
@@ -253,12 +256,6 @@ public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateRepo
 		}
 	}
 
-	private void clearFilterIfNotEmpty(com.vaadin.ui.ComboBox<?> filter1, com.vaadin.ui.ComboBox<?> filter2) {
-		if (filter1.getValue() != null) {
-			filter2.clear();
-		}
-	}
-
 	@Override
 	public void setValue(AggregateReportCriteria newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
@@ -274,28 +271,32 @@ public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateRepo
 		}
 	}
 
+	@Override
 	protected void applyDependenciesOnNewValue(AggregateReportCriteria criteria) {
+
 		applyRegionFilterDependency(criteria.getRegion(), AggregateReportCriteria.DISTRICT);
 
-		final ComboBox facilityField = getField(AggregateReportCriteria.HEALTH_FACILITY);
-		final ComboBox pointOfEntryField = getField(AggregateReportCriteria.POINT_OF_ENTRY);
-
 		if (criteria.getDistrict() != null) {
-			FieldHelper.updateItems(facilityField, FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(criteria.getDistrict(), false));
-			FieldHelper.updateItems(
-				pointOfEntryField,
-				FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(criteria.getDistrict().getUuid(), false));
+			if (facilityFilter != null) {
+				FieldHelper
+					.updateItems(facilityFilter, FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(criteria.getDistrict(), false));
+			}
+			if (pointOfEntryFilter != null) {
+				FieldHelper.updateItems(
+					pointOfEntryFilter,
+					FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(criteria.getDistrict().getUuid(), false));
+			}
 		}
 
-		facilityField.setValue(criteria.getHealthFacility());
+		Optional.ofNullable(facilityFilter).ifPresent(f -> f.setValue(criteria.getHealthFacility()));
 		if (criteria.getHealthFacility() != null) {
-			clearAndDisableFields(pointOfEntryField);
+			clearAndDisableFields(pointOfEntryFilter);
 		}
 
-		pointOfEntryField.setValue(criteria.getPointOfEntry());
+		Optional.ofNullable(pointOfEntryFilter).ifPresent(p -> p.setValue(criteria.getPointOfEntry()));
 
 		if (criteria.getPointOfEntry() != null) {
-			clearAndDisableFields(facilityField);
+			clearAndDisableFields(facilityFilter);
 		}
 	}
 }
