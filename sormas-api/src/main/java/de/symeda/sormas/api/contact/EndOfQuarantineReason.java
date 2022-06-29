@@ -24,6 +24,7 @@ public enum EndOfQuarantineReason {
 	LOST_TO_FOLLOWUP,
 	OTHER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

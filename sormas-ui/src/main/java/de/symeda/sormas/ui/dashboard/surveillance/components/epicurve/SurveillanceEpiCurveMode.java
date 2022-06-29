@@ -24,6 +24,7 @@ public enum SurveillanceEpiCurveMode {
 	CASE_STATUS,
 	ALIVE_OR_DEAD;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

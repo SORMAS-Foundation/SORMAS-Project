@@ -612,6 +612,7 @@ public abstract class AbstractTableField<E> extends CustomField<Collection> {
 	 * @since Vaadin 7.4
 	 *        Workaround, because in AbstractField.clear () calls setValue (null).
 	 */
+	@Override
 	public void clear() {
 		BeanItemContainer<E> container = getContainer();
 		if (container != null) {

@@ -18,6 +18,7 @@ public enum CampaignFormElementStyle {
 	COL_11,
 	COL_12;
 
+	@Override
 	public String toString() {
 		return name().toLowerCase().replaceAll("_", "-");
 	}
@@ -25,5 +26,4 @@ public enum CampaignFormElementStyle {
 	public static CampaignFormElementStyle fromString(String stringValue) {
 		return valueOf(stringValue.toUpperCase().replaceAll("-", "_"));
 	}
-
 }

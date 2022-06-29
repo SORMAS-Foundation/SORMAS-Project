@@ -17,11 +17,13 @@ package de.symeda.sormas.api.event;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum EventIdentificationSource {
-  UNKNOWN,
-  BACKWARD_TRACING,
-  FORWARD_TRACING;
 
-  public String toString() {
-    return I18nProperties.getEnumCaption(this);
-  }
+	UNKNOWN,
+	BACKWARD_TRACING,
+	FORWARD_TRACING;
+
+	@Override
+	public String toString() {
+		return I18nProperties.getEnumCaption(this);
+	}
 }

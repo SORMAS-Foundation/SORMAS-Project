@@ -24,6 +24,7 @@ public enum DateFilterOption {
 	DATE,
 	EPI_WEEK;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

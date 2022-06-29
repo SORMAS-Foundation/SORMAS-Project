@@ -12,6 +12,7 @@ public enum CaseIdentificationSource {
 	SCREENING,
 	OTHER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

@@ -31,6 +31,7 @@ public enum ContactStatus {
 	 */
 	DROPPED;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

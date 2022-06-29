@@ -24,6 +24,7 @@ public enum SamplePurpose {
 	EXTERNAL,
 	INTERNAL;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

@@ -7,6 +7,7 @@ public enum PersonContactDetailType {
     EMAIL,
     OTHER;
 
+	@Override
     public String toString() {
         return I18nProperties.getEnumCaption(this);
     }

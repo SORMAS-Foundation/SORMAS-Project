@@ -365,6 +365,7 @@ public enum UserRight {
 	public static final String _SORMAS_TO_SORMAS_CLIENT = "SORMAS_TO_SORMAS_CLIENT";
 	public static final String _EXTERNAL_VISITS = "EXTERNAL_VISITS";
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

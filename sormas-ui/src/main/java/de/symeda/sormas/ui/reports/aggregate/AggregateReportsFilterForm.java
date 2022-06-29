@@ -273,4 +273,29 @@ public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateRepo
 			cbToEpiWeekFilter.setValue(newFieldValue.getEpiWeekTo());
 		}
 	}
+
+	protected void applyDependenciesOnNewValue(AggregateReportCriteria criteria) {
+		applyRegionFilterDependency(criteria.getRegion(), AggregateReportCriteria.DISTRICT);
+
+		final ComboBox facilityField = getField(AggregateReportCriteria.HEALTH_FACILITY);
+		final ComboBox pointOfEntryField = getField(AggregateReportCriteria.POINT_OF_ENTRY);
+
+		if (criteria.getDistrict() != null) {
+			FieldHelper.updateItems(facilityField, FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(criteria.getDistrict(), false));
+			FieldHelper.updateItems(
+				pointOfEntryField,
+				FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(criteria.getDistrict().getUuid(), false));
+		}
+
+		facilityField.setValue(criteria.getHealthFacility());
+		if (criteria.getHealthFacility() != null) {
+			clearAndDisableFields(pointOfEntryField);
+		}
+
+		pointOfEntryField.setValue(criteria.getPointOfEntry());
+
+		if (criteria.getPointOfEntry() != null) {
+			clearAndDisableFields(facilityField);
+		}
+	}
 }

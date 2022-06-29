@@ -49,6 +49,7 @@ public enum InfectionSetting {
 		return this.parent;
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

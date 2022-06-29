@@ -9,6 +9,7 @@ public enum PointOfEntryType {
 	GROUND_CROSSING,
 	OTHER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

@@ -24,6 +24,7 @@ public enum DocumentRelatedEntityType {
 	EVENT,
 	TRAVEL_ENTRY;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

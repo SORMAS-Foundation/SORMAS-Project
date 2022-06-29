@@ -25,6 +25,7 @@ public enum PlagueType {
 	PNEUMONIC,
 	SEPTICAEMIC;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

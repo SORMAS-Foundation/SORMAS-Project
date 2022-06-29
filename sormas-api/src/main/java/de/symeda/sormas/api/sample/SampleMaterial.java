@@ -65,6 +65,7 @@ public enum SampleMaterial {
 	PLEURAL_FLUID,
 	OTHER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
