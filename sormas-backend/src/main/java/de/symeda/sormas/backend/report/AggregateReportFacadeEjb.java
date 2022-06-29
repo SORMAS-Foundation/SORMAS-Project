@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -60,9 +59,10 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "AggregateReportFacade")
-@RolesAllowed(UserRight._AGGREGATE_REPORT_VIEW)
+@RightsAllowed(UserRight._AGGREGATE_REPORT_VIEW)
 public class AggregateReportFacadeEjb implements AggregateReportFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -95,7 +95,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._AGGREGATE_REPORT_EDIT)
+	@RightsAllowed(UserRight._AGGREGATE_REPORT_EDIT)
 	public AggregateReportDto saveAggregateReport(@Valid AggregateReportDto dto) {
 
 		if (dto.getAgeGroup() != null && dto.getAgeGroup().isEmpty()) {
@@ -385,7 +385,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._AGGREGATE_REPORT_EDIT)
+	@RightsAllowed(UserRight._AGGREGATE_REPORT_EDIT)
 	public void deleteReport(String reportUuid) {
 
 		if (!userService.hasRight(UserRight.AGGREGATE_REPORT_EDIT)) {

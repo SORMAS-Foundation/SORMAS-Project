@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -70,9 +69,10 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "ExternalMessageFacade")
-@RolesAllowed(UserRight._EXTERNAL_MESSAGE_VIEW)
+@RightsAllowed(UserRight._EXTERNAL_MESSAGE_VIEW)
 public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	public static final List<String> VALID_SORT_PROPERTY_NAMES = Arrays.asList(
@@ -233,13 +233,13 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._EXTERNAL_MESSAGE_DELETE)
+	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_DELETE)
 	public void deleteExternalMessage(String uuid) {
 		externalMessageService.deletePermanent(externalMessageService.getByUuid(uuid));
 	}
 
 	@Override
-	@RolesAllowed(UserRight._EXTERNAL_MESSAGE_DELETE)
+	@RightsAllowed(UserRight._EXTERNAL_MESSAGE_DELETE)
 	public void deleteExternalMessages(List<String> uuids) {
 		List<ExternalMessage> externalMessages = externalMessageService.getByUuids(uuids);
 		for (ExternalMessage externalMessage : externalMessages) {
@@ -250,7 +250,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES)
+	@RightsAllowed(UserRight._PERFORM_BULK_OPERATIONS_EXTERNAL_MESSAGES)
 	public void bulkAssignExternalMessages(List<String> uuids, UserReferenceDto userRef) {
 		List<ExternalMessage> externalMessages = externalMessageService.getByUuids(uuids);
 		User user = userService.getByReferenceDto(userRef);
@@ -387,7 +387,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	 * @return An indication whether the fetching of new labMessage was successful. If it was not, an error message meant for UI users.
 	 */
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._SYSTEM,
 		UserRight._EXTERNAL_MESSAGE_VIEW })
 	public ExternalMessageFetchResult fetchAndSaveExternalMessages(Date since) {
