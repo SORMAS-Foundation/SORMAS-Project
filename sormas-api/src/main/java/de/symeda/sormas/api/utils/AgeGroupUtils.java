@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.api.utils;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -89,16 +88,16 @@ public class AgeGroupUtils {
 		}
 
 		final List<String> ageGroupList = Stream.of(ageGroupsString.split(",")).collect(Collectors.toList());
-		final List<String> invalidAgeGroupsList = new ArrayList<>();
-		ageGroupList.forEach(s -> {
+		ageGroupList.removeIf(s -> {
 			try {
 				validateAgeGroup(s);
+				return false;
 			} catch (IllegalArgumentException e) {
 				logger.warn(String.format("Age group %s in ageGroupsString %s is not a valid age group.", s, ageGroupsString));
-				invalidAgeGroupsList.add(s);
+				return true;
 			}
 		});
-		ageGroupList.removeAll(invalidAgeGroupsList);
+
 		return ageGroupList;
 	}
 
@@ -108,16 +107,16 @@ public class AgeGroupUtils {
 			return null;
 		}
 
-		final List<String> invalidAgeGroupsList = new ArrayList<>();
-		ageGroupList.forEach(s -> {
+		ageGroupList.removeIf(s -> {
 			try {
 				validateAgeGroup(s);
+				return false;
 			} catch (IllegalArgumentException e) {
 				logger.warn(String.format("Age group %s in ageGroupsList %s is not a valid age group.", s, ageGroupList));
-				invalidAgeGroupsList.add(s);
+				return true;
 			}
 		});
-		ageGroupList.removeAll(invalidAgeGroupsList);
+
 		return String.join(",", ageGroupList);
 	}
 
