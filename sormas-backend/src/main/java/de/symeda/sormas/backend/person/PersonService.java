@@ -45,6 +45,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
@@ -998,6 +999,9 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	@Override
 	public void deletePermanent(Person person) {
 
+		// CAREFUL: Since deletePermanentByUuids does not use this method, every logic that is added
+		// also needs to be applied there.
+
 		manualMessageLogService.getByPersonUuid(person.getUuid())
 			.forEach(manualMessageLog -> manualMessageLogService.deletePermanent(manualMessageLog));
 		visitService.deletePersonVisits(Collections.singletonList(person.getUuid()));
@@ -1008,7 +1012,17 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	@Override
 	public void deletePermanentByUuids(List<String> uuids) {
 
+		// CAREFUL: Everything that is done here also needs to be done in deletePermanent.
+
+		manualMessageLogService.deletePersonMessageLogs(uuids);
 		visitService.deletePersonVisits(uuids);
-		super.deletePermanentByUuids(uuids);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaDelete<Person> cq = cb.createCriteriaDelete(Person.class);
+		Root<Person> personRoot = cq.from(Person.class);
+
+		cq.where(personRoot.get(AbstractDomainObject.UUID).in(uuids));
+
+		em.createQuery(cq).executeUpdate();
 	}
 }

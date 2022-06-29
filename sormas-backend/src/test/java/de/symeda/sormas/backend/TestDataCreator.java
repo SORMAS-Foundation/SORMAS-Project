@@ -92,6 +92,7 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonContactDetailDto;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.api.person.PersonDto;
@@ -127,6 +128,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.backend.common.messaging.ManualMessageLog;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.continent.Continent;
@@ -1923,6 +1925,18 @@ public class TestDataCreator {
 		beanTest.getExternalShareInfoService().ensurePersisted(shareInfo);
 
 		return shareInfo;
+	}
+
+	public ManualMessageLog createManualMessageLog(UserReferenceDto user, PersonReferenceDto recipientPerson) {
+		ManualMessageLog messageLog = new ManualMessageLog();
+		messageLog.setMessageType(MessageType.EMAIL);
+		messageLog.setSentDate(new Date());
+		messageLog.setSendingUser(beanTest.getUserService().getByUuid(user.getUuid()));
+		messageLog.setRecipientPerson(beanTest.getPersonService().getByUuid(recipientPerson.getUuid()));
+
+		beanTest.getManualMessageLogService().ensurePersisted(messageLog);
+
+		return messageLog;
 	}
 
 	/**

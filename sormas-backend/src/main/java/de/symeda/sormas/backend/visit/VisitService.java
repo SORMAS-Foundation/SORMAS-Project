@@ -30,6 +30,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Fetch;
@@ -235,16 +236,23 @@ public class VisitService extends BaseAdoService<Visit> {
 	 */
 	public void deletePersonVisits(List<String> personUuids) {
 
+		// CAREFUL: This logic needs to be revisited if deletePermanent is overridden for visits
+		// because it might be necessary to consider additional logic.
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Visit> visitRoot = cq.from(Visit.class);
 		Join<Visit, Person> visitPersonJoin = visitRoot.join(Visit.PERSON, JoinType.LEFT);
-
 		cq.where(visitPersonJoin.get(AbstractDomainObject.UUID).in(personUuids));
 		cq.select(visitRoot.get(Visit.UUID));
+		List<String> visitUuids = em.createQuery(cq).getResultList();
 
-		List<String> uuids = em.createQuery(cq).getResultList();
-		deletePermanentByUuids(uuids);
+		if (!visitUuids.isEmpty()) {
+			CriteriaDelete<Visit> cd = cb.createCriteriaDelete(Visit.class);
+			Root<Visit> visitDeleteRoot = cd.from(Visit.class);
+			cd.where(visitDeleteRoot.get(Visit.UUID).in(visitUuids));
+			em.createQuery(cd).executeUpdate();
+		}
 	}
 
 	/**

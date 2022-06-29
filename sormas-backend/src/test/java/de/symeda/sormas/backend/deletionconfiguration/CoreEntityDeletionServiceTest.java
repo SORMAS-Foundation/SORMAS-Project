@@ -9,8 +9,6 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import de.symeda.sormas.api.common.DeletionDetails;
-import de.symeda.sormas.api.common.DeletionReason;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
@@ -20,6 +18,8 @@ import org.junit.Test;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventDto;
@@ -59,10 +59,8 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CASE);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(
-			rdcf,
-			creator.getUserRoleReference(DefaultUserRole.ADMIN),
-			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 
@@ -170,10 +168,8 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CASE);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(
-			rdcf,
-			creator.getUserRoleReference(DefaultUserRole.ADMIN),
-			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 
@@ -207,10 +203,8 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.IMMUNIZATION);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(
-			rdcf,
-			creator.getUserRoleReference(DefaultUserRole.ADMIN),
-			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 		ImmunizationDto immunization = creator.createImmunization(Disease.EVD, person.toReference(), user.toReference(), rdcf);
 		creator.createVaccination(user.toReference(), immunization.toReference());
@@ -241,10 +235,8 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.TRAVEL_ENTRY);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(
-			rdcf,
-			creator.getUserRoleReference(DefaultUserRole.ADMIN),
-			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 		TravelEntryDto travelEntry = creator.createTravelEntry(person.toReference(), user.toReference(), rdcf, null);
 
@@ -275,10 +267,8 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 			getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.IMMUNIZATION);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(
-			rdcf,
-			creator.getUserRoleReference(DefaultUserRole.ADMIN),
-			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf, c -> c.setDisease(Disease.EVD));
 		creator.createVisit(Disease.EVD, person.toReference());
@@ -288,6 +278,7 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		caze.setDisease(Disease.CHOLERA);
 		getCaseFacade().save(caze);
 		ImmunizationDto immunization = creator.createImmunization(Disease.EVD, person.toReference(), user.toReference(), rdcf);
+		creator.createManualMessageLog(user.toReference(), person.toReference());
 
 		final Date tenYearsPlusAgoCases = DateUtils.addDays(new Date(), (-1) * caseCoreEntityTypeConfig.deletionPeriod - 1);
 		SessionImpl em = (SessionImpl) getEntityManager();
@@ -299,12 +290,16 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		em.save(singleResultCase);
 
 		assertEquals(1, getPersonService().count());
+		assertEquals(1, getVisitService().count());
+		assertEquals(1, getManualMessageLogService().count());
 
 		useSystemUser();
 		getCoreEntityDeletionService().executeAutomaticDeletion();
 		loginWith(user);
 
 		assertEquals(1, getPersonService().count());
+		assertEquals(1, getVisitService().count());
+		assertEquals(1, getManualMessageLogService().count());
 
 		final Date tenYearsPlusAgoImmunizations = DateUtils.addDays(new Date(), (-1) * immunizationCoreEntityTypeConfig.deletionPeriod - 1);
 		em = (SessionImpl) getEntityManager();
@@ -320,6 +315,8 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		loginWith(user);
 
 		assertEquals(0, getPersonService().count());
+		assertEquals(0, getVisitService().count());
+		assertEquals(0, getManualMessageLogService().count());
 	}
 
 	@Test
@@ -329,10 +326,8 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		DeletionConfiguration deletionConfig = getDeletionConfigurationService().getCoreEntityTypeManualDeletionConfig(CoreEntityType.IMMUNIZATION);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(
-			rdcf,
-			creator.getUserRoleReference(DefaultUserRole.ADMIN),
-			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 		ImmunizationDto immunization = creator.createImmunization(Disease.EVD, person.toReference(), user.toReference(), rdcf);
 
@@ -368,10 +363,8 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CONTACT);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(
-			rdcf,
-			creator.getUserRoleReference(DefaultUserRole.ADMIN),
-			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 
 		ContactDto contactDto = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
@@ -417,10 +410,8 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CONTACT);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(
-			rdcf,
-			creator.getUserRoleReference(DefaultUserRole.ADMIN),
-			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 
 		ContactDto contactDto = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
