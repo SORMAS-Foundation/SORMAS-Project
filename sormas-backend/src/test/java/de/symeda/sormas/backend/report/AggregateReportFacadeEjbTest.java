@@ -18,13 +18,13 @@ package de.symeda.sormas.backend.report;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -195,7 +195,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 
 		createAggregateReport(1, 1, 1, rdcf.region, rdcf.district, null, null);
 		createAggregateReport(2, 2, 2, rdcf.region, rdcf.district, null, null);
-		createAggregateReport(3, 3, 3, rdcf.region, rdcf.district, rdcf.facility, rdcf.pointOfEntry);
+		createAggregateReport(3, 3, 3, rdcf.region, rdcf.district, rdcf.facility, null);
 
 		AggregateReportCriteria criteria = new AggregateReportCriteria();
 		criteria.setShowZeroRowsForGrouping(false);
@@ -205,6 +205,11 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
 		Assert.assertEquals(1, indexList.size());
 		Assert.assertEquals(2, indexList.get(0).getNewCases());
+
+		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.REGION);
+		List<AggregatedCaseCountDto> indexListRegionGrouping = getAggregateReportFacade().getIndexList(criteria);
+		Assert.assertEquals(1, indexListRegionGrouping.size());
+		Assert.assertEquals(2, indexListRegionGrouping.get(0).getNewCases());
 	}
 
 	@Test
@@ -213,6 +218,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 
 		createAggregateReport(1, 1, 1, rdcf.region, rdcf.district, facility2.toReference(), null);
 		createAggregateReport(2, 2, 2, rdcf.region, rdcf.district, rdcf.facility, null);
+		createAggregateReport(3, 10, 3, rdcf.region, rdcf.district, null, rdcf.pointOfEntry);
 
 		AggregateReportCriteria criteria = new AggregateReportCriteria();
 		criteria.setShowZeroRowsForGrouping(false);
@@ -221,6 +227,27 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.DISTRICT);
 		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
 		Assert.assertEquals(1, indexList.size());
-		Assert.assertEquals(3, indexList.get(0).getNewCases());
+		Assert.assertEquals(6, indexList.get(0).getNewCases());
+		Assert.assertEquals(13, indexList.get(0).getDeaths());
+
+		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.REGION);
+		List<AggregatedCaseCountDto> indexListRegionGrouping = getAggregateReportFacade().getIndexList(criteria);
+		Assert.assertEquals(1, indexListRegionGrouping.size());
+		Assert.assertEquals(6, indexListRegionGrouping.get(0).getNewCases());
+		Assert.assertEquals(13, indexListRegionGrouping.get(0).getDeaths());
+
+		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.HEALTH_FACILITY);
+		List<AggregatedCaseCountDto> indexListFacilityGrouping = getAggregateReportFacade().getIndexList(criteria);
+		Assert.assertEquals(2, indexListFacilityGrouping.size());
+		Assert.assertEquals(2, indexListFacilityGrouping.get(0).getNewCases());
+		Assert.assertEquals(2, indexListFacilityGrouping.get(0).getDeaths());
+		Assert.assertEquals(1, indexListFacilityGrouping.get(1).getNewCases());
+		Assert.assertEquals(1, indexListFacilityGrouping.get(1).getDeaths());
+
+		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.POINT_OF_ENTRY);
+		List<AggregatedCaseCountDto> indexListPoeGrouping = getAggregateReportFacade().getIndexList(criteria);
+		Assert.assertEquals(1, indexListPoeGrouping.size());
+		Assert.assertEquals(3, indexListPoeGrouping.get(0).getNewCases());
+		Assert.assertEquals(10, indexListPoeGrouping.get(0).getDeaths());
 	}
 }

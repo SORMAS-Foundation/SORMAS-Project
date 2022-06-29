@@ -187,6 +187,8 @@ public class AggregatedCaseCountDto implements Serializable {
 		this(disease, newCases, labConfirmations, deaths, year, epiWeek, ageGroup, regionName, regionId, districtName, districtId, changeDate);
 		this.healthFacilityName = healthFacilityName;
 		this.healthFacilityId = healthFacilityId;
+		this.pointOfEntryName = pointOfEntryName;
+		this.pointOfEntryId = pointOfEntryId;
 	}
 
 	public String getRegionName() {
@@ -452,7 +454,7 @@ public class AggregatedCaseCountDto implements Serializable {
 		if (healthFacilityId == null && that.healthFacilityId == null && pointOfEntryId == null && that.pointOfEntryId == null) {
 			return true;
 		}
-		if ((healthFacilityId != null || pointOfEntryId != null) && (that.healthFacilityId != null && that.pointOfEntryId != null)) {
+		if ((healthFacilityId != null || pointOfEntryId != null) && (that.healthFacilityId != null || that.pointOfEntryId != null)) {
 			return true;
 		}
 		return false;
