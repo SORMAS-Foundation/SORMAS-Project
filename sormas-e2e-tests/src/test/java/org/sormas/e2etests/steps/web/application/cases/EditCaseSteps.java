@@ -1719,6 +1719,7 @@ public class EditCaseSteps implements En {
               getFollowUpUntilDateDE(),
               dateExceedingExpectedDate,
               "Follow-up until date is invalid!");
+        });
     When(
         "^I check that Point Of Entry information is displayed as read-only on Edit case page$",
         () -> {
