@@ -66,6 +66,7 @@ public class EditCasePage {
       By.cssSelector("#investigationStatus label");
   public static final By INVESTIGATED_DATE_FIELD = By.cssSelector("#investigatedDate");
   public static final By EXTERNAL_TOKEN_INPUT = By.id("externalToken");
+  public static final By INTERNAL_TOKEN_INPUT = By.id("internalToken");
   public static final By DISEASE_COMBOBOX = By.cssSelector("#disease div");
   public static final By REINFECTION_OPTIONS = By.cssSelector("#reInfection label");
   public static final By OUTCOME_OF_CASE_OPTIONS = By.cssSelector("#outcome label");

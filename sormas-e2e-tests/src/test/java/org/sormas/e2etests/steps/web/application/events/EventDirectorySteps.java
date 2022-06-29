@@ -1232,6 +1232,14 @@ public class EventDirectorySteps implements En {
           TimeUnit.SECONDS.sleep(3); // wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+
+    When(
+        "I filter for SAMPLE TOKEN in Events Directory",
+        () -> {
+          webDriverHelpers.fillInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, "SAMPLE TOKEN");
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
   }
 
   private List<Map<String, String>> getTableRowsData() {

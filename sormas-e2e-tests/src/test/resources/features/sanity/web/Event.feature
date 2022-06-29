@@ -976,4 +976,16 @@ Feature: Create events
       | Contact Supervisor        |
       | Surveillance Supervisor   |
 
-
+  @issue=SORDEV-6609 @env_de
+  Scenario: Test for event internal token
+    Given I log in as a National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data for DE version
+    And I navigate to EVENT from edit event page
+    When I fill in the Internal Token field in Edit Case page with SAMPLE TOKEN
+    And I click on save button in the case popup
+    And I click on the Events button from navbar
+    And I check that the German Internal Token column is present
+    And I filter for SAMPLE TOKEN in Events Directory
+    Then I check that at least one SAMPLE TOKEN is displayed in table

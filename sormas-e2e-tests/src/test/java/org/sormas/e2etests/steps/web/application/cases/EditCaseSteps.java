@@ -1881,6 +1881,14 @@ public class EditCaseSteps implements En {
           webDriverHelpers.fillInWebElement(EditContactPage.GENERAL_COMMENT_TEXT, comment);
         });
 
+    And(
+        "I fill in the Internal Token field in Edit Case page with ([^\"]*)",
+        (String token) -> {
+          webDriverHelpers.scrollToElementUntilIsVisible(INTERNAL_TOKEN_INPUT);
+          webDriverHelpers.fillInWebElement(INTERNAL_TOKEN_INPUT, token);
+        });
+
+
     When(
         "I check if Type of sample has not a ([^\"]*) option",
         (String option) -> {
