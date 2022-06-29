@@ -2,6 +2,7 @@ package de.symeda.sormas.backend;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,7 +12,6 @@ import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.util.RightsAllowed;
 import org.junit.runner.RunWith;
 
 import com.tngtech.archunit.base.DescribedPredicate;
@@ -58,6 +58,7 @@ import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb;
 import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
+import de.symeda.sormas.backend.util.RightsAllowed;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 
@@ -70,6 +71,17 @@ public class ArchitectureTest {
 	@ArchTest
 	public static final ArchRule dontUseFacadeProviderRule =
 		ArchRuleDefinition.theClass(FacadeProvider.class).should().onlyBeAccessed().byClassesThat().belongToAnyOf(FacadeProvider.class);
+
+	/**
+	 * @RolesAllowed annotation was replaced by @RightsAllowed for performance reasons
+	 */
+	@ArchTest
+	public static final ArchRule dontUseRolesAllowedClassAnnotationRule =
+		classes().should().notBeAnnotatedWith(RolesAllowed.class);
+
+	@ArchTest
+	public static final ArchRule dontUseRolesAllowedMethodAnnotationRule =
+		methods().should().notBeAnnotatedWith(RolesAllowed.class);
 
 	private static final DescribedPredicate<JavaClass> classesInDataDictionary =
 		new DescribedPredicate<JavaClass>("are used as data dictionary entity") {
@@ -291,14 +303,6 @@ public class ArchitectureTest {
 			}
 
 			methodChecks.check(classes);
-		}
-
-		// don't use RolesAllowed anymore, until performance problem is fixed
-		if (authMode != AuthMode.METHODS_ONLY) {
-			ArchRuleDefinition.theClass(facadeEjbClass).should().notBeAnnotatedWith(RolesAllowed.class).check(classes);
-		}
-		if (authMode != AuthMode.CLASS_ONLY) {
-			methods.should().notBeAnnotatedWith(RolesAllowed.class).check(classes);
 		}
 	}
 
