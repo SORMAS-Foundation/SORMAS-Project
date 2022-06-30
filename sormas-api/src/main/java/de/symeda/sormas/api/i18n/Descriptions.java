@@ -165,6 +165,7 @@ public interface Descriptions {
 	String UserRole_hasAssociatedDistrictUser = "UserRole.hasAssociatedDistrictUser";
 	String UserRole_hasOptionalHealthFacility = "UserRole.hasOptionalHealthFacility";
 	String UserRole_portHealthUser = "UserRole.portHealthUser";
+	String userRoleNotifications = "userRoleNotifications";
 	String userRoleTemplate = "userRoleTemplate";
 	String Visit_visitDateTime = "Visit.visitDateTime";
 	String Visit_visitRemarks = "Visit.visitRemarks";

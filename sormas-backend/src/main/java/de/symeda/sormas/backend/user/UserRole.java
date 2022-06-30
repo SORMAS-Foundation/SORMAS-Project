@@ -22,6 +22,7 @@ import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAUL
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -66,8 +67,8 @@ public class UserRole extends AbstractDomainObject {
 	private boolean hasAssociatedDistrictUser;
 	private boolean portHealthUser;
 	private JurisdictionLevel jurisdictionLevel;
-	private List<NotificationType> emailNotificationTypes = new ArrayList<>();
-	private List<NotificationType> smsNotificationTypes = new ArrayList<>();
+	private Set<NotificationType> emailNotificationTypes = Collections.emptySet();
+	private Set<NotificationType> smsNotificationTypes = Collections.emptySet();
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Enumerated(EnumType.STRING)
@@ -156,11 +157,11 @@ public class UserRole extends AbstractDomainObject {
 			"userrole_id",
 			"notificationtype" }))
 	@Column(name = "notificationtype", nullable = false)
-	public List<NotificationType> getEmailNotificationTypes() {
+	public Set<NotificationType> getEmailNotificationTypes() {
 		return emailNotificationTypes;
 	}
 
-	public void setEmailNotificationTypes(List<NotificationType> emailNotifications) {
+	public void setEmailNotificationTypes(Set<NotificationType> emailNotifications) {
 		this.emailNotificationTypes = emailNotifications;
 	}
 
@@ -172,11 +173,11 @@ public class UserRole extends AbstractDomainObject {
 			"userrole_id",
 			"notificationtype" }))
 	@Column(name = "notificationtype", nullable = false)
-	public List<NotificationType> getSmsNotificationTypes() {
+	public Set<NotificationType> getSmsNotificationTypes() {
 		return smsNotificationTypes;
 	}
 
-	public void setSmsNotificationTypes(List<NotificationType> smsNotifications) {
+	public void setSmsNotificationTypes(Set<NotificationType> smsNotifications) {
 		this.smsNotificationTypes = smsNotifications;
 	}
 

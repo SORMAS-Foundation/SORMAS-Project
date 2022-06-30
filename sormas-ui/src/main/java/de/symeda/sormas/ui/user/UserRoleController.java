@@ -33,6 +33,7 @@ public class UserRoleController {
 
 	public void registerViews(Navigator navigator) {
 		navigator.addView(UserRoleView.VIEW_NAME, UserRoleView.class);
+		navigator.addView(UserRoleNotificationsView.VIEW_NAME, UserRoleNotificationsView.class);
 	}
 
 	public void create() {
@@ -68,8 +69,12 @@ public class UserRoleController {
 
 	public CommitDiscardWrapperComponent<UserRoleDataForm> getUserRoleEditComponent(UserRoleReferenceDto userRoleRef) {
 		UserRoleDataForm form = new UserRoleDataForm();
-		form.setValue(UserRoleDto.build());
+
+		UserRoleDto userRole = FacadeProvider.getUserRoleFacade().getByUuid(userRoleRef.getUuid());
+		form.setValue(userRole);
+
 		final CommitDiscardWrapperComponent<UserRoleDataForm> editView =
+			// TODO rights
 			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE), form.getFieldGroup());
 
 		editView.addCommitListener(() -> {
@@ -79,12 +84,31 @@ public class UserRoleController {
 
 				Notification.show(I18nProperties.getString(Strings.messageUserRoleSaved), Notification.Type.WARNING_MESSAGE);
 				SormasUI.refreshView();
-
 			}
 		});
 
+		return editView;
+	}
+
+	public CommitDiscardWrapperComponent<UserRoleNotificationsForm> getUserRoleNotificationsEditComponent(UserRoleReferenceDto userRoleRef) {
+		UserRoleNotificationsForm form = new UserRoleNotificationsForm();
+
 		UserRoleDto userRole = FacadeProvider.getUserRoleFacade().getByUuid(userRoleRef.getUuid());
 		form.setValue(userRole);
+
+		final CommitDiscardWrapperComponent<UserRoleNotificationsForm> editView =
+			// TODO - rights
+			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE), form.getFieldGroup());
+
+		editView.addCommitListener(() -> {
+			if (!form.getFieldGroup().isModified()) {
+				UserRoleDto dto = form.getValue();
+				FacadeProvider.getUserRoleFacade().saveUserRole(dto);
+
+				Notification.show(I18nProperties.getString(Strings.messageUserRoleSaved), Notification.Type.WARNING_MESSAGE);
+				SormasUI.refreshView();
+			}
+		});
 
 		return editView;
 	}

@@ -90,6 +90,7 @@ public interface Captions {
 	String actionNext = "actionNext";
 	String actionNo = "actionNo";
 	String actionNoActions = "actionNoActions";
+	String actionNoAll = "actionNoAll";
 	String actionOkay = "actionOkay";
 	String actionOverwrite = "actionOverwrite";
 	String actionPick = "actionPick";
@@ -115,6 +116,7 @@ public interface Captions {
 	String actionStatusChangeDate = "actionStatusChangeDate";
 	String actionUnclearLabMessage = "actionUnclearLabMessage";
 	String actionYes = "actionYes";
+	String actionYesAll = "actionYesAll";
 	String actionYesForAll = "actionYesForAll";
 	String actionYesForSome = "actionYesForSome";
 	String ActivityAsCase = "ActivityAsCase";
@@ -2420,6 +2422,9 @@ public interface Captions {
 	String UserRole_smsNotificationTypes = "UserRole.smsNotificationTypes";
 	String UserRole_templateUserRole = "UserRole.templateUserRole";
 	String UserRole_userRights = "UserRole.userRights";
+	String userRoleNotifications = "userRoleNotifications";
+	String userRoleNotificationTypeEmail = "userRoleNotificationTypeEmail";
+	String userRoleNotificationTypeSms = "userRoleNotificationTypeSms";
 	String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";
 	String Vaccination = "Vaccination";
 	String Vaccination_otherVaccineManufacturer = "Vaccination.otherVaccineManufacturer";

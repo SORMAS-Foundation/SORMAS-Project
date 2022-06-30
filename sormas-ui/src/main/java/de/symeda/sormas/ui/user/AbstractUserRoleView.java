@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.user;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
@@ -24,7 +25,7 @@ import de.symeda.sormas.ui.utils.AbstractDetailView;
 
 public abstract class AbstractUserRoleView extends AbstractDetailView<UserRoleReferenceDto> {
 
-	public static final String ROOT_VIEW_NAME = UsersView.VIEW_NAME;
+	public static final String ROOT_VIEW_NAME = "userrole";
 
 	protected AbstractUserRoleView(String viewName) {
 		super(viewName);
@@ -48,5 +49,6 @@ public abstract class AbstractUserRoleView extends AbstractDetailView<UserRoleRe
 
 		menu.removeAllViews();
 		menu.addView(UserRoleView.VIEW_NAME, I18nProperties.getCaption(UserRoleDto.I18N_PREFIX), params);
+		menu.addView(UserRoleNotificationsView.VIEW_NAME, I18nProperties.getCaption(Captions.userRoleNotifications), params);
 	}
 }

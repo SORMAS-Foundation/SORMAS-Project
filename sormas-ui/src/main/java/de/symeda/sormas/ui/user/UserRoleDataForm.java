@@ -41,7 +41,7 @@ import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
-import de.symeda.sormas.ui.utils.components.CheckboxGroup;
+import de.symeda.sormas.ui.utils.components.CheckboxSet;
 
 public class UserRoleDataForm extends AbstractEditForm<UserRoleDto> {
 
@@ -103,9 +103,9 @@ public class UserRoleDataForm extends AbstractEditForm<UserRoleDto> {
 			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getDescription(Descriptions.userRoleTemplate), ContentMode.HTML);
 		getContent().addComponent(templateInfoLabel, TEMPLATE_INFO_LOC);
 
-		CheckboxGroup<UserRight> userRightCbGroup = addField(UserRoleDto.USER_RIGHTS, CheckboxGroup.class);
-		userRightCbGroup.setCaption(null);
-		userRightCbGroup.setItems(getSortedUserRights(), r -> r.getUserRightGroup().toString());
+		CheckboxSet<UserRight> userRightCbSet = addField(UserRoleDto.USER_RIGHTS, CheckboxSet.class);
+		userRightCbSet.setCaption(null);
+		userRightCbSet.setItems(getSortedUserRights(), r -> r.getUserRightGroup().toString());
 
 		UserRoleFormHelper.createFieldDependencies(this);
 	}

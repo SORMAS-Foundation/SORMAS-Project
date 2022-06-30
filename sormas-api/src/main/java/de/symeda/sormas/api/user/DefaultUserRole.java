@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -34,36 +33,21 @@ import java.util.stream.Stream;
  */
 public enum DefaultUserRole {
 
-	ADMIN(false, false, false, false, JurisdictionLevel.NONE, Collections.emptyList(), Collections.emptyList()),
+	ADMIN(false, false, false, false, JurisdictionLevel.NONE, Collections.emptySet(), Collections.emptySet()),
 	NATIONAL_USER(false,
 		false,
 		false,
 		false,
 		JurisdictionLevel.NATION,
-		Arrays.asList(NotificationType.TASK_START, NotificationType.TASK_DUE, NotificationType.TASK_UPDATED_ASSIGNEE),
-		Arrays.asList(NotificationType.TASK_START, NotificationType.TASK_DUE, NotificationType.TASK_UPDATED_ASSIGNEE)),
+		new HashSet<>(Arrays.asList(NotificationType.TASK_START, NotificationType.TASK_DUE, NotificationType.TASK_UPDATED_ASSIGNEE)),
+		new HashSet<>(Arrays.asList(NotificationType.TASK_START, NotificationType.TASK_DUE, NotificationType.TASK_UPDATED_ASSIGNEE))),
 	SURVEILLANCE_SUPERVISOR(true,
 		false,
 		false,
 		false,
 		JurisdictionLevel.REGION,
-		Arrays.asList(
-			NotificationType.CASE_CLASSIFICATION_CHANGED,
-			NotificationType.DISEASE_CHANGED,
-			NotificationType.CASE_INVESTIGATION_DONE,
-			NotificationType.CASE_LAB_RESULT_ARRIVED,
-			NotificationType.CONTACT_LAB_RESULT_ARRIVED,
-			NotificationType.TASK_START,
-			NotificationType.TASK_DUE,
-			NotificationType.TASK_UPDATED_ASSIGNEE,
-			NotificationType.VISIT_COMPLETED,
-			NotificationType.CONTACT_SYMPTOMATIC,
-			NotificationType.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED,
-			NotificationType.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
-			NotificationType.EVENT_GROUP_CREATED,
-			NotificationType.EVENT_ADDED_TO_EVENT_GROUP,
-			NotificationType.EVENT_REMOVED_FROM_EVENT_GROUP),
-		Arrays.asList(
+		new HashSet<>(
+			Arrays.asList(
 			NotificationType.CASE_CLASSIFICATION_CHANGED,
 			NotificationType.DISEASE_CHANGED,
 			NotificationType.CASE_INVESTIGATION_DONE,
@@ -79,43 +63,53 @@ public enum DefaultUserRole {
 			NotificationType.EVENT_GROUP_CREATED,
 			NotificationType.EVENT_ADDED_TO_EVENT_GROUP,
 			NotificationType.EVENT_REMOVED_FROM_EVENT_GROUP)),
-	ADMIN_SUPERVISOR(true, false, false, false, JurisdictionLevel.REGION, Collections.emptyList(), Collections.emptyList()), // FIXME : remove this when user rights management is doable by users
+		new HashSet<>(
+			Arrays.asList(
+			NotificationType.CASE_CLASSIFICATION_CHANGED,
+			NotificationType.DISEASE_CHANGED,
+			NotificationType.CASE_INVESTIGATION_DONE,
+			NotificationType.CASE_LAB_RESULT_ARRIVED,
+			NotificationType.CONTACT_LAB_RESULT_ARRIVED,
+			NotificationType.TASK_START,
+			NotificationType.TASK_DUE,
+			NotificationType.TASK_UPDATED_ASSIGNEE,
+			NotificationType.VISIT_COMPLETED,
+			NotificationType.CONTACT_SYMPTOMATIC,
+			NotificationType.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED,
+			NotificationType.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
+			NotificationType.EVENT_GROUP_CREATED,
+			NotificationType.EVENT_ADDED_TO_EVENT_GROUP,
+			NotificationType.EVENT_REMOVED_FROM_EVENT_GROUP))),
+	ADMIN_SUPERVISOR(true, false, false, false, JurisdictionLevel.REGION, Collections.emptySet(), Collections.emptySet()), // FIXME : remove this when user rights management is doable by users
 	SURVEILLANCE_OFFICER(false,
 		true,
 		false,
 		false,
 		JurisdictionLevel.DISTRICT,
-		Arrays.asList(
-			NotificationType.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED,
-			NotificationType.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
-			NotificationType.EVENT_GROUP_CREATED,
-			NotificationType.EVENT_ADDED_TO_EVENT_GROUP,
-			NotificationType.EVENT_REMOVED_FROM_EVENT_GROUP),
-		Arrays.asList(
+		new HashSet<>(
+			Arrays.asList(
 			NotificationType.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED,
 			NotificationType.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
 			NotificationType.EVENT_GROUP_CREATED,
 			NotificationType.EVENT_ADDED_TO_EVENT_GROUP,
 			NotificationType.EVENT_REMOVED_FROM_EVENT_GROUP)),
-	HOSPITAL_INFORMANT(false, false, true, false, JurisdictionLevel.HEALTH_FACILITY, Collections.emptyList(), Collections.emptyList()),
-	COMMUNITY_OFFICER(false, true, false, false, JurisdictionLevel.COMMUNITY, Collections.emptyList(), Collections.emptyList()),
-	COMMUNITY_INFORMANT(false, false, true, false, JurisdictionLevel.COMMUNITY, Collections.emptyList(), Collections.emptyList()),
+		new HashSet<>(
+			Arrays.asList(
+			NotificationType.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED,
+			NotificationType.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
+			NotificationType.EVENT_GROUP_CREATED,
+			NotificationType.EVENT_ADDED_TO_EVENT_GROUP,
+			NotificationType.EVENT_REMOVED_FROM_EVENT_GROUP))),
+	HOSPITAL_INFORMANT(false, false, true, false, JurisdictionLevel.HEALTH_FACILITY, Collections.emptySet(), Collections.emptySet()),
+	COMMUNITY_OFFICER(false, true, false, false, JurisdictionLevel.COMMUNITY, Collections.emptySet(), Collections.emptySet()),
+	COMMUNITY_INFORMANT(false, false, true, false, JurisdictionLevel.COMMUNITY, Collections.emptySet(), Collections.emptySet()),
 	CASE_SUPERVISOR(true,
 		false,
 		false,
 		false,
 		JurisdictionLevel.REGION,
-		Arrays.asList(
-			NotificationType.CASE_CLASSIFICATION_CHANGED,
-			NotificationType.DISEASE_CHANGED,
-			NotificationType.CASE_INVESTIGATION_DONE,
-			NotificationType.CASE_LAB_RESULT_ARRIVED,
-			NotificationType.TASK_START,
-			NotificationType.TASK_DUE,
-			NotificationType.TASK_UPDATED_ASSIGNEE,
-			NotificationType.VISIT_COMPLETED,
-			NotificationType.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED),
-		Arrays.asList(
+		new HashSet<>(
+			Arrays.asList(
 			NotificationType.CASE_CLASSIFICATION_CHANGED,
 			NotificationType.DISEASE_CHANGED,
 			NotificationType.CASE_INVESTIGATION_DONE,
@@ -125,22 +119,25 @@ public enum DefaultUserRole {
 			NotificationType.TASK_UPDATED_ASSIGNEE,
 			NotificationType.VISIT_COMPLETED,
 			NotificationType.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED)),
-	CASE_OFFICER(false, true, false, false, JurisdictionLevel.DISTRICT, Collections.emptyList(), Collections.emptyList()),
+		new HashSet<>(
+			Arrays.asList(
+			NotificationType.CASE_CLASSIFICATION_CHANGED,
+			NotificationType.DISEASE_CHANGED,
+			NotificationType.CASE_INVESTIGATION_DONE,
+			NotificationType.CASE_LAB_RESULT_ARRIVED,
+			NotificationType.TASK_START,
+			NotificationType.TASK_DUE,
+			NotificationType.TASK_UPDATED_ASSIGNEE,
+			NotificationType.VISIT_COMPLETED,
+			NotificationType.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED))),
+	CASE_OFFICER(false, true, false, false, JurisdictionLevel.DISTRICT, Collections.emptySet(), Collections.emptySet()),
 	CONTACT_SUPERVISOR(true,
 		false,
 		false,
 		false,
 		JurisdictionLevel.REGION,
-		Arrays.asList(
-			NotificationType.CASE_CLASSIFICATION_CHANGED,
-			NotificationType.DISEASE_CHANGED,
-			NotificationType.CONTACT_LAB_RESULT_ARRIVED,
-			NotificationType.TASK_START,
-			NotificationType.TASK_DUE,
-			NotificationType.TASK_UPDATED_ASSIGNEE,
-			NotificationType.VISIT_COMPLETED,
-			NotificationType.CONTACT_SYMPTOMATIC),
-		Arrays.asList(
+		new HashSet<>(
+			Arrays.asList(
 			NotificationType.CASE_CLASSIFICATION_CHANGED,
 			NotificationType.DISEASE_CHANGED,
 			NotificationType.CONTACT_LAB_RESULT_ARRIVED,
@@ -149,23 +146,24 @@ public enum DefaultUserRole {
 			NotificationType.TASK_UPDATED_ASSIGNEE,
 			NotificationType.VISIT_COMPLETED,
 			NotificationType.CONTACT_SYMPTOMATIC)),
-	CONTACT_OFFICER(false, true, false, false, JurisdictionLevel.DISTRICT, Collections.emptyList(), Collections.emptyList()),
+		new HashSet<>(
+			Arrays.asList(
+			NotificationType.CASE_CLASSIFICATION_CHANGED,
+			NotificationType.DISEASE_CHANGED,
+			NotificationType.CONTACT_LAB_RESULT_ARRIVED,
+			NotificationType.TASK_START,
+			NotificationType.TASK_DUE,
+			NotificationType.TASK_UPDATED_ASSIGNEE,
+			NotificationType.VISIT_COMPLETED,
+			NotificationType.CONTACT_SYMPTOMATIC))),
+	CONTACT_OFFICER(false, true, false, false, JurisdictionLevel.DISTRICT, Collections.emptySet(), Collections.emptySet()),
 	EVENT_OFFICER(true,
 		false,
 		false,
 		false,
 		JurisdictionLevel.REGION,
-		Arrays.asList(
-			NotificationType.EVENT_PARTICIPANT_LAB_RESULT_ARRIVED,
-			NotificationType.TASK_START,
-			NotificationType.TASK_DUE,
-			NotificationType.TASK_UPDATED_ASSIGNEE,
-			NotificationType.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED,
-			NotificationType.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
-			NotificationType.EVENT_GROUP_CREATED,
-			NotificationType.EVENT_ADDED_TO_EVENT_GROUP,
-			NotificationType.EVENT_REMOVED_FROM_EVENT_GROUP),
-		Arrays.asList(
+		new HashSet<>(
+			Arrays.asList(
 			NotificationType.EVENT_PARTICIPANT_LAB_RESULT_ARRIVED,
 			NotificationType.TASK_START,
 			NotificationType.TASK_DUE,
@@ -175,37 +173,48 @@ public enum DefaultUserRole {
 			NotificationType.EVENT_GROUP_CREATED,
 			NotificationType.EVENT_ADDED_TO_EVENT_GROUP,
 			NotificationType.EVENT_REMOVED_FROM_EVENT_GROUP)),
+		new HashSet<>(
+			Arrays.asList(
+			NotificationType.EVENT_PARTICIPANT_LAB_RESULT_ARRIVED,
+			NotificationType.TASK_START,
+			NotificationType.TASK_DUE,
+			NotificationType.TASK_UPDATED_ASSIGNEE,
+			NotificationType.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED,
+			NotificationType.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
+			NotificationType.EVENT_GROUP_CREATED,
+			NotificationType.EVENT_ADDED_TO_EVENT_GROUP,
+			NotificationType.EVENT_REMOVED_FROM_EVENT_GROUP))),
 	LAB_USER(false,
 		false,
 		false,
 		false,
 		JurisdictionLevel.LABORATORY,
-		Collections.singletonList(NotificationType.LAB_SAMPLE_SHIPPED),
-		Collections.singletonList(NotificationType.LAB_SAMPLE_SHIPPED)),
+		Collections.singleton(NotificationType.LAB_SAMPLE_SHIPPED),
+		Collections.singleton(NotificationType.LAB_SAMPLE_SHIPPED)),
 	EXTERNAL_LAB_USER(false,
 		false,
 		false,
 		false,
 		JurisdictionLevel.EXTERNAL_LABORATORY,
-		Collections.singletonList(NotificationType.LAB_SAMPLE_SHIPPED),
-		Collections.singletonList(NotificationType.LAB_SAMPLE_SHIPPED)),
-	NATIONAL_OBSERVER(false, false, false, false, JurisdictionLevel.NATION, Collections.emptyList(), Collections.emptyList()),
-	STATE_OBSERVER(false, false, false, false, JurisdictionLevel.REGION, Collections.emptyList(), Collections.emptyList()),
-	DISTRICT_OBSERVER(false, false, false, false, JurisdictionLevel.DISTRICT, Collections.emptyList(), Collections.emptyList()),
-	NATIONAL_CLINICIAN(false, false, false, false, JurisdictionLevel.NATION, Collections.emptyList(), Collections.emptyList()),
-	POE_INFORMANT(false, false, false, true, JurisdictionLevel.POINT_OF_ENTRY, Collections.emptyList(), Collections.emptyList()),
+		Collections.singleton(NotificationType.LAB_SAMPLE_SHIPPED),
+		Collections.singleton(NotificationType.LAB_SAMPLE_SHIPPED)),
+	NATIONAL_OBSERVER(false, false, false, false, JurisdictionLevel.NATION, Collections.emptySet(), Collections.emptySet()),
+	STATE_OBSERVER(false, false, false, false, JurisdictionLevel.REGION, Collections.emptySet(), Collections.emptySet()),
+	DISTRICT_OBSERVER(false, false, false, false, JurisdictionLevel.DISTRICT, Collections.emptySet(), Collections.emptySet()),
+	NATIONAL_CLINICIAN(false, false, false, false, JurisdictionLevel.NATION, Collections.emptySet(), Collections.emptySet()),
+	POE_INFORMANT(false, false, false, true, JurisdictionLevel.POINT_OF_ENTRY, Collections.emptySet(), Collections.emptySet()),
 	POE_SUPERVISOR(true,
 		false,
 		false,
 		true,
 		JurisdictionLevel.REGION,
-		Arrays.asList(NotificationType.TASK_START, NotificationType.TASK_DUE, NotificationType.TASK_UPDATED_ASSIGNEE),
-		Arrays.asList(NotificationType.TASK_START, NotificationType.TASK_DUE, NotificationType.TASK_UPDATED_ASSIGNEE)),
-	POE_NATIONAL_USER(false, false, false, true, JurisdictionLevel.NATION, Collections.emptyList(), Collections.emptyList()),
-	IMPORT_USER(false, false, false, false, JurisdictionLevel.NONE, Collections.emptyList(), Collections.emptyList()),
-	REST_EXTERNAL_VISITS_USER(false, false, false, false, JurisdictionLevel.NATION, Collections.emptyList(), Collections.emptyList()),
-	SORMAS_TO_SORMAS_CLIENT(false, false, false, false, JurisdictionLevel.NATION, Collections.emptyList(), Collections.emptyList()),
-	BAG_USER(false, false, false, false, JurisdictionLevel.NONE, Collections.emptyList(), Collections.emptyList());
+		new HashSet<>(Arrays.asList(NotificationType.TASK_START, NotificationType.TASK_DUE, NotificationType.TASK_UPDATED_ASSIGNEE)),
+		new HashSet<>(Arrays.asList(NotificationType.TASK_START, NotificationType.TASK_DUE, NotificationType.TASK_UPDATED_ASSIGNEE))),
+	POE_NATIONAL_USER(false, false, false, true, JurisdictionLevel.NATION, Collections.emptySet(), Collections.emptySet()),
+	IMPORT_USER(false, false, false, false, JurisdictionLevel.NONE, Collections.emptySet(), Collections.emptySet()),
+	REST_EXTERNAL_VISITS_USER(false, false, false, false, JurisdictionLevel.NATION, Collections.emptySet(), Collections.emptySet()),
+	SORMAS_TO_SORMAS_CLIENT(false, false, false, false, JurisdictionLevel.NATION, Collections.emptySet(), Collections.emptySet()),
+	BAG_USER(false, false, false, false, JurisdictionLevel.NONE, Collections.emptySet(), Collections.emptySet());
 
 	private final boolean supervisor;
 	private final boolean hasOptionalHealthFacility;
@@ -214,8 +223,8 @@ public enum DefaultUserRole {
 
 	private final JurisdictionLevel jurisdictionLevel;
 
-	private final List<NotificationType> emailNotificationTypes;
-	private final List<NotificationType> smsNotificationTypes;
+	private final Set<NotificationType> emailNotificationTypes;
+	private final Set<NotificationType> smsNotificationTypes;
 
 	DefaultUserRole(
 		boolean supervisor,
@@ -223,8 +232,8 @@ public enum DefaultUserRole {
 		boolean hasAssociatedDistrictUser,
 		boolean portHealthUser,
 		JurisdictionLevel jurisdictionLevel,
-		List<NotificationType> emailNotificationTypes,
-		List<NotificationType> smsNotificationTypes) {
+		Set<NotificationType> emailNotificationTypes,
+		Set<NotificationType> smsNotificationTypes) {
 
 		this.supervisor = supervisor;
 		this.hasOptionalHealthFacility = hasOptionalHealthFacility;
@@ -257,11 +266,11 @@ public enum DefaultUserRole {
 		return portHealthUser;
 	}
 
-	public List<NotificationType> getEmailNotificationTypes() {
+	public Set<NotificationType> getEmailNotificationTypes() {
 		return emailNotificationTypes;
 	}
 
-	public List<NotificationType> getSmsNotificationTypes() {
+	public Set<NotificationType> getSmsNotificationTypes() {
 		return smsNotificationTypes;
 	}
 

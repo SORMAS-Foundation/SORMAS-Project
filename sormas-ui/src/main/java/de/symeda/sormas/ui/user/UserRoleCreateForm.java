@@ -97,8 +97,8 @@ public class UserRoleCreateForm extends AbstractEditForm<UserRoleDto> {
 
 		if (templateRole == null) {
 			userRole.setUserRights(Collections.emptySet());
-			userRole.setEmailNotificationTypes(Collections.emptyList());
-			userRole.setSmsNotificationTypes(Collections.emptyList());
+			userRole.setEmailNotificationTypes(Collections.emptySet());
+			userRole.setSmsNotificationTypes(Collections.emptySet());
 		} else {
 			userRole.setUserRights(templateRole.getUserRights());
 			userRole.setEmailNotificationTypes(templateRole.getEmailNotificationTypes());

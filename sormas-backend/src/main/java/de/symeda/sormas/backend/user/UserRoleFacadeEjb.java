@@ -183,8 +183,8 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		target.setHasOptionalHealthFacility(source.hasOptionalHealthFacility());
 		target.setHasAssociatedDistrictUser(source.hasAssociatedDistrictUser());
 		target.setPortHealthUser(source.isPortHealthUser());
-		target.setEmailNotificationTypes(new ArrayList<>(source.getEmailNotificationTypes()));
-		target.setSmsNotificationTypes(new ArrayList<>(source.getSmsNotificationTypes()));
+		target.setEmailNotificationTypes(new HashSet<>(source.getEmailNotificationTypes()));
+		target.setSmsNotificationTypes(new HashSet<>(source.getSmsNotificationTypes()));
 		target.setJurisdictionLevel(source.getJurisdictionLevel());
 
 		return target;

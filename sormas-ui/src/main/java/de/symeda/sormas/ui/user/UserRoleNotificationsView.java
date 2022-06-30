@@ -16,18 +16,15 @@
 package de.symeda.sormas.ui.user;
 
 import com.vaadin.navigator.ViewChangeListener;
-
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 
-public class UserRoleView extends AbstractUserRoleView {
+public class UserRoleNotificationsView extends AbstractUserRoleView {
 
-	private static final long serialVersionUID = -9114105065249694196L;
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/notifications";
 
-	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/main";
-
-	public UserRoleView() {
+	public UserRoleNotificationsView() {
 		super(VIEW_NAME);
 	}
 
@@ -39,9 +36,8 @@ public class UserRoleView extends AbstractUserRoleView {
 
 	@Override
 	protected void initView(String params) {
-
-		CommitDiscardWrapperComponent<UserRoleDataForm> editComponent =
-			ControllerProvider.getUserRoleController().getUserRoleEditComponent(getReference());
+		CommitDiscardWrapperComponent<UserRoleNotificationsForm> editComponent =
+			ControllerProvider.getUserRoleController().getUserRoleNotificationsEditComponent(getReference());
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
