@@ -33,9 +33,11 @@ public class UserManagementSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
     When(
         "^I click on the NEW USER button$",
-        () ->
-            webDriverHelpers.clickWhileOtherButtonIsDisplayed(
-                NEW_USER_BUTTON, FIRST_NAME_OF_USER_INPUT));
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_USER_BUTTON);
+          webDriverHelpers.clickWhileOtherButtonIsDisplayed(
+              NEW_USER_BUTTON, FIRST_NAME_OF_USER_INPUT);
+        });
 
     When(
         "^I select first user from list$",

@@ -55,6 +55,8 @@ public class EditEventPage {
   public static final By NEW_ACTION_BUTTON = By.id("actionNewAction");
   public static final By NEW_TASK_BUTTON = By.id("taskNewTask");
   public static final By EDIT_FIRST_TASK = By.cssSelector("#edit-task-0");
+  public static final By DELETE_BUTTON_DISABLED =
+      By.xpath("//div[@id='delete' and @aria-disabled='true']");
   public static final By LINK_EVENT_GROUP_BUTTON = By.cssSelector("div#Link\\ event\\ group");
   public static final By NEW_EVENT_GROUP_RADIOBUTTON =
       By.xpath("//*[contains(text(),'New event group')]/..");
@@ -147,6 +149,11 @@ public class EditEventPage {
       By.cssSelector("[id='country'] [class='v-filterselect-button']");
   public static final By COUNTRY_COMBOBOX_DIABLED =
       By.xpath("//div[@id=\"country\" and contains(@class, 'v-disabled')]");
+  public static final By REASON_FOR_DELETION_MARK =
+      By.cssSelector(".popupContent span[class='v-errorindicator v-errorindicator-error']");
+  public static By REASON_FOR_DELETION_INPUT = By.cssSelector("#deletionReason input");
+  public static final By REASON_FOR_DELETION_MESSAGE =
+      By.xpath("//div[@class='v-errormessage v-errormessage-error']");
   public static final By
       PATHOGEN_FINE_TYPING_COMPLIANT_WITH_THE_ONE_OF_CASES_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE =
           By.xpath(

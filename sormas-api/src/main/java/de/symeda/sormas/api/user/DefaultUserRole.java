@@ -950,6 +950,8 @@ public enum DefaultUserRole {
 					TASK_VIEW,
 					TASK_EDIT,
 					TASK_EXPORT,
+					SEE_PERSONAL_DATA_IN_JURISDICTION,
+					SEE_SENSITIVE_DATA_IN_JURISDICTION,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;

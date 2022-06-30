@@ -174,11 +174,8 @@ public class CasesView extends AbstractView {
 		if (CasesViewType.FOLLOW_UP_VISITS_OVERVIEW.equals(viewConfiguration.getViewType())) {
 			if (criteria.getFollowUpVisitsInterval() == null) {
 				criteria.setFollowUpVisitsInterval(followUpRangeInterval);
-				grid = new CaseFollowUpGrid(criteria, getClass());
-			} else {
-				grid = new CaseFollowUpGrid(criteria, getClass());
 			}
-
+			grid = new CaseFollowUpGrid(criteria, getClass());
 		} else {
 			criteria.followUpUntilFrom(null);
 			grid = CasesViewType.DETAILED.equals(viewConfiguration.getViewType()) ? new CaseGridDetailed(criteria) : new CaseGrid(criteria);

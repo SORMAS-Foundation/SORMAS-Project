@@ -179,6 +179,7 @@ public interface Captions {
 	String aggregateReportNewAggregateReport = "aggregateReportNewAggregateReport";
 	String aggregateReportNewCasesShort = "aggregateReportNewCasesShort";
 	String aggregateReportReportFound = "aggregateReportReportFound";
+	String aggregateReportShowOnlyDuplicateReports = "aggregateReportShowOnlyDuplicateReports";
 	String aggregateReportShowZeroRowsForGrouping = "aggregateReportShowZeroRowsForGrouping";
 	String aggregateReportThisWeek = "aggregateReportThisWeek";
 	String all = "all";
@@ -2442,6 +2443,8 @@ public interface Captions {
 	String versionIsMissing = "versionIsMissing";
 	String View_actions = "View.actions";
 	String View_aggregatereports = "View.aggregatereports";
+	String View_aggregatereports_aggregatereporting = "View.aggregatereports.aggregatereporting";
+	String View_aggregatereports_reportdata = "View.aggregatereports.reportdata";
 	String View_aggregatereports_sub = "View.aggregatereports.sub";
 	String View_campaign_campaigndata = "View.campaign.campaigndata";
 	String View_campaign_campaigndata_dataform = "View.campaign.campaigndata.dataform";
