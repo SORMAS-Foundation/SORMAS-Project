@@ -1680,7 +1680,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				if (!sample.isDeleted()) {
 					if (sample.getAssociatedCase() == null) {
 						sample.setAssociatedCase(caze);
-					} else {
+					} else if (!sample.getAssociatedCase().getUuid().equals(cazeRef.getUuid())) {
 						sampleFacade.cloneSampleForCase(sample, caze);
 					}
 				}
@@ -1696,14 +1696,17 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		UserRight._CASE_CREATE,
 		UserRight._CASE_EDIT })
 	public void setSampleAssociations(EventParticipantReferenceDto sourceEventParticipant, CaseReferenceDto cazeRef) {
+
 		if (sourceEventParticipant != null) {
 			final EventParticipant eventParticipant = eventParticipantService.getByUuid(sourceEventParticipant.getUuid());
 			final Case caze = service.getByUuid(cazeRef.getUuid());
 			eventParticipant.getSamples().forEach(sample -> {
-				if (sample.getAssociatedCase() == null) {
-					sample.setAssociatedCase(caze);
-				} else {
-					sampleFacade.cloneSampleForCase(sample, caze);
+				if (!sample.isDeleted()) {
+					if (sample.getAssociatedCase() == null) {
+						sample.setAssociatedCase(caze);
+					} else if (!sample.getAssociatedCase().getUuid().equals(cazeRef.getUuid())) {
+						sampleFacade.cloneSampleForCase(sample, caze);
+					}
 				}
 			});
 
