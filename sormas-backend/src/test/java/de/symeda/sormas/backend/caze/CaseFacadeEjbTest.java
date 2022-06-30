@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.backend.caze;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -29,6 +31,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -51,12 +59,19 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
+import de.symeda.sormas.backend.MockProducer;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
 import org.joda.time.DateTime;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -174,8 +189,25 @@ import de.symeda.sormas.backend.util.DtoHelper;
 
 public class CaseFacadeEjbTest extends AbstractBeanTest {
 
+	private static final int WIREMOCK_TESTING_PORT = 8888;
+	private ExternalSurveillanceToolFacade subjectUnderTest;
+
+	@Rule
+	public WireMockRule wireMockRule = new WireMockRule(options().port(WIREMOCK_TESTING_PORT), false);
+
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
+
+	@Before
+	public void setup() {
+		configureExternalSurvToolUrlForWireMock();
+		subjectUnderTest = getExternalSurveillanceToolGatewayFacade();
+	}
+
+	@After
+	public void teardown() {
+		clearExternalSurvToolUrlForWireMock();
+	}
 
 	@Test
 	public void testFilterByResponsibleRegionAndDistrictOfCase() {
@@ -1470,6 +1502,13 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(null).size());
 		assertEquals(1, getCaseFacade().getAllActiveUuids().size());
 
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(caze.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+		Case case1 = getCaseService().getByUuid(caze.getUuid());
+		getExternalShareInfoService().createAndPersistShareInfo(case1, ExternalShareStatus.SHARED);
 		getCaseFacade().archive(caze.getUuid(), null);
 
 		// getAllActiveCases and getAllUuids should return length 0
@@ -2070,14 +2109,27 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// One archived case
 		CaseDataDto case1 = creator.createCase(user, person, rdcf);
+		Case caze1 = getCaseService().getByUuid(case1.getUuid());
+		getExternalShareInfoService().createAndPersistShareInfo(caze1, ExternalShareStatus.SHARED);
+
 		CaseFacadeEjbLocal cut = getBean(CaseFacadeEjbLocal.class);
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(case1.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 		cut.archive(case1.getUuid(), null);
+		assertTrue(cut.isArchived(case1.getUuid()));
 
 		// One other case
 		CaseDataDto case2 = creator.createCase(user, person, rdcf);
-
-		assertTrue(cut.isArchived(case1.getUuid()));
+		Case caze2 = getCaseService().getByUuid(case2.getUuid());
+		getExternalShareInfoService().createAndPersistShareInfo(caze2, ExternalShareStatus.SHARED);
 		assertFalse(cut.isArchived(case2.getUuid()));
+
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(case2.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
 
 		// Case of "today" shouldn't be archived
 		cut.archiveAllArchivableCases(70, LocalDate.now().plusDays(69));
@@ -2899,4 +2951,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcfEntities);
 	}
 
+	private void configureExternalSurvToolUrlForWireMock() {
+		MockProducer.getProperties().setProperty("survnet.url", String.format("http://localhost:%s", WIREMOCK_TESTING_PORT));
+	}
+
+	private void clearExternalSurvToolUrlForWireMock() {
+		MockProducer.getProperties().setProperty("survnet.url", "");
+	}
 }

@@ -3,12 +3,12 @@ package de.symeda.sormas.ui.reports.aggregate;
 import java.util.Date;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -17,7 +17,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
-import de.symeda.sormas.api.report.AggregateReportGroupingLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -31,42 +30,38 @@ import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 
-@SuppressWarnings("serial")
-public class AggregateReportsView extends AbstractAggregateReportsView {
+public class ReportDataView extends AbstractAggregateReportsView {
 
-	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/aggregatereporting";
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/reportdata";
 
-	private AggregateReportsGrid grid;
+	private ReportDataGrid grid;
 	private VerticalLayout gridLayout;
 	private Button btnExport;
 	private Button btnCreate;
 	private Button btnEdit;
 
-	private CheckBox showZeroRowsGrouping;
+	private CheckBox showOnlyDuplicates;
 
 	private AggregateReportsFilterForm aggregateReportsFilterForm;
 
-	public AggregateReportsView() {
-		super(VIEW_NAME);
+	public ReportDataView() {
 
+		super(VIEW_NAME);
 		UserDto user = UserProvider.getCurrent().getUser();
 
-		boolean criteriaUninitialized = !ViewModelProviders.of(AggregateReportsView.class).has(AggregateReportCriteria.class);
-		criteria = ViewModelProviders.of(AggregateReportsView.class).get(AggregateReportCriteria.class);
+		boolean criteriaUninitialized = !ViewModelProviders.of(ReportDataView.class).has(AggregateReportCriteria.class);
+		criteria = ViewModelProviders.of(ReportDataView.class).get(AggregateReportCriteria.class);
 		if (criteriaUninitialized || criteria.getEpiWeekFrom() == null || criteria.getEpiWeekTo() == null) {
 			criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
 		}
 
-		criteria.setAggregateReportGroupingLevel(
-			criteria.getAggregateReportGroupingLevel() != null ? criteria.getAggregateReportGroupingLevel() : AggregateReportGroupingLevel.REGION);
+		grid = new ReportDataGrid(criteria);
 
 		gridLayout = new VerticalLayout();
 
-		gridLayout.addComponent(createGroupingBar());
+		gridLayout.addComponent(createDuplicateFilter());
 
 		gridLayout.addComponent(createFilterBar(user));
-
-		grid = new AggregateReportsGrid(criteria);
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -106,33 +101,19 @@ public class AggregateReportsView extends AbstractAggregateReportsView {
 		}
 	}
 
-	private HorizontalLayout createGroupingBar() {
-		HorizontalLayout jurisdictionLayout = new HorizontalLayout();
-		AggregateReportGroupingSelector aggregateReportGroupingSelector = new AggregateReportGroupingSelector();
-		aggregateReportGroupingSelector.setValue(criteria.getAggregateReportGroupingLevel());
+	private Component createDuplicateFilter() {
 
-		aggregateReportGroupingSelector.addValueChangeListener(e -> {
-			AggregateReportGroupingLevel groupingValue = (AggregateReportGroupingLevel) e.getValue();
-			criteria.setAggregateReportGroupingLevel(groupingValue);
-			grid.setColumnsVisibility(groupingValue);
-			grid.reload();
-		});
-		jurisdictionLayout.addComponent(aggregateReportGroupingSelector);
+		showOnlyDuplicates = new CheckBox();
+		showOnlyDuplicates.setId(AggregateReportCriteria.SHOW_ONLY_DUPLICATES);
+		showOnlyDuplicates.setCaption(I18nProperties.getCaption(Captions.aggregateReportShowOnlyDuplicateReports));
+		showOnlyDuplicates.addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
+		showOnlyDuplicates.setValue(criteria.getShowOnlyDuplicates());
 
-		showZeroRowsGrouping = new CheckBox();
-		showZeroRowsGrouping.setId(AggregateReportCriteria.SHOW_ZERO_ROWS_FOR_GROUPING);
-		showZeroRowsGrouping.setCaption(I18nProperties.getCaption(Captions.aggregateReportShowZeroRowsForGrouping));
-		showZeroRowsGrouping.addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
-
-		showZeroRowsGrouping.setValue(criteria.getShowZeroRowsForGrouping());
-
-		showZeroRowsGrouping.addValueChangeListener(e -> {
-			criteria.setShowZeroRowsForGrouping(e.getValue());
+		showOnlyDuplicates.addValueChangeListener(e -> {
+			criteria.setShowOnlyDuplicates(e.getValue());
 		});
 
-		jurisdictionLayout.addComponent(showZeroRowsGrouping);
-
-		return jurisdictionLayout;
+		return showOnlyDuplicates;
 	}
 
 	private VerticalLayout createFilterBar(UserDto user) {
@@ -168,13 +149,13 @@ public class AggregateReportsView extends AbstractAggregateReportsView {
 		});
 
 		aggregateReportsFilterForm.addResetHandler(e -> {
-			ViewModelProviders.of(AggregateReportsView.class).remove(AggregateReportCriteria.class);
+			ViewModelProviders.of(ReportDataView.class).remove(AggregateReportCriteria.class);
 			AggregateReportCriteria emptyCriteria = new AggregateReportCriteria();
 			navigateTo(emptyCriteria, true);
 		});
 
 		aggregateReportsFilterForm.addApplyHandler(e -> {
-			if (epiWeekFilterBarDataValidation()) {
+			if (isEpiWeekFilterValid()) {
 				grid.reload();
 			} else {
 				NotificationHelper.showNotification(
@@ -189,12 +170,12 @@ public class AggregateReportsView extends AbstractAggregateReportsView {
 		return filterLayout;
 	}
 
-	private boolean epiWeekFilterBarDataValidation() {
+	private boolean isEpiWeekFilterValid() {
 		return criteria.getEpiWeekTo() != null && criteria.getEpiWeekFrom() != null;
 	}
 
 	@Override
-	public void enter(ViewChangeEvent event) {
+	public void enter(ViewChangeListener.ViewChangeEvent event) {
 		super.enter(event);
 		EpiWeek epiWeekFrom = criteria.getEpiWeekFrom();
 		EpiWeek epiWeekTo = criteria.getEpiWeekTo();

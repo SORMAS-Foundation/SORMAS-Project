@@ -143,6 +143,7 @@ public final class CssStyles {
 	public static final String BACKGROUND_HIGHLIGHT = "background-highlight";
 	public static final String BACKGROUND_CRITICAL = "background-critical";
 	public static final String BACKGROUND_DARKER = "background-darker";
+	public static final String BACKGROUND_DUPLICATE_AGGREGATE_REPORT = "background-duplicate-aggregate-report";
 
 	// Button styles
 	public static final String VAADIN_BUTTON = "v-button";

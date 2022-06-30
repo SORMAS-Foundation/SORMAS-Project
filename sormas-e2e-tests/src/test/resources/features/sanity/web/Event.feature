@@ -976,4 +976,28 @@ Feature: Create events
       | Contact Supervisor        |
       | Surveillance Supervisor   |
 
-
+  @issue=SORDEV-11455 @env_main
+  Scenario: Add reason for deletion to confirmation dialogue
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When I log in with National User
+    And I click on the Events button from navbar
+    And I navigate to the last created through API Event page via URL
+    And I click Delete button on Edit Event page
+    And I click on No option in Confirm deletion on Edit Event Page
+    And I click Delete button on Edit Event page
+    And I click on Yes option in Confirm deletion on Edit Event Page
+    And I check that error message is equal to "Please choose a reason for deletion" in Reason for Deletion in popup
+    And I click on No option in Confirm deletion on Edit Event Page
+    And I click Delete button on Edit Event page
+    And I set Reason for deletion to "Other reason" on Edit Event Page
+    And I click on Yes option in Confirm deletion on Edit Event Page
+    And I check that error message is equal to "Please add a reason for deletion" in Reason for Deletion in popup
+    And I click on No option in Confirm deletion on Edit Event Page
+    And I click Delete button on Edit Event page
+    And I set Reason for deletion to "Entity created without legal reason" on Edit Event Page
+    And I click on Yes option in Confirm deletion on Edit Event Page
+    And I am accessing the event tab using the created event via api
+    And I check if Reason for deletion is set to "Entity created without legal reason" on Edit Event Page
+    And I check if Delete button on Edit Event Page is disabled
