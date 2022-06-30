@@ -106,12 +106,6 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	public EditPermissionType isTravelEntryEditAllowed(String travelEntryUuid) {
-		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
-		return service.isTravelEntryEditAllowed(travelEntry);
-	}
-
-	@Override
 	@RightsAllowed(UserRight._TRAVEL_ENTRY_DELETE)
 	public void delete(String travelEntryUuid, DeletionDetails deletionDetails) {
 		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);

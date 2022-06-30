@@ -27,7 +27,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CoreFacade;
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
@@ -58,8 +57,6 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 	List<String> getDeletedUuidsSince(Date since);
 
 	void archiveAllArchivableEvents(int daysAfterEventsGetsArchived);
-
-	EditPermissionType isEventEditAllowed(String eventUuid);
 
 	boolean doesExternalTokenExist(String externalToken, String eventUuid);
 

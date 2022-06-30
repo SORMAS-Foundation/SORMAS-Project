@@ -478,7 +478,8 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return builder;
 	}
 
-	public EditPermissionType isEventParticipantEditAllowed(EventParticipant eventParticipant) {
+	@Override
+	public EditPermissionType isEditAllowed(EventParticipant eventParticipant) {
 
 		if (eventParticipant.getSormasToSormasOriginInfo() != null && !eventParticipant.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
 			return EditPermissionType.REFUSED;

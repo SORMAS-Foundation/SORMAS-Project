@@ -67,7 +67,7 @@ public abstract class AbstractTravelEntryView extends AbstractDetailView<TravelE
 	}
 
 	protected Boolean isTravelEntryEditAllowed() {
-		return FacadeProvider.getTravelEntryFacade().isTravelEntryEditAllowed(getReference().getUuid()).equals(EditPermissionType.ALLOWED);
+		return FacadeProvider.getTravelEntryFacade().isEditAllowed(getReference().getUuid()).equals(EditPermissionType.ALLOWED);
 	}
 
 	@Override

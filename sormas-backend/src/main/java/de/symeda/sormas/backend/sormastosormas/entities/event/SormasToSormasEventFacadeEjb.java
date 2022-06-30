@@ -18,7 +18,6 @@ package de.symeda.sormas.backend.sormastosormas.entities.event;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.EVENT_ENDPOINT;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.EVENT_SYNC_ENDPOINT;
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventValidationGroupName;
 
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
@@ -110,7 +109,7 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 		throws SormasToSormasException {
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 		for (Event event : entities) {
-			if (!eventService.isEventEditAllowed(event).equals(EditPermissionType.ALLOWED)) {
+			if (!eventService.isEditAllowed(event).equals(EditPermissionType.ALLOWED)) {
 				validationErrors.add(
 					new ValidationErrors(
 						buildEventValidationGroupName(event),

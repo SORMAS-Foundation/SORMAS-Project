@@ -119,7 +119,7 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 		throws SormasToSormasException {
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 		for (Case caze : entities) {
-			if (!caseService.getEditPermissionType(caze).equals(EditPermissionType.ALLOWED)) {
+			if (!caseService.isEditAllowed(caze).equals(EditPermissionType.ALLOWED)) {
 				validationErrors.add(
 					new ValidationErrors(
 						buildCaseValidationGroupName(caze),

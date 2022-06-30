@@ -254,7 +254,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		Event existingEvent = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
-		if (internal && existingEvent != null && !service.isEventEditAllowed(existingEvent).equals(EditPermissionType.ALLOWED)) {
+		if (internal && existingEvent != null && !service.isEditAllowed(existingEvent).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventNotEditable));
 		}
 
@@ -1342,7 +1342,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		for (String evetUuid : eventUuidList) {
 			Event event = service.getByUuid(evetUuid);
 
-			if (service.isEventEditAllowed(event).equals(EditPermissionType.ALLOWED)) {
+			if (service.isEditAllowed(event).equals(EditPermissionType.ALLOWED)) {
 				EventDto eventDto = toDto(event);
 				if (eventStatusChange) {
 					eventDto.setEventStatus(updatedTempEvent.getEventStatus());
@@ -1362,11 +1362,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		}
 
 		return changedEvents;
-	}
-
-	public EditPermissionType isEventEditAllowed(String eventUuid) {
-		Event event = service.getByUuid(eventUuid);
-		return service.isEventEditAllowed(event);
 	}
 
 	@Override

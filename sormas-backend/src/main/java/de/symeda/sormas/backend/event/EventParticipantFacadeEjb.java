@@ -337,9 +337,7 @@ public class EventParticipantFacadeEjb
 	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto, boolean checkChangeDate, boolean internal) {
 		EventParticipant existingParticipant = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
-		if (internal
-			&& existingParticipant != null
-			&& !service.isEventParticipantEditAllowed(existingParticipant).equals(EditPermissionType.ALLOWED)) {
+		if (internal && existingParticipant != null && !service.isEditAllowed(existingParticipant).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventParticipantNotEditable));
 		}
 
@@ -924,13 +922,6 @@ public class EventParticipantFacadeEjb
 		return Optional.ofNullable(service.getByEventAndPerson(eventUuid, personUuid))
 			.map(eventParticipant -> new EventParticipantReferenceDto(eventParticipant.getUuid()))
 			.orElse(null);
-	}
-
-	@Override
-	public EditPermissionType isEventParticipantEditAllowed(String uuid) {
-		EventParticipant eventParticipant = service.getByUuid(uuid);
-
-		return service.isEventParticipantEditAllowed(eventParticipant);
 	}
 
 	@Override

@@ -359,7 +359,7 @@ public class ContactFacadeEjb
 	public ContactDto save(ContactDto dto, boolean handleChanges, boolean handleCaseChanges, boolean checkChangeDate, boolean internal) {
 		final Contact existingContact = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
-		if (internal && existingContact != null && !service.isContactEditAllowed(existingContact).equals(EditPermissionType.ALLOWED)) {
+		if (internal && existingContact != null && !service.isEditAllowed(existingContact).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorContactNotEditable));
 		}
 
@@ -1937,13 +1937,6 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	public EditPermissionType isContactEditAllowed(String contactUuid) {
-		Contact contact = service.getByUuid(contactUuid);
-
-		return service.isContactEditAllowed(contact);
-	}
-
-	@Override
 	@RightsAllowed(UserRight._CONTACT_MERGE)
 	public void mergeContact(String leadUuid, String otherUuid) {
 		ContactDto leadContactDto = getContactWithoutPseudonyimizationByUuid(leadUuid);
@@ -2198,7 +2191,7 @@ public class ContactFacadeEjb
 		for (String contactUuid : contactUuidlist) {
 			Contact contact = service.getByUuid(contactUuid);
 
-			if (service.isContactEditAllowed(contact).equals(EditPermissionType.ALLOWED)) {
+			if (service.isEditAllowed(contact).equals(EditPermissionType.ALLOWED)) {
 				ContactDto existingContactDto = toDto(contact);
 				if (classificationChange) {
 					existingContactDto.setContactClassification(updatedContactBulkEditData.getContactClassification());
