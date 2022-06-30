@@ -98,7 +98,8 @@ public class ShareDataBuilderHelper {
 	public ContactDto getContactDto(Contact contact, Pseudonymizer pseudonymizer) {
 		ContactDto contactDto = contactFacade.convertToDto(contact, pseudonymizer);
 
-		contactDto.setReportingUser(null);
+		// todo reportingUser is expected to be not null in validate()
+		//contactDto.setReportingUser(null);
 		contactDto.setContactOfficer(null);
 		contactDto.setResultingCaseUser(null);
 		contactDto.setSormasToSormasOriginInfo(null);
