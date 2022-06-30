@@ -217,7 +217,8 @@ public class StartupShutdownService {
 
 		pointOfEntryService.createConstantPointsOfEntry();
 
-		upgrade(); // Has to be called before createDefaultUsers.
+		// Has to be called before createDefaultUsers
+		upgrade();
 
 		createDefaultUsers();
 
@@ -792,6 +793,22 @@ public class StartupShutdownService {
 							userService.persist(user);
 						});
 					}
+				}
+				break;
+			case 469:
+				UserRole userRole = userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.COMMUNITY_INFORMANT));
+				if (userRole != null) {
+					userRole.getUserRights().removeIf(userRight -> userRight == UserRight.DASHBOARD_CAMPAIGNS_VIEW);
+					userRoleService.ensurePersisted(userRole);
+				}
+				break;
+			case 471:
+				// Hacky solution because it's possible that the user role has been re-configured in the meantime; #9645 will make sure that
+				// default user roles are not changed.
+				userRole = userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.EXTERNAL_LAB_USER));
+				if (userRole != null) {
+					userRole.getUserRights().add(UserRight.SEE_SENSITIVE_DATA_IN_JURISDICTION);
+					userRoleService.ensurePersisted(userRole);
 				}
 				break;
 

@@ -102,8 +102,10 @@ public class SurveillanceDiseaseCarouselLayout extends VerticalLayout {
 		carouselMenu = new SubMenu();
 
 		for (Disease disease : diseases) {
-			carouselMenu.addView(disease.getName(), disease.toShortString(), (e) -> {
+			carouselMenu.addView(disease.getName(), disease.toShortString(), () -> {
 				this.changeSelectedDisease(disease, true);
+
+				return true;
 			});
 		}
 

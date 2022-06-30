@@ -228,6 +228,35 @@ public class CreateNewContactSteps implements En {
         });
 
     When(
+        "I fill only mandatory fields with and set relationship with case to ([^\"]*)",
+        (String option) -> {
+          contact = contactService.buildGeneratedContact();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          fillFirstName(contact.getFirstName());
+          fillLastName(contact.getLastName());
+          selectSex(contact.getSex());
+          fillDateOfReport(contact.getReportDate(), Locale.ENGLISH);
+          fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
+          selectResponsibleRegion(contact.getResponsibleRegion());
+          selectResponsibleDistrict(contact.getResponsibleDistrict());
+          fillRelationshipWithCaseEqual(option);
+        });
+
+    When(
+        "^I fill a mandatory fields for a new contact form for DE$",
+        () -> {
+          contact = contactService.buildGeneratedContactDE();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          fillFirstName(contact.getFirstName());
+          fillLastName(contact.getLastName());
+          selectSex(contact.getSex());
+          fillDateOfReport(contact.getReportDate(), Locale.GERMAN);
+          fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
+          selectResponsibleRegion(contact.getResponsibleRegion());
+          selectResponsibleDistrict(contact.getResponsibleDistrict());
+        });
+
+    When(
         "^I fill a new contact form with chosen data without personal data$",
         () -> {
           contact = contactService.buildGeneratedContact();
@@ -463,6 +492,10 @@ public class CreateNewContactSteps implements En {
 
   private void fillRelationshipWithCase(String relationshipWithCase) {
     webDriverHelpers.selectFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX, relationshipWithCase);
+  }
+
+  private void fillRelationshipWithCaseEqual(String relationshipWithCase) {
+    webDriverHelpers.selectFromComboboxEqual(RELATIONSHIP_WITH_CASE_COMBOBOX, relationshipWithCase);
   }
 
   private void fillDescriptionOfHowContactTookPlace(String descriptionOfHowContactTookPlace) {

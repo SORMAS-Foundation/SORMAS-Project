@@ -34,7 +34,7 @@ public class SymptomService {
 
   public Symptoms buildEditGeneratedSymptoms() {
     return Symptoms.builder()
-        .maximumBodyTemperatureInC("35,2")
+        .maximumBodyTemperatureInC("35.2")
         .sourceOfBodyTemperature("rectal")
         .chillsOrSweats(YES.toString())
         .headache(YES.toString())
@@ -78,7 +78,7 @@ public class SymptomService {
 
   public Symptoms buildEditGeneratedSymptomsWithNoOptions() {
     return Symptoms.builder()
-        .maximumBodyTemperatureInC("35,2")
+        .maximumBodyTemperatureInC("35.2")
         .sourceOfBodyTemperature("rectal")
         .chillsOrSweats(NO.toString())
         .headache(NO.toString())
@@ -120,7 +120,7 @@ public class SymptomService {
 
   public Symptoms buildEditGeneratedSymptomsWithUnknownOptions() {
     return Symptoms.builder()
-        .maximumBodyTemperatureInC("35,2")
+        .maximumBodyTemperatureInC("35.2")
         .sourceOfBodyTemperature("rectal")
         .chillsOrSweats(UNKNOWN.toString())
         .headache(UNKNOWN.toString())

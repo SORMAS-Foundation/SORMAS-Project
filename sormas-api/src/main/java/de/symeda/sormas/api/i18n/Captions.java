@@ -87,6 +87,7 @@ public interface Captions {
 	String actionNewAction = "actionNewAction";
 	String actionNewEntry = "actionNewEntry";
 	String actionNewForm = "actionNewForm";
+	String actionNext = "actionNext";
 	String actionNo = "actionNo";
 	String actionNoActions = "actionNoActions";
 	String actionOkay = "actionOkay";
@@ -164,6 +165,7 @@ public interface Captions {
 	String address = "address";
 	String AggregateReport_deaths = "AggregateReport.deaths";
 	String AggregateReport_disease = "AggregateReport.disease";
+	String AggregateReport_grouping = "AggregateReport.grouping";
 	String AggregateReport_healthFacility = "AggregateReport.healthFacility";
 	String AggregateReport_labConfirmations = "AggregateReport.labConfirmations";
 	String AggregateReport_newCases = "AggregateReport.newCases";
@@ -177,6 +179,8 @@ public interface Captions {
 	String aggregateReportNewAggregateReport = "aggregateReportNewAggregateReport";
 	String aggregateReportNewCasesShort = "aggregateReportNewCasesShort";
 	String aggregateReportReportFound = "aggregateReportReportFound";
+	String aggregateReportShowOnlyDuplicateReports = "aggregateReportShowOnlyDuplicateReports";
+	String aggregateReportShowZeroRowsForGrouping = "aggregateReportShowZeroRowsForGrouping";
 	String aggregateReportThisWeek = "aggregateReportThisWeek";
 	String all = "all";
 	String area = "area";
@@ -1727,6 +1731,8 @@ public interface Captions {
 	String personsReplaceGeoCoordinates = "personsReplaceGeoCoordinates";
 	String personsSetMissingGeoCoordinates = "personsSetMissingGeoCoordinates";
 	String personsUpdated = "personsUpdated";
+	String physiciansReportCaseAddVaccination = "physiciansReportCaseAddVaccination";
+	String physiciansReportCaseImmunizations = "physiciansReportCaseImmunizations";
 	String PointOfEntry = "PointOfEntry";
 	String PointOfEntry_active = "PointOfEntry.active";
 	String PointOfEntry_archived = "PointOfEntry.archived";
@@ -2437,6 +2443,8 @@ public interface Captions {
 	String versionIsMissing = "versionIsMissing";
 	String View_actions = "View.actions";
 	String View_aggregatereports = "View.aggregatereports";
+	String View_aggregatereports_aggregatereporting = "View.aggregatereports.aggregatereporting";
+	String View_aggregatereports_reportdata = "View.aggregatereports.reportdata";
 	String View_aggregatereports_sub = "View.aggregatereports.sub";
 	String View_campaign_campaigndata = "View.campaign.campaigndata";
 	String View_campaign_campaigndata_dataform = "View.campaign.campaigndata.dataform";

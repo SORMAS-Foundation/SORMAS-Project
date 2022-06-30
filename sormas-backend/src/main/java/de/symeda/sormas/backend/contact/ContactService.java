@@ -52,7 +52,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
-import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.common.DeletionDetails;
@@ -182,6 +181,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	@Override
 	public List<Contact> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -482,14 +482,17 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)) {
 
 			ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, from);
-			Join<Contact, Case> sourceCaseJoin = contactQueryContext.getJoins().getCaze();
 			return Collections.singletonList(
-				cb.and(
-					cb.equal(sourceCaseJoin.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE),
-					cb.greaterThanOrEqualTo(sourceCaseJoin.get(Case.CLASSIFICATION_DATE), since)));
+				caseService.createObsoleteLimitedSyncCasePredicate(cb, contactQueryContext.getJoins().getCaze(), since, getCurrentUser()));
 		} else {
 			return Collections.emptyList();
 		}
+	}
+
+	@Override
+	protected Predicate getUserFilterForObsoleteUuids(CriteriaBuilder cb, CriteriaQuery<String> cq, Root<Contact> from) {
+
+		return createUserFilter(new ContactQueryContext(cb, cq, from), new ContactCriteria().excludeLimitedSyncRestrictions(true));
 	}
 
 	public Long countContactsForMap(Region region, District district, Disease disease, Date from, Date to) {
@@ -990,13 +993,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		CriteriaQuery<?> cq = contactQueryContext.getQuery();
 		CriteriaBuilder cb = contactQueryContext.getCriteriaBuilder();
-		From<?, ?> contactPath = contactQueryContext.getRoot();
 
 		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, contactQueryContext.getJoins().getCaseJoins());
 		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
 			userFilter = caseService.createUserFilter(caseQueryContext);
 		} else {
-			CaseUserFilterCriteria userFilterCriteria = new CaseUserFilterCriteria();
+			CaseUserFilterCriteria userFilterCriteria =
+				new CaseUserFilterCriteria().excludeLimitedSyncRestrictions(contactCriteria.isExcludeLimitedSyncRestrictions());
 			userFilter = caseService.createUserFilter(caseQueryContext, userFilterCriteria);
 		}
 
@@ -1079,17 +1082,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				cb.or(cb.equal(contactPath.get(Contact.DISEASE), currentUser.getLimitedDisease()), cb.isNull(contactPath.get(Contact.DISEASE))));
 		}
 
-		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
+		if ((contactCriteria == null || !contactCriteria.isExcludeLimitedSyncRestrictions())
+			&& featureConfigurationFacade
+				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)
 			&& RequestContextHolder.isMobileSync()) {
-			Join<Contact, Case> sourceCaseJoin = qc.getJoins().getCaze();
-			final Predicate limitedCaseSyncPredicate = cb.not(
-				cb.and(
-					cb.equal(sourceCaseJoin.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE),
-					cb.or(
-						cb.notEqual(sourceCaseJoin.get(Case.REPORTING_USER), currentUser),
-						cb.and(
-							cb.equal(sourceCaseJoin.get(Case.REPORTING_USER), currentUser),
-							cb.isNull(sourceCaseJoin.get(Case.CREATION_VERSION))))));
+			final Predicate limitedCaseSyncPredicate = caseService.createLimitedSyncCasePredicate(cb, qc.getJoins().getCaze(), currentUser);
 			filter = CriteriaBuilderHelper.and(cb, filter, limitedCaseSyncPredicate);
 		}
 

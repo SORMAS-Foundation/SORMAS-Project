@@ -60,7 +60,7 @@ public class UserRoleDto extends EntityDto {
 
 		UserRoleDto dto = new UserRoleDto();
 		dto.setUuid(DataHelper.createUuid());
-		Set<UserRight> userRightsSet = new HashSet<UserRight>();
+		Set<UserRight> userRightsSet = new HashSet<>();
 		userRightsSet.addAll(Arrays.asList(userRights));
 		dto.setUserRights(userRightsSet);
 		return dto;

@@ -76,7 +76,7 @@ import de.symeda.sormas.api.event.EventParticipantListEntryDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -457,7 +457,7 @@ public class EventParticipantFacadeEjb
 
 	@Override
 	@RolesAllowed(UserRight._EVENTPARTICIPANT_DELETE)
-	public void delete(String uuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolException {
+	public void delete(String uuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolRuntimeException {
 		EventParticipant eventParticipant = service.getByUuid(uuid);
 		service.delete(eventParticipant, deletionDetails);
 	}
@@ -806,8 +806,9 @@ public class EventParticipantFacadeEjb
 						Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
 						Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
 
-						List<Vaccination> relevantSortedVaccinations =
-							getRelevantSortedVaccinations(exportDto.getEventUuid(), mostRecentImmunization.getVaccinations());
+						List<Vaccination> relevantSortedVaccinations = getRelevantSortedVaccinations(
+							exportDto.getEventUuid(),
+							filteredImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList()));
 						Vaccination firstVaccination = null;
 						Vaccination lastVaccination = null;
 
@@ -1063,8 +1064,7 @@ public class EventParticipantFacadeEjb
 		Join<EventParticipant, Person> personJoin = eventParticipantQueryContext.getJoins().getPerson();
 		Join<EventParticipant, Event> eventJoin = eventParticipantQueryContext.getJoins().getEvent();
 
-		Expression<Object> jurisdictionSelector =
-			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(eventParticipantQueryContext));
+		Expression<Object> jurisdictionSelector = JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(eventParticipantQueryContext));
 		cq.multiselect(
 			eventParticipantRoot.get(EventParticipant.UUID),
 			personJoin.get(Person.FIRST_NAME),

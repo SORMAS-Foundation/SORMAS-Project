@@ -18,12 +18,15 @@
 
 package org.sormas.e2etests.steps.web.application;
 
+import static org.sormas.e2etests.pages.application.NavBarPage.DISCARD_USER_SETTINGS_BUTTON;
+import static org.sormas.e2etests.pages.application.NavBarPage.USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.LOGOUT_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
 import org.sormas.e2etests.enums.UserRoles;
 import org.sormas.e2etests.envconfig.dto.EnvUser;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
@@ -96,6 +99,36 @@ public class LoginSteps implements En {
         () -> {
           webDriverHelpers.checkWebElementContainsText(
               NavBarPage.CONFIGURATION_BUTTON, "Einstellungen");
+        });
+
+    When(
+        "I check that English word for User Settings is present in the left main menu",
+        () -> {
+          webDriverHelpers.checkWebElementContainsText(
+              NavBarPage.USER_SETTINGS_BUTTON, "User Settings");
+        });
+    When(
+        "I check that German word for User Settings is present in the left main menu",
+        () -> {
+          webDriverHelpers.checkWebElementContainsText(
+              NavBarPage.USER_SETTINGS_BUTTON, "Benutzereinstellungen");
+        });
+    Then(
+        "I check that ([^\"]*) language is selected in User Settings",
+        (String expectedLanguageText) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT);
+          String selectedLanguageText =
+              webDriverHelpers.getValueFromWebElement(USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT);
+          Assert.assertEquals(
+              "Selected language is not correct", expectedLanguageText, selectedLanguageText);
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_USER_SETTINGS_BUTTON);
+        });
+    And(
+        "I click on logout button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(LOGOUT_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(LoginPage.LOGIN_BUTTON);
         });
   }
 }

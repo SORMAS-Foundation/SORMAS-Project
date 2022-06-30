@@ -13,28 +13,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.externalmessage.labmessage.processing.flow;
+package de.symeda.sormas.ui.externalmessage.processing.flow;
 
-public enum ProcessingResultStatus {
+import java.util.concurrent.CompletionStage;
 
-	CONTINUE(false, false),
-	CANCELED(true, false),
-	CANCELED_WITH_CORRECTIONS(true, false),
-	DONE(false, true);
+public interface FlowAction<T, R> {
 
-	private final boolean canceled;
-	private final boolean done;
-
-	ProcessingResultStatus(boolean canceled, boolean done) {
-		this.canceled = canceled;
-		this.done = done;
-	}
-
-	public boolean isCanceled() {
-		return canceled;
-	}
-
-	public boolean isDone() {
-		return done;
-	}
+	CompletionStage<ProcessingResult<R>> apply(ProcessingResult<T> currentResult);
 }

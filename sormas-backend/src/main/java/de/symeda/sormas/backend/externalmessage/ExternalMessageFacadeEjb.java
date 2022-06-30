@@ -31,8 +31,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.BooleanUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -60,6 +59,7 @@ import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReport;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReportFacadeEjb;
@@ -91,8 +91,6 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
-
 	@EJB
 	private ExternalMessageService externalMessageService;
 	@EJB
@@ -103,6 +101,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	private SyncFacadeEjb.SyncFacadeEjbLocal syncFacadeEjb;
 	@EJB
 	private SampleService sampleService;
+	@EJB
+	private CaseService caseService;
 	@EJB
 	private UserService userService;
 
@@ -135,7 +135,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonPhone(source.getPersonPhone());
 		target.setPersonEmail(source.getPersonEmail());
 		target.setReporterCity(source.getReporterCity());
-		target.setLabExternalId(source.getLabExternalId());
+		target.setReporterExternalIds(source.getReporterExternalIds());
 		target.setReporterName(source.getReporterName());
 		target.setReporterPostalCode(source.getReporterPostalCode());
 		if (source.getTestReports() != null) {
@@ -155,6 +155,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		}
 		if (source.getSample() != null) {
 			target.setSample(sampleService.getByReferenceDto(source.getSample()));
+		}
+		if (source.getCaze() != null) {
+			target.setCaze(caseService.getByReferenceDto(source.getCaze()));
 		}
 		return target;
 	}
@@ -197,7 +200,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setPersonPhone(source.getPersonPhone());
 		target.setPersonEmail(source.getPersonEmail());
 		target.setReporterCity(source.getReporterCity());
-		target.setLabExternalId(source.getLabExternalId());
+		target.setReporterExternalIds(source.getReporterExternalIds());
 		target.setReporterName(source.getReporterName());
 		target.setReporterPostalCode(source.getReporterPostalCode());
 		target.setStatus(source.getStatus());
@@ -207,12 +210,15 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		target.setSampleReceivedDate(source.getSampleReceivedDate());
 		target.setSpecimenCondition(source.getSpecimenCondition());
 		if (source.getTestReports() != null) {
-			target.setTestReports(source.getTestReports().stream().map(t -> TestReportFacadeEjb.toDto(t)).collect(toList()));
+			target.setTestReports(source.getTestReports().stream().map(TestReportFacadeEjb::toDto).collect(toList()));
 		}
 		target.setReportId(source.getReportId());
 		target.setSampleOverallTestResult(source.getSampleOverallTestResult());
 		if (source.getSample() != null) {
 			target.setSample(source.getSample().toReference());
+		}
+		if (source.getCaze() != null) {
+			target.setCaze(source.getCaze().toReference());
 		}
 		if (source.getAssignee() != null) {
 			target.setAssignee(source.getAssignee().toReference());
@@ -264,7 +270,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 	}
 
 	@Override
-	public Boolean isProcessed(String uuid) {
+	public boolean isProcessed(String uuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
@@ -275,7 +281,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		cq.where(filter);
 		cq.select(cb.equal(from.get(ExternalMessage.STATUS), ExternalMessageStatus.PROCESSED));
 
-		return QueryHelper.getSingleResult(em, cq);
+		return BooleanUtils.isTrue(QueryHelper.getSingleResult(em, cq));
 	}
 
 	@Override
@@ -441,9 +447,9 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		String version = I18nProperties.getCaption(Captions.versionIsMissing);
 		try {
 			version = labResultsFacade.getVersion();
-		} finally {
-			return version;
+		} catch (Exception e) {
 		}
+		return version;
 	}
 
 	private ExternalMessageFetchResult getSuccessfulFetchResult(ExternalMessageResult<List<ExternalMessageDto>> externalMessageResult) {

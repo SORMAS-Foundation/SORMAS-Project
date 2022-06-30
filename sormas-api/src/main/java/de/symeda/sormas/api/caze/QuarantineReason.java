@@ -25,6 +25,7 @@ public enum QuarantineReason {
 	OUTBREAK_INVESTIGATION,
 	OTHER_REASON;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

@@ -91,10 +91,12 @@ public class EventGroupSelectionGrid extends FilteredGrid<EventGroupIndexDto, Ev
 		});
 	}
 
+	@Override
 	public void setCriteria(EventGroupCriteria criteria) {
 		getFilteredDataProvider().setFilter(criteria);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public ConfigurableFilterDataProvider<EventGroupIndexDto, Void, EventGroupCriteria> getFilteredDataProvider() {
 		return (ConfigurableFilterDataProvider<EventGroupIndexDto, Void, EventGroupCriteria>) super.getDataProvider();

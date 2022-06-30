@@ -770,3 +770,121 @@ Feature: Contacts end to end tests
     When I click on new Visit button
     And I create a new Visit with specific data
     Then I check that username is displayed in the Visit Origin column
+
+  @issue=SORDEV-5563 @env_de
+  Scenario: Add contact person details to facilities contacts
+    Given I log in as a Admin User
+    Then I click on the Configuration button from navbar
+    And I navigate to facilities tab in Configuration
+    And I click on New Entry button in Facilities tab in Configuration
+    Then I set name, region and district in Facilities tab in Configuration
+    And I set Facility Category to "Medizinische Einrichtung" and Facility Type to "Krankenhaus" in Facilities tab in Configuration
+    And I set Facility Contact person first and last name with email address and phone number
+    Then I click on Save Button in new Facility form
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a mandatory fields for a new contact form for DE
+    And I click on SAVE new contact button
+    Then I open Contact Person tab
+    And I set Region to "Voreingestellte Bundesländer" and District to "Voreingestellter Landkreis"
+    Then I set Facility Category to "Medizinische Einrichtung" and  Facility Type to "Krankenhaus"
+    And I set facility name to created facility
+    And I check if data for created facility is automatically imported to the correct fields in Case Person tab
+    And I click on save button from Edit Person page
+    Then I click on the Configuration button from navbar
+    And I navigate to facilities tab in Configuration
+    Then I search last created facility
+    Then I click on edit button for the last searched facility
+    And I archive facility
+
+  @env_main @#8565
+  Scenario: Check an archived contact if its read only
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I open last edited contact by API via URL navigation
+    Then I click on the Archive contact button and confirm popup
+    Then I click on logout button from navbar
+    Then I log in with National User
+    Then I open last edited contact by API via URL navigation
+    Then I check if editable fields are read only for an archived contact
+
+  @env_main @issue=SORDEV-7453
+  Scenario: Check contacts order after contact edit
+    Given I log in as a National User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click on SAVE new contact button
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click on SAVE new contact button
+    And I click on the Contacts button from navbar
+    Then I get two last contacts ID from cases list
+    And I open 2 contact in order from list
+    And I fill general comment in contact edit page with EDITED
+    And I click SAVE button on Edit Contact Page
+    And I click on the Contacts button from navbar
+    Then I compare previous first contact ID on the list with actually second contact ID on list
+
+  @issue=SORDEV-6461 @env_main
+  Scenario: Test the task type in the contact's new task form
+    Given I log in as a National User
+    Then I click on the Contacts button from navbar
+    And I open the first contact from contacts list
+    And I click on the NEW TASK button
+    And I check if New task form is displayed correctly
+    And I check that required fields are marked as mandatory
+    And I clear Due Date field in the New task form
+    And I click SAVE button on New Task form
+    Then I check that all required fields are mandatory in the New task form
+    When I close input data error popup in Contact Directory
+    And I check that values listed in the task type combobox are correct
+    And I choose Other task as described in comments option from task type combobox in the New task form
+    Then I check that Comments on task field is mandatory in the New task form
+
+  @issue=SORDEV-6102 @env_main
+  Scenario: Merge duplicate contacts
+    Then API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    When I fill a new contact form for duplicated contact with same person data
+    And I click on SAVE button in create contact form
+    And I click on the CHOOSE SOURCE CASE button from CONTACT page
+    And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
+    And I search for the last case uuid created via Api in the CHOOSE SOURCE Contact window
+    And I open the first found result in the CHOOSE SOURCE window
+    Then I click SAVE button on Edit Contact Page
+    Then I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    When I fill a new contact form for duplicated contact with same person data
+    And I click on SAVE button in create contact form
+    And I Pick a new person in Pick or create person popup during contact creation
+    When I check the created data for duplicated contact is correctly displayed on Edit Contact page
+    And I click on the CHOOSE SOURCE CASE button from CONTACT page
+    And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
+    And I search for the last case uuid created via Api in the CHOOSE SOURCE Contact window
+    And I open the first found result in the CHOOSE SOURCE window
+    Then I click SAVE button on Edit Contact Page
+    And I click on the Contacts button from navbar
+    And I click on the More button on Contact directory page
+    Then I click on Merge Duplicates on Contact directory page
+    And I click on Merge button of leading case in Merge Duplicate Contact page
+    Then I click to Confirm action in Merge Duplicates Cases popup
+    And I click on the Contacts button from navbar
+    And I apply filter by duplicated contact Person data on Contact Directory Page
+    And I check that number of displayed contact results is 1

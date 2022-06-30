@@ -26,6 +26,7 @@ public enum EventInvestigationStatus {
 	DONE,
 	DISCARDED;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

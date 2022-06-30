@@ -1169,6 +1169,44 @@ Feature: Case end to end tests
     And I click on SAVE new contact case button
     Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
 
+  @issue=SORDEV-8413 @env_main
+  Scenario: Test Hide specific enum values based on the related disease
+    Given I log in with National User
+    When I click on the Cases button from navbar
+    Then I click on the NEW CASE button
+    And I create a new case with specific data
+    Then I click on New Task from Case page
+    And I check if Task Type has not a environmental health activities option
+    And I check if Task Type has not a safe burial / cremation option
+    And I check if Task Type has not a depopulation of animals option
+    And I check if Task Type has not a testing of animals option
+    Then I click on discard button from new task
+    And I navigate to epidemiological data tab in Edit case page
+    And I click on Exposure details known with YES option
+    Then I click on New Entry in Exposure Details Known in Cases directory
+    And I check if Exposure Type of activity has not a Burial option
+    And I check if Exposure details has a Animal contact option
+    Then I click on discard button from Epidemiological Data Exposure popup
+    And I navigate to case tab
+    Then I click yes on the DISCARD UNSAVED CHANGES popup if it appears
+    Then I click on New Sample
+    And I check if Type of sample has not a stool option
+    And I check if Type of sample has not a rectal swab option
+    And I check if Type of sample has not a crust option
+    And I check if Type of sample has not a urine option
+    And I check if Type of sample has not a nurchal skin biopsy option
+    And I check if Type of sample has not a brain tissue option
+    Then I create a new Sample with specific data and save
+    And I click on edit Sample
+    And I click on the new pathogen test from the Edit Sample page
+    Then I set Test Disease as COVID-19 in new pathogen result
+    And I check if Type of test in new pathogen results has no incubation time option
+    And I check if Type of test in new pathogen results has no Indirect Fluorescent Antibody time option
+    And I check if Type of test in new pathogen results has no Direct Fluorescent Antibody time option
+    And I check if Type of test in new pathogen results has no Microscopy time option
+    And I check if Type of test in new pathogen results has no Gram Stain time option
+    And I check if Type of test in new pathogen results has no Latex Agglutination time option
+
   @issue=SORDEV-9496 @env_de
   Scenario: Test Handle person related fields and search button for travel entry forms
     Given API: I create a new person
@@ -1202,3 +1240,113 @@ Feature: Case end to end tests
     And I click on Save button from the new travel entry form
     Then I navigate to the last created via api Person page via URL
     And I check if added travel Entry appeared on Edit Person Page
+
+  @issue=SORDEV-5623 @env_de
+  Scenario: Show date and responsible user of last follow-up status change
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with only the required data for DE version
+    Then I check that follow-up status is set to Under follow-up in German on Edit case page
+    When I click on the Cancel Follow-up button from Edit case page
+    Then I provide follow-up status comment from Edit case page
+    And I click on save button from Edit Case page
+    And I check that Date of Follow-up Status Change and Responsible User are correctly displayed on Edit case page
+    When I click on the Resume Follow-up button from Edit case page
+    And I click on save button from Edit Case page
+    And I check that Date of Follow-up Status Change and Responsible User are correctly displayed on Edit case page
+    And I click on the Lost to Follow-up button from Edit case page
+    Then I provide follow-up status comment from Edit case page
+    And I click on save button from Edit Case page
+    And I check that Date of Follow-up Status Change and Responsible User are correctly displayed on Edit case page
+    And I check that Expected Follow-up Until Date is correctly displayed on Edit case page
+    When I select Overwrite Follow-up Until Date checkbox on Edit case page
+    And I set the Follow-up Until Date to exceed the Expected Follow-up Until Date on Edit case page
+    And I click on save button from Edit Case page
+    Then I check if the Follow-up Until Date is correctly displayed on Edit case page
+
+  @issue=SORDEV-5563 @env_de
+  Scenario: Add contact person details to facilities case person
+    Given I log in as a Admin User
+    Then I click on the Configuration button from navbar
+    And I navigate to facilities tab in Configuration
+    And I click on New Entry button in Facilities tab in Configuration
+    Then I set name, region and district in Facilities tab in Configuration
+    And I set Facility Category to "Medizinische Einrichtung" and Facility Type to "Krankenhaus" in Facilities tab in Configuration
+    And I set Facility Contact person first and last name with email address and phone number
+    Then I click on Save Button in new Facility form
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data using created facility
+    Then I click on save case button
+    Then I navigate to case person tab
+    Then I click yes on the DISCARD UNSAVED CHANGES popup if it appears
+    Then I set Facility Category to "Medizinische Einrichtung" and  Facility Type to "Krankenhaus"
+    And I set Region to "Voreingestellte Bundesländer" and District to "Voreingestellter Landkreis"
+    And I set facility name to created facility
+    And I check if data for created facility is automatically imported to the correct fields in Case Person tab
+    Then I click SAVE button on Edit Contact Page
+    Then I click on the Configuration button from navbar
+    And I navigate to facilities tab in Configuration
+    Then I search last created facility
+    Then I click on edit button for the last searched facility
+    And I archive facility
+
+  @env_main @#8556
+  Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of a Case
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    Then I navigate to the last created case via the url
+    Then I click on New Sample
+    Then I create a new Sample with positive test result with Guinea Worm as disease
+    Then I confirm the Create case from contact with positive test result
+    Then I navigate to the last created case via the url
+    Then I click on edit Sample
+    Then I click on new test result for pathogen tests
+    Then I create a new pathogen test result with Dengue Fever as disease
+    Then I confirm the Create case from contact with positive test result
+    Then I navigate to the last created case via the url
+    Then I validate only one sample is created with two pathogen tests
+    Then I click on edit Sample
+    Then I validate the existence of two pathogen tests
+
+
+  @env_main @#8565
+  Scenario: Check an archived case if its read only
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in as a Admin User
+    Then I open last edited case by API via URL navigation
+    Then I click on the Archive case button and confirm popup
+    Then I click on logout button from navbar
+    Then I log in with National User
+    Then I open last edited case by API via URL navigation
+    Then I check if editable fields are read only for an archived case
+
+  @env_main @issue=SORDEV-7453
+  Scenario: Check cases order after case edit
+    Given I log in as a National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data
+    When I click on save button in the case popup
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data
+    When I click on save button in the case popup
+    And I click on the Cases button from navbar
+    Then I get two last cases ID from cases list
+    And I open 2 case in order from list
+    And I fill general comment in case edit page with EDITED
+    When I click on save button in the case popup
+    And I click on the Cases button from navbar
+    Then I compare previous first case ID on the list with actually second case ID on list

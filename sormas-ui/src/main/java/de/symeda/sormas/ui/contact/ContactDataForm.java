@@ -160,7 +160,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					loc(FOLLOW_UP_STATUS_HEADING_LOC) +
                     fluidRowLocs(ContactDto.FOLLOW_UP_STATUS, CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC, LOST_FOLLOW_UP_BTN_LOC) +
 					fluidRowLocs(ContactDto.FOLLOW_UP_STATUS_CHANGE_DATE, ContactDto.FOLLOW_UP_STATUS_CHANGE_USER) +
-                    fluidRowLocs(ContactDto.FOLLOW_UP_UNTIL, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC, ContactDto.OVERWRITE_FOLLOW_UP_UTIL) +
+                    fluidRowLocs(ContactDto.FOLLOW_UP_UNTIL, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC, ContactDto.OVERWRITE_FOLLOW_UP_UNTIL) +
                     fluidRowLocs(ContactDto.FOLLOW_UP_COMMENT) +
                     fluidRowLocs(ContactDto.CONTACT_OFFICER, "") + loc(GENERAL_COMMENT_LOC)
                     + fluidRowLocs(ContactDto.ADDITIONAL_DETAILS) +
@@ -186,6 +186,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private TextField tfExpectedFollowUpUntilDate;
 	private CheckBox cbOverwriteFollowUpUntil;
 	private DateField dfFollowUpUntil;
+	private FollowUpPeriodDto expectedFollowUpPeriodDto;
 	private CheckBox multiDayContact;
 	private DateField firstContactDate;
 	private DateField lastContactDate;
@@ -449,11 +450,9 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.FOLLOW_UP_COMMENT, TextArea.class).setRows(3);
 		dfFollowUpUntil = addDateField(ContactDto.FOLLOW_UP_UNTIL, DateField.class, -1);
 		dfFollowUpUntil.addValueChangeListener(v -> onFollowUpUntilChanged(v, dfQuarantineTo, cbQuarantineExtended, cbQuarantineReduced));
-		cbOverwriteFollowUpUntil = addField(ContactDto.OVERWRITE_FOLLOW_UP_UTIL, CheckBox.class);
+		cbOverwriteFollowUpUntil = addField(ContactDto.OVERWRITE_FOLLOW_UP_UNTIL, CheckBox.class);
 		cbOverwriteFollowUpUntil.addValueChangeListener(e -> {
-			if (!(Boolean) e.getProperty().getValue()) {
-				dfFollowUpUntil.discard();
-			}
+			updateOverwriteFollowUpUntil();
 		});
 		dfQuarantineTo.addValueChangeListener(e -> onQuarantineEndChange());
 		addValueChangeListener(e -> {
@@ -581,18 +580,18 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		FieldHelper.setReadOnlyWhen(
 			getFieldGroup(),
 			Arrays.asList(ContactDto.FOLLOW_UP_UNTIL),
-			ContactDto.OVERWRITE_FOLLOW_UP_UTIL,
+			ContactDto.OVERWRITE_FOLLOW_UP_UNTIL,
 			Arrays.asList(Boolean.FALSE),
 			false,
 			true);
 		FieldHelper.setRequiredWhen(
 			getFieldGroup(),
-			ContactDto.OVERWRITE_FOLLOW_UP_UTIL,
+			ContactDto.OVERWRITE_FOLLOW_UP_UNTIL,
 			Arrays.asList(ContactDto.FOLLOW_UP_UNTIL),
 			Arrays.asList(Boolean.TRUE));
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
-			Arrays.asList(ContactDto.FOLLOW_UP_UNTIL, ContactDto.OVERWRITE_FOLLOW_UP_UTIL),
+			Arrays.asList(ContactDto.FOLLOW_UP_UNTIL, ContactDto.OVERWRITE_FOLLOW_UP_UNTIL),
 			ContactDto.FOLLOW_UP_STATUS,
 			Arrays.asList(FollowUpStatus.CANCELED, FollowUpStatus.COMPLETED, FollowUpStatus.FOLLOW_UP, FollowUpStatus.LOST),
 			true);
@@ -709,6 +708,18 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		FieldHelper.addSoftRequiredStyle(firstContactDate, lastContactDate, contactProximity, relationToCase);
 	}
 
+	private void updateOverwriteFollowUpUntil() {
+		if (!Boolean.TRUE.equals(cbOverwriteFollowUpUntil.getValue())) {
+			boolean readOnly = dfFollowUpUntil.isReadOnly();
+			dfFollowUpUntil.setReadOnly(false);
+			dfFollowUpUntil.discard();
+			if (expectedFollowUpPeriodDto != null && expectedFollowUpPeriodDto.getFollowUpEndDate() != null) {
+				dfFollowUpUntil.setValue(expectedFollowUpPeriodDto.getFollowUpEndDate());
+			}
+			dfFollowUpUntil.setReadOnly(readOnly);
+		}
+	}
+
 	/*
 	 * Only used for Systems in Germany. Follows specific rules for german systems.
 	 */
@@ -761,7 +772,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			tfExpectedFollowUpUntilDate.setVisible(followUpStatus != FollowUpStatus.NO_FOLLOW_UP);
 			boolean followUpCanceledOrLost = followUpStatus == FollowUpStatus.CANCELED || followUpStatus == FollowUpStatus.LOST;
 			cbOverwriteFollowUpUntil.setReadOnly(followUpCanceledOrLost);
-			dfFollowUpUntil.setReadOnly(followUpCanceledOrLost || Boolean.TRUE != cbOverwriteFollowUpUntil.getValue());
+			dfFollowUpUntil.setReadOnly(followUpCanceledOrLost || !Boolean.TRUE.equals(cbOverwriteFollowUpUntil.getValue()));
 			if (followUpStatus == FollowUpStatus.FOLLOW_UP) {
 
 				Button cancelButton = ButtonHelper.createButton(Captions.contactCancelFollowUp, event -> {
@@ -1018,7 +1029,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		DateComparisonValidator.addStartEndValidators(lastContactDate, reportDate);
 
-		if (firstContactDate.isVisible() || multiDayContact.getValue() == Boolean.TRUE) {
+		if (firstContactDate.isVisible() || Boolean.TRUE.equals(multiDayContact.getValue())) {
 			DateComparisonValidator.addStartEndValidators(firstContactDate, lastContactDate);
 			DateComparisonValidator.addStartEndValidators(firstContactDate, reportDate);
 		}
@@ -1028,14 +1039,17 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	public void setValue(ContactDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
 
-		FollowUpPeriodDto followUpPeriodDto = FacadeProvider.getContactFacade().getCalculatedFollowUpUntilDate(newFieldValue, true);
-		tfExpectedFollowUpUntilDate.setValue(DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpEndDate(), I18nProperties.getUserLanguage()));
+		expectedFollowUpPeriodDto = FacadeProvider.getContactFacade().getCalculatedFollowUpUntilDate(newFieldValue, true);
+		tfExpectedFollowUpUntilDate
+			.setValue(DateHelper.formatLocalDate(expectedFollowUpPeriodDto.getFollowUpEndDate(), I18nProperties.getUserLanguage()));
 		tfExpectedFollowUpUntilDate.setReadOnly(true);
 		tfExpectedFollowUpUntilDate.setDescription(
 			String.format(
 				I18nProperties.getString(Strings.infoExpectedFollowUpUntilDateContact),
-				followUpPeriodDto.getFollowUpStartDateType(),
-				DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpStartDate(), I18nProperties.getUserLanguage())));
+				expectedFollowUpPeriodDto.getFollowUpStartDateType(),
+				DateHelper.formatLocalDate(expectedFollowUpPeriodDto.getFollowUpStartDate(), I18nProperties.getUserLanguage())));
+		updateOverwriteFollowUpUntil();
+		updateFollowUpStatusComponents();
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value

@@ -45,17 +45,7 @@ Changing these entries overrides that default value. Unlike with features, disea
 
 **Important: If you're using the mobile app, you also need to update the `changedate` to the current date and time whenever you change a disease configuration!** Otherwise the mobile applications will not be notified about the change.
 
-It is possible to adjust the following properties that define how the diseases are handled:
-
-* **`active`:** Whether this disease is used in this SORMAS instance. The concrete type of usage is specified by the other properties.
-* **`primaryDisease`:** Primary diseases are enabled for case surveillance while non-primary diseases can only be used for pathogen testing.
-* **`caseBased`:** Case-based diseases can be used to create cases while non-case-based diseases can be used for aggregate reporting.
-* **`followUpEnabled`:** Whether follow-up is enabled for this disease, i.e. the follow-up status can be managed and visits can be created.
-* **`followUpDuration`:** The minimum duration of follow-up for contacts of this disease.
-* **`caseFollowUpDuration`:** The minimum duration of follow-up for cases of this disease.
-* **`eventParticipantFollowUpDuration`:** The minimum duration of follow-up for event participants of this disease. Please note that event participant follow-up is not yet implemented.
-* **`extendedClassification`:** Whether this disease uses an extended case classification system that allows users to specify whether a case has been clinically, epidemiologically or laboratory-diagnostically confirmed.
-* **`extendedClassificationMulti`:** Whether the three confirmation properties used for extended classification can be specified individually, i.e. users can enter multiple sources of confirmation.
+[This Wiki page](https://github.com/hzi-braunschweig/SORMAS-Project/wiki/Disease-Configuration-Options) contains a list and explanation of all currently configurable disease properties.
 
 ## Deletion Configuration
 SORMAS can be set up to automatically delete entities after a specific time period. There are seven core entities for which automatic deletion can be enabled and configured: *Case, Contact, Event, Event Participant, Immunization, Travel Entry, and Campaign.* This configuration is currently only possible directly in the database via the `deleteconfiguration` table, which already contains rows for each of these entities. The table consists of the following columns:
@@ -89,3 +79,29 @@ You can download an import guide from within the popup window that will be opene
 Make sure that you always start with the highest administrative division when importing (i.e. at least *Countries* if you want to collect data from other countries as well, *Areas* if enabled, or *Regions* otherwise) and work your way down to the lowest, because lower divisions typically contain mandatory references to higher divisions.
 
 For *Countries*, *Subcontinents* and *Continents*, SORMAS provides a default import that allows you to automatically add a complete set of data to your system. For *Countries*, this default data equals to the [official list of countries provided by the WHO](https://www.who.int/countries). For *Subcontinents* and *Continents*, the list is based on the data used by the [Robert Koch Institut](https://www.rki.de/DE/Home/homepage_node.html).
+
+## User Role Configuration
+
+A **user** is the user account for employees who have access to SORMAS. Similarly, there are technical users that allow external systems to access data.
+Users have one or sometimes more **user roles**. The roles of a user can be chosen by an admin when creating a new user or editing an existing one.
+Each user role is defined by a set of **user rights** and a **jurisdiction** that represents the area of responsibility. For example, the jurisdiction of a surveillance officer is the district, which is defined on the user. User roles that have different areas of responsibility are therefore not combinable.
+
+![grafik](https://user-images.githubusercontent.com/23217632/173802276-edeafa20-3f8c-4b21-bc0e-21b7b54f46b4.png)
+
+SORMAS comes with an extensive list of user rights that are used to check which data and functionality can be access by the user in the backend and the user interface.
+To cover the typical use cases, SORMAS defines a set of default user roles that are automatically created when setting up a SORMAS instance.
+
+Most user rights define an action related to an entity type, e.g. the user right *CASE_EDIT* allows users to edit case data.
+The following automatically generated document **lists and describes all user rights and the default user roles**:
+https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-api/src/main/resources/doc/SORMAS_User_Rights.xlsx
+
+User roles are fully configurable, allowing admins to create new user roles and edit existing ones, to customize the instance to the given needs and to make sure data protection requirements are fulfilled. 
+
+At this point the configuration has to be done in the database, a user interface to configure user roles will be implemented starting sprint 117 (see #4462 and #4463).
+
+### Related topics
+
+* Epic that introduced configurable user roles: #898
+* Data access based on user rights and user's jurisdiction: https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-backend/doc/UserDataAccess.md
+* Using keycloak as authentication provider: https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/docs/SERVER_SETUP.md#keycloak-server
+* The available jurisdiction levels (nation, region, district, health facility, etc.) are defined in Java code (https://github.com/hzi-braunschweig/SORMAS-Project/blob/development/sormas-api/src/main/java/de/symeda/sormas/api/user/JurisdictionLevel.java)

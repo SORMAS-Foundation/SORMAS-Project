@@ -235,6 +235,7 @@ public class EditCasePage {
       By.xpath(
           "//div[text()='Documents']/../parent::div/../../following-sibling::div//div[@class='v-label v-widget caption-truncated v-label-caption-truncated v-label-undef-w']");
   public static final By ARCHIVE_CASE_BUTTON = By.id("archiveDearchive");
+  public static final By CONFIRM_ACTION = By.id("actionConfirm");
   public static final By ARCHIVE_RELATED_CONTACTS_CHECKBOX =
       By.cssSelector(".popupContent span[class='v-checkbox v-widget']");
   public static final By INFRASTRUCTURE_DATA_POPUP =
@@ -250,4 +251,40 @@ public class EditCasePage {
       By.xpath("(//div[@location='samples']//div[@class='v-label v-widget v-label-undef-w'])[4]");
   public static final By SAMPLES_CARD_TEST_TYPE =
       By.xpath("(//div[@location='samples']//div[@class='v-label v-widget v-label-undef-w'])[5]");
+  public static final By FOLLOW_UP_STATUS_INPUT = By.cssSelector("#followUpStatus input");
+  public static final By CANCEL_FOLLOW_UP_BUTTON = By.cssSelector("#contactCancelFollowUp");
+  public static final By DATE_OF_FOLLOW_UP_STATUS_CHANGE =
+      By.cssSelector("[location='followUpStatusChangeDate'] [class='v-captiontext']");
+  public static final By DATE_OF_FOLLOW_UP_STATUS_CHANGE_INPUT =
+      By.cssSelector("#followUpStatusChangeDate input");
+  public static final By RESPONSIBLE_USER_FOR_FOLLOW_UP_STATUS_CHANGE =
+      By.cssSelector("[location='followUpStatusChangeUser'] [class='v-captiontext']");
+  public static final By RESPONSIBLE_USER_FOR_FOLLOW_UP_STATUS_CHANGE_INPUT =
+      By.cssSelector("#followUpStatusChangeUser input");
+  public static final By FOLLOW_UP_COMMENT_FIELD = By.cssSelector("#followUpComment");
+  public static final By RESUME_FOLLOW_UP_BUTTON = By.cssSelector("#contactResumeFollowUp");
+  public static final By LOST_TO_FOLLOW_UP_BUTTON = By.cssSelector("#contactLostToFollowUp");
+  public static final By EXPECTED_FOLLOW_UP_UNTIL_DATE_INPUT =
+      By.cssSelector("[location='expectedFollowUpUntilDateLoc'] input");
+  public static final By OVERWRITE_FOLLOW_UP_UNTIL_DATE_LABEL =
+      By.cssSelector("#overwriteFollowUpUntil label");
+  public static final By FOLLOW_UP_UNTIL_DATE_INPUT = By.cssSelector("#followUpUntil input");
+  public static final By POINT_OF_ENTRY_TEXT = By.cssSelector("#pointOfEntry input");
+  public static final By POINT_OF_ENTRY_DETAILS = By.cssSelector("#pointOfEntryDetails");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY =
+      By.cssSelector("#caseReferFromPointOfEntry");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY_POPUP_DE =
+      By.xpath(
+          "//div[contains(@class,'v-window-header') and text()='Fall vom Einreiseort weiterleiten']");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY_REGION =
+      By.cssSelector(".popupContent #region div[role='button'");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY_DISTRICT =
+      By.cssSelector(".popupContent #district div[role='button'");
+  public static final By REFER_CASE_FROM_POINT_OF_ENTRY_SAVE_BUTTON =
+      By.cssSelector(".popupContent #commit");
+  public static final By CASE_ORIGIN = By.cssSelector("#caseOrigin input");
+
+  public static By getCaseIDPathByIndex(int index) {
+    return By.xpath(String.format("//table/tbody/tr[%s]/td[1]/a", index));
+  }
 }

@@ -666,7 +666,6 @@ public enum DefaultUserRole {
 					EVENTPARTICIPANT_VIEW,
 					WEEKLYREPORT_CREATE,
 					WEEKLYREPORT_VIEW,
-					DASHBOARD_CAMPAIGNS_VIEW,
 					PORT_HEALTH_INFO_VIEW,
 					SEE_PERSONAL_DATA_IN_JURISDICTION,
 					SEE_SENSITIVE_DATA_IN_JURISDICTION,
@@ -951,6 +950,8 @@ public enum DefaultUserRole {
 					TASK_VIEW,
 					TASK_EDIT,
 					TASK_EXPORT,
+					SEE_PERSONAL_DATA_IN_JURISDICTION,
+					SEE_SENSITIVE_DATA_IN_JURISDICTION,
 					SORMAS_REST,
 					SORMAS_UI));
 			break;
@@ -1475,6 +1476,8 @@ public enum DefaultUserRole {
 					PORT_HEALTH_INFO_VIEW,
 					PORT_HEALTH_INFO_EDIT,
 					AGGREGATE_REPORT_VIEW,
+					AGGREGATE_REPORT_EXPORT,
+					AGGREGATE_REPORT_EDIT,
 					SEE_PERSONAL_DATA_IN_JURISDICTION,
 					SEE_SENSITIVE_DATA_IN_JURISDICTION,
 					CAMPAIGN_VIEW,
@@ -1614,6 +1617,7 @@ public enum DefaultUserRole {
 		return laboratoryJurisdictionPresent ? JurisdictionLevel.LABORATORY : JurisdictionLevel.NONE;
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

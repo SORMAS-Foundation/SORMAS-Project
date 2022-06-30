@@ -108,6 +108,7 @@ public class CreateNewEventSteps implements En {
           selectEventManagementStatusOption(newEvent.getEventManagementStatus());
           selectRiskLevel(newEvent.getRiskLevel());
           selectDisease(newEvent.getDisease());
+          selectDiseaseVariant(newEvent.getDiseaseVariant());
           fillTitle(newEvent.getTitle());
           selectSourceType(newEvent.getSourceType());
           selectTypeOfPlace(newEvent.getEventLocation());
@@ -270,6 +271,19 @@ public class CreateNewEventSteps implements En {
               "Diseases statuses are not equal");
           softly.assertAll();
         });
+
+    When(
+        "I create a new event with event identification source {string}",
+        (String eventIdentificationSource) -> {
+          newEvent = collectEventUuid();
+          String timestamp = String.valueOf(System.currentTimeMillis());
+          webDriverHelpers.fillInWebElement(TITLE_INPUT, "EVENT_AUTOMATION" + timestamp);
+          selectEventIdentificationSource(eventIdentificationSource);
+          selectResponsibleRegion(RegionsValues.VoreingestellteBundeslander.getName());
+          selectResponsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CREATED_MESSAGE);
+        });
   }
 
   private Event collectEventUuid() {
@@ -279,6 +293,11 @@ public class CreateNewEventSteps implements En {
 
   private void selectEventStatus(String eventStatus) {
     webDriverHelpers.clickWebElementByText(EVENT_STATUS_OPTIONS, eventStatus);
+  }
+
+  private void selectEventIdentificationSource(String eventIdentificationSource) {
+    webDriverHelpers.clickWebElementByText(
+        EVENT_IDENTIFICATION_SOURCE_COMBOBOX, eventIdentificationSource);
   }
 
   private void selectRiskLevel(String riskLevel) {
@@ -303,6 +322,10 @@ public class CreateNewEventSteps implements En {
 
   private void selectDisease(String disease) {
     webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
+  }
+
+  private void selectDiseaseVariant(String diseaseVariant) {
+    webDriverHelpers.selectFromCombobox(DISEASE_VARIANT_COMBOBOX, diseaseVariant);
   }
 
   private void fillTitle(String title) {

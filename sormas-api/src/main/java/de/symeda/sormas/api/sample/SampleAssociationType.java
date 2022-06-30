@@ -9,6 +9,7 @@ public enum SampleAssociationType {
 	CONTACT,
 	EVENT_PARTICIPANT;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

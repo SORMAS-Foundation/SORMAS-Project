@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import android.content.Context;
@@ -15,10 +16,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 
 import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ObservableArrayList;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.utils.AgeGroupUtils;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.report.DiseaseAgeGroup;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -26,9 +28,14 @@ import de.symeda.sormas.app.BaseReportFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.common.InfrastructureAdo;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.facility.Facility;
+import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
+import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.report.AggregateReport;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.core.NotificationContext;
 import de.symeda.sormas.app.core.async.AsyncTaskResult;
@@ -53,6 +60,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 	private FragmentReportsAggregateLayoutBinding contentBinding;
 
 	private List<AggregateReport> reports = new ArrayList<>();
+	private List<AggregateReport> userReports = new ArrayList<>();
 
 	public static AggregateReportsFragment newInstance() {
 		return newInstance(AggregateReportsFragment.class, null);
@@ -122,6 +130,10 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 			}
 		});
 
+		contentBinding.aggregateReportsReport.initializeSpinner(new ArrayList<>(), null, field -> {
+			showReportData();
+		});
+
 		contentBinding.submitReport.setOnClickListener(view -> showSubmitCaseNumbersConfirmationDialog());
 	}
 
@@ -135,6 +147,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 	}
 
 	private void updateByEpiWeek() {
+
 		EpiWeek epiWeek = (EpiWeek) contentBinding.aggregateReportsWeek.getValue();
 
 		if (DataHelper.equal(epiWeek, lastUpdateEpiWeek)) {
@@ -157,8 +170,29 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 		}
 
 		if (epiWeek != null) {
-			showReportData();
+			fillReportsDropdown();
 		}
+	}
+
+	private void fillReportsDropdown() {
+
+		if (contentBinding.aggregateReportsWeek.getValue() == null) {
+			contentBinding.aggregateReportsReport.setSpinnerData(new ArrayList<>());
+			return;
+		}
+
+		reports = DatabaseHelper.getAggregateReportDao().getReportsByEpiWeek((EpiWeek) contentBinding.aggregateReportsWeek.getValue());
+
+		List<ReportUserInfo> reportUserInfo = reports.stream()
+			.map(r -> new ReportUserInfo(r.getReportingUser(), r.getDistrict(), r.getHealthFacility(), r.getPointOfEntry()))
+			.distinct()
+			.collect(Collectors.toList());
+
+		addJurisdictionsWithoutReports(reportUserInfo);
+		sortReportUserInfo(reportUserInfo);
+
+		contentBinding.aggregateReportsReport
+			.setSpinnerData(reportUserInfo.stream().map(r -> new Item<>(r.getCaption(), r)).collect(Collectors.toList()));
 	}
 
 	private void showReportData() {
@@ -166,18 +200,34 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 		contentBinding.reportContent.removeAllViews();
 
 		Date latestLocalChangeDate = null;
+		User user = ConfigProvider.getUser();
 
 		final Map<Disease, List<AggregateReport>> reportsByDisease = new HashMap<>();
 		final EpiWeek epiWeek = (EpiWeek) contentBinding.aggregateReportsWeek.getValue();
-		final User user = ConfigProvider.getUser();
-		reports = DatabaseHelper.getAggregateReportDao().getReportsByEpiWeekAndUser(epiWeek, user);
+		final User selectedUser = ((ReportUserInfo) contentBinding.aggregateReportsReport.getValue()).user;
+		final InfrastructureAdo selectedInfrastructure = ((ReportUserInfo) contentBinding.aggregateReportsReport.getValue()).getInfrastructure();
+		final boolean enabled = selectedUser == null || user.equals(selectedUser);
+		userReports = reports.stream()
+			.filter(r -> r.getReportingUser().equals(selectedUser) && isSameInfrastructure(r, selectedInfrastructure))
+			.collect(Collectors.toList());
+		DatabaseHelper.getAggregateReportDao().sortAggregateReports(userReports);
 
 		List<Disease> diseaseList = DiseaseConfigurationCache.getInstance().getAllDiseases(true, false, false);
 		Map<String, Disease> diseaseMap = diseaseList.stream().collect(Collectors.toMap(Disease::toString, disease -> disease));
 		Map<String, Disease> diseasesWithoutReport = new HashMap<>(diseaseMap);
+		List<DiseaseAgeGroup> diseaseAgeGroupsWithoutReport = new ArrayList<>();
+		diseaseMap.values().forEach(disease -> {
+			List<String> ageGroups = DatabaseHelper.getDiseaseConfigurationDao().getDiseaseConfiguration(disease).getAgeGroups();
+			if (ageGroups != null) {
+				ageGroups.forEach(ageGroup -> {
+					diseaseAgeGroupsWithoutReport.add(new DiseaseAgeGroup(disease.toString(), ageGroup));
+				});
+			} else {
+				diseaseAgeGroupsWithoutReport.add(new DiseaseAgeGroup(disease.toString(), null));
+			}
+		});
 
-		for (AggregateReport report : reports) {
-
+		for (AggregateReport report : userReports) {
 			Disease disease = report.getDisease();
 			if (reportsByDisease.containsKey(disease)) {
 				List<AggregateReport> aggregateReports = reportsByDisease.get(disease);
@@ -188,15 +238,41 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 				reportsByDisease.put(disease, aggregateReports);
 			}
 			diseasesWithoutReport.remove(disease.toString());
+			diseaseAgeGroupsWithoutReport.remove(new DiseaseAgeGroup(disease.toString(), report.getAgeGroup()));
 		}
 
 		for (Map.Entry<Disease, List<AggregateReport>> entry : reportsByDisease.entrySet()) {
 			Disease key = entry.getKey();
 			List<AggregateReport> aggregateReports = entry.getValue();
+			List<String> diseaseAgeGroups =
+				aggregateReports.stream().map(aggregateReport -> aggregateReport.getAgeGroup()).collect(Collectors.toList());
+
+			List<DiseaseAgeGroup> noDataAgeGroups = diseaseAgeGroupsWithoutReport.stream()
+				.filter(
+					diseaseAgeGroup -> diseaseAgeGroup.getDisease().equals(entry.getKey().toString())
+						&& !diseaseAgeGroups.contains(diseaseAgeGroup.getAgeGroup()))
+				.collect(Collectors.toList());
+
+			if (!noDataAgeGroups.isEmpty()) {
+				noDataAgeGroups.forEach(diseaseAgeGroup -> {
+					AggregateReport aggregateReport =
+						DatabaseHelper.getAggregateReportDao().build(diseaseMap.get(diseaseAgeGroup.getDisease()), epiWeek, selectedInfrastructure);
+					aggregateReport.setAgeGroup(diseaseAgeGroup.getAgeGroup());
+					userReports.add(aggregateReport);
+					aggregateReports.add(aggregateReport);
+				});
+
+				DatabaseHelper.getAggregateReportDao().sortAggregateReports(aggregateReports);
+			}
+
 			if (aggregateReports.size() == 1) {
 				LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				RowReportAggregateLayoutBinding binding =
-						DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_layout, contentBinding.reportContent, true);
+					DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_layout, contentBinding.reportContent, true);
+				binding.aggregateReportDeaths.setEnabled(enabled);
+				binding.aggregateReportLabConfirmations.setEnabled(enabled);
+				binding.aggregateReportNewCases.setEnabled(enabled);
+				contentBinding.submitReport.setEnabled(enabled);
 				AggregateReport report = aggregateReports.get(0);
 				binding.setData(report);
 				if (latestLocalChangeDate == null
@@ -205,18 +281,23 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 				}
 			} else {
 				LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-				RowReportAggregateDiseaseLayoutBinding diseaseBinding = DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_disease_layout, contentBinding.reportContent, true);
+				RowReportAggregateDiseaseLayoutBinding diseaseBinding =
+					DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_disease_layout, contentBinding.reportContent, true);
 				diseaseBinding.setDisease(key.toString());
 				for (AggregateReport report : aggregateReports) {
 					RowReportAggregateAgegroupLayoutBinding binding =
-							DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_agegroup_layout, contentBinding.reportContent, true);
+						DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_agegroup_layout, contentBinding.reportContent, true);
+					binding.aggregateReportDeaths.setEnabled(enabled);
+					binding.aggregateReportLabConfirmations.setEnabled(enabled);
+					binding.aggregateReportNewCases.setEnabled(enabled);
+					contentBinding.submitReport.setEnabled(enabled);
 					String ageGroup = report.getAgeGroup();
 					if (ageGroup != null) {
 						report.setAgeGroup(ageGroup);
 					}
 					binding.setData(report);
 					if (latestLocalChangeDate == null
-							|| (report.getLocalChangeDate() != null && latestLocalChangeDate.before(report.getLocalChangeDate()))) {
+						|| (report.getLocalChangeDate() != null && latestLocalChangeDate.before(report.getLocalChangeDate()))) {
 						latestLocalChangeDate = report.getLocalChangeDate();
 					}
 				}
@@ -224,17 +305,19 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 		}
 
 		for (String disease : diseasesWithoutReport.keySet()) {
-
 			Disease diseaseEnum = diseasesWithoutReport.get(disease);
 			List<String> ageGroups = DatabaseHelper.getDiseaseConfigurationDao().getDiseaseConfiguration(diseaseEnum).getAgeGroups();
 			if (ageGroups == null || ageGroups.isEmpty()) {
 				LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				RowReportAggregateLayoutBinding binding =
 					DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_layout, contentBinding.reportContent, true);
-				AggregateReport data = DatabaseHelper.getAggregateReportDao().build();
-				data.setDisease(diseaseEnum);
+				binding.aggregateReportDeaths.setEnabled(enabled);
+				binding.aggregateReportLabConfirmations.setEnabled(enabled);
+				binding.aggregateReportNewCases.setEnabled(enabled);
+				contentBinding.submitReport.setEnabled(enabled);
+				AggregateReport data = DatabaseHelper.getAggregateReportDao().build(diseaseEnum, epiWeek, selectedInfrastructure);
 				binding.setData(data);
-				reports.add(data);
+				userReports.add(data);
 			} else {
 				LayoutInflater diseaseInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				RowReportAggregateDiseaseLayoutBinding viewBinding =
@@ -244,11 +327,14 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 					LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 					RowReportAggregateAgegroupLayoutBinding binding =
 						DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_agegroup_layout, contentBinding.reportContent, true);
-					AggregateReport data = DatabaseHelper.getAggregateReportDao().build();
-					data.setDisease(diseaseEnum);
+					binding.aggregateReportDeaths.setEnabled(enabled);
+					binding.aggregateReportLabConfirmations.setEnabled(enabled);
+					binding.aggregateReportNewCases.setEnabled(enabled);
+					contentBinding.submitReport.setEnabled(enabled);
+					AggregateReport data = DatabaseHelper.getAggregateReportDao().build(diseaseEnum, epiWeek, selectedInfrastructure);
 					data.setAgeGroup(ageGroup);
 					binding.setData(data);
-					reports.add(data);
+					userReports.add(data);
 				}
 			}
 		}
@@ -280,7 +366,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 
 				@Override
 				public void doInBackground(TaskResultHolder resultHolder) throws DaoException {
-					for (AggregateReport report : reports) {
+					for (AggregateReport report : userReports) {
 						// Don't save if a generated report has no case numbers
 						if (report.getLocalChangeDate() == null
 							&& (report.getNewCases() == null || report.getNewCases() == 0)
@@ -298,15 +384,6 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 						if (report.getDeaths() == null) {
 							report.setDeaths(0);
 						}
-
-						final EpiWeek epiWeek = (EpiWeek) contentBinding.aggregateReportsWeek.getValue();
-						if (epiWeek != null) {
-							report.setEpiWeek(epiWeek.getWeek());
-							report.setYear(epiWeek.getYear());
-						}
-
-						User currentUser = ConfigProvider.getUser();
-						report.setReportingUser(currentUser);
 
 						DatabaseHelper.getAggregateReportDao().saveAndSnapshot(report);
 					}
@@ -334,6 +411,89 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 		confirmationDialog.show();
 	}
 
+	private void sortReportUserInfo(List<ReportUserInfo> reportUserInfo) {
+
+		reportUserInfo.sort((r1, r2) -> {
+			if (r1.isCurrentUserReport()) {
+				return -1;
+			} else if (r2.isCurrentUserReport()) {
+				return 1;
+			} else if (r1.district != null && (r1.user == null || r2.district == null)) {
+				return -1;
+			} else if (r2.district != null && (r2.user == null || r1.district == null)) {
+				return 1;
+			} else if (r1.district != null) {
+				return r1.user.getUserName().compareTo(r2.user.getUserName());
+			} else if (r1.facility != null && (r1.user == null || r2.facility == null)) {
+				return -1;
+			} else if (r2.facility != null && (r2.user == null || r1.facility == null)) {
+				return 1;
+			} else if (r1.facility != null) {
+				return r1.user.getUserName().compareTo(r2.user.getUserName());
+			} else if (r1.pointOfEntry != null && (r1.user == null || r2.pointOfEntry == null)) {
+				return -1;
+			} else if (r2.pointOfEntry != null && (r2.user == null || r1.pointOfEntry == null)) {
+				return 1;
+			} else if (r1.pointOfEntry != null) {
+				return r1.user.getUserName().compareTo(r2.user.getUserName());
+			} else {
+				return 0;
+			}
+		});
+	}
+
+	private void addJurisdictionsWithoutReports(List<ReportUserInfo> reportUserInfoList) {
+
+		User user = ConfigProvider.getUser();
+		JurisdictionLevel jurisdictionLevel = user.getJurisdictionLevel();
+
+		if (jurisdictionLevel == JurisdictionLevel.DISTRICT) {
+			if (reports.stream()
+				.noneMatch(
+					r -> user.getDistrict().equals(r.getDistrict())
+						&& r.getHealthFacility() == null
+						&& r.getPointOfEntry() == null
+						&& r.getReportingUser().equals(user))) {
+				reportUserInfoList.add(new ReportUserInfo(user, user.getDistrict(), user.getHealthFacility(), user.getPointOfEntry()));
+			}
+
+			DatabaseHelper.getFacilityDao()
+				.getActiveHealthFacilitiesByDistrictAndType(user.getDistrict(), FacilityType.HOSPITAL, false, false)
+				.stream()
+				.filter(f -> reports.stream().noneMatch(r -> f.equals(r.getHealthFacility())))
+				.collect(Collectors.toList())
+				.forEach(f -> {
+					reportUserInfoList.add(new ReportUserInfo(null, null, f, null));
+				});
+
+			DatabaseHelper.getPointOfEntryDao()
+				.getActiveByDistrict(user.getDistrict(), false)
+				.stream()
+				.filter(p -> reports.stream().noneMatch(r -> p.equals(r.getPointOfEntry())))
+				.collect(Collectors.toList())
+				.forEach(p -> {
+					reportUserInfoList.add(new ReportUserInfo(null, null, null, p));
+				});
+		} else if (jurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY
+			&& reports.stream().noneMatch(r -> user.getHealthFacility().equals(r.getHealthFacility()) && r.getReportingUser().equals(user))) {
+			reportUserInfoList.add(new ReportUserInfo(user, user.getDistrict(), user.getHealthFacility(), user.getPointOfEntry()));
+		} else if (jurisdictionLevel == JurisdictionLevel.POINT_OF_ENTRY
+			&& reports.stream().noneMatch(r -> user.getPointOfEntry().equals(r.getPointOfEntry()) && r.getReportingUser().equals(user))) {
+			reportUserInfoList.add(new ReportUserInfo(user, user.getDistrict(), user.getHealthFacility(), user.getPointOfEntry()));
+		}
+	}
+
+	private boolean isSameInfrastructure(AggregateReport report, InfrastructureAdo infrastructure) {
+
+		return infrastructure instanceof Facility
+			? report.getHealthFacility() != null && infrastructure.getUuid().equals(report.getHealthFacility().getUuid())
+			: infrastructure instanceof PointOfEntry
+				? report.getPointOfEntry() != null && infrastructure.getUuid().equals(report.getPointOfEntry().getUuid())
+				: report.getHealthFacility() == null
+					&& report.getPointOfEntry() == null
+					&& infrastructure.getUuid().equals(report.getDistrict().getUuid());
+	}
+
 	@Override
 	protected int getReportLayout() {
 		return R.layout.fragment_reports_aggregate_layout;
@@ -348,9 +508,57 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 		}
 	}
 
-	private ObservableArrayList makeObservable(List<AggregateReport> reports) {
-		ObservableArrayList<AggregateReport> newList = new ObservableArrayList<>();
-		newList.addAll(reports);
-		return newList;
+	private static class ReportUserInfo {
+
+		public User user;
+		public District district;
+		public Facility facility;
+		public PointOfEntry pointOfEntry;
+
+		public ReportUserInfo(User user, District district, Facility facility, PointOfEntry pointOfEntry) {
+
+			this.user = user;
+			this.district = district;
+			this.facility = facility;
+			this.pointOfEntry = pointOfEntry;
+		}
+
+		public String getCaption() {
+
+			return getInfrastructure().toString() + (user != null ? " - " + user.getUserName() : "");
+		}
+
+		public boolean isCurrentUserReport() {
+
+			User currentUser = ConfigProvider.getUser();
+			return currentUser.equals(user) && (facility != null && facility.equals(currentUser.getHealthFacility()))
+				|| (pointOfEntry != null && pointOfEntry.equals(currentUser.getPointOfEntry()))
+				|| (facility == null && pointOfEntry == null && district != null && district.equals(currentUser.getDistrict()));
+		}
+
+		public InfrastructureAdo getInfrastructure() {
+
+			return facility != null ? facility : pointOfEntry != null ? pointOfEntry : district;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+
+			if (this == o)
+				return true;
+			if (o == null || getClass() != o.getClass())
+				return false;
+			ReportUserInfo that = (ReportUserInfo) o;
+			return Objects.equals(user, that.user)
+				&& Objects.equals(district, that.district)
+				&& Objects.equals(facility, that.facility)
+				&& Objects.equals(pointOfEntry, that.pointOfEntry);
+		}
+
+		@Override
+		public int hashCode() {
+
+			return Objects.hash(user, district, facility, pointOfEntry);
+		}
 	}
 }

@@ -50,6 +50,23 @@ public class TaskService {
         .build();
   }
 
+  public Task buildGeneratedTaskDE() {
+    long timeStamp = System.currentTimeMillis();
+    return Task.builder()
+        .taskContext("GENERAL")
+        .taskType("Andere Aufgabe (siehe Kommentar)")
+        .suggestedStartDate(LocalDate.now())
+        .suggestedStartTime(LocalTime.of(11, 30))
+        .dueDateDate(LocalDate.now().plusDays(1))
+        .dueDateTime(LocalTime.of(11, 30))
+        .assignedTo("Ad MIN")
+        .priority("Normal")
+        .commentsOnTask("Task comment-" + timeStamp)
+        .commentsOnExecution("Execution comment-" + timeStamp)
+        .taskStatus(StatusValues.PENDING.getValue())
+        .build();
+  }
+
   public Task buildEditTask(String currentTaskContext, String currentStatus) {
     long timeStamp = System.currentTimeMillis();
     return Task.builder()

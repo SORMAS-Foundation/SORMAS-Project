@@ -249,6 +249,17 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	}
 
 	@Override
+	public List<VaccinationDto> getVaccinationsByCriteria(
+		VaccinationListCriteria criteria,
+		Integer first,
+		Integer max,
+		List<SortProperty> sortProperties) {
+		List<Vaccination> vaccinationsList = vaccinationService.getVaccinationsByCriteria(criteria, first, max, sortProperties);
+
+		return vaccinationsList.stream().map(this::toDto).collect(Collectors.toList());
+	}
+
+	@Override
 	public List<VaccinationListEntryDto> getEntriesList(
 		VaccinationListCriteria criteria,
 		Integer first,

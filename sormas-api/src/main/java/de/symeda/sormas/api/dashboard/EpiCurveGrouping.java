@@ -8,8 +8,8 @@ public enum EpiCurveGrouping {
 	WEEK,
 	MONTH;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-
 }

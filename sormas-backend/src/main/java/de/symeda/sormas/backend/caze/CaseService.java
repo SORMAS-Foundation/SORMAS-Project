@@ -14,6 +14,8 @@
  */
 package de.symeda.sormas.backend.caze;
 
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,6 +50,8 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.share.ExternalShareStatus;
+import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -201,6 +205,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private SurveillanceReportService surveillanceReportService;
 	@EJB
 	private DocumentService documentService;
+	@EJB
+	private ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
 
 	public CaseService() {
 		super(Case.class);
@@ -544,13 +550,32 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.LIMITED_SYNCHRONIZATION)
 			&& featureConfigurationFacade
 				.isPropertyValueTrue(FeatureType.LIMITED_SYNCHRONIZATION, FeatureTypeProperty.EXCLUDE_NO_CASE_CLASSIFIED_CASES)) {
-			return Collections.singletonList(
-				cb.and(
-					cb.equal(from.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE),
-					cb.greaterThanOrEqualTo(from.get(Case.CLASSIFICATION_DATE), since)));
+			return Collections.singletonList(createObsoleteLimitedSyncCasePredicate(cb, from, since, getCurrentUser()));
 		} else {
 			return Collections.emptyList();
 		}
+	}
+
+	public Predicate createLimitedSyncCasePredicate(CriteriaBuilder cb, Join<?, Case> join, User currentUser) {
+
+		return cb.or(
+			cb.isNull(join.get(Case.UUID)),
+			cb.not(
+				cb.and(
+					cb.equal(join.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE),
+					cb.or(
+						cb.notEqual(join.get(Case.REPORTING_USER), currentUser),
+						cb.and(cb.equal(join.get(Case.REPORTING_USER), currentUser), cb.isNull(join.get(Case.CREATION_VERSION)))))));
+	}
+
+	public Predicate createObsoleteLimitedSyncCasePredicate(CriteriaBuilder cb, From<?, Case> root, Date since, User currentUser) {
+
+		return cb.and(
+			cb.equal(root.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE),
+			cb.greaterThanOrEqualTo(root.get(Case.CLASSIFICATION_DATE), since),
+			cb.or(
+				cb.notEqual(root.get(Case.REPORTING_USER), currentUser),
+				cb.and(cb.equal(root.get(Case.REPORTING_USER), currentUser), cb.isNull(root.get(Case.CREATION_VERSION)))));
 	}
 
 	@Override
@@ -956,10 +981,57 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			ensurePersisted(c);
 		});
 
-		caseFacade.deleteCaseInExternalSurveillanceTool(caze);
+		deleteCaseInExternalSurveillanceTool(caze);
 		deleteCaseLinks(caze);
 
 		super.deletePermanent(caze);
+	}
+
+	@Override
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		super.archive(entityUuid, endOfProcessingDate);
+		setArchiveInExternalSurveillanceToolForEntity(entityUuid, true);
+	}
+
+	@Override
+	public void archive(List<String> entityUuids) {
+		super.archive(entityUuids);
+		setArchiveInExternalSurveillanceToolForEntities(entityUuids, true);
+	}
+
+	@Override
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		super.dearchive(entityUuids, dearchiveReason);
+		setArchiveInExternalSurveillanceToolForEntities(entityUuids, false);
+	}
+
+	public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) {
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
+			try {
+				externalSurveillanceToolGatewayFacade
+					.sendCases(externalShareInfoService.getSharedCaseUuidsWithoutDeletedStatus(entityUuids), archived);
+			} catch (ExternalSurveillanceToolException e) {
+				throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+			}
+		}
+	}
+
+	public void setArchiveInExternalSurveillanceToolForEntity(String entityUuid, boolean archived) {
+		Case caze = getByUuid(entityUuid);
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()
+			&& externalShareInfoService.isCaseShared(caze.getId())
+			&& !hasShareInfoWithDeletedStatus(entityUuid)) {
+			try {
+				externalSurveillanceToolGatewayFacade.sendCases(Collections.singletonList(entityUuid), archived);
+			} catch (ExternalSurveillanceToolException e) {
+				throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+			}
+		}
+	}
+
+	public boolean hasShareInfoWithDeletedStatus(String entityUuid) {
+		List<ExternalShareInfo> result = externalShareInfoService.getShareInfoByCase(entityUuid);
+		return result.stream().anyMatch(info -> info.getStatus().equals(ExternalShareStatus.DELETED));
 	}
 
 	@Override
@@ -971,13 +1043,21 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			.filter(sample -> sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null)
 			.forEach(sample -> sampleService.delete(sample, deletionDetails));
 
-		caseFacade.deleteCaseInExternalSurveillanceTool(caze);
+		deleteCaseInExternalSurveillanceTool(caze);
 		deleteCaseLinks(caze);
 		caze.setDeletionReason(deletionDetails.getDeletionReason());
 		caze.setOtherDeletionReason(deletionDetails.getOtherDeletionReason());
 
 		// Mark the case as deleted
 		super.delete(caze, deletionDetails);
+	}
+
+	private void deleteCaseInExternalSurveillanceTool(Case caze) {
+		try {
+			caseFacade.deleteCaseInExternalSurveillanceTool(caze);
+		} catch (ExternalSurveillanceToolException e) {
+			throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+		}
 	}
 
 	private void deleteCaseLinks(Case caze) {

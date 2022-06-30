@@ -24,6 +24,7 @@ public enum RabiesType {
 	FURIOUS_RABIES,
 	PARALYTIC_RABIES;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

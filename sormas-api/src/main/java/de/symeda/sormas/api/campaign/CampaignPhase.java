@@ -11,6 +11,7 @@ public enum CampaignPhase {
 	INTRA,
 	POST;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.user;
 
 import static de.symeda.sormas.api.user.DefaultUserRole.ADMIN;
+import static de.symeda.sormas.api.user.DefaultUserRole.ADMIN_SUPERVISOR;
 import static de.symeda.sormas.api.user.DefaultUserRole.CASE_OFFICER;
 import static de.symeda.sormas.api.user.DefaultUserRole.CONTACT_OFFICER;
 import static de.symeda.sormas.api.user.DefaultUserRole.CONTACT_SUPERVISOR;
@@ -340,6 +341,26 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));
 		assertFalse(userReferenceDtos.contains(limitedSurveillanceOfficer));
 
+	}
+
+	@Test
+	public void testGetUserRefsByDistrictsForResponsibleSurveillanceOfficer(){
+		RDCF rdcfDefault = creator.createRDCF();
+		RDCF rdcfOther = creator.createRDCF("otherRegion", "oderDistrict", "otherCommunity", "otherFacility");
+
+		UserDto surveilanceOfficerDefault = creator.createUser(rdcfDefault, "Surveillance", "Officer", creator.getUserRoleReference(SURVEILLANCE_OFFICER));
+		UserDto surveilanceSupervisorDefault = creator.createUser(rdcfDefault, "Surveillance", "Supervisor", creator.getUserRoleReference(SURVEILLANCE_SUPERVISOR));
+		UserDto adminSupervisorDefault = creator.createUser(rdcfDefault, "Admin", "Supervisor", creator.getUserRoleReference(ADMIN_SUPERVISOR));
+		UserDto adminSupervisorOther = creator.createUser(rdcfOther, "Admin", "Supervisor Other", creator.getUserRoleReference(ADMIN_SUPERVISOR));
+
+		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUserRefsByDistricts(Arrays.asList(rdcfDefault.district), Disease.CORONAVIRUS);
+		assertNotNull(userReferenceDtos);
+		assertEquals(3, userReferenceDtos.size());
+		List<String> userReferenceUUIDs = userReferenceDtos.stream().map(u->u.getUuid()).collect(Collectors.toList());
+		assertTrue(userReferenceUUIDs.contains(surveilanceOfficerDefault.getUuid()));
+		assertTrue(userReferenceUUIDs.contains(surveilanceSupervisorDefault.getUuid()));
+		assertTrue(userReferenceUUIDs.contains(adminSupervisorDefault.getUuid()));
+		assertFalse(userReferenceUUIDs.contains(adminSupervisorOther.getUuid()));
 	}
 
 	@Test

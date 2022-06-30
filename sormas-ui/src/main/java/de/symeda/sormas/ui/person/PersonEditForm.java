@@ -546,6 +546,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 	}
 
+	@Override
 	public void setValue(PersonDto newFieldValue) {
 		super.setValue(newFieldValue);
 		initializePresentConditionField();
@@ -886,6 +887,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		return super.addFieldToLayout(layout, propertyId, field);
 	}
 
+	@Override
 	public void setHeading(String heading) {
 		personInformationHeadingLabel.setValue(heading);
 	}

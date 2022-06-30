@@ -35,6 +35,7 @@ public class CreateNewCasePage {
   public static final By FACILITY_CATEGORY_COMBOBOX = By.cssSelector("#typeGroup div");
   public static final By FACILITY_TYPE_COMBOBOX = By.cssSelector("#type div");
   public static final By FACILITY_COMBOBOX = By.cssSelector("#healthFacility div");
+  public static final By FACILITY_NAME_COMBOBOX = By.cssSelector("#facility div");
   public static final By PLACE_OF_STAY_HOME =
       By.xpath("//div[@location='facilityOrHomeLoc']//label[contains(text(), 'Home')]");
   public static final By FIRST_NAME_INPUT =
@@ -43,6 +44,7 @@ public class CreateNewCasePage {
   public static final By SEX_COMBOBOX =
       By.cssSelector(".v-window [location='sex'] div[role='combobox'] div");
   public static final By SAVE_BUTTON = By.id("commit");
+  public static final By CONFIRM_BUTTON_POPUP = By.cssSelector(".popupContent #commit");
   public static final By CASE_ORIGIN_OPTIONS =
       By.cssSelector(".popupContent #caseOrigin .v-select-option");
   public static final By EXTERNAL_ID_INPUT = By.cssSelector(".popupContent #externalID");
@@ -62,8 +64,7 @@ public class CreateNewCasePage {
   public static final By DATE_OF_SYMPTOM_ONSET_INPUT = By.cssSelector(".v-window #onsetDate input");
   public static final By PRIMARY_PHONE_NUMBER_INPUT = By.cssSelector(".v-window #phone");
   public static final By PRIMARY_EMAIL_ADDRESS_INPUT = By.cssSelector(".v-window #emailAddress");
-  public static final By CONTACT_CASE_SAVE_BUTTON =
-      By.xpath("//div[contains(@class, 'popupContent')]//div[@id='commit']");
+  public static final By CONTACT_CASE_SAVE_BUTTON = By.xpath("//div[@id='commit']");
   public static final By ENTER_HOME_ADDRESS_CHECKBOX =
       By.cssSelector("[location='enterHomeAddressNow'] span.v-checkbox");
   public static final By CASE_DISEASE_VARIANT_COMBOBOX =
@@ -78,6 +79,8 @@ public class CreateNewCasePage {
   public static final By PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON = By.id("actionSearch");
   public static final By CREATE_A_NEW_CASE_CONFIRMATION_BUTTON =
       By.xpath("//*[text()='Create a new case']");
+  public static final By PICK_AN_EXISTING_CASE_CONFIRMATION_BUTTON =
+      By.xpath("//*[text()='Pick an existing case']");
   public static final By CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON =
       By.xpath("//*[text()='Create a new person']");
   public static final By SELECT_PERSON_WINDOW_CONFIRM_BUTTON =
@@ -115,4 +118,14 @@ public class CreateNewCasePage {
       By.xpath("//span[@class=\"v-captiontext\" and text()=\"Reisepassnummer\"]");
   public static final By NATIONAL_HEALTH_ID_ATTRIBUTE =
       By.xpath("//span[@class=\"v-captiontext\" and text()=\"Krankenversicherungsnummer\"]");
+  public static final By DIFFERENT_POINT_OF_ENTRY_JURISDICTION =
+      By.cssSelector(".popupContent #differentPointOfEntryJurisdiction");
+  public static final By POINT_OF_ENTRY_REGION_BUTTON =
+      By.cssSelector(".popupContent #pointOfEntryRegion div[role='button']");
+  public static final By POINT_OF_ENTRY_DISTRICT_BUTTON =
+      By.cssSelector(".popupContent #pointOfEntryDistrict div[role='button']");
+  public static final By POINT_OF_ENTRY_COMBOBOX =
+      By.cssSelector(".popupContent #pointOfEntry div[role='button'");
+  public static final By POINT_OF_ENTRY_DETAILS =
+      By.cssSelector(".popupContent #pointOfEntryDetails");
 }

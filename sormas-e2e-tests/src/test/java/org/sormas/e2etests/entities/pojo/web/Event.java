@@ -27,6 +27,7 @@ import lombok.*;
 public class Event {
   String uuid;
   String eventStatus;
+  String diseaseVariant;
   String investigationStatus;
   String eventManagementStatus;
   String title;
@@ -43,4 +44,7 @@ public class Event {
   String community;
   String sourceType;
   String responsibleUser;
+  String facility;
+  String facilityCategory;
+  String facilityType;
 }

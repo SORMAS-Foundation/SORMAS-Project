@@ -98,7 +98,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	private Date testDateTime;
 	@Required
 	private FacilityReferenceDto lab;
-	@SensitiveData
+	@SensitiveData(mandatoryField = true)
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String labDetails;
 	@Required

@@ -28,6 +28,7 @@ public enum EducationType {
 	TERTIARY,
 	OTHER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

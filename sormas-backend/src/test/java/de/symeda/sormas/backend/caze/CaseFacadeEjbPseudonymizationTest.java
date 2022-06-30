@@ -21,6 +21,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.startsWith;
 
@@ -422,9 +423,9 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(caze.getRegion(), is(rdcf1.region));
 		assertThat(caze.getDistrict(), is(rdcf1.district));
 		assertThat(caze.getCommunity(), is(nullValue()));
-		assertThat(caze.getHealthFacility(), is(nullValue()));
+		assertThat(caze.getHealthFacility(), notNullValue());
 		assertThat(caze.getHealthFacilityDetails(), is(isEmptyString()));
-		assertThat(caze.getPointOfEntry(), is(nullValue()));
+		assertThat(caze.getPointOfEntry(), notNullValue());
 		assertThat(caze.getPointOfEntryDetails(), is(isEmptyString()));
 		assertThat(caze.getPerson().getFirstName(), is(isEmptyString()));
 		assertThat(caze.getPerson().getLastName(), is(isEmptyString()));

@@ -10,6 +10,7 @@ public enum SystemEventStatus {
 	ERROR,
 	UNCLEAR;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

@@ -37,6 +37,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.share.ExternalShareCriteria;
 import de.symeda.sormas.api.share.ExternalShareInfoCriteria;
 import de.symeda.sormas.api.share.ExternalShareStatus;
@@ -107,6 +108,16 @@ public class ExternalShareInfoService extends AdoServiceWithUserFilter<ExternalS
 		return em.createQuery(cq).getResultList();
 	}
 
+	public List<ExternalShareInfo> getShareInfoByEvent(String eventUuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ExternalShareInfo> cq = cb.createQuery(ExternalShareInfo.class);
+		Root<ExternalShareInfo> root = cq.from(ExternalShareInfo.class);
+
+		cq.where(buildCriteriaFilter(new ExternalShareInfoCriteria().event(new EventReferenceDto(eventUuid)), cb, root));
+		return em.createQuery(cq).getResultList();
+	}
+
 	private <T> void createAndPersistShareInfo(ExternalShareStatus status, T associatedEntity, BiConsumer<ExternalShareInfo, T> setAssociatedEntity) {
 		ExternalShareInfo shareInfo = new ExternalShareInfo();
 
@@ -127,6 +138,14 @@ public class ExternalShareInfoService extends AdoServiceWithUserFilter<ExternalS
 
 	public List<ExternalShareInfoCountAndLatestDate> getEventShareCountAndLatestDate(List<Long> eventIds) {
 		return getShareCountAndLatestDate(eventIds, ExternalShareInfo.EVENT);
+	}
+
+	public List<String> getSharedCaseUuidsWithoutDeletedStatus(List<String> caseUuids) {
+		return getSharedEntityUuidsWithoutDeletedStatus(caseUuids, ExternalShareInfo.CAZE);
+	}
+
+	public List<String> getSharedEventUuidsWithoutDeletedStatus(List<String> eventUuids) {
+		return getSharedEntityUuidsWithoutDeletedStatus(eventUuids, ExternalShareInfo.EVENT);
 	}
 
 	public List<ExternalShareInfoCountAndLatestDate> getShareCountAndLatestDate(List<Long> ids, String associatedObjectName) {
@@ -166,6 +185,29 @@ public class ExternalShareInfoService extends AdoServiceWithUserFilter<ExternalS
 			cb.function(ExtendedPostgreSQL94Dialect.CONCAT_FUNCTION, String.class, associatedObjectId, creationDate).in(latestShareInfoSubQuery),
 			associatedObjectId.in(ids));
 
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<String> getSharedEntityUuidsWithoutDeletedStatus(List<String> entityUuids, String associatedObjectName) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<ExternalShareInfo> externalShareInfo = cq.from(ExternalShareInfo.class);
+
+		Join<?, ExternalShareInfo> associatedObjectJoin = externalShareInfo.join(associatedObjectName);
+
+		Subquery<Integer> survToolShareSubQuery = cq.subquery(Integer.class);
+		Root<ExternalShareInfo> survToolShareRoot = survToolShareSubQuery.from(ExternalShareInfo.class);
+		survToolShareSubQuery.select(survToolShareRoot.get(associatedObjectName));
+		Predicate deletedFilter = cb.equal(survToolShareRoot.get(ExternalShareInfo.STATUS), ExternalShareStatus.DELETED);
+		survToolShareSubQuery.where(deletedFilter);
+
+		Predicate entityUuidsFilter = associatedObjectJoin.get(AbstractDomainObject.UUID).in(entityUuids);
+
+		Predicate filter =
+			CriteriaBuilderHelper.and(cb, entityUuidsFilter, cb.not(associatedObjectJoin.get(AbstractDomainObject.ID).in(survToolShareSubQuery)));
+		cq.where(filter);
+
+		cq.select(externalShareInfo.join(associatedObjectName).get(AbstractDomainObject.UUID)).distinct(true);
 		return em.createQuery(cq).getResultList();
 	}
 

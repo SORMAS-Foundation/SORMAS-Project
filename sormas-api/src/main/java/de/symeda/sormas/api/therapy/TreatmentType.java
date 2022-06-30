@@ -33,6 +33,7 @@ public enum TreatmentType {
 	VASOPRESSORS_INOTROPES,
 	OTHER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
