@@ -47,4 +47,20 @@ public class EditImmunizationPage {
   public static final By DISCARD_BUTTON = By.id("discard");
   public static final By COMMIT_BUTTON = By.id("commit");
   public static final By DELETE_BUTTON = By.id("delete");
+  public static final By DELETION_REASON_COMBOBOX =
+      By.cssSelector(".popupContent div[role='combobox'] input+div");
+  public static final By ACTION_CANCEL_BUTTON = By.cssSelector(".popupContent #actionCancel");
+  public static final By REASON_FOR_DELETION_EXCLAMATION_MARK =
+      By.cssSelector(".popupContent span[class='v-errorindicator v-errorindicator-error']");
+  public static final By REASON_FOR_DELETION_MESSAGE =
+      By.xpath("//div[@class='v-errormessage v-errormessage-error']");
+
+  public static By getReasonForDeletionDetailsFieldLabel(String label) {
+    return By.xpath(String.format("//div[@class='popupContent']//span[text()='[%s[']", label));
+  }
+
+  public static By REASON_FOR_DELETION_DISABLED_REASON_INPUT =
+      By.cssSelector("#deletionReason input");
+  public static By EXTERNAL_ID_INPUT = By.cssSelector("#externalId");
+  public static By ADDITIONAL_DETAILS = By.cssSelector("#additionalDetails");
 }
