@@ -460,7 +460,7 @@ public class SampleFacadeEjb implements SampleFacade {
 				I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.LAB)));
 		}
 
-		if(checkAssociatedEntities){
+		if (checkAssociatedEntities) {
 			validateSampleAssociatedEntities(sample);
 		}
 
