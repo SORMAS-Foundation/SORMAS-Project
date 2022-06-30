@@ -2722,6 +2722,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@RightsAllowed({
 		UserRight._CASE_VIEW,
 		UserRight._EXTERNAL_VISITS })
+	@Override
 	public CaseDataDto toDto(Case source) {
 		return toCaseDto(source);
 	}

@@ -32,7 +32,10 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
@@ -45,6 +48,7 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.event.EventService;
@@ -58,7 +62,9 @@ import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasSha
 import de.symeda.sormas.backend.user.User;
 
 @Stateless(name = "SormasToSormasEventFacade")
-public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterface<Event, EventDto, SormasToSormasEventDto, EventService>
+public class SormasToSormasEventFacadeEjb
+	extends
+	AbstractSormasToSormasInterface<Event, EventDto, EventIndexDto, SormasToSormasEventDto, EventReferenceDto, EventService, EventCriteria, EventFacadeEjb>
 	implements SormasToSormasEventFacade {
 
 	public static final String EVENT_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.EVENT_REQUEST_ENDPOINT;
@@ -83,8 +89,8 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	}
 
 	@Inject
-	public SormasToSormasEventFacadeEjb(EventService eventService) {
-		super(eventService);
+	public SormasToSormasEventFacadeEjb(EventFacadeEjb.EventFacadeEjbLocal facade) {
+		super(facade);
 	}
 
 	@Override
@@ -238,12 +244,13 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	@LocalBean
 	@Stateless
 	public static class SormasToSormasEventFacadeEjbLocal extends SormasToSormasEventFacadeEjb {
+
 		public SormasToSormasEventFacadeEjbLocal() {
 		}
 
 		@Inject
-		public SormasToSormasEventFacadeEjbLocal(EventService eventService) {
-			super(eventService);
+		public SormasToSormasEventFacadeEjbLocal(EventFacadeEjb.EventFacadeEjbLocal facade) {
+			super(facade);
 		}
 	}
 }

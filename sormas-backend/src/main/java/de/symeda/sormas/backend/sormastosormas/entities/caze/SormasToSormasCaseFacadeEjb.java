@@ -33,7 +33,10 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.i18n.Captions;
@@ -51,6 +54,7 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.contact.Contact;
@@ -66,7 +70,9 @@ import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasSha
 import de.symeda.sormas.backend.user.User;
 
 @Stateless(name = "SormasToSormasCaseFacade")
-public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface<Case, CaseDataDto, SormasToSormasCaseDto, CaseService>
+public class SormasToSormasCaseFacadeEjb
+	extends
+	AbstractSormasToSormasInterface<Case, CaseDataDto, CaseIndexDto, SormasToSormasCaseDto, CaseReferenceDto, CaseService, CaseCriteria, CaseFacadeEjb>
 	implements SormasToSormasCaseFacade {
 
 	public static final String CASE_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CASE_REQUEST_ENDPOINT;
@@ -90,8 +96,8 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	}
 
 	@Inject
-	public SormasToSormasCaseFacadeEjb(CaseService caseService) {
-		super(caseService);
+	public SormasToSormasCaseFacadeEjb(CaseFacadeEjb.CaseFacadeEjbLocal facade) {
+		super(facade);
 	}
 
 	@Override
@@ -279,8 +285,8 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 		}
 
 		@Inject
-		public SormasToSormasCaseFacadeEjbLocal(CaseService caseService) {
-			super(caseService);
+		public SormasToSormasCaseFacadeEjbLocal(CaseFacadeEjb.CaseFacadeEjbLocal facade) {
+			super(facade);
 		}
 	}
 }

@@ -32,7 +32,10 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactIndexDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -50,6 +53,7 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.sample.SampleService;
@@ -63,7 +67,9 @@ import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormas
 import de.symeda.sormas.backend.user.User;
 
 @Stateless(name = "SormasToSormasContactFacade")
-public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterface<Contact, ContactDto, SormasToSormasContactDto, ContactService>
+public class SormasToSormasContactFacadeEjb
+	extends
+	AbstractSormasToSormasInterface<Contact, ContactDto, ContactIndexDto, SormasToSormasContactDto, ContactReferenceDto, ContactService, ContactCriteria, ContactFacadeEjb>
 	implements SormasToSormasContactFacade {
 
 	private static final String CONTACT_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CONTACT_REQUEST_ENDPOINT;
@@ -87,8 +93,8 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 	}
 
 	@Inject
-	public SormasToSormasContactFacadeEjb(ContactService contactService) {
-		super(contactService);
+	public SormasToSormasContactFacadeEjb(ContactFacadeEjb.ContactFacadeEjbLocal facade) {
+		super(facade);
 	}
 
 	@Override
@@ -289,8 +295,8 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 		}
 
 		@Inject
-		public SormasToSormasContactFacadeEjbLocal(ContactService contactService) {
-			super(contactService);
+		public SormasToSormasContactFacadeEjbLocal(ContactFacadeEjb.ContactFacadeEjbLocal facade) {
+			super(facade);
 		}
 	}
 }

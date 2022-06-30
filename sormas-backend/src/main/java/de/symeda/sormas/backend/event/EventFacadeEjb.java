@@ -1026,6 +1026,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		}
 	}
 
+	@Override
 	public EventDto toDto(Event source) {
 		return toEventDto(source);
 	}
