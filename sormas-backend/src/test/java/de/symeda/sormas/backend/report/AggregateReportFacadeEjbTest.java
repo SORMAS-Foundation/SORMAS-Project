@@ -230,12 +230,6 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(6, indexList.get(0).getNewCases());
 		Assert.assertEquals(13, indexList.get(0).getDeaths());
 
-		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.REGION);
-		List<AggregatedCaseCountDto> indexListRegionGrouping = getAggregateReportFacade().getIndexList(criteria);
-		Assert.assertEquals(1, indexListRegionGrouping.size());
-		Assert.assertEquals(6, indexListRegionGrouping.get(0).getNewCases());
-		Assert.assertEquals(13, indexListRegionGrouping.get(0).getDeaths());
-
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.HEALTH_FACILITY);
 		List<AggregatedCaseCountDto> indexListFacilityGrouping = getAggregateReportFacade().getIndexList(criteria);
 		Assert.assertEquals(2, indexListFacilityGrouping.size());
@@ -249,5 +243,18 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(1, indexListPoeGrouping.size());
 		Assert.assertEquals(3, indexListPoeGrouping.get(0).getNewCases());
 		Assert.assertEquals(10, indexListPoeGrouping.get(0).getDeaths());
+
+		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.REGION);
+		List<AggregatedCaseCountDto> indexListRegionGrouping = getAggregateReportFacade().getIndexList(criteria);
+		Assert.assertEquals(1, indexListRegionGrouping.size());
+		Assert.assertEquals(6, indexListRegionGrouping.get(0).getNewCases());
+		Assert.assertEquals(13, indexListRegionGrouping.get(0).getDeaths());
+
+		createAggregateReport(4, 4, 4, rdcf.region, null, null, null);
+
+		List<AggregatedCaseCountDto> indexListRegionGroupingWhenRegionaData = getAggregateReportFacade().getIndexList(criteria);
+		Assert.assertEquals(1, indexListRegionGroupingWhenRegionaData.size());
+		Assert.assertEquals(4, indexListRegionGroupingWhenRegionaData.get(0).getNewCases());
+		Assert.assertEquals(4, indexListRegionGroupingWhenRegionaData.get(0).getDeaths());
 	}
 }
