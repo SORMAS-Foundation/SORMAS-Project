@@ -144,3 +144,12 @@ Feature: Edit Persons
     Given I log in with National User
     And I click on the Persons button from navbar
     Then I check that the Person table structure is correct
+
+  @issue=SORDEV-5630 @env_main
+  Scenario: Test a general comment field in person entity
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    When I click on the Contacts button from navbar
+    Then I navigate to the last created via api Person page via URL
