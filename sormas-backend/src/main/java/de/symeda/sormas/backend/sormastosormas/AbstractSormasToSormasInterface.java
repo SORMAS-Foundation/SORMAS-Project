@@ -36,12 +36,10 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
-import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -83,6 +81,7 @@ import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CoreAdo;
@@ -566,7 +565,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 					}
 				}
 			}
-			// run face validation
+			// run facade validation
 			facade.validate(facade.toDto(ado));
 
 			// run type specific S2S validation checks
