@@ -569,7 +569,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 			facade.validate(facade.toDto(ado));
 
 			// run type specific S2S validation checks
-			validateEntitiesBeforeShareInner(ado, handOverOwnership, targetOrganizationId, validationErrors);
+			validateEntitiesInner(ado, handOverOwnership, targetOrganizationId, validationErrors);
 		}
 
 		if (!validationErrors.isEmpty()) {
@@ -578,7 +578,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 
 	}
 
-	protected abstract void validateEntitiesBeforeShareInner(
+	protected abstract void validateEntitiesInner(
 		ADO ado,
 		boolean handOverOwnership,
 		String targetOrganizationId,

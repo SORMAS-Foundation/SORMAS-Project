@@ -139,7 +139,7 @@ public class SormasToSormasEventFacadeEjb
 	}
 
 	@Override
-	protected void validateEntitiesBeforeShareInner(
+	protected void validateEntitiesInner(
 		Event ado,
 		boolean handOverOwnership,
 		String targetOrganizationId,

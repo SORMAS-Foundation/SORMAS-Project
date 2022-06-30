@@ -148,7 +148,7 @@ public class SormasToSormasContactFacadeEjb
 	}
 
 	@Override
-	protected void validateEntitiesBeforeShareInner(
+	protected void validateEntitiesInner(
 		Contact contact,
 		boolean handOverOwnership,
 		String targetOrganizationId,

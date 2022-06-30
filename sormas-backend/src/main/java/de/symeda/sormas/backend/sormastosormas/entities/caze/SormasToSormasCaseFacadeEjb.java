@@ -151,7 +151,7 @@ public class SormasToSormasCaseFacadeEjb
 	}
 
 	@Override
-	protected void validateEntitiesBeforeShareInner(
+	protected void validateEntitiesInner(
 		Case ado,
 		boolean handOverOwnership,
 		String targetOrganizationId,
