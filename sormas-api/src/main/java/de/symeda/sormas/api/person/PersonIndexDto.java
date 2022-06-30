@@ -29,7 +29,6 @@ public class PersonIndexDto extends PseudonymizableIndexDto implements Serializa
 	public static final String PHONE = "phone";
 	public static final String EMAIL_ADDRESS = "emailAddress";
 
-	private String uuid;
 	@PersonalData
 	@SensitiveData
 	private String firstName;
@@ -79,7 +78,7 @@ public class PersonIndexDto extends PseudonymizableIndexDto implements Serializa
 		Date changeDate,
 		boolean isInJurisdiction) {
 
-		this.uuid = uuid;
+		super(uuid);
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.ageAndBirthDate = new AgeAndBirthDateDto(age, ageType, birthdateDD, birthdateMM, birthdateYYYY);
@@ -93,14 +92,6 @@ public class PersonIndexDto extends PseudonymizableIndexDto implements Serializa
 		this.emailAddress = email;
 		this.changeDate = changeDate;
 		this.isInJurisdiction = isInJurisdiction;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public String getFirstName() {
@@ -210,11 +201,6 @@ public class PersonIndexDto extends PseudonymizableIndexDto implements Serializa
 	@Override
 	public String getCaption() {
 		return PersonDto.buildCaption(getFirstName(), getLastName());
-	}
-
-	@Override
-	public String toString() {
-		return PersonDto.I18N_PREFIX + StringUtils.SPACE + uuid;
 	}
 
 	@Override

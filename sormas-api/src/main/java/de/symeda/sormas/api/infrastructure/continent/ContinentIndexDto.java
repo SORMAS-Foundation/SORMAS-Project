@@ -22,7 +22,7 @@ public class ContinentIndexDto extends ContinentDto {
     }
 
     @JsonIgnore
-    public String getI18nPrefix() {
+    public String i18nPrefix() {
         return I18N_PREFIX;
     }
 }

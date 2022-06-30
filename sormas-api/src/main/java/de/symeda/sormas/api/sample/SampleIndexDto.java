@@ -63,7 +63,6 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 	public static final String ADDITIONAL_TESTING_STATUS = "additionalTestingStatus";
 	public static final String PATHOGEN_TEST_COUNT = "pathogenTestCount";
 
-	private String uuid;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
 	@Pseudonymizer(EmptyValuePseudonymizer.class)
@@ -115,7 +114,7 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 						  boolean isInJurisdiction, boolean isCaseInJurisdiction, boolean isContactInJurisdiction,  boolean isContactCaseInJurisdiction, boolean isEventParticipantInJurisdiction) {
 	//@formatter:on
 
-		this.uuid = uuid;
+		super(uuid);
 		if (associatedCaseUuid != null) {
 			this.associatedCase = new CaseReferenceDto(associatedCaseUuid, associatedCaseFirstName, associatedCaseLastName);
 		}
@@ -162,14 +161,6 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 			isContactInJurisdiction,
 			isContactCaseInJurisdiction,
 			isEventParticipantInJurisdiction);
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public CaseReferenceDto getAssociatedCase() {
@@ -311,7 +302,7 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 	public SampleReferenceDto toReference() {
 
 		return new SampleReferenceDto(
-			uuid,
+			getUuid(),
 			getSampleMaterial(),
 			getAssociatedCase() != null ? getAssociatedCase().getUuid() : null,
 			getAssociatedContact() != null ? getAssociatedContact().getUuid() : null,
@@ -395,10 +386,5 @@ public class SampleIndexDto extends PseudonymizableIndexDto implements Serializa
 			sb.append(": ").append(pathogenTestResult);
 		}
 		return sb.toString();
-	}
-
-	@Override
-	public String toString() {
-		return SampleDto.I18N_PREFIX + StringUtils.SPACE + uuid;
 	}
 }

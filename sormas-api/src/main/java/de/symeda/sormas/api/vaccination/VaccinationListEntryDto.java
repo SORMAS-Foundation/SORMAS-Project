@@ -31,21 +31,12 @@ public class VaccinationListEntryDto extends PseudonymizableIndexDto implements 
 
 	private static final long serialVersionUID = 5665903874736291912L;
 
-	private String uuid;
 	private Vaccine vaccineName;
 	private String otherVaccineName;
 	private Date vaccinationDate;
 	private Disease disease;
 	private boolean isRelevant;
 	private String nonRelevantMessage;
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
 
 	public Vaccine getVaccineName() {
 		return vaccineName;
@@ -96,7 +87,7 @@ public class VaccinationListEntryDto extends PseudonymizableIndexDto implements 
 	}
 
 	public VaccinationReferenceDto toReference() {
-		return new VaccinationReferenceDto(uuid, toString());
+		return new VaccinationReferenceDto(getUuid(), toString());
 	}
 
 	@Override
@@ -110,11 +101,6 @@ public class VaccinationListEntryDto extends PseudonymizableIndexDto implements 
 			vaccine = I18nProperties.getString(Strings.labelNoVaccineName);
 		}
 
-		return (date.isEmpty() ? "" : date + " - ") + vaccine + " (" + DataHelper.getShortUuid(uuid) +")";
-	}
-
-	@Override
-	public String toString() {
-		return VaccinationDto.I18N_PREFIX + StringUtils.SPACE + uuid;
+		return (date.isEmpty() ? "" : date + " - ") + vaccine + " (" + DataHelper.getShortUuid(getUuid()) +")";
 	}
 }

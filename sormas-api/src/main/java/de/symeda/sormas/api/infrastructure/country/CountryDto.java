@@ -122,7 +122,7 @@ public class CountryDto extends InfrastructureDto {
 	}
 
 	@JsonIgnore
-	public String getI18nPrefix() {
+	public String i18nPrefix() {
 		return I18N_PREFIX;
 	}
 

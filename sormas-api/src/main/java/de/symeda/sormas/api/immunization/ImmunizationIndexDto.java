@@ -46,8 +46,6 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 	public static final String RECOVERY_DATE = "recoveryDate";
 	public static final String IMMUNIZATION_PERIOD = "immunizationPeriod";
 
-	private String uuid;
-
 	private String personUuid;
 	@PersonalData
 	@SensitiveData
@@ -87,7 +85,7 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 		Date recoveryDate,
 		boolean isInJurisdiction) {
 
-		this.uuid = uuid;
+		super(uuid);
 		this.personUuid = personUuid;
 		this.personFirstName = personFirstName;
 		this.personLastName = personLastName;
@@ -103,14 +101,6 @@ public class ImmunizationIndexDto extends PseudonymizableIndexDto implements Ser
 		this.lastVaccineType = lastVaccineType;
 		this.recoveryDate = recoveryDate;
 		this.isInJurisdiction = isInJurisdiction;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public String getPersonUuid() {

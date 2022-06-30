@@ -81,7 +81,6 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 	public static final String SURVEILLANCE_TOOL_STATUS = "surveillanceToolStatus";
 
 	private long id;
-	private String uuid;
 	private String epidNumber;
 	private String externalID;
 	private String externalToken;
@@ -171,8 +170,8 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 	) {
 		//@formatter:on
 
+		super(uuid);
 		this.id = id;
-		this.uuid = uuid;
 		this.epidNumber = epidNumber;
 		this.externalID = externalID;
 		this.externalToken = externalToken;
@@ -389,7 +388,7 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 	}
 
 	public CaseReferenceDto toReference() {
-		return new CaseReferenceDto(uuid, personFirstName, personLastName);
+		return new CaseReferenceDto(getUuid(), personFirstName, personLastName);
 	}
 
 	@Override
@@ -398,21 +397,8 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 	}
 
 	@Override
-	public String toString() {
-		return CaseDataDto.I18N_PREFIX + StringUtils.SPACE + uuid;
-	}
-
-	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public String getExternalID() {

@@ -23,7 +23,6 @@ public abstract class FollowUpDto extends PseudonymizableIndexDto implements Ser
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 
-	private String uuid;
 	@PersonalData
 	private String firstName;
 	@PersonalData
@@ -34,7 +33,7 @@ public abstract class FollowUpDto extends PseudonymizableIndexDto implements Ser
 	private VisitResultDto[] visitResults;
 
 	protected FollowUpDto(String uuid, String personFirstName, String personLastName, Date reportDate, Date followUpUntil, Disease disease) {
-		this.uuid = uuid;
+		super(uuid);
 		this.firstName = personFirstName;
 		this.lastName = personLastName;
 		this.reportDate = reportDate;
@@ -45,14 +44,6 @@ public abstract class FollowUpDto extends PseudonymizableIndexDto implements Ser
 	public void initVisitSize(int i) {
 		visitResults = new VisitResultDto[i];
 		Arrays.fill(visitResults, new VisitResultDto(VisitOrigin.USER, VisitResult.NOT_PERFORMED));
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public String getFirstName() {

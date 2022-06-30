@@ -27,7 +27,6 @@ public class CaseSelectionDto extends PseudonymizableIndexDto implements Seriali
 	public static final String CASE_CLASSIFICATION = "caseClassification";
 	public static final String OUTCOME = "outcome";
 
-	private String uuid;
 	private String epidNumber;
 	private String externalID;
 	private Disease disease;
@@ -65,7 +64,7 @@ public class CaseSelectionDto extends PseudonymizableIndexDto implements Seriali
 		CaseOutcome outcome,
 		boolean isInJurisdiction) {
 
-		this.uuid = uuid;
+		super(uuid);
 		this.epidNumber = epidNumber;
 		this.externalID = externalID;
 		this.disease = disease;
@@ -79,14 +78,6 @@ public class CaseSelectionDto extends PseudonymizableIndexDto implements Seriali
 		this.caseClassification = caseClassification;
 		this.outcome = outcome;
 		this.isInJurisdiction = isInJurisdiction;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public String getEpidNumber() {
@@ -194,17 +185,12 @@ public class CaseSelectionDto extends PseudonymizableIndexDto implements Seriali
 	}
 
 	public CaseReferenceDto toReference() {
-		return new CaseReferenceDto(uuid, personFirstName, personLastName);
+		return new CaseReferenceDto(getUuid(), personFirstName, personLastName);
 	}
 
 	@Override
 	public String getCaption() {
 		return CaseReferenceDto.buildCaption(getUuid(), getPersonFirstName(), getPersonLastName());
-	}
-
-	@Override
-	public String toString() {
-		return CaseDataDto.I18N_PREFIX + StringUtils.SPACE + uuid;
 	}
 
 	@Override
