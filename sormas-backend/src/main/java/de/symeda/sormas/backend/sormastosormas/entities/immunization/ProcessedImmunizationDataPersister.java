@@ -55,7 +55,8 @@ public class ProcessedImmunizationDataPersister extends ProcessedDataPersister<I
 		handleValidationError(
 			() -> immunizationFacade.save(immunuzation, false, false),
 			Captions.Immunization,
-			buildImmunizationValidationGroupName(immunuzation));
+			buildImmunizationValidationGroupName(immunuzation),
+			immunuzation);
 	}
 
 	@Override
