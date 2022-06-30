@@ -137,12 +137,13 @@ public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateRepo
 		case AggregateReportCriteria.REGION: {
 			final RegionReferenceDto region = user.getRegion() != null ? user.getRegion() : (RegionReferenceDto) event.getProperty().getValue();
 			if (region != null) {
-				boolean districtFieldEnabled = districtFilter.isEnabled();
 				enableFields(districtFilter);
 				FieldHelper.updateItems(districtFilter, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
 				Optional.ofNullable(facilityFilter).ifPresent(AbstractField::clear);
 				Optional.ofNullable(pointOfEntryFilter).ifPresent(AbstractField::clear);
-				districtFilter.setEnabled(districtFieldEnabled);
+				if (user.getDistrict() != null) {
+					disableFields(districtFilter);
+				}
 			} else {
 				clearAndDisableFields(districtFilter, facilityFilter, pointOfEntryFilter);
 			}
