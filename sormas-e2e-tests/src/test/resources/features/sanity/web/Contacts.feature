@@ -835,10 +835,6 @@ Feature: Contacts end to end tests
     And I click on the Contacts button from navbar
     Then I compare previous first contact ID on the list with actually second contact ID on list
 
-
-
-
-
   @issue=SORDEV-6461 @env_main
   Scenario: Test the task type in the contact's new task form
     Given I log in as a National User
@@ -855,7 +851,6 @@ Feature: Contacts end to end tests
     And I choose Other task as described in comments option from task type combobox in the New task form
     Then I check that Comments on task field is mandatory in the New task form
 
-
   @issue=SORDEV-6609 @env_main
   Scenario: Test for contact internal token
     Given I log in as a National User
@@ -870,3 +865,40 @@ Feature: Contacts end to end tests
     And I filter for SAMPLE TOKEN in Contacts Directory
     Then I check that at least one SAMPLE TOKEN is displayed in table
 
+  @issue=SORDEV-6102 @env_main
+  Scenario: Merge duplicate contacts
+    Then API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    When I fill a new contact form for duplicated contact with same person data
+    And I click on SAVE button in create contact form
+    And I click on the CHOOSE SOURCE CASE button from CONTACT page
+    And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
+    And I search for the last case uuid created via Api in the CHOOSE SOURCE Contact window
+    And I open the first found result in the CHOOSE SOURCE window
+    Then I click SAVE button on Edit Contact Page
+    Then I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    When I fill a new contact form for duplicated contact with same person data
+    And I click on SAVE button in create contact form
+    And I Pick a new person in Pick or create person popup during contact creation
+    When I check the created data for duplicated contact is correctly displayed on Edit Contact page
+    And I click on the CHOOSE SOURCE CASE button from CONTACT page
+    And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
+    And I search for the last case uuid created via Api in the CHOOSE SOURCE Contact window
+    And I open the first found result in the CHOOSE SOURCE window
+    Then I click SAVE button on Edit Contact Page
+    And I click on the Contacts button from navbar
+    And I click on the More button on Contact directory page
+    Then I click on Merge Duplicates on Contact directory page
+    And I click on Merge button of leading case in Merge Duplicate Contact page
+    Then I click to Confirm action in Merge Duplicates Cases popup
+    And I click on the Contacts button from navbar
+    And I apply filter by duplicated contact Person data on Contact Directory Page
+    And I check that number of displayed contact results is 1

@@ -11646,5 +11646,7 @@ WHERE uu.userright = 'AGGREGATE_REPORT_VIEW'
 
 INSERT INTO schema_version (version_number, comment) VALUES (470, 'Allow surveillance officer to create aggregate reports #9052');
 
+-- 2022-06-27 Allow external lab users to edit samples #8892
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (471, 'Allow external lab users to edit samples #8892', true);
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
