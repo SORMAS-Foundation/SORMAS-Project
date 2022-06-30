@@ -213,6 +213,11 @@ public interface Validations {
 	String validEventInvestigationStatus = "validEventInvestigationStatus";
 	String validEventStatus = "validEventStatus";
 	String validEventTitle = "validEventTitle";
+	String validExistingCase = "validExistingCase";
+	String validExistingContact = "validExistingContact";
+	String validExistingEventParticipant = "validExistingEventParticipant";
+	String validExistingLaboratory = "validExistingLaboratory";
+	String validExistingReportingUser = "validExistingReportingUser";
 	String validFacility = "validFacility";
 	String validFacilityType = "validFacilityType";
 	String validHealthConditions = "validHealthConditions";
