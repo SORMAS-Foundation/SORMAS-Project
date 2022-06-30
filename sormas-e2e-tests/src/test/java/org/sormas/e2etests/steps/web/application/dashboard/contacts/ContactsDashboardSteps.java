@@ -73,7 +73,6 @@ public class ContactsDashboardSteps implements En {
           webDriverHelpers.getWebElement(CONFIRMED_COUNTER_LABEL_ON_CONTACTS_DASHBOARD);
           confirmedContact_EN =
               webDriverHelpers.getWebElement(CONFIRMED_COUNTER_ON_CONTACTS_DASHBOARD).getText();
-          // System.out.println(confirmedContact);
 
           webDriverHelpers.getWebElement(UNDER_FU_CHART_ON_CONTACTS_DASHBOARD);
         });
@@ -85,14 +84,13 @@ public class ContactsDashboardSteps implements En {
           webDriverHelpers.getWebElement(CONFIRMED_COUNTER_LABEL_ON_CONTACTS_DASHBOARD_DE);
           confirmedContact_DE =
               webDriverHelpers.getWebElement(CONFIRMED_COUNTER_ON_CONTACTS_DASHBOARD_DE).getText();
-          // System.out.println(confirmedContact);
 
           webDriverHelpers.getWebElement(UNDER_FU_CHART_ON_CONTACTS_DASHBOARD);
         });
     And(
         "I compare English and German confirmed contacts counter",
         () -> {
-          Assert.assertEquals(confirmedContact_EN, confirmedContact_DE, "Counters not equal!");
+          Assert.assertEquals(confirmedContact_EN, confirmedContact_DE, "Counters for confirmed contacts are not equal!");
         });
   }
 }
