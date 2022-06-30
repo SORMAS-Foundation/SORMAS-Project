@@ -372,7 +372,10 @@ public class EditCaseSteps implements En {
 
     When(
         "I navigate to Hospitalization tab in Cases",
-        () -> webDriverHelpers.clickOnWebElementBySelector(HOSPITALIZATION_TAB));
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          webDriverHelpers.clickOnWebElementBySelector(HOSPITALIZATION_TAB);
+        });
 
     And(
         "I navigate to case person tab",
