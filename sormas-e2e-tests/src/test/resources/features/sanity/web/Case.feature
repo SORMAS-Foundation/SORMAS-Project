@@ -1350,3 +1350,33 @@ Feature: Case end to end tests
     When I click on save button in the case popup
     And I click on the Cases button from navbar
     Then I compare previous first case ID on the list with actually second case ID on list
+
+  @issue=SORDEV-6614 @env_de
+  Scenario: Provide a search alternative aside from the duplicate recognizing
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill a new case form with same person details for DE version
+    And I click on Save button in Case form
+    Then I click on the Cases button from navbar
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill a new case form with same person details for DE version
+    And I click on Save button in Case form
+    And I click to select another person from Pick or create person popup for DE
+    And I check if name and name prefilled in Pick or create person are equal to one used in case creation
+    And I check that External Id is visible in Pick or Create Person popup for De
+    And I check that Reset is visible in Pick or Create Person popup for De
+    And I check that Search is visible in Pick or Create Person popup for De
+    And I click on Reset filters in Pick or create Person popup
+    And I click on Search in Pick or create Person popup
+    And I check that error message is equal to "Mindestens ein Namensfeld oder ein anderes Feld sollte ausgefüllt werden" in Pick or Create person in popup
+    And I fill first and last name with last created peron data in Pick or Create person in popup
+    And I click on Search in Pick or create Person popup
+    And I click on first result in Pick or create Person popup
