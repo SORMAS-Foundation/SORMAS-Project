@@ -165,7 +165,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		}
 	}
 
-	// todo this can be moved up later
+	// todo this can be moved up 
 	public long count(CRITERIA criteria) {
 		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
 	}
@@ -181,4 +181,9 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	protected abstract List<ADO> findDuplicates(DTO dto, boolean includeArchived);
 
 	// todo implement toDto() here
+
+	@Override
+	public void validate(DTO dto) throws ValidationRuntimeException {
+		// todo we do not run any generic validation logic for infra yet
+	}
 }
