@@ -45,6 +45,7 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolExc
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb;
+import de.symeda.sormas.backend.user.UserRole;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -588,8 +589,9 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		Predicate filter = null;
 		if (eventCriteria.getReportingUserRole() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.isMember(eventCriteria.getReportingUserRole(), joins.getReportingUser().get(User.USER_ROLES)));
+			Join<Event, User> reportingUser = joins.getReportingUser();
+			Join<User, UserRole> rolesJoin = reportingUser.join(User.USER_ROLES, JoinType.LEFT);
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(rolesJoin.get(UserRole.UUID), eventCriteria.getReportingUserRole().getUuid()));
 		}
 		if (eventCriteria.getDisease() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.DISEASE), eventCriteria.getDisease()));
