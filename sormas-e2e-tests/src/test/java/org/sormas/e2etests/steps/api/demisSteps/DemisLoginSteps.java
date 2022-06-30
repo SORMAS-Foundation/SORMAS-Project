@@ -15,29 +15,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.steps.api;
+package org.sormas.e2etests.steps.api.demisSteps;
 
+import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
-import javax.inject.Inject;
-import org.sormas.e2etests.entities.pojo.api.Contact;
-import org.sormas.e2etests.entities.pojo.api.Task;
-import org.sormas.e2etests.entities.services.api.TaskApiService;
-import org.sormas.e2etests.helpers.api.sormasrest.TaskHelper;
+import lombok.extern.slf4j.Slf4j;
+import org.sormas.e2etests.entities.pojo.api.Person;
+import org.sormas.e2etests.entities.services.api.PersonApiService;
+import org.sormas.e2etests.helpers.api.demis.DemisHelper;
+import org.sormas.e2etests.helpers.api.sormasrest.PersonsHelper;
 import org.sormas.e2etests.state.ApiState;
 
-public class TasksSteps implements En {
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
+
+@Slf4j
+public class DemisLoginSteps implements En {
 
   @Inject
-  public TasksSteps(TaskHelper taskHelper, TaskApiService taskApiService, ApiState apiState) {
+  public DemisLoginSteps(DemisHelper demisHelper) {
 
     When(
-        "API: I create a new task",
+        "API: I login to DEMIS server",
         () -> {
-          Task task = taskApiService.buildGeneratedTask();
-          Contact contact = Contact.builder().uuid(apiState.getCreatedContact().getUuid()).build();
-          task = task.toBuilder().contact(contact).build();
-          taskHelper.createTask(task);
-          apiState.setCreatedTask(task);
+          //
         });
   }
 }

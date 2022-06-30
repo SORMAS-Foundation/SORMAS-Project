@@ -24,7 +24,7 @@ import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.entities.pojo.api.Case;
 import org.sormas.e2etests.entities.services.api.CaseApiService;
-import org.sormas.e2etests.helpers.api.CaseHelper;
+import org.sormas.e2etests.helpers.api.sormasrest.CaseHelper;
 import org.sormas.e2etests.state.ApiState;
 
 @Slf4j

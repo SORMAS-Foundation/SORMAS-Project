@@ -1068,7 +1068,8 @@ public class SurveillanceDashboardSteps implements En {
     And(
         "I compare English and German confirmed counter",
         () -> {
-          Assert.assertEquals(confirmedCases_EN, confirmedCases_DE, "Counters for confirmed cases are not equal!");
+          Assert.assertEquals(
+              confirmedCases_EN, confirmedCases_DE, "Counters for confirmed cases are not equal!");
         });
   }
 }
