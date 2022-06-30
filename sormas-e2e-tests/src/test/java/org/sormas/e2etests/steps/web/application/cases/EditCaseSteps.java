@@ -363,7 +363,6 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
           webDriverHelpers.clickOnWebElementBySelector(HOSPITALIZATION_TAB);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
         });
 
     And(
