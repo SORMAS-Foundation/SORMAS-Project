@@ -20,10 +20,6 @@ import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.EVE
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventValidationGroupName;
 
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -34,20 +30,18 @@ import java.util.stream.Stream;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventFacade;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.event.Event;
@@ -64,7 +58,7 @@ import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasSha
 import de.symeda.sormas.backend.user.User;
 
 @Stateless(name = "SormasToSormasEventFacade")
-public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterface<Event, EventDto, SormasToSormasEventDto>
+public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterface<Event, EventDto, SormasToSormasEventDto, EventService>
 	implements SormasToSormasEventFacade {
 
 	public static final String EVENT_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.EVENT_REQUEST_ENDPOINT;
@@ -85,14 +79,52 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	private SormasToSormasShareInfoService shareInfoService;
 
 	public SormasToSormasEventFacadeEjb() {
-		super(
-			EVENT_REQUEST_ENDPOINT,
-			EVENT_REQUEST_GET_DATA_ENDPOINT,
-			SAVE_SHARED_EVENTS_ENDPOINT,
-			SYNC_SHARED_EVENTS_ENDPOINT,
-			EVENT_SHARES_ENDPOINT,
-			Captions.Event,
-			ShareRequestDataType.EVENT);
+
+	}
+
+	@Inject
+	public SormasToSormasEventFacadeEjb(EventService eventService) {
+		super(eventService);
+	}
+
+	@Override
+	public String getRequestEndpoint() {
+		return EVENT_REQUEST_ENDPOINT;
+	}
+
+	@Override
+	public String getRequestGetDataEndpoint() {
+		return EVENT_REQUEST_GET_DATA_ENDPOINT;
+	}
+
+	@Override
+	public String getSaveEndpoint() {
+		return SAVE_SHARED_EVENTS_ENDPOINT;
+	}
+
+	@Override
+	public String getSyncEndpoint() {
+		return SYNC_SHARED_EVENTS_ENDPOINT;
+	}
+
+	@Override
+	public String getSharesEndpoint() {
+		return EVENT_SHARES_ENDPOINT;
+	}
+
+	@Override
+	public String getEntityCaptionTag() {
+		return Captions.Event;
+	}
+
+	@Override
+	public ShareRequestDataType getShareRequestDataType() {
+		return ShareRequestDataType.EVENT;
+	}
+
+	@Override
+	public Event extractFromShareInfo(SormasToSormasShareInfo shareInfo) {
+		return shareInfo.getEvent();
 	}
 
 	@Override
@@ -101,52 +133,22 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	}
 
 	@Override
-	protected void validateEntitiesBeforeShare(
-		List<Event> entities,
+	protected void validateEntitiesBeforeShareInner(
+		Event ado,
 		boolean handOverOwnership,
 		String targetOrganizationId,
-		boolean pendingRequestAllowed)
-		throws SormasToSormasException {
-		List<ValidationErrors> validationErrors = new ArrayList<>();
-		for (Event event : entities) {
-			if (!eventService.isEditAllowed(event).equals(EditPermissionType.ALLOWED)) {
-				validationErrors.add(
-					new ValidationErrors(
-						buildEventValidationGroupName(event),
-						ValidationErrors
-							.create(new ValidationErrorGroup(Captions.Event), new ValidationErrorMessage(Validations.sormasToSormasNotEditable))));
-			}
-
-			if (!pendingRequestAllowed) {
-				SormasToSormasShareInfo shareInfo = shareInfoService.getByEventAndOrganization(event.getUuid(), targetOrganizationId);
-				if (shareInfo != null) {
-					ShareRequestInfo latestShare =
-						ShareInfoHelper.getLatestRequest(shareInfo.getRequests().stream()).orElseGet(ShareRequestInfo::new);
-
-					if (latestShare.getRequestStatus() == ShareRequestStatus.PENDING) {
-						validationErrors.add(
-							new ValidationErrors(
-								buildEventValidationGroupName(event),
-								ValidationErrors.create(
-									new ValidationErrorGroup(Captions.Event),
-									new ValidationErrorMessage(Validations.sormasToSormasExistingPendingRequest))));
-					}
-				}
-			}
-		}
-
-		if (!validationErrors.isEmpty()) {
-			throw SormasToSormasException.fromStringProperty(validationErrors, Strings.errorSormasToSormasShare);
-		}
+		List<ValidationErrors> validationErrors) {
+		// nothing to do besides standard validation in super class.
 	}
 
 	@Override
-	protected void validateEntitiesBeforeSend(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {
-		validateEntitiesBeforeShare(
-			shares.stream().map(SormasToSormasShareInfo::getEvent).filter(Objects::nonNull).collect(Collectors.toList()),
-			shares.get(0).isOwnershipHandedOver(),
-			shares.get(0).getOrganizationId(),
-			true);
+	public SormasToSormasShareInfo getByTypeAndOrganization(Event ado, String targetOrganizationId) {
+		return shareInfoService.getByEventAndOrganization(ado.getUuid(), targetOrganizationId);
+	}
+
+	@Override
+	protected ValidationErrorGroup buildValidationGroupNameForAdo(Event ado) {
+		return buildEventValidationGroupName(ado);
 	}
 
 	@Override
@@ -236,6 +238,12 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	@LocalBean
 	@Stateless
 	public static class SormasToSormasEventFacadeEjbLocal extends SormasToSormasEventFacadeEjb {
+		public SormasToSormasEventFacadeEjbLocal() {
+		}
 
+		@Inject
+		public SormasToSormasEventFacadeEjbLocal(EventService eventService) {
+			super(eventService);
+		}
 	}
 }

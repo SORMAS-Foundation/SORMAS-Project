@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -31,13 +31,12 @@ import java.util.stream.Stream;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
@@ -46,7 +45,6 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
@@ -63,13 +61,12 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless(name = "SormasToSormasCaseFacade")
-public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface<Case, CaseDataDto, SormasToSormasCaseDto>
+public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface<Case, CaseDataDto, SormasToSormasCaseDto, CaseService>
 	implements SormasToSormasCaseFacade {
 
 	public static final String CASE_REQUEST_ENDPOINT = RESOURCE_PATH + SormasToSormasApiConstants.CASE_REQUEST_ENDPOINT;
@@ -90,14 +87,51 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	private SormasToSormasShareInfoService shareInfoService;
 
 	public SormasToSormasCaseFacadeEjb() {
-		super(
-			CASE_REQUEST_ENDPOINT,
-			CASE_REQUEST_GET_DATA_ENDPOINT,
-			SAVE_SHARED_CASE_ENDPOINT,
-			SYNC_CASE_ENDPOINT,
-			CASE_SHARES_ENDPOINT,
-			Captions.CaseData,
-			ShareRequestDataType.CASE);
+	}
+
+	@Inject
+	public SormasToSormasCaseFacadeEjb(CaseService caseService) {
+		super(caseService);
+	}
+
+	@Override
+	public String getRequestEndpoint() {
+		return CASE_REQUEST_ENDPOINT;
+	}
+
+	@Override
+	public String getRequestGetDataEndpoint() {
+		return CASE_REQUEST_GET_DATA_ENDPOINT;
+	}
+
+	@Override
+	public String getSaveEndpoint() {
+		return SAVE_SHARED_CASE_ENDPOINT;
+	}
+
+	@Override
+	public String getSyncEndpoint() {
+		return SYNC_CASE_ENDPOINT;
+	}
+
+	@Override
+	public String getSharesEndpoint() {
+		return CASE_SHARES_ENDPOINT;
+	}
+
+	@Override
+	public String getEntityCaptionTag() {
+		return Captions.CaseData;
+	}
+
+	@Override
+	public ShareRequestDataType getShareRequestDataType() {
+		return ShareRequestDataType.CASE;
+	}
+
+	@Override
+	public Case extractFromShareInfo(SormasToSormasShareInfo shareInfo) {
+		return shareInfo.getCaze();
 	}
 
 	@Override
@@ -111,60 +145,29 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	}
 
 	@Override
-	protected void validateEntitiesBeforeShare(
-		List<Case> entities,
+	protected void validateEntitiesBeforeShareInner(
+		Case ado,
 		boolean handOverOwnership,
 		String targetOrganizationId,
-		boolean pendingRequestAllowed)
-		throws SormasToSormasException {
-		List<ValidationErrors> validationErrors = new ArrayList<>();
-		for (Case caze : entities) {
-			if (!caseService.isEditAllowed(caze).equals(EditPermissionType.ALLOWED)) {
-				validationErrors.add(
-					new ValidationErrors(
-						buildCaseValidationGroupName(caze),
-						ValidationErrors
-							.create(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasNotEditable))));
-			}
-			if (handOverOwnership && caze.getPerson().isEnrolledInExternalJournal()) {
-				validationErrors.add(
-					new ValidationErrors(
-						buildCaseValidationGroupName(caze),
-						ValidationErrors.create(
-							new ValidationErrorGroup(Captions.CaseData),
-							new ValidationErrorMessage(Validations.sormasToSormasPersonEnrolled))));
-			}
+		List<ValidationErrors> validationErrors) {
 
-			if (!pendingRequestAllowed) {
-				SormasToSormasShareInfo shareInfo = shareInfoService.getByCaseAndOrganization(caze.getUuid(), targetOrganizationId);
-				if (shareInfo != null) {
-					ShareRequestInfo latestShare =
-						ShareInfoHelper.getLatestRequest(shareInfo.getRequests().stream()).orElseGet(ShareRequestInfo::new);
-
-					if (latestShare.getRequestStatus() == ShareRequestStatus.PENDING) {
-						validationErrors.add(
-							new ValidationErrors(
-								buildCaseValidationGroupName(caze),
-								ValidationErrors.create(
-									new ValidationErrorGroup(Captions.CaseData),
-									new ValidationErrorMessage(Validations.sormasToSormasExistingPendingRequest))));
-					}
-				}
-			}
-		}
-
-		if (!validationErrors.isEmpty()) {
-			throw SormasToSormasException.fromStringProperty(validationErrors, Strings.errorSormasToSormasShare);
+		if (handOverOwnership && ado.getPerson().isEnrolledInExternalJournal()) {
+			validationErrors.add(
+				new ValidationErrors(
+					buildCaseValidationGroupName(ado),
+					ValidationErrors
+						.create(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasPersonEnrolled))));
 		}
 	}
 
 	@Override
-	protected void validateEntitiesBeforeSend(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {
-		validateEntitiesBeforeShare(
-			shares.stream().map(SormasToSormasShareInfo::getCaze).filter(Objects::nonNull).collect(Collectors.toList()),
-			shares.get(0).isOwnershipHandedOver(),
-			shares.get(0).getOrganizationId(),
-			true);
+	public SormasToSormasShareInfo getByTypeAndOrganization(Case ado, String targetOrganizationId) {
+		return shareInfoService.getByCaseAndOrganization(ado.getUuid(), targetOrganizationId);
+	}
+
+	@Override
+	protected ValidationErrorGroup buildValidationGroupNameForAdo(Case ado) {
+		return buildCaseValidationGroupName(ado);
 	}
 
 	@Override
@@ -272,5 +275,12 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	@Stateless
 	public static class SormasToSormasCaseFacadeEjbLocal extends SormasToSormasCaseFacadeEjb {
 
+		public SormasToSormasCaseFacadeEjbLocal() {
+		}
+
+		@Inject
+		public SormasToSormasCaseFacadeEjbLocal(CaseService caseService) {
+			super(caseService);
+		}
 	}
 }

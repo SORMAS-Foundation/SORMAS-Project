@@ -171,38 +171,27 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 	@EJB
 	private SormasToSormasEntitiesHelper sormasToSormasEntitiesHelper;
 
-	private final String requestEndpoint;
-	private final String requestGetDataEndpoint;
-	private final String saveEndpoint;
-	private final String syncEndpoint;
-	private final String sharesEndpoint;
-
-	private final String entityCaptionTag;
-
-	private final ShareRequestDataType shareRequestDataType;
-
 	protected AbstractSormasToSormasInterface() {
-		throw new RuntimeException("AbstractSormasToSormasInterface should not be instantiated");
+
 	}
 
-	public AbstractSormasToSormasInterface(
-		String requestEndpoint,
-		String requestGetDataEndpoint,
-		String saveEndpoint,
-		String syncEndpoint,
-		String sharesEndpoint,
-		String entityCaptionTag,
-		ShareRequestDataType shareRequestDataType,
-		SRV service) {
-		this.requestEndpoint = requestEndpoint;
-		this.requestGetDataEndpoint = requestGetDataEndpoint;
-		this.saveEndpoint = saveEndpoint;
-		this.syncEndpoint = syncEndpoint;
-		this.sharesEndpoint = sharesEndpoint;
-		this.entityCaptionTag = entityCaptionTag;
-		this.shareRequestDataType = shareRequestDataType;
+	protected AbstractSormasToSormasInterface(SRV service) {
 		this.service = service;
 	}
+
+	public abstract String getRequestEndpoint();
+
+	public abstract String getRequestGetDataEndpoint();
+
+	public abstract String getSaveEndpoint();
+
+	public abstract String getSyncEndpoint();
+
+	public abstract String getSharesEndpoint();
+
+	public abstract String getEntityCaptionTag();
+
+	public abstract ShareRequestDataType getShareRequestDataType();
 
 	@Override
 	@Transactional(rollbackOn = {
@@ -247,7 +236,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(currentUser, options);
 
 		sormasToSormasRestClient
-			.post(options.getOrganization().getId(), requestEndpoint, new ShareRequestData(requestUuid, previewsToSend, originInfo), null);
+			.post(options.getOrganization().getId(), getRequestEndpoint(), new ShareRequestData(requestUuid, previewsToSend, originInfo), null);
 
 		// remove shares to the origin
 		shareRequestInfoService.ensurePersisted(shareRequestInfo);
@@ -286,7 +275,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		validateShareRequestBeforeAccept(shareRequest);
 
 		SormasToSormasEncryptedDataDto encryptedData =
-			sormasToSormasRestClient.post(organizationId, requestGetDataEndpoint, requestUuid, SormasToSormasEncryptedDataDto.class);
+			sormasToSormasRestClient.post(organizationId, getRequestEndpoint(), requestUuid, SormasToSormasEncryptedDataDto.class);
 
 		decryptAndPersist(
 			encryptedData,
@@ -330,7 +319,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		SormasToSormasDto dataToSend = shareDataBuilder.buildShareDataForRequest(requestInfo, currentUser);
 
 		SormasToSormasEncryptedDataDto encryptedResponse =
-			sormasToSormasRestClient.post(options.getOrganization().getId(), saveEndpoint, dataToSend, SormasToSormasEncryptedDataDto.class);
+			sormasToSormasRestClient.post(options.getOrganization().getId(), getSaveEndpoint(), dataToSend, SormasToSormasEncryptedDataDto.class);
 
 		ShareRequestAcceptData responseData = sormasToSormasEncryptionEjb.decryptAndVerify(encryptedResponse, ShareRequestAcceptData.class);
 
@@ -427,7 +416,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		return sormasToSormasEncryptionEjb.signAndEncrypt(shares, encryptedCriteria.getSenderId());
 	}
 
-	protected final void validateEntitiesBeforeSend(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {
+	protected void validateEntitiesBeforeSend(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {
 		validateEntitiesBeforeShare(
 			shares.stream().map(this::extractFromShareInfo).filter(Objects::nonNull).collect(Collectors.toList()),
 			shares.get(0).isOwnershipHandedOver(),
@@ -535,14 +524,14 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 	}
 
 	private ValidationErrorGroup buildEntityValidationGroupName(String uuid) {
-		return buildValidationGroupName(entityCaptionTag, uuid);
+		return buildValidationGroupName(getEntityCaptionTag(), uuid);
 	}
 
 	protected abstract BaseAdoService<ADO> getEntityService();
 
 	protected abstract Class<S[]> getShareDataClass();
 
-	protected final void validateEntitiesBeforeShare(
+	protected void validateEntitiesBeforeShare(
 		List<ADO> entities,
 		boolean handOverOwnership,
 		String targetOrganizationId,
@@ -556,7 +545,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 					new ValidationErrors(
 						buildEventValidationGroupName(ado),
 						ValidationErrors.create(
-							new ValidationErrorGroup(getErrorGroupCaption()),
+							new ValidationErrorGroup(getEntityCaptionTag()),
 							new ValidationErrorMessage(Validations.sormasToSormasNotEditable))));
 			}
 
@@ -571,12 +560,12 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 							new ValidationErrors(
 								buildEventValidationGroupName(ado),
 								ValidationErrors.create(
-									new ValidationErrorGroup(getErrorGroupCaption()),
+									new ValidationErrorGroup(getEntityCaptionTag()),
 									new ValidationErrorMessage(Validations.sormasToSormasExistingPendingRequest))));
 					}
 				}
 			}
-			ado.validate();
+			// todo ado.validate();
 			// run type specific validation checks
 			validateEntitiesBeforeShareInner(ado, handOverOwnership, targetOrganizationId, validationErrors);
 		}
@@ -595,8 +584,6 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 
 	public abstract SormasToSormasShareInfo getByTypeAndOrganization(ADO ado, String targetOrganizationId);
 
-	protected abstract String getErrorGroupCaption();
-
 	protected abstract ValidationErrorGroup buildValidationGroupNameForAdo(ADO ado);
 
 	protected abstract void validateShareRequestBeforeAccept(SormasToSormasShareRequestDto shareRequest) throws SormasToSormasException;
@@ -609,7 +596,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		SormasToSormasDto shareData =
 			shareDataBuilder.buildShareData(shares, dataBuilderHelper.createSormasToSormasOriginInfo(currentUser, requestInfo), requestInfo);
 
-		sormasToSormasRestClient.post(options.getOrganization().getId(), syncEndpoint, new SyncDataDto(shareData, criteria), null);
+		sormasToSormasRestClient.post(options.getOrganization().getId(), getSyncEndpoint(), new SyncDataDto(shareData, criteria), null);
 
 		// add new shares to the original request
 		requestInfo.getShares().addAll(shares.stream().filter(s -> s.getId() == null).collect(Collectors.toList()));
@@ -633,7 +620,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		SormasToSormasDto shareData = shareDataBuilder
 			.buildShareData(shareRequestInfo.getShares(), dataBuilderHelper.createSormasToSormasOriginInfo(currentUser, options), shareRequestInfo);
 
-		sormasToSormasRestClient.post(originInfo.getOrganizationId(), syncEndpoint, new SyncDataDto(shareData, criteria), null);
+		sormasToSormasRestClient.post(originInfo.getOrganizationId(), getSyncEndpoint(), new SyncDataDto(shareData, criteria), null);
 
 		// remove existing shares from the request info
 		shareRequestInfo.setShares(shareRequestInfo.getShares().stream().filter(s -> s.getId() == null).collect(Collectors.toList()));
@@ -648,7 +635,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		ShareRequestPreviews previews) {
 		SormasToSormasShareRequestDto request = SormasToSormasShareRequestDto.build();
 		request.setUuid(requestUuid);
-		request.setDataType(shareRequestDataType);
+		request.setDataType(getShareRequestDataType());
 		request.setStatus(ShareRequestStatus.PENDING);
 
 		request.setOriginInfo(originInfo);
@@ -670,7 +657,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 					uuid -> new ValidationErrors(
 						buildEntityValidationGroupName(uuid),
 						ValidationErrors.create(
-							new ValidationErrorGroup(entityCaptionTag),
+							new ValidationErrorGroup(getEntityCaptionTag()),
 							new ValidationErrorMessage(Validations.sormasToSormasOwnershipAlreadyHandedOver))))
 				.collect(Collectors.toList());
 
@@ -694,7 +681,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 		walkShareTree(criteria, (entity, originInfo, parentCriteria) -> {
 			try {
 				SormasToSormasEncryptedDataDto encryptedShares = sormasToSormasRestClient
-					.post(originInfo.getOrganizationId(), sharesEndpoint, parentCriteria, SormasToSormasEncryptedDataDto.class);
+					.post(originInfo.getOrganizationId(), getSharesEndpoint(), parentCriteria, SormasToSormasEncryptedDataDto.class);
 
 				shares.addAll(Arrays.asList(sormasToSormasEncryptionEjb.decryptAndVerify(encryptedShares, SormasToSormasShareTree[].class)));
 			} catch (SormasToSormasException e) {
@@ -708,7 +695,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends CoreAdo & Sorm
 				if (!noForward) {
 					SormasToSormasEncryptedDataDto encryptedShares = sormasToSormasRestClient.post(
 						shareInfo.getOrganizationId(),
-						sharesEndpoint,
+						getSharesEndpoint(),
 						new ShareTreeCriteria(reShareCriteria.getEntityUuid(), reShareCriteria.getExceptedOrganizationId(), true),
 						SormasToSormasEncryptedDataDto.class);
 
