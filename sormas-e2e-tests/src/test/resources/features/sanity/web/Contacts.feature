@@ -851,6 +851,20 @@ Feature: Contacts end to end tests
     And I choose Other task as described in comments option from task type combobox in the New task form
     Then I check that Comments on task field is mandatory in the New task form
 
+  @issue=SORDEV-6609 @env_main
+  Scenario: Test for contact internal token
+    Given I log in as a National User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click on SAVE new contact button
+    When I fill in the Internal Token field in Edit Case page with SAMPLE TOKEN
+    And I click on save button in the case popup
+    And I click on the Contacts button from navbar
+    And I check that the Internal Token column is present
+    And I filter for SAMPLE TOKEN in Contacts Directory
+    Then I check that at least one SAMPLE TOKEN is displayed in table
+
   @issue=SORDEV-6102 @env_main
   Scenario: Merge duplicate contacts
     Then API: I create a new person

@@ -1350,3 +1350,16 @@ Feature: Case end to end tests
     When I click on save button in the case popup
     And I click on the Cases button from navbar
     Then I compare previous first case ID on the list with actually second case ID on list
+
+  @issue=SORDEV-6609 @env_main
+  Scenario: Test for case internal token
+    Given I log in as a National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with specific data
+    When I fill in the Internal Token field in Edit Case page with SAMPLE TOKEN
+    And I click on save button in the case popup
+    And I click on the Cases button from navbar
+    And I check that the Internal Token column is present
+    And I filter for SAMPLE TOKEN in Cases Directory
+    Then I check that at least one SAMPLE TOKEN is displayed in table
