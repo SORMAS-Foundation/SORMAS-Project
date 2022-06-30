@@ -301,12 +301,6 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	public EditPermissionType isImmunizationEditAllowed(String uuid) {
-		Immunization immunization = service.getByUuid(uuid);
-		return service.isImmunizationEditAllowed(immunization);
-	}
-
-	@Override
 	public List<ImmunizationDto> getSimilarImmunizations(ImmunizationSimilarityCriteria criteria) {
 		return service.getSimilarImmunizations(criteria).stream().map(result -> {
 			ImmunizationDto immunizationDto = new ImmunizationDto();
@@ -335,7 +329,7 @@ public class ImmunizationFacadeEjb
 	public ImmunizationDto save(@Valid @NotNull ImmunizationDto dto, boolean checkChangeDate, boolean internal) {
 		Immunization existingImmunization = service.getByUuid(dto.getUuid());
 
-		if (internal && existingImmunization != null && !service.isImmunizationEditAllowed(existingImmunization).equals(EditPermissionType.ALLOWED)) {
+		if (internal && existingImmunization != null && !service.isEditAllowed(existingImmunization).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorImmunizationNotEditable));
 		}
 

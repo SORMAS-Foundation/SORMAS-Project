@@ -3887,12 +3887,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_FOLLOWUP, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE));
 	}
 
-	public EditPermissionType isCaseEditAllowed(String caseUuid) {
-		Case caze = service.getByUuid(caseUuid);
-
-		return service.getEditPermissionType(caze);
-	}
-
 	@Override
 	@RightsAllowed(UserRight._CASE_EDIT)
 	public void sendMessage(List<String> caseUuids, String subject, String messageContent, MessageType... messageTypes) {

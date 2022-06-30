@@ -243,4 +243,9 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	public Date calculateEndOfProcessingDate(String entityUuid) {
 		return service.calculateEndOfProcessingDate(Collections.singletonList(entityUuid)).get(entityUuid);
 	}
+
+	public EditPermissionType isEditAllowed(String uuid) {
+		ADO ado = service.getByUuid(uuid);
+		return service.isEditAllowed(ado);
+	}
 }

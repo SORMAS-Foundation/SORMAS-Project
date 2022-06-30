@@ -27,7 +27,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CoreFacade;
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
@@ -70,8 +69,6 @@ public interface EventParticipantFacade
 	List<String> getArchivedUuidsSince(Date since);
 
 	List<String> getDeletedUuidsSince(Date date);
-
-	EditPermissionType isEventParticipantEditAllowed(String uuid);
 
 	EventParticipantDto getFirst(EventParticipantCriteria eventParticipantCriteria);
 
