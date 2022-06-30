@@ -16,9 +16,13 @@
 package de.symeda.sormas.ui.user;
 
 import com.vaadin.navigator.Navigator;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 
+import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
@@ -26,6 +30,7 @@ import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
@@ -67,13 +72,13 @@ public class UserRoleController {
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
-	public CommitDiscardWrapperComponent<UserRoleDataForm> getUserRoleEditComponent(UserRoleReferenceDto userRoleRef) {
-		UserRoleDataForm form = new UserRoleDataForm();
+	public CommitDiscardWrapperComponent<UserRoleEditForm> getUserRoleEditComponent(UserRoleReferenceDto userRoleRef) {
+		UserRoleEditForm form = new UserRoleEditForm();
 
 		UserRoleDto userRole = FacadeProvider.getUserRoleFacade().getByUuid(userRoleRef.getUuid());
 		form.setValue(userRole);
 
-		final CommitDiscardWrapperComponent<UserRoleDataForm> editView =
+		final CommitDiscardWrapperComponent<UserRoleEditForm> editView =
 			// TODO rights
 			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE), form.getFieldGroup());
 
@@ -86,6 +91,25 @@ public class UserRoleController {
 				SormasUI.refreshView();
 			}
 		});
+
+		String captionKey = userRole.isEnabled() ? Captions.actionDisable : Captions.actionEnable;
+		Button archiveButton = ButtonHelper.createButton(captionKey, I18nProperties.getCaption(captionKey), e -> {
+			boolean isCommitSuccessFul = true;
+			if (editView.isModified()) {
+				isCommitSuccessFul = editView.commitAndHandle();
+			}
+
+			if (isCommitSuccessFul) {
+				UserRoleDto formData = editView.getWrappedComponent().getValue();
+				formData.setEnabled(!userRole.isEnabled());
+				FacadeProvider.getUserRoleFacade().saveUserRole(formData);
+
+				SormasUI.refreshView();
+			}
+		}, ValoTheme.BUTTON_LINK);
+
+		editView.getButtonsPanel().addComponentAsFirst(archiveButton);
+		editView.getButtonsPanel().setComponentAlignment(archiveButton, Alignment.BOTTOM_LEFT);
 
 		return editView;
 	}

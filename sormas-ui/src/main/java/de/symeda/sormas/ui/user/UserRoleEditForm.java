@@ -43,7 +43,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.components.CheckboxSet;
 
-public class UserRoleDataForm extends AbstractEditForm<UserRoleDto> {
+public class UserRoleEditForm extends AbstractEditForm<UserRoleDto> {
 
 	private static final long serialVersionUID = 8099247063020818190L;
 
@@ -63,7 +63,7 @@ public class UserRoleDataForm extends AbstractEditForm<UserRoleDto> {
 		+ fluidRowLocs(TEMPLATE_INFO_LOC)
 		+ fluidRowLocs(UserRoleDto.USER_RIGHTS);
 
-	protected UserRoleDataForm() {
+	protected UserRoleEditForm() {
 		super(UserRoleDto.class, UserRoleDto.I18N_PREFIX);
 	}
 

@@ -40,7 +40,7 @@ public class UserRoleView extends AbstractUserRoleView {
 	@Override
 	protected void initView(String params) {
 
-		CommitDiscardWrapperComponent<UserRoleDataForm> editComponent =
+		CommitDiscardWrapperComponent<UserRoleEditForm> editComponent =
 			ControllerProvider.getUserRoleController().getUserRoleEditComponent(getReference());
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);

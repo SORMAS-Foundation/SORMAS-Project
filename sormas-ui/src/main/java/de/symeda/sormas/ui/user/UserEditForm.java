@@ -23,7 +23,10 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import com.vaadin.v7.data.util.converter.Converter;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -49,6 +52,7 @@ import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -140,8 +144,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         addField(UserDto.ACTIVE, CheckBox.class);
         addField(UserDto.USER_NAME, TextField.class);
         OptionGroup userRoles = addField(UserDto.USER_ROLES, OptionGroup.class);
-        userRoleMap = FacadeProvider.getUserRoleFacade().getEnabledUserRoles().stream().collect(Collectors.toMap(userRole -> userRole.toReference(), userRole -> userRole));
-        userRoles.addItems(userRoleMap.keySet().stream().sorted(Comparator.comparing(UserRoleReferenceDto::getCaption)).collect(Collectors.toList()));
+        userRoleMap = FacadeProvider.getUserRoleFacade().getAll().stream().collect(Collectors.toMap(UserRoleDto::toReference, userRole -> userRole));
+        userRoles.addItems(getFilteredUserRoles(Collections.emptySet()));
         userRoles.addValidator(new UserRolesValidator());
         userRoles.setMultiSelect(true);
         CssStyles.style(CssStyles.CAPTION_ON_TOP);
@@ -195,10 +199,25 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         updateFieldsByUserRole();
     }
 
-    @SuppressWarnings("unchecked")
+	@Override
+	public void setValue(UserDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		final OptionGroup userRolesField = (OptionGroup)getFieldGroup().getField(UserDto.USER_ROLES);
+		FieldHelper.updateItems(userRolesField, getFilteredUserRoles(newFieldValue.getUserRoles()));
+
+		super.setValue(newFieldValue);
+	}
+
+	private List<UserRoleReferenceDto> getFilteredUserRoles(Set<UserRoleReferenceDto> selectedUserRoles) {
+		return userRoleMap
+				.entrySet().stream().filter(r -> r.getValue().isEnabled() || selectedUserRoles.stream().anyMatch(s -> DataHelper.isSame(s, r.getValue())))
+				.map(Map.Entry::getKey)
+				.sorted(Comparator.comparing(UserRoleReferenceDto::getCaption)).collect(Collectors.toList());
+	}
+
+	@SuppressWarnings("unchecked")
     private void updateFieldsByUserRole() {
 
-		final Field userRolesField = getFieldGroup().getField(UserDto.USER_ROLES);
+		final OptionGroup userRolesField = (OptionGroup)getFieldGroup().getField(UserDto.USER_ROLES);
 
         Set<UserRoleReferenceDto> userRolesFieldValue = (Set<UserRoleReferenceDto>) userRolesField.getValue();
         final JurisdictionLevel jurisdictionLevel = UserRoleDto.getJurisdictionLevel(userRolesFieldValue.stream().map(userRole -> userRoleMap.get(userRole)).collect(Collectors.toSet()));

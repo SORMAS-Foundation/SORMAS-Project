@@ -191,19 +191,6 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	}
 
 	@Override
-	public Set<UserRoleDto> getEnabledUserRoles() {
-
-		Set<UserRoleDto> userRoles = getAll().stream().collect(Collectors.toSet());
-
-		for (UserRoleDto userRole : userRoles) {
-			if (!userRole.isEnabled()) {
-				userRoles.remove(userRole);
-			}
-		}
-		return userRoles;
-	}
-
-	@Override
 	public Set<UserRoleReferenceDto> getAllAsReference() {
 		List<UserRoleDto> all = getAll();
 		return all != null ? all.stream().map(userRole -> userRole.toReference()).collect(Collectors.toSet()) : null;
