@@ -130,8 +130,11 @@ public interface Validations {
 	String noAddressFacilityInAddressCommunity = "noAddressFacilityInAddressCommunity";
 	String noAddressFacilityInAddressDistrict = "noAddressFacilityInAddressDistrict";
 	String noAddressFacilityInAddressRegion = "noAddressFacilityInAddressRegion";
+	String noCaseWithUuid = "noCaseWithUuid";
 	String noCommunityInDistrict = "noCommunityInDistrict";
+	String noContactWithUuid = "noContactWithUuid";
 	String noDistrictInRegion = "noDistrictInRegion";
+	String noEventParticipantWithUuid = "noEventParticipantWithUuid";
 	String noFacilityInCommunity = "noFacilityInCommunity";
 	String noFacilityInDistrict = "noFacilityInDistrict";
 	String noFacilityInRegion = "noFacilityInRegion";
@@ -139,7 +142,9 @@ public interface Validations {
 	String noFacilityInResponsibleDistrict = "noFacilityInResponsibleDistrict";
 	String noFacilityInResponsibleRegion = "noFacilityInResponsibleRegion";
 	String noFacilityType = "noFacilityType";
+	String noLaboratoryWithUuid = "noLaboratoryWithUuid";
 	String noPastDateAllowed = "noPastDateAllowed";
+	String noReportingUserWithUuid = "noReportingUserWithUuid";
 	String noResponsibleCommunityInResponsibleDistrict = "noResponsibleCommunityInResponsibleDistrict";
 	String noResponsibleDistrictInResponsibleRegion = "noResponsibleDistrictInResponsibleRegion";
 	String notAccomodationFacilityType = "notAccomodationFacilityType";
@@ -213,11 +218,6 @@ public interface Validations {
 	String validEventInvestigationStatus = "validEventInvestigationStatus";
 	String validEventStatus = "validEventStatus";
 	String validEventTitle = "validEventTitle";
-	String validExistingCase = "validExistingCase";
-	String validExistingContact = "validExistingContact";
-	String validExistingEventParticipant = "validExistingEventParticipant";
-	String validExistingLaboratory = "validExistingLaboratory";
-	String validExistingReportingUser = "validExistingReportingUser";
 	String validFacility = "validFacility";
 	String validFacilityType = "validFacilityType";
 	String validHealthConditions = "validHealthConditions";

@@ -725,7 +725,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 			getSampleFacade().saveSample(cazeSample);
 			fail();
 		} catch (ValidationRuntimeException e) {
-			assertEquals(I18nProperties.getValidationError(Validations.validExistingCase), e.getMessage());
+			assertEquals(I18nProperties.getValidationError(Validations.noCaseWithUuid), e.getMessage());
 		}
 	}
 
@@ -747,7 +747,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 			getSampleFacade().saveSample(contactSample);
 			fail();
 		} catch (ValidationRuntimeException e) {
-			assertEquals(I18nProperties.getValidationError(Validations.validExistingContact), e.getMessage());
+			assertEquals(I18nProperties.getValidationError(Validations.noContactWithUuid), e.getMessage());
 		}
 	}
 
@@ -772,7 +772,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 			getSampleFacade().saveSample(eventParticipantSample);
 			fail();
 		} catch (ValidationRuntimeException e) {
-			assertEquals(I18nProperties.getValidationError(Validations.validExistingEventParticipant), e.getMessage());
+			assertEquals(I18nProperties.getValidationError(Validations.noEventParticipantWithUuid), e.getMessage());
 		}
 	}
 
@@ -796,7 +796,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 			getSampleFacade().saveSample(cazeSample);
 			fail();
 		} catch (ValidationRuntimeException e) {
-			assertEquals(I18nProperties.getValidationError(Validations.validExistingLaboratory), e.getMessage());
+			assertEquals(I18nProperties.getValidationError(Validations.noLaboratoryWithUuid), e.getMessage());
 		}
 	}
 
@@ -820,7 +820,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 			getSampleFacade().saveSample(sample);
 			fail();
 		} catch (ValidationRuntimeException e) {
-			assertEquals(I18nProperties.getValidationError(Validations.validExistingReportingUser), e.getMessage());
+			assertEquals(I18nProperties.getValidationError(Validations.noReportingUserWithUuid), e.getMessage());
 		}
 	}
 

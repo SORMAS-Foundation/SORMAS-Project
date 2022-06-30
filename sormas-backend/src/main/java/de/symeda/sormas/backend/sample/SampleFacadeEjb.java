@@ -468,19 +468,19 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	private void validateSampleAssociatedEntities(SampleDto sample) {
 		if (sample.getAssociatedCase() != null && !caseService.exists(sample.getAssociatedCase().getUuid())) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validExistingCase));
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noCaseWithUuid));
 		}
 		if (sample.getAssociatedContact() != null && !contactService.exists(sample.getAssociatedContact().getUuid())) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validExistingContact));
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noContactWithUuid));
 		}
 		if (sample.getAssociatedEventParticipant() != null && !eventParticipantService.exists(sample.getAssociatedEventParticipant().getUuid())) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validExistingEventParticipant));
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noEventParticipantWithUuid));
 		}
 		if (sample.getLab() != null && !facilityService.exists(sample.getLab().getUuid())) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validExistingLaboratory));
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noLaboratoryWithUuid));
 		}
 		if (!userService.exists(sample.getReportingUser().getUuid())) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validExistingReportingUser));
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noReportingUserWithUuid));
 		}
 	}
 
