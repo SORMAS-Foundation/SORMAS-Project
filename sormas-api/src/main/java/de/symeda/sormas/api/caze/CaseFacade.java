@@ -102,8 +102,6 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	void setSampleAssociationsUnrelatedDisease(EventParticipantReferenceDto sourceEventParticipant, CaseReferenceDto cazeRef);
 
-	void validate(CaseDataDto dto) throws ValidationRuntimeException;
-
 	List<String> getAllActiveUuids();
 
 	List<CaseDataDto> getAllActiveCasesAfter(Date date, Integer batchSize, String lastSynchronizedUuid);

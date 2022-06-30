@@ -58,8 +58,7 @@ public abstract class ShareDataBuilder<DTO extends SormasToSormasShareableDto, A
 
 	protected abstract PREVIEW doBuildShareDataPreview(ADO data, ShareRequestInfo requestInfo);
 
-	public PREVIEW buildShareDataPreview(ADO data, ShareRequestInfo requestInfo)
-		throws SormasToSormasValidationException, ValidationRuntimeException {
+	public PREVIEW buildShareDataPreview(ADO data, ShareRequestInfo requestInfo) throws SormasToSormasValidationException {
 		PREVIEW shared = doBuildShareDataPreview(data, requestInfo);
 		ValidationErrors errors = validator.validateOutgoingPreview(shared);
 		if (errors.hasError()) {
