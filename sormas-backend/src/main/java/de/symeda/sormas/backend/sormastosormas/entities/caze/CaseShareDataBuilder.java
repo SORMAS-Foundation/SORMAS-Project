@@ -24,6 +24,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
@@ -31,10 +32,13 @@ import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
 
 @Stateless
 @LocalBean
@@ -48,6 +52,9 @@ public class CaseShareDataBuilder
 
 	public CaseShareDataBuilder() {
 	}
+
+	@EJB
+	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
 
 	@EJB
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
@@ -66,6 +73,12 @@ public class CaseShareDataBuilder
 		dataBuilderHelper.clearIgnoredProperties(cazeDto);
 
 		return new SormasToSormasCaseDto(personDto, cazeDto);
+	}
+
+	@Override
+	public void validateWithEjbShared(SormasToSormasCaseDto dto) {
+		personFacade.validate(dto.getPerson());
+		caseFacade.validate(dto.getEntity());
 	}
 
 	@Override

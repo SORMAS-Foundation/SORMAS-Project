@@ -22,6 +22,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
@@ -40,9 +41,11 @@ public abstract class ShareDataBuilder<DTO extends SormasToSormasShareableDto, A
 
 	protected abstract SHARED doBuildShareData(ADO data, ShareRequestInfo requestInfo);
 
-	public SHARED buildShareData(ADO data, ShareRequestInfo requestInfo) throws SormasToSormasValidationException {
+	public SHARED buildShareData(ADO data, ShareRequestInfo requestInfo) throws SormasToSormasValidationException, ValidationRuntimeException {
 		SHARED shared = doBuildShareData(data, requestInfo);
+		validateWithEjbShared(shared);
 		ValidationErrors errors = validator.validateOutgoing(shared);
+
 		if (errors.hasError()) {
 			List<ValidationErrors> validationErrors = new ArrayList<>();
 			validationErrors.add(errors);
@@ -51,9 +54,12 @@ public abstract class ShareDataBuilder<DTO extends SormasToSormasShareableDto, A
 		return shared;
 	}
 
+	protected abstract void validateWithEjbShared(SHARED shared) throws ValidationRuntimeException;
+
 	protected abstract PREVIEW doBuildShareDataPreview(ADO data, ShareRequestInfo requestInfo);
 
-	public PREVIEW buildShareDataPreview(ADO data, ShareRequestInfo requestInfo) throws SormasToSormasValidationException {
+	public PREVIEW buildShareDataPreview(ADO data, ShareRequestInfo requestInfo)
+		throws SormasToSormasValidationException, ValidationRuntimeException {
 		PREVIEW shared = doBuildShareDataPreview(data, requestInfo);
 		ValidationErrors errors = validator.validateOutgoingPreview(shared);
 		if (errors.hasError()) {
@@ -63,4 +69,5 @@ public abstract class ShareDataBuilder<DTO extends SormasToSormasShareableDto, A
 		}
 		return shared;
 	}
+
 }
