@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.backend.user;
 
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -557,9 +558,11 @@ public class UserFacadeEjb implements UserFacade {
 	public UserDto saveUser(@Valid UserDto dto) {
 
 		User oldUser = null;
+		Set<UserRight> oldUserRights = Collections.emptySet();
 		if (dto.getCreationDate() != null) {
 			try {
 				oldUser = (User) BeanUtils.cloneBean(userService.getByUuid(dto.getUuid()));
+				oldUserRights = UserRole.getUserRights(oldUser.getUserRoles());
 			} catch (Exception e) {
 				throw new IllegalArgumentException("Invalid bean access", e);
 			}
@@ -576,6 +579,17 @@ public class UserFacadeEjb implements UserFacade {
 
 		if (!isLoginUnique(oldUser == null ? null : oldUser.getUuid(), dto.getUserName())) {
 			throw new ValidationException(I18nProperties.getValidationError(Validations.userNameNotUnique));
+		}
+
+		if (DataHelper.isSame(oldUser, userService.getCurrentUser())) {
+
+			Set<UserRight> updatedUserRights = UserRole.getUserRights(user.getUserRoles());
+
+			if (oldUserRights.contains(UserRight.USER_ROLE_EDIT) && !updatedUserRights.contains(UserRight.USER_ROLE_EDIT)) {
+				throw new ValidationException(I18nProperties.getValidationError(Validations.removeUserRightEditRightFromOwnUser));
+			} else if (!updatedUserRights.contains(UserRight.USER_EDIT)) {
+				throw new ValidationException(I18nProperties.getValidationError(Validations.removeUserEditRightFromOwnUser));
+			}
 		}
 
 		userService.ensurePersisted(user);

@@ -643,6 +643,7 @@ public interface Strings {
 	String headingSamplesDeleted = "headingSamplesDeleted";
 	String headingSaveNotification = "headingSaveNotification";
 	String headingSaveUser = "headingSaveUser";
+	String headingSaveUserNotPossible = "headingSaveUserNotPossible";
 	String headingSecurityAlert = "headingSecurityAlert";
 	String headingSeeAllPersons = "headingSeeAllPersons";
 	String headingSelectCampaign = "headingSelectCampaign";

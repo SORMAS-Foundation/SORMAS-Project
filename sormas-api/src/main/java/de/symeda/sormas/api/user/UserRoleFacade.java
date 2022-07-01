@@ -68,4 +68,6 @@ public interface UserRoleFacade {
 	Map<UserRoleDto, Set<UserRight>> getUserRoleRights();
 
 	Set<UserRoleDto> getDefaultUserRolesAsDto();
+
+	Collection<UserRoleDto> getByReferences(Set<UserRoleReferenceDto> userRoles);
 }

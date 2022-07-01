@@ -270,13 +270,19 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 
 	@Override
 	public Set<UserRoleDto> getDefaultUserRolesAsDto() {
-		return Stream.of(DefaultUserRole.values())
-			.map(r -> {
-				UserRoleDto role = UserRoleDto.build();
-				r.toUserRole(role);
-				return role;
-			})
-			.collect(Collectors.toSet());
+		return Stream.of(DefaultUserRole.values()).map(r -> {
+			UserRoleDto role = UserRoleDto.build();
+			r.toUserRole(role);
+			return role;
+		}).collect(Collectors.toSet());
+	}
+
+	@Override
+	public Collection<UserRoleDto> getByReferences(Set<UserRoleReferenceDto> references) {
+		return userRoleService.getByUuids(references.stream().map(UserRoleReferenceDto::getUuid).collect(Collectors.toList()))
+			.stream()
+			.map(UserRoleFacadeEjb::toDto)
+			.collect(Collectors.toList());
 	}
 
 	@LocalBean
