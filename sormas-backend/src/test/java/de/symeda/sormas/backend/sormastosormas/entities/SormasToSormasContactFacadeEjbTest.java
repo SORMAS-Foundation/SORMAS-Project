@@ -21,6 +21,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNotNull;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -120,8 +121,8 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 				assertThat(sharedContact.getPerson().getLastName(), is(person.getLastName()));
 
 				assertThat(sharedContact.getEntity().getUuid(), is(contact.getUuid()));
-				// todo what to do with this?
-				//assertThat(sharedContact.getEntity().getReportingUser(), is(nullValue()));
+
+				assertThat(sharedContact.getEntity().getReportingUser(), isNotNull());
 				assertThat(sharedContact.getEntity().getContactOfficer(), is(nullValue()));
 				assertThat(sharedContact.getEntity().getResultingCaseUser(), is(nullValue()));
 
