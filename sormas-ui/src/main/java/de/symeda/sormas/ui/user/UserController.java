@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.user;
 
+import de.symeda.sormas.api.user.UserRoleDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
@@ -102,9 +104,10 @@ public class UserController {
 		UserEditForm userEditForm = new UserEditForm(false);
 		UserDto userDto = FacadeProvider.getUserFacade().getByUuid(userUuid);
 		userEditForm.setValue(userDto);
+		UserProvider userProvider = UserProvider.getCurrent();
 		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(
 			userEditForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.USER_EDIT),
+			userProvider.hasUserRight(UserRight.USER_EDIT),
 			userEditForm.getFieldGroup());
 
 		// Add reset password button

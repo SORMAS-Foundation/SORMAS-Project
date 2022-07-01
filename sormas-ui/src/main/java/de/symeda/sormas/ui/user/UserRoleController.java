@@ -60,8 +60,7 @@ public class UserRoleController {
 		createForm.setValue(UserRoleDto.build());
 		final CommitDiscardWrapperComponent<UserRoleCreateForm> editView = new CommitDiscardWrapperComponent<>(
 			createForm,
-			// TODO - UserRight.USER_ROLE_CREATE
-			UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE),
+			UserProvider.getCurrent().hasUserRight(UserRight.USER_ROLE_EDIT),
 			createForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
@@ -88,8 +87,7 @@ public class UserRoleController {
 		form.setValue(userRole);
 
 		final CommitDiscardWrapperComponent<UserRoleEditForm> editView =
-			// TODO use UserRight.USER_ROLE_EDIT
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE), form.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.USER_ROLE_EDIT), form.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
@@ -101,28 +99,30 @@ public class UserRoleController {
 			}
 		});
 
-		editView.addDeleteListener(() -> {
-			long userCountWithRole = FacadeProvider.getUserFacade().getUserCountHavingRole(userRoleRef);
-			if (userCountWithRole > 0) {
-				List<UserReferenceDto> usersWithOnlyRole = FacadeProvider.getUserFacade().getUsersHavingOnlyRole(userRoleRef);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.USER_ROLE_DELETE)) {
+			editView.addDeleteListener(() -> {
+				long userCountWithRole = FacadeProvider.getUserFacade().getUserCountHavingRole(userRoleRef);
+				if (userCountWithRole > 0) {
+					List<UserReferenceDto> usersWithOnlyRole = FacadeProvider.getUserFacade().getUsersHavingOnlyRole(userRoleRef);
 
-				if (usersWithOnlyRole.isEmpty()) {
-					FacadeProvider.getUserRoleFacade().deleteUserRole(userRoleRef);
-					// TODO - navigate to user roles view
-					UI.getCurrent().getNavigator().navigateTo(UsersView.VIEW_NAME);
-				} else {
-					VaadinUiUtil.showSimplePopupWindow(
-						I18nProperties.getString(Strings.headingDeleteUserRoleNotPossible),
-						String.format(
-							I18nProperties.getString(Strings.errorDeleteUserRoleUsedAlone),
-							usersWithOnlyRole.stream().map(r -> DataHelper.getShortUuid(r.getUuid())).collect(Collectors.joining(", "))),
-						ContentMode.HTML);
+					if (usersWithOnlyRole.isEmpty()) {
+						FacadeProvider.getUserRoleFacade().deleteUserRole(userRoleRef);
+						// TODO - navigate to user roles view
+						UI.getCurrent().getNavigator().navigateTo(UsersView.VIEW_NAME);
+					} else {
+						VaadinUiUtil.showSimplePopupWindow(
+							I18nProperties.getString(Strings.headingDeleteUserRoleNotPossible),
+							String.format(
+								I18nProperties.getString(Strings.errorDeleteUserRoleUsedAlone),
+								usersWithOnlyRole.stream().map(r -> DataHelper.getShortUuid(r.getUuid())).collect(Collectors.joining(", "))),
+							ContentMode.HTML);
+					}
 				}
-			}
-		}, I18nProperties.getCaption(UserRoleDto.I18N_PREFIX), () -> {
-			long userCountWithRole = FacadeProvider.getUserFacade().getUserCountHavingRole(userRoleRef);
-			return userCountWithRole == 0 ? null : String.format(I18nProperties.getString(Strings.confirmationDeleteUserRole), userCountWithRole);
-		});
+			}, I18nProperties.getCaption(UserRoleDto.I18N_PREFIX), () -> {
+				long userCountWithRole = FacadeProvider.getUserFacade().getUserCountHavingRole(userRoleRef);
+				return userCountWithRole == 0 ? null : String.format(I18nProperties.getString(Strings.confirmationDeleteUserRole), userCountWithRole);
+			});
+		}
 
 		String enableDisableCaptionKey = userRole.isEnabled() ? Captions.actionDisable : Captions.actionEnable;
 		Button enableDisableButton = ButtonHelper.createButton(enableDisableCaptionKey, I18nProperties.getCaption(enableDisableCaptionKey), e -> {
@@ -153,8 +153,7 @@ public class UserRoleController {
 		form.setValue(userRole);
 
 		final CommitDiscardWrapperComponent<UserRoleNotificationsForm> editView =
-			// TODO - rights
-			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.USER_CREATE), form.getFieldGroup());
+			new CommitDiscardWrapperComponent<>(form, UserProvider.getCurrent().hasUserRight(UserRight.USER_ROLE_EDIT), form.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {

@@ -2149,7 +2149,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					newCase.getDisease().toString());
 
 				notificationService.sendNotifications(
-					NotificationType.DISEASE_CHANGED,
+					NotificationType.CASE_DISEASE_CHANGED,
 					JurisdictionHelper.getCaseRegions(newCase),
 					null,
 					MessageSubject.DISEASE_CHANGED,

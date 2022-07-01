@@ -11646,5 +11646,25 @@ WHERE uu.userright = 'AGGREGATE_REPORT_VIEW'
 
 INSERT INTO schema_version (version_number, comment) VALUES (470, 'Allow surveillance officer to create aggregate reports #9052');
 
+-- 2022-07-1 Edit and create user roles #4463
+
+DO $$
+    DECLARE rec RECORD;
+    BEGIN
+        FOR rec IN (select ur.userrole_id from userroles_userrights ur
+                    where ur.userright = 'USER_EDIT')
+            LOOP
+                INSERT INTO userroles_userrights(userrole_id, userright) VALUES (rec.userrole_id, 'USER_ROLE_EDIT');
+                INSERT INTO userroles_userrights(userrole_id, userright) VALUES (rec.userrole_id, 'USER_ROLE_DELETE');
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+update userroles_smsnotificationtypes set notificationtype = 'CASE_DISEASE_CHANGED' where notificationtype = 'DISEASE_CHANGED';
+update userroles_emailnotificationtypes set notificationtype = 'CASE_DISEASE_CHANGED' where notificationtype = 'DISEASE_CHANGED';
+update userroles_smsnotificationtypes set notificationtype = 'CONTACT_VISIT_COMPLETED' where notificationtype = 'VISIT_COMPLETED';
+update userroles_emailnotificationtypes set notificationtype = 'CONTACT_VISIT_COMPLETED' where notificationtype = 'VISIT_COMPLETED';
+
+INSERT INTO schema_version (version_number, comment) VALUES (471, 'Edit and create user roles #4463');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
