@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.caze.caseimport;
 
-import de.symeda.sormas.api.user.UserRight;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -52,7 +51,10 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ImportCellData;
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
+import de.symeda.sormas.api.importexport.ImportRelatedObjectsMapper;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
@@ -69,6 +71,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -76,11 +79,8 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.EnumService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.api.importexport.ImportCellData;
-import de.symeda.sormas.api.importexport.ImportErrorException;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportHelper;
-import de.symeda.sormas.api.importexport.ImportRelatedObjectsMapper;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
@@ -255,7 +255,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 			personFacade.validate(entities.getPerson());
 			caseFacade.validate(entities.getCaze());
 			for (SampleDto sample : entities.getSamples()) {
-				sampleFacade.validate(sample);
+				sampleFacade.validate(sample, false);
 			}
 			for (PathogenTestDto pathogenTest : entities.getPathogenTests()) {
 				pathogenTestFacade.validate(pathogenTest);

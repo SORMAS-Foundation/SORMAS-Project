@@ -2,7 +2,6 @@ package de.symeda.sormas.ui.dashboard.contacts.components;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
 
@@ -28,7 +27,9 @@ public class ContactsFilterLayout extends DashboardFilterLayout {
 		super(dashboardView, dashboardDataProvider, CONTACTS_FILTERS);
 	}
 
+	@Override
 	public void populateLayout() {
+
 		super.populateLayout();
 		createInfoLabel();
 		createRegionAndDistrictFilter();

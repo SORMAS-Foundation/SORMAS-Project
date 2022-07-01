@@ -25,6 +25,7 @@ public enum ActionStatus {
 	IN_PROGRESS,
 	DONE;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

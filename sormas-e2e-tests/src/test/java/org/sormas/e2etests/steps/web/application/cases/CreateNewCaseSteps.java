@@ -25,8 +25,66 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.*;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_DISEASE_VARIANT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_DOCUMENT_EMPTY_TEXT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_ORIGIN_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_UPLOADED_TEST_FILE;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONFIRM_BUTTON_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_CASE_CONFIRMATION_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_BIRTH_DAY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_BIRTH_MONTH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_BIRTH_YEAR_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_SYMPTOM_ONSET_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DELETE_LAST_UPDATED_CASE_DOCUMENT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DIFFERENT_POINT_OF_ENTRY_JURISDICTION;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DISEASE_VARIANT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DOWNLOAD_LAST_UPDATED_CASE_DOCUMENT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ENTER_HOME_ADDRESS_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.EPID_NUMBER_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.EXTERNAL_ID_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FACILITY_CATEGORY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FACILITY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FACILITY_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FIRST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FIRST_NAME_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LAST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LAST_NAME_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LINE_LISTING_DISCARD_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LINE_LISTING_DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NATIONAL_HEALTH_ID_ATTRIBUTE;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NATIONAL_HEALTH_ID_POPUP_TABLE_HEADER;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NEW_DOCUMENT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NICKNAME_ATTRIBUTE;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NICKNAME_POPUP_TABLE_HEADER;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PASSPORT_NUMBER_ATTRIBUTE;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PASSPORT_NUMBER_POPUP_TABLE_HEADER;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PICK_AN_EXISTING_CASE_CONFIRMATION_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PLACE_DESCRIPTION_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PLACE_OF_STAY;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.POINT_OF_ENTRY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.POINT_OF_ENTRY_DETAILS;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.POINT_OF_ENTRY_DISTRICT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.POINT_OF_ENTRY_REGION_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PRESENT_CONDITION_OF_PERSON_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PRIMARY_EMAIL_ADDRESS_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PRIMARY_PHONE_NUMBER_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.RESPONSIBLE_COMMUNITY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.RESPONSIBLE_DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.RESPONSIBLE_REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SELECT_PERSON_WINDOW_CONFIRM_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SELECT_PERSON_WINDOW_CONFIRM_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SEX_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.START_DATA_IMPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_THE_CASES_LIST_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_CASE_CHECKBOX;
@@ -200,6 +258,15 @@ public class CreateNewCaseSteps implements En {
         () -> {
           webDriverHelpers.fillInWebElement(
               PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT, firstName + " " + lastName);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I filter for SAMPLE TOKEN in Cases Directory",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, "SAMPLE TOKEN");
           webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
@@ -401,10 +468,26 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
+        "^I save the new case$",
+        () -> {
+          webDriverHelpers.scrollToElement(CONFIRM_BUTTON_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
+
+    When(
         "I save a new case",
         () -> {
           webDriverHelpers.scrollToElement(CONTACT_CASE_SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
+
+    When(
+        "^I confirm creating a new case$",
+        () -> {
+          webDriverHelpers.scrollToElement(ACTION_CONFIRM_POPUP_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_POPUP_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
@@ -588,7 +671,7 @@ public class CreateNewCaseSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX);
             webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
           }
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
+          //   webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
     When(
         "^I check if National Health Id, Nickname and Passport number appear in Pick or create person popup$",
@@ -606,6 +689,15 @@ public class CreateNewCaseSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(PICK_A_EXISTING_CASE_LABEL_DE);
             webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           }
+        });
+
+    When(
+        "^I pick a new case in pick or create a case popup$",
+        () -> {
+          // webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_CASE_CONFIRMATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(PICK_AN_EXISTING_CASE_CONFIRMATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
 
     When(

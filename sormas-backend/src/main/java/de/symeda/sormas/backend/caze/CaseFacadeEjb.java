@@ -21,7 +21,6 @@ import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -142,6 +141,7 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
@@ -163,6 +163,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.location.LocationReferenceDto;
 import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -1090,14 +1091,24 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 						caseExposures.stream()
 							.filter(e -> ExposureType.TRAVEL.equals(e.getExposureType()))
 							.forEach(
-								exposure -> travelHistoryBuilder.append(
-									EpiDataHelper.buildDetailedTravelString(
-										exposure.getLocation().toString(),
-										exposure.getDescription(),
-										exposure.getStartDate(),
-										exposure.getEndDate(),
-										userLanguage))
-									.append(", "));
+								exposure -> {
+									Location location = exposure.getLocation();
+									travelHistoryBuilder.append(
+										EpiDataHelper.buildDetailedTravelString(
+											LocationReferenceDto.buildCaption(
+												location.getRegion() != null ? location.getRegion().getName() : null,
+												location.getDistrict() != null ? location.getDistrict().getName() : null,
+												location.getCommunity() != null ? location.getCommunity().getName() : null,
+												location.getCity(),
+												location.getStreet(),
+												location.getHouseNumber(),
+												location.getAdditionalInformation()),
+											exposure.getDescription(),
+											exposure.getStartDate(),
+											exposure.getEndDate(),
+											userLanguage))
+										.append(", ");
+								});
 						if (travelHistoryBuilder.length() > 0) {
 							exportDto.setTraveled(true);
 							travelHistoryBuilder.delete(travelHistoryBuilder.lastIndexOf(", "), travelHistoryBuilder.length() - 1);
@@ -1636,8 +1647,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		service.ensurePersisted(caze);
 		if (handleChanges) {
 			updateCaseVisitAssociations(existingCaseDto, caze);
-			service.updateFollowUpDetails(caze, existingCaseDto != null && caze.getFollowUpStatus() != existingCaseDto.getFollowUpStatus());
-
 			onCaseChanged(existingCaseDto, caze, syncShares);
 		}
 	}
@@ -1682,7 +1691,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				if (!sample.isDeleted()) {
 					if (sample.getAssociatedCase() == null) {
 						sample.setAssociatedCase(caze);
-					} else {
+					} else if (!sample.getAssociatedCase().getUuid().equals(cazeRef.getUuid())) {
 						sampleFacade.cloneSampleForCase(sample, caze);
 					}
 				}
@@ -1698,14 +1707,17 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		UserRight._CASE_CREATE,
 		UserRight._CASE_EDIT })
 	public void setSampleAssociations(EventParticipantReferenceDto sourceEventParticipant, CaseReferenceDto cazeRef) {
+
 		if (sourceEventParticipant != null) {
 			final EventParticipant eventParticipant = eventParticipantService.getByUuid(sourceEventParticipant.getUuid());
 			final Case caze = service.getByUuid(cazeRef.getUuid());
 			eventParticipant.getSamples().forEach(sample -> {
-				if (sample.getAssociatedCase() == null) {
-					sample.setAssociatedCase(caze);
-				} else {
-					sampleFacade.cloneSampleForCase(sample, caze);
+				if (!sample.isDeleted()) {
+					if (sample.getAssociatedCase() == null) {
+						sample.setAssociatedCase(caze);
+					} else if (!sample.getAssociatedCase().getUuid().equals(cazeRef.getUuid())) {
+						sampleFacade.cloneSampleForCase(sample, caze);
+					}
 				}
 			});
 
@@ -2063,6 +2075,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				contactService.udpateContactStatus(contact);
 			}
 		}
+
+		// Update follow-up
+		service.updateFollowUpDetails(newCase, existingCase != null && newCase.getFollowUpStatus() != existingCase.getFollowUpStatus());
 
 		updateTasksOnCaseChanged(newCase, existingCase);
 

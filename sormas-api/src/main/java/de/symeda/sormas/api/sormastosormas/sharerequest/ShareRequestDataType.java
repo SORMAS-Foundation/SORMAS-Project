@@ -18,10 +18,12 @@ package de.symeda.sormas.api.sormastosormas.sharerequest;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum ShareRequestDataType {
+
 	CASE,
 	CONTACT,
 	EVENT;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

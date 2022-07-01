@@ -18,6 +18,7 @@ public enum CampaignFormElementType {
 		return allowedValues;
 	}
 
+	@Override
 	public String toString() {
 		return name().toLowerCase().replaceAll("_", "-");
 	}
@@ -25,5 +26,4 @@ public enum CampaignFormElementType {
 	public static CampaignFormElementType fromString(String stringValue) {
 		return valueOf(stringValue.toUpperCase().replaceAll("-", "_"));
 	}
-
 }

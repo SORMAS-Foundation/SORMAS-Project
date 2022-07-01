@@ -10,6 +10,7 @@ public enum VisitResult {
 	UNCOOPERATIVE,
 	NOT_PERFORMED;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

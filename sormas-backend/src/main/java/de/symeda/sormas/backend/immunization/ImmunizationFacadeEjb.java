@@ -114,6 +114,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb.VaccinationFacadeEjbLocal;
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 
 @Stateless(name = "ImmunizationFacade")
 @RolesAllowed(UserRight._IMMUNIZATION_VIEW)
@@ -160,6 +161,8 @@ public class ImmunizationFacadeEjb
 	private SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal sormasToSormasContactFacade;
 	@EJB
 	private SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacadeEjbLocal;
+	@EJB
+	private VaccinationService vaccinationService;
 
 	public ImmunizationFacadeEjb() {
 	}
@@ -180,7 +183,7 @@ public class ImmunizationFacadeEjb
 		if (dto == null) {
 			return null;
 		}
-		return new ImmunizationReferenceDto(dto.getUuid(), dto.toString(), dto.getExternalId());
+		return new ImmunizationReferenceDto(dto.getUuid(), dto.getCaption(), dto.getExternalId());
 	}
 
 	public ImmunizationDto toDto(Immunization entity) {
@@ -359,10 +362,11 @@ public class ImmunizationFacadeEjb
 					.findAny()
 					.orElse(null);
 			}
-			Date oldVaccinationDate = existingVaccination != null ? existingVaccination.getVaccinationDate() : null;
+			Date oldRelevantVaccineDate = existingVaccination != null ? vaccinationService.getRelevantVaccineDate(existingVaccination) : null;
+			Date newRelevantVaccineDate = vaccinationService.getRelevantVaccineDate(vaccination);
 			vaccinationFacade.updateVaccinationStatuses(
-				vaccination.getVaccinationDate(),
-				oldVaccinationDate,
+				newRelevantVaccineDate,
+				oldRelevantVaccineDate,
 				immunization.getPerson().getId(),
 				immunization.getDisease());
 		});

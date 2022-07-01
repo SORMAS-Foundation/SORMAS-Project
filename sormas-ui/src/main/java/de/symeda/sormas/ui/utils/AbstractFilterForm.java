@@ -177,13 +177,13 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 		if (user.getRegion() != null && user.getDistrict() == null) {
 			FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
 			districtField.setEnabled(true);
-		} else {
-			if (region != null) {
-				FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+		} else if (region != null) {
+			FieldHelper.updateItems(districtField, FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
+			if (user.getDistrict() == null) {
 				districtField.setEnabled(true);
-			} else {
-				districtField.setEnabled(false);
 			}
+		} else {
+			districtField.setEnabled(false);
 		}
 	}
 

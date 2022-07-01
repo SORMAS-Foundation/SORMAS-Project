@@ -108,6 +108,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.MULTIPLE_OPTIONS_SEARCH_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.NEW_ENTRY_EPIDEMIOLOGICAL_DATA;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.PERSON_LIKE_SEARCH_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.RELATIONSHIP_WITH_CASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.RESULTS_GRID_HEADER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.getCheckboxByUUID;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
@@ -134,6 +135,7 @@ import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPag
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPORT_SUCCESS_DE;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+import static org.sormas.e2etests.steps.web.application.contacts.EditContactSteps.aContact;
 import static org.sormas.e2etests.steps.web.application.contacts.EditContactSteps.collectedContact;
 
 import com.github.javafaker.Faker;
@@ -1038,6 +1040,33 @@ public class ContactDirectorySteps implements En {
               contactID1,
               getContactIDByIndex(2),
               "Edited contact do not move previous first contact to second place on list.");
+        });
+
+    When(
+        "^I set Relationship with case on ([^\"]*)$",
+        (String option) -> {
+          webDriverHelpers.selectFromComboboxEqual(RELATIONSHIP_WITH_CASE_COMBOBOX, option);
+        });
+
+    When(
+        "I filter by last collected from UI specific Contact uuid",
+        () -> {
+          String contactUuid = aContact.getUuid();
+          By uuidLocator = By.cssSelector(String.format(CONTACT_RESULTS_UUID_LOCATOR, contactUuid));
+          webDriverHelpers.fillAndSubmitInWebElement(
+              CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, contactUuid);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(uuidLocator);
+        });
+
+    When(
+        "I filter for SAMPLE TOKEN in Contacts Directory",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, "SAMPLE TOKEN");
+          webDriverHelpers.clickOnWebElementBySelector(
+              CONTACT_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
   }
 

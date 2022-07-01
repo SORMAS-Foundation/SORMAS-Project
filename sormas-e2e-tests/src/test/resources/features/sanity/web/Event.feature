@@ -877,8 +877,7 @@ Feature: Create events
     Then I click on edit button for the last searched facility
     And I archive facility
 
-    #this testcase needs to be changed when bug 9212 is fixed
-    @env_main @#8556 @ignore
+    @env_main @#8556
   Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of an Event Participant
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -897,16 +896,14 @@ Feature: Create events
     Then I click on New Sample and discard changes is asked
     Then I collect the sample UUID displayed on create new sample page
     Then I create a new Sample with positive test result with COVID-19 as disease
-    Then I confirm last popup window when there are multiple ones
-#    Then I confirm the Create case from event participant with positive test result
-    Then I create a new case with specific data for positive pathogen test result
-    Then I confirm last popup window when there are multiple ones
+    Then I confirm popup window
+    Then I pick a new case in pick or create a case popup
     Then I click on edit Sample
-    Then I confirm last popup window when there are multiple ones
     Then I click on new test result for pathogen tests
     Then I create a new pathogen test result with Cholera as disease
     Then I confirm the Create case from contact with positive test result
     Then I create a new case with specific data for positive pathogen test result
+    Then I save the new case
     Then I navigate to a specific Event Participant of an Event based on UUID
     Then I validate only one sample is created with two pathogen tests
     Then I click on edit Sample
@@ -979,4 +976,42 @@ Feature: Create events
       | Contact Supervisor        |
       | Surveillance Supervisor   |
 
+  @issue=SORDEV-6609 @env_de
+  Scenario: Test for event internal token
+    Given I log in as a National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data for DE version
+    And I navigate to EVENT from edit event page
+    When I fill in the Internal Token field in Edit Case page with SAMPLE TOKEN
+    And I click on save button in the case popup
+    And I click on the Events button from navbar
+    And I check that the German Internal Token column is present
+    And I filter for SAMPLE TOKEN in Events Directory
+    Then I check that at least one SAMPLE TOKEN is displayed in table
 
+  @issue=SORDEV-11455 @env_main
+  Scenario: Add reason for deletion to confirmation dialogue
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When I log in with National User
+    And I click on the Events button from navbar
+    And I navigate to the last created through API Event page via URL
+    And I click Delete button on Edit Event page
+    And I click on No option in Confirm deletion on Edit Event Page
+    And I click Delete button on Edit Event page
+    And I click on Yes option in Confirm deletion on Edit Event Page
+    And I check that error message is equal to "Please choose a reason for deletion" in Reason for Deletion in popup
+    And I click on No option in Confirm deletion on Edit Event Page
+    And I click Delete button on Edit Event page
+    And I set Reason for deletion to "Other reason" on Edit Event Page
+    And I click on Yes option in Confirm deletion on Edit Event Page
+    And I check that error message is equal to "Please add a reason for deletion" in Reason for Deletion in popup
+    And I click on No option in Confirm deletion on Edit Event Page
+    And I click Delete button on Edit Event page
+    And I set Reason for deletion to "Entity created without legal reason" on Edit Event Page
+    And I click on Yes option in Confirm deletion on Edit Event Page
+    And I am accessing the event tab using the created event via api
+    And I check if Reason for deletion is set to "Entity created without legal reason" on Edit Event Page
+    And I check if Delete button on Edit Event Page is disabled

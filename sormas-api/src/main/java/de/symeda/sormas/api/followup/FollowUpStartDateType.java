@@ -24,6 +24,7 @@ public enum FollowUpStartDateType {
 	EARLIEST_SAMPLE_COLLECTION_DATE,
 	REPORT_DATE;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
@@ -35,5 +36,4 @@ public enum FollowUpStartDateType {
 	public String getDescription() {
 		return I18nProperties.getEnumDescription(this);
 	}
-
 }

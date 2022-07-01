@@ -45,6 +45,7 @@ public enum TypeOfPlace {
 		Arrays.asList(FACILITY_23_IFSG, COMMUNITY_FACILITY, FACILITY_36_IFSG, UNKNOWN, OTHER);
 	private static final List<TypeOfPlace> FACILITY_TYPES = Arrays.asList(FACILITY, FACILITY_23_IFSG, COMMUNITY_FACILITY, FACILITY_36_IFSG);
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

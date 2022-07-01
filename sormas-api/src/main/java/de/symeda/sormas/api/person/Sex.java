@@ -33,6 +33,7 @@ public enum Sex
 		return this.name();
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

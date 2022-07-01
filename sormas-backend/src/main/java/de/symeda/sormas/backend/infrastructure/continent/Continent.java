@@ -52,9 +52,4 @@ public class Continent extends InfrastructureAdo {
 	public ContinentReferenceDto toReference() {
 		return new ContinentReferenceDto(getUuid(), getDefaultName(), externalId);
 	}
-
-	@Override
-	public String toString() {
-		return getDefaultName();
-	}
 }

@@ -104,10 +104,12 @@ public class EventSelectionGrid extends FilteredGrid<EventIndexDto, EventCriteri
 		});
 	}
 
+	@Override
 	public void setCriteria(EventCriteria criteria) {
 		getFilteredDataProvider().setFilter(criteria);
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public ConfigurableFilterDataProvider<EventIndexDto, Void, EventCriteria> getFilteredDataProvider() {
 		return (ConfigurableFilterDataProvider<EventIndexDto, Void, EventCriteria>) super.getDataProvider();

@@ -163,6 +163,7 @@
     <string name="caption_drawer_open">Open navigation drawer</string>
     <string name="caption_dropped">Dropped</string>
     <string name="caption_epi_week">Epi Week</string>
+    <string name="caption_report">Report</string>
     <string name="caption_event_description">Description</string>
     <string name="caption_event_location">Location</string>
     <string name="caption_event_period">Date of event</string>
@@ -272,6 +273,7 @@
     <string name="description_sormas_logo">APMIS Logo</string>
     <string name="description_username">Username</string>
     <string name="description_year">Year</string>
+    <string name="description_report">Report</string>
     <string name="entity_case">Case</string>
     <string name="entity_contact">Contact</string>
     <string name="entity_event">Event</string>
@@ -444,6 +446,7 @@
     <string name="hint_select_month">Select Month</string>
     <string name="hint_select_epi_week">Select Epi Week</string>
     <string name="hint_select_year">Select Year</string>
+    <string name="hint_select_report">Select Report</string>
     <string name="hint_settings_server_url">e.g. https://sormas.helmholtz-hzi.de/sormas-rest/</string>
     <string name="hint_weekly_report_confirmation_required">You need to confirm the report for last week.</string>
     <string name="hint_weekly_report_no_data">No data available for this epi week.</string>

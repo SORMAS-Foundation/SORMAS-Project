@@ -19,6 +19,8 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_OKAY;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_RESET_POPUP;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_SEARCH_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALLBUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS;
@@ -77,6 +79,8 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DOWN
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DOWNLOAD_IMPORT_GUIDE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ENTER_BULK_EDIT_MODE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EPI_DATA_TAB;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EXCLAMATION_MARK_MESSAGE_PICK_OR_CREATE_PERSON_POPUP;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EXCLAMATION_MARK_PICK_OR_CREATE_PERSON_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_RESULT_IN_GRID;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.GRID_HEADERS;
@@ -104,6 +108,10 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getM
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getResultByIndex;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FIRST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LAST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE_DEFINITION_TEXT;
@@ -111,6 +119,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.getCaseID
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.IMPORT_CASE_CONTACTS_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.IMPORT_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.FIRST_RESULT_IN_GRID_IMPORT_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_OPTIONS;
@@ -120,6 +129,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.SELECT_ANOTHER_PERSON_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPORT_SUCCESS_DE;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
@@ -565,6 +575,22 @@ public class CaseDirectorySteps implements En {
             webDriverHelpers.fillAndSubmitInWebElement(
                 PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
                 apiState.getLastCreatedPerson().getUuid()));
+    When(
+        "I click to select another person from Pick or create person popup for DE",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SELECT_ANOTHER_PERSON_DE);
+        });
+    When(
+        "I check if name and name prefilled in Pick or create person are equal to one used in case creation",
+        () -> {
+          softly.assertEquals(
+              CaseReinfectionSteps.caze.getFirstName(),
+              webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT), "Prefilled first name is not equal");
+          softly.assertEquals(
+              CaseReinfectionSteps.caze.getLastName(),
+              webDriverHelpers.getValueFromWebElement(LAST_NAME_INPUT), "Prefilled last name is not equal");
+          softly.assertAll();
+        });
     And(
         "I apply Person Id filter to one attached to last created UI Case on Case directory page",
         () ->
@@ -806,7 +832,7 @@ public class CaseDirectorySteps implements En {
               webDriverHelpers.clickOnWebElementBySelector(CASES_WITHOUT_GEO_COORDINATES_CHECKBOX);
               break;
             case ("Only cases without responsible officer"):
-            case ("Nur F\u00E4lle ohne verantwortlichen Beauftragten"):
+            case ("Nur F\u00E4lle ohne verantwortlichen Benutzer"):
               webDriverHelpers.clickOnWebElementBySelector(
                   CASES_WITHOUT_RESPONSIBLE_OFFICER_CHECKBOX);
               break;
@@ -1065,7 +1091,67 @@ public class CaseDirectorySteps implements En {
                           path.toAbsolutePath())),
               20);
         });
-
+    When(
+        "I check that ([^\"]*) is visible in Pick or Create Person popup for De",
+        (String option) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          By selector = null;
+          Boolean elementVisible = true;
+          switch (option) {
+            case "External Id":
+              selector = UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT;
+              break;
+            case "Reset":
+              selector = ACTION_RESET_POPUP;
+              break;
+            case "Search":
+              selector = ACTION_SEARCH_POPUP;
+              break;
+          }
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(selector);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertTrue(elementVisible, option + " is not visible!");
+          softly.assertAll();
+        });
+    When(
+        "I click on Reset filters in Pick or create Person popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_RESET_POPUP);
+        });
+    When(
+        "I click on Search in Pick or create Person popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_SEARCH_POPUP);
+        });
+    When(
+        "I check that error message is equal to {string} in Pick or Create person in popup",
+        (String expected) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              EXCLAMATION_MARK_PICK_OR_CREATE_PERSON_POPUP);
+          webDriverHelpers.hoverToElement(EXCLAMATION_MARK_PICK_OR_CREATE_PERSON_POPUP);
+          String message =
+              webDriverHelpers.getTextFromWebElement(
+                  EXCLAMATION_MARK_MESSAGE_PICK_OR_CREATE_PERSON_POPUP);
+          softly.assertEquals(message, expected, "Error messages are not equal");
+          softly.assertAll();
+        });
+    When(
+        "I fill first and last name with last created peron data in Pick or Create person in popup",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              FIRST_NAME_INPUT, apiState.getLastCreatedPerson().getFirstName());
+          webDriverHelpers.fillInWebElement(
+              LAST_NAME_INPUT, apiState.getLastCreatedPerson().getLastName());
+        });
+    When(
+        "I click on first result in Pick or create Person popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_RESULT_IN_GRID_IMPORT_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
     When(
         "I click on the Archive bulk cases on Case Directory page",
         () -> {

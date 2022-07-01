@@ -23,6 +23,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import java.util.List;
 
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
@@ -81,7 +82,14 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 		ComboBox district = addInfrastructureField(CaseDataDto.DISTRICT);
 		ComboBox community = addInfrastructureField(CaseDataDto.COMMUNITY);
 		community.setNullSelectionAllowed(true);
-		facilityOrHome = new NullableOptionGroup(I18nProperties.getCaption(Captions.casePlaceOfStay), TypeOfPlace.FOR_CASES);
+		facilityOrHome =
+			addCustomField(FACILITY_OR_HOME_LOC, TypeOfPlace.class, NullableOptionGroup.class, I18nProperties.getCaption(Captions.casePlaceOfStay));
+		facilityOrHome.removeAllItems();
+		for (TypeOfPlace place : TypeOfPlace.FOR_CASES) {
+			facilityOrHome.addItem(place);
+			facilityOrHome.setItemCaption(place, I18nProperties.getEnumCaption(place));
+		}
+		facilityOrHome.setItemCaptionMode(AbstractSelect.ItemCaptionMode.EXPLICIT);
 		facilityOrHome.setId("facilityOrHome");
 		facilityOrHome.setWidth(100, Unit.PERCENTAGE);
 		CssStyles.style(facilityOrHome, ValoTheme.OPTIONGROUP_HORIZONTAL);

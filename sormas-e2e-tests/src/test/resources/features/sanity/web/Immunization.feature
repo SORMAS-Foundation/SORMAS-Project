@@ -101,3 +101,37 @@ Feature: Immunization end to end tests
     And I click Immunization aggregation button on Person Directory Page
     Then I click on first person in person directory
     And I check if data of created immunization is in Immunization tab on Edit Person Page
+
+  @issue=SORDEV-11454 @env_main
+  Scenario: Add reason for deletion to confirmation dialogue
+    Given I log in as a Admin User
+    And I click on the Immunizations button from navbar
+    And I click on the NEW IMMUNIZATION button
+    When I create a new immunization with specific data
+    Then I check the created data is correctly displayed on Edit immunization page
+    And I copy url of current immunization case
+    And I click SAVE button on Edit Immunization Page
+    Then I click on Delete button from immunization case
+    And I check if reason for deletion as "Deletion request by affected person according to GDPR" is available
+    And I check if reason for deletion as "Deletion request by another authority" is available
+    And I check if reason for deletion as "Entity created without legal reason" is available
+    And I check if reason for deletion as "Deletion request by affected person according to GDPR" is available
+    And I check if reason for deletion as "Responsibility transferred to another authority" is available
+    And I check if reason for deletion as "Deletion of duplicate entries" is available
+    And I check if reason for deletion as "Other reason" is available
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from immunization case
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Please choose a reason for deletion" appears next to Reason for deletion
+    When I set Reason for deletion as "Other reason"
+    Then I check if "Reason for deletion details" field is available in Confirm deletion popup in Immunization
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Please add a reason for deletion" appears next to Reason for deletion
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from immunization case
+    And I set Reason for deletion as "Deletion request by affected person according to GDPR"
+    And I click on Yes option in Confirm deletion popup
+    When I back to deleted immunization case by url
+    Then I check if reason of deletion is set to "Deletion request by affected person according to GDPR"
+    And I check if External ID input on immunization edit page is disabled
+    And I check if Additional details text area on immunization edit page is disabled

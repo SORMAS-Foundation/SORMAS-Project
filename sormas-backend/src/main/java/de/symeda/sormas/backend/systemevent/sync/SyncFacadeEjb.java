@@ -1,17 +1,19 @@
 package de.symeda.sormas.backend.systemevent.sync;
 
+import java.util.Date;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.systemevents.SystemEventDto;
 import de.symeda.sormas.api.systemevents.SystemEventStatus;
 import de.symeda.sormas.api.systemevents.SystemEventType;
 import de.symeda.sormas.api.systemevents.sync.SyncFacade;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import java.util.Date;
 
 @Stateless(name = "SyncFacade")
 public class SyncFacadeEjb implements SyncFacade {

@@ -27,6 +27,7 @@ public enum FollowUpStatus {
 	LOST,
 	NO_FOLLOW_UP;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

@@ -14,8 +14,6 @@
  */
 package de.symeda.sormas.backend.caze;
 
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,12 +77,15 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
@@ -120,6 +121,7 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
+import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -145,12 +147,14 @@ import de.symeda.sormas.backend.therapy.Treatment;
 import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitService;
@@ -203,6 +207,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private SurveillanceReportService surveillanceReportService;
 	@EJB
 	private DocumentService documentService;
+	@EJB
+	private ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
+	@EJB
+	private VaccinationService vaccinationService;
 
 	public CaseService() {
 		super(Case.class);
@@ -627,8 +635,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.isMember(caseCriteria.getReportingUserRole(), joins.getReportingUser().get(User.USER_ROLES)));
+			Join<User, UserRole> rolesJoin = reportingUser.join(User.USER_ROLES, JoinType.LEFT);
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(rolesJoin.get(UserRole.UUID), caseCriteria.getReportingUserRole().getUuid()));
 		}
 		if (caseCriteria.getDisease() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE), caseCriteria.getDisease()));
@@ -981,6 +989,53 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		deleteCaseLinks(caze);
 
 		super.deletePermanent(caze);
+	}
+
+	@Override
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		super.archive(entityUuid, endOfProcessingDate);
+		setArchiveInExternalSurveillanceToolForEntity(entityUuid, true);
+	}
+
+	@Override
+	public void archive(List<String> entityUuids) {
+		super.archive(entityUuids);
+		setArchiveInExternalSurveillanceToolForEntities(entityUuids, true);
+	}
+
+	@Override
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		super.dearchive(entityUuids, dearchiveReason);
+		setArchiveInExternalSurveillanceToolForEntities(entityUuids, false);
+	}
+
+	public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) {
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
+			try {
+				externalSurveillanceToolGatewayFacade
+					.sendCases(externalShareInfoService.getSharedCaseUuidsWithoutDeletedStatus(entityUuids), archived);
+			} catch (ExternalSurveillanceToolException e) {
+				throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+			}
+		}
+	}
+
+	public void setArchiveInExternalSurveillanceToolForEntity(String entityUuid, boolean archived) {
+		Case caze = getByUuid(entityUuid);
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()
+			&& externalShareInfoService.isCaseShared(caze.getId())
+			&& !hasShareInfoWithDeletedStatus(entityUuid)) {
+			try {
+				externalSurveillanceToolGatewayFacade.sendCases(Collections.singletonList(entityUuid), archived);
+			} catch (ExternalSurveillanceToolException e) {
+				throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+			}
+		}
+	}
+
+	public boolean hasShareInfoWithDeletedStatus(String entityUuid) {
+		List<ExternalShareInfo> result = externalShareInfoService.getShareInfoByCase(entityUuid);
+		return result.stream().anyMatch(info -> info.getStatus().equals(ExternalShareStatus.DELETED));
 	}
 
 	@Override

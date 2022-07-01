@@ -253,5 +253,4 @@ public class Vaccination extends AbstractDomainObject {
 	public void setTrimester(Trimester trimester) {
 		this.trimester = trimester;
 	}
-
 }

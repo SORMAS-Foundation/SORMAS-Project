@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.sormastosormas.data.validation;
 
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildPathogenTestValidationGroupName;
+
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
@@ -14,8 +16,6 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPrev
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
-
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildPathogenTestValidationGroupName;
 
 public abstract class SormasToSormasDtoValidator<DTO extends SormasToSormasShareableDto, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW extends PseudonymizableDto> {
 

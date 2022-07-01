@@ -88,13 +88,19 @@ public class PhysiciansReportCaseEditComponent extends CommitDiscardWrapperCompo
 		getButtonsPanel().addComponent(nextButton);
 
 		saveAndOpenCaseButton = ButtonHelper.createButton(Captions.actionSaveAndOpenCase, (b) -> {
-			if (activeTabComponent.commitAndHandle()) {
+			if (!activeTabComponent.isDirty() || activeTabComponent.commitAndHandle()) {
 				commit();
 				ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
 			}
 		}, ValoTheme.BUTTON_PRIMARY);
 
 		getButtonsPanel().addComponent(saveAndOpenCaseButton, getButtonsPanel().getComponentIndex(getCommitButton()));
+
+		setPrimaryCommitListener(() -> {
+			if (activeTabComponent.isDirty()) {
+				activeTabComponent.commitAndHandle();
+			}
+		});
 
 		for (TabConfig tabConfig : tabConfigs) {
 			tabsMenu.addView(tabConfig.captionTag, I18nProperties.getCaption(tabConfig.captionTag), () -> {

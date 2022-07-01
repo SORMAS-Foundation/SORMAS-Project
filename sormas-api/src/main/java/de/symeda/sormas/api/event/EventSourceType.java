@@ -25,6 +25,7 @@ public enum EventSourceType {
 	MATHEMATICAL_MODEL,
 	INSTITUTIONAL_PARTNER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

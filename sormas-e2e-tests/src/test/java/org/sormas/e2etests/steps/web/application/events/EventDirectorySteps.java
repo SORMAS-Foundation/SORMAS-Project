@@ -166,6 +166,7 @@ public class EventDirectorySteps implements En {
   private final BaseSteps baseSteps;
   public static final String userDirPath = System.getProperty("user.dir");
   private final List<String> oldEventUUIDs = new ArrayList<>();
+  static Map<String, Integer> headersMap;
 
   @Inject
   public EventDirectorySteps(
@@ -1231,6 +1232,26 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.selectFromCombobox(EVENT_PARTICIPANT_DISPLAY_FILTER_COMBOBOX, option);
           TimeUnit.SECONDS.sleep(3); // wait for reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I filter for SAMPLE TOKEN in Events Directory",
+        () -> {
+          webDriverHelpers.fillInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, "SAMPLE TOKEN");
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I check that the German Internal Token column is present",
+        () -> {
+          TimeUnit.SECONDS.sleep(3); // For preventing premature data collection
+          headersMap = extractColumnHeadersHashMap();
+          String headers = headersMap.toString();
+          softly.assertTrue(
+              headers.contains("HERDKENNUNG (INTERNES AKTENZEICHEN)"),
+              "The German INTERNAL TOKEN column is not displayed!");
+          softly.assertAll();
         });
   }
 

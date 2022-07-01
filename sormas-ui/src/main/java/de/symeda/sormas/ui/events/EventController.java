@@ -29,8 +29,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.common.DeletionReason;
-import de.symeda.sormas.ui.utils.DeletableUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -51,9 +49,10 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
+import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventFacade;
@@ -86,9 +85,10 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
+import de.symeda.sormas.ui.utils.DeletableUtils;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
-import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
+import de.symeda.sormas.ui.utils.components.automaticdeletion.DeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class EventController {
@@ -743,7 +743,8 @@ public class EventController {
 	public CommitDiscardWrapperComponent<EventDataForm> getEventDataEditComponent(final String eventUuid, Consumer<EventStatus> saveCallback) {
 
 		EventDto event = findEvent(eventUuid);
-		AutomaticDeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getEventFacade().getAutomaticDeletionInfo(eventUuid);
+		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getEventFacade().getAutomaticDeletionInfo(eventUuid);
+		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getEventFacade().getManuallyDeletionInfo(eventUuid);
 
 		EventDataForm eventEditForm = new EventDataForm(false, event.isPseudonymized());
 		eventEditForm.setValue(event);
@@ -752,9 +753,7 @@ public class EventController {
 			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT),
 			eventEditForm.getFieldGroup());
 
-		if (automaticDeletionInfoDto != null) {
-			editView.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel(automaticDeletionInfoDto));
-		}
+		editView.getButtonsPanel().addComponentAsFirst(new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, event.isDeleted()));
 
 		if (event.isDeleted()) {
 			editView.getWrappedComponent().getField(EventDto.DELETION_REASON).setVisible(true);

@@ -90,6 +90,7 @@ public enum DocumentWorkflow {
 		return fileType == DOCX;
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

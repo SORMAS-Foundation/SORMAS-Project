@@ -25,7 +25,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.common.DeletionDetails;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -38,7 +37,8 @@ import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.common.CoreEntityType;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.deletionconfiguration.DeletionInfoDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -401,7 +401,7 @@ public class CampaignFacadeEjb
 		if (entity == null) {
 			return null;
 		}
-		CampaignReferenceDto dto = new CampaignReferenceDto(entity.getUuid(), entity.toString());
+		CampaignReferenceDto dto = new CampaignReferenceDto(entity.getUuid(), entity.getName());
 		return dto;
 	}
 
@@ -411,7 +411,7 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
+	public DeletionInfoDto getAutomaticDeletionInfo(String uuid) {
 		return null; // campaigns do not support automatic deletion yet
 	}
 
