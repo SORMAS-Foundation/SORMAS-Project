@@ -136,8 +136,6 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 	 */
 	int getNonSourceCaseCountForDashboard(List<String> caseUuids);
 
-	void validate(ContactDto contact);
-
 	List<SimilarContactDto> getMatchingContacts(ContactSimilarityCriteria criteria);
 
 	boolean doesExternalTokenExist(String externalToken, String contactUuid);

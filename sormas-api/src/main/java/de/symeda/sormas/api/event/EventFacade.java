@@ -33,7 +33,6 @@ import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
 public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventReferenceDto, EventCriteria> {
@@ -69,8 +68,6 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 	Set<String> getAllEventUuidsByEventGroupUuid(String eventGroupUuid);
 
 	List<String> getEventUuidsWithOwnershipHandedOver(List<String> eventUuids);
-
-	void validate(EventDto dto) throws ValidationRuntimeException;
 
 	Set<RegionReferenceDto> getAllRegionsRelatedToEventUuids(List<String> uuids);
 

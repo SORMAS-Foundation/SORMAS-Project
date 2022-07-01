@@ -56,8 +56,6 @@ public interface EventParticipantFacade
 
 	List<EventParticipantListEntryDto> getListEntries(EventParticipantCriteria eventParticipantCriteria, Integer first, Integer max);
 
-	void validate(EventParticipantDto eventParticipant);
-
 	Map<String, Long> getContactCountPerEventParticipant(List<String> eventParticipantUuids, EventParticipantCriteria eventParticipantCriteria);
 
 	boolean exists(String personUuid, String eventUUID);

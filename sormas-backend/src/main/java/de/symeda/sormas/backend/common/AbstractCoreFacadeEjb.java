@@ -223,8 +223,6 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 	protected abstract void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer pseudonymizer);
 
-	public abstract void validate(DTO dto) throws ValidationRuntimeException;
-
 	@DenyAll
 	public void archive(String entityUuid, Date endOfProcessingDate) {
 		service.archive(entityUuid, endOfProcessingDate);
