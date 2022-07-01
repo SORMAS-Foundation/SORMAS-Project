@@ -154,7 +154,7 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 
 	@Override
 	protected SormasToSormasShareInfo getByTypeAndOrganization(Contact contact, String targetOrganizationId) {
-		return shareInfoService.getByCaseAndOrganization(contact.getUuid(), targetOrganizationId);
+		return shareInfoService.getByContactAndOrganization(contact.getUuid(), targetOrganizationId);
 	}
 
 	@Override
