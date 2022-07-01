@@ -122,7 +122,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 
 				assertThat(sharedContact.getEntity().getUuid(), is(contact.getUuid()));
 
-				assertThat(sharedContact.getEntity().getReportingUser(), isNotNull());
+				assertThat(sharedContact.getEntity().getReportingUser(), is(officer));
 				assertThat(sharedContact.getEntity().getContactOfficer(), is(nullValue()));
 				assertThat(sharedContact.getEntity().getResultingCaseUser(), is(nullValue()));
 
