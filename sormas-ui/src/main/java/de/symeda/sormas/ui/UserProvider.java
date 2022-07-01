@@ -43,6 +43,8 @@ public class UserProvider {
 		UserRight.OUTBREAK_VIEW,
 		UserRight.POPULATION_MANAGE);
 
+	private static final List userUserRoles = Arrays.asList(UserRight.USER_VIEW, UserRight.USER_ROLE_VIEW);
+
 	private UserDto user;
 	private UserReferenceDto userReference;
 	private Set<UserRoleDto> userRoles;
@@ -85,6 +87,11 @@ public class UserProvider {
 	public boolean hasConfigurationAccess() {
 		Set<UserRight> currentUserRights = getUserRights();
 		return configurationUserRoles.stream().anyMatch(currentUserRights::contains);
+	}
+
+	public boolean hasUserAccess() {
+		Set<UserRight> currentUserRights = getUserRights();
+		return userUserRoles.stream().anyMatch(currentUserRights::contains);
 	}
 
 	public boolean hasUserRight(UserRight userRight) {

@@ -2539,7 +2539,8 @@ public interface Captions {
 	String View_tasks_archive = "View.tasks.archive";
 	String View_tasks_sub = "View.tasks.sub";
 	String View_travelEntries = "View.travelEntries";
-	String View_users = "View.users";
+    String View_user_users = "View.user.users";
+    String View_user_userroles = "View.user.userroles";
 	String View_users_sub = "View.users.sub";
 	String Visit = "Visit";
 	String Visit_disease = "Visit.disease";
