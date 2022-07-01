@@ -851,7 +851,7 @@ Feature: Contacts end to end tests
     And I choose Other task as described in comments option from task type combobox in the New task form
     Then I check that Comments on task field is mandatory in the New task form
 
-  @issue=SORDEV-11753 @env_main
+  @issue=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -859,23 +859,40 @@ Feature: Contacts end to end tests
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in as a Surveillance Officer
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     Then I click on Line Listing button
     And I click CHOOSE CASE button
-    And I search for the last case uuid in the CHOOSE SOURCE Contact window
-    And I open the first found result in the CHOOSE SOURCE Contact window
-
-    And I create a new Contact with specific data through Line Listing with duplicated data
+    And I search for the last case uuid in the CHOOSE SOURCE Contact window for DE
+    And I open the first found result in the CHOOSE SOURCE Contact window for De
+    And I create a new Contact with specific data through Line Listing with duplicated data for De
     And I save the new contact using line listing feature
     Then I click on the Contacts button from navbar
     Then I click on Line Listing button
     And I click CHOOSE CASE button
-    And I search for the last case uuid in the CHOOSE SOURCE Contact window
-    And I open the first found result in the CHOOSE SOURCE Contact window
-
-    And I create a new Contact with specific data through Line Listing with duplicated data
+    And I search for the last case uuid in the CHOOSE SOURCE Contact window for DE
+    And I open the first found result in the CHOOSE SOURCE Contact window for De
+    And I create a new Contact with specific data through Line Listing with duplicated data for De
     And I save the new contact using line listing feature
-    And I Pick a new person in Pick or create person popup during case creation
+    And I Pick a new person in Pick or create person popup during contact creation for DE
+    And I filter by Person's full name of last created duplicated line listing contact on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I open 1 contact in order from list
+    And I click NEW VACCINATION button for DE
+    And I set new vaccination name the same as duplicate for DE
+    And I set new vaccination date the same as duplicate for DE
+    And I click SAVE button in new Vaccination form
+    When I click on the Contacts button from navbar
+    And I filter by Person's full name of last created duplicated line listing contact on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I open 2 contact in order from list
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data for duplicates in new Vaccination form for DE
+    And I click SAVE button in new Vaccination form
+    And I click on the Contacts button from navbar
+    And I click on the More button on Contact directory page
+    Then I click on Merge Duplicates on Contact directory page
+    And I click on Merge button of leading case in Merge Duplicate Contact page
+    Then I click to Confirm action in Merge Duplicates Cases popup
     And I click on New Sample
 

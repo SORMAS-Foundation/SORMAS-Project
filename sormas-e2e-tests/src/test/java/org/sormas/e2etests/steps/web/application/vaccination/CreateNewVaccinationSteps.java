@@ -44,12 +44,13 @@ public class CreateNewVaccinationSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   public static Vaccination vaccination;
+  public static Vaccination duplicatedVacinationDe;
 
   @Inject
   public CreateNewVaccinationSteps(
       WebDriverHelpers webDriverHelpers, VaccinationService vaccinationService) {
     this.webDriverHelpers = webDriverHelpers;
-
+    duplicatedVacinationDe = vaccinationService.buildGeneratedVaccinationDE();
     When(
         "I fill new vaccination data in new Vaccination form for DE",
         () -> {
@@ -79,6 +80,30 @@ public class CreateNewVaccinationSteps implements En {
           fillUniiCode(vaccination.getUniiCode());
           fillBatchNumber(vaccination.getBatchNumber());
           fillAtcCode(vaccination.getAtcCode());
+        });
+    When(
+        "I fill new vaccination data for duplicates in new Vaccination form for DE",
+        () -> {
+          fillVaccinationDate(duplicatedVacinationDe.getVaccinationDate(), Locale.GERMAN);
+          selectVaccineName(duplicatedVacinationDe.getVaccineName());
+          selectVaccineManufacturer(duplicatedVacinationDe.getVaccineManufacturer());
+          fillVaccineType(duplicatedVacinationDe.getVaccineType());
+          selectVaccinationInfoSource(duplicatedVacinationDe.getVaccinationInfoSource());
+          fillVaccineDose(duplicatedVacinationDe.getVaccineDose());
+          fillInn(duplicatedVacinationDe.getInn());
+          fillUniiCode(duplicatedVacinationDe.getUniiCode());
+          fillBatchNumber(duplicatedVacinationDe.getBatchNumber());
+          fillAtcCode(duplicatedVacinationDe.getAtcCode());
+        });
+    When(
+        "I set new vaccination name the same as duplicate for DE",
+        () -> {
+          selectVaccineName(duplicatedVacinationDe.getVaccineName());
+        });
+    When(
+        "I set new vaccination date the same as duplicate for DE",
+        () -> {
+          fillVaccinationDate(duplicatedVacinationDe.getVaccinationDate(), Locale.GERMAN);
         });
     When(
         "I click SAVE button in new Vaccination form",

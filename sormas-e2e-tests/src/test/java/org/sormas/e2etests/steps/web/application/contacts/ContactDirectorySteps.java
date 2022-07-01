@@ -28,6 +28,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ENTE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FACILITY_ACTIVITY_AS_CASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LEAVE_BULK_EDIT_MODE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MORE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getMergeDuplicatesButtonById;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_TYPE_OF_ACTIVITY_COMBOBOX;
@@ -804,11 +805,19 @@ public class ContactDirectorySteps implements En {
               break;
           }
         });
+    And(
+        "I filter by Person's full name of last created duplicated line listing contact on Contact Directory Page",
+        () ->
+            webDriverHelpers.fillAndSubmitInWebElement(
+                PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
+                ContactsLineListingSteps.duplicatedContactLineListingDE.getFirstName()
+                    + " "
+                    + ContactsLineListingSteps.duplicatedContactLineListingDE.getLastName()));
     When(
         "^I click on Line Listing button$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LINE_LISTING);
-          webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING);
+          webDriverHelpers.doubleClickOnWebElementBySelector(LINE_LISTING);
         });
 
     And(

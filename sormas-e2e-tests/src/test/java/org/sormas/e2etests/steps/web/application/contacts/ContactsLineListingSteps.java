@@ -43,6 +43,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactsLineListing
 import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_SEX_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_TYPE_OF_CONTACT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.getLineListingDateReportInputByIndex;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_SAVED_POPUP;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -64,6 +65,7 @@ public class ContactsLineListingSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   public static ContactsLineListing contactsLineListing;
   public static ContactsLineListing duplicatedContactLineListing;
+  public static ContactsLineListing duplicatedContactLineListingDE;
 
   @Inject
   public ContactsLineListingSteps(
@@ -73,6 +75,8 @@ public class ContactsLineListingSteps implements En {
       ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
     duplicatedContactLineListing = contactsLineListingService.buildGeneratedLineListingContacts();
+    duplicatedContactLineListingDE =
+        contactsLineListingService.buildGeneratedLineListingContactsDE();
     When(
         "^I create a new Contact with specific data for DE version through Line Listing$",
         () -> {
@@ -105,6 +109,23 @@ public class ContactsLineListingSteps implements En {
           selectBirthDay(duplicatedContactLineListing.getBirthDay());
           selectSex(duplicatedContactLineListing.getSex());
         });
+    When(
+        "^I create a new Contact with specific data through Line Listing with duplicated data for De$",
+        () -> {
+          selectRegion(duplicatedContactLineListingDE.getRegion());
+          selectDistrict(duplicatedContactLineListingDE.getDistrict());
+          fillDateOfReport(duplicatedContactLineListingDE.getDateOfReport(), Locale.GERMAN);
+          fillDateOfLastContact(
+              duplicatedContactLineListingDE.getDateOfLastContact(), Locale.GERMAN);
+          selectTypeOfContact(duplicatedContactLineListingDE.getTypeOfContact());
+          selectRelationshipWithCase(duplicatedContactLineListingDE.getRelationshipWithCase());
+          fillFirstName(duplicatedContactLineListingDE.getFirstName());
+          fillLastName(duplicatedContactLineListingDE.getLastName());
+          selectBirthYear(duplicatedContactLineListingDE.getBirthYear());
+          selectBirthMonth(duplicatedContactLineListingDE.getBirthMonth());
+          selectBirthDay(duplicatedContactLineListingDE.getBirthDay());
+          selectSex(duplicatedContactLineListingDE.getSex());
+        });
 
     When(
         "^I create a new Contact with specific data through Line Listing$",
@@ -133,6 +154,11 @@ public class ContactsLineListingSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_ACTION_SAVE);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(25);
+          if (webDriverHelpers.isElementVisibleWithTimeout(CONTACT_SAVED_POPUP, 5)) {
+            webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONTACT_SAVED_POPUP);
+            webDriverHelpers.clickOnWebElementBySelector(CONTACT_SAVED_POPUP);
+          }
+          TimeUnit.SECONDS.sleep(2);
         });
     When(
         "I save the new contacts from Event Participants using line listing feature in Event Participant tab",
