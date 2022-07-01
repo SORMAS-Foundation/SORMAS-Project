@@ -42,7 +42,7 @@ Feature: Contact import and export tests
     Then I click on the Contacts button from navbar
     And I click on the More button on Contact directory page
     And I click on the Import button from Contact directory
-    Then I select the "TestContact_ImportPrio_template.csv" CSV file in the file picker
+    Then I select the "ImportContactPrio.csv" CSV file in the file picker
     And I click on the "DATENIMPORT STARTEN" button from the Import Contact popup
     Then I click to create new person from the Contact Import popup
     And I check that an import success notification appears in the Import Contact popup

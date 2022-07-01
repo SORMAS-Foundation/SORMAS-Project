@@ -172,28 +172,28 @@ public class EditContactPersonSteps implements En {
                   CreateNewContactSteps.contact.getPrimaryEmailAddress(),
                   CreateNewContactSteps.contact.getPrimaryPhoneNumber());
         });
-      When(
-              "I check that ([^\"]*) is visible on Edit Contact Person Page",
-              (String option) -> {
-                  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
-                  By selector = null;
-                  Boolean elementVisible = true;
-                  switch (option) {
-                      case "Primary telephone":
-                          selector = TELEPHONE_PRIMARY;
-                          break;
-                      case "Primary email address":
-                          selector = EMAIL_PRIMARY;
-                          break;
-                  }
-                  try {
-                      webDriverHelpers.scrollToElementUntilIsVisible(selector);
-                  } catch (Throwable ignored) {
-                      elementVisible = false;
-                  }
-                  softly.assertTrue(elementVisible, option + " is not visible!");
-                  softly.assertAll();
-              });
+    When(
+        "I check that ([^\"]*) is visible on Edit Contact Person Page",
+        (String option) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          By selector = null;
+          Boolean elementVisible = true;
+          switch (option) {
+            case "Primary telephone":
+              selector = TELEPHONE_PRIMARY;
+              break;
+            case "Primary email address":
+              selector = EMAIL_PRIMARY;
+              break;
+          }
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(selector);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertTrue(elementVisible, option + " is not visible!");
+          softly.assertAll();
+        });
   }
 
   private void fillSalutation(String salutation) {
