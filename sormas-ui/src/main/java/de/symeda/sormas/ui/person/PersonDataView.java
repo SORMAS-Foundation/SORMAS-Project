@@ -159,7 +159,7 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 		menu.addView(PersonsView.VIEW_NAME, I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, Captions.personPersonsList));
 		menu.addView(PersonDataView.VIEW_NAME, I18nProperties.getCaption(PersonDto.I18N_PREFIX), params);
 
-		PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(getReference().getUuid());
+		PersonDto person = FacadeProvider.getPersonFacade().getByUuid(getReference().getUuid());
 		setMainHeaderComponent(ControllerProvider.getPersonController().getPersonViewTitleLayout(person));
 	}
 

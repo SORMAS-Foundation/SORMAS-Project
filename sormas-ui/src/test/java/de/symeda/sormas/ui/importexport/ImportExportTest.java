@@ -209,7 +209,7 @@ public class ImportExportTest extends AbstractBeanTest {
 		assertThat(importedCase.getSymptoms().getTremor(), is(SymptomState.YES));
 		assertThat(importedCase.getSymptoms().getVomiting(), is(SymptomState.YES));
 
-		PersonDto importedPerson = getPersonFacade().getPersonByUuid(importedCase.getPerson().getUuid());
+		PersonDto importedPerson = getPersonFacade().getByUuid(importedCase.getPerson().getUuid());
 
 		assertThat(importedPerson.getFirstName(), is("Import John"));
 		assertThat(importedPerson.getLastName(), is("Import Doe"));
@@ -350,7 +350,7 @@ public class ImportExportTest extends AbstractBeanTest {
 		assertThat(importedContact.isQuarantineExtended(), is(true));
 		assertThat(importedContact.getFollowUpStatus(), is(FollowUpStatus.FOLLOW_UP));
 
-		PersonDto importedPerson = getPersonFacade().getPersonByUuid(importedContact.getPerson().getUuid());
+		PersonDto importedPerson = getPersonFacade().getByUuid(importedContact.getPerson().getUuid());
 
 		assertThat(importedPerson.getFirstName(), is("Import John"));
 		assertThat(importedPerson.getLastName(), is("Import Doe"));

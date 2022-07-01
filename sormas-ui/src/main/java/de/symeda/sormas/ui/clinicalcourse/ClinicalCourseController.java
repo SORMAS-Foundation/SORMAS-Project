@@ -34,7 +34,7 @@ public class ClinicalCourseController {
 		ClinicalVisitForm form = new ClinicalVisitForm(
 			true,
 			clinicalVisit.getDisease(),
-			FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()),
+			FacadeProvider.getPersonFacade().getByUuid(caze.getPerson().getUuid()),
 			false);
 		form.setValue(clinicalVisit);
 
@@ -68,7 +68,7 @@ public class ClinicalCourseController {
 		ClinicalVisitForm form = new ClinicalVisitForm(
 			false,
 			clinicalVisit.getDisease(),
-			FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()),
+			FacadeProvider.getPersonFacade().getByUuid(caze.getPerson().getUuid()),
 			clinicalVisit.isPseudonymized());
 		form.setValue(clinicalVisit);
 

@@ -214,7 +214,7 @@ public class EventParticipantImporter extends DataImporter {
 					PersonDto importPerson = newPersonTemp;
 
 					if (selectedPersonUuid != null) {
-						importPerson = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPersonUuid);
+						importPerson = FacadeProvider.getPersonFacade().getByUuid(selectedPersonUuid);
 					}
 
 					// get first eventparticipant for event and person

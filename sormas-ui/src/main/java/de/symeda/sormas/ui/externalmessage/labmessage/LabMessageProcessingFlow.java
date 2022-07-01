@@ -159,7 +159,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 
 		contactCreateComponent.addCommitListener(() -> {
 			LabMessageProcessingHelper.updateAddressAndSavePerson(
-				FacadeProvider.getPersonFacade().getPersonByUuid(contactCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
+				FacadeProvider.getPersonFacade().getByUuid(contactCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
 				labMessage);
 
 			callback.done(contactCreateComponent.getWrappedComponent().getValue());

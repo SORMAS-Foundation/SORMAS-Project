@@ -1175,7 +1175,7 @@ public class DevModeView extends AbstractConfigurationView {
 			PersonDto person;
 			if (config.isCreateMultipleContactsPerPerson() && !personUuids.isEmpty() && randomPercent(25)) {
 				String personUuid = random(personUuids);
-				person = FacadeProvider.getPersonFacade().getPersonByUuid(personUuid);
+				person = FacadeProvider.getPersonFacade().getByUuid(personUuid);
 			} else {
 				person = PersonDto.build();
 				fillEntity(person, referenceDateTime);

@@ -115,7 +115,7 @@ public class EventParticipantsController {
 									if (FacadeProvider.getEventParticipantFacade().exists(selectedPerson.getUuid(), eventRef.getUuid())) {
 										throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageAlreadyEventParticipant));
 									} else {
-										dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
+										dto.setPerson(FacadeProvider.getPersonFacade().getByUuid(selectedPerson.getUuid()));
 										EventParticipantDto savedDto = eventParticipantFacade.save(dto);
 
 										Notification notification = new Notification(

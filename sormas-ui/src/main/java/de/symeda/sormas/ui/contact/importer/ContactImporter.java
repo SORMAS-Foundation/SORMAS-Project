@@ -218,7 +218,7 @@ public class ContactImporter extends DataImporter {
 					synchronized (contactSelectLock) {
 
 						if (selectedPersonUuid != null) {
-							importPerson = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPersonUuid);
+							importPerson = FacadeProvider.getPersonFacade().getByUuid(selectedPersonUuid);
 						}
 
 						handleContactSimilarity(

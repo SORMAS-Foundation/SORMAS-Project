@@ -190,7 +190,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 
 		EventParticipantIndexDto importedEventParticipant =
 			eventParticipantFacade.getIndexList(new EventParticipantCriteria().withEvent(eventRef), null, null, null).get(0);
-		PersonDto importedPerson = getPersonFacade().getPersonByUuid(importedEventParticipant.getPersonUuid());
+		PersonDto importedPerson = getPersonFacade().getByUuid(importedEventParticipant.getPersonUuid());
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
 		assertEquals(1, eventParticipantFacade.count(new EventParticipantCriteria().withEvent(eventRef)));
