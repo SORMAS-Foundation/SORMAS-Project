@@ -73,7 +73,7 @@ public class CaseShareDataBuilder
 	}
 
 	@Override
-	public void validateWithEjbShared(SormasToSormasCaseDto dto) {
+	public void doBusinessValidation(SormasToSormasCaseDto dto) {
 		personFacade.validate(dto.getPerson());
 		caseFacade.validate(dto.getEntity());
 	}

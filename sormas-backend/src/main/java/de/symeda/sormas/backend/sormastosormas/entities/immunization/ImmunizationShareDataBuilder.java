@@ -64,7 +64,7 @@ public class ImmunizationShareDataBuilder
 	}
 
 	@Override
-	public void validateWithEjbShared(SormasToSormasImmunizationDto sormasToSormasImmunizationDto) throws ValidationRuntimeException {
+	public void doBusinessValidation(SormasToSormasImmunizationDto sormasToSormasImmunizationDto) throws ValidationRuntimeException {
 		immunizationFacade.validate(sormasToSormasImmunizationDto.getEntity());
 	}
 

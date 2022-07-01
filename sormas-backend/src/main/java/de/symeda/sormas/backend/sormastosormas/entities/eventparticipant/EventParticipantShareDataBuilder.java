@@ -71,7 +71,7 @@ public class EventParticipantShareDataBuilder
 	}
 
 	@Override
-	public void validateWithEjbShared(SormasToSormasEventParticipantDto sormasToSormasEventParticipantDto) throws ValidationRuntimeException {
+	public void doBusinessValidation(SormasToSormasEventParticipantDto sormasToSormasEventParticipantDto) throws ValidationRuntimeException {
 		eventParticipantFacade.validate(sormasToSormasEventParticipantDto.getEntity());
 	}
 

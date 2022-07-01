@@ -48,7 +48,7 @@ public abstract class ShareDataBuilder<DTO extends SormasToSormasShareableDto, A
 		SHARED shared = doBuildShareData(data, requestInfo);
 		logger.info("Run validation for S2S shares based on BaseFacade::validate for {}", data.getUuid());
 		try {
-			validateWithEjbShared(shared);
+			doBusinessValidation(shared);
 		} catch (ValidationRuntimeException e){
 			logger.error("THIS IS A BUG: a share was constructed which properties does not pass the validation logic of their dedicated facade: %s ", e);
 			throw e;
@@ -64,7 +64,7 @@ public abstract class ShareDataBuilder<DTO extends SormasToSormasShareableDto, A
 		return shared;
 	}
 
-	protected abstract void validateWithEjbShared(SHARED shared) throws ValidationRuntimeException;
+	protected abstract void doBusinessValidation(SHARED shared) throws ValidationRuntimeException;
 
 	protected abstract PREVIEW doBuildShareDataPreview(ADO data, ShareRequestInfo requestInfo);
 

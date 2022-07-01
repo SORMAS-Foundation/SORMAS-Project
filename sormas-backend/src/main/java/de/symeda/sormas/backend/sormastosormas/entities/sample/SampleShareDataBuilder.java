@@ -75,7 +75,7 @@ public class SampleShareDataBuilder
 	}
 
 	@Override
-	public void validateWithEjbShared(SormasToSormasSampleDto sormasToSormasSampleDto) throws ValidationRuntimeException {
+	public void doBusinessValidation(SormasToSormasSampleDto sormasToSormasSampleDto) throws ValidationRuntimeException {
 		sampleFacade.validate(sormasToSormasSampleDto.getEntity());
 		sormasToSormasSampleDto.getPathogenTests().forEach(pathogenTestFacade::validate);
 		// additional test facade has no validation method

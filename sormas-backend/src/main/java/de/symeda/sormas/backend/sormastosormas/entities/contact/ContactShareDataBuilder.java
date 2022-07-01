@@ -68,7 +68,7 @@ public class ContactShareDataBuilder
 	}
 
 	@Override
-	public void validateWithEjbShared(SormasToSormasContactDto dto) throws ValidationRuntimeException {
+	public void doBusinessValidation(SormasToSormasContactDto dto) throws ValidationRuntimeException {
 		personFacade.validate(dto.getPerson());
 		contactFacade.validate(dto.getEntity());
 	}
