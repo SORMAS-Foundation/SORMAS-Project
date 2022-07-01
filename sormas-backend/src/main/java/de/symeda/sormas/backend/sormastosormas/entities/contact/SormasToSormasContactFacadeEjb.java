@@ -44,6 +44,8 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactFacade;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
@@ -54,8 +56,11 @@ import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequest;
+import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequestService;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless(name = "SormasToSormasContactFacade")
@@ -76,6 +81,8 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 	private SormasToSormasShareInfoService shareInfoService;
 	@EJB
 	private ImmunizationService immunizationService;
+	@EJB
+	private SormasToSormasShareRequestService shareRequestService;
 
 	public SormasToSormasContactFacadeEjb() {
 		super(
@@ -99,10 +106,15 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 	}
 
 	@Override
-	protected void validateEntitiesBeforeShare(List<Contact> entities, boolean handOverOwnership) throws SormasToSormasException {
+	protected void validateEntitiesBeforeShare(
+		List<Contact> entities,
+		boolean handOverOwnership,
+		String targetOrganizationId,
+		boolean pendingRequestAllowed)
+		throws SormasToSormasException {
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 		for (Contact contact : entities) {
-			if (!contactService.isContactEditAllowed(contact).equals(EditPermissionType.ALLOWED)) {
+			if (!contactService.isEditAllowed(contact).equals(EditPermissionType.ALLOWED)) {
 				validationErrors.add(
 					new ValidationErrors(
 						buildContactValidationGroupName(contact),
@@ -117,18 +129,108 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 							new ValidationErrorGroup(Captions.Contact),
 							new ValidationErrorMessage(Validations.sormasToSormasPersonEnrolled))));
 			}
+
+			if (contact.getCaze() == null) {
+				validationErrors.add(
+					new ValidationErrors(
+						buildContactValidationGroupName(contact),
+						ValidationErrors.create(
+							new ValidationErrorGroup(Captions.Contact),
+							new ValidationErrorMessage(Validations.sormasToSormasContactHasNoCase))));
+			} else if (contact.getSormasToSormasOriginInfo() == null
+				|| !contact.getSormasToSormasOriginInfo().getOrganizationId().equals(targetOrganizationId)) {
+				SormasToSormasShareInfo caseShareInfo = shareInfoService.getByCaseAndOrganization(contact.getCaze().getUuid(), targetOrganizationId);
+				if (caseShareInfo == null) {
+					validationErrors.add(
+						new ValidationErrors(
+							buildContactValidationGroupName(contact),
+							ValidationErrors.create(
+								new ValidationErrorGroup(Captions.Contact),
+								new ValidationErrorMessage(Validations.sormasToSormasContactCaseNotShared))));
+				} else {
+					ShareRequestInfo latestRequest =
+						ShareInfoHelper.getLatestRequest(caseShareInfo.getRequests().stream()).orElseGet(ShareRequestInfo::new);
+					if (latestRequest.getRequestStatus() != ShareRequestStatus.PENDING
+						&& latestRequest.getRequestStatus() != ShareRequestStatus.ACCEPTED) {
+						validationErrors.add(
+							new ValidationErrors(
+								buildContactValidationGroupName(contact),
+								ValidationErrors.create(
+									new ValidationErrorGroup(Captions.Contact),
+									new ValidationErrorMessage(Validations.sormasToSormasContactCaseNotShared))));
+					}
+				}
+			}
+
+			if (!pendingRequestAllowed) {
+				SormasToSormasShareInfo shareInfo = shareInfoService.getByContactAndOrganization(contact.getUuid(), targetOrganizationId);
+				if (shareInfo != null) {
+					ShareRequestInfo latestShare =
+						ShareInfoHelper.getLatestRequest(shareInfo.getRequests().stream()).orElseGet(ShareRequestInfo::new);
+
+					if (latestShare.getRequestStatus() == ShareRequestStatus.PENDING) {
+						validationErrors.add(
+							new ValidationErrors(
+								buildContactValidationGroupName(contact),
+								ValidationErrors.create(
+									new ValidationErrorGroup(Captions.Contact),
+									new ValidationErrorMessage(Validations.sormasToSormasExistingPendingRequest))));
+					}
+				}
+			}
 		}
 
-		if (validationErrors.size() > 0) {
+		if (!validationErrors.isEmpty()) {
 			throw SormasToSormasException.fromStringProperty(validationErrors, Strings.errorSormasToSormasShare);
 		}
 	}
 
 	@Override
-	protected void validateEntitiesBeforeShare(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {
+	protected void validateEntitiesBeforeSend(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {
 		validateEntitiesBeforeShare(
 			shares.stream().map(SormasToSormasShareInfo::getContact).filter(Objects::nonNull).collect(Collectors.toList()),
-			shares.get(0).isOwnershipHandedOver());
+			shares.get(0).isOwnershipHandedOver(),
+			shares.get(0).getOrganizationId(),
+			true);
+	}
+
+	@Override
+	protected void validateShareRequestBeforeAccept(SormasToSormasShareRequestDto shareRequest) throws SormasToSormasException {
+		List<ValidationErrors> validationErrors = new ArrayList<>();
+
+		shareRequest.getContacts().forEach(c -> {
+			if (c.getCaze() == null) {
+				validationErrors.add(
+					new ValidationErrors(
+						buildContactValidationGroupName(c),
+						ValidationErrors.create(
+							new ValidationErrorGroup(Captions.Contact),
+							new ValidationErrorMessage(Validations.sormasToSormasAcceptContactHasNoCase))));
+			} else {
+				List<SormasToSormasShareRequest> caseRequests = shareRequestService.getShareRequestsForCase(c.getCaze());
+				if (caseRequests.isEmpty()
+					|| caseRequests.stream()
+						.allMatch(r -> r.getStatus() == ShareRequestStatus.REJECTED || r.getStatus() == ShareRequestStatus.REVOKED)) {
+					validationErrors.add(
+						new ValidationErrors(
+							buildContactValidationGroupName(c),
+							ValidationErrors.create(
+								new ValidationErrorGroup(Captions.Contact),
+								new ValidationErrorMessage(Validations.sormasToSormasAcceptContactWithoutCaseShared))));
+				} else if (caseRequests.stream().noneMatch(r -> r.getStatus() == ShareRequestStatus.ACCEPTED)) {
+					validationErrors.add(
+						new ValidationErrors(
+							buildContactValidationGroupName(c),
+							ValidationErrors.create(
+								new ValidationErrorGroup(Captions.Contact),
+								new ValidationErrorMessage(Validations.sormasToSormasAcceptCaseBeforeContact))));
+				}
+			}
+		});
+
+		if (!validationErrors.isEmpty()) {
+			throw SormasToSormasException.fromStringProperty(validationErrors, Strings.errorSormasToSormasAccept);
+		}
 	}
 
 	@Override

@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParticipantPreview;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
@@ -67,6 +68,11 @@ public class EventParticipantShareDataBuilder
 			requestInfo.isPseudonymizedSensitiveData());
 
 		return new SormasToSormasEventParticipantDto(eventParticipantDto);
+	}
+
+	@Override
+	public void doBusinessValidation(SormasToSormasEventParticipantDto sormasToSormasEventParticipantDto) throws ValidationRuntimeException {
+		eventParticipantFacade.validate(sormasToSormasEventParticipantDto.getEntity());
 	}
 
 	@Override

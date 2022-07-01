@@ -149,12 +149,20 @@ public class LocationDto extends PseudonymizableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String facilityDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@PersonalData
+	@SensitiveData
 	private String contactPersonFirstName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@PersonalData
+	@SensitiveData
 	private String contactPersonLastName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@PersonalData
+	@SensitiveData
 	private String contactPersonPhone;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
+	@PersonalData
+	@SensitiveData
 	private String contactPersonEmail;
 
 	public String getDetails() {

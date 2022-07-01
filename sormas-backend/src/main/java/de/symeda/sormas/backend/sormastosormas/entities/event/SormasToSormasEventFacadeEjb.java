@@ -20,6 +20,9 @@ import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.EVE
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventValidationGroupName;
 
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -98,15 +101,37 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	}
 
 	@Override
-	protected void validateEntitiesBeforeShare(List<Event> entities, boolean handOverOwnership) throws SormasToSormasException {
+	protected void validateEntitiesBeforeShare(
+		List<Event> entities,
+		boolean handOverOwnership,
+		String targetOrganizationId,
+		boolean pendingRequestAllowed)
+		throws SormasToSormasException {
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 		for (Event event : entities) {
-			if (!eventService.isEventEditAllowed(event).equals(EditPermissionType.ALLOWED)) {
+			if (!eventService.isEditAllowed(event).equals(EditPermissionType.ALLOWED)) {
 				validationErrors.add(
 					new ValidationErrors(
 						buildEventValidationGroupName(event),
 						ValidationErrors
 							.create(new ValidationErrorGroup(Captions.Event), new ValidationErrorMessage(Validations.sormasToSormasNotEditable))));
+			}
+
+			if (!pendingRequestAllowed) {
+				SormasToSormasShareInfo shareInfo = shareInfoService.getByEventAndOrganization(event.getUuid(), targetOrganizationId);
+				if (shareInfo != null) {
+					ShareRequestInfo latestShare =
+						ShareInfoHelper.getLatestRequest(shareInfo.getRequests().stream()).orElseGet(ShareRequestInfo::new);
+
+					if (latestShare.getRequestStatus() == ShareRequestStatus.PENDING) {
+						validationErrors.add(
+							new ValidationErrors(
+								buildEventValidationGroupName(event),
+								ValidationErrors.create(
+									new ValidationErrorGroup(Captions.Event),
+									new ValidationErrorMessage(Validations.sormasToSormasExistingPendingRequest))));
+					}
+				}
 			}
 		}
 
@@ -116,10 +141,17 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	}
 
 	@Override
-	protected void validateEntitiesBeforeShare(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {
+	protected void validateEntitiesBeforeSend(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {
 		validateEntitiesBeforeShare(
 			shares.stream().map(SormasToSormasShareInfo::getEvent).filter(Objects::nonNull).collect(Collectors.toList()),
-			shares.get(0).isOwnershipHandedOver());
+			shares.get(0).isOwnershipHandedOver(),
+			shares.get(0).getOrganizationId(),
+			true);
+	}
+
+	@Override
+	protected void validateShareRequestBeforeAccept(SormasToSormasShareRequestDto shareRequest) throws SormasToSormasException {
+
 	}
 
 	@Override

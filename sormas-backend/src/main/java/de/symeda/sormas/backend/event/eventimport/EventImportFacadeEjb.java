@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -71,9 +70,10 @@ import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.Distri
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "EventImportFacade")
-@RolesAllowed(UserRight._EVENT_IMPORT)
+@RightsAllowed(UserRight._EVENT_IMPORT)
 public class EventImportFacadeEjb implements EventImportFacade {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(EventImportFacadeEjb.class);

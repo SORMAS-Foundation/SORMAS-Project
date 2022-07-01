@@ -71,7 +71,7 @@ public class AbstractImmunizationView extends AbstractDetailView<ImmunizationRef
 	}
 
 	protected boolean isImmunizationEditAllowed() {
-		return FacadeProvider.getImmunizationFacade().isImmunizationEditAllowed(getReference().getUuid()).equals(EditPermissionType.ALLOWED);
+		return FacadeProvider.getImmunizationFacade().isEditAllowed(getReference().getUuid()).equals(EditPermissionType.ALLOWED);
 	}
 
 	@Override

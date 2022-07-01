@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -117,9 +116,10 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "SampleFacade")
-@RolesAllowed(UserRight._SAMPLE_VIEW)
+@RightsAllowed(UserRight._SAMPLE_VIEW)
 public class SampleFacadeEjb implements SampleFacade {
 
 	private static final int DELETED_BATCH_SIZE = 1000;
@@ -342,14 +342,14 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._SAMPLE_CREATE,
 		UserRight._SAMPLE_EDIT })
 	public SampleDto saveSample(@Valid SampleDto dto) {
 		return saveSample(dto, true, true, true);
 	}
 
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._SAMPLE_CREATE,
 		UserRight._SAMPLE_EDIT })
 	public SampleDto saveSample(@Valid SampleDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal) {
@@ -691,13 +691,13 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._SAMPLE_EXPORT)
+	@RightsAllowed(UserRight._SAMPLE_EXPORT)
 	public List<SampleExportDto> getExportList(SampleCriteria criteria, Collection<String> selectedRows, int first, int max) {
 		return getExportList(criteria, null, selectedRows, first, max);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._SAMPLE_EXPORT)
+	@RightsAllowed(UserRight._SAMPLE_EXPORT)
 	public List<SampleExportDto> getExportList(CaseCriteria criteria, Collection<String> selectedRows, int first, int max) {
 		return getExportList(null, criteria, selectedRows, first, max);
 	}
@@ -730,7 +730,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._SAMPLE_DELETE)
+	@RightsAllowed(UserRight._SAMPLE_DELETE)
 	public void deleteSample(SampleReferenceDto sampleRef, DeletionDetails deletionDetails) {
 		Sample sample = sampleService.getByReferenceDto(sampleRef);
 		sampleService.delete(sample, deletionDetails);
@@ -739,7 +739,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._SAMPLE_DELETE)
+	@RightsAllowed(UserRight._SAMPLE_DELETE)
 	public void deleteAllSamples(List<String> sampleUuids, DeletionDetails deletionDetails) {
 		long startTime = DateHelper.startTime();
 
@@ -748,7 +748,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		logger.debug("deleteAllSamples(sampleUuids) finished. samplesCount = {}, {}ms", sampleUuids.size(), DateHelper.durationMillies(startTime));
 	}
 
-	@RolesAllowed(UserRight._SAMPLE_DELETE)
+	@RightsAllowed(UserRight._SAMPLE_DELETE)
 	public List<String> deleteSamples(List<String> sampleUuids, DeletionDetails deletionDetails) {
 		List<String> deletedSampleUuids = new ArrayList<>();
 		List<Sample> samplesToBeDeleted = sampleService.getByUuids(sampleUuids);
@@ -1052,7 +1052,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		return sampleService.isSampleEditAllowed(sample);
 	}
 
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._SAMPLE_CREATE,
 		UserRight._CASE_CREATE })
 	public void cloneSampleForCase(Sample sample, Case caze) {

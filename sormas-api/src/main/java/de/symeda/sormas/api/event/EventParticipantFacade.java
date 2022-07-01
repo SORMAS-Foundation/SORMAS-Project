@@ -27,7 +27,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CoreFacade;
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
@@ -57,8 +56,6 @@ public interface EventParticipantFacade
 
 	List<EventParticipantListEntryDto> getListEntries(EventParticipantCriteria eventParticipantCriteria, Integer first, Integer max);
 
-	void validate(EventParticipantDto eventParticipant);
-
 	Map<String, Long> getContactCountPerEventParticipant(List<String> eventParticipantUuids, EventParticipantCriteria eventParticipantCriteria);
 
 	boolean exists(String personUuid, String eventUUID);
@@ -70,8 +67,6 @@ public interface EventParticipantFacade
 	List<String> getArchivedUuidsSince(Date since);
 
 	List<String> getDeletedUuidsSince(Date date);
-
-	EditPermissionType isEventParticipantEditAllowed(String uuid);
 
 	EventParticipantDto getFirst(EventParticipantCriteria eventParticipantCriteria);
 

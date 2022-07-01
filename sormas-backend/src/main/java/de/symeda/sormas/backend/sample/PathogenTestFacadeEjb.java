@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -78,6 +77,7 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "PathogenTestFacade")
 public class PathogenTestFacadeEjb implements PathogenTestFacade {
@@ -272,7 +272,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._PATHOGEN_TEST_DELETE)
+	@RightsAllowed(UserRight._PATHOGEN_TEST_DELETE)
 	public void deletePathogenTest(String pathogenTestUuid, DeletionDetails deletionDetails) {
 
 		PathogenTest pathogenTest = pathogenTestService.getByUuid(pathogenTestUuid);

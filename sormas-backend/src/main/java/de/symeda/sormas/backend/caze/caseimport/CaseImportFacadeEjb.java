@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -89,10 +88,11 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.RightsAllowed;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb.VaccinationFacadeEjbLocal;
 
 @Stateless(name = "CaseImportFacade")
-@RolesAllowed(UserRight._CASE_IMPORT)
+@RightsAllowed(UserRight._CASE_IMPORT)
 public class CaseImportFacadeEjb implements CaseImportFacade {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(CaseImportFacadeEjb.class);

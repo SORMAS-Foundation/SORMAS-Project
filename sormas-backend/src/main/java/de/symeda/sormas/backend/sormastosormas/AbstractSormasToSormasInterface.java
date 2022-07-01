@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -115,6 +114,7 @@ import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormas
 import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequestFacadeEJB.SormasToSormasShareRequestFacadeEJBLocal;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomainObject & SormasToSormasShareable, DTO extends SormasToSormasShareableDto, S extends SormasToSormasEntityDto<DTO>>
 	implements SormasToSormasEntityInterface {
@@ -200,7 +200,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	@Override
 	@Transactional(rollbackOn = {
 		Exception.class })
-	@RolesAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
+	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
 	public void share(List<String> entityUuids, @Valid SormasToSormasOptionsDto options) throws SormasToSormasException {
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)) {
 			sendShareRequest(entityUuids, options);
@@ -229,7 +229,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			ensureConsistentOptions(options);
 		}
 
-		validateEntitiesBeforeShare(entities, options.isHandOverOwnership());
+		validateEntitiesBeforeShare(entities, options.isHandOverOwnership(), options.getOrganization().getId(), false);
 
 		String requestUuid = DataHelper.createUuid();
 
@@ -276,6 +276,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		String organizationId = shareRequest.getOriginInfo().getOrganizationId();
 
+		validateShareRequestBeforeAccept(shareRequest);
+
 		SormasToSormasEncryptedDataDto encryptedData =
 			sormasToSormasRestClient.post(organizationId, requestGetDataEndpoint, requestUuid, SormasToSormasEncryptedDataDto.class);
 
@@ -301,7 +303,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		String requestUuid = sormasToSormasEncryptionEjb.decryptAndVerify(encryptedRequestUuid, String.class);
 		ShareRequestInfo requestInfo = shareRequestInfoService.getByUuid(requestUuid);
 
-		validateEntitiesBeforeShare(requestInfo.getShares());
+		validateEntitiesBeforeSend(requestInfo.getShares());
 
 		SormasToSormasDto shareData = shareDataBuilder.buildShareDataForRequest(requestInfo, currentUser);
 
@@ -312,7 +314,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		User currentUser = userService.getCurrentUser();
 		List<ADO> entities = getEntityService().getByUuids(entityUuids);
 
-		validateEntitiesBeforeShare(entities, options.isHandOverOwnership());
+		validateEntitiesBeforeShare(entities, options.isHandOverOwnership(), options.getOrganization().getId(), false);
 		ensureConsistentOptions(options);
 
 		String requestUuid = DataHelper.createUuid();
@@ -367,30 +369,27 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	public void syncShares(ShareTreeCriteria criteria) {
 		User currentUser = userService.getCurrentUser();
 
-		walkShareTree(
-			criteria,
-			(entity, originInfo, parentCriteria) -> {
+		walkShareTree(criteria, (entity, originInfo, parentCriteria) -> {
+			// prevent stopping the iteration through the shares because of a failed sync operation
+			// sync with as much servers as possible
+			try {
+				syncEntityToOrigin(entity, originInfo, parentCriteria);
+			} catch (Exception e) {
+				LOGGER.error("Failed to sync to [{}]", originInfo.getOrganizationId(), e);
+			}
+		}, ((entity, shareInfo, reShareCriteria, noForward) -> {
+			if (!noForward) {
 				// prevent stopping the iteration through the shares because of a failed sync operation
 				// sync with as much servers as possible
 				try {
-					syncEntityToOrigin(entity, originInfo, parentCriteria);
-				} catch (Exception e) {
-					LOGGER.error("Failed to sync to [{}]", originInfo.getOrganizationId(), e);
-				}
-			},
-			((entity, shareInfo, reShareCriteria, noForward) -> {
-				if (!noForward) {
-					// prevent stopping the iteration through the shares because of a failed sync operation
-					// sync with as much servers as possible
-					try {
-						ShareRequestInfo latestRequestInfo = ShareInfoHelper.getLatestAcceptedRequest(shareInfo.getRequests().stream()).orElse(null);
+					ShareRequestInfo latestRequestInfo = ShareInfoHelper.getLatestAcceptedRequest(shareInfo.getRequests().stream()).orElse(null);
 
-						syncEntityToShares(entity, latestRequestInfo, reShareCriteria, currentUser);
-					} catch (Exception e) {
-						LOGGER.error("Failed to sync to [{}]", shareInfo.getOrganizationId(), e);
-					}
+					syncEntityToShares(entity, latestRequestInfo, reShareCriteria, currentUser);
+				} catch (Exception e) {
+					LOGGER.error("Failed to sync to [{}]", shareInfo.getOrganizationId(), e);
 				}
-			}));
+			}
+		}));
 	}
 
 	@Override
@@ -523,9 +522,16 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	protected abstract Class<S[]> getShareDataClass();
 
-	protected abstract void validateEntitiesBeforeShare(List<ADO> entities, boolean handOverOwnership) throws SormasToSormasException;
+	protected abstract void validateEntitiesBeforeShare(
+		List<ADO> entities,
+		boolean handOverOwnership,
+		String targetOrganizationId,
+		boolean pendingRequestAllowed)
+		throws SormasToSormasException;
 
-	protected abstract void validateEntitiesBeforeShare(List<SormasToSormasShareInfo> shares) throws SormasToSormasException;
+	protected abstract void validateEntitiesBeforeSend(List<SormasToSormasShareInfo> shares) throws SormasToSormasException;
+
+	protected abstract void validateShareRequestBeforeAccept(SormasToSormasShareRequestDto shareRequest) throws SormasToSormasException;
 
 	private void syncEntityToShares(ADO entity, ShareRequestInfo requestInfo, ShareTreeCriteria criteria, User currentUser)
 		throws SormasToSormasException {

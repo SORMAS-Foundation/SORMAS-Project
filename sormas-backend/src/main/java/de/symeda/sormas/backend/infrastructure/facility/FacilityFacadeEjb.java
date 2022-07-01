@@ -570,7 +570,8 @@ public class FacilityFacadeEjb
 		// facilities are excluded from infra. data locking for now...
 	}
 
-	private void validate(FacilityDto dto) {
+	@Override
+	public void validate(FacilityDto dto) {
 		if (dto.getType() == null
 			&& !FacilityDto.OTHER_FACILITY_UUID.equals(dto.getUuid())
 			&& !FacilityDto.NONE_FACILITY_UUID.equals(dto.getUuid())) {
