@@ -205,11 +205,13 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
 		Assert.assertEquals(1, indexList.size());
 		Assert.assertEquals(2, indexList.get(0).getNewCases());
+		Assert.assertEquals(informant1.toReference(), indexList.get(0).getReportingUser());
 
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.REGION);
 		List<AggregatedCaseCountDto> indexListRegionGrouping = getAggregateReportFacade().getIndexList(criteria);
 		Assert.assertEquals(1, indexListRegionGrouping.size());
 		Assert.assertEquals(2, indexListRegionGrouping.get(0).getNewCases());
+		Assert.assertNull(indexListRegionGrouping.get(0).getReportingUser());
 	}
 
 	@Test
@@ -229,6 +231,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(1, indexList.size());
 		Assert.assertEquals(6, indexList.get(0).getNewCases());
 		Assert.assertEquals(13, indexList.get(0).getDeaths());
+		Assert.assertNull(indexList.get(0).getReportingUser());
 
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.HEALTH_FACILITY);
 		List<AggregatedCaseCountDto> indexListFacilityGrouping = getAggregateReportFacade().getIndexList(criteria);
@@ -249,6 +252,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(1, indexListRegionGrouping.size());
 		Assert.assertEquals(6, indexListRegionGrouping.get(0).getNewCases());
 		Assert.assertEquals(13, indexListRegionGrouping.get(0).getDeaths());
+		Assert.assertNull(indexListRegionGrouping.get(0).getReportingUser());
 
 		createAggregateReport(4, 4, 4, rdcf.region, null, null, null);
 
@@ -256,5 +260,6 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(1, indexListRegionGroupingWhenRegionaData.size());
 		Assert.assertEquals(4, indexListRegionGroupingWhenRegionaData.get(0).getNewCases());
 		Assert.assertEquals(4, indexListRegionGroupingWhenRegionaData.get(0).getDeaths());
+		Assert.assertEquals(informant1.toReference(), indexListRegionGroupingWhenRegionaData.get(0).getReportingUser());
 	}
 }

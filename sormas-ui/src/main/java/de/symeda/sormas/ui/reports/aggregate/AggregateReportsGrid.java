@@ -31,6 +31,7 @@ public class AggregateReportsGrid extends FilteredGrid<AggregatedCaseCountDto, A
 	protected void addDefaultColumns() {
 		setColumns(
 			AggregatedCaseCountDto.DISEASE,
+			AggregatedCaseCountDto.REPORTING_USER,
 			AggregatedCaseCountDto.REGION_NAME,
 			AggregatedCaseCountDto.DISTRICT_NAME,
 			AggregatedCaseCountDto.HEALTH_FACILITY_NAME,

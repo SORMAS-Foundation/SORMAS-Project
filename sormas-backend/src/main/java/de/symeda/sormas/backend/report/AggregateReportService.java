@@ -85,9 +85,17 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 		return filter;
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, AggregateReport> from) {
+		return createUserFilter(new AggregateReportQueryContext(cb, cq,from));
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Predicate createUserFilter(AggregateReportQueryContext queryContext) {
+
+		CriteriaBuilder cb = queryContext.getCriteriaBuilder();
+		From<?, AggregateReport> from = queryContext.getRoot();
+		AggregateReportJoins joins = queryContext.getJoins();
 
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
@@ -100,7 +108,7 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 		}
 
 		// Whoever created the weekly report is allowed to access it
-		Join<AggregateReport, User> reportingUser = from.join(AggregateReport.REPORTING_USER, JoinType.LEFT);
+		Join<AggregateReport, User> reportingUser = joins.getReportingUser();
 		Predicate filter = cb.equal(reportingUser, currentUser);
 
 		switch (jurisdictionLevel) {

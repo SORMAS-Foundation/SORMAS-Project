@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.report;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -66,7 +65,6 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import org.docx4j.wml.P;
 
 @Stateless(name = "AggregateReportFacade")
 @RolesAllowed(UserRight._AGGREGATE_REPORT_VIEW)
@@ -154,8 +152,10 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<AggregatedCaseCountDto> cq = cb.createQuery(AggregatedCaseCountDto.class);
 		Root<AggregateReport> root = cq.from(AggregateReport.class);
+		AggregateReportQueryContext queryContext = new AggregateReportQueryContext(cb,cq, root);
+		AggregateReportJoins joins = queryContext.getJoins();
 
-		Predicate filter = service.createUserFilter(cb, cq, root);
+		Predicate filter = service.createUserFilter(queryContext);
 		if (criteria != null) {
 			Predicate criteriaFilter = service.createCriteriaFilter(criteria, cb, cq, root);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
@@ -209,37 +209,40 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.isNotNull(root.get(AggregateReport.POINT_OF_ENTRY))));
 			}
 
-//			if (shouldIncludeRegion(groupingLevel)) {
 				Join<AggregateReport, Region> regionJoin = root.join(AggregateReport.REGION, JoinType.LEFT);
 				List<Path<Object>> regionPath = Arrays.asList(regionJoin.get(Region.NAME), regionJoin.get(Region.ID));
 				expressions.addAll(regionPath);
 				selectionList.addAll(regionPath);
-//			}
 
-//			if (shouldIncludeDistrict(groupingLevel)) {
 				Join<AggregateReport, District> districtJoin = root.join(AggregateReport.DISTRICT, JoinType.LEFT);
 				List<Path<Object>> districtPath = Arrays.asList(districtJoin.get(District.NAME), districtJoin.get(District.ID));
 				expressions.addAll(districtPath);
 				selectionList.addAll(districtPath);
-//			}
 
-//			if (shouldIncludeHealthFacility(groupingLevel)) {
 				Join<AggregateReport, Facility> facilityJoin = root.join(AggregateReport.HEALTH_FACILITY, JoinType.LEFT);
 				List<Path<Object>> facilityPath = Arrays.asList(facilityJoin.get(Facility.NAME), facilityJoin.get(Facility.ID));
 				expressions.addAll(facilityPath);
 				selectionList.addAll(facilityPath);
-//			}
 
-//			if (shouldIncludePointOfEntry(groupingLevel)) {
 				Join<AggregateReport, PointOfEntry> pointOfEntryJoin = root.join(AggregateReport.POINT_OF_ENTRY, JoinType.LEFT);
-				List<Path<Object>> pointOfEntryPath = Arrays.asList(pointOfEntryJoin.get(PointOfEntry.ID), pointOfEntryJoin.get(PointOfEntry.NAME));
+				List<Path<Object>> pointOfEntryPath = Arrays.asList(pointOfEntryJoin.get(PointOfEntry.NAME), pointOfEntryJoin.get(PointOfEntry.ID));
 				expressions.addAll(pointOfEntryPath);
 				selectionList.addAll(pointOfEntryPath);
-//			}
 		}
 
-		selectionList.add(root.get(AggregateReport.CHANGE_DATE));
-		expressions.add(root.get(AggregateReport.CHANGE_DATE));
+		selectionList.addAll(
+			Arrays.asList(
+				joins.getReportingUser().get(User.UUID),
+				joins.getReportingUser().get(User.FIRST_NAME),
+				joins.getReportingUser().get(User.LAST_NAME),
+				root.get(AggregateReport.CHANGE_DATE)));
+		expressions.addAll(
+			Arrays.asList(
+				joins.getReportingUser().get(User.UUID),
+				joins.getReportingUser().get(User.FIRST_NAME),
+				joins.getReportingUser().get(User.LAST_NAME),
+				root.get(AggregateReport.CHANGE_DATE)));
+
 		cq.multiselect(selectionList);
 
 		if (filter != null) {
@@ -310,7 +313,15 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 				aggregatedCaseCountDto.setDistrictId(null);
 				aggregatedCaseCountDto.setDistrictName(null);
 			}
+			aggregatedCaseCountDto.setReportingUser(null);
 			resultList.add(aggregatedCaseCountDto);
+		});
+
+		resultList.forEach(aggregatedCaseCountDto -> {
+			if (aggregatedCaseCountDto.getReportingUser() != null
+				&& AggregateReportGroupingLevel.getByJurisdictionLevel(aggregatedCaseCountDto.getJurisdictionlevel()) != finalGroupingLevel) {
+				aggregatedCaseCountDto.setReportingUser(null);
+			}
 		});
 
 		for (AggregatedCaseCountDto result : resultList) {
@@ -488,9 +499,13 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		Disease disease,
 		EpiWeek epiWeek) {
 
+		Long regionid = selectedRegion != null ? selectedRegion.getId() : null;
 		String regionName = selectedRegion != null ? selectedRegion.getName() : null;
+		Long districtId = selectedDistrict != null ? selectedDistrict.getId() : null;
 		String districtName = selectedDistrict != null ? selectedDistrict.getName() : null;
+		Long healthFacilityid = selectedFacility != null ? selectedFacility.getId() : null;
 		String healthFacilityName = selectedFacility != null ? selectedFacility.getName() : null;
+		Long pointOfEntryId = selectedPoindOfEntry != null ? selectedPoindOfEntry.getId() : null;
 		String pointOfEntryName = selectedPoindOfEntry != null ? selectedPoindOfEntry.getName() : null;
 
 		resultList.add(
@@ -503,9 +518,15 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 				epiWeek.getWeek(),
 				"",
 				regionName,
+				regionid,
 				districtName,
+				districtId,
 				healthFacilityName,
-				pointOfEntryName, new Date()));
+				healthFacilityid,
+				pointOfEntryName,
+				pointOfEntryId,
+				null, null, null,
+				new Date()));
 	}
 
 	private boolean shouldIncludeRegion(AggregateReportGroupingLevel groupingLevel) {
