@@ -76,6 +76,18 @@ public class CreateNewImmunizationSteps implements En {
           webDriverHelpers.scrollToElement(DISCARD_IMMUNIZATION_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DISCARD_IMMUNIZATION_BUTTON);
         });
+
+    When(
+        "I fill only mandatory fields in immunization popup with means of immunization as a {string}",
+        (String status) -> {
+          immunization =
+              immunizationService.buildGeneratedImmunizationWithMeansOfImmunizationFromCase(status);
+          fillDateOfReport(immunization.getDateOfReport());
+          fillMeansOfImmunization(immunization.getMeansOfImmunization());
+          selectResponsibleRegion(immunization.getResponsibleRegion());
+          selectResponsibleDistrict(immunization.getResponsibleDistrict());
+          webDriverHelpers.clickOnWebElementBySelector(IMMUNIZATION_POPUP_SAVE_BUTTON);
+        });
   }
 
   private void fillDateOfReport(LocalDate date) {

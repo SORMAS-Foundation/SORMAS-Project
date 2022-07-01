@@ -242,7 +242,7 @@ public class CreateNewSampleSteps implements En {
               sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
           selectTestResult(sample.getTestResults());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
@@ -633,6 +633,12 @@ public class CreateNewSampleSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });
 
+    When(
+        "I confirm case with positive test result",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
+        });
     When(
         "I confirm the Create case from event participant with positive test result",
         () -> {
