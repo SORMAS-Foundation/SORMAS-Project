@@ -85,10 +85,4 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 		boolean eventStatusChange,
 		boolean eventInvestigationStatusChange,
 		boolean eventManagementStatusChange);
-
-	void archive(String eventUuid, Date endOfProcessingDate);
-
-	void archive(List<String> eventUuids);
-
-	void dearchive(List<String> eventUuids, String dearchiveReason);
 }

@@ -1088,27 +1088,24 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 						if (caseExposures.stream().anyMatch(e -> ExposureType.BURIAL.equals(e.getExposureType()))) {
 							exportDto.setBurialAttended(true);
 						}
-						caseExposures.stream()
-							.filter(e -> ExposureType.TRAVEL.equals(e.getExposureType()))
-							.forEach(
-								exposure -> {
-									Location location = exposure.getLocation();
-									travelHistoryBuilder.append(
-										EpiDataHelper.buildDetailedTravelString(
-											LocationReferenceDto.buildCaption(
-												location.getRegion() != null ? location.getRegion().getName() : null,
-												location.getDistrict() != null ? location.getDistrict().getName() : null,
-												location.getCommunity() != null ? location.getCommunity().getName() : null,
-												location.getCity(),
-												location.getStreet(),
-												location.getHouseNumber(),
-												location.getAdditionalInformation()),
-											exposure.getDescription(),
-											exposure.getStartDate(),
-											exposure.getEndDate(),
-											userLanguage))
-										.append(", ");
-								});
+						caseExposures.stream().filter(e -> ExposureType.TRAVEL.equals(e.getExposureType())).forEach(exposure -> {
+							Location location = exposure.getLocation();
+							travelHistoryBuilder.append(
+								EpiDataHelper.buildDetailedTravelString(
+									LocationReferenceDto.buildCaption(
+										location.getRegion() != null ? location.getRegion().getName() : null,
+										location.getDistrict() != null ? location.getDistrict().getName() : null,
+										location.getCommunity() != null ? location.getCommunity().getName() : null,
+										location.getCity(),
+										location.getStreet(),
+										location.getHouseNumber(),
+										location.getAdditionalInformation()),
+									exposure.getDescription(),
+									exposure.getStartDate(),
+									exposure.getEndDate(),
+									userLanguage))
+								.append(", ");
+						});
 						if (travelHistoryBuilder.length() > 0) {
 							exportDto.setTraveled(true);
 							travelHistoryBuilder.delete(travelHistoryBuilder.lastIndexOf(", "), travelHistoryBuilder.length() - 1);
@@ -2734,6 +2731,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return dto;
 	}
 
+	@Override
 	@RightsAllowed({
 		UserRight._CASE_VIEW,
 		UserRight._EXTERNAL_VISITS })
