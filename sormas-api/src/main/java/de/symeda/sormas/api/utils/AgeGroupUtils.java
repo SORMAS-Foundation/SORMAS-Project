@@ -87,7 +87,7 @@ public class AgeGroupUtils {
 			return null;
 		}
 
-		final List<String> ageGroupList = Stream.of(ageGroupsString.trim().split(",")).collect(Collectors.toList());
+		final List<String> ageGroupList = Stream.of(ageGroupsString.split(",")).map(String::trim).collect(Collectors.toList());
 		ageGroupList.removeIf(s -> {
 			try {
 				validateAgeGroup(s);
