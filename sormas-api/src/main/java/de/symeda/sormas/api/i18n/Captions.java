@@ -2418,6 +2418,7 @@ public interface Captions {
 	String UserRole_portHealthUser = "UserRole.portHealthUser";
 	String UserRole_smsNotificationTypes = "UserRole.smsNotificationTypes";
 	String UserRole_userRights = "UserRole.userRights";
+	String userRoleNewUserRole = "userRoleNewUserRole";
 	String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";
 	String Vaccination = "Vaccination";
 	String Vaccination_otherVaccineManufacturer = "Vaccination.otherVaccineManufacturer";

@@ -9,6 +9,7 @@ public class UserRoleCriteria extends BaseCriteria implements Serializable {
 
 	private Boolean enabled;
 	private UserRight userRight;
+	private JurisdictionLevel jurisdictionLevel;
 	private String freeText;
 
 	public UserRoleCriteria enabled(Boolean enabled) {
@@ -29,14 +30,23 @@ public class UserRoleCriteria extends BaseCriteria implements Serializable {
 		return userRight;
 	}
 
+	public UserRoleCriteria jurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
+		this.jurisdictionLevel = jurisdictionLevel;
+		return this;
+	}
+
+	public JurisdictionLevel getJurisdictionLevel() {
+		return jurisdictionLevel;
+	}
+
 	public void setUserRight(UserRight userRight) {
 		this.userRight = userRight;
 	}
 
-    public UserRoleCriteria freeText(String freeText) {
-        this.freeText = freeText;
-        return this;
-    }
+	public UserRoleCriteria freeText(String freeText) {
+		this.freeText = freeText;
+		return this;
+	}
 
 	@IgnoreForUrl
 	public String getFreeText() {

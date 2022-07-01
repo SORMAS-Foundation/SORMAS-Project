@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
+import de.symeda.sormas.api.utils.SortProperty;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -66,4 +68,8 @@ public interface UserRoleFacade {
 	UserRoleReferenceDto getUserRoleReferenceById(long id);
 
 	Map<UserRoleDto, Set<UserRight>> getUserRoleRights();
+
+	long count(UserRoleCriteria userRoleCriteria);
+
+	List<UserRoleDto> getIndexList(UserRoleCriteria userRoleCriteria, int first, int max, List<SortProperty> sortProperties);
 }

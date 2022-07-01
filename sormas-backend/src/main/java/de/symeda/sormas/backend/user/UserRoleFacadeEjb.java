@@ -32,17 +32,34 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRoleCriteria;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleFacade;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
+import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "UserRoleFacade")
 public class UserRoleFacadeEjb implements UserRoleFacade {
+
+	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
+	private EntityManager em;
 
 	@EJB
 	private UserRoleService userRoleService;
@@ -252,6 +269,69 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		getAll().forEach(c -> map.put(c, c.getUserRights()));
 
 		return map;
+	}
+
+	@Override
+	public long count(UserRoleCriteria userRoleCriteria) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<UserRole> root = cq.from(UserRole.class);
+
+		Predicate filter = null;
+
+		if (userRoleCriteria != null) {
+			filter = userRoleService.buildCriteriaFilter(userRoleCriteria, cb, root);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.select(cb.count(root));
+		return em.createQuery(cq).getSingleResult();
+	}
+
+	@Override
+	public List<UserRoleDto> getIndexList(UserRoleCriteria userRoleCriteria, int first, int max, List<SortProperty> sortProperties) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<UserRole> cq = cb.createQuery(UserRole.class);
+		Root<UserRole> userRole = cq.from(UserRole.class);
+
+		Predicate filter = null;
+
+		if (userRoleCriteria != null) {
+			filter = userRoleService.buildCriteriaFilter(userRoleCriteria, cb, userRole);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		if (sortProperties != null && !sortProperties.isEmpty()) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case EntityDto.UUID:
+				case UserRoleDto.ENABLED:
+				case UserRoleDto.JURISDICTION_LEVEL:
+				case UserRoleDto.CAPTION:
+				case UserRoleDto.DESCRIPTION:
+					expression = userRole.get(sortProperty.propertyName);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(userRole.get(AbstractDomainObject.CHANGE_DATE)));
+		}
+
+		cq.select(userRole);
+
+		return QueryHelper.getResultList(em, cq, first, max, UserRoleFacadeEjb::toDto);
 	}
 
 	@LocalBean

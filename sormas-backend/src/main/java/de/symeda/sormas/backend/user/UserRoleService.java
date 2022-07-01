@@ -37,8 +37,11 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.user.NotificationProtocol;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRoleCriteria;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
 @Stateless
 @LocalBean
@@ -118,5 +121,34 @@ public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
 			}
 		}
 		return false;
+	}
+
+	public Predicate buildCriteriaFilter(UserRoleCriteria userRoleCriteria, CriteriaBuilder cb, Root<UserRole> from) {
+
+		Predicate filter = null;
+
+		if (userRoleCriteria.getEnabled() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(UserRole.ENABLED), userRoleCriteria.getEnabled()));
+		}
+
+		if (userRoleCriteria.getUserRight() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.in(from.get(UserRole.USER_RIGHTS)).value(userRoleCriteria.getUserRight()));
+		}
+
+		if (userRoleCriteria.getFreeText() != null) {
+			String[] textFilters = userRoleCriteria.getFreeText().split("\\s+");
+			for (String textFilter : textFilters) {
+				if (DataHelper.isNullOrEmpty(textFilter)) {
+					continue;
+				}
+
+				Predicate likeFilters = cb.or(
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(UserRole.CAPTION), textFilter),
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(UserRole.DESCRIPTION), textFilter));
+				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
+			}
+		}
+
+		return filter;
 	}
 }
