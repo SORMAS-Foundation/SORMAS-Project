@@ -56,6 +56,7 @@ public class AboutDirectorySteps implements En {
           language = chosenLanguage;
           webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, chosenLanguage);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
         });
 
     When(

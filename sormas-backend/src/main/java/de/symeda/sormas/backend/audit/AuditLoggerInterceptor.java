@@ -14,10 +14,8 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
-import javax.ejb.SessionContext;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
@@ -29,7 +27,6 @@ import de.symeda.sormas.backend.i18n.I18nFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
 import de.symeda.sormas.backend.user.CurrentUserService;
-import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 
 public class AuditLoggerInterceptor {

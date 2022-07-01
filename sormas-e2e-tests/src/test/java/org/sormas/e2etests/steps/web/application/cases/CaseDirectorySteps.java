@@ -781,7 +781,7 @@ public class CaseDirectorySteps implements En {
               webDriverHelpers.clickOnWebElementBySelector(CASES_WITHOUT_GEO_COORDINATES_CHECKBOX);
               break;
             case ("Only cases without responsible officer"):
-            case ("Nur F\u00E4lle ohne verantwortlichen Beauftragten"):
+            case ("Nur F\u00E4lle ohne verantwortlichen Benutzer"):
               webDriverHelpers.clickOnWebElementBySelector(
                   CASES_WITHOUT_RESPONSIBLE_OFFICER_CHECKBOX);
               break;

@@ -38,7 +38,6 @@ import static de.symeda.sormas.api.caze.CaseDataDto.RESPONSIBLE_DISTRICT;
 import static de.symeda.sormas.api.caze.CaseDataDto.RESPONSIBLE_REGION;
 import static de.symeda.sormas.api.caze.CaseDataDto.SYMPTOMS;
 
-import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import java.beans.PropertyDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -98,6 +97,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;

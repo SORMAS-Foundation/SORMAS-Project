@@ -1,5 +1,11 @@
 package de.symeda.sormas.backend.sormastosormas.entities.contact;
 
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
+
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
@@ -8,12 +14,6 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.data.validation.ValidationDirection;
-
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
 
 @Stateless
 @LocalBean

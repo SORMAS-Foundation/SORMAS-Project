@@ -19,15 +19,13 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
 import org.apache.commons.collections.CollectionUtils;
-import de.symeda.sormas.backend.user.UserService;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryCriteria;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
@@ -36,6 +34,8 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
@@ -44,6 +44,7 @@ import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
 
@@ -73,7 +74,11 @@ public class PointOfEntryFacadeEjb
 			return null;
 		}
 
-		return new PointOfEntryReferenceDto(entity.getUuid(), entity.toString(), entity.getPointOfEntryType(), entity.getExternalID());
+		return new PointOfEntryReferenceDto(
+			entity.getUuid(),
+			InfrastructureHelper.buildPointOfEntryString(entity.getUuid(), entity.getName()),
+			entity.getPointOfEntryType(),
+			entity.getExternalID());
 	}
 
 	@Override

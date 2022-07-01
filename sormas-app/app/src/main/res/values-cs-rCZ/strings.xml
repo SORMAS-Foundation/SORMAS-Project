@@ -163,6 +163,7 @@
     <string name="caption_drawer_open">Otevřít navigační panel</string>
     <string name="caption_dropped">Zahozeno</string>
     <string name="caption_epi_week">Epi týden</string>
+    <string name="caption_report">Zpráva</string>
     <string name="caption_event_description">Popis</string>
     <string name="caption_event_location">Poloha</string>
     <string name="caption_event_period">Datum události</string>
@@ -272,6 +273,7 @@
     <string name="description_sormas_logo">SORMAS Logo</string>
     <string name="description_username">Uživatelské jméno</string>
     <string name="description_year">Rok</string>
+    <string name="description_report">Zpráva</string>
     <string name="entity_case">Případ</string>
     <string name="entity_contact">Kontakt</string>
     <string name="entity_event">Událost</string>
@@ -444,6 +446,7 @@
     <string name="hint_select_month">Vybrat měsíc</string>
     <string name="hint_select_epi_week">Vyberte týden Epi</string>
     <string name="hint_select_year">Vybrat rok</string>
+    <string name="hint_select_report">Vybrat Zprávu</string>
     <string name="hint_settings_server_url">např. https://sormas.helmholtz-hzi.de/sormas-rest/</string>
     <string name="hint_weekly_report_confirmation_required">Musíte potvrdit zprávu za minulý týden.</string>
     <string name="hint_weekly_report_no_data">Pro tento týden epi nejsou k dispozici žádná data.</string>

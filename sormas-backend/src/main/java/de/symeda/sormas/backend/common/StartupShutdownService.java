@@ -802,6 +802,15 @@ public class StartupShutdownService {
 					userRoleService.ensurePersisted(userRole);
 				}
 				break;
+			case 471:
+				// Hacky solution because it's possible that the user role has been re-configured in the meantime; #9645 will make sure that
+				// default user roles are not changed.
+				userRole = userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.EXTERNAL_LAB_USER));
+				if (userRole != null) {
+					userRole.getUserRights().add(UserRight.SEE_SENSITIVE_DATA_IN_JURISDICTION);
+					userRoleService.ensurePersisted(userRole);
+				}
+				break;
 
 			default:
 				throw new NoSuchElementException(DataHelper.toStringNullable(versionNeedingUpgrade));

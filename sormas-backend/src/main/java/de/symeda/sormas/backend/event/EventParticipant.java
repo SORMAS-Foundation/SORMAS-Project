@@ -30,7 +30,6 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
@@ -114,11 +113,6 @@ public class EventParticipant extends CoreAdo implements SormasToSormasShareable
 
 	public void setInvolvementDescription(String involvementDescription) {
 		this.involvementDescription = involvementDescription;
-	}
-
-	@Override
-	public String toString() {
-		return getPerson().toString();
 	}
 
 	@ManyToOne

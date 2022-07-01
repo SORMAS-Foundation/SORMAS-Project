@@ -668,7 +668,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 			contentBinding.caseDataClassifiedBy.setValue(getResources().getString(R.string.system));
 		}
 
-		if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY) {
+		if (record.getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY && record.getHealthFacility() == null) {
 			contentBinding.facilityTypeFieldsLayout.setVisibility(GONE);
 			contentBinding.caseDataHealthFacility.setVisibility(GONE);
 			contentBinding.caseDataHealthFacilityDetails.setVisibility(GONE);

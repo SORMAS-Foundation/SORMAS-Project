@@ -372,7 +372,10 @@ public class EditCaseSteps implements En {
 
     When(
         "I navigate to Hospitalization tab in Cases",
-        () -> webDriverHelpers.clickOnWebElementBySelector(HOSPITALIZATION_TAB));
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          webDriverHelpers.clickOnWebElementBySelector(HOSPITALIZATION_TAB);
+        });
 
     And(
         "I navigate to case person tab",
@@ -1880,6 +1883,14 @@ public class EditCaseSteps implements En {
         (String comment) -> {
           webDriverHelpers.fillInWebElement(EditContactPage.GENERAL_COMMENT_TEXT, comment);
         });
+
+    And(
+        "I fill in the Internal Token field in Edit Case page with ([^\"]*)",
+        (String token) -> {
+          webDriverHelpers.scrollToElementUntilIsVisible(INTERNAL_TOKEN_INPUT);
+          webDriverHelpers.fillInWebElement(INTERNAL_TOKEN_INPUT, token);
+        });
+
 
     When(
         "I check if Type of sample has not a ([^\"]*) option",

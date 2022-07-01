@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application;
 
+import static org.sormas.e2etests.pages.application.NavBarPage.DISCARD_USER_SETTINGS_BUTTON;
 import static org.sormas.e2etests.pages.application.NavBarPage.USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.LOGOUT_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
@@ -121,6 +122,13 @@ public class LoginSteps implements En {
               webDriverHelpers.getValueFromWebElement(USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT);
           Assert.assertEquals(
               "Selected language is not correct", expectedLanguageText, selectedLanguageText);
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_USER_SETTINGS_BUTTON);
+        });
+    And(
+        "I click on logout button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(LOGOUT_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(LoginPage.LOGIN_BUTTON);
         });
   }
 }
