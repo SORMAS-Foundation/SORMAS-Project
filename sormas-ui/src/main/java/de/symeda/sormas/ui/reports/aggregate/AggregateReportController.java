@@ -20,7 +20,7 @@ public class AggregateReportController {
 
 	public void openEditOrCreateWindow(Runnable onClose, boolean edit) {
 		Window window = VaadinUiUtil.createPopupWindow();
-		AggregateReportsView currentView = (AggregateReportsView) SormasUI.get().getNavigator().getCurrentView();
+		AbstractAggregateReportsView currentView = (AbstractAggregateReportsView) SormasUI.get().getNavigator().getCurrentView();
 		AggregateReportsEditLayout createLayout = new AggregateReportsEditLayout(window, currentView.getCriteria(), edit);
 		window.setHeight(90, Unit.PERCENTAGE);
 		window.setWidth(createLayout.getWidth() + 64 + 20, Unit.PIXELS);

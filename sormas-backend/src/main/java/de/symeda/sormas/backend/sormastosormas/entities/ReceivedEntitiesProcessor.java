@@ -23,22 +23,22 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
-import de.symeda.sormas.api.utils.DataHelper;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
+import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
+import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.sormastosormas.ValidationHelper;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.ReceivedCaseProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.contact.ReceivedContactProcessor;

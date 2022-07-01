@@ -35,6 +35,7 @@ public enum ApproximateAgeType {
 	MONTHS,
 	DAYS;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

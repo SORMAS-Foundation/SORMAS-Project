@@ -38,6 +38,7 @@ public enum SamplingReason {
 	UNKNOWN,
 	OTHER_REASON;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

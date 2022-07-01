@@ -45,6 +45,7 @@ public enum StatisticsCaseAttributeGroup {
 		return attributes;
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

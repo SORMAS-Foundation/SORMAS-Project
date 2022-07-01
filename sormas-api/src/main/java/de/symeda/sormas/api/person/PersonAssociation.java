@@ -11,6 +11,7 @@ public enum PersonAssociation {
 	IMMUNIZATION,
 	TRAVEL_ENTRY;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

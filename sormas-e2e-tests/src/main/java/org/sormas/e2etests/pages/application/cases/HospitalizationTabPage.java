@@ -59,4 +59,8 @@ public class HospitalizationTabPage {
   public static final By PREVIOUS_HOSPITALIZATION_POPUP =
       By.xpath(
           "//*[contains(@class, 'v-window-header') and contains(text(),'Previous hospitalization')]");
+  public static final By CURRENT_HOSPITALIZATION_HEADING =
+      By.xpath("//*[contains(text(),'Current Hospitalization')]");
+  public static final By PREVIOUS_HOSPITALIZATION_HEADING =
+      By.xpath("//*[contains(text(),'Previous Hospitalizations')]");
 }

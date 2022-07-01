@@ -10,6 +10,7 @@ public enum ContactIdentificationSource {
 	OTHER,
 	UNKNOWN;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

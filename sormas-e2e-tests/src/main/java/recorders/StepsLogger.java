@@ -38,6 +38,7 @@ public class StepsLogger implements StepLifecycleListener {
   public static final String PROCESS_ID_STRING = String.format("[PROCESS_ID:%s] ->", PROCESS_ID);
   private static RemoteWebDriver driver;
   private static boolean isScreenshotEnabled = true;
+  private static boolean takeScreenshotAfterStep = false;
 
   public static void setRemoteWebDriver(RemoteWebDriver remoteWebDriver) {
     driver = remoteWebDriver;
@@ -54,26 +55,16 @@ public class StepsLogger implements StepLifecycleListener {
 
   @Override
   public void afterStepUpdate(final StepResult result) {
+    if (takeScreenshotAfterStep) {
+      takeScreenshot();
+    }
     if (isScreenshotEnabled && driver != null) {
-      takeScreenshotAfter();
       if (!result.getStatus().value().contains("pass")) {
         attachConsoleLog();
       }
     }
     isScreenshotEnabled = true;
     log.info("{} -> Finished step -> {}", PROCESS_ID_STRING, result.getName());
-  }
-
-  @Attachment(value = "After step screenshot", type = "image/png")
-  public void takeScreenshotAfter() {
-    byte[] screenShot = driver.getScreenshotAs(OutputType.BYTES);
-    Allure.getLifecycle()
-        .addAttachment(
-            "Screenshot at :"
-                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MMM-yy hh:mm:ss")),
-            "image/png",
-            "png",
-            screenShot);
   }
 
   @SneakyThrows
@@ -86,5 +77,17 @@ public class StepsLogger implements StepLifecycleListener {
     } catch (Exception any) {
       log.error("Failed to attach logs to Allure report due to: {}", any.getCause());
     }
+  }
+
+  @Attachment(value = "After step screenshot", type = "image/png")
+  public void takeScreenshot() {
+    byte[] screenShot = driver.getScreenshotAs(OutputType.BYTES);
+    Allure.getLifecycle()
+        .addAttachment(
+            "Screenshot at :"
+                + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MMM-yy hh:mm:ss")),
+            "image/png",
+            "png",
+            screenShot);
   }
 }

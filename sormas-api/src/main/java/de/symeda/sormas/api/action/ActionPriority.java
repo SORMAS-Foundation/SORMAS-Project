@@ -25,6 +25,7 @@ public enum ActionPriority {
 	NORMAL,
 	LOW;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

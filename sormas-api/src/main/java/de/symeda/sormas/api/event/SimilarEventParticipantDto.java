@@ -28,7 +28,6 @@ public class SimilarEventParticipantDto extends PseudonymizableIndexDto implemen
 	private String lastName;
 	@SensitiveData
 	private String involvementDescription;
-	private String uuid;
 	private EventStatus eventStatus;
 	private String eventTitle;
 	private Date startDate;
@@ -45,7 +44,7 @@ public class SimilarEventParticipantDto extends PseudonymizableIndexDto implemen
 		Date startDate,
 		boolean isInJurisdiction) {
 
-		this.uuid = uuid;
+		super(uuid);
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.involvementDescription = involvementDescription;
@@ -54,14 +53,6 @@ public class SimilarEventParticipantDto extends PseudonymizableIndexDto implemen
 		this.eventTitle = eventTitle;
 		this.startDate = startDate;
 		this.isInJurisdiction = isInJurisdiction;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public String getEventUuid() {

@@ -7,6 +7,7 @@ public enum CaseReferenceDefinition {
 	FULFILLED,
 	NOT_FULFILLED;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

@@ -25,6 +25,7 @@ public enum StatisticsVisualizationType {
 	MAP,
 	CHART;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
@@ -34,6 +35,7 @@ public enum StatisticsVisualizationType {
 		REGIONS,
 		DISTRICTS;
 
+		@Override
 		public String toString() {
 			return I18nProperties.getEnumCaption(this);
 		}
@@ -46,6 +48,7 @@ public enum StatisticsVisualizationType {
 		LINE,
 		PIE;
 
+		@Override
 		public String toString() {
 			return I18nProperties.getEnumCaption(this);
 		}

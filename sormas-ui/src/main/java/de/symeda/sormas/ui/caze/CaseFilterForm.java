@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import de.symeda.sormas.api.person.PresentCondition;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.server.Sizeable;
@@ -50,6 +49,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -173,6 +173,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		eventSearchField.setNullRepresentation("");
 	}
 
+	@Override
 	public void addMoreFilters(CustomLayout moreFiltersContainer) {
 
 		ComboBox presentConditionField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.PRESENT_CONDITION, 140));
@@ -237,9 +238,10 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.REINFECTION_STATUS, 140));
 		}
 
-		addField(
+		ComboBox reportedByField = addField(
 			moreFiltersContainer,
 			FieldConfiguration.withCaptionAndPixelSized(CaseCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
+		reportedByField.addItems(FacadeProvider.getUserRoleFacade().getAllActiveAsReference());
 
 		TextField reportingUserField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.REPORTING_USER_LIKE, 200));
 		reportingUserField.setNullRepresentation("");

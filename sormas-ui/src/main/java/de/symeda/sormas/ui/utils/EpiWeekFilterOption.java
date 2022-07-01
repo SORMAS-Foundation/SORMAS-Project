@@ -8,6 +8,7 @@ public enum EpiWeekFilterOption {
 	THIS_WEEK,
 	SPECIFY_WEEK;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

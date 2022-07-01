@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.externalsurveillancetool;
 
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -28,6 +27,8 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.event.Event;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,7 @@ import de.symeda.sormas.backend.share.ExternalShareInfoService;
 
 @Stateless(name = "ExternalSurveillanceToolFacade")
 public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveillanceToolFacade {
+
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
@@ -65,19 +67,31 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 	}
 
 	@Override
-	public void sendCases(List<String> caseUuids) throws ExternalSurveillanceToolException {
+	public void sendCases(List<String> caseUuids, boolean archived) throws ExternalSurveillanceToolException {
 		ExportParameters params = new ExportParameters();
 		params.setCaseUuids(caseUuids);
+		params.setArchived(archived);
 
 		sendRequest(params);
+
+		caseUuids.forEach(uuid -> {
+			Case caze = caseService.getByUuid(uuid);
+			shareInfoService.createAndPersistShareInfo(caze, ExternalShareStatus.SHARED);
+		});
 	}
 
 	@Override
-	public void sendEvents(List<String> eventUuids) throws ExternalSurveillanceToolException {
+	public void sendEvents(List<String> eventUuids, boolean archived) throws ExternalSurveillanceToolException {
 		ExportParameters params = new ExportParameters();
 		params.setEventUuids(eventUuids);
+		params.setArchived(archived);
 
 		sendRequest(params);
+
+		eventUuids.forEach(uuid -> {
+			Event event = eventService.getByUuid(uuid);
+			shareInfoService.createAndPersistShareInfo(event, ExternalShareStatus.SHARED);
+		});
 	}
 
 	private void sendRequest(ExportParameters params) throws ExternalSurveillanceToolException {
@@ -187,7 +201,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 		try {
 			Response response =
-					ClientBuilder.newBuilder().connectTimeout(30, TimeUnit.SECONDS).build().target(serviceUrl).path(versionEndpoint).request().get();
+				ClientBuilder.newBuilder().connectTimeout(30, TimeUnit.SECONDS).build().target(serviceUrl).path(versionEndpoint).request().get();
 			int status = response.getStatus();
 
 			if (status != HttpServletResponse.SC_OK) {
@@ -196,7 +210,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 			ExternalSurveillanceToolResponse entity = response.readEntity(ExternalSurveillanceToolResponse.class);
 			return entity.getMessage();
-		} catch (Exception e){
+		} catch (Exception e) {
 			logger.error("Couldn't get version of external surveillance tool at {}{}", serviceUrl, versionEndpoint, e);
 			throw new ExternalSurveillanceToolException(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_versionRequestError));
 		}
@@ -206,6 +220,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 		private List<String> caseUuids;
 		private List<String> eventUuids;
+		private boolean archived;
 
 		public List<String> getCaseUuids() {
 			return caseUuids;
@@ -221,6 +236,14 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 		public void setEventUuids(List<String> eventUuids) {
 			this.eventUuids = eventUuids;
+		}
+
+		public boolean isArchived() {
+			return archived;
+		}
+
+		public void setArchived(boolean archived) {
+			this.archived = archived;
 		}
 	}
 

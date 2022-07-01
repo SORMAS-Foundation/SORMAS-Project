@@ -263,6 +263,15 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
+        "I filter for SAMPLE TOKEN in Cases Directory",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, "SAMPLE TOKEN");
+          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
         "I collect uuid of the case",
         () -> {
           casesUUID.add(webDriverHelpers.getValueFromWebElement(UUID_INPUT));
@@ -662,7 +671,7 @@ public class CreateNewCaseSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX);
             webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
           }
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
+          //   webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
     When(
         "^I check if National Health Id, Nickname and Passport number appear in Pick or create person popup$",

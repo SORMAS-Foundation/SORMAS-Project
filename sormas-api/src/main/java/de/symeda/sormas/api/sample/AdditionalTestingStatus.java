@@ -8,6 +8,7 @@ public enum AdditionalTestingStatus {
 	REQUESTED,
 	PERFORMED;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

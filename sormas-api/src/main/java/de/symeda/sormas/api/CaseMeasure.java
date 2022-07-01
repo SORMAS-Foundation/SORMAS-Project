@@ -30,7 +30,8 @@ public enum CaseMeasure {
 	 */
 	CASE_INCIDENCE;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
-	};
+	}
 }

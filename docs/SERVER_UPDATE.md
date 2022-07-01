@@ -59,77 +59,24 @@ These are the default users for most user roles, intended to be used on developm
 
 ### Standalone installation
 
-Upgrading from Keycloak 12 to 16 following the steps from here <https://www.keycloak.org/docs/16.1/upgrading/#_upgrading>
-
-*16.1.0 doesn't provide a way to upgrade host based installations as there were a lot of changes due to the Wildfly update <https://www.keycloak.org/docs/16.1/upgrading/#migrating-to-16-0-0>*
+Follow the official Keycloak upgrade [guide](https://www.keycloak.org/docs/latest/upgrading/).
 
 To update follow this steps:
 
 1. Prerequisites
 * Backup the DB
 * Backup the current Keycloak configuration
-* Download 16.1.0 zip from <https://www.keycloak.org/downloads>
-* Extract everything from the archive somewhere on your disk (will call this `KEYCLOAK_HOME_16`)
+* Download the 18.0.1 zip from <https://www.keycloak.org/downloads>
+* Extract everything from the archive somewhere on your disk (will call this `KEYCLOAK_HOME_NEW`)
 
-2. From you current installation (will call this `KEYCLOAK_HOME_12`) directory copy the following into the new installation
-* Copy directory `KEYCLOAK_HOME_12/themes/sormas` over to `KEYCLOAK_HOME_16/themes`
-* Copy directory `KEYCLOAK_HOME_12/modules/system/layers/keycloak/org/postgresql` over into `KEYCLOAK_HOME_16/modules/system/layers/keycloak/org`
-* Copy `KEYCLOAK_HOME_12/standalone/deployments/sormas-keycloak-service-provider-*.jar` over to `KEYCLOAK_HOME_16/standalone/deployments`
+2. From you current installation (will call this `KEYCLOAK_HOME_OLD`) directory copy the following into the new installation
+* Copy directory `KEYCLOAK_HOME_OLD/themes/sormas` over to `KEYCLOAK_HOME_NEW/themes`
+* Copy `KEYCLOAK_HOME_OLD/providers/sormas-keycloak-service-provider-*.jar` over to `KEYCLOAK_HOME_16/providers`
 
-3. Edit the `KEYCLOAK_HOME_16/standalone/configuration/standalone.xml`
-* Search for `java:jboss/datasources/KeycloakDS` and you should find something like this
-```xml
-<datasource jndi-name="java:jboss/datasources/KeycloakDS" pool-name="KeycloakDS" enabled="true" use-java-context="true" statistics-enabled="${wildfly.datasources.statistics-enabled:${wildfly.statistics-enabled:false}}">
-```
-* Replace it's content with the content from `KEYCLOAK_HOME_12/standalone/configuration/standalone.xml` and you should end up with something like this
-```xml
-<datasource jndi-name="java:jboss/datasources/KeycloakDS" pool-name="KeycloakDS" enabled="true" use-java-context="true" statistics-enabled="${wildfly.datasources.statistics-enabled:${wildfly.statistics-enabled:false}}">
-    <connection-url>jdbc:postgresql://host:5432/keycloak-db-name</connection-url>
-    <driver>postgresql</driver>
-     <pool>
-         <max-pool-size>20</max-pool-size>
-     </pool>
-     <security>
-          <user-name>keycloak-db-username</user-name>
-          <password>keycloak-db-password</password>
-      </security>
- </datasource>
-```
-* Make sure that you replace `keycloak-db-name`, `keycloak-db-username` and `keycloak-db-password` with your actual values
-* In the section `<drivers>` bellow, add also this option
-```xml
-<driver name="postgresql" module="org.postgresql">
-    <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
-</driver>
-```
-* You should end up with something like this
-
-```xml
-<drivers>
-    <driver name="postgresql" module="org.postgresql">
-        <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
-    </driver>
-    <driver name="h2" module="com.h2database.h2">
-        <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
-    </driver>
-</drivers>
-```
+3. Setup Keycloak to use the [Database](https://www.keycloak.org/server/db)
 4. Start Keycloak
 * Database will be migrated automatically
 
-
-Upgrading from Keycloak 11 to 12 following the steps from here <https://www.keycloak.org/docs/12.0/upgrading/#_upgrading>
-
-1. Stop the old server and make sure to remove any open connections to the DB
-2. Backup the DB *(once the upgrade is done the old version cannot be used with the new DB version)*
-3. Backup the old installation
-4. Remove `${OLD_KEYCLOAK_HOME}/standalone/data/tx-object-store/`
-5. Download the new Keycloak installation from <https://www.keycloak.org/downloads>
-6. Copy the `${NEW_KEYCLOAK_HOME}/standalone/` directory from the previous installation over the directory in the new installation
-7. Copy the postgres module from `${OLD_KEYCLOAK_HOME}/modules/system/layers/keycloak/org/` over to the new installation directory
-8. Copy the SORMAS themes from `{OLD_KEYCLOAK_HOME}/themes/` over to the new installation directory
-9. While the new installation is stopped, run `${NEW_KEYCLOAK_HOME}/bin/jboss-cli.sh ----file=${NEW_KEYCLOAK_HOME}/bin/migrate-standalone.cli` *(`.bat` for Windows)*
-10. Start the new Keycloak installation from `${NEW_KEYCLOAK_HOME}/bin/standalone.sh` *(`.bat` for Windows)*
 
 ### Docker installation
 

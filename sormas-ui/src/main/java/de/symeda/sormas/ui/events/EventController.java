@@ -744,7 +744,7 @@ public class EventController {
 
 		EventDto event = findEvent(eventUuid);
 		DeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getEventFacade().getAutomaticDeletionInfo(eventUuid);
-		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getCaseFacade().getManuallyDeletionInfo(eventUuid);
+		DeletionInfoDto manuallyDeletionInfoDto = FacadeProvider.getEventFacade().getManuallyDeletionInfo(eventUuid);
 
 		EventDataForm eventEditForm = new EventDataForm(false, event.isPseudonymized());
 		eventEditForm.setValue(event);

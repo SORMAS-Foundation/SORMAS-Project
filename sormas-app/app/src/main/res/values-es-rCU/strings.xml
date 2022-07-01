@@ -163,6 +163,7 @@
     <string name="caption_drawer_open">Abrir panel de navegación</string>
     <string name="caption_dropped">Descartado</string>
     <string name="caption_epi_week">Semana epi</string>
+    <string name="caption_report">Informe</string>
     <string name="caption_event_description">Descripción</string>
     <string name="caption_event_location">Ubicación</string>
     <string name="caption_event_period">Fecha del evento</string>
@@ -272,6 +273,7 @@
     <string name="description_sormas_logo">Logo de SORMAS</string>
     <string name="description_username">Nombre de usuario</string>
     <string name="description_year">Año</string>
+    <string name="description_report">Informe</string>
     <string name="entity_case">Caso</string>
     <string name="entity_contact">Contacto</string>
     <string name="entity_event">Evento</string>
@@ -444,6 +446,7 @@
     <string name="hint_select_month">Seleccionar mes</string>
     <string name="hint_select_epi_week">Seleccionar semana epi</string>
     <string name="hint_select_year">Seleccionar año</string>
+    <string name="hint_select_report">Seleccionar informe</string>
     <string name="hint_settings_server_url">por ejemplo, https://sormas.helmholtz-hzi.de/sormas-rest/</string>
     <string name="hint_weekly_report_confirmation_required">Debe confirmar el informe de la semana pasada.</string>
     <string name="hint_weekly_report_no_data">No hay datos disponibles para esta semana epi.</string>

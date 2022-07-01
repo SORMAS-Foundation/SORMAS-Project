@@ -13,7 +13,6 @@ public class TravelEntryListEntryDto extends PseudonymizableIndexDto implements 
 
 	public static final String REPORT_DATE = "reportDate";
 
-	private String uuid;
 	private Date reportDate;
 	private Disease disease;
 	private String pointOfEntryName;
@@ -21,19 +20,11 @@ public class TravelEntryListEntryDto extends PseudonymizableIndexDto implements 
 	private boolean isInJurisdiction;
 
 	public TravelEntryListEntryDto(String uuid, Date reportDate, Disease disease, String pointOfEntryName, boolean isInJurisdiction) {
-		this.uuid = uuid;
+		super(uuid);
 		this.reportDate = reportDate;
 		this.disease = disease;
 		this.pointOfEntryName = pointOfEntryName;
 		this.isInJurisdiction = isInJurisdiction;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public Date getReportDate() {
