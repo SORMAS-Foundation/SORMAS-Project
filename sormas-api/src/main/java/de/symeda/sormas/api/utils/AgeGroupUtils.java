@@ -23,6 +23,8 @@ import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -32,13 +34,17 @@ public class AgeGroupUtils {
 	private static final String AGE_GROUP_RANGE_REGEX = "\\d{1,3}[dmyDMY]_\\d{1,3}[dmyDMY]";
 	private static final String AGE_GROUP_START_AT_REGEX = "\\d{1,3}[dmyDMY]";
 
+	private static final Logger logger = LoggerFactory.getLogger(AgeGroupUtils.class);
+
 	public static void validateAgeGroup(String ageGroup) {
+
 		if (!(Pattern.matches(AGE_GROUP_RANGE_REGEX, ageGroup) || Pattern.matches(AGE_GROUP_START_AT_REGEX, ageGroup))) {
 			throw new IllegalArgumentException("Invalid ageGroup definition: " + ageGroup);
 		}
 	}
 
 	public static String createCaption(String ageGroup) {
+
 		if (ageGroup == null || ageGroup.isEmpty()) {
 			return StringUtils.EMPTY;
 		}
@@ -62,6 +68,7 @@ public class AgeGroupUtils {
 	}
 
 	private static String getAgeGroupTimeUnitCaption(String ageGroupTimeUnit) {
+
 		if (ageGroupTimeUnit.equalsIgnoreCase("d")) {
 			return I18nProperties.getCaption(Captions.days);
 		}
@@ -75,38 +82,46 @@ public class AgeGroupUtils {
 	}
 
 	public static List<String> convertToList(String ageGroupsString) {
+
 		if (StringUtils.isBlank(ageGroupsString)) {
 			return null;
 		}
 
-		try {
-			final List<String> ageGroupList = Stream.of(ageGroupsString.split(",")).collect(Collectors.toList());
-			ageGroupList.forEach(s -> validateAgeGroup(s));
-			return ageGroupList;
-		} catch (IllegalArgumentException e) {
-			throw new RuntimeException(
-				"Content of ageGroupsString is not a valid list of ageGroups, or one of the ageGroups in the String does not match a valid ageGroup: "
-					+ ageGroupsString);
-		}
+		final List<String> ageGroupList = Stream.of(ageGroupsString.split(",")).map(String::trim).collect(Collectors.toList());
+		ageGroupList.removeIf(s -> {
+			try {
+				validateAgeGroup(s);
+				return false;
+			} catch (IllegalArgumentException e) {
+				logger.warn(String.format("Age group %s in ageGroupsString %s is not a valid age group.", s, ageGroupsString));
+				return true;
+			}
+		});
+
+		return ageGroupList;
 	}
 
 	public static String convertToString(List<String> ageGroupList) {
+
 		if (CollectionUtils.isEmpty(ageGroupList)) {
 			return null;
 		}
 
-		try {
-			ageGroupList.forEach(s -> validateAgeGroup(s));
-		} catch (IllegalArgumentException e) {
-			throw new RuntimeException(
-				"Content of ageGroupsList is not a valid list of ageGroups, or one of the ageGroups in the String does not match a valid ageGroup: "
-					+ ageGroupList);
-		}
+		ageGroupList.removeIf(s -> {
+			try {
+				validateAgeGroup(s);
+				return false;
+			} catch (IllegalArgumentException e) {
+				logger.warn(String.format("Age group %s in ageGroupsList %s is not a valid age group.", s, ageGroupList));
+				return true;
+			}
+		});
 
-		return ageGroupList.stream().collect(Collectors.joining(","));
+		return String.join(",", ageGroupList);
 	}
 
 	public static Comparator<String> getComparator() {
+
 		Comparator<String> comparator = Comparator
 			.comparing(
 				(String ageGroup) -> ageGroup != null
@@ -121,13 +136,12 @@ public class AgeGroupUtils {
 					String[] split = ageGroup.split("_");
 					return split.length > 1 ? split[1].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase() : StringUtils.EMPTY;
 				})
-			.thenComparing(
-				(String ageGroup) ->  {
-					if (ageGroup == null)
-						return 0;
-					String[] split = ageGroup.split("_");
-					return split.length > 1  ? Integer.parseInt(split[1].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0;
-				});
+			.thenComparing((String ageGroup) -> {
+				if (ageGroup == null)
+					return 0;
+				String[] split = ageGroup.split("_");
+				return split.length > 1 ? Integer.parseInt(split[1].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0;
+			});
 		return comparator;
 	}
 }
