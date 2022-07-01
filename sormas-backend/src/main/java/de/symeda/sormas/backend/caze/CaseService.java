@@ -154,6 +154,7 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitService;
@@ -208,6 +209,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private DocumentService documentService;
 	@EJB
 	private ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
+	@EJB
+	private VaccinationService vaccinationService;
 
 	public CaseService() {
 		super(Case.class);
