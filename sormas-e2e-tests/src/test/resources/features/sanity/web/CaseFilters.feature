@@ -325,7 +325,7 @@ Feature: Case filter functionality
 
   @issue=SORQA-83 @env_de
   Scenario: Check checkboxes filters on Case directory page for DE specific
-    Given I log in with National User
+    Given I log in as a Surveillance Officer
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data for DE version
@@ -339,10 +339,10 @@ Feature: Case filter functionality
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 1
     And I click "Nur Fälle ohne Geo-Koordinaten" checkbox on Case directory page
-    And I click "Nur Fälle ohne verantwortlichen Beauftragten" checkbox on Case directory page
+    And I click "Nur Fälle ohne verantwortlichen Benutzer" checkbox on Case directory page
     And I click APPLY BUTTON in Case Directory Page
-    And I check that number of displayed cases results is 0
-    And I click "Nur Fälle ohne verantwortlichen Beauftragten" checkbox on Case directory page
+    And I check that number of displayed cases results is 1
+    And I click "Nur Fälle ohne verantwortlichen Benutzer" checkbox on Case directory page
     And I click "Nur Fälle mit verlängerter Isolation" checkbox on Case directory page
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
