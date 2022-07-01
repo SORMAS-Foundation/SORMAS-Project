@@ -27,7 +27,6 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -114,9 +113,10 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "TaskFacade")
-@RolesAllowed(UserRight._TASK_VIEW)
+@RightsAllowed(UserRight._TASK_VIEW)
 public class TaskFacadeEjb implements TaskFacade {
 
 	private static final int ARCHIVE_BATCH_SIZE = 1000;
@@ -295,7 +295,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._TASK_CREATE,
 		UserRight._TASK_EDIT })
 	public TaskDto saveTask(@Valid TaskDto dto) {
@@ -710,7 +710,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._TASK_EXPORT)
+	@RightsAllowed(UserRight._TASK_EXPORT)
 	public List<TaskExportDto> getExportList(TaskCriteria criteria, Collection<String> selectedRows, int first, int max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<TaskExportDto> cq = cb.createQuery(TaskExportDto.class);
@@ -907,13 +907,13 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._TASK_DELETE)
+	@RightsAllowed(UserRight._TASK_DELETE)
 	public void deleteTask(TaskDto taskDto) {
 		Task task = taskService.getByUuid(taskDto.getUuid());
 		taskService.deletePermanent(task);
 	}
 
-	@RolesAllowed(UserRight._TASK_DELETE)
+	@RightsAllowed(UserRight._TASK_DELETE)
 	public List<String> deleteTasks(List<String> tasksUuids) {
 		List<String> deletedTaskUuids = new ArrayList<>();
 		List<Task> tasksToBeDeleted = taskService.getByUuids(tasksUuids);
@@ -927,7 +927,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._SYSTEM)
+	@RightsAllowed(UserRight._SYSTEM)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void sendNewAndDueTaskMessages() {
 
@@ -1001,7 +1001,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._TASK_EDIT)
+	@RightsAllowed(UserRight._TASK_EDIT)
 	public void updateArchived(List<String> taskUuids, boolean archived) {
 		IterableHelper.executeBatched(taskUuids, ARCHIVE_BATCH_SIZE, e -> taskService.updateArchived(e, archived));
 	}

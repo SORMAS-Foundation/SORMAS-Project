@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.sormastosormas.share.sharerequest;
 
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -184,6 +185,14 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		List<SormasToSormasShareRequestIndexDto> shareRequestIndexList = getIndexList(criteria, first, max, sortProperties);
 		long totalElementCount = count(criteria);
 		return new Page<>(shareRequestIndexList, first, max, totalElementCount);
+	}
+
+	@Override
+	public List<SormasToSormasShareRequestDto> getShareRequestsForCase(CaseReferenceDto caze) {
+		return shareRequestService.getShareRequestsForCase(caze)
+			.stream()
+			.map(SormasToSormasShareRequestFacadeEJB::toDto)
+			.collect(Collectors.toList());
 	}
 
 	public SormasToSormasShareRequest fromDto(@NotNull SormasToSormasShareRequestDto source, boolean checkChangeDate) {

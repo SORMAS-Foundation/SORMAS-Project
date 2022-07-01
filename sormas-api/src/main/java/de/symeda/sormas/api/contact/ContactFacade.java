@@ -28,10 +28,9 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.caze.CoreAndPersonDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.CoreAndPersonDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
@@ -137,11 +136,7 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 	 */
 	int getNonSourceCaseCountForDashboard(List<String> caseUuids);
 
-	void validate(ContactDto contact);
-
 	List<SimilarContactDto> getMatchingContacts(ContactSimilarityCriteria criteria);
-
-	EditPermissionType isContactEditAllowed(String contactUuid);
 
 	boolean doesExternalTokenExist(String externalToken, String contactUuid);
 

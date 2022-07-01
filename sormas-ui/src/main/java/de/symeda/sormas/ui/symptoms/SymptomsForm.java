@@ -162,6 +162,13 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			.sorted(Comparator.comparing(fieldName -> I18nProperties.getPrefixCaption(I18N_PREFIX, fieldName)))
 			.collect(Collectors.toList());
 
+		if (symptomGroup == SymptomGroup.SKIN) {
+			symptomLocations.add(symptomLocations.indexOf(LESIONS_RESEMBLE_IMG1) + 1, MONKEYPOX_LESIONS_IMG1);
+			symptomLocations.add(symptomLocations.indexOf(LESIONS_RESEMBLE_IMG2) + 1, MONKEYPOX_LESIONS_IMG2);
+			symptomLocations.add(symptomLocations.indexOf(LESIONS_RESEMBLE_IMG3) + 1, MONKEYPOX_LESIONS_IMG3);
+			symptomLocations.add(symptomLocations.indexOf(LESIONS_RESEMBLE_IMG4) + 1, MONKEYPOX_LESIONS_IMG4);
+		}
+
 		symptomGroupMap.put(loc, symptomLocations);
 
 		return loc(loc)
@@ -739,7 +746,8 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 
 		symptomGroupMap.forEach((location, strings) -> {
 			final Component groupLabel = getContent().getComponent(location);
-			final Optional<String> groupHasVisibleSymptom = strings.stream().filter(s -> getFieldGroup().getField(s).isVisible()).findAny();
+			final Optional<String> groupHasVisibleSymptom =
+				strings.stream().filter(s -> getFieldGroup().getField(s) != null && getFieldGroup().getField(s).isVisible()).findAny();
 			if (!groupHasVisibleSymptom.isPresent()) {
 				groupLabel.setVisible(false);
 			}

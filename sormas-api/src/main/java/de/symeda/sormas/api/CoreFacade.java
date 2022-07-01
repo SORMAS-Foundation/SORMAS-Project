@@ -44,4 +44,6 @@ public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 
 	Date calculateEndOfProcessingDate(String entityUuids);
 
+	EditPermissionType isEditAllowed(String uuid);
+
 }

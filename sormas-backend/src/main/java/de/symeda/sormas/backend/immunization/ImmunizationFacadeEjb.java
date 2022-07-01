@@ -28,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -112,11 +111,12 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
+import de.symeda.sormas.backend.util.RightsAllowed;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb.VaccinationFacadeEjbLocal;
 
 @Stateless(name = "ImmunizationFacade")
-@RolesAllowed(UserRight._IMMUNIZATION_VIEW)
+@RightsAllowed(UserRight._IMMUNIZATION_VIEW)
 public class ImmunizationFacadeEjb
 	extends
 	AbstractCoreFacadeEjb<Immunization, ImmunizationDto, ImmunizationIndexDto, ImmunizationReferenceDto, ImmunizationService, ImmunizationCriteria>
@@ -259,7 +259,7 @@ public class ImmunizationFacadeEjb
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	@RolesAllowed(UserRight._SYSTEM)
+	@RightsAllowed(UserRight._SYSTEM)
 	public void archiveAllArchivableImmunizations(int daysAfterImmunizationsGetsArchived) {
 		archiveAllArchivableImmunizations(daysAfterImmunizationsGetsArchived, LocalDate.now());
 	}
@@ -294,16 +294,10 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed(UserRight._IMMUNIZATION_DELETE)
+	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
 	public void delete(String uuid, DeletionDetails deletionDetails) {
 		Immunization immunization = service.getByUuid(uuid);
 		service.delete(immunization, deletionDetails);
-	}
-
-	@Override
-	public EditPermissionType isImmunizationEditAllowed(String uuid) {
-		Immunization immunization = service.getByUuid(uuid);
-		return service.isImmunizationEditAllowed(immunization);
 	}
 
 	@Override
@@ -322,20 +316,20 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._IMMUNIZATION_CREATE,
 		UserRight._IMMUNIZATION_EDIT })
 	public ImmunizationDto save(@Valid @NotNull ImmunizationDto dto) {
 		return save(dto, true, true);
 	}
 
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._IMMUNIZATION_CREATE,
 		UserRight._IMMUNIZATION_EDIT })
 	public ImmunizationDto save(@Valid @NotNull ImmunizationDto dto, boolean checkChangeDate, boolean internal) {
 		Immunization existingImmunization = service.getByUuid(dto.getUuid());
 
-		if (internal && existingImmunization != null && !service.isImmunizationEditAllowed(existingImmunization).equals(EditPermissionType.ALLOWED)) {
+		if (internal && existingImmunization != null && !service.isEditAllowed(existingImmunization).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorImmunizationNotEditable));
 		}
 
@@ -450,7 +444,7 @@ public class ImmunizationFacadeEjb
 		return new Page<>(immunizationIndexList, offset, size, totalElementCount);
 	}
 
-	@RolesAllowed(UserRight._IMMUNIZATION_DELETE)
+	@RightsAllowed(UserRight._IMMUNIZATION_DELETE)
 	public List<String> deleteImmunizations(List<String> immunizationUuids, DeletionDetails deletionDetails) {
 		List<String> deletedImmunizationUuids = new ArrayList<>();
 		List<Immunization> immunizationsToBeDeleted = service.getByUuids(immunizationUuids);
@@ -535,13 +529,13 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed(UserRight._SYSTEM)
+	@RightsAllowed(UserRight._SYSTEM)
 	public void updateImmunizationStatuses() {
 		service.updateImmunizationStatuses();
 	}
 
 	@Override
-	@RolesAllowed(UserRight._IMMUNIZATION_EDIT)
+	@RightsAllowed(UserRight._IMMUNIZATION_EDIT)
 	public boolean linkRecoveryImmunizationToSearchedCase(String specificCaseSearchValue, ImmunizationDto immunization) {
 
 		CaseCriteria criteria = new CaseCriteria();
@@ -595,7 +589,7 @@ public class ImmunizationFacadeEjb
 		return service.getByPersonUuids(uuids).stream().map(i -> toDto(i)).collect(Collectors.toList());
 	}
 
-	@RolesAllowed(UserRight._IMMUNIZATION_EDIT)
+	@RightsAllowed(UserRight._IMMUNIZATION_EDIT)
 	public void syncSharesAsync(Immunization immunization) {
 		//sync case/contact/event this immunization was shared with
 		List<DataHelper.Pair<ShareRequestDataType, ShareTreeCriteria>> syncParams = immunization.getSormasToSormasShares()
@@ -643,7 +637,7 @@ public class ImmunizationFacadeEjb
 		}, 5, TimeUnit.SECONDS);
 	}
 
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._IMMUNIZATION_CREATE,
 		UserRight._PERSON_EDIT })
 	public void copyImmunizationToLeadPerson(ImmunizationDto immunizationDto, PersonDto leadPerson, List<VaccinationDto> leadPersonVaccinations) {
@@ -662,13 +656,13 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed(UserRight._IMMUNIZATION_ARCHIVE)
+	@RightsAllowed(UserRight._IMMUNIZATION_ARCHIVE)
 	public void archive(String entityUuid, Date endOfProcessingDate) {
 		super.archive(entityUuid, endOfProcessingDate);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._IMMUNIZATION_ARCHIVE)
+	@RightsAllowed(UserRight._IMMUNIZATION_ARCHIVE)
 	public void dearchive(List<String> entityUuids, String dearchiveReason) {
 		super.dearchive(entityUuids, dearchiveReason);
 	}

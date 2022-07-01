@@ -1574,7 +1574,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return ContactJurisdictionPredicateValidator.of(contactQueryContext, user).inJurisdictionOrOwned();
 	}
 
-	public EditPermissionType isContactEditAllowed(Contact contact) {
+	@Override
+	public EditPermissionType isEditAllowed(Contact contact) {
 
 		if (contact.getSormasToSormasOriginInfo() != null && !contact.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
 			return EditPermissionType.REFUSED;

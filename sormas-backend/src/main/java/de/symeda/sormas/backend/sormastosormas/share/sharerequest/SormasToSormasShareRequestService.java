@@ -15,6 +15,11 @@
 
 package de.symeda.sormas.backend.sormastosormas.share.sharerequest;
 
+import static de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect.ARRAY_CONTAINS_TEXT;
+import static de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect.JSON_EXTRACT_PATH_TEXT;
+
+import java.util.List;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -22,9 +27,11 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.springframework.util.CollectionUtils;
 
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestCriteria;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -53,5 +60,28 @@ public class SormasToSormasShareRequestService extends AdoServiceWithUserFilter<
 		}
 
 		return filter;
+	}
+
+	public List<SormasToSormasShareRequest> getShareRequestsForCase(CaseReferenceDto caze) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+
+		CriteriaQuery<SormasToSormasShareRequest> cq = cb.createQuery(SormasToSormasShareRequest.class);
+		Root<SormasToSormasShareRequest> from = cq.from(SormasToSormasShareRequest.class);
+
+		Subquery<String> casesSubQuery = cq.subquery(String.class);
+		Root<SormasToSormasShareRequest> casesRoot = casesSubQuery.from(SormasToSormasShareRequest.class);
+		casesSubQuery.where(cb.equal(casesRoot.get(SormasToSormasShareRequest.ID), from.get(SormasToSormasShareRequest.ID)));
+		casesSubQuery.select(
+			cb.function(
+				JSON_EXTRACT_PATH_TEXT,
+				String.class,
+				cb.function("json_array_elements", String[].class, casesRoot.get(SormasToSormasShareRequest.CASES)),
+				cb.literal("uuid")).as(String.class));
+
+		cq.where(
+			cb.isTrue(
+				cb.function(ARRAY_CONTAINS_TEXT, Boolean.class, cb.function("array", String[].class, casesSubQuery), cb.literal(caze.getUuid()))));
+
+		return em.createQuery(cq).getResultList();
 	}
 }
