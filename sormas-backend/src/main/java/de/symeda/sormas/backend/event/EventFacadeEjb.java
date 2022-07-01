@@ -177,8 +177,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			return null;
 		}
 
-		return new EventReferenceDto(
-			entity.getUuid(), getCaption(entity));
+		return new EventReferenceDto(entity.getUuid(), getCaption(entity));
 	}
 
 	private static String getCaption(Event entity) {
@@ -1036,6 +1035,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		}
 	}
 
+	@Override
 	public EventDto toDto(Event source) {
 		return toEventDto(source);
 	}
