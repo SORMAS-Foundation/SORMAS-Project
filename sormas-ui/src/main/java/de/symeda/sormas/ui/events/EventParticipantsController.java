@@ -317,7 +317,7 @@ public class EventParticipantsController {
 	}
 
 	private void savePersonAndEventParticipant(Consumer<EventParticipantReferenceDto> doneConsumer, EventParticipantDto dto) {
-		personFacade.savePerson(dto.getPerson());
+		personFacade.save(dto.getPerson());
 		eventParticipantFacade.save(dto);
 		Notification.show(I18nProperties.getString(Strings.messageEventParticipantSaved), Type.WARNING_MESSAGE);
 		if (doneConsumer != null)

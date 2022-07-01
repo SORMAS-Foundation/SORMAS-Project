@@ -174,7 +174,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 
 		final PersonDto person;
 		if (personUuid != null) {
-			person = personFacade.getPersonByUuid(personUuid);
+			person = personFacade.getByUuid(personUuid);
 		} else {
 			person = PersonDto.buildImportEntity();
 		}
@@ -216,7 +216,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 			}
 
 //			PersonDto savedPerson = personFacade.savePerson(person);
-			final PersonDto savedPerson = personFacade.savePerson(person, skipPersonValidation);
+			final PersonDto savedPerson = personFacade.save(person, skipPersonValidation);
 			caze.setPerson(savedPerson.toReference());
 			// Workaround: Reset the change date to avoid OutdatedEntityExceptions
 			// Should be changed when doing #2265

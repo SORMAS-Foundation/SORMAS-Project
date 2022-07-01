@@ -250,7 +250,7 @@ public class ContactImporter extends DataImporter {
 						insertRowDataIntoContactAndPerson(values, entityClasses, entityPropertyPaths, importPerson, newContactTemp, relatedMapper);
 					}
 
-					personReferenceDto = FacadeProvider.getPersonFacade().savePerson(importPerson, skipPersonValidation).toReference();
+					personReferenceDto = FacadeProvider.getPersonFacade().save(importPerson, skipPersonValidation).toReference();
 
 					// Workaround: Reset the change date to avoid OutdatedEntityExceptions
 					newContact.setChangeDate(new Date());

@@ -258,7 +258,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 			if (!createForm.getFieldGroup().isModified()) {
 				final EventParticipantDto dto = createForm.getValue();
 
-				FacadeProvider.getPersonFacade().savePerson(dto.getPerson());
+				FacadeProvider.getPersonFacade().save(dto.getPerson());
 				EventParticipantDto savedDto = FacadeProvider.getEventParticipantFacade().save(dto);
 				Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Notification.Type.ASSISTIVE_NOTIFICATION);
 

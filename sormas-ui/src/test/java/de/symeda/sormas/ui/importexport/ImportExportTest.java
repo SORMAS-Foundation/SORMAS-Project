@@ -123,7 +123,7 @@ public class ImportExportTest extends AbstractBeanTest {
 		person.getAddress().setPostalCode("test postal code");
 		person.getAddress().setPostalCode("test postal code");
 
-		getPersonFacade().savePerson(person);
+		getPersonFacade().save(person);
 
 		StreamResource exportStreamResource =
 			CaseDownloadUtil.createCaseExportResource(new CaseCriteria(), Collections::emptySet, CaseExportType.CASE_SURVEILLANCE, null);
@@ -278,7 +278,7 @@ public class ImportExportTest extends AbstractBeanTest {
 		person.getAddress().setPostalCode("test postal code");
 		person.getAddress().setPostalCode("test postal code");
 
-		getPersonFacade().savePerson(person);
+		getPersonFacade().save(person);
 
 		StreamResource exportStreamResource = ContactDownloadUtil.createContactExportResource(new ContactCriteria(), Collections::emptySet, null);
 

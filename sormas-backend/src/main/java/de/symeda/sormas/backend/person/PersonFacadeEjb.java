@@ -52,6 +52,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.common.AbstractBaseEjb;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -175,7 +176,8 @@ import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "PersonFacade")
 @RightsAllowed(UserRight._PERSON_VIEW)
-public class PersonFacadeEjb implements PersonFacade {
+public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIndexDto, PersonReferenceDto, PersonService, PersonCriteria>
+	implements PersonFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -232,14 +234,6 @@ public class PersonFacadeEjb implements PersonFacade {
 	private ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacade;
 
 	@Override
-	public List<String> getAllUuids() {
-		if (userService.getCurrentUser() == null) {
-			return Collections.emptyList();
-		}
-		return personService.getAllUuids();
-	}
-
-	@Override
 	public List<SimilarPersonDto> getSimilarPersonDtos(PersonSimilarityCriteria criteria) {
 
 		return personService.getSimilarPersonDtos(criteria, null);
@@ -253,7 +247,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			return false;
 		}
 
-		return personService.getSimilarPersonDtos(criteria, 1).size() > 0;
+		return !personService.getSimilarPersonDtos(criteria, 1).isEmpty();
 	}
 
 	@Override
@@ -265,8 +259,13 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public List<PersonDto> getPersonsAfter(Date date) {
+	public List<PersonDto> getAllAfter(Date date) {
 		return getPersonsAfter(date, null, null);
+	}
+
+	@Override
+	protected void selectDtoFields(CriteriaQuery<PersonDto> cq, Root<Person> root) {
+		// There is no shared multiselect in this class
 	}
 
 	@Override
@@ -301,11 +300,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		return toPseudonymizedDtos(personService.getDeathsBetween(fromDate, toDate, district, disease, user));
 	}
 
-	@Override
-	public PersonReferenceDto getReferenceByUuid(String uuid) {
-		return Optional.of(uuid).map(u -> personService.getByUuid(u)).map(PersonFacadeEjb::toReferenceDto).orElse(null);
-	}
-
 	public Long getPersonIdByUuid(String uuid) {
 		return Optional.of(uuid).map(u -> personService.getIdByUuid(u)).orElse(null);
 	}
@@ -314,7 +308,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	@RightsAllowed({
 		UserRight._PERSON_VIEW,
 		UserRight._EXTERNAL_VISITS })
-	public PersonDto getPersonByUuid(String uuid) {
+	public PersonDto getByUuid(String uuid) {
 		final Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return Optional.of(uuid)
 			.map(u -> personService.getByUuid(u))
@@ -328,7 +322,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		UserRight._EXTERNAL_VISITS,
 		UserRight._SYSTEM })
 	public JournalPersonDto getPersonForJournal(String uuid) {
-		PersonDto detailedPerson = Optional.of(uuid).map(u -> personService.getByUuid(u)).map(p -> toDto(p)).orElse(null);
+		PersonDto detailedPerson = Optional.of(uuid).map(u -> personService.getByUuid(u)).map(PersonFacadeEjb::toPersonDto).orElse(null);
 		return getPersonForJournal(detailedPerson);
 	}
 
@@ -339,7 +333,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		UserRight._SYSTEM })
 	public boolean isEnrolledInExternalJournal(String uuid) {
 		Person person = personService.getByUuid(uuid);
-		return person != null ? person.isEnrolledInExternalJournal() : false;
+		return person != null && person.isEnrolledInExternalJournal();
 	}
 
 	public JournalPersonDto getPersonForJournal(PersonDto detailedPerson) {
@@ -415,19 +409,19 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	@RightsAllowed(UserRight._PERSON_EDIT)
-	public PersonDto savePerson(@Valid PersonDto source) throws ValidationRuntimeException {
-		return savePerson(source, true, true, false);
+	public PersonDto save(@Valid PersonDto source) throws ValidationRuntimeException {
+		return save(source, true, true, false);
 	}
 
 	@Override
 	@RightsAllowed(UserRight._PERSON_EDIT)
-	public PersonDto savePerson(@Valid PersonDto source, boolean skipValidation) throws ValidationRuntimeException {
-		return savePerson(source, true, true, skipValidation);
+	public PersonDto save(@Valid PersonDto source, boolean skipValidation) throws ValidationRuntimeException {
+		return save(source, true, true, skipValidation);
 	}
 
 	/**
 	 * Saves the received person.
-	 * If checkChangedDate is specified, it checks whether the the person from the database has a higher timestamp than the source object,
+	 * If checkChangedDate is specified, it checks whether the person from the database has a higher timestamp than the source object,
 	 * so it prevents overwriting with obsolete data.
 	 * If the person to be saved is enrolled in the external journal, the relevant data is validated and, if changed, the external journal
 	 * is notified.
@@ -441,7 +435,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	 * @throws ValidationRuntimeException
 	 *             if the passed source person to be saved contains invalid data
 	 */
-	public PersonDto savePerson(@Valid PersonDto source, boolean checkChangeDate, boolean syncShares, boolean skipValidation)
+	public PersonDto save(@Valid PersonDto source, boolean checkChangeDate, boolean syncShares, boolean skipValidation)
 		throws ValidationRuntimeException {
 		Person person = personService.getByUuid(source.getUuid());
 
@@ -879,14 +873,18 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	@RightsAllowed(UserRight._EXTERNAL_VISITS)
 	public boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status) {
-		PersonDto person = getPersonByUuid(personUuid);
+		PersonDto person = getByUuid(personUuid);
 		person.setSymptomJournalStatus(status);
-		savePerson(person);
+		save(person);
 		return true;
 	}
 
-	public static PersonDto toDto(Person source) {
+	@Override
+	public PersonDto toDto(Person source) {
+		return toPersonDto(source);
+	}
 
+	public static PersonDto toPersonDto(Person source) {
 		if (source == null) {
 			return null;
 		}
@@ -1571,6 +1569,11 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 	}
 
+	@Override
+	public PersonReferenceDto toRefDto(Person person) {
+		return toReferenceDto(person);
+	}
+
 	public static PersonReferenceDto toReferenceDto(Person entity) {
 
 		if (entity == null) {
@@ -1579,6 +1582,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		return new PersonReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName());
 	}
 
+	@Override
 	public Person fillOrBuildEntity(@NotNull PersonDto source, Person target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, personService::createPerson, checkChangeDate);
@@ -1728,7 +1732,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 
 		DtoHelper.copyDtoValues(leadPerson, otherPerson, false);
-		savePerson(leadPerson);
+		save(leadPerson);
 	}
 
 	@Override

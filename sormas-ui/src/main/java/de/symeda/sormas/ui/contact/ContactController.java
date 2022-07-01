@@ -424,13 +424,13 @@ public class ContactController {
 					if (dbPerson == null) {
 						PersonDto personDto = PersonDto.build();
 						transferDataToPerson(createForm, personDto);
-						FacadeProvider.getPersonFacade().savePerson(personDto);
+						FacadeProvider.getPersonFacade().save(personDto);
 						dto.setPerson(personDto.toReference());
 						createNewContact(dto, e -> {
 						});
 					} else {
 						transferDataToPerson(createForm, dbPerson);
-						FacadeProvider.getPersonFacade().savePerson(dbPerson);
+						FacadeProvider.getPersonFacade().save(dbPerson);
 						createNewContact(dto, e -> {
 						});
 					}
@@ -502,7 +502,7 @@ public class ContactController {
 				PersonFacade personFacade = FacadeProvider.getPersonFacade();
 				PersonDto personDto = personFacade.getPersonByUuid(dto.getPerson().getUuid());
 				transferDataToPerson(createForm, personDto);
-				personFacade.savePerson(personDto);
+				personFacade.save(personDto);
 
 				fillPersonAddressIfEmpty(dto, () -> personDto);
 
@@ -888,7 +888,7 @@ public class ContactController {
 				person.getAddress().setDistrict(CaseLogic.getDistrictWithFallback(caze));
 				person.getAddress().setCommunity(CaseLogic.getCommunityWithFallback(caze));
 			}
-			FacadeProvider.getPersonFacade().savePerson(person);
+			FacadeProvider.getPersonFacade().save(person);
 		}
 	}
 }

@@ -344,7 +344,7 @@ public class TestDataCreator {
 			customConfig.accept(person);
 		}
 
-		person = beanTest.getPersonFacade().savePerson(person);
+		person = beanTest.getPersonFacade().save(person);
 
 		return person;
 	}
@@ -360,7 +360,7 @@ public class TestDataCreator {
 			customConfig.accept(person);
 		}
 
-		person = beanTest.getPersonFacade().savePerson(person);
+		person = beanTest.getPersonFacade().save(person);
 
 		return person;
 	}
@@ -406,7 +406,7 @@ public class TestDataCreator {
 			person.setAddress(address);
 		}
 
-		person = beanTest.getPersonFacade().savePerson(person);
+		person = beanTest.getPersonFacade().save(person);
 
 		return person;
 	}
@@ -432,7 +432,7 @@ public class TestDataCreator {
 			customConfig.accept(person);
 		}
 
-		person = beanTest.getPersonFacade().savePerson(person);
+		person = beanTest.getPersonFacade().save(person);
 
 		return person;
 	}

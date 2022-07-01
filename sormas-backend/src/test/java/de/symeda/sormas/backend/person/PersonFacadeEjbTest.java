@@ -239,7 +239,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcfEntities);
-		getPersonFacade().savePerson(person1);
+		getPersonFacade().save(person1);
 
 		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria().presentCondition(PresentCondition.DEAD), null, null, null).size());
 		assertEquals(2, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
@@ -272,7 +272,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcfEntities);
-		getPersonFacade().savePerson(person1);
+		getPersonFacade().save(person1);
 
 		PersonCriteria criteria = new PersonCriteria();
 		criteria.setNameAddressPhoneEmailLike("James");
@@ -507,7 +507,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		contact1.setFollowUpUntil(DateHelper.subtractDays(now, 20));
 		contact2.setFollowUpUntil(DateHelper.subtractDays(now, 8));
 
-		getPersonFacade().savePerson(person);
+		getPersonFacade().save(person);
 		getContactFacade().save(contact1);
 		getContactFacade().save(contact2);
 
@@ -645,7 +645,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		Date t1 = new Date();
 
 		// 0. Make sure that empty result works
-		assertThat(getPersonFacade().getPersonsAfter(t1), is(empty()));
+		assertThat(getPersonFacade().getAllAfter(t1), is(empty()));
 		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, null), is(empty()));
 		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID), is(empty()));
 
@@ -653,7 +653,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person1 = creator.createPerson("First", "Person");
 		creator.createContact(nationalUser.toReference(), person1.toReference());
 
-		assertThat(getPersonFacade().getPersonsAfter(t1), contains(person1));
+		assertThat(getPersonFacade().getAllAfter(t1), contains(person1));
 		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, null), contains(person1));
 		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1));
 		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, person1.getUuid()), contains(person1));
@@ -667,7 +667,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		}
 
 		Date t2 = new Date();
-		assertThat(getPersonFacade().getPersonsAfter(t2), is(empty()));
+		assertThat(getPersonFacade().getAllAfter(t2), is(empty()));
 		assertThat(getPersonFacade().getPersonsAfter(t2, batchSize, null), is(empty()));
 		assertThat(getPersonFacade().getPersonsAfter(t2, batchSize, EntityDto.NO_LAST_SYNCED_UUID), is(empty()));
 
@@ -675,8 +675,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person2 = creator.createPerson("Second", "Person");
 		creator.createContact(nationalUser.toReference(), person2.toReference());
 
-		assertThat(getPersonFacade().getPersonsAfter(t1), contains(person1, person2));
-		assertThat(getPersonFacade().getPersonsAfter(t2), contains(person2));
+		assertThat(getPersonFacade().getAllAfter(t1), contains(person1, person2));
+		assertThat(getPersonFacade().getAllAfter(t2), contains(person2));
 
 		// 3. Check with third person with TravelEntry
 		Date t3 = new Date();
@@ -685,7 +685,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			.createTravelEntry(person3.toReference(), nationalUser.toReference(), Disease.CORONAVIRUS, rdcf.region, rdcf.district, rdcf.pointOfEntry);
 
 		// 3a. Found by TravelEntry
-		assertThat(getPersonFacade().getPersonsAfter(t1), contains(person1, person2, person3));
+		assertThat(getPersonFacade().getAllAfter(t1), contains(person1, person2, person3));
 		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1, person2, person3));
 		assertThat(getPersonFacade().getPersonsAfter(t3, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person3));
 
@@ -719,7 +719,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		person.setAddress(new LocationDto());
 		person.setAddresses(Collections.singletonList(new LocationDto()));
 
-		PersonDto savedPerson = getPersonFacade().savePerson(person);
+		PersonDto savedPerson = getPersonFacade().save(person);
 
 		assertThat(savedPerson.getUuid(), not(isEmptyOrNullString()));
 		assertThat(savedPerson.getAddress().getUuid(), not(isEmptyOrNullString()));
@@ -790,8 +790,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		leadPerson.setPersonContactDetails(Collections.singletonList(leadContactDetail));
 		otherPerson.setPersonContactDetails(Collections.singletonList(otherContactDetail));
 
-		leadPerson = getPersonFacade().savePerson(leadPerson);
-		otherPerson = getPersonFacade().savePerson(otherPerson);
+		leadPerson = getPersonFacade().save(leadPerson);
+		otherPerson = getPersonFacade().save(otherPerson);
 
 		getPersonFacade().mergePerson(leadPerson, otherPerson);
 

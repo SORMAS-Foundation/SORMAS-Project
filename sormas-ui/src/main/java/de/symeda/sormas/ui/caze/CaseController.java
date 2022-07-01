@@ -705,7 +705,7 @@ public class CaseController {
 					dto.setWasInQuarantineBeforeIsolation(YesNoUnknown.YES);
 
 					transferDataToPerson(createForm, person);
-					FacadeProvider.getPersonFacade().savePerson(person);
+					FacadeProvider.getPersonFacade().save(person);
 
 					saveCase(dto);
 
@@ -730,7 +730,7 @@ public class CaseController {
 					}
 				} else if (convertedEventParticipant != null) {
 					transferDataToPerson(createForm, person);
-					FacadeProvider.getPersonFacade().savePerson(person);
+					FacadeProvider.getPersonFacade().save(person);
 					selectOrCreateCase(dto, person, uuid -> {
 						if (uuid == null) {
 							dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
@@ -761,7 +761,7 @@ public class CaseController {
 					});
 				} else if (convertedTravelEntry != null) {
 					transferDataToPerson(createForm, person);
-					FacadeProvider.getPersonFacade().savePerson(person);
+					FacadeProvider.getPersonFacade().save(person);
 
 					dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 					saveCase(dto);
@@ -780,13 +780,13 @@ public class CaseController {
 					if (dbPerson == null) {
 						PersonDto personDto = PersonDto.build();
 						transferDataToPerson(createForm, personDto);
-						FacadeProvider.getPersonFacade().savePerson(personDto);
+						FacadeProvider.getPersonFacade().save(personDto);
 						dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 						dto.setPerson(personDto.toReference());
 						saveCase(dto);
 					} else {
 						transferDataToPerson(createForm, dbPerson);
-						FacadeProvider.getPersonFacade().savePerson(dbPerson);
+						FacadeProvider.getPersonFacade().save(dbPerson);
 						dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 						saveCase(dto);
 					}

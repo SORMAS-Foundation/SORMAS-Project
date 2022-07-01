@@ -313,7 +313,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		assertThat(savedCase.getSormasToSormasOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ID));
 		assertThat(savedCase.getSormasToSormasOriginInfo().getSenderName(), is("John doe"));
 
-		PersonDto savedPerson = getPersonFacade().getPersonByUuid(savedCase.getPerson().getUuid());
+		PersonDto savedPerson = getPersonFacade().getByUuid(savedCase.getPerson().getUuid());
 		assertThat(savedPerson, is(notNullValue()));
 		assertThat(savedPerson.getAddress().getRegion(), is(rdcf.region));
 		assertThat(savedPerson.getAddress().getDistrict(), is(rdcf.district));
@@ -360,7 +360,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		assertThat(savedCase.getSormasToSormasOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ID));
 		assertThat(savedCase.getSormasToSormasOriginInfo().getSenderName(), is("John doe"));
 
-		PersonDto savedPerson = getPersonFacade().getPersonByUuid(savedCase.getPerson().getUuid());
+		PersonDto savedPerson = getPersonFacade().getByUuid(savedCase.getPerson().getUuid());
 		assertThat(savedPerson, is(notNullValue()));
 		assertThat(savedPerson.getAddress().getRegion(), is(rdcf.region));
 		assertThat(savedPerson.getAddress().getDistrict(), is(rdcf.district));

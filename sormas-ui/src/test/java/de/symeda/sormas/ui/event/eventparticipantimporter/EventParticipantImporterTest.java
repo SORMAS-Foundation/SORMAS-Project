@@ -151,7 +151,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		final String EXISTING_PERSON_LAST_NAME = "Heinz";
 		PersonDto person = creator.createPerson("Günther", EXISTING_PERSON_LAST_NAME);
 		person.setPresentCondition(PresentCondition.UNKNOWN);
-		getPersonFacade().savePerson(person);
+		getPersonFacade().save(person);
 
 		creator.createCase(
 			user.toReference(),
