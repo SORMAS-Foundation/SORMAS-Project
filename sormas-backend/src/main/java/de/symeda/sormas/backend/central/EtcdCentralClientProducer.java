@@ -1,8 +1,8 @@
 package de.symeda.sormas.backend.central;
 
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-
 import javax.enterprise.inject.Produces;
+
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 public class EtcdCentralClientProducer {
 
