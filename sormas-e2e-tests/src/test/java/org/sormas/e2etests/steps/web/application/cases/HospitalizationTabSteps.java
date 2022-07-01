@@ -167,6 +167,15 @@ public class HospitalizationTabSteps implements En {
     And(
         "^I check if Previous Hospitalization Popup is displayed$",
         () -> webDriverHelpers.isElementVisibleWithTimeout(PREVIOUS_HOSPITALIZATION_POPUP, 10));
+    Then(
+        "I check Hospitalization tab have Current hospitalization heading",
+        () ->
+            webDriverHelpers.waitUntilIdentifiedElementIsPresent(CURRENT_HOSPITALIZATION_HEADING));
+
+    Then(
+        "I check Hospitalization tab have Previous hospitalization heading",
+        () ->
+            webDriverHelpers.waitUntilIdentifiedElementIsPresent(PREVIOUS_HOSPITALIZATION_HEADING));
   }
 
   @SneakyThrows

@@ -84,7 +84,7 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 
 		VaccinationDto vaccinationDto = creator.createVaccination(
 			nationalUser.toReference(),
-			new ImmunizationReferenceDto(immunizationDto.getUuid(), immunizationDto.toString(), immunizationDto.getExternalId()),
+			new ImmunizationReferenceDto(immunizationDto.getUuid(), immunizationDto.getCaption(), immunizationDto.getExternalId()),
 			healthConditions);
 
 		Vaccination actualVaccination = getVaccinationService().getByUuid(vaccinationDto.getUuid());

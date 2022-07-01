@@ -143,7 +143,7 @@ public class AreaFacadeEjb extends AbstractInfrastructureFacadeEjb<Area, AreaDto
 		if (entity == null) {
 			return null;
 		}
-		return new AreaReferenceDto(entity.getUuid(), entity.toString());
+		return new AreaReferenceDto(entity.getUuid(), entity.getName());
 	}
 
 	@Override

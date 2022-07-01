@@ -172,12 +172,6 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 
 		Predicate assigneeFilter = createAssigneeFilter(cb, joins.getAssignee());
 
-		Predicate contactRightsPredicate =
-			this.createContactFilter(cb, taskQueryContext.getRoot(), joins.getAssignee(), joins.getTaskObservers(), currentUser);
-		if (contactRightsPredicate != null) {
-			assigneeFilter = cb.and(assigneeFilter, contactRightsPredicate);
-		}
-
 		Predicate relatedEntityNotDeletedFilter = cb.or(
 			cb.equal(taskPath.get(Task.TASK_CONTEXT), TaskContext.GENERAL),
 			caseService.createDefaultFilter(cb, joins.getCaze()),
@@ -203,7 +197,10 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		}
 		Predicate contactFilter = contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()));
 		if (contactFilter != null) {
-			filter = cb.or(filter, contactFilter);
+			filter = cb.or(
+				filter,
+				CriteriaBuilderHelper
+					.or(cb, contactFilter, createAssigneeOrObserverFilter(cb, joins.getAssignee(), joins.getTaskObservers(), currentUser)));
 		}
 		Predicate eventFilter = eventService.createUserFilter(new EventQueryContext(cb, cq, joins.getEventJoins()));
 		if (eventFilter != null) {
@@ -260,25 +257,9 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			.or(cb, cb.isNull(assigneeUserJoin.get(User.UUID)), userService.createCurrentUserJurisdictionFilter(cb, assigneeUserJoin));
 	}
 
-	/*
-	 * A user that not have CONTACT_VIEW or CONTACT_EDIT rights is allowed to see the tasks assign to it or where it is
-	 * set as an observer. This restriction should be applied only for tasks of type CONTACT.
-	 */
-	private Predicate createContactFilter(
-		CriteriaBuilder cb,
-		From<?, Task> task,
-		Join<?, User> assigneeUserJoin,
-		Join<?, User> observersJoin,
-		User user) {
-		Predicate predicate = null;
-		if (!userService.hasRight(UserRight.CONTACT_VIEW) && !userService.hasRight(UserRight.CONTACT_EDIT)) {
-			predicate = cb.or(
-				cb.notEqual(task.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
-				cb.equal(assigneeUserJoin.get(User.UUID), user.getUuid()),
-				cb.equal(observersJoin.get(User.UUID), user.getUuid()));
-		}
+	private Predicate createAssigneeOrObserverFilter(CriteriaBuilder cb, Join<?, User> assigneeUserJoin, Join<?, User> observersJoin, User user) {
 
-		return predicate;
+		return cb.or(cb.equal(assigneeUserJoin.get(User.UUID), user.getUuid()), cb.equal(observersJoin.get(User.UUID), user.getUuid()));
 	}
 
 	public long getCount(TaskCriteria taskCriteria) {

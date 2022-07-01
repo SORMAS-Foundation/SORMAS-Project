@@ -52,6 +52,7 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventCriteriaDateType;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -323,7 +324,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		List<ExternalShareInfo> result = externalShareInfoService.getShareInfoByEvent(entityUuid);
 		return result.stream().anyMatch(info -> info.getStatus().equals(ExternalShareStatus.DELETED));
 	}
-    
+
 	public List<String> getArchivedUuidsSince(Date since) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();

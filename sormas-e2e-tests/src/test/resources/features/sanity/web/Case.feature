@@ -1241,6 +1241,30 @@ Feature: Case end to end tests
     Then I navigate to the last created via api Person page via URL
     And I check if added travel Entry appeared on Edit Person Page
 
+  @issue=SORDEV-5623 @env_de
+  Scenario: Show date and responsible user of last follow-up status change
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with only the required data for DE version
+    Then I check that follow-up status is set to Under follow-up in German on Edit case page
+    When I click on the Cancel Follow-up button from Edit case page
+    Then I provide follow-up status comment from Edit case page
+    And I click on save button from Edit Case page
+    And I check that Date of Follow-up Status Change and Responsible User are correctly displayed on Edit case page
+    When I click on the Resume Follow-up button from Edit case page
+    And I click on save button from Edit Case page
+    And I check that Date of Follow-up Status Change and Responsible User are correctly displayed on Edit case page
+    And I click on the Lost to Follow-up button from Edit case page
+    Then I provide follow-up status comment from Edit case page
+    And I click on save button from Edit Case page
+    And I check that Date of Follow-up Status Change and Responsible User are correctly displayed on Edit case page
+    And I check that Expected Follow-up Until Date is correctly displayed on Edit case page
+    When I select Overwrite Follow-up Until Date checkbox on Edit case page
+    And I set the Follow-up Until Date to exceed the Expected Follow-up Until Date on Edit case page
+    And I click on save button from Edit Case page
+    Then I check if the Follow-up Until Date is correctly displayed on Edit case page
+
   @issue=SORDEV-5563 @env_de
   Scenario: Add contact person details to facilities case person
     Given I log in as a Admin User
@@ -1326,3 +1350,16 @@ Feature: Case end to end tests
     When I click on save button in the case popup
     And I click on the Cases button from navbar
     Then I compare previous first case ID on the list with actually second case ID on list
+
+  @issue=SORDEV-6609 @env_main
+  Scenario: Test for case internal token
+    Given I log in as a National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with specific data
+    When I fill in the Internal Token field in Edit Case page with SAMPLE TOKEN
+    And I click on save button in the case popup
+    And I click on the Cases button from navbar
+    And I check that the Internal Token column is present
+    And I filter for SAMPLE TOKEN in Cases Directory
+    Then I check that at least one SAMPLE TOKEN is displayed in table

@@ -15,9 +15,9 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 
-import de.symeda.sormas.api.common.CoreEntityType;
 import org.apache.commons.lang3.ArrayUtils;
 
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.feature.FeatureConfigurationCriteria;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;

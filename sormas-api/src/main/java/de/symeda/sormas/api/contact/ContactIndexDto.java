@@ -60,7 +60,6 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	public static final String DISTRICT_UUID = "districtUuid";
 	public static final String COMMUNITY_UUID = "communityUuid";
 
-	private String uuid;
 	private String personUuid;
 	@PersonalData
 	private String firstName;
@@ -109,7 +108,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	) {
 	//@formatter:on
 
-		this.uuid = uuid;
+		super(uuid);
 		this.personUuid = personUuid;
 		this.firstName = personFirstName;
 		this.lastName = personLastName;
@@ -143,14 +142,6 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 		this.caseDistrictName = caseDistrictName;
 
 		this.contactJurisdictionFlagsDto = new ContactJurisdictionFlagsDto(isInJurisdiction, isCaseInJurisdiction);
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public String getPersonUuid() {
@@ -374,7 +365,7 @@ public class ContactIndexDto extends PseudonymizableIndexDto implements Serializ
 	}
 
 	public ContactReferenceDto toReference() {
-		return new ContactReferenceDto(uuid);
+		return new ContactReferenceDto(getUuid());
 	}
 
 	public boolean getInJurisdiction() {

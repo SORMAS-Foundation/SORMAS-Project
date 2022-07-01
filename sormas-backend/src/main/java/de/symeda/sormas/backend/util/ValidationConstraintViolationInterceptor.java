@@ -19,10 +19,11 @@ import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 import javax.validation.ConstraintViolationException;
 
-import de.symeda.sormas.api.utils.ConstrainValidationHelper;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.symeda.sormas.api.utils.ConstrainValidationHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 public class ValidationConstraintViolationInterceptor {
 

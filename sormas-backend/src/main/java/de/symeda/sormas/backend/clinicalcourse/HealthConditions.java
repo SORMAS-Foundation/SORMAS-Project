@@ -249,5 +249,4 @@ public class HealthConditions extends AbstractDomainObject {
 	public void setImmunodeficiencyIncludingHiv(YesNoUnknown immunodeficiencyIncludingHiv) {
 		this.immunodeficiencyIncludingHiv = immunodeficiencyIncludingHiv;
 	}
-
 }
