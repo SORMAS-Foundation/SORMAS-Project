@@ -136,6 +136,7 @@ public interface Strings {
 	String confirmationDeleteTasks = "confirmationDeleteTasks";
 	String confirmationDeleteTravelEntries = "confirmationDeleteTravelEntries";
 	String confirmationDeleteTreatments = "confirmationDeleteTreatments";
+	String confirmationDeleteUserRole = "confirmationDeleteUserRole";
 	String confirmationDeleteVisits = "confirmationDeleteVisits";
 	String confirmationDisableAllLineListingNational = "confirmationDisableAllLineListingNational";
 	String confirmationDisableAllLineListingRegion = "confirmationDisableAllLineListingRegion";
@@ -267,6 +268,7 @@ public interface Strings {
 	String errorContactMerging = "errorContactMerging";
 	String errorContactNotEditable = "errorContactNotEditable";
 	String errorCreatingTemplateDirectory = "errorCreatingTemplateDirectory";
+	String errorDeleteUserRoleUsedAlone = "errorDeleteUserRoleUsedAlone";
 	String errorDeletingDocument = "errorDeletingDocument";
 	String errorDeletingDocumentTemplate = "errorDeletingDocumentTemplate";
 	String errorDocumentGeneration = "errorDocumentGeneration";
@@ -463,6 +465,7 @@ public interface Strings {
 	String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";
 	String headingDeleteConfirmation = "headingDeleteConfirmation";
 	String headingDeleteContacts = "headingDeleteContacts";
+	String headingDeleteUserRoleNotPossible = "headingDeleteUserRoleNotPossible";
 	String headingDeleteVaccinations = "headingDeleteVaccinations";
 	String headingDisableLineListing = "headingDisableLineListing";
 	String headingDiscardUnsavedChanges = "headingDiscardUnsavedChanges";

@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.user;
 
 import de.symeda.sormas.api.utils.FeatureIndependent;
+import java.util.Collections;
 import java.util.Set;
 
 import javax.validation.Valid;
@@ -83,7 +84,7 @@ public class UserDto extends EntityDto {
 	@Valid
 	private LocationDto address;
 
-	private Set<UserRoleReferenceDto> userRoles;
+	private Set<UserRoleReferenceDto> userRoles = Collections.emptySet();
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;

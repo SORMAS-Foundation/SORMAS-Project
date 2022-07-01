@@ -45,7 +45,7 @@ public interface UserRoleFacade {
 
 	UserRoleDto saveUserRole(@Valid UserRoleDto dto);
 
-	void deleteUserRole(UserRoleDto dto);
+	void deleteUserRole(UserRoleReferenceDto dto);
 
 	boolean hasUserRight(Collection<UserRoleDto> userRoles, UserRight userRight);
 

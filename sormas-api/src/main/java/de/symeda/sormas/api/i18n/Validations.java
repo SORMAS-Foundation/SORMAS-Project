@@ -37,6 +37,7 @@ public interface Validations {
 	String campaignFormUnsupportedDependingOnValue = "campaignFormUnsupportedDependingOnValue";
 	String campaignFormUnsupportedStyle = "campaignFormUnsupportedStyle";
 	String campaignFormUnsupportedType = "campaignFormUnsupportedType";
+	String cantRemoveLastRole = "cantRemoveLastRole";
 	String captionNotUnique = "captionNotUnique";
 	String caseClassificationInvalid = "caseClassificationInvalid";
 	String caseMultipleInfectionEnvironments = "caseMultipleInfectionEnvironments";

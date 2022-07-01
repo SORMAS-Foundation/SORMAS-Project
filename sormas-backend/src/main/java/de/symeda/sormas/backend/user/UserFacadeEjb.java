@@ -854,6 +854,16 @@ public class UserFacadeEjb implements UserFacade {
 		}
 	}
 
+	@Override
+	public long getUserCountHavingRole(UserRoleReferenceDto userRoleRef) {
+		return userService.countWithRole(userRoleRef);
+	}
+
+	@Override
+	public List<UserReferenceDto> getUsersHavingOnlyRole(UserRoleReferenceDto userRoleRef) {
+		return userService.getAllWithOnlyRole(userRoleRef).stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toList());
+	}
+
 	public interface JurisdictionOverEntitySubqueryBuilder<ADO extends AbstractDomainObject> {
 
 		Subquery<ADO> buildSubquery(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<User> userRoot);

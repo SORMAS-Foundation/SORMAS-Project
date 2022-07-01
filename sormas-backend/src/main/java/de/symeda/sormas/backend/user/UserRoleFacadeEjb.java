@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -46,7 +45,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleFacade;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.util.DtoHelper;
 
@@ -117,7 +115,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	}
 
 	@Override
-	public void deleteUserRole(UserRoleDto dto) {
+	public void deleteUserRole(UserRoleReferenceDto dto) {
 
 		UserRole entity = userRoleService.getByUuid(dto.getUuid());
 		userRoleService.deletePermanent(entity);

@@ -36,6 +36,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -48,6 +49,7 @@ import de.symeda.sormas.api.user.NotificationProtocol;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
@@ -858,6 +860,45 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
 		Root<User> from = cq.from(getElementClass());
 		cq.where(cb.equal(from.join(User.HEALTH_FACILITY, JoinType.LEFT).get(Facility.TYPE), facilityType));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public long countWithRole(UserRoleReferenceDto userRoleRef) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<User> from = cq.from(getElementClass());
+
+		cq.select(cb.count(from));
+		cq.where(cb.equal(from.join(User.USER_ROLES, JoinType.LEFT).get(UserRole.UUID), userRoleRef.getUuid()));
+
+		return em.createQuery(cq).getSingleResult();
+
+	}
+
+	public List<User> getAllWithRole(UserRole userRoleRef) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<User> cq = cb.createQuery(User.class);
+		Root<User> from = cq.from(getElementClass());
+
+		cq.where(cb.equal(from.join(User.USER_ROLES, JoinType.LEFT).get(UserRole.UUID), userRoleRef.getUuid()));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<User> getAllWithOnlyRole(UserRoleReferenceDto userRoleRef) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<User> cq = cb.createQuery(User.class);
+		Root<User> from = cq.from(getElementClass());
+		Join<Object, Object> rolesJoin = from.join(User.USER_ROLES, JoinType.LEFT);
+
+		Subquery<Long> roleCount = cq.subquery(Long.class);
+		Root<User> roleCountFrom = roleCount.from(User.class);
+
+		roleCount.select(cb.count(roleCountFrom.join(User.USER_ROLES, JoinType.LEFT).get(UserRole.ID)));
+		roleCount.where(cb.equal(from.get(User.ID), roleCountFrom.get(User.ID)));
+
+		cq.where(cb.equal(rolesJoin.get(UserRole.UUID), userRoleRef.getUuid()), cb.equal(roleCount, 1));
 
 		return em.createQuery(cq).getResultList();
 	}
