@@ -69,7 +69,7 @@ public class PersonResource extends EntityDtoResource {
 		@PathParam("since") long since,
 		@PathParam("size") int size,
 		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
-		return FacadeProvider.getPersonFacade().getPersonsAfter(new Date(since), size, lastSynchronizedUuid);
+		return FacadeProvider.getPersonFacade().getAllAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
 	@POST

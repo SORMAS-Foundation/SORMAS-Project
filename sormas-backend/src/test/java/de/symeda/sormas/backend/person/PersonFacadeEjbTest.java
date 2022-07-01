@@ -646,30 +646,30 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		// 0. Make sure that empty result works
 		assertThat(getPersonFacade().getAllAfter(t1), is(empty()));
-		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, null), is(empty()));
-		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID), is(empty()));
+		assertThat(getPersonFacade().getAllAfter(t1, batchSize, null), is(empty()));
+		assertThat(getPersonFacade().getAllAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID), is(empty()));
 
 		// 1. Check one persons with two timestamps
 		PersonDto person1 = creator.createPerson("First", "Person");
 		creator.createContact(nationalUser.toReference(), person1.toReference());
 
 		assertThat(getPersonFacade().getAllAfter(t1), contains(person1));
-		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, null), contains(person1));
-		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1));
-		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, person1.getUuid()), contains(person1));
-		assertThat(getPersonFacade().getPersonsAfter(person1.getChangeDate(), batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1));
+		assertThat(getPersonFacade().getAllAfter(t1, batchSize, null), contains(person1));
+		assertThat(getPersonFacade().getAllAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1));
+		assertThat(getPersonFacade().getAllAfter(t1, batchSize, person1.getUuid()), contains(person1));
+		assertThat(getPersonFacade().getAllAfter(person1.getChangeDate(), batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1));
 		{
-			List<PersonDto> result = getPersonFacade().getPersonsAfter(t1, batchSize, person1.getUuid());
+			List<PersonDto> result = getPersonFacade().getAllAfter(t1, batchSize, person1.getUuid());
 			assertThat(result, contains(person1));
-			assertThat(getPersonFacade().getPersonsAfter(result.get(0).getChangeDate(), batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1));
+			assertThat(getPersonFacade().getAllAfter(result.get(0).getChangeDate(), batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1));
 			// person1 still in result because of Contact reference
-			assertThat(getPersonFacade().getPersonsAfter(result.get(0).getChangeDate(), batchSize, person1.getUuid()), contains(person1));
+			assertThat(getPersonFacade().getAllAfter(result.get(0).getChangeDate(), batchSize, person1.getUuid()), contains(person1));
 		}
 
 		Date t2 = new Date();
 		assertThat(getPersonFacade().getAllAfter(t2), is(empty()));
-		assertThat(getPersonFacade().getPersonsAfter(t2, batchSize, null), is(empty()));
-		assertThat(getPersonFacade().getPersonsAfter(t2, batchSize, EntityDto.NO_LAST_SYNCED_UUID), is(empty()));
+		assertThat(getPersonFacade().getAllAfter(t2, batchSize, null), is(empty()));
+		assertThat(getPersonFacade().getAllAfter(t2, batchSize, EntityDto.NO_LAST_SYNCED_UUID), is(empty()));
 
 		// 2. Check two persons with two timestamps
 		PersonDto person2 = creator.createPerson("Second", "Person");
@@ -686,28 +686,28 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		// 3a. Found by TravelEntry
 		assertThat(getPersonFacade().getAllAfter(t1), contains(person1, person2, person3));
-		assertThat(getPersonFacade().getPersonsAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1, person2, person3));
-		assertThat(getPersonFacade().getPersonsAfter(t3, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person3));
+		assertThat(getPersonFacade().getAllAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person1, person2, person3));
+		assertThat(getPersonFacade().getAllAfter(t3, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person3));
 
 		// 3b. Exclude TravelEntries from mobileSync
 		MockProducer.setMobileSync(true);
 		List<PersonDto> personsAfterT1;
-		personsAfterT1 = getPersonFacade().getPersonsAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID);
+		personsAfterT1 = getPersonFacade().getAllAfter(t1, batchSize, EntityDto.NO_LAST_SYNCED_UUID);
 		assertThat(personsAfterT1, contains(person1, person2));
 
 		// 4. Test retrieval of persons for mobileSync with different changeDates and uuids
 		PersonDto personRead1 = personsAfterT1.get(0);
 		PersonDto personRead2 = personsAfterT1.get(1);
 
-		assertThat(getPersonFacade().getPersonsAfter(t1, 1, EntityDto.NO_LAST_SYNCED_UUID), contains(person1));
-		assertThat(getPersonFacade().getPersonsAfter(personRead1.getChangeDate(), batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person2));
-		assertThat(getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), batchSize, EntityDto.NO_LAST_SYNCED_UUID), is(empty()));
+		assertThat(getPersonFacade().getAllAfter(t1, 1, EntityDto.NO_LAST_SYNCED_UUID), contains(person1));
+		assertThat(getPersonFacade().getAllAfter(personRead1.getChangeDate(), batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person2));
+		assertThat(getPersonFacade().getAllAfter(personRead2.getChangeDate(), batchSize, EntityDto.NO_LAST_SYNCED_UUID), is(empty()));
 		Date changeDateBeforePerson2 = new Date(personRead2.getChangeDate().getTime() - 1L);
-		assertThat(getPersonFacade().getPersonsAfter(changeDateBeforePerson2, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person2));
+		assertThat(getPersonFacade().getAllAfter(changeDateBeforePerson2, batchSize, EntityDto.NO_LAST_SYNCED_UUID), contains(person2));
 
-		assertThat(getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), batchSize, "AAAAAA-AAAAAA-AAAAAA-AAAAAA"), contains(person2));
-		assertThat(getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), batchSize, "ZZZZZZ-ZZZZZZ-ZZZZZZ-ZZZZZZ"), is(empty()));
-		assertThat(getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), batchSize, personRead2.getUuid()), is(empty()));
+		assertThat(getPersonFacade().getAllAfter(personRead2.getChangeDate(), batchSize, "AAAAAA-AAAAAA-AAAAAA-AAAAAA"), contains(person2));
+		assertThat(getPersonFacade().getAllAfter(personRead2.getChangeDate(), batchSize, "ZZZZZZ-ZZZZZZ-ZZZZZZ-ZZZZZZ"), is(empty()));
+		assertThat(getPersonFacade().getAllAfter(personRead2.getChangeDate(), batchSize, personRead2.getUuid()), is(empty()));
 	}
 
 	@Test

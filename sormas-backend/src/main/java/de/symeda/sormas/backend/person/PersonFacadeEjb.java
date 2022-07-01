@@ -260,7 +260,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	@Override
 	public List<PersonDto> getAllAfter(Date date) {
-		return getPersonsAfter(date, null, null);
+		return getAllAfter(date, null, null);
 	}
 
 	@Override
@@ -269,8 +269,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	}
 
 	@Override
-	public List<PersonDto> getPersonsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-
+	public List<PersonDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 		return toPseudonymizedDtos(personService.getAllAfter(date, batchSize, lastSynchronizedUuid));
 	}
 

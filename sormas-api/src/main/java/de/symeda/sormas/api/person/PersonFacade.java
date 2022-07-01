@@ -42,7 +42,7 @@ public interface PersonFacade extends BaseFacade<PersonDto, PersonIndexDto, Pers
 
 	DataHelper.Pair<CaseClassification, PersonDto> savePersonWithoutNotifyingExternalJournal(@Valid PersonDto source);
 
-	List<PersonDto> getPersonsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
+	List<PersonDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
 
 	/**
 	 * Returns a list with the names of all persons that the user has access to and that match the criteria.
