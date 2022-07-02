@@ -47,6 +47,10 @@ public class EditContactsPage {
       By.xpath(
           " //div[contains(@class, 'popupContent')]//tr[contains(@class, 'v-grid-row-has-data')]//td");
 
+  public static final By EXTERNAL_TOKEN_CONTACT_INPUT = By.cssSelector("#externalToken");
+  public static final By CASE_OR_EVENT_INFORMATION_CONTACT_TEXT_AREA =
+      By.cssSelector("#caseOrEventInformation");
+
   public static By getContactByUUID(String uuid) {
     return By.xpath(String.format("//a[text()=\"%s\"]", uuid.substring(0, 6).toUpperCase()));
   }

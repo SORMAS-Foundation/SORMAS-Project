@@ -539,10 +539,12 @@ public class CaseDirectorySteps implements En {
         () -> {
           softly.assertEquals(
               CaseReinfectionSteps.caze.getFirstName(),
-              webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT), "Prefilled first name is not equal");
+              webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT),
+              "Prefilled first name is not equal");
           softly.assertEquals(
               CaseReinfectionSteps.caze.getLastName(),
-              webDriverHelpers.getValueFromWebElement(LAST_NAME_INPUT), "Prefilled last name is not equal");
+              webDriverHelpers.getValueFromWebElement(LAST_NAME_INPUT),
+              "Prefilled last name is not equal");
           softly.assertAll();
         });
     And(
