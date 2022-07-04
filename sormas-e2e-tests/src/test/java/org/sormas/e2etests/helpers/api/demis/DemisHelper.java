@@ -17,9 +17,6 @@
  */
 package org.sormas.e2etests.helpers.api.demis;
 
-import static org.sormas.e2etests.constants.api.Endpoints.TASKS_PATH;
-import static org.sormas.e2etests.steps.BaseSteps.locale;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
@@ -28,17 +25,11 @@ import io.restassured.filter.Filter;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
-import io.restassured.http.Method;
 import io.restassured.specification.RequestSpecification;
-import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
-import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.SneakyThrows;
-import org.sormas.e2etests.entities.pojo.api.Request;
-import org.sormas.e2etests.entities.pojo.api.Task;
-import org.sormas.e2etests.enums.UserRoles;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.RestAssuredClient;
 
@@ -62,10 +53,13 @@ public class DemisHelper {
     this.logRestAssuredInfo = logRestAssuredInfo;
   }
 
+  @SneakyThrows
   private RequestSpecification request() {
     RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-    final String restEndpoint = "/sormas-rest";
-    RestAssured.baseURI = runningConfiguration.getEnvironmentUrlForMarket(locale) + restEndpoint;
+    String baseDemis = "https://10.210.11.214:443";
+    final String restEndpoint = "/auth/realms/LAB/protocol/openid-connect/token";
+    // RestAssured.baseURI = runningConfiguration.getEnvironmentUrlForMarket(locale) + restEndpoint;
+    RestAssured.baseURI = baseDemis + restEndpoint;
     Filter filters[];
     if (logRestAssuredInfo) {
       filters =
@@ -77,15 +71,13 @@ public class DemisHelper {
     }
     requestSpecification =
         RestAssured.given()
-            .auth()
-            .preemptive()
-            .basic(
-                runningConfiguration
-                    .getUserByRole(locale, UserRoles.RestUser.getRole())
-                    .getUsername(),
-                runningConfiguration
-                    .getUserByRole(locale, UserRoles.RestUser.getRole())
-                    .getPassword());
+            .trustStore(
+                "C:\\Users\\Razvan\\Downloads\\demis\\DEMIS-Adapter-2.0.1\\config\\DEMIS-test-lab999_CSM026304641.p12",
+                "demisLoginCertificate")
+            .contentType("application/x-www-form-urlencoded; charset=utf-8")
+            .formParam("client_secret", "secret_client_secret")
+            .formParam("username", "test-lab999")
+            .formParam("grant_type", "password");
 
     return requestSpecification
         .config(
@@ -100,15 +92,16 @@ public class DemisHelper {
 
   @SneakyThrows
   public void loginRequest() {
+    request().post().then().extract().response();
     // restAssuredClient.sendRequest();
-//    final ByteArrayOutputStream out = new ByteArrayOutputStream();
-//    List<Task> listOfContacts = List.of(task);
-//    objectMapper.writeValue(out, listOfContacts);
-//    restAssuredClient.sendRequest(
-//        Request.builder()
-//            .method(Method.POST)
-//            .path(TASKS_PATH + "push")
-//            .body(out.toString())
-//            .build());
+    //    final ByteArrayOutputStream out = new ByteArrayOutputStream();
+    //    List<Task> listOfContacts = List.of(task);
+    //    objectMapper.writeValue(out, listOfContacts);
+    //    restAssuredClient.sendRequest(
+    //        Request.builder()
+    //            .method(Method.POST)
+    //            .path(TASKS_PATH + "push")
+    //            .body(out.toString())
+    //            .build());
   }
 }

@@ -17,18 +17,10 @@
  */
 package org.sormas.e2etests.steps.api.demisSteps;
 
-import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
-import lombok.extern.slf4j.Slf4j;
-import org.sormas.e2etests.entities.pojo.api.Person;
-import org.sormas.e2etests.entities.services.api.PersonApiService;
-import org.sormas.e2etests.helpers.api.demis.DemisHelper;
-import org.sormas.e2etests.helpers.api.sormasrest.PersonsHelper;
-import org.sormas.e2etests.state.ApiState;
-
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.sormas.e2etests.helpers.api.demis.DemisHelper;
 
 @Slf4j
 public class DemisLoginSteps implements En {
@@ -36,10 +28,10 @@ public class DemisLoginSteps implements En {
   @Inject
   public DemisLoginSteps(DemisHelper demisHelper) {
 
-    When(
-        "API: I login to DEMIS server",
+    Given(
+        "calule mananci ovaz",
         () -> {
-          //
+          demisHelper.loginRequest();
         });
   }
 }
