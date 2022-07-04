@@ -59,7 +59,9 @@ public class AggregatedCaseCountDto implements Serializable {
 		int year,
 		int epiWeek,
 		String ageGroup,
-		String reportingUserUuid, String reportingUserFirstName, String reportingUserLastName,
+		String reportingUserUuid,
+		String reportingUserFirstName,
+		String reportingUserLastName,
 		Date changeDate) {
 
 		this.disease = disease;
@@ -89,9 +91,22 @@ public class AggregatedCaseCountDto implements Serializable {
 		Long healthFacilityId,
 		String pointOfEntryName,
 		Long pointOfEntryId,
-		String reportingUserUuid, String reportingUserFirstName, String reportingUserLastName,
+		String reportingUserUuid,
+		String reportingUserFirstName,
+		String reportingUserLastName,
 		Date changeDate) {
-		this(disease, newCases, labConfirmations, deaths, year, epiWeek, ageGroup, reportingUserUuid, reportingUserFirstName, reportingUserLastName, changeDate);
+		this(
+			disease,
+			newCases,
+			labConfirmations,
+			deaths,
+			year,
+			epiWeek,
+			ageGroup,
+			reportingUserUuid,
+			reportingUserFirstName,
+			reportingUserLastName,
+			changeDate);
 		this.regionName = regionName;
 		this.regionId = regionId;
 		this.districtName = districtName;

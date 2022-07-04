@@ -88,6 +88,31 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	@EJB
 	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 
+	public static AggregateReportDto toDto(AggregateReport source) {
+
+		if (source == null) {
+			return null;
+		}
+
+		AggregateReportDto target = new AggregateReportDto();
+		DtoHelper.fillDto(target, source);
+
+		target.setDisease(source.getDisease());
+		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
+		target.setYear(source.getYear());
+		target.setEpiWeek(source.getEpiWeek());
+		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
+		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
+		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
+		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
+		target.setNewCases(source.getNewCases());
+		target.setLabConfirmations(source.getLabConfirmations());
+		target.setDeaths(source.getDeaths());
+		target.setAgeGroup(source.getAgeGroup());
+
+		return target;
+	}
+
 	@Override
 	public List<AggregateReportDto> getAllAggregateReportsAfter(Date date) {
 
@@ -121,38 +146,13 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		return service.getAllUuids();
 	}
 
-	public static AggregateReportDto toDto(AggregateReport source) {
-
-		if (source == null) {
-			return null;
-		}
-
-		AggregateReportDto target = new AggregateReportDto();
-		DtoHelper.fillDto(target, source);
-
-		target.setDisease(source.getDisease());
-		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
-		target.setYear(source.getYear());
-		target.setEpiWeek(source.getEpiWeek());
-		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
-		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
-		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
-		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
-		target.setNewCases(source.getNewCases());
-		target.setLabConfirmations(source.getLabConfirmations());
-		target.setDeaths(source.getDeaths());
-		target.setAgeGroup(source.getAgeGroup());
-
-		return target;
-	}
-
 	@Override
 	public List<AggregatedCaseCountDto> getIndexList(AggregateReportCriteria criteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<AggregatedCaseCountDto> cq = cb.createQuery(AggregatedCaseCountDto.class);
 		Root<AggregateReport> root = cq.from(AggregateReport.class);
-		AggregateReportQueryContext queryContext = new AggregateReportQueryContext(cb,cq, root);
+		AggregateReportQueryContext queryContext = new AggregateReportQueryContext(cb, cq, root);
 		AggregateReportJoins joins = queryContext.getJoins();
 
 		Predicate filter = service.createUserFilter(queryContext);
@@ -209,25 +209,25 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.isNotNull(root.get(AggregateReport.POINT_OF_ENTRY))));
 			}
 
-				Join<AggregateReport, Region> regionJoin = root.join(AggregateReport.REGION, JoinType.LEFT);
-				List<Path<Object>> regionPath = Arrays.asList(regionJoin.get(Region.NAME), regionJoin.get(Region.ID));
-				expressions.addAll(regionPath);
-				selectionList.addAll(regionPath);
+			Join<AggregateReport, Region> regionJoin = root.join(AggregateReport.REGION, JoinType.LEFT);
+			List<Path<Object>> regionPath = Arrays.asList(regionJoin.get(Region.NAME), regionJoin.get(Region.ID));
+			expressions.addAll(regionPath);
+			selectionList.addAll(regionPath);
 
-				Join<AggregateReport, District> districtJoin = root.join(AggregateReport.DISTRICT, JoinType.LEFT);
-				List<Path<Object>> districtPath = Arrays.asList(districtJoin.get(District.NAME), districtJoin.get(District.ID));
-				expressions.addAll(districtPath);
-				selectionList.addAll(districtPath);
+			Join<AggregateReport, District> districtJoin = root.join(AggregateReport.DISTRICT, JoinType.LEFT);
+			List<Path<Object>> districtPath = Arrays.asList(districtJoin.get(District.NAME), districtJoin.get(District.ID));
+			expressions.addAll(districtPath);
+			selectionList.addAll(districtPath);
 
-				Join<AggregateReport, Facility> facilityJoin = root.join(AggregateReport.HEALTH_FACILITY, JoinType.LEFT);
-				List<Path<Object>> facilityPath = Arrays.asList(facilityJoin.get(Facility.NAME), facilityJoin.get(Facility.ID));
-				expressions.addAll(facilityPath);
-				selectionList.addAll(facilityPath);
+			Join<AggregateReport, Facility> facilityJoin = root.join(AggregateReport.HEALTH_FACILITY, JoinType.LEFT);
+			List<Path<Object>> facilityPath = Arrays.asList(facilityJoin.get(Facility.NAME), facilityJoin.get(Facility.ID));
+			expressions.addAll(facilityPath);
+			selectionList.addAll(facilityPath);
 
-				Join<AggregateReport, PointOfEntry> pointOfEntryJoin = root.join(AggregateReport.POINT_OF_ENTRY, JoinType.LEFT);
-				List<Path<Object>> pointOfEntryPath = Arrays.asList(pointOfEntryJoin.get(PointOfEntry.NAME), pointOfEntryJoin.get(PointOfEntry.ID));
-				expressions.addAll(pointOfEntryPath);
-				selectionList.addAll(pointOfEntryPath);
+			Join<AggregateReport, PointOfEntry> pointOfEntryJoin = root.join(AggregateReport.POINT_OF_ENTRY, JoinType.LEFT);
+			List<Path<Object>> pointOfEntryPath = Arrays.asList(pointOfEntryJoin.get(PointOfEntry.NAME), pointOfEntryJoin.get(PointOfEntry.ID));
+			expressions.addAll(pointOfEntryPath);
+			selectionList.addAll(pointOfEntryPath);
 		}
 
 		selectionList.addAll(
@@ -264,7 +264,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 				resultList.stream().filter(a -> aggregatedCaseCountDto.similar(a, finalGroupingLevel)).findAny();
 			if (similarOptional.isPresent()) {
 				AggregatedCaseCountDto similar = similarOptional.get();
-				if (aggregatedCaseCountDto.equalJurisdiction(similar)){
+				if (aggregatedCaseCountDto.equalJurisdiction(similar)) {
 					if (aggregatedCaseCountDto.getChangeDate().getTime() > similar.getChangeDate().getTime()) {
 						resultList.remove(similar);
 						resultList.add(aggregatedCaseCountDto);
@@ -273,12 +273,12 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 					if (aggregatedCaseCountDto.higherJurisdictionLevel(similar)) {
 						resultList.remove(similar);
 						resultList.add(aggregatedCaseCountDto);
-					} else if (aggregatedCaseCountDto.sameJurisdictionLevel(similar)){
+					} else if (aggregatedCaseCountDto.sameJurisdictionLevel(similar)) {
 						if (subJurisdictionsToBeMerged.containsKey(similar)) {
 							List<AggregatedCaseCountDto> mergeListDtos = subJurisdictionsToBeMerged.get(similar);
 							Optional<AggregatedCaseCountDto> mergeDtoEqualJurisdictionOptional =
 								mergeListDtos.stream().filter(a -> a.equalJurisdiction(aggregatedCaseCountDto)).findAny();
-							if (mergeDtoEqualJurisdictionOptional.isPresent()){
+							if (mergeDtoEqualJurisdictionOptional.isPresent()) {
 								AggregatedCaseCountDto mergeDuplicate = mergeDtoEqualJurisdictionOptional.get();
 								if (aggregatedCaseCountDto.getChangeDate().getTime() > mergeDuplicate.getChangeDate().getTime()) {
 									mergeListDtos.remove(mergeDuplicate);
@@ -301,15 +301,20 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 
 		subJurisdictionsToBeMerged.forEach((aggregatedCaseCountDto, aggregatedCaseCountDtos) -> {
 			resultList.remove(aggregatedCaseCountDto);
-			aggregatedCaseCountDto.setNewCases(aggregatedCaseCountDtos.stream().mapToLong(a->a.getNewCases()).sum() + aggregatedCaseCountDto.getNewCases());
-			aggregatedCaseCountDto.setDeaths(aggregatedCaseCountDtos.stream().mapToLong(a->a.getDeaths()).sum() + aggregatedCaseCountDto.getDeaths());
-			aggregatedCaseCountDto.setLabConfirmations(aggregatedCaseCountDtos.stream().mapToLong(a->a.getLabConfirmations()).sum() + aggregatedCaseCountDto.getLabConfirmations());
+			aggregatedCaseCountDto
+				.setNewCases(aggregatedCaseCountDtos.stream().mapToLong(a -> a.getNewCases()).sum() + aggregatedCaseCountDto.getNewCases());
+			aggregatedCaseCountDto
+				.setDeaths(aggregatedCaseCountDtos.stream().mapToLong(a -> a.getDeaths()).sum() + aggregatedCaseCountDto.getDeaths());
+			aggregatedCaseCountDto.setLabConfirmations(
+				aggregatedCaseCountDtos.stream().mapToLong(a -> a.getLabConfirmations()).sum() + aggregatedCaseCountDto.getLabConfirmations());
 			if (aggregatedCaseCountDto.getHealthFacilityId() != null || aggregatedCaseCountDto.getPointOfEntryId() != null) {
 				aggregatedCaseCountDto.setHealthFacilityId(null);
 				aggregatedCaseCountDto.setHealthFacilityName(null);
 				aggregatedCaseCountDto.setPointOfEntryId(null);
 				aggregatedCaseCountDto.setPointOfEntryName(null);
-			} else if (aggregatedCaseCountDto.getDistrictId() != null && aggregatedCaseCountDto.getPointOfEntryId() == null && aggregatedCaseCountDto.getHealthFacilityId() == null) {
+			} else if (aggregatedCaseCountDto.getDistrictId() != null
+				&& aggregatedCaseCountDto.getPointOfEntryId() == null
+				&& aggregatedCaseCountDto.getHealthFacilityId() == null) {
 				aggregatedCaseCountDto.setDistrictId(null);
 				aggregatedCaseCountDto.setDistrictName(null);
 			}
@@ -357,7 +362,14 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 										&& report.getEpiWeek().equals(epiWeek.getWeek()))
 								.findAny();
 							if (!resultForEpiWeekAndDisease.isPresent()) {
-								addZeroRowToList(resultList, selectedRegion, selectedDistrict, selectedFacility, selectedPoindOfEntry, disease, epiWeek);
+								addZeroRowToList(
+									resultList,
+									selectedRegion,
+									selectedDistrict,
+									selectedFacility,
+									selectedPoindOfEntry,
+									disease,
+									epiWeek);
 							}
 						}
 					}
@@ -525,7 +537,9 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 				healthFacilityid,
 				pointOfEntryName,
 				pointOfEntryId,
-				null, null, null,
+				null,
+				null,
+				null,
 				new Date()));
 	}
 

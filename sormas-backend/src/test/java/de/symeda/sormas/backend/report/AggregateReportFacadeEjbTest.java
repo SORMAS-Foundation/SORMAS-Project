@@ -172,7 +172,10 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
 		FacilityReferenceDto facility,
-		PointOfEntryReferenceDto pointOfEntry, int newCases, int deaths, int labConfirmations) {
+		PointOfEntryReferenceDto pointOfEntry,
+		int newCases,
+		int deaths,
+		int labConfirmations) {
 		AggregateReportDto aggregateReportDto = AggregateReportDto.build();
 		aggregateReportDto.setDisease(Disease.HIV);
 		aggregateReportDto.setReportingUser(informant1.toReference());

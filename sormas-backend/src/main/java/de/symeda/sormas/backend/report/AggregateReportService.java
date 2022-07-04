@@ -87,7 +87,7 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, AggregateReport> from) {
-		return createUserFilter(new AggregateReportQueryContext(cb, cq,from));
+		return createUserFilter(new AggregateReportQueryContext(cb, cq, from));
 	}
 
 	@SuppressWarnings("rawtypes")
