@@ -445,6 +445,53 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		return service.findBy(criteria, user).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
 
+	@Override
+	public List<AggregateReportDto> getAllAggregatedReportsFromSameEpiWeekUserAndJurisdiction(AggregateReportDto aggregateReportDto) {
+
+		AggregateReportCriteria criteria = new AggregateReportCriteria();
+		criteria.setRegion(aggregateReportDto.getRegion());
+		criteria.setDistrict(aggregateReportDto.getDistrict());
+		criteria.setHealthFacility(aggregateReportDto.getHealthFacility());
+		criteria.setPointOfEntry(aggregateReportDto.getPointOfEntry());
+		criteria.setEpiWeekFrom(new EpiWeek(aggregateReportDto.getYear(), aggregateReportDto.getEpiWeek()));
+		criteria.setEpiWeekTo(new EpiWeek(aggregateReportDto.getYear(), aggregateReportDto.getEpiWeek()));
+		criteria.setReportingUser(aggregateReportDto.getReportingUser());
+		criteria.setForceJurisdictionCheck(true);
+
+		List<AggregateReportDto> report = getAggregateReports(criteria);
+
+		List<Disease> diseaseList = diseaseConfigurationFacade.getAllDiseases(true, false, false);
+
+		Set<AggregateReportDto> userList = new HashSet<>();
+		diseaseList.forEach(disease -> {
+			List<String> diseaseAgeGroups = diseaseConfigurationFacade.getAgeGroups(disease);
+
+			if (diseaseAgeGroups != null) {
+				diseaseAgeGroups.forEach(ageGroup -> {
+					report.stream()
+						.filter(aggregateReport -> disease.equals(aggregateReport.getDisease()) && ageGroup.equals(aggregateReport.getAgeGroup()))
+						.max(Comparator.comparing(AggregateReportDto::getChangeDate))
+						.ifPresent(userList::add);
+
+				});
+			} else {
+				report.stream()
+					.filter(aggregateReport -> disease.equals(aggregateReport.getDisease()))
+					.max(Comparator.comparing(AggregateReportDto::getChangeDate))
+					.ifPresent(userList::add);
+			}
+		});
+
+		return new ArrayList<>(userList);
+	}
+
+	@Override
+	public void deleteAggregatedReports(List<String> aggregatedReportUuids) {
+		for (String aggregatedReportUuid : aggregatedReportUuids) {
+			deleteReport(aggregatedReportUuid);
+		}
+	}
+
 	public AggregateReport fromDto(@NotNull AggregateReportDto source, boolean checkChangeDate) {
 
 		AggregateReport target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()), AggregateReport::new, checkChangeDate);

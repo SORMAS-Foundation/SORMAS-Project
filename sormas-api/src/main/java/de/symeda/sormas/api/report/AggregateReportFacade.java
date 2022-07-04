@@ -23,7 +23,11 @@ public interface AggregateReportFacade {
 
 	List<AggregateReportDto> getList(AggregateReportCriteria criteria);
 
+	List<AggregateReportDto> getAllAggregatedReportsFromSameEpiWeekUserAndJurisdiction(AggregateReportDto aggregateReportDto);
+
 	void deleteReport(String reportUuid);
+
+	void deleteAggregatedReports(List<String> uuids);
 
 	long countWithCriteria(AggregateReportCriteria criteria);
 }

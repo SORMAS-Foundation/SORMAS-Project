@@ -232,8 +232,14 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		return null;
 	}
 
-	@Override public List<String> getAgeGroups(Disease disease) {
+	@Override
+	public List<String> getAgeGroups(Disease disease) {
 		return service.getDiseaseConfiguration(disease).getAgeGroups();
+	}
+
+	@Override
+	public String getFirstAgeGroup(Disease disease) {
+		return getAgeGroups(disease) != null ? getAgeGroups(disease).get(0) : null;
 	}
 
 	public DiseaseConfiguration fromDto(@NotNull DiseaseConfigurationDto source, boolean checkChangeDate) {
