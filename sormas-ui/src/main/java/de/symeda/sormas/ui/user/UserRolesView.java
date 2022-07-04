@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.user;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -9,6 +10,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRoleCriteria;
 import de.symeda.sormas.api.user.UserRoleDto;
@@ -16,12 +18,16 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 
 public class UserRolesView extends AbstractUserView {
 
 	private static final long serialVersionUID = -3533557348112305469L;
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/userroles";
+
+	public static final String ENABLED_FILTER = I18nProperties.getString(Strings.enabled);
+	public static final String DISABLED_FILTER = I18nProperties.getString(Strings.disabled);
 
 	private UserRoleCriteria criteria;
 
@@ -31,6 +37,7 @@ public class UserRolesView extends AbstractUserView {
 
 	private ComboBox userRightsFilter;
 	private ComboBox jurisdictionFilter;
+	private ComboBox enabledFilter;
 
 	private VerticalLayout gridLayout;
 
@@ -43,7 +50,7 @@ public class UserRolesView extends AbstractUserView {
 		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
-
+		gridLayout.addComponent(createStatusFilterBar());
 		gridLayout.addComponent(grid);
 		gridLayout.setMargin(true);
 		gridLayout.setSpacing(false);
@@ -66,6 +73,36 @@ public class UserRolesView extends AbstractUserView {
 		addHeaderComponent(createButton);
 	}
 
+	public HorizontalLayout createStatusFilterBar() {
+		HorizontalLayout statusFilterLayout = new HorizontalLayout();
+		statusFilterLayout.setSpacing(true);
+		statusFilterLayout.setMargin(false);
+		statusFilterLayout.setWidth(100, Unit.PERCENTAGE);
+		statusFilterLayout.addStyleName(CssStyles.VSPACE_3);
+
+		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
+		actionButtonsLayout.setSpacing(true);
+
+		enabledFilter = ComboBoxHelper.createComboBoxV7();
+		enabledFilter.setId(UserRoleDto.ENABLED);
+		enabledFilter.setWidth(200, Unit.PIXELS);
+		enabledFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserRoleDto.I18N_PREFIX, UserRoleDto.ENABLED));
+		enabledFilter.addItems(ENABLED_FILTER, DISABLED_FILTER);
+		enabledFilter.addValueChangeListener(e -> {
+			criteria.enabled(
+				ENABLED_FILTER.equals(e.getProperty().getValue())
+					? Boolean.TRUE
+					: DISABLED_FILTER.equals(e.getProperty().getValue()) ? Boolean.FALSE : null);
+			navigateTo(criteria);
+		});
+		actionButtonsLayout.addComponent(enabledFilter);
+		statusFilterLayout.addComponent(actionButtonsLayout);
+		statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
+		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
+
+		return statusFilterLayout;
+	}
+
 	public HorizontalLayout createFilterBar() {
 		HorizontalLayout filterLayout = new HorizontalLayout();
 		filterLayout.setMargin(false);
@@ -81,7 +118,6 @@ public class UserRolesView extends AbstractUserView {
 			criteria.jurisdictionLevel((JurisdictionLevel) e.getProperty().getValue());
 			navigateTo(criteria);
 		});
-
 		filterLayout.addComponent(jurisdictionFilter);
 
 		return filterLayout;
@@ -107,6 +143,7 @@ public class UserRolesView extends AbstractUserView {
 		applyingCriteria = true;
 
 		jurisdictionFilter.setValue(criteria.getJurisdictionLevel() == null ? null : criteria.getJurisdictionLevel());
+		enabledFilter.setValue(criteria.getEnabled() == null ? null : criteria.getEnabled() ? ENABLED_FILTER : DISABLED_FILTER);
 
 		// searchField.setValue(criteria.getFreeText());
 		applyingCriteria = false;
