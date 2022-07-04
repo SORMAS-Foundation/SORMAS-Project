@@ -360,7 +360,7 @@ public class AggregatedCaseCountDto implements Serializable {
 		if (healthFacilityId == null && that.healthFacilityId != null && pointOfEntryId == null && that.pointOfEntryId == null) {
 			return true;
 		}
-		if (pointOfEntryId == null && that.pointOfEntryId != null && healthFacilityId == null && that.healthFacilityId != null) {
+		if (pointOfEntryId == null && that.pointOfEntryId != null && healthFacilityId == null && that.healthFacilityId == null) {
 			return true;
 		}
 		return false;
