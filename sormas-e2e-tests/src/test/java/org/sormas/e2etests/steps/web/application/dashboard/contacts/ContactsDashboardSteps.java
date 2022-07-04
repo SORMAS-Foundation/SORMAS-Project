@@ -90,7 +90,10 @@ public class ContactsDashboardSteps implements En {
     And(
         "I compare English and German confirmed contacts counter",
         () -> {
-          Assert.assertEquals(confirmedContact_EN, confirmedContact_DE, "Counters for confirmed contacts are not equal!");
+          Assert.assertEquals(
+              confirmedContact_EN,
+              confirmedContact_DE,
+              "Counters for confirmed contacts are not equal!");
         });
   }
 }
