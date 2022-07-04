@@ -1015,3 +1015,18 @@ Feature: Create events
     And I am accessing the event tab using the created event via api
     And I check if Reason for deletion is set to "Entity created without legal reason" on Edit Event Page
     And I check if Delete button on Edit Event Page is disabled
+
+    @issue=SORDEV-8055 @env_main
+    Scenario Outline: Allow users to select the used delimiter when importing files
+      Given I log in as a Admin User
+      And I click on the Events button from navbar
+      When I click on the Import button from Events directory
+      Then I check if default Value Separator is set to "Default (Comma)"
+      And I check is possible to set Value Separator to <option>
+
+      Examples:
+        | option          |
+        | Comma           |
+        | Semicolon       |
+        | Tab             |
+        | Default (Comma) |
