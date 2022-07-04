@@ -170,6 +170,7 @@ public interface Captions {
 	String AggregateReport_labConfirmations = "AggregateReport.labConfirmations";
 	String AggregateReport_newCases = "AggregateReport.newCases";
 	String AggregateReport_pointOfEntry = "AggregateReport.pointOfEntry";
+	String AggregateReport_reportingUser = "AggregateReport.reportingUser";
 	String aggregateReportDeathsShort = "aggregateReportDeathsShort";
 	String aggregateReportDiscardSelection = "aggregateReportDiscardSelection";
 	String aggregateReportEditAggregateReport = "aggregateReportEditAggregateReport";
