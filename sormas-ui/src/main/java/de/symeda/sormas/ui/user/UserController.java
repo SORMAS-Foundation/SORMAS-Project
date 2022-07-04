@@ -47,6 +47,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
@@ -130,6 +131,29 @@ public class UserController {
 							closeWindowCallback.run();
 						}
 					});
+				}
+				if (DataHelper.isSame(user, userProvider.getUser())) {
+
+					Set<UserRight> oldUserRights =
+						UserRoleDto.getUserRights(FacadeProvider.getUserRoleFacade().getByReferences(existingUser.getUserRoles()));
+					Set<UserRight> newUserRights = UserRoleDto.getUserRights(FacadeProvider.getUserRoleFacade().getByReferences(user.getUserRoles()));
+
+					if (oldUserRights.contains(UserRight.USER_ROLE_EDIT) && !newUserRights.contains(UserRight.USER_ROLE_EDIT)) {
+						new Notification(
+							I18nProperties.getString(Strings.messageCheckInputData),
+							I18nProperties.getValidationError(Validations.removeUserRightEditRightFromOwnUser),
+							Notification.Type.ERROR_MESSAGE,
+							true).show(Page.getCurrent());
+					} else if (!newUserRights.contains(UserRight.USER_EDIT)) {
+						new Notification(
+							I18nProperties.getString(Strings.messageCheckInputData),
+							I18nProperties.getValidationError(Validations.removeUserEditRightFromOwnUser),
+							Notification.Type.ERROR_MESSAGE,
+							true).show(Page.getCurrent());
+					} else {
+						saveUser(user);
+						closeWindowCallback.run();
+					}
 				} else {
 					saveUser(user);
 					closeWindowCallback.run();

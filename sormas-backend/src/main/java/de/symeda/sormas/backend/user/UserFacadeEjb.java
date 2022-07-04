@@ -14,9 +14,9 @@
  */
 package de.symeda.sormas.backend.user;
 
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -568,11 +568,10 @@ public class UserFacadeEjb implements UserFacade {
 			}
 		}
 
-		User user = fromDto(dto, true);
+		Collection<UserRoleDto> newRoles = userRoleFacade.getByReferences(dto.getUserRoles());
 
 		try {
-			userRoleFacade.validateUserRoleCombination(
-				user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toDto(userRole)).collect(Collectors.toSet()));
+			userRoleFacade.validateUserRoleCombination(newRoles);
 		} catch (UserRoleDto.UserRoleValidationException e) {
 			throw new ValidationException(e);
 		}
@@ -583,15 +582,16 @@ public class UserFacadeEjb implements UserFacade {
 
 		if (DataHelper.isSame(oldUser, userService.getCurrentUser())) {
 
-			Set<UserRight> updatedUserRights = UserRole.getUserRights(user.getUserRoles());
+			Set<UserRight> newUserRights = UserRoleDto.getUserRights(newRoles);
 
-			if (oldUserRights.contains(UserRight.USER_ROLE_EDIT) && !updatedUserRights.contains(UserRight.USER_ROLE_EDIT)) {
+			if (oldUserRights.contains(UserRight.USER_ROLE_EDIT) && !newUserRights.contains(UserRight.USER_ROLE_EDIT)) {
 				throw new ValidationException(I18nProperties.getValidationError(Validations.removeUserRightEditRightFromOwnUser));
-			} else if (!updatedUserRights.contains(UserRight.USER_EDIT)) {
+			} else if (!newUserRights.contains(UserRight.USER_EDIT)) {
 				throw new ValidationException(I18nProperties.getValidationError(Validations.removeUserEditRightFromOwnUser));
 			}
 		}
 
+		User user = fromDto(dto, true);
 		userService.ensurePersisted(user);
 
 		if (oldUser == null) {
