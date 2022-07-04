@@ -159,6 +159,8 @@ public interface Validations {
 	String personMultiplePrimaryEmailAddresses = "personMultiplePrimaryEmailAddresses";
 	String personMultiplePrimaryPhoneNumbers = "personMultiplePrimaryPhoneNumbers";
 	String phoneNumberValidation = "phoneNumberValidation";
+	String removeRolesWithEditRightFromOwnUser = "removeRolesWithEditRightFromOwnUser";
+	String removeRolesWithEditUserFromOwnUser = "removeRolesWithEditUserFromOwnUser";
 	String removeUserEditRightFromOwnUser = "removeUserEditRightFromOwnUser";
 	String removeUserRightEditRightFromOwnUser = "removeUserRightEditRightFromOwnUser";
 	String required = "required";

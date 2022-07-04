@@ -141,13 +141,13 @@ public class UserController {
 					if (oldUserRights.contains(UserRight.USER_ROLE_EDIT) && !newUserRights.contains(UserRight.USER_ROLE_EDIT)) {
 						new Notification(
 							I18nProperties.getString(Strings.messageCheckInputData),
-							I18nProperties.getValidationError(Validations.removeUserRightEditRightFromOwnUser),
+							I18nProperties.getValidationError(Validations.removeRolesWithEditRightFromOwnUser),
 							Notification.Type.ERROR_MESSAGE,
 							true).show(Page.getCurrent());
 					} else if (!newUserRights.contains(UserRight.USER_EDIT)) {
 						new Notification(
 							I18nProperties.getString(Strings.messageCheckInputData),
-							I18nProperties.getValidationError(Validations.removeUserEditRightFromOwnUser),
+							I18nProperties.getValidationError(Validations.removeRolesWithEditUserFromOwnUser),
 							Notification.Type.ERROR_MESSAGE,
 							true).show(Page.getCurrent());
 					} else {

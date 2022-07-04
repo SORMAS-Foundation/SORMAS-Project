@@ -45,6 +45,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleFacade;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.util.DtoHelper;
 
@@ -111,6 +112,21 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		}
 		if (!userRoleService.isCaptionUnique(source.getUuid(), source.getCaption())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.captionNotUnique));
+		}
+
+		User currentUser = userService.getCurrentUser();
+		if (currentUser.getUserRoles().stream().anyMatch(r -> DataHelper.isSame(r, source))) {
+			Set<UserRole> currentUserRoles = currentUser.getUserRoles();
+			Set<UserRight> currentUserRights = UserRole.getUserRights(currentUserRoles);
+			Set<UserRight> newUserRights = UserRoleDto
+				// replace old user role with the one being edited
+				.getUserRights(currentUserRoles.stream().map(r -> DataHelper.isSame(r, source) ? source : toDto(r)).collect(Collectors.toList()));
+
+			if (currentUserRights.contains(UserRight.USER_ROLE_EDIT) && !newUserRights.contains(UserRight.USER_ROLE_EDIT)) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.removeUserRightEditRightFromOwnUser));
+			} else if (currentUserRights.contains(UserRight.USER_EDIT) && !newUserRights.contains(UserRight.USER_EDIT)) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.removeUserEditRightFromOwnUser));
+			}
 		}
 	}
 

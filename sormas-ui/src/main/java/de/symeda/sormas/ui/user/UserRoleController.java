@@ -15,22 +15,26 @@
 
 package de.symeda.sormas.ui.user;
 
-import com.vaadin.ui.UI;
-import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataView;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.vaadin.navigator.Navigator;
+import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
@@ -92,6 +96,34 @@ public class UserRoleController {
 		editView.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
 				UserRoleDto dto = form.getValue();
+
+				UserDto currentUser = UserProvider.getCurrent().getUser();
+				if (currentUser.getUserRoles().stream().anyMatch(r -> DataHelper.isSame(r, dto))) {
+					Collection<UserRoleDto> currentUserRoles = FacadeProvider.getUserRoleFacade().getByReferences(currentUser.getUserRoles());
+					Set<UserRight> currentUserRights = UserRoleDto.getUserRights(currentUserRoles);
+					Set<UserRight> newUserRights = UserRoleDto
+						// replace old user role with the one being edited
+						.getUserRights(currentUserRoles.stream().map(r -> DataHelper.isSame(r, dto) ? dto : r).collect(Collectors.toList()));
+
+					if (currentUserRights.contains(UserRight.USER_ROLE_EDIT) && !newUserRights.contains(UserRight.USER_ROLE_EDIT)) {
+						new Notification(
+							I18nProperties.getString(Strings.messageCheckInputData),
+							I18nProperties.getValidationError(Validations.removeUserRightEditRightFromOwnUser),
+							Notification.Type.ERROR_MESSAGE,
+							true).show(Page.getCurrent());
+
+						return;
+					} else if (currentUserRights.contains(UserRight.USER_EDIT) && !newUserRights.contains(UserRight.USER_EDIT)) {
+						new Notification(
+							I18nProperties.getString(Strings.messageCheckInputData),
+							I18nProperties.getValidationError(Validations.removeUserEditRightFromOwnUser),
+							Notification.Type.ERROR_MESSAGE,
+							true).show(Page.getCurrent());
+
+						return;
+					}
+				}
+
 				FacadeProvider.getUserRoleFacade().saveUserRole(dto);
 
 				Notification.show(I18nProperties.getString(Strings.messageUserRoleSaved), Notification.Type.WARNING_MESSAGE);
