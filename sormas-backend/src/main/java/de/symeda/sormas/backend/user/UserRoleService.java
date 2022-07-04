@@ -135,6 +135,10 @@ public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.in(from.get(UserRole.USER_RIGHTS)).value(userRoleCriteria.getUserRight()));
 		}
 
+		if (userRoleCriteria.getJurisdictionLevel() != null) {
+		   filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(UserRole.JURISDICTION_LEVEL), userRoleCriteria.getJurisdictionLevel()));
+        }
+
 		if (userRoleCriteria.getFreeText() != null) {
 			String[] textFilters = userRoleCriteria.getFreeText().split("\\s+");
 			for (String textFilter : textFilters) {

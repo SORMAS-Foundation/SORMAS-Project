@@ -4,7 +4,6 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRoleCriteria;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -28,7 +27,7 @@ public class UserRoleGrid extends FilteredGrid<UserRoleDto, UserRoleCriteria> {
 		((Column<UserRoleDto, Boolean>) getColumn(UserRoleDto.ENABLED)).setRenderer(new BooleanRenderer());
 
 		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+			column.setCaption(I18nProperties.getPrefixCaption(UserRoleDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
 		}
 	}
 
@@ -49,6 +48,8 @@ public class UserRoleGrid extends FilteredGrid<UserRoleDto, UserRoleCriteria> {
 		setSelectionMode(SelectionMode.NONE);
 	}
 
-	//setCriteria(getCriteria());
+	public void reload() {
+		getDataProvider().refreshAll();
+	}
 
 }

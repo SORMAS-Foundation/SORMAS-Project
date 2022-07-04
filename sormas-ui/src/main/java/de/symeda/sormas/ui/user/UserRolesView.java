@@ -8,8 +8,10 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRoleCriteria;
+import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -27,7 +29,7 @@ public class UserRolesView extends AbstractUserView {
 	private Button btnExport;
 	private Button createButton;
 
-	private ComboBox userRolesFilter;
+	private ComboBox userRightsFilter;
 	private ComboBox jurisdictionFilter;
 
 	private VerticalLayout gridLayout;
@@ -38,7 +40,7 @@ public class UserRolesView extends AbstractUserView {
 		criteria = ViewModelProviders.of(UserRolesView.class).get(UserRoleCriteria.class);
 
 		grid = new UserRoleGrid();
-		// grid.setCriteria(criteria);
+		grid.setCriteria(criteria);
 		gridLayout = new VerticalLayout();
 		gridLayout.addComponent(createFilterBar());
 
@@ -71,17 +73,15 @@ public class UserRolesView extends AbstractUserView {
 		filterLayout.setSizeUndefined();
 
 		jurisdictionFilter = ComboBoxHelper.createComboBoxV7();
-		jurisdictionFilter.setId(UserDto.JURISDICTION_LEVEL);
+		jurisdictionFilter.setId(UserRoleDto.JURISDICTION_LEVEL);
 		jurisdictionFilter.setWidth(200, Unit.PIXELS);
+		jurisdictionFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserRoleDto.I18N_PREFIX, UserRoleDto.JURISDICTION_LEVEL));
+		jurisdictionFilter.addItems((Object[]) JurisdictionLevel.values());
+		jurisdictionFilter.addValueChangeListener(e -> {
+			criteria.jurisdictionLevel((JurisdictionLevel) e.getProperty().getValue());
+			navigateTo(criteria);
+		});
 
-		//userRolesFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.JURISDICTION_LEVEL));
-		/*
-		 * userRolesFilter.addItems(FacadeProvider.getUserRoleFacade().getAllActiveAsReference());
-		 * userRolesFilter.addValueChangeListener(e -> {
-		 * criteria.userRole((UserRoleReferenceDto) e.getProperty().getValue());
-		 * navigateTo(criteria);
-		 * });
-		 */
 		filterLayout.addComponent(jurisdictionFilter);
 
 		return filterLayout;
@@ -89,6 +89,27 @@ public class UserRolesView extends AbstractUserView {
 
 	@Override
 	public void enter(ViewChangeListener.ViewChangeEvent event) {
+
+		if (event != null) {
+			String params = event.getParameters().trim();
+			if (params.startsWith("?")) {
+				params = params.substring(1);
+				criteria.fromUrlParams(params);
+			}
+			updateFilterComponents();
+		}
+		grid.reload();
 		super.enter(event);
 	}
+
+	public void updateFilterComponents() {
+
+		applyingCriteria = true;
+
+		jurisdictionFilter.setValue(criteria.getJurisdictionLevel() == null ? null : criteria.getJurisdictionLevel());
+
+		// searchField.setValue(criteria.getFreeText());
+		applyingCriteria = false;
+	}
+
 }

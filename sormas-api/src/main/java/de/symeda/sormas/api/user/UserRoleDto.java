@@ -34,7 +34,7 @@ public class UserRoleDto extends EntityDto {
 
 	private static final long serialVersionUID = -547459523041494446L;
 
-	public static final String I18N_PREFIX = "UserRoleDto";
+	public static final String I18N_PREFIX = "UserRole";
 
 	public static final String USER_RIGHTS = "userRights";
 	public static final String CAPTION = "caption";
