@@ -702,6 +702,14 @@ public class EditCaseSteps implements En {
         });
 
     When(
+        "In created case I select Outcome Of Case Status to ([^\"]*)",
+        (String caseStatus) -> {
+          webDriverHelpers.clickWebElementByText(
+              OUTCOME_OF_CASE_OPTIONS, CaseOutcome.getValueFor(caseStatus).toUpperCase());
+          TimeUnit.SECONDS.sleep(1);
+        });
+
+    When(
         "I select German Investigation Status ([^\"]*)",
         (String option) -> {
           String investigationStatus = new String();
@@ -1900,6 +1908,17 @@ public class EditCaseSteps implements En {
               "Type of sample is incorrect");
           softly.assertAll();
         });
+
+    When(
+        "I click on the NEW IMMUNIZATION button in Edit case",
+        () -> {
+          webDriverHelpers.scrollToElement(NEW_IMMUNIZATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_IMMUNIZATION_BUTTON);
+        });
+
+    When(
+        "I click on Edit Immunization button on Edit Case",
+        () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_IMMUNIZATION_BUTTON));
   }
 
   private Case collectCasePersonUuid() {

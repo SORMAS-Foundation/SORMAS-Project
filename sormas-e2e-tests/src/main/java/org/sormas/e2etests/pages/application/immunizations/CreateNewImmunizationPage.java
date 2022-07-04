@@ -19,6 +19,7 @@ public class CreateNewImmunizationPage {
   public static final By SEX_COMBOBOX =
       By.cssSelector(".v-window [location='sex'] div[role='combobox'] div");
   public static final By SAVE_BUTTON = By.id("commit");
+  public static final By IMMUNIZATION_POPUP_SAVE_BUTTON = By.cssSelector(".popupContent #commit");
   public static final By CASE_ORIGIN_OPTIONS =
       By.cssSelector(".popupContent #caseOrigin .v-select-option");
   public static final By EXTERNAL_ID_INPUT = By.cssSelector(".popupContent #externalId");
