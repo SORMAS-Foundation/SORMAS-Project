@@ -176,12 +176,7 @@ Feature: Immunization end to end tests
     And I click on save button in New Immunization form
     And I check the specific created data is correctly displayed on Edit immunization page
     And I click on logout button from navbar
-    And I log in as a Admin User
-    And I click on the Users from navbar
-    And I click on the NEW USER button
-    And I create a new user with data according to "Surveillance Officer"
-    And I click on logout button from navbar
-    And As a new created user with limited disease view I log in
+    And I log in as a Surveillance Officer
     Then I click on the Cases button from navbar
     And I filter by CaseID of last created UI Case on Case directory page
     And I click on the first Case ID from Case Directory

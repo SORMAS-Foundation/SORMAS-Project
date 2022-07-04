@@ -348,44 +348,6 @@ public class CreateNewUserSteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 30);
         });
-
-    And(
-        "I create a new user with data according to {string}",
-        (String role) -> {
-          user = userService.buildGeneratedUserWithRole(role);
-          fillFirstName(user.getFirstName());
-          fillLastName(user.getLastName());
-          fillEmailAddress(user.getEmailAddress());
-          fillPhoneNumber(user.getPhoneNumber());
-          selectCountry(user.getCountry());
-          selectRegion(user.getRegion());
-          selectDistrict(user.getDistrict());
-          selectCommunity(user.getCommunity());
-          selectFacilityCategory(user.getFacilityCategory());
-          selectFacilityType(user.getFacilityType());
-          selectFacility(user.getFacility());
-          fillFacilityNameAndDescription(user.getFacilityNameAndDescription());
-          fillStreet(user.getStreet());
-          fillHouseNr(user.getHouseNumber());
-          fillAdditionalInformation(user.getAdditionalInformation());
-          fillPostalCode(user.getPostalCode());
-          fillCity(user.getCity());
-          selectAreaType(user.getAreaType());
-          fillGpsLatitude(user.getGpsLatitude());
-          fillGpsLongitude(user.getGpsLongitude());
-          fillGpsAccuracy(user.getGpsAccuracy());
-          selectActive(user.getActive());
-          fillUserName(user.getUserName());
-          selectUserRole(role);
-          selectSurveillanceRegion(user.getRegion());
-          selectSurveillanceDistrict(user.getDistrict());
-          userName = user.getUserName();
-          webDriverHelpers.scrollToElement(SAVE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
-          userPass = webDriverHelpers.getTextFromWebElement(PASSWORD_FIELD);
-          closeNewPasswordPopUp();
-        });
   }
 
   private void fillFirstName(String firstName) {
