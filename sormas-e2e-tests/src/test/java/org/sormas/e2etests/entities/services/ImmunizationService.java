@@ -68,4 +68,14 @@ public class ImmunizationService {
         .meansOfImmunization(meansOfImmunization)
         .build();
   }
+
+  public Immunization buildImmunizationWithSpecificResponsibleLocation() {
+    return Immunization.builder()
+            .dateOfReport(LocalDate.now().minusDays(1))
+            .externalId(UUID.randomUUID().toString())
+            .responsibleRegion("Berlin")
+            .responsibleDistrict("SK Berlin Mitte")
+            .meansOfImmunization("Vaccination")
+            .build();
+  }
 }

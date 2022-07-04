@@ -1900,7 +1900,6 @@ public class EditCaseSteps implements En {
           webDriverHelpers.fillInWebElement(INTERNAL_TOKEN_INPUT, token);
         });
 
-
     When(
         "I check if Type of sample has not a ([^\"]*) option",
         (String option) -> {
@@ -1931,7 +1930,24 @@ public class EditCaseSteps implements En {
 
     And(
         "^I click on save button in New Immunization form$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EditImmunizationPage.UUID);
+        });
+
+    And(
+        "^I navigate to linked immunization on Edit case page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(REPORT_DATE_INPUT);
+          System.out.print(
+              "IMMUNIZATION UUID " + EditImmunizationSteps.collectedImmunization.getUuid());
+          webDriverHelpers.clickOnWebElementBySelector(
+              getByImmunizationUuid(EditImmunizationSteps.collectedImmunization.getUuid()));
+
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              EditImmunizationPage.DATE_OF_REPORT_INPUT);
+        });
   }
 
   private Case collectCasePersonUuid() {
