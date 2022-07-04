@@ -175,7 +175,6 @@ Feature: Immunization end to end tests
     And I fill a new immunization form with specific responsible location
     And I click on save button in New Immunization form
     And I check the specific created data is correctly displayed on Edit immunization page
-    And I collect uuid of the case
     And I click on logout button from navbar
     And I log in as a Admin User
     And I click on the Users from navbar
