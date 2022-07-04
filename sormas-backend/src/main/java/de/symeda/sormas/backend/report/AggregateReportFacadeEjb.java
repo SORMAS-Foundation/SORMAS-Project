@@ -6,12 +6,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -39,6 +42,7 @@ import de.symeda.sormas.api.report.AggregateReportGroupingLevel;
 import de.symeda.sormas.api.report.AggregatedCaseCountDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AgeGroupUtils;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -60,9 +64,10 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "AggregateReportFacade")
-@RolesAllowed(UserRight._AGGREGATE_REPORT_VIEW)
+@RightsAllowed(UserRight._AGGREGATE_REPORT_VIEW)
 public class AggregateReportFacadeEjb implements AggregateReportFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -95,7 +100,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._AGGREGATE_REPORT_EDIT)
+	@RightsAllowed(UserRight._AGGREGATE_REPORT_EDIT)
 	public AggregateReportDto saveAggregateReport(@Valid AggregateReportDto dto) {
 
 		if (dto.getAgeGroup() != null && dto.getAgeGroup().isEmpty()) {
@@ -307,6 +312,82 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		return resultList;
 	}
 
+	@Override
+	public List<AggregateReportDto> getAggregateReports(AggregateReportCriteria criteria) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<AggregateReport> cq = cb.createQuery(AggregateReport.class);
+		Root<AggregateReport> root = cq.from(AggregateReport.class);
+
+		Predicate filter = service.createUserFilter(cb, cq, root);
+		if (criteria != null) {
+			Predicate criteriaFilter = service.createCriteriaFilter(criteria, cb, cq, root);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		List<AggregateReport> resultList = em.createQuery(cq).getResultList();
+
+		List<AggregateReportDto> aggregateReportDtoList =
+			resultList.stream().map(aggregateReport -> toDto(aggregateReport)).collect(Collectors.toList());
+
+		Set<AggregateReportDto> onlyDuplicatesReturnList = new HashSet<>();
+
+		aggregateReportDtoList.forEach(r -> {
+			List<AggregateReportDto> duplicateReports =
+				aggregateReportDtoList.stream().filter(r2 -> !r.equals(r2) && isDuplicate(r, r2)).collect(Collectors.toList());
+			if (duplicateReports.stream().anyMatch(r2 -> r.getChangeDate().before(r2.getChangeDate()))) {
+				r.setDuplicate(true);
+				onlyDuplicatesReturnList.add(r);
+			}
+			onlyDuplicatesReturnList.addAll(duplicateReports);
+		});
+
+		if (criteria != null && criteria.getShowOnlyDuplicates()) {
+			List<AggregateReportDto> aggregateReportDtos = new ArrayList<>(onlyDuplicatesReturnList);
+			aggregateReportDtos.sort(getAggregateReportsComparator());
+			return aggregateReportDtos;
+		}
+
+		aggregateReportDtoList.sort(getAggregateReportsComparator());
+		return aggregateReportDtoList;
+	}
+
+	private Comparator<AggregateReportDto> getAggregateReportsComparator() {
+		return Comparator.comparing(AggregateReportDto::getDisease, Comparator.nullsFirst(Comparator.comparing(Disease::toString)))
+			.thenComparing(AggregateReportDto::getYear, Comparator.nullsFirst(Comparator.naturalOrder()))
+			.thenComparing(AggregateReportDto::getEpiWeek, Comparator.nullsFirst(Comparator.naturalOrder()))
+			.thenComparing(
+				r -> r.getAgeGroup() != null
+					? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
+					: StringUtils.EMPTY)
+			.thenComparing(r -> r.getAgeGroup() != null ? Integer.parseInt(r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0)
+			.thenComparing(AggregateReportDto::getRegion, Comparator.nullsFirst(Comparator.naturalOrder()))
+			.thenComparing(AggregateReportDto::getDistrict, Comparator.nullsFirst(Comparator.naturalOrder()))
+			.thenComparing(AggregateReportDto::getHealthFacility, Comparator.nullsFirst(Comparator.naturalOrder()))
+			.thenComparing(AggregateReportDto::getPointOfEntry, Comparator.nullsFirst(Comparator.naturalOrder()))
+			.thenComparing(AggregateReportDto::getChangeDate);
+	}
+
+	private boolean isDuplicate(AggregateReportDto aggregateReportDto, AggregateReportDto duplicateCandidate) {
+
+		return Stream
+			.<Function<AggregateReportDto, Object>> of(
+				AggregateReportDto::getDisease,
+				AggregateReportDto::getRegion,
+				AggregateReportDto::getDistrict,
+				AggregateReportDto::getHealthFacility,
+				AggregateReportDto::getPointOfEntry,
+				AggregateReportDto::getYear,
+				AggregateReportDto::getEpiWeek,
+				AggregateReportDto::getAgeGroup)
+			.allMatch(m -> DataHelper.equal(m.apply(aggregateReportDto), m.apply(duplicateCandidate)));
+
+	}
+
 	private void addToList(
 		List<AggregatedCaseCountDto> resultList,
 		Region selectedRegion,
@@ -385,7 +466,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._AGGREGATE_REPORT_EDIT)
+	@RightsAllowed(UserRight._AGGREGATE_REPORT_EDIT)
 	public void deleteReport(String reportUuid) {
 
 		if (!userService.hasRight(UserRight.AGGREGATE_REPORT_EDIT)) {

@@ -588,7 +588,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 					}
 					if (multipleCausesFound) {
 						htmlMsg.append("<ul>");
-						// Alle nochmal
+						// All again
 						for (int i = 0; i < causes.length; i++) {
 							if (!causes[i].isInvisible()) {
 								htmlMsg.append("<li style=\"color: #FFF;\">").append(findHtmlMessage(causes[i])).append("</li>");

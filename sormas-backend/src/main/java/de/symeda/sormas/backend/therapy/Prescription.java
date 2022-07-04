@@ -175,5 +175,4 @@ public class Prescription extends AbstractDomainObject {
 	public void setAdditionalNotes(String additionalNotes) {
 		this.additionalNotes = additionalNotes;
 	}
-
 }

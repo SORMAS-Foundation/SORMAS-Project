@@ -18,8 +18,6 @@ import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 
 import javax.validation.Valid;
@@ -36,6 +34,7 @@ import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -46,6 +45,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.EmbeddedPersonalData;
 import de.symeda.sormas.api.utils.FieldConstraints;
@@ -104,7 +104,7 @@ public class ContactDto extends SormasToSormasShareableDto {
 	public static final String INTERNAL_TOKEN = "internalToken";
 	public static final String LAST_CONTACT_DATE = "lastContactDate";
 	public static final String MULTI_DAY_CONTACT = "multiDayContact";
-	public static final String OVERWRITE_FOLLOW_UP_UTIL = "overwriteFollowUpUntil";
+	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
 	public static final String PERSON = "person";
 	public static final String PROHIBITION_TO_WORK = "prohibitionToWork";
 	public static final String PROHIBITION_TO_WORK_FROM = "prohibitionToWorkFrom";

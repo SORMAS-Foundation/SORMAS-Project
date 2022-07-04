@@ -78,6 +78,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		super(EventParticipant.class);
 	}
 
+	@Override
 	public List<EventParticipant> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 		return getAllAfter(date, null, batchSize, lastSynchronizedUuid);
 	}
@@ -478,7 +479,8 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return builder;
 	}
 
-	public EditPermissionType isEventParticipantEditAllowed(EventParticipant eventParticipant) {
+	@Override
+	public EditPermissionType isEditAllowed(EventParticipant eventParticipant) {
 
 		if (eventParticipant.getSormasToSormasOriginInfo() != null && !eventParticipant.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
 			return EditPermissionType.REFUSED;

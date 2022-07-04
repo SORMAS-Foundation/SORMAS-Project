@@ -206,6 +206,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		return addChangeDates(changeDateFilterBuilder, immunization, false).build();
 	}
 
+	@Override
 	public List<Immunization> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -235,6 +236,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		return getBatchedQueryResults(cb, cq, from, batchSize);
 	}
 
+	@Override
 	public boolean isArchived(String uuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
@@ -560,7 +562,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		return filter;
 	}
 
-	public EditPermissionType isImmunizationEditAllowed(Immunization immunization) {
+	@Override
+	public EditPermissionType isEditAllowed(Immunization immunization) {
 
 		if (!userService.hasRight(UserRight.IMMUNIZATION_EDIT)) {
 			return EditPermissionType.REFUSED;

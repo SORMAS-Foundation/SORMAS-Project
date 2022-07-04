@@ -61,8 +61,8 @@ form input.pf-c-form-control, form input.pf-c-button {
     border-radius: 4px;
     padding: 4px 8px;
     border: 2px solid #CDD8EC;
-    background: white;
     color: #374B59;
+    background: white no-repeat;
 }
 
 .form-group input.pf-c-form-control:hover {

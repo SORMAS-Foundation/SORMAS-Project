@@ -377,6 +377,7 @@ public enum UserRight {
 		return userRightGroup;
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

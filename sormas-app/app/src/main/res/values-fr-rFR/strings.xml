@@ -163,6 +163,7 @@
     <string name="caption_drawer_open">Ouvrir le panneau de navigation</string>
     <string name="caption_dropped">Abandonné</string>
     <string name="caption_epi_week">Semaine Epidemiologique</string>
+    <string name="caption_report">Report</string>
     <string name="caption_event_description">Description</string>
     <string name="caption_event_location">Lieu</string>
     <string name="caption_event_period">Date de l\'événement</string>
@@ -272,6 +273,7 @@
     <string name="description_sormas_logo">Logo SORMAS</string>
     <string name="description_username">Nom d\'utilisateur</string>
     <string name="description_year">Année</string>
+    <string name="description_report">Report</string>
     <string name="entity_case">Cas</string>
     <string name="entity_contact">Contact</string>
     <string name="entity_event">Événement</string>
@@ -444,6 +446,7 @@
     <string name="hint_select_month">Sélectionnez le mois</string>
     <string name="hint_select_epi_week">Sélectionnez la semaine Epi</string>
     <string name="hint_select_year">Sélectionnez l\'année</string>
+    <string name="hint_select_report">Select Report</string>
     <string name="hint_settings_server_url">par exemple https://sormas.helmholtz-hzi.de/sormas-rest/</string>
     <string name="hint_weekly_report_confirmation_required">Vous devez confirmer le rapport pour la semaine dernière.</string>
     <string name="hint_weekly_report_no_data">Aucune donnée disponible pour cette semaine Epi.</string>

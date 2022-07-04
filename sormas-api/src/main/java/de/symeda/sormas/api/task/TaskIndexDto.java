@@ -71,7 +71,6 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
 	public static final String DISEASE = "disease";
 
-	private String uuid;
 	private TaskContext taskContext;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
@@ -308,14 +307,6 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 		default:
 			throw new IndexOutOfBoundsException(taskContext.toString());
 		}
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public RegionReferenceDto getRegion() {

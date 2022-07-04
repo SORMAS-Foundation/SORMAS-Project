@@ -308,6 +308,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private TextField facilityDetails;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
 	private TextField tfExpectedFollowUpUntilDate;
+	private FollowUpPeriodDto expectedFollowUpPeriodDto;
 	private boolean ignoreDifferentPlaceOfStayJurisdiction = false;
 
 	private final Map<ReinfectionDetailGroup, CaseReinfectionCheckBoxTree> reinfectionTrees = new EnumMap<>(ReinfectionDetailGroup.class);
@@ -914,7 +915,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			tfExpectedFollowUpUntilDate = new TextField();
 			tfExpectedFollowUpUntilDate.setCaption(I18nProperties.getCaption(Captions.CaseData_expectedFollowUpUntil));
 			getContent().addComponent(tfExpectedFollowUpUntilDate, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC);
-			cbOverwriteFollowUpUntil = addField(ContactDto.OVERWRITE_FOLLOW_UP_UTIL, CheckBox.class);
+			cbOverwriteFollowUpUntil = addField(CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL, CheckBox.class);
 
 			setReadOnly(true, CaseDataDto.FOLLOW_UP_STATUS, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER);
 
@@ -936,8 +937,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 		if (cbOverwriteFollowUpUntil != null) {
 			cbOverwriteFollowUpUntil.addValueChangeListener(e -> {
-				if (!(Boolean) e.getProperty().getValue()) {
+				if (!Boolean.TRUE.equals(e.getProperty().getValue())) {
 					dfFollowUpUntil.discard();
+					if (expectedFollowUpPeriodDto != null && expectedFollowUpPeriodDto.getFollowUpEndDate() != null) {
+						dfFollowUpUntil.setValue(expectedFollowUpPeriodDto.getFollowUpEndDate());
+					}
 				}
 			});
 			FieldHelper.setReadOnlyWhen(
@@ -1293,8 +1297,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				setVisible(true, CaseDataDto.POINT_OF_ENTRY);
 				if (getValue().getPointOfEntry() != null) {
 					setVisible(getValue().getPointOfEntry().isOtherPointOfEntry(), CaseDataDto.POINT_OF_ENTRY_DETAILS);
-					btnReferFromPointOfEntry.setVisible(UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_FROM_POE) &&
-							getValue().getHealthFacility() == null);
+					btnReferFromPointOfEntry
+						.setVisible(UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_FROM_POE) && getValue().getHealthFacility() == null);
 				}
 
 				if (getValue().getHealthFacility() == null) {
@@ -1659,15 +1663,15 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 
 		if (caseFollowUpEnabled && UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
-			FollowUpPeriodDto followUpPeriodDto = FacadeProvider.getCaseFacade().calculateFollowUpUntilDate(newFieldValue, true);
+			expectedFollowUpPeriodDto = FacadeProvider.getCaseFacade().calculateFollowUpUntilDate(newFieldValue, true);
 			tfExpectedFollowUpUntilDate
-				.setValue(DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpEndDate(), I18nProperties.getUserLanguage()));
+				.setValue(DateHelper.formatLocalDate(expectedFollowUpPeriodDto.getFollowUpEndDate(), I18nProperties.getUserLanguage()));
 			tfExpectedFollowUpUntilDate.setReadOnly(true);
 			tfExpectedFollowUpUntilDate.setDescription(
 				String.format(
 					I18nProperties.getString(Strings.infoExpectedFollowUpUntilDateCase),
-					followUpPeriodDto.getFollowUpStartDateType(),
-					DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpStartDate(), I18nProperties.getUserLanguage())));
+					expectedFollowUpPeriodDto.getFollowUpStartDateType(),
+					DateHelper.formatLocalDate(expectedFollowUpPeriodDto.getFollowUpStartDate(), I18nProperties.getUserLanguage())));
 		}
 
 		updateVisibilityDifferentPlaceOfStayJurisdiction(newFieldValue);
@@ -1748,7 +1752,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		return MAIN_HTML_LAYOUT + (caseFollowUpEnabled ? FOLLOWUP_LAYOUT : "") + PAPER_FORM_DATES_AND_HEALTH_CONDITIONS_HTML_LAYOUT;
 	}
 
-	public void addButtonListener(String componentId, Button.ClickListener listener){
+	public void addButtonListener(String componentId, Button.ClickListener listener) {
 		Button button = (Button) getContent().getComponent(componentId);
 		button.addClickListener(listener);
 	}

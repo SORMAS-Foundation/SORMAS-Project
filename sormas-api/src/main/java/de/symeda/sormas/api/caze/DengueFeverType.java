@@ -25,6 +25,7 @@ public enum DengueFeverType {
 	DENGUE_HEMORRHAGIC_FEVER,
 	DENUGE_SHOCK_SYNDROME;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

@@ -23,8 +23,6 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.location.LocationFacade;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
@@ -33,6 +31,8 @@ import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;

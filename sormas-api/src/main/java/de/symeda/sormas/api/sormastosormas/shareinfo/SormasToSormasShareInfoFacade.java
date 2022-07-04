@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.api.sormastosormas.shareinfo;
 
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import java.util.List;
 
 import javax.ejb.Remote;
@@ -25,4 +28,10 @@ public interface SormasToSormasShareInfoFacade {
 	List<SormasToSormasShareInfoDto> getIndexList(SormasToSormasShareInfoCriteria criteria, Integer first, Integer max);
 
 	SormasToSormasShareInfoDto getShareInfoByUuid(String uuid);
+
+	SormasToSormasShareInfoDto getCaseShareInfoByOrganization(CaseReferenceDto caze, String organizationId);
+
+	SormasToSormasShareInfoDto getContactShareInfoByOrganization(ContactReferenceDto contact, String organizationId);
+
+	SormasToSormasShareInfoDto getEventShareInfoByOrganization(EventReferenceDto event, String organizationId);
 }

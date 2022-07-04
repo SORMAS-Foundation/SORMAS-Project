@@ -143,6 +143,34 @@ public class CreateNewContactSteps implements En {
           fillRelationshipWithCase(contact.getRelationshipWithCase());
           fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
         });
+
+    When(
+        "^I fill a new contact form for DE version without multicontact$",
+        () -> {
+          contact = contactService.buildGeneratedContactDE();
+          fillFirstName(contact.getFirstName());
+          fillLastName(contact.getLastName());
+          fillDateOfBirth(contact.getDateOfBirth(), Locale.GERMAN);
+          selectSex(contact.getSex());
+          fillPrimaryPhoneNumber(contact.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(contact.getPrimaryEmailAddress());
+          selectReturningTraveler(contact.getReturningTraveler());
+          fillDateOfReport(contact.getReportDate(), Locale.GERMAN);
+          fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
+          fillCaseIdInExternalSystem(contact.getCaseIdInExternalSystem());
+          fillDateOfLastContact(contact.getDateOfLastContact(), Locale.GERMAN);
+          fillCaseOrEventInformation(contact.getCaseOrEventInformation());
+          selectResponsibleRegion(contact.getResponsibleRegion());
+          selectResponsibleDistrict(contact.getResponsibleDistrict());
+          selectResponsibleCommunity(contact.getResponsibleCommunity());
+          selectTypeOfContact(contact.getTypeOfContact());
+          fillAdditionalInformationOnTheTypeOfContact(
+              contact.getAdditionalInformationOnContactType());
+          selectContactCategory(contact.getContactCategory().toUpperCase());
+          fillRelationshipWithCase(contact.getRelationshipWithCase());
+          fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
+        });
+
     When(
         "^I fill a new contact form with same person data for DE version$",
         () -> {
@@ -225,6 +253,21 @@ public class CreateNewContactSteps implements En {
           //          selectContactCategory(contact.getContactCategory().toUpperCase());
           fillRelationshipWithCase(contact.getRelationshipWithCase());
           fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
+        });
+
+    When(
+        "I fill only mandatory fields with and set relationship with case to ([^\"]*)",
+        (String option) -> {
+          contact = contactService.buildGeneratedContact();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          fillFirstName(contact.getFirstName());
+          fillLastName(contact.getLastName());
+          selectSex(contact.getSex());
+          fillDateOfReport(contact.getReportDate(), Locale.ENGLISH);
+          fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
+          selectResponsibleRegion(contact.getResponsibleRegion());
+          selectResponsibleDistrict(contact.getResponsibleDistrict());
+          fillRelationshipWithCaseEqual(option);
         });
 
     When(
@@ -477,6 +520,10 @@ public class CreateNewContactSteps implements En {
 
   private void fillRelationshipWithCase(String relationshipWithCase) {
     webDriverHelpers.selectFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX, relationshipWithCase);
+  }
+
+  private void fillRelationshipWithCaseEqual(String relationshipWithCase) {
+    webDriverHelpers.selectFromComboboxEqual(RELATIONSHIP_WITH_CASE_COMBOBOX, relationshipWithCase);
   }
 
   private void fillDescriptionOfHowContactTookPlace(String descriptionOfHowContactTookPlace) {

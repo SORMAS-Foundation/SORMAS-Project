@@ -21,7 +21,6 @@ import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -49,7 +48,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -142,6 +140,7 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
@@ -163,6 +162,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.location.LocationReferenceDto;
 import de.symeda.sormas.api.messaging.ManualMessageLogDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.ApproximateAgeType;
@@ -338,6 +338,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.PatchHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.vaccination.VaccinationService;
@@ -347,7 +348,7 @@ import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless(name = "CaseFacade")
-@RolesAllowed(UserRight._CASE_VIEW)
+@RightsAllowed(UserRight._CASE_VIEW)
 public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, CaseIndexDto, CaseReferenceDto, CaseService, CaseCriteria>
 	implements CaseFacade {
 
@@ -701,7 +702,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return entries;
 	}
 
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._CASE_EDIT })
 	public CaseDataDto postUpdate(String uuid, JsonNode caseDataDtoJson) {
 		CaseDataDto existingCaseDto = getCaseDataWithoutPseudonyimization(uuid);
@@ -712,7 +713,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	@RolesAllowed(UserRight._CASE_EXPORT)
+	@RightsAllowed(UserRight._CASE_EXPORT)
 	public List<CaseExportDto> getExportList(
 		CaseCriteria caseCriteria,
 		Collection<String> selectedRows,
@@ -1087,17 +1088,24 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 						if (caseExposures.stream().anyMatch(e -> ExposureType.BURIAL.equals(e.getExposureType()))) {
 							exportDto.setBurialAttended(true);
 						}
-						caseExposures.stream()
-							.filter(e -> ExposureType.TRAVEL.equals(e.getExposureType()))
-							.forEach(
-								exposure -> travelHistoryBuilder.append(
-									EpiDataHelper.buildDetailedTravelString(
-										exposure.getLocation().toString(),
-										exposure.getDescription(),
-										exposure.getStartDate(),
-										exposure.getEndDate(),
-										userLanguage))
-									.append(", "));
+						caseExposures.stream().filter(e -> ExposureType.TRAVEL.equals(e.getExposureType())).forEach(exposure -> {
+							Location location = exposure.getLocation();
+							travelHistoryBuilder.append(
+								EpiDataHelper.buildDetailedTravelString(
+									LocationReferenceDto.buildCaption(
+										location.getRegion() != null ? location.getRegion().getName() : null,
+										location.getDistrict() != null ? location.getDistrict().getName() : null,
+										location.getCommunity() != null ? location.getCommunity().getName() : null,
+										location.getCity(),
+										location.getStreet(),
+										location.getHouseNumber(),
+										location.getAdditionalInformation()),
+									exposure.getDescription(),
+									exposure.getStartDate(),
+									exposure.getEndDate(),
+									userLanguage))
+								.append(", ");
+						});
 						if (travelHistoryBuilder.length() > 0) {
 							exportDto.setTraveled(true);
 							travelHistoryBuilder.delete(travelHistoryBuilder.lastIndexOf(", "), travelHistoryBuilder.length() - 1);
@@ -1395,7 +1403,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return service.getCasesForDuplicateMerging(criteria, ignoreRegion, configFacade.getNameSimilarityThreshold());
 	}
 
-	@RolesAllowed(UserRight._CASE_EDIT)
+	@RightsAllowed(UserRight._CASE_EDIT)
 	public void updateCompleteness(String caseUuid) {
 		service.updateCompleteness(caseUuid);
 	}
@@ -1415,7 +1423,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._CASE_CREATE,
 		UserRight._CASE_EDIT })
 	public CaseDataDto save(@Valid @NotNull CaseDataDto dto) throws ValidationRuntimeException {
@@ -1423,7 +1431,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._CASE_CREATE,
 		UserRight._CASE_EDIT,
 		UserRight._EXTERNAL_VISITS })
@@ -1432,7 +1440,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._CASE_CREATE,
 		UserRight._CASE_EDIT })
 	public CoreAndPersonDto<CaseDataDto> save(@Valid @NotNull CoreAndPersonDto<CaseDataDto> coreAndPersonDto) throws ValidationRuntimeException {
@@ -1448,7 +1456,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return savedCoreAndPersonDto;
 	}
 
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._CASE_EDIT })
 	public Integer saveBulkCase(
 		List<String> caseUuidList,
@@ -1482,7 +1490,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return changedCases;
 	}
 
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._CASE_EDIT })
 	public void saveBulkEditWithFacilities(
 		List<String> caseUuidList,
@@ -1571,7 +1579,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._CASE_CREATE,
 		UserRight._CASE_EDIT })
 	public CaseDataDto save(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal, boolean systemSave)
@@ -1586,7 +1594,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return caseSave(dto, handleChanges, existingCase, toDto(existingCase), checkChangeDate, internal);
 	}
 
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._CASE_EDIT })
 	public CaseDataDto updateFollowUpComment(@Valid @NotNull CaseDataDto dto) throws ValidationRuntimeException {
 		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
@@ -1627,7 +1635,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return convertToDto(caze, pseudonymizer);
 	}
 
-	@RolesAllowed(UserRight._CASE_EDIT)
+	@RightsAllowed(UserRight._CASE_EDIT)
 	public void syncSharesAsync(ShareTreeCriteria criteria) {
 		executorService.schedule(() -> sormasToSormasCaseFacade.syncShares(criteria), 5, TimeUnit.SECONDS);
 	}
@@ -1636,8 +1644,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		service.ensurePersisted(caze);
 		if (handleChanges) {
 			updateCaseVisitAssociations(existingCaseDto, caze);
-			service.updateFollowUpDetails(caze, existingCaseDto != null && caze.getFollowUpStatus() != existingCaseDto.getFollowUpStatus());
-
 			onCaseChanged(existingCaseDto, caze, syncShares);
 		}
 	}
@@ -1670,7 +1676,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._CASE_CREATE,
 		UserRight._CASE_EDIT })
 	public void setSampleAssociations(ContactReferenceDto sourceContact, CaseReferenceDto cazeRef) {
@@ -1682,7 +1688,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				if (!sample.isDeleted()) {
 					if (sample.getAssociatedCase() == null) {
 						sample.setAssociatedCase(caze);
-					} else {
+					} else if (!sample.getAssociatedCase().getUuid().equals(cazeRef.getUuid())) {
 						sampleFacade.cloneSampleForCase(sample, caze);
 					}
 				}
@@ -1694,18 +1700,21 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._CASE_CREATE,
 		UserRight._CASE_EDIT })
 	public void setSampleAssociations(EventParticipantReferenceDto sourceEventParticipant, CaseReferenceDto cazeRef) {
+
 		if (sourceEventParticipant != null) {
 			final EventParticipant eventParticipant = eventParticipantService.getByUuid(sourceEventParticipant.getUuid());
 			final Case caze = service.getByUuid(cazeRef.getUuid());
 			eventParticipant.getSamples().forEach(sample -> {
-				if (sample.getAssociatedCase() == null) {
-					sample.setAssociatedCase(caze);
-				} else {
-					sampleFacade.cloneSampleForCase(sample, caze);
+				if (!sample.isDeleted()) {
+					if (sample.getAssociatedCase() == null) {
+						sample.setAssociatedCase(caze);
+					} else if (!sample.getAssociatedCase().getUuid().equals(cazeRef.getUuid())) {
+						sampleFacade.cloneSampleForCase(sample, caze);
+					}
 				}
 			});
 
@@ -1715,7 +1724,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._CASE_CREATE,
 		UserRight._CASE_EDIT })
 	public void setSampleAssociationsUnrelatedDisease(EventParticipantReferenceDto sourceEventParticipant, CaseReferenceDto cazeRef) {
@@ -2064,6 +2073,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			}
 		}
 
+		// Update follow-up
+		service.updateFollowUpDetails(newCase, existingCase != null && newCase.getFollowUpStatus() != existingCase.getFollowUpStatus());
+
 		updateTasksOnCaseChanged(newCase, existingCase);
 
 		// Update case classification if the feature is enabled
@@ -2242,7 +2254,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
-	@RolesAllowed(UserRight._CASE_EDIT)
+	@RightsAllowed(UserRight._CASE_EDIT)
 	public void setCaseResponsible(Case caze) {
 		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT)) {
 			District reportingUserDistrict = caze.getReportingUser().getDistrict();
@@ -2284,7 +2296,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	 * @param forceReassignment
 	 *            force reassignment of case tasks.
 	 */
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._CASE_CREATE,
 		UserRight._CASE_EDIT })
 	public void reassignTasksOfCase(Case caze, boolean forceReassignment) {
@@ -2309,7 +2321,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed(UserRight._SYSTEM)
+	@RightsAllowed(UserRight._SYSTEM)
 	public int updateCompleteness() {
 		List<String> getCompletenessCheckCaseList = getCompletenessCheckNeededCaseList();
 
@@ -2477,14 +2489,14 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CASE_DELETE)
+	@RightsAllowed(UserRight._CASE_DELETE)
 	public void delete(String caseUuid, DeletionDetails deletionDetails) throws ExternalSurveillanceToolRuntimeException {
 		Case caze = service.getByUuid(caseUuid);
 		deleteCase(caze, deletionDetails);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CASE_DELETE)
+	@RightsAllowed(UserRight._CASE_DELETE)
 	public void deleteWithContacts(String caseUuid, DeletionDetails deletionDetails) {
 
 		Case caze = service.getByUuid(caseUuid);
@@ -2499,7 +2511,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		service.delete(caze, deletionDetails);
 	}
 
-	@RolesAllowed(UserRight._CASE_DELETE)
+	@RightsAllowed(UserRight._CASE_DELETE)
 	@Override
 	public List<String> deleteCases(List<String> caseUuids, DeletionDetails deletionDetails) {
 
@@ -2521,7 +2533,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CASE_MERGE)
+	@RightsAllowed(UserRight._CASE_MERGE)
 	public void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid) {
 
 		Case caze = service.getByUuid(caseUuid);
@@ -2532,7 +2544,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		delete(caseUuid, new DeletionDetails(DeletionReason.DUPLICATE_ENTRIES, null));
 	}
 
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._CASE_DELETE,
 		UserRight._SYSTEM })
 	public void deleteCaseInExternalSurveillanceTool(Case caze) throws ExternalSurveillanceToolException {
@@ -2546,7 +2558,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CASE_ARCHIVE)
+	@RightsAllowed(UserRight._CASE_ARCHIVE)
 	public void archive(String entityUuid, Date endOfProcessingDate, boolean includeContacts) {
 		super.archive(entityUuid, endOfProcessingDate);
 		if (includeContacts) {
@@ -2556,7 +2568,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CASE_ARCHIVE)
+	@RightsAllowed(UserRight._CASE_ARCHIVE)
 	public void archive(List<String> entityUuids, boolean includeContacts) {
 		super.archive(entityUuids);
 		if (includeContacts) {
@@ -2566,7 +2578,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CASE_ARCHIVE)
+	@RightsAllowed(UserRight._CASE_ARCHIVE)
 	public void dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts) {
 		super.dearchive(entityUuids, dearchiveReason);
 		if (includeContacts) {
@@ -2576,7 +2588,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._CASE_CREATE,
 		UserRight._CASE_EDIT })
 	public void setResultingCase(EventParticipantReferenceDto eventParticipantReferenceDto, CaseReferenceDto caseReferenceDto) {
@@ -2650,7 +2662,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._CASE_EDIT,
 		UserRight._CASE_EDIT })
 	public void restorePseudonymizedDto(CaseDataDto dto, CaseDataDto existingCaseDto, Case caze, Pseudonymizer pseudonymizer) {
@@ -2719,7 +2731,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return dto;
 	}
 
-	@RolesAllowed({
+	@Override
+	@RightsAllowed({
 		UserRight._CASE_VIEW,
 		UserRight._EXTERNAL_VISITS })
 	public CaseDataDto toDto(Case source) {
@@ -3147,7 +3160,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
-	@RolesAllowed(UserRight._CASE_EDIT)
+	@RightsAllowed(UserRight._CASE_EDIT)
 	public void updateInvestigationByTask(Case caze) {
 
 		CaseReferenceDto caseRef = caze.toReference();
@@ -3484,7 +3497,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CASE_MERGE)
+	@RightsAllowed(UserRight._CASE_MERGE)
 	public void mergeCase(String leadUuid, String otherUuid) {
 
 		mergeCase(getCaseDataWithoutPseudonyimization(leadUuid), getCaseDataWithoutPseudonyimization(otherUuid), false);
@@ -3690,7 +3703,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CASE_CREATE)
+	@RightsAllowed(UserRight._CASE_CREATE)
 	public CaseDataDto cloneCase(CaseDataDto existingCaseDto) {
 
 		CaseDataDto newCase = CaseDataDto.build(existingCaseDto.getPerson(), existingCaseDto.getDisease());
@@ -3706,7 +3719,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	 */
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	@RolesAllowed(UserRight._SYSTEM)
+	@RightsAllowed(UserRight._SYSTEM)
 	public void archiveAllArchivableCases(int daysAfterCaseGetsArchived) {
 
 		archiveAllArchivableCases(daysAfterCaseGetsArchived, LocalDate.now());
@@ -3872,7 +3885,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CASE_EDIT)
+	@RightsAllowed(UserRight._CASE_EDIT)
 	public FollowUpPeriodDto calculateFollowUpUntilDate(CaseDataDto caseDto, boolean ignoreOverwrite) {
 		List<SampleDto> samples = Collections.emptyList();
 		if (userService.hasRight(UserRight.SAMPLE_VIEW)) {
@@ -3887,14 +3900,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_FOLLOWUP, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE));
 	}
 
-	public EditPermissionType isCaseEditAllowed(String caseUuid) {
-		Case caze = service.getByUuid(caseUuid);
-
-		return service.getEditPermissionType(caze);
-	}
-
 	@Override
-	@RolesAllowed(UserRight._CASE_EDIT)
+	@RightsAllowed(UserRight._CASE_EDIT)
 	public void sendMessage(List<String> caseUuids, String subject, String messageContent, MessageType... messageTypes) {
 		caseUuids.forEach(uuid -> {
 			final Case aCase = service.getByUuid(uuid);
@@ -4127,12 +4134,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CASE_EDIT)
+	@RightsAllowed(UserRight._CASE_EDIT)
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		service.updateExternalData(externalData);
 	}
 
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._VISIT_CREATE,
 		UserRight._VISIT_EDIT,
 		UserRight._EXTERNAL_VISITS })

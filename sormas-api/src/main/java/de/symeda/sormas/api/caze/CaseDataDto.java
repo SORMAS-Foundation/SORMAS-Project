@@ -29,6 +29,10 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
@@ -1720,8 +1724,13 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		this.healthConditions = healthConditions;
 	}
 
+	@JsonIgnore
+	public String i18nPrefix() {
+		return I18N_PREFIX;
+	}
+
 	@Override
 	public String toString() {
-		return this.getUuid() + " - " + this.getExternalID();
+		return super.toString() + (StringUtils.isNotBlank(this.getExternalID()) ? " - " + this.getExternalID() : StringUtils.EMPTY);
 	}
 }

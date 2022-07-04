@@ -79,7 +79,9 @@ import de.symeda.sormas.ui.externalmessage.ExternalMessagesView;
 import de.symeda.sormas.ui.immunization.ImmunizationsView;
 import de.symeda.sormas.ui.person.PersonsView;
 import de.symeda.sormas.ui.reports.ReportsView;
+import de.symeda.sormas.ui.reports.aggregate.AbstractAggregateReportsView;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportsView;
+import de.symeda.sormas.ui.reports.aggregate.ReportDataView;
 import de.symeda.sormas.ui.samples.SamplesView;
 import de.symeda.sormas.ui.sormastosormas.ShareRequestsView;
 import de.symeda.sormas.ui.statistics.AbstractStatisticsView;
@@ -177,9 +179,10 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(CasesView.class, CasesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuCases), VaadinIcons.EDIT);
 		}
 		if (permitted(FeatureType.AGGREGATE_REPORTING, UserRight.AGGREGATE_REPORT_VIEW)) {
+			AbstractAggregateReportsView.registerViews(navigator);
 			menu.addView(
 				AggregateReportsView.class,
-				AggregateReportsView.VIEW_NAME,
+				AbstractAggregateReportsView.ROOT_VIEW_NAME,
 				I18nProperties.getCaption(Captions.mainMenuAggregateReports),
 				VaadinIcons.GRID_SMALL);
 		}

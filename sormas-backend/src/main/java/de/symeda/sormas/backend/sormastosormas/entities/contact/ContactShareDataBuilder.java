@@ -24,7 +24,10 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb;
+import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
@@ -37,6 +40,12 @@ public class ContactShareDataBuilder
 
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
+
+	@EJB
+	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
+
+	@EJB
+	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
 
 	@Inject
 	public ContactShareDataBuilder(SormasToSormasContactDtoValidator validator) {
@@ -56,6 +65,12 @@ public class ContactShareDataBuilder
 		ContactDto contactDto = dataBuilderHelper.getContactDto(contact, pseudonymizer);
 
 		return new SormasToSormasContactDto(personDto, contactDto);
+	}
+
+	@Override
+	public void doBusinessValidation(SormasToSormasContactDto dto) throws ValidationRuntimeException {
+		personFacade.validate(dto.getPerson());
+		contactFacade.validate(dto.getEntity());
 	}
 
 	@Override

@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -19,9 +18,10 @@ import de.symeda.sormas.backend.externalmessage.ExternalMessage;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb;
 import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "TestReportFacade")
-@RolesAllowed(UserRight._EXTERNAL_MESSAGE_PROCESS)
+@RightsAllowed(UserRight._EXTERNAL_MESSAGE_PROCESS)
 public class TestReportFacadeEjb implements TestReportFacade {
 
 	@EJB
@@ -57,7 +57,11 @@ public class TestReportFacadeEjb implements TestReportFacade {
 			return Collections.emptyList();
 		}
 
-		return externalMessageService.getByUuid(labMessageRef.getUuid()).getTestReports().stream().map(TestReportFacadeEjb::toDto).collect(Collectors.toList());
+		return externalMessageService.getByUuid(labMessageRef.getUuid())
+			.getTestReports()
+			.stream()
+			.map(TestReportFacadeEjb::toDto)
+			.collect(Collectors.toList());
 	}
 
 	public static TestReportDto toDto(TestReport source) {

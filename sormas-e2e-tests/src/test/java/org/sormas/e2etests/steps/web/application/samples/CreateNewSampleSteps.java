@@ -38,6 +38,7 @@ import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.COMMENT_AREA_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CONJ_BILIRUBIN_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CREATININE_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_AND_TIME_OF_RESULTS;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_OF_RESULT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_SAMPLE_COLLECTED;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_SAMPLE_RECEIVED;
@@ -234,12 +235,14 @@ public class CreateNewSampleSteps implements En {
           selectTestedDisease(sample.getTestedDisease());
           selectTypeOfTest(sample.getTypeOfTest());
           selectTestResult(sample.getSampleTestResults());
+          fillDateOfResult(sample.getDateOfResult(), Locale.ENGLISH);
+          fillTimeOfResult(sample.getTimeOfResult());
           selectLaboratory(sample.getLaboratory());
           selectResultVerifiedByLabSupervisor(
               sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
           selectTestResult(sample.getTestResults());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
@@ -254,6 +257,25 @@ public class CreateNewSampleSteps implements En {
               sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
           selectTestResult(sample.getTestResults());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "^I validate date and time is present on sample card$",
+        () -> {
+          String dateAndTimeVisible =
+              webDriverHelpers.getTextFromWebElement(DATE_AND_TIME_OF_RESULTS);
+          LocalDate date = sample.getDateOfResult();
+          LocalTime time = sample.getTimeOfResult();
+          DateTimeFormatter dateFormater = DateTimeFormatter.ofPattern("M/d/yyyy");
+          DateTimeFormatter timeFormater = DateTimeFormatter.ofPattern("hh:mm a");
+          softly.assertEquals(
+              "Date and time of result: "
+                  + dateFormater.format(date)
+                  + " "
+                  + timeFormater.format(time),
+              dateAndTimeVisible,
+              "Date or time is not equal");
+          softly.assertAll();
         });
 
     When(
@@ -611,6 +633,12 @@ public class CreateNewSampleSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });
 
+    When(
+        "I confirm case with positive test result",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
+        });
     When(
         "I confirm the Create case from event participant with positive test result",
         () -> {

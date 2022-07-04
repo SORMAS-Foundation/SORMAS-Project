@@ -47,6 +47,7 @@ public enum StatisticsCaseSubAttribute {
 		this.usedForGrouping = usedForGrouping;
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

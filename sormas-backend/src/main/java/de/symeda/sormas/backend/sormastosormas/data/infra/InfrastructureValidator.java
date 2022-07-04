@@ -24,8 +24,8 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.infrastructure.InfrastructureDto;
+import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;

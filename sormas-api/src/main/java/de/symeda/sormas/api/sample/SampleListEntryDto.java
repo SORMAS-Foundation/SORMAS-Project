@@ -14,7 +14,6 @@ public class SampleListEntryDto extends PseudonymizableIndexDto implements Seria
 	public static final String SAMPLING_REASON = "samplingReason";
 	public static final String PATHOGEN_TEST_COUNT = "pathogenTestCount";
 
-	private String uuid;
 	private SampleMaterial sampleMaterial;
 	private PathogenTestResultType pathogenTestResult;
 	private SpecimenCondition specimenCondition;
@@ -49,7 +48,7 @@ public class SampleListEntryDto extends PseudonymizableIndexDto implements Seria
 		AdditionalTestingStatus additionalTestingStatus,
 		long pathogenTestCount) {
 
-		this.uuid = uuid;
+		super(uuid);
 		this.sampleMaterial = sampleMaterial;
 		this.pathogenTestResult = pathogenTestResult;
 		this.specimenCondition = specimenCondition;
@@ -65,14 +64,6 @@ public class SampleListEntryDto extends PseudonymizableIndexDto implements Seria
 		this.samplingReasonDetails = samplingReasonDetails;
 		this.additionalTestingStatus = additionalTestingStatus;
 		this.pathogenTestCount = pathogenTestCount;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public SampleMaterial getSampleMaterial() {
@@ -196,6 +187,6 @@ public class SampleListEntryDto extends PseudonymizableIndexDto implements Seria
 	}
 
 	public SampleReferenceDto toReference() {
-		return new SampleReferenceDto(uuid, getSampleMaterial(), null, null, null);
+		return new SampleReferenceDto(getUuid(), getSampleMaterial(), null, null, null);
 	}
 }

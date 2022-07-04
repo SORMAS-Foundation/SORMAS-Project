@@ -49,6 +49,7 @@ import org.testng.Assert;
 @Slf4j
 public class WebDriverHelpers {
 
+  private static String PID = "PID [" + BaseSteps.PROCESS_ID + "] ->";
   public static final int FLUENT_WAIT_TIMEOUT_SECONDS = 20;
   public static final By CHECKBOX_TEXT_LABEL = By.xpath("ancestor::span//label");
   public static final By TABLE_SCROLLER =
@@ -90,7 +91,7 @@ public class WebDriverHelpers {
   }
 
   public void waitUntilIdentifiedElementIsVisibleAndClickable(final Object selector, int seconds) {
-    log.info("Waiting for element [{}] to be visible and clickable", selector);
+    log.info(PID + "Waiting for element [{}] to be visible and clickable", selector);
     if (selector instanceof By) {
       assertHelpers.assertWithPoll(
           () -> {
@@ -124,7 +125,7 @@ public class WebDriverHelpers {
   }
 
   public void waitUntilIdentifiedElementDisappear(final Object selector, int seconds) {
-    log.info("Waiting for element [{}] to disappear", selector);
+    log.info(PID + "Waiting for element [{}] to disappear", selector);
     if (selector instanceof By) {
       assertHelpers.assertWithPoll(
           () -> {
@@ -146,7 +147,7 @@ public class WebDriverHelpers {
   }
 
   public void waitUntilAListOfWebElementsAreNotEmpty(final By selector) {
-    log.info("Waiting after list of elements [{}] to be populated", selector);
+    log.info(PID + "Waiting after list of elements [{}] to be populated", selector);
     assertHelpers.assertWithPoll(
         () -> {
           List<String> webElementsTexts =
@@ -187,7 +188,7 @@ public class WebDriverHelpers {
                     getValueFromWebElement(selector),
                     "",
                     String.format("Field %s wasn't cleared", selector));
-                log.info("Filling element [ {} ] with text [ {} ]", selector, text);
+                log.info(PID + "Filling element [ {} ] with text [ {} ]", selector, text);
                 baseSteps.getDriver().findElement(selector).sendKeys(text);
                 String valueFromWebElement = getValueFromWebElement(selector);
                 Assert.assertEquals(
@@ -197,7 +198,8 @@ public class WebDriverHelpers {
               });
 
     } catch (ConditionTimeoutException ignored) {
-      log.error("Unable to fill on element identified by locator: {} and text {}", selector, text);
+      log.error(
+          PID + "Unable to fill on element identified by locator: {} and text {}", selector, text);
       throw new TimeoutException(
           "Unable to fill on element identified by locator: " + selector + " and text : " + text);
     }
@@ -223,7 +225,7 @@ public class WebDriverHelpers {
                 assertWithMessage("Field %s wasn't cleared", selector)
                     .that(getValueFromWebElement(selector))
                     .isEqualTo("");
-                log.info("Filling element [ {} ] with text [ {} ]", selector, text);
+                log.info(PID + "Filling element [ {} ] with text [ {} ]", selector, text);
                 baseSteps.getDriver().findElement(selector).sendKeys(text);
                 baseSteps.getDriver().findElement(By.cssSelector("body")).sendKeys(Keys.TAB);
                 String valueFromWebElement = getValueFromWebElement(selector);
@@ -232,7 +234,8 @@ public class WebDriverHelpers {
                     .isEqualTo(text);
               });
     } catch (ConditionTimeoutException ignored) {
-      log.error("Unable to fill on element identified by locator: {} and text {}", selector, text);
+      log.error(
+          PID + "Unable to fill on element identified by locator: {} and text {}", selector, text);
       throw new TimeoutException(
           "Unable to fill on element identified by locator: " + selector + " and text : " + text);
     }
@@ -265,6 +268,43 @@ public class WebDriverHelpers {
         "//td[@role='listitem']/span[ contains(text(), '"
             + text
             + "') or starts-with(text(), '\" + text + \"') ]";
+    waitUntilIdentifiedElementIsVisibleAndClickable(comboboxInput);
+    comboboxInput.sendKeys(text);
+    waitUntilElementIsVisibleAndClickable(By.className("v-filterselect-suggestmenu"));
+    waitUntilANumberOfElementsAreVisibleAndClickable(By.xpath("//td[@role='listitem']/span"), 1);
+    By dropDownValueXpath = By.xpath(comboBoxItemWithText);
+    TimeUnit.MILLISECONDS.sleep(700);
+    clickOnWebElementBySelector(dropDownValueXpath);
+    await()
+        .pollInterval(ONE_HUNDRED_MILLISECONDS)
+        .ignoreExceptions()
+        .catchUncaughtExceptions()
+        .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
+        .untilAsserted(
+            () -> {
+              Assert.assertTrue(
+                  baseSteps
+                      .getDriver()
+                      .findElement(selector)
+                      .findElement(By.xpath("preceding-sibling::input"))
+                      .getAttribute("value")
+                      .contains(text),
+                  String.format("Option %s wasn't selected from dropdown %s", text, selector));
+            });
+  }
+
+  @SneakyThrows
+  public void selectFromComboboxEqual(By selector, String text) {
+    clickOnWebElementBySelector(selector);
+    WebElement comboboxInput =
+        baseSteps
+            .getDriver()
+            .findElement(selector)
+            .findElement(By.xpath("preceding-sibling::input"));
+    String comboBoxItemWithText =
+        "//td[@role='listitem']/span[text()='"
+            + text
+            + "' or starts-with(text(), '\" + text + \"') ]";
     waitUntilIdentifiedElementIsVisibleAndClickable(comboboxInput);
     comboboxInput.sendKeys(text);
     waitUntilElementIsVisibleAndClickable(By.className("v-filterselect-suggestmenu"));
@@ -344,13 +384,13 @@ public class WebDriverHelpers {
                     baseSteps.getDriver().findElements(selector).get(index).isEnabled(),
                     String.format("The element: %s was not enabled", selector));
                 scrollToElement(selector);
-                log.info("Clicking on element [ {} ]", selector);
+                log.info(PID + "Clicking on element [ {} ]", selector);
                 baseSteps.getDriver().findElement(selector).click();
                 waitForPageLoaded();
               });
 
     } catch (ConditionTimeoutException ignored) {
-      log.error("Unable to click on element identified by locator: {}", selector);
+      log.error(PID + "Unable to click on element identified by locator: {}", selector);
       throw new TimeoutException(
           String.format("Unable to click on element identified by locator: %s", selector));
     }
@@ -376,13 +416,13 @@ public class WebDriverHelpers {
                     baseSteps.getDriver().findElements(selector).get(index).isEnabled(),
                     String.format("The element: %s was not enabled", selector));
                 scrollToElement(selector);
-                log.info("Double-Clicking on element [ {} ]", selector);
+                log.info(PID + "Double-Clicking on element [ {} ]", selector);
                 actions.doubleClick(element).perform();
                 waitForPageLoaded();
               });
 
     } catch (ConditionTimeoutException ignored) {
-      log.error("Unable to double click on element identified by locator: {}", selector);
+      log.error(PID + "Unable to double click on element identified by locator: {}", selector);
       throw new TimeoutException(
           String.format("Unable to double click on element identified by locator: %s", selector));
     }
@@ -397,7 +437,7 @@ public class WebDriverHelpers {
   }
 
   public void accessWebSite(String url) {
-    log.info("Navigating to: {} ", url);
+    log.info(PID + "Navigating to: {} ", url);
     baseSteps.getDriver().get(url);
     waitForPageLoaded();
   }
@@ -423,11 +463,11 @@ public class WebDriverHelpers {
 
   public void clickOnWebElementWhichMayNotBePresent(final By byObject, final int index) {
     try {
-      log.info("Clicking on element: {}", byObject);
+      log.info(PID + "Clicking on element: {}", byObject);
       baseSteps.getDriver().findElements(byObject).get(index).click();
     } catch (Exception exception) {
       log.warn(
-          "Unable to click on element:  {}, at index {}, due to: {}",
+          PID + "Unable to click on element:  {}, at index {}, due to: {}",
           byObject,
           index,
           exception.getMessage());
@@ -447,10 +487,10 @@ public class WebDriverHelpers {
     JavascriptExecutor javascriptExecutor = baseSteps.getDriver();
     try {
       if (selector instanceof WebElement) {
-        log.info("Scrolling to element [{}]", selector);
+        log.info(PID + "Scrolling to element [{}]", selector);
         javascriptExecutor.executeScript(SCROLL_TO_WEB_ELEMENT_SCRIPT, selector);
       } else {
-        log.info("Scrolling to element [{}]", selector);
+        log.info(PID + "Scrolling to element [{}]", selector);
         javascriptExecutor.executeScript(
             SCROLL_TO_WEB_ELEMENT_SCRIPT, baseSteps.getDriver().findElement((By) selector));
       }
@@ -482,12 +522,12 @@ public class WebDriverHelpers {
         javascriptExecutor.executeScript(CLICK_ELEMENT_SCRIPT, selector);
       } else {
         waitUntilIdentifiedElementIsPresent(selector);
-        log.info("Clicking on element {} via javascript", selector);
+        log.info(PID + "Clicking on element {} via javascript", selector);
         javascriptExecutor.executeScript(
             CLICK_ELEMENT_SCRIPT, baseSteps.getDriver().findElement((By) selector));
       }
     } catch (Exception ignored) {
-      log.error("Unable to click on element {} via javascript", selector);
+      log.error(PID + "Unable to click on element {} via javascript", selector);
     }
   }
 
@@ -657,7 +697,7 @@ public class WebDriverHelpers {
 
   public WebElement getWebElement(By byObject) {
     try {
-      log.info("Returning WebElement for provided locator [ {} ]", byObject);
+      log.info(PID + "Returning WebElement for provided locator [ {} ]", byObject);
       return baseSteps.getDriver().findElement(byObject);
     } catch (Exception any) {
       throw new WebDriverException(
@@ -699,8 +739,8 @@ public class WebDriverHelpers {
             });
       }
     } catch (StaleElementReferenceException staleEx) {
-      log.warn("StaleElement found for: [ {} ]", selector);
-      log.info("Performing again wait until element is present action");
+      log.warn(PID + "StaleElement found for: [ {} ]", selector);
+      log.info(PID + "Performing again wait until element is present action");
       waitUntilIdentifiedElementIsPresent(selector);
     }
   }
@@ -781,14 +821,14 @@ public class WebDriverHelpers {
     scrollToElement(selector);
     WebElement webElement = baseSteps.getDriver().findElement(selector);
     while (!"".contentEquals(getValueFromWebElement(selector))) {
-      log.info("Deleted char: {}", getValueFromWebElement(selector));
+      log.info(PID + "Deleted char: {}", getValueFromWebElement(selector));
       webElement.clear();
       webElement.sendKeys(Keys.LEFT_CONTROL);
       webElement.sendKeys("A");
       webElement.sendKeys((Keys.BACK_SPACE));
       webElement.click();
       if (Instant.now().isAfter(start.plus(1, ChronoUnit.MINUTES))) {
-        throw new Error("The field didn't clear");
+        throw new Error("The field " + selector + "didn't clear");
       }
     }
   }

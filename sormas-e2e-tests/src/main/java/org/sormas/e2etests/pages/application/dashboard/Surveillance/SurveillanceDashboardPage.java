@@ -415,4 +415,18 @@ public class SurveillanceDashboardPage {
   public static final By REGION_COMBOBOX_DROPDOWN =
       By.cssSelector("[location='regionFilter'] > div > div");
   public static final By DATE_TYPE_COMBOBOX_DROPDOWN = By.cssSelector("#dateType div");
+
+  public static final By CONFIRMED_COUNTER_LABEL_ON_SURVEILLANCE_DASHBOARD =
+      By.xpath("//div[contains(text(),'Confirmed')]/parent::div/parent::div");
+  public static final By CONFIRMED_COUNTER_ON_SURVEILLANCE_DASHBOARD =
+      By.xpath("//div[contains(text(),'Confirmed')]/parent::div/parent::div/div[1]/div");
+  public static final By CONFIRMED_COUNTER_LABEL_ON_SURVEILLANCE_DASHBOARD_DE =
+      By.xpath(
+          "//div[contains(text(),'C. Klin.-labordiagn. best\u00E4tigt')]/parent::div/parent::div");
+  public static final By CONFIRMED_COUNTER_ON_SURVEILLANCE_DASHBOARD_DE =
+      By.xpath(
+          "//div[contains(text(),'C. Klin.-labordiagn. best\u00E4tigt')]/parent::div/parent::div/div[1]/div");
+  public static final By CONFIRMED_CURVE_ON_SURVEILLANCE_DASHBOARD =
+      By.cssSelector(
+          "svg > g.highcharts-legend > g > g > g.highcharts-legend-item.highcharts-column-series.highcharts-color-undefined.highcharts-series-3 > text > tspan");
 }

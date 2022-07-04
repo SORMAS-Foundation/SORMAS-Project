@@ -20,6 +20,7 @@ public class CaseArchivingController extends ArchivingController<CaseFacade> {
 		entityFacade.archive(uuid, endOfProcessingDate, archiveWithContacts.getValue());
 	}
 
+	@Override
 	protected void doArchive(CaseFacade entityFacade, List<String> entityUuids) {
 		entityFacade.archive(entityUuids, archiveWithContacts.getValue());
 	}

@@ -11,6 +11,7 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -30,6 +31,12 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 	@SuppressWarnings("rawtypes")
 	protected Predicate createUserFilterInternal(CriteriaBuilder cb, CriteriaQuery cq, From<?, Campaign> from) {
 		return createUserFilter(new CampaignQueryContext(cb, cq, from));
+	}
+
+	@Override
+	public EditPermissionType isEditAllowed(Campaign entity) {
+		// todo this case was not covered before? Feels like a bug fixed?
+		return getEditPermissionType(entity);
 	}
 
 	public Predicate createUserFilter(CampaignQueryContext queryContext) {

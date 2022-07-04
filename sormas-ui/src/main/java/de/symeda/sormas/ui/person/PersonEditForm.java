@@ -546,6 +546,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 	}
 
+	@Override
 	public void setValue(PersonDto newFieldValue) {
 		super.setValue(newFieldValue);
 		initializePresentConditionField();
@@ -862,12 +863,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		if (deathPlaceType.isVisible() && deathPlaceType.getValue() == null) {
 			if (deathPlaceDesc.isVisible() && StringUtils.isBlank(deathPlaceDesc.getValue())) {
-				deathPlaceDesc.setValue(getValue().getAddress().toString());
+				deathPlaceDesc.setValue(getValue().getAddress().getCaption());
 			}
 		}
 
 		if (burialPlaceDesc.isVisible() && StringUtils.isBlank(burialPlaceDesc.getValue())) {
-			burialPlaceDesc.setValue(getValue().getAddress().toString());
+			burialPlaceDesc.setValue(getValue().getAddress().getCaption());
 		}
 	}
 
@@ -886,6 +887,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		return super.addFieldToLayout(layout, propertyId, field);
 	}
 
+	@Override
 	public void setHeading(String heading) {
 		personInformationHeadingLabel.setValue(heading);
 	}

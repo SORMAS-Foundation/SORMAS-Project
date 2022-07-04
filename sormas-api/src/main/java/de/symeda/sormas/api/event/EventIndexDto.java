@@ -73,7 +73,6 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String EVENT_IDENTIFICATION_SOURCE = "eventIdentificationSource";
 
 	private Long id;
-	private String uuid;
 	private String externalId;
 	private String externalToken;
 	private String internalToken;
@@ -167,8 +166,8 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		Date changeDate,
 		EventIdentificationSource eventIdentificationSource) {
 
+		super(uuid);
 		this.id = id;
-		this.uuid = uuid;
 		this.externalId = externalId;
 		this.externalToken = externalToken;
 		this.internalToken = internalToken;
@@ -205,14 +204,6 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public String getExternalId() {
@@ -524,14 +515,14 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 		EventIndexDto that = (EventIndexDto) o;
 
-		return uuid.equals(that.uuid);
+		return getUuid().equals(that.getUuid());
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+		result = prime * result + ((getUuid() == null) ? 0 : getUuid().hashCode());
 		return result;
 	}
 

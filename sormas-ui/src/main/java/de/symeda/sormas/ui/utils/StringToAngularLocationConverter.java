@@ -28,6 +28,7 @@ public final class StringToAngularLocationConverter extends StringToDoubleConver
 
 	private static final long serialVersionUID = -8697124581004777191L;
 
+	@Override
 	protected NumberFormat getFormat(Locale locale) {
 
 		if (locale == null) {

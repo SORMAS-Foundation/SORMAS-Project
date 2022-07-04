@@ -15,10 +15,21 @@
 
 package de.symeda.sormas.backend.info;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Map;
+import java.util.function.Function;
+
+import org.apache.commons.lang3.reflect.TypeUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
@@ -28,16 +39,6 @@ import de.symeda.sormas.api.utils.Outbreaks;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
-import java.util.function.Function;
-
-import de.symeda.sormas.api.i18n.I18nProperties;
-import org.apache.commons.lang3.reflect.TypeUtils;
 
 public enum EntityColumn {
 
@@ -95,6 +96,7 @@ public enum EntityColumn {
 		return isColumnForAllFieldsSheet;
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

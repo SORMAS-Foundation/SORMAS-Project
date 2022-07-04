@@ -53,8 +53,8 @@ public class CampaignFormDataImportLayout extends AbstractImportLayout {
 		addDownloadErrorReportComponent(3);
 	}
 
+	@Override
 	protected void addDownloadImportTemplateComponent(int step, String templateFilePath, String templateFileName) {
 		super.addDownloadImportTemplateComponent(step, templateFilePath, templateFileName);
 	}
-
 }

@@ -307,11 +307,14 @@ public interface Strings {
 	String errorReadingTemplate = "errorReadingTemplate";
 	String errorSampleNotEditable = "errorSampleNotEditable";
 	String errorSormasToSormasAccept = "errorSormasToSormasAccept";
+	String errorSormasToSormasAcceptContactsBeforeAcceptSourceCase = "errorSormasToSormasAcceptContactsBeforeAcceptSourceCase";
+	String errorSormasToSormasAcceptContactsWithoutCaseShared = "errorSormasToSormasAcceptContactsWithoutCaseShared";
 	String errorSormasToSormasCertNotGenerated = "errorSormasToSormasCertNotGenerated";
 	String errorSormasToSormasConnection = "errorSormasToSormasConnection";
 	String errorSormasToSormasDecrypt = "errorSormasToSormasDecrypt";
 	String errorSormasToSormasDeleteFromExternalSurveillanceTool = "errorSormasToSormasDeleteFromExternalSurveillanceTool";
 	String errorSormasToSormasEncrypt = "errorSormasToSormasEncrypt";
+	String errorSormasToSormasExistingPendingRequest = "errorSormasToSormasExistingPendingRequest";
 	String errorSormasToSormasInvalidRequestMethod = "errorSormasToSormasInvalidRequestMethod";
 	String errorSormasToSormasLoadShares = "errorSormasToSormasLoadShares";
 	String errorSormasToSormasRequestProcessed = "errorSormasToSormasRequestProcessed";
@@ -320,6 +323,8 @@ public interface Strings {
 	String errorSormasToSormasSend = "errorSormasToSormasSend";
 	String errorSormasToSormasServerAccess = "errorSormasToSormasServerAccess";
 	String errorSormasToSormasShare = "errorSormasToSormasShare";
+	String errorSormasToSormasShareContactWithoutCase = "errorSormasToSormasShareContactWithoutCase";
+	String errorSormasToSormasShareContactWithUnsharedSourceCase = "errorSormasToSormasShareContactWithUnsharedSourceCase";
 	String errorTemplateFileCorrupt = "errorTemplateFileCorrupt";
 	String errorViewNotFound = "errorViewNotFound";
 	String errorWasReported = "errorWasReported";
@@ -660,6 +665,8 @@ public interface Strings {
 	String headingSimilarImmunization = "headingSimilarImmunization";
 	String headingSomeCasesNotDeleted = "headingSomeCasesNotDeleted";
 	String headingSomeEventsNotDeleted = "headingSomeEventsNotDeleted";
+	String headingSormasToSormasCanAcceptContactsWithoutCase = "headingSormasToSormasCanAcceptContactsWithoutCase";
+	String headingSormasToSormasCantShareContactWithoutCase = "headingSormasToSormasCantShareContactWithoutCase";
 	String headingStoppedFollowUp = "headingStoppedFollowUp";
 	String headingSurveillanceReports = "headingSurveillanceReports";
 	String headingSymptomJournalAccountCreation = "headingSymptomJournalAccountCreation";
@@ -1379,6 +1386,7 @@ public interface Strings {
 	String text = "text";
 	String toCase = "toCase";
 	String total = "total";
+	String unexpectedErrorSormasToSormasAccept = "unexpectedErrorSormasToSormasAccept";
 	String unsavedChanges_cancel = "unsavedChanges.cancel";
 	String unsavedChanges_discard = "unsavedChanges.discard";
 	String unsavedChanges_save = "unsavedChanges.save";

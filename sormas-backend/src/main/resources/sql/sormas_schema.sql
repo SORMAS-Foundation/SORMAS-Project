@@ -11646,6 +11646,8 @@ WHERE uu.userright = 'AGGREGATE_REPORT_VIEW'
 
 INSERT INTO schema_version (version_number, comment) VALUES (470, 'Allow surveillance officer to create aggregate reports #9052');
 
+-- 2022-06-27 Allow external lab users to edit samples #8892
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (471, 'Allow external lab users to edit samples #8892', true);
 -- 2022-07-1 Edit and create user roles #4463
 
 DO $$
@@ -11665,6 +11667,6 @@ update userroles_emailnotificationtypes set notificationtype = 'CASE_DISEASE_CHA
 update userroles_smsnotificationtypes set notificationtype = 'CONTACT_VISIT_COMPLETED' where notificationtype = 'VISIT_COMPLETED';
 update userroles_emailnotificationtypes set notificationtype = 'CONTACT_VISIT_COMPLETED' where notificationtype = 'VISIT_COMPLETED';
 
-INSERT INTO schema_version (version_number, comment) VALUES (471, 'Edit and create user roles #4463');
+INSERT INTO schema_version (version_number, comment) VALUES (472, 'Edit and create user roles #4463');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

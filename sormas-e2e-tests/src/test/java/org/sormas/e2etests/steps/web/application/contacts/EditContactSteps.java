@@ -41,6 +41,9 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFO
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CASE_OR_EVENT_INFORMATION_CONTACT_TEXT_AREA;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.EXTERNAL_TOKEN_CONTACT_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RELATIONSHIP_WITH_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
@@ -48,6 +51,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_TAB;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.SAVE_BUTTON_FOR_POPUP_WINDOWS;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DELETE_BUTTON;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.GENERAL_SEARCH_INPUT;
 
 import cucumber.api.java8.En;
@@ -89,6 +93,7 @@ public class EditContactSteps implements En {
   public static final String userDirPath = System.getProperty("user.dir");
   public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
   public static final DateTimeFormatter formatterDE = DateTimeFormatter.ofPattern("d.M.yyyy");
+  private static String currentUrl;
 
   @Inject
   public EditContactSteps(
@@ -1002,6 +1007,56 @@ public class EditContactSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(COMMENTS_ON_TASK_TITLE);
           webDriverHelpers.checkWebElementContainsText(COMMENTS_ON_TASK_TITLE, "*");
+        });
+
+    When(
+        "I check if collected contact UUID is the same in opened contact",
+        () -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(UUID_INPUT),
+              aContact.getUuid(),
+              "UUIDs are not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "^I check if relationship with case is set to ([^\"]*)$",
+        (String option) -> {
+          webDriverHelpers.scrollToElement(RELATIONSHIP_WITH_CASE_INPUT);
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(RELATIONSHIP_WITH_CASE_INPUT),
+              option,
+              "Relationships with case are not equal");
+          softly.assertAll();
+        });
+
+    When("I copy url of current contact", () -> currentUrl = webDriverHelpers.returnURL());
+
+    When(
+        "I click on Delete button from contact",
+        () -> {
+          webDriverHelpers.scrollToElement(DELETE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+        });
+
+    When("I back to deleted contact by url", () -> webDriverHelpers.accessWebSite(currentUrl));
+
+    When(
+        "I check if External token input on case edit page is disabled",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementEnabled(EXTERNAL_TOKEN_CONTACT_INPUT),
+              "External token input is enabled");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if Case or event information text area on case edit page is disabled",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementEnabled(CASE_OR_EVENT_INFORMATION_CONTACT_TEXT_AREA),
+              "Case or event information text area is enabled");
+          softly.assertAll();
         });
   }
 
