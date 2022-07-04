@@ -215,3 +215,24 @@ Feature: Sample Functionalities
     Then I confirm creating a new case
     Then I navigate to the last created contact via the url
     Then I validate date and time is present on sample card
+
+
+  @env_de @issue=SORDEV-7427
+  Scenario: Test Make date fields in sample creation mask and information non-compulsory
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    Then I click on New Sample in German
+    And I select Sent dispatched checkbox
+    And I select Received checkbox
+    Then I check is Sent dispatched Date and Received Date fields required
+    And I click Add Pathogen test in Sample creation page in German
+    And I check DATE AND TIME OF RESULT field
+    And I click on save sample button
+    Then I check error popup message in German

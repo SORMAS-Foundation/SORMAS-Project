@@ -1007,4 +1007,16 @@ public class WebDriverHelpers {
           "Cannot close active window and switch to parent window because only one is available!");
     }
   }
+
+  public void checkIsPopupContainsList(By popup, List popupElements) {
+
+    String popupElementXPath;
+    String popupXPath = popup.toString();
+    By lookingElement;
+    for (Object popupMessage : popupElements) {
+      popupElementXPath = popupXPath + "//li[contains(text(),'" + popupMessage + "')]";
+      lookingElement = By.xpath(popupElementXPath.replace("By.xpath:", ""));
+      getWebElement(lookingElement);
+    }
+  }
 }

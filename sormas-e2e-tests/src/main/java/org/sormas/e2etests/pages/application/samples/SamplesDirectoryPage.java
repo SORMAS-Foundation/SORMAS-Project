@@ -54,6 +54,9 @@ public class SamplesDirectoryPage {
   public static final By SAMPLE_NOT_SHIPPED = By.id("sampleNotShipped");
   public static final By SAMPLE_SHIPPED = By.id("sampleShipped");
   public static final By SAMPLE_RECEIVED = By.id("sampleReceived");
+  public static final By SAMPLE_SHIPPED_CHECKBOX = By.xpath("//span[@id='shipped']/label");
+  public static final By SAMPLE_RECEIVED_CHECKBOX = By.xpath("//span[@id='received']/label");
+
   public static final By SAMPLE_REFFERED_TO_OTHER_LAB = By.id("sampleReferred");
   public static final By CREATE_CASE_POSITIVE_TEST_RESULT_LABEL =
       By.cssSelector(".popupContent [class='v-window-header']");

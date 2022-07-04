@@ -44,7 +44,10 @@ public class CreateNewSamplePage {
   public static final By LABORATORY_NAME_POPUP_INPUT =
       By.cssSelector(".popupContent [id='labDetails']");
   public static final By RECEIVED_OPTION_BUTTON = By.cssSelector("[id='received'] label");
-  public static final By DATE_SAMPLE_RECEIVED = By.cssSelector("[id='receivedDate'] input");
+  public static final By DATE_SAMPLE_SEND =
+      By.xpath("//div[@id='shipmentDate' and not(contains(@class, 'v-required'))]");
+  public static final By DATE_SAMPLE_RECEIVED =
+      By.xpath("//div[@id='receivedDate' and not(contains(@class, 'v-required'))]");
   public static final By SPECIMEN_CONDITION_COMBOBOX =
       By.cssSelector("[id='specimenCondition'] [class='v-filterselect-button']");
   public static final By SPECIMEN_CONDITION_INPUT =
@@ -137,4 +140,8 @@ public class CreateNewSamplePage {
       By.cssSelector(".v-window-contents .v-slot:nth-of-type(1) .v-button");
   public static final By DATE_AND_TIME_OF_RESULTS =
       By.xpath("//div[contains(text(),'Date and time of result:')]");
+  public static final By DATE_AND_TIME_OF_RESULTS_DE =
+      By.xpath("//*[@id='testDateTime_date' and not(contains(@class, 'v-required'))]");
+  public static final By ERROR_POPUP =
+      By.xpath("//div[@class='v-Notification error v-Notification-error']");
 }

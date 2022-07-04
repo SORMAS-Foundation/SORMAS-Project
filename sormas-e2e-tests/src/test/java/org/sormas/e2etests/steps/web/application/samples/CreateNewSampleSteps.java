@@ -39,10 +39,13 @@ import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CONJ_BILIRUBIN_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CREATININE_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_AND_TIME_OF_RESULTS;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_AND_TIME_OF_RESULTS_DE;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_OF_RESULT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_SAMPLE_COLLECTED;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_SAMPLE_RECEIVED;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_SAMPLE_SEND;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_TEST_REPORT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ERROR_POPUP;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.FIELD_SAMPLE_ID_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.FINAL_LABORATORY_RESULT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.HAEMOGLOBIN_INPUT;
@@ -109,6 +112,8 @@ import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.EDIT_TEST_RESULTS_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.RESULT_VERIFIED_BY_LAB_SUPERVISOR_EDIT_OPTIONS;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_EDIT_PURPOSE_OPTIONS;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_RECEIVED_CHECKBOX;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_SHIPPED_CHECKBOX;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -668,6 +673,55 @@ public class CreateNewSampleSteps implements En {
               webDriverHelpers.checkIfElementExistsInCombobox(TYPE_OF_TEST_COMBOBOX, typeOfTest),
               "Type of test is incorrect");
           softly.assertAll();
+        });
+    And(
+        "I select Sent dispatched checkbox",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAMPLE_SHIPPED_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(SAMPLE_SHIPPED_CHECKBOX);
+        });
+    And(
+        "I select Received checkbox",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAMPLE_RECEIVED_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(SAMPLE_RECEIVED_CHECKBOX);
+        });
+    Then(
+        "I check is Sent dispatched Date and Received Date fields required",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DATE_SAMPLE_SEND);
+
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DATE_SAMPLE_RECEIVED);
+        });
+    And(
+        "I click Add Pathogen test in Sample creation page in German",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST_BUTTON_DE);
+        });
+    And(
+        "I check DATE AND TIME OF RESULT field",
+        () -> {
+          TimeUnit.SECONDS.sleep(10);
+          webDriverHelpers.getWebElement(DATE_AND_TIME_OF_RESULTS_DE);
+        });
+    And(
+        "I click on save sample button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    Then(
+        "I check error popup message in German",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(ERROR_POPUP);
+          List<String> popupExpected =
+              List.of(
+                  "Probentyp",
+                  "Probenentnahme-Datum",
+                  "Labor",
+                  "Ergebnis verifiziert von Laborleitung",
+                  "Art des Tests");
+          webDriverHelpers.checkIsPopupContainsList(ERROR_POPUP, popupExpected);
         });
   }
 
