@@ -199,6 +199,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOU
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DISCARD_BUTTON;
+import static org.sormas.e2etests.pages.application.immunizations.CreateNewImmunizationPage.MEANS_OF_IMMUNIZATIONS_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EVENT_PARTICIPANTS_DATA_TAB;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
@@ -1919,6 +1920,18 @@ public class EditCaseSteps implements En {
     When(
         "I click on Edit Immunization button on Edit Case",
         () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_IMMUNIZATION_BUTTON));
+
+    And(
+        "^I click on the NEW IMMUNIZATION button from Edit case page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              NEW_IMMUNIZATION_BUTTON, 30);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_IMMUNIZATION_BUTTON);
+        });
+
+    And(
+        "^I click on save button in New Immunization form$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT));
   }
 
   private Case collectCasePersonUuid() {

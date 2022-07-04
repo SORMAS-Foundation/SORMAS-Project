@@ -292,4 +292,10 @@ public class EditCasePage {
   public static By getCaseIDPathByIndex(int index) {
     return By.xpath(String.format("//table/tbody/tr[%s]/td[1]/a", index));
   }
+
+  public static final By NEW_IMMUNIZATION_BUTTON = By.cssSelector("[id='New immunization']");
+  public static final By NEW_IMMUNIZATION_RESPONSIBLE_REGION_COMBOBOX =
+      By.cssSelector(".v-window #responsibleRegion div");
+  public static final By NEW_IMMUNIZATION_RESPONSIBLE_DISTRICT_COMBOBOX =
+      By.cssSelector(".v-window #responsibleDistrict div");
 }
