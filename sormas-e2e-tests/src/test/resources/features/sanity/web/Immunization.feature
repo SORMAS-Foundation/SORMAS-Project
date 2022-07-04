@@ -181,4 +181,4 @@ Feature: Immunization end to end tests
     And I filter by CaseID of last created UI Case on Case directory page
     And I click on the first Case ID from Case Directory
     And I navigate to linked immunization on Edit case page
-    Then I check that Immunization data is displayed as read-only
+    Then I check that Immunization data is displayed as read-only on Edit immunization page

@@ -293,7 +293,6 @@ public class EditCasePage {
     return By.xpath(String.format("//table/tbody/tr[%s]/td[1]/a", index));
   }
 
-  public static final By NEW_IMMUNIZATION_BUTTON = By.cssSelector("[id='New immunization']");
   public static By getByImmunizationUuid(String immunizationUuid) {
     return By.id("edit-immunization-" + immunizationUuid);
   }
