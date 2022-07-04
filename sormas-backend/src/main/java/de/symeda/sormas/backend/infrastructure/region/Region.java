@@ -82,11 +82,6 @@ public class Region extends InfrastructureAdo {
 		this.districts = districts;
 	}
 
-	@Override
-	public String toString() {
-		return getName();
-	}
-
 	public Float getGrowthRate() {
 		return growthRate;
 	}

@@ -135,3 +135,30 @@ Feature: Immunization end to end tests
     Then I check if reason of deletion is set to "Deletion request by affected person according to GDPR"
     And I check if External ID input on immunization edit page is disabled
     And I check if Additional details text area on immunization edit page is disabled
+
+  @issue=SORDEV-8061 @env_main
+  Scenario: Immunizations V: Link recovery immunizations to recovered cases
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data
+    And I collect uuid of the case
+    Then In created case I select Outcome Of Case Status to Recovered
+    And I check if date of outcome filed is available
+    Then I fill the Date of outcome to yesterday
+    And I click on Save button in Case form
+    And I click on New Sample
+    Then I create a new Sample with positive test result with COVID-19 as disease
+    Then I confirm case with positive test result
+    And I click on the NEW IMMUNIZATION button in Edit case
+    Then I fill only mandatory fields in immunization popup with means of immunization as a "Recovery"
+    Then I click on Link Case button
+    And I fill filed with collected case in Search specific case popup
+    And I click on Search case in Search specific case popup in immunization Link Case
+    Then I check if case was found in Link Case
+    And I click Okay in Case Found in Immunization Link Case popup
+    Then I check if Open Case button exists in Immunization edit page
+    And I check if Date of first positive result is equal with created pathogen test
+    And I check if Date of recovery is equal with created case
+    Then I click on Open Case button in Edit immunization
+    Then I check if collected case UUID is equal with current

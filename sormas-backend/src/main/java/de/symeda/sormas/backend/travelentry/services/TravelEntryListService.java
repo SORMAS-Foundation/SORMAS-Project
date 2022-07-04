@@ -11,7 +11,9 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.travelentry.TravelEntryListEntryDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
@@ -76,5 +78,11 @@ public class TravelEntryListService extends BaseTravelEntryService {
 		filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
 
 		return filter;
+	}
+
+	@Override
+	public EditPermissionType isEditAllowed(TravelEntry travelEntry) {
+		// todo is the following correct? This was not covered before so I think this is a bug fixed
+		return getEditPermissionType(travelEntry);
 	}
 }

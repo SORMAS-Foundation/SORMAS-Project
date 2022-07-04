@@ -120,9 +120,4 @@ public class District extends InfrastructureAdo {
 	public void setFeatureConfigurations(List<FeatureConfiguration> featureConfigurations) {
 		this.featureConfigurations = featureConfigurations;
 	}
-
-	@Override
-	public String toString() {
-		return getName();
-	}
 }

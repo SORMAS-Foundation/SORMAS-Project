@@ -118,7 +118,8 @@ public class SormasToSormasExternalMessageFacadeEjb implements SormasToSormasExt
 			handleValidationError(
 				() -> externalMessageFacade.save(externalMessage),
 				Captions.ExternalMessage,
-				buildExternalMessageValidationGroupName(externalMessage));
+				buildExternalMessageValidationGroupName(externalMessage),
+				externalMessage);
 		}
 	}
 

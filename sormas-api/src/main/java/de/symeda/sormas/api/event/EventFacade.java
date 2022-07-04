@@ -27,14 +27,12 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CoreFacade;
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
 public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventReferenceDto, EventCriteria> {
@@ -59,8 +57,6 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 
 	void archiveAllArchivableEvents(int daysAfterEventsGetsArchived);
 
-	EditPermissionType isEventEditAllowed(String eventUuid);
-
 	boolean doesExternalTokenExist(String externalToken, String eventUuid);
 
 	String getUuidByCaseUuidOrPersonUuid(String value);
@@ -72,8 +68,6 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 	Set<String> getAllEventUuidsByEventGroupUuid(String eventGroupUuid);
 
 	List<String> getEventUuidsWithOwnershipHandedOver(List<String> eventUuids);
-
-	void validate(EventDto dto) throws ValidationRuntimeException;
 
 	Set<RegionReferenceDto> getAllRegionsRelatedToEventUuids(List<String> uuids);
 
@@ -91,10 +85,4 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 		boolean eventStatusChange,
 		boolean eventInvestigationStatusChange,
 		boolean eventManagementStatusChange);
-
-	void archive(String eventUuid, Date endOfProcessingDate);
-
-	void archive(List<String> eventUuids);
-
-	void dearchive(List<String> eventUuids, String dearchiveReason);
 }

@@ -6,7 +6,6 @@ import java.util.List;
 import org.hibernate.transform.ResultTransformer;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.action.ActionMeasure;
 import de.symeda.sormas.api.action.ActionPriority;
 import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;

@@ -153,5 +153,4 @@ public class Treatment extends AbstractDomainObject {
 	public void setPrescription(Prescription prescription) {
 		this.prescription = prescription;
 	}
-
 }

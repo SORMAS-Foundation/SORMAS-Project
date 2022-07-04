@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
