@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
-import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -65,6 +64,8 @@ public final class PasswordHelper {
 		}
 	}
 
+	private static final String HEX_ALPHABET = "0123456789abcdef";
+
 	public static String createPass(final int length) {
 
 		SecureRandom rnd = new SecureRandom();
@@ -93,7 +94,12 @@ public final class PasswordHelper {
 		}
 	}
 
-	public static String hexEncode(byte[] aData) {
-		return new BigInteger(1, aData).toString(16);
+	public static String hexEncode(byte[] data) {
+
+		StringBuilder hex = new StringBuilder(2 * data.length);
+		for (final byte b : data) {
+			hex.append(HEX_ALPHABET.charAt((b & 0xF0) >> 4)).append(HEX_ALPHABET.charAt((b & 0x0F)));
+		}
+		return hex.toString();
 	}
 }
