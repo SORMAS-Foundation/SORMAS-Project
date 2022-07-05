@@ -298,10 +298,10 @@ Feature: Vaccination tests
     And I open 1 contact in order from list
     And I check that number of added Vaccinations is 2
     And I click to edit 1 vaccination on Edit Contact page
-    And I check that displayed vaccination date in form is equal to date from duplicated entry
+    And I check that displayed vaccination date in form is equal to name from duplicated entry
     And I close import popup in Edit Contact directory
     And I click to edit 2 vaccination on Edit Contact page
-    And I check that displayed vaccination date in form is equal to date from duplicated entry
+    And I check that displayed vaccination date in form is equal to name from duplicated entry
 
   @issue=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts[5]
@@ -344,9 +344,9 @@ Feature: Vaccination tests
     And I collect the leading contact UUID displayed on Contact Directory Page
     And I click on the More button on Contact directory page
     Then I click on Merge Duplicates on Contact directory page
-    And I click on Merge button of first leading Contact in Merge Duplicate Contact page
     And I filter by Case ID used during Contact creation
     And I click APPLY BUTTON in Merge Duplicates View on Contact Directory Page
+    And I click on Merge button of first leading Contact in Merge Duplicate Contact page
     Then I click to Confirm action in Merge Duplicates Cases popup
     And I click on the Contacts button from navbar
     And I filter by Person's full name of last created duplicated line listing contact on Contact Directory Page

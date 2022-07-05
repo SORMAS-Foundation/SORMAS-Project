@@ -32,8 +32,7 @@ public class ContactDirectoryPage {
       By.cssSelector("div#contactsViewSwitcher span:nth-child(2) > label");
   public static final By CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT =
       By.cssSelector("input#contactOrCaseLike");
-  public static final By ACTION_MERGE_CONTACT_DIRECTORY =
-          By.cssSelector("#actionMerge");
+  public static final By ACTION_MERGE_CONTACT_DIRECTORY = By.cssSelector("#actionMerge");
   public static final By CONTACTS_DETAILED_COLUMN_HEADERS =
       By.cssSelector("thead .v-grid-column-default-header-content");
   public static final By CONTACTS_COLUMN_HEADERS =
@@ -68,7 +67,7 @@ public class ContactDirectoryPage {
   public static final By CONTACT_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON =
       By.cssSelector("div#actionApplyFilters");
   public static final By CONTACT_DIRECTORY_DETAILED_PAGE_CONFIRM_FILTER_BUTTON =
-          By.cssSelector("div#actionConfirmFilters");
+      By.cssSelector("div#actionConfirmFilters");
   public static final By GRID_RESULTS_COUNTER_CONTACT_DIRECTORY = By.cssSelector(".badge");
   public static final By CONTACTS_WITH_QUARANTINE_ORDERED_VERBALLY_CHECKBOX =
       By.id("quarantineOrderedVerbally");

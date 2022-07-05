@@ -289,18 +289,19 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
         });
 
-      And(
-              "I click on Merge button of first leading Contact in Merge Duplicate Contact page",
-              () -> {
-                  webDriverHelpers.clickOnWebElementBySelector(ACTION_MERGE_CONTACT_DIRECTORY);
-                  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
-              });
-      And(
-              "I filter by Case ID used during Contact creation",
-              () -> {
-                  webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, apiState.getCreatedCase().getUuid());
-                  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
-              });
+    And(
+        "I click on Merge button of first leading Contact in Merge Duplicate Contact page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_MERGE_CONTACT_DIRECTORY);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
+        });
+    And(
+        "I filter by Case ID used during Contact creation",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              MULTIPLE_OPTIONS_SEARCH_INPUT, apiState.getCreatedCase().getUuid());
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
+        });
     When(
         "I open the last created contact",
         () -> {
@@ -758,13 +759,13 @@ public class ContactDirectorySteps implements En {
               CONTACT_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
           TimeUnit.SECONDS.sleep(3); // needed for table refresh
         });
-      And(
-              "I click APPLY BUTTON in Merge Duplicates View on Contact Directory Page",
-              () -> {
-                  webDriverHelpers.clickOnWebElementBySelector(
-                          CONTACT_DIRECTORY_DETAILED_PAGE_CONFIRM_FILTER_BUTTON);
-                  TimeUnit.SECONDS.sleep(3); // needed for table refresh
-              });
+    And(
+        "I click APPLY BUTTON in Merge Duplicates View on Contact Directory Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              CONTACT_DIRECTORY_DETAILED_PAGE_CONFIRM_FILTER_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // needed for table refresh
+        });
 
     And(
         "I click {string} checkbox on Contact directory page",
