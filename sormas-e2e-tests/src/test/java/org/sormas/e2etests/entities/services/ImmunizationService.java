@@ -58,4 +58,14 @@ public class ImmunizationService {
         .validUntil(LocalDate.now())
         .build();
   }
+
+  public Immunization buildGeneratedImmunizationWithMeansOfImmunizationFromCase(
+      String meansOfImmunization) {
+    return Immunization.builder()
+        .dateOfReport(LocalDate.now())
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .meansOfImmunization(meansOfImmunization)
+        .build();
+  }
 }

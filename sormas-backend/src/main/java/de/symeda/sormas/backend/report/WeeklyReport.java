@@ -31,9 +31,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "weeklyreport")
@@ -173,6 +173,7 @@ public class WeeklyReport extends AbstractDomainObject {
 	}
 
 	public void setAssignedOfficer(User assignedOfficer) {
+
 		this.assignedOfficer = assignedOfficer;
 	}
 }

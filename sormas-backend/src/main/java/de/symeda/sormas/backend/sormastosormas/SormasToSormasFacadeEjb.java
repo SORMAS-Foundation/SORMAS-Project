@@ -17,6 +17,9 @@ package de.symeda.sormas.backend.sormastosormas;
 
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -242,7 +245,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		} catch (ExternalSurveillanceToolException e) {
 			LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
 
-			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasAccept);
+			throw SormasToSormasException.fromStringProperty(Strings.unexpectedErrorSormasToSormasAccept);
 		}
 	}
 

@@ -34,6 +34,8 @@ import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
+import org.apache.commons.lang3.StringUtils;
 
 public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIndexDto, Serializable, Cloneable {
 
@@ -79,7 +81,6 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 	public static final String SURVEILLANCE_TOOL_STATUS = "surveillanceToolStatus";
 
 	private long id;
-	private String uuid;
 	private String epidNumber;
 	private String externalID;
 	private String externalToken;
@@ -169,8 +170,8 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 	) {
 		//@formatter:on
 
+		super(uuid);
 		this.id = id;
-		this.uuid = uuid;
 		this.epidNumber = epidNumber;
 		this.externalID = externalID;
 		this.externalToken = externalToken;
@@ -387,25 +388,17 @@ public class CaseIndexDto extends PseudonymizableIndexDto implements MergeableIn
 	}
 
 	public CaseReferenceDto toReference() {
-		return new CaseReferenceDto(uuid, personFirstName, personLastName);
+		return new CaseReferenceDto(getUuid(), personFirstName, personLastName);
 	}
 
 	@Override
-	public String toString() {
+	public String getCaption() {
 		return CaseReferenceDto.buildCaption(getUuid(), getPersonFirstName(), getPersonLastName());
 	}
 
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public String getExternalID() {

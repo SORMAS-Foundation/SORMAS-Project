@@ -200,9 +200,10 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID),
 				140));
 		officerField.addItems(fetchContactResponsiblesByRegion(currentUserDto().getRegion()));
-		addField(
+		ComboBox reportedByField = addField(
 			moreFiltersContainer,
 			FieldConfiguration.withCaptionAndPixelSized(ContactCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
+		reportedByField.addItems(FacadeProvider.getUserRoleFacade().getAllActiveAsReference());
 		Field<?> followUpUntilTo = addField(
 			moreFiltersContainer,
 			FieldConfiguration.withCaptionAndPixelSized(

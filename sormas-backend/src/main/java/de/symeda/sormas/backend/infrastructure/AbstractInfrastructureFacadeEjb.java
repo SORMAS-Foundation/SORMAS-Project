@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -26,6 +25,7 @@ import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 public abstract class AbstractInfrastructureFacadeEjb<ADO extends InfrastructureAdo, DTO extends InfrastructureDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, SRV extends AbstractInfrastructureAdoService<ADO, CRITERIA>, CRITERIA extends BaseCriteria>
 	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA>
@@ -135,7 +135,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		}
 	}
 
-	@RolesAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
+	@RightsAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
 	public List<String> archive(List<String> entityUuids) {
 		List<String> archivedEntityUuids = new ArrayList<>();
 		entityUuids.forEach(entityUuid -> {
@@ -147,7 +147,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		return archivedEntityUuids;
 	}
 
-	@RolesAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
+	@RightsAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
 	public List<String> dearchive(List<String> entityUuids) {
 		List<String> dearchivedEntityUuids = new ArrayList<>();
 		entityUuids.forEach(entityUuid -> {
@@ -165,7 +165,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		}
 	}
 
-	// todo this can be moved up later
+	// todo this can be moved up
 	public long count(CRITERIA criteria) {
 		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
 	}
@@ -181,4 +181,9 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	protected abstract List<ADO> findDuplicates(DTO dto, boolean includeArchived);
 
 	// todo implement toDto() here
+
+	@Override
+	public void validate(DTO dto) throws ValidationRuntimeException {
+		// todo we do not run any generic validation logic for infra yet
+	}
 }

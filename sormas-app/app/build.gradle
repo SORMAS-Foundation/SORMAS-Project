@@ -99,7 +99,6 @@ dependencies {
     implementation 'javax.persistence:persistence-api:1.0.2'
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.google.firebase:firebase-analytics'
-
     implementation 'com.google.firebase:firebase-perf'
     implementation 'com.google.firebase:firebase-config'
     implementation("de.symeda.sormas:sormas-api:$sormasVersion") { changing = true }
@@ -124,6 +123,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.4'
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     implementation "androidx.paging:paging-runtime:$paging_version"
+    implementation 'androidx.work:work-runtime-ktx:2.7.1'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.hamcrest:hamcrest:2.2'
     testImplementation 'org.hamcrest:hamcrest-core:2.2'
@@ -138,6 +138,7 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'me.dm7.barcodescanner:zxing:1.9.13'
     implementation 'io.crowdcode.sormas.lbds:lbds-android-messaging:1.4.6'
+    implementation 'org.slf4j:slf4j-api:1.7.36'
 }
 
 apply plugin: "jacoco"

@@ -15,8 +15,16 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.caze;
 
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.backend.caze.Case;
@@ -25,12 +33,6 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
 
 @Stateless
 @LocalBean
@@ -61,22 +63,33 @@ public class ProcessedCaseDataPersister extends ProcessedDataPersister<CaseDataD
 	private void persistProcessedData(SormasToSormasCaseDto caseData, boolean isCreate) throws SormasToSormasValidationException {
 		CaseDataDto caze = caseData.getEntity();
 
+		final PersonDto person = caseData.getPerson();
 		if (isCreate) {
 			// save person first during creation
 			handleValidationError(
-				() -> personFacade.savePerson(caseData.getPerson(), false, false, false),
+				() -> personFacade.savePerson(person, false, false, false),
 				Captions.Person,
-				buildCaseValidationGroupName(caze));
+				buildCaseValidationGroupName(caze),
+				person);
 
-			handleValidationError(() -> caseFacade.save(caze, true, false, false, false), Captions.CaseData, buildCaseValidationGroupName(caze));
+			handleValidationError(
+				() -> caseFacade.save(caze, true, false, false, false),
+				Captions.CaseData,
+				buildCaseValidationGroupName(caze),
+				caze);
 		} else {
 			//save case first during update
 
-			handleValidationError(() -> caseFacade.save(caze, true, false, false, false), Captions.CaseData, buildCaseValidationGroupName(caze));
 			handleValidationError(
-				() -> personFacade.savePerson(caseData.getPerson(), false, false, false),
+				() -> caseFacade.save(caze, true, false, false, false),
+				Captions.CaseData,
+				buildCaseValidationGroupName(caze),
+				caze);
+			handleValidationError(
+				() -> personFacade.savePerson(person, false, false, false),
 				Captions.Person,
-				buildCaseValidationGroupName(caze));
+				buildCaseValidationGroupName(caze),
+				person);
 		}
 	}
 }

@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.sormastosormas.entities.event;
 
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventValidationGroupName;
+
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -12,8 +14,6 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.data.validation.ValidationDirection;
-
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventValidationGroupName;
 
 @Stateless
 @LocalBean

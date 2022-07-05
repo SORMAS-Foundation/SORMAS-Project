@@ -1,23 +1,5 @@
 package de.symeda.sormas.backend.central;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.io.Resources;
-import com.google.protobuf.ByteString;
-
-import com.ibm.etcd.api.KeyValue;
-import com.ibm.etcd.api.RangeResponse;
-import com.ibm.etcd.client.EtcdClient;
-import com.ibm.etcd.client.KvStoreClient;
-import com.ibm.etcd.client.kv.KvClient;
-
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -26,6 +8,23 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.io.Resources;
+import com.google.protobuf.ByteString;
+import com.ibm.etcd.api.KeyValue;
+import com.ibm.etcd.api.RangeResponse;
+import com.ibm.etcd.client.EtcdClient;
+import com.ibm.etcd.client.KvStoreClient;
+import com.ibm.etcd.client.kv.KvClient;
+
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 public class EtcdCentralClient {
 

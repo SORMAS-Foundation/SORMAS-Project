@@ -7,11 +7,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externaldata.HasExternalData;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import org.apache.commons.lang3.StringUtils;
 
 public class ExternalDataUtil {
 

@@ -39,14 +39,14 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.user.DefaultUserRole;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedAttribute;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -259,11 +259,6 @@ public class User extends AbstractDomainObject {
 
 	public void setAssociatedOfficer(User associatedOfficer) {
 		this.associatedOfficer = associatedOfficer;
-	}
-
-	@Override
-	public String toString() {
-		return UserReferenceDto.buildCaption(getFirstName(), getLastName());
 	}
 
 	public UserReferenceDto toReference() {

@@ -372,7 +372,10 @@ public class EditCaseSteps implements En {
 
     When(
         "I navigate to Hospitalization tab in Cases",
-        () -> webDriverHelpers.clickOnWebElementBySelector(HOSPITALIZATION_TAB));
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          webDriverHelpers.clickOnWebElementBySelector(HOSPITALIZATION_TAB);
+        });
 
     And(
         "I navigate to case person tab",
@@ -696,6 +699,14 @@ public class EditCaseSteps implements En {
                   .investigationStatus("Investigation " + investigationStatus)
                   .build(); // TODO: Create POJO updater class
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "In created case I select Outcome Of Case Status to ([^\"]*)",
+        (String caseStatus) -> {
+          webDriverHelpers.clickWebElementByText(
+              OUTCOME_OF_CASE_OPTIONS, CaseOutcome.getValueFor(caseStatus).toUpperCase());
+          TimeUnit.SECONDS.sleep(1);
         });
 
     When(
@@ -1881,6 +1892,14 @@ public class EditCaseSteps implements En {
           webDriverHelpers.fillInWebElement(EditContactPage.GENERAL_COMMENT_TEXT, comment);
         });
 
+    And(
+        "I fill in the Internal Token field in Edit Case page with ([^\"]*)",
+        (String token) -> {
+          webDriverHelpers.scrollToElementUntilIsVisible(INTERNAL_TOKEN_INPUT);
+          webDriverHelpers.fillInWebElement(INTERNAL_TOKEN_INPUT, token);
+        });
+
+
     When(
         "I check if Type of sample has not a ([^\"]*) option",
         (String option) -> {
@@ -1889,6 +1908,17 @@ public class EditCaseSteps implements En {
               "Type of sample is incorrect");
           softly.assertAll();
         });
+
+    When(
+        "I click on the NEW IMMUNIZATION button in Edit case",
+        () -> {
+          webDriverHelpers.scrollToElement(NEW_IMMUNIZATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_IMMUNIZATION_BUTTON);
+        });
+
+    When(
+        "I click on Edit Immunization button on Edit Case",
+        () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_IMMUNIZATION_BUTTON));
   }
 
   private Case collectCasePersonUuid() {
