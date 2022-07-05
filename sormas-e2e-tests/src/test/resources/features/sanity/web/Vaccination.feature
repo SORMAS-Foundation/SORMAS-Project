@@ -86,3 +86,271 @@ Feature: Vaccination tests
     Then I check if generated document for Event Participant based on "VaccinationGenerationTest_EventParticipants.docx" was downloaded properly
     And I check if generated document for Event Participant based on "VaccinationGenerationTest_EventParticipants.docx" contains all required fields
     Then I delete downloaded file created from "VaccinationGenerationTest_EventParticipants.docx" Document Template for Event Participant
+
+  @issue=SORDEV-11753 @env_de
+  Scenario: Duplicate detection for vaccinations when merging contacts [1]
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    When I click on the Contacts button from navbar
+    Then I click on Line Listing button
+    And I click CHOOSE CASE button
+    And I search for the last case uuid in the CHOOSE SOURCE Contact window for DE
+    And I open the first found result in the CHOOSE SOURCE Contact window for De
+    And I create a new Contact with specific data through Line Listing with duplicated data for De
+    And I save the new contact using line listing feature
+    Then I click on the Contacts button from navbar
+    Then I click on Line Listing button
+    And I click CHOOSE CASE button
+    And I search for the last case uuid in the CHOOSE SOURCE Contact window for DE
+    And I open the first found result in the CHOOSE SOURCE Contact window for De
+    And I create a new Contact with specific data through Line Listing with duplicated data for De
+    And I save the new contact using line listing feature
+    And I Pick a new person in Pick or create person popup during contact creation for DE
+    And I filter by Person's full name of last created duplicated line listing contact on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I open 1 contact in order from list
+    And I click NEW VACCINATION button for DE
+    And I set new vaccination name the same as duplicate for DE
+    And I set new vaccination date the same as duplicate for DE
+    And I click SAVE button in new Vaccination form
+    When I click on the Contacts button from navbar
+    And I filter by Person's full name of last created duplicated line listing contact on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I open 2 contact in order from list
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data for duplicates in new Vaccination form for DE
+    And I click SAVE button in new Vaccination form
+    And I click on the Contacts button from navbar
+    And I collect the leading contact UUID displayed on Contact Directory Page
+    And I click on the More button on Contact directory page
+    Then I click on Merge Duplicates on Contact directory page
+    And I click on Merge button of leading duplicated line listing Contact in Merge Duplicate Contact page
+    Then I click to Confirm action in Merge Duplicates Cases popup
+    And I click on the Contacts button from navbar
+    And I filter by Person's full name of last created duplicated line listing contact on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I open 1 contact in order from list
+    And I check that number of added Vaccinations is 1
+    And I click to edit 1 vaccination on Edit Contact page
+    And I check that displayed data in form is equal to whole data from duplicated entry
+
+  @issue=SORDEV-11753 @env_de
+  Scenario: Duplicate detection for vaccinations when merging contacts [2]
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    When I click on the Contacts button from navbar
+    Then I click on Line Listing button
+    And I click CHOOSE CASE button
+    And I search for the last case uuid in the CHOOSE SOURCE Contact window for DE
+    And I open the first found result in the CHOOSE SOURCE Contact window for De
+    And I create a new Contact with specific data through Line Listing with duplicated data for De
+    And I save the new contact using line listing feature
+    Then I click on the Contacts button from navbar
+    Then I click on Line Listing button
+    And I click CHOOSE CASE button
+    And I search for the last case uuid in the CHOOSE SOURCE Contact window for DE
+    And I open the first found result in the CHOOSE SOURCE Contact window for De
+    And I create a new Contact with specific data through Line Listing with duplicated data for De
+    And I save the new contact using line listing feature
+    And I Pick a new person in Pick or create person popup during contact creation for DE
+    And I filter by Person's full name of last created duplicated line listing contact on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I open 1 contact in order from list
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data for duplicates in new Vaccination form for DE
+    And I click SAVE button in new Vaccination form
+    When I click on the Contacts button from navbar
+    And I filter by Person's full name of last created duplicated line listing contact on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I open 2 contact in order from list
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data in new Vaccination form for DE
+    And I set new vaccination name the same as duplicate for DE
+    And I set new vaccination date the same as duplicate for DE
+    And I click SAVE button in new Vaccination form
+    And I click on the Contacts button from navbar
+    And I collect the leading contact UUID displayed on Contact Directory Page
+    And I click on the More button on Contact directory page
+    Then I click on Merge Duplicates on Contact directory page
+    And I click on Merge button of leading duplicated line listing Contact in Merge Duplicate Contact page
+    Then I click to Confirm action in Merge Duplicates Cases popup
+    And I click on the Contacts button from navbar
+    And I filter by Person's full name of last created duplicated line listing contact on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I open 1 contact in order from list
+    And I check that number of added Vaccinations is 1
+    And I click to edit 1 vaccination on Edit Contact page
+    And I check that displayed vaccination date in form is equal to name from duplicated entry
+
+  @issue=SORDEV-11753 @env_de
+  Scenario: Duplicate detection for vaccinations when merging contacts [3]
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    When I click on the Contacts button from navbar
+    Then I click on Line Listing button
+    And I click CHOOSE CASE button
+    And I search for the last case uuid in the CHOOSE SOURCE Contact window for DE
+    And I open the first found result in the CHOOSE SOURCE Contact window for De
+    And I create a new Contact with specific data through Line Listing with duplicated data for De
+    And I save the new contact using line listing feature
+    Then I click on the Contacts button from navbar
+    Then I click on Line Listing button
+    And I click CHOOSE CASE button
+    And I search for the last case uuid in the CHOOSE SOURCE Contact window for DE
+    And I open the first found result in the CHOOSE SOURCE Contact window for De
+    And I create a new Contact with specific data through Line Listing with duplicated data for De
+    And I save the new contact using line listing feature
+    And I Pick a new person in Pick or create person popup during contact creation for DE
+    And I filter by Person's full name of last created duplicated line listing contact on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I open 1 contact in order from list
+    And I click NEW VACCINATION button for DE
+    And I set new vaccination date the same as duplicate for DE
+    And I click SAVE button in new Vaccination form
+    When I click on the Contacts button from navbar
+    And I filter by Person's full name of last created duplicated line listing contact on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I open 2 contact in order from list
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data for duplicates in new Vaccination form for DE
+    And I set new vaccination date the same as duplicate for DE
+    And I click SAVE button in new Vaccination form
+    And I click on the Contacts button from navbar
+    And I collect the leading contact UUID displayed on Contact Directory Page
+    And I click on the More button on Contact directory page
+    Then I click on Merge Duplicates on Contact directory page
+    And I click on Merge button of leading duplicated line listing Contact in Merge Duplicate Contact page
+    Then I click to Confirm action in Merge Duplicates Cases popup
+    And I click on the Contacts button from navbar
+    And I filter by Person's full name of last created duplicated line listing contact on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I open 1 contact in order from list
+    And I check that number of added Vaccinations is 2
+    And I click to edit 1 vaccination on Edit Contact page
+    And I check that displayed vaccination date in form is equal to date from duplicated entry
+    And I close import popup in Edit Contact directory
+    And I click to edit 2 vaccination on Edit Contact page
+    And I check that displayed vaccination date in form is equal to date from duplicated entry
+
+  @issue=SORDEV-11753 @env_de
+  Scenario: Duplicate detection for vaccinations when merging contactsss tests [4]
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    When I click on the Contacts button from navbar
+    Then I click on Line Listing button
+    And I click CHOOSE CASE button
+    And I search for the last case uuid in the CHOOSE SOURCE Contact window for DE
+    And I open the first found result in the CHOOSE SOURCE Contact window for De
+    And I create a new Contact with specific data through Line Listing with duplicated data for De
+    And I save the new contact using line listing feature
+    Then I click on the Contacts button from navbar
+    Then I click on Line Listing button
+    And I click CHOOSE CASE button
+    And I search for the last case uuid in the CHOOSE SOURCE Contact window for DE
+    And I open the first found result in the CHOOSE SOURCE Contact window for De
+    And I create a new Contact with specific data through Line Listing with duplicated data for De
+    And I save the new contact using line listing feature
+    And I Pick a new person in Pick or create person popup during contact creation for DE
+    And I filter by Person's full name of last created duplicated line listing contact on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I open 1 contact in order from list
+    And I click NEW VACCINATION button for DE
+    And I set new vaccination name the same as duplicate for DE
+    And I click SAVE button in new Vaccination form
+    When I click on the Contacts button from navbar
+    And I filter by Person's full name of last created duplicated line listing contact on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I open 2 contact in order from list
+    And I click NEW VACCINATION button for DE
+    And I set new vaccination name the same as duplicate for DE
+    And I click SAVE button in new Vaccination form
+    And I click on the Contacts button from navbar
+    And I collect the leading contact UUID displayed on Contact Directory Page
+    And I click on the More button on Contact directory page
+    Then I click on Merge Duplicates on Contact directory page
+    And I click on Merge button of leading duplicated line listing Contact in Merge Duplicate Contact page
+    Then I click to Confirm action in Merge Duplicates Cases popup
+    And I click on the Contacts button from navbar
+    And I filter by Person's full name of last created duplicated line listing contact on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I open 1 contact in order from list
+    And I check that number of added Vaccinations is 2
+    And I click to edit 1 vaccination on Edit Contact page
+    And I check that displayed vaccination date in form is equal to date from duplicated entry
+    And I close import popup in Edit Contact directory
+    And I click to edit 2 vaccination on Edit Contact page
+    And I check that displayed vaccination date in form is equal to date from duplicated entry
+
+  @issue=SORDEV-11753 @env_de
+  Scenario: Duplicate detection for vaccinations when merging contacts[5]
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    When I click on the Contacts button from navbar
+    Then I click on Line Listing button
+    And I click CHOOSE CASE button
+    And I search for the last case uuid in the CHOOSE SOURCE Contact window for DE
+    And I open the first found result in the CHOOSE SOURCE Contact window for De
+    And I create a new Contact with specific data through Line Listing with duplicated data for De
+    And I save the new contact using line listing feature
+    Then I click on the Contacts button from navbar
+    Then I click on Line Listing button
+    And I click CHOOSE CASE button
+    And I search for the last case uuid in the CHOOSE SOURCE Contact window for DE
+    And I open the first found result in the CHOOSE SOURCE Contact window for De
+    And I create a new Contact with specific data through Line Listing with duplicated data for De
+    And I save the new contact using line listing feature
+    And I Pick a new person in Pick or create person popup during contact creation for DE
+    And I filter by Person's full name of last created duplicated line listing contact on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I open 1 contact in order from list
+    And I click NEW VACCINATION button for DE
+    And I fill new duplicate vaccination data in new Vaccination form for DE without vaccination date and name
+    And I click SAVE button in new Vaccination form
+    When I click on the Contacts button from navbar
+    And I filter by Person's full name of last created duplicated line listing contact on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I open 2 contact in order from list
+    And I click NEW VACCINATION button for DE
+    And I fill new duplicate vaccination data in new Vaccination form for DE without vaccination date and name
+    And I click SAVE button in new Vaccination form
+    And I click on the Contacts button from navbar
+    And I collect the leading contact UUID displayed on Contact Directory Page
+    And I click on the More button on Contact directory page
+    Then I click on Merge Duplicates on Contact directory page
+    And I click on Merge button of leading duplicated line listing Contact in Merge Duplicate Contact page
+    Then I click to Confirm action in Merge Duplicates Cases popup
+    And I click on the Contacts button from navbar
+    And I filter by Person's full name of last created duplicated line listing contact on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I open 1 contact in order from list
+    And I check that number of added Vaccinations is 2
+    And I click to edit 1 vaccination on Edit Contact page
+    And I check that displayed vaccination form has empty vaccination date and name
+    And I close import popup in Edit Contact directory
+    And I click to edit 2 vaccination on Edit Contact page
+    And I check that displayed vaccination form has empty vaccination date and name

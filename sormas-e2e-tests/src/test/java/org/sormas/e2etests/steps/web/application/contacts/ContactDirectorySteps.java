@@ -171,6 +171,7 @@ public class ContactDirectorySteps implements En {
 
   public static String contactID1;
   public static String contactID2;
+  public static String leadingContactUUID;
 
   @Inject
   public ContactDirectorySteps(
@@ -268,11 +269,21 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
+    When(
+        "I collect the leading contact UUID displayed on Contact Directory Page",
+        () -> leadingContactUUID = getContactIDByIndex(1));
     And(
         "I click on Merge button of leading case in Merge Duplicate Contact page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
               getMergeDuplicatesButtonById(collectedContact.getUuid()));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
+        });
+    And(
+        "I click on Merge button of leading duplicated line listing Contact in Merge Duplicate Contact page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              getMergeDuplicatesButtonById(leadingContactUUID));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
         });
     When(
@@ -320,6 +331,7 @@ public class ContactDirectorySteps implements En {
         "I click on Merge Duplicates on Contact directory page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_MERGE_DUPLICATES);
+          TimeUnit.SECONDS.sleep(2);
         });
     When(
         "I click Leave Bulk Edit Mode on Contact directory page",
