@@ -19,7 +19,6 @@ package de.symeda.sormas.api.utils;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasLength;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -63,35 +62,12 @@ public class PasswordHelperTest {
 
 		password = "QTj]qF90U~-CMLa/";
 
-		for (int i = 0; i < 1000; i++) {
-			String passwordHash = PasswordHelper.encodePassword(password, PasswordHelper.createPass(16));
-			assertThat(passwordHash, hasLength(64));
-		}
-
 		seed = "xPQCk3J5psSOkLcp";
 		passwordHashExpected = "35472f3b451e136556597ec82c16236c85a77dd1718173f2bedd1b1ab3737277";
 		assertThat(PasswordHelper.encodePassword(password, seed), equalTo(passwordHashExpected));
+
 		seed = "eqQ8HaXBkmjqqBgt";
 		passwordHashExpected = "0daf0f39b9f32cc81462f8c4a9f12ac96552474769768aa6811f672692945d98";
 		assertThat(PasswordHelper.encodePassword(password, seed), equalTo(passwordHashExpected));
-	}
-
-	@Test
-	public void testEncodePasswordWithValidHashLength() {
-
-		String password;
-		String seed;
-
-		password = "QTj]qF90U~-CMLa/";
-
-		// Check a reasonable amount of iterations that the password results in a stable length hash
-		for (int i = 1; i <= 1_024; i++) {
-			seed = PasswordHelper.createPass(16);
-			String passwordHash = PasswordHelper.encodePassword(password, seed);
-			assertThat(
-				String.format("Invalid hash length in iteration %d. password:'%s', seed:'%s' hash:'%s'", i, password, seed, passwordHash),
-				passwordHash,
-				hasLength(64));
-		}
 	}
 }

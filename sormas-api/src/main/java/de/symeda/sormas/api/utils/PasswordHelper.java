@@ -24,6 +24,8 @@ import java.security.SecureRandom;
 
 import javax.validation.ValidationException;
 
+import org.apache.commons.codec.binary.Hex;
+
 public final class PasswordHelper {
 
 	private PasswordHelper() {
@@ -64,8 +66,6 @@ public final class PasswordHelper {
 		}
 	}
 
-	private static final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
-
 	public static String createPass(final int length) {
 
 		SecureRandom rnd = new SecureRandom();
@@ -85,23 +85,11 @@ public final class PasswordHelper {
 			digest = MessageDigest.getInstance("SHA-256");
 			digest.reset();
 			byte[] digested = digest.digest((password + seed).getBytes(StandardCharsets.UTF_8));
-			String encoded = hexEncode(digested);
-
+			String encoded = Hex.encodeHexString(digested);
 			return encoded;
 
 		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	public static String hexEncode(byte[] data) {
-
-		char[] hexChars = new char[data.length * 2];
-		for (int j = 0; j < data.length; j++) {
-			int v = data[j] & 0xFF;
-			hexChars[j * 2] = HEX_ARRAY[v >>> 4];
-			hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
-		}
-		return new String(hexChars);
 	}
 }
