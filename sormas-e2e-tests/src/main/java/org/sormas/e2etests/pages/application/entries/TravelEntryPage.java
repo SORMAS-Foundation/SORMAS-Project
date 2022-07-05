@@ -27,6 +27,8 @@ public class TravelEntryPage {
   public static final By COMMIT_BUTTON = By.cssSelector("div#commit");
   public static final By NEW_PERSON_RADIOBUTTON_DE =
       By.xpath("//*[text()='Eine neue Person anlegen']");
+  public static final By SELECT_ANOTHER_PERSON_DE =
+      By.xpath("//*[text()='Eine andere Person w\u00E4hlen']");
   public static final By IMPORT_SUCCESS_DE = By.xpath("//*[text()='Import erfolgreich!']");
   public static final By NEW_TRAVEL_ENTRY_BUTTON = By.cssSelector("div#travelEntryNewTravelEntry");
   public static final By EPI_DATA_CASE_NEW_TRAVEL_ENTRY_DE_BUTTON = By.id("Neue Einreise");

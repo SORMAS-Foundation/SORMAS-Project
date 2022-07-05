@@ -144,6 +144,7 @@ public class CreateNewCaseSteps implements En {
   private static BaseSteps baseSteps;
   protected static Case oneCase;
   public static final String userDirPath = System.getProperty("user.dir");
+  public static List<String> casesUUID = new ArrayList<>();
 
   @Inject
   public CreateNewCaseSteps(
@@ -168,7 +169,7 @@ public class CreateNewCaseSteps implements En {
             faker.number().numberBetween(1, 27));
     UUID randomUUID_first_user = UUID.randomUUID();
     UUID randomUUID_second_user = UUID.randomUUID();
-    List<String> casesUUID = new ArrayList<>();
+
     oneCase = caseService.buildGeneratedCaseForOnePerson(firstName, lastName, dateOfBirth);
     oneCase = oneCase.toBuilder().disease("COVID-19").build();
 
@@ -671,6 +672,8 @@ public class CreateNewCaseSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX);
             webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
           }
+          TimeUnit.SECONDS.sleep(1);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
           //   webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
     When(
@@ -936,6 +939,16 @@ public class CreateNewCaseSteps implements En {
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(POINT_OF_ENTRY_REGION_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(POINT_OF_ENTRY_DISTRICT_BUTTON);
+        });
+
+    When(
+        "I check if collected case UUID is equal with current",
+        () -> {
+          softly.assertEquals(
+              casesUUID.get(0),
+              webDriverHelpers.getValueFromWebElement(UUID_INPUT),
+              "UUIDs of cases are not equal");
+          softly.assertAll();
         });
   }
 

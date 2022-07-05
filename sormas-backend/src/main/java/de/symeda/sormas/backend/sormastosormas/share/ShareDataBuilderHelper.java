@@ -98,7 +98,8 @@ public class ShareDataBuilderHelper {
 	public ContactDto getContactDto(Contact contact, Pseudonymizer pseudonymizer) {
 		ContactDto contactDto = contactFacade.convertToDto(contact, pseudonymizer);
 
-		contactDto.setReportingUser(null);
+		// reporting user is not set to null here as it would not pass the validation
+		// the receiver appears to set it to SORMAS2SORMAS Client anyway in the UI
 		contactDto.setContactOfficer(null);
 		contactDto.setResultingCaseUser(null);
 		contactDto.setSormasToSormasOriginInfo(null);

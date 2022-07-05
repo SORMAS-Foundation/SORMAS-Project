@@ -73,6 +73,8 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	public static final Reference LAB_MESSAGE_CONVERT_TO_HTML = new Reference("convertToHTML");
 	public static final Reference GET_EXTERNAL_LAB_MESSAGES = new Reference("getExternalLabMessages");
 
+	private FhirContext fhirContext;
+	private IParser fhirJsonParser;
 	private String auditSourceSite;
 	private Map<String, AuditEvent.AuditEventAction> actionBackendMap;
 	private static final Map<String, AuditEvent.AuditEventAction> actionRestMap = new HashMap<String, AuditEvent.AuditEventAction>() {
@@ -118,12 +120,13 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		}
 
 		actionBackendMap = new HashMap<>();
+
+		fhirContext = FhirContext.forR4();
+		fhirJsonParser = fhirContext.newJsonParser();
 	}
 
 	private void accept(AuditEvent event) {
-		FhirContext ctx = FhirContext.forR4();
-		IParser parser = ctx.newJsonParser();
-		String serialized = parser.encodeResourceToString(event);
+		String serialized = fhirJsonParser.encodeResourceToString(event);
 		auditLogger.getAuditLogger().info(serialized);
 	}
 

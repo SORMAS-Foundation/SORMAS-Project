@@ -31,6 +31,7 @@ import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
+import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
@@ -50,6 +51,9 @@ public class CaseShareDataBuilder
 	}
 
 	@EJB
+	private PersonFacadeEjb.PersonFacadeEjbLocal personFacade;
+
+	@EJB
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
@@ -66,6 +70,12 @@ public class CaseShareDataBuilder
 		dataBuilderHelper.clearIgnoredProperties(cazeDto);
 
 		return new SormasToSormasCaseDto(personDto, cazeDto);
+	}
+
+	@Override
+	public void doBusinessValidation(SormasToSormasCaseDto dto) {
+		personFacade.validate(dto.getPerson());
+		caseFacade.validate(dto.getEntity());
 	}
 
 	@Override

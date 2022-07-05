@@ -175,4 +175,6 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 
 		return EditPermissionType.ALLOWED;
 	}
+
+	public abstract EditPermissionType isEditAllowed(ADO entity);
 }

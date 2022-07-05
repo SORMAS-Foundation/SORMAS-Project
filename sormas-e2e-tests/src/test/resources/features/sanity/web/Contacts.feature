@@ -902,3 +902,67 @@ Feature: Contacts end to end tests
     And I click on the Contacts button from navbar
     And I apply filter by duplicated contact Person data on Contact Directory Page
     And I check that number of displayed contact results is 1
+
+  @issue=SORDEV-11451 @env_main
+  Scenario: Add reason for deletion to confirmation dialogue
+    Given I log in as a Admin User
+    When I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click on SAVE new contact button
+    And I copy url of current contact
+    Then I click on Delete button from contact
+    And I check if reason for deletion as "Deletion request by affected person according to GDPR" is available
+    And I check if reason for deletion as "Deletion request by another authority" is available
+    And I check if reason for deletion as "Entity created without legal reason" is available
+    And I check if reason for deletion as "Responsibility transferred to another authority" is available
+    And I check if reason for deletion as "Deletion of duplicate entries" is available
+    And I check if reason for deletion as "Other reason" is available
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from contact
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Please choose a reason for deletion" appears next to Reason for deletion
+    When I set Reason for deletion as "Other reason"
+    Then I check if "Reason for deletion details" field is available in Confirm deletion popup in Immunization
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Please add a reason for deletion" appears next to Reason for deletion
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from immunization case
+    And I set Reason for deletion as "Deletion request by affected person according to GDPR"
+    And I click on Yes option in Confirm deletion popup
+    When I back to deleted contact by url
+    Then I check if reason of deletion is set to "Deletion request by affected person according to GDPR"
+    And I check if External token input on case edit page is disabled
+    And I check if Case or event information text area on case edit page is disabled
+
+  @issue=SORDEV-11451 @env_de
+  Scenario: Add reason for deletion to confirmation dialogue for DE version
+    Given I log in as a Admin User
+    When I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form for DE version without multicontact
+    And I click on SAVE new contact button
+    And I copy url of current contact
+    Then I click on Delete button from contact
+    And I check if reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO" is available
+    And I check if reason for deletion as "Löschen auf Anforderung einer anderen Behörde" is available
+    And I check if reason for deletion as "Entität ohne Rechtsgrund angelegt" is available
+    And I check if reason for deletion as "Abgabe des Vorgangs wegen Nicht-Zuständigkeit" is available
+    And I check if reason for deletion as "Löschen von Duplikaten" is available
+    And I check if reason for deletion as "Anderer Grund" is available
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from contact
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Bitte wählen Sie einen Grund fürs Löschen" appears next to Reason for deletion
+    When I set Reason for deletion as "Anderer Grund"
+    Then I check if "DETAILS ZUM GRUND DES LÖSCHENS" field is available in Confirm deletion popup in Immunization
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Bitte geben Sie einen Grund fürs Löschen an" appears next to Reason for deletion
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from immunization case
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    When I back to deleted contact by url
+    Then I check if reason of deletion is set to "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I check if External token input on case edit page is disabled
+    And I check if Case or event information text area on case edit page is disabled

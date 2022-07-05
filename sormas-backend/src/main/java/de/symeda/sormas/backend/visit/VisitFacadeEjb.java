@@ -30,7 +30,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -105,9 +104,10 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "VisitFacade")
-@RolesAllowed({
+@RightsAllowed({
 	UserRight._CONTACT_VIEW,
 	UserRight._CASE_VIEW })
 public class VisitFacadeEjb implements VisitFacade {
@@ -212,7 +212,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._VISIT_CREATE,
 		UserRight._VISIT_EDIT })
 	public VisitDto saveVisit(@Valid VisitDto dto) {
@@ -239,7 +239,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._EXTERNAL_VISITS)
+	@RightsAllowed(UserRight._EXTERNAL_VISITS)
 	public ExternalVisitDto saveExternalVisit(@Valid final ExternalVisitDto dto) {
 
 		final String personUuid = dto.getPersonUuid();
@@ -293,7 +293,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._VISIT_DELETE)
+	@RightsAllowed(UserRight._VISIT_DELETE)
 	public void deleteVisit(String visitUuid) {
 
 		if (!userService.hasRight(UserRight.VISIT_DELETE)) {
@@ -313,9 +313,9 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<VisitIndexDto> cq = cb.createQuery(VisitIndexDto.class);
-		
+
 		Root<Visit> visit = cq.from(Visit.class);
-		
+
 		VisitJoins visitJoins = new VisitJoins(visit, JoinType.LEFT);
 		Join<Visit, Symptoms> symptoms = visitJoins.getSymptoms();
 		Join<Visit, User> visitUser = visitJoins.getUser();
@@ -478,10 +478,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		return resultList;
 	}
 
-	private Expression<Object> jurisdictionSelector(
-		CriteriaQuery cq,
-		CriteriaBuilder cb,
-		VisitJoins visitJoins) {
+	private Expression<Object> jurisdictionSelector(CriteriaQuery cq, CriteriaBuilder cb, VisitJoins visitJoins) {
 		return JurisdictionHelper.booleanSelector(
 			cb,
 			cb.or(
