@@ -254,80 +254,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		List<AggregatedCaseCountDto> queryResult = em.createQuery(cq).getResultList();
 		Map<Disease, AggregatedCaseCountDto> reportSet = new HashMap<>();
 
-		List<AggregatedCaseCountDto> resultList = new ArrayList<>();
-		Map<AggregatedCaseCountDto, List<AggregatedCaseCountDto>> subJurisdictionsToBeMerged = new HashMap<>();
-
-		final AggregateReportGroupingLevel finalGroupingLevel = groupingLevel;
-		for (AggregatedCaseCountDto aggregatedCaseCountDto : queryResult) {
-
-			Optional<AggregatedCaseCountDto> similarOptional =
-				resultList.stream().filter(a -> aggregatedCaseCountDto.similar(a, finalGroupingLevel)).findAny();
-			if (similarOptional.isPresent()) {
-				AggregatedCaseCountDto similar = similarOptional.get();
-				if (aggregatedCaseCountDto.equalJurisdiction(similar)) {
-					if (aggregatedCaseCountDto.getChangeDate().getTime() > similar.getChangeDate().getTime()) {
-						resultList.remove(similar);
-						resultList.add(aggregatedCaseCountDto);
-					}
-				} else {
-					if (aggregatedCaseCountDto.higherJurisdictionLevel(similar)) {
-						resultList.remove(similar);
-						resultList.add(aggregatedCaseCountDto);
-					} else if (aggregatedCaseCountDto.sameJurisdictionLevel(similar)) {
-						if (subJurisdictionsToBeMerged.containsKey(similar)) {
-							List<AggregatedCaseCountDto> mergeListDtos = subJurisdictionsToBeMerged.get(similar);
-							Optional<AggregatedCaseCountDto> mergeDtoEqualJurisdictionOptional =
-								mergeListDtos.stream().filter(a -> a.equalJurisdiction(aggregatedCaseCountDto)).findAny();
-							if (mergeDtoEqualJurisdictionOptional.isPresent()) {
-								AggregatedCaseCountDto mergeDuplicate = mergeDtoEqualJurisdictionOptional.get();
-								if (aggregatedCaseCountDto.getChangeDate().getTime() > mergeDuplicate.getChangeDate().getTime()) {
-									mergeListDtos.remove(mergeDuplicate);
-									mergeListDtos.add(aggregatedCaseCountDto);
-								}
-							} else {
-								mergeListDtos.add(aggregatedCaseCountDto);
-							}
-						} else {
-							List<AggregatedCaseCountDto> arrayList = new ArrayList();
-							arrayList.add(aggregatedCaseCountDto);
-							subJurisdictionsToBeMerged.put(similar, arrayList);
-						}
-					}
-				}
-			} else {
-				resultList.add(aggregatedCaseCountDto);
-			}
-		}
-
-		subJurisdictionsToBeMerged.forEach((aggregatedCaseCountDto, aggregatedCaseCountDtos) -> {
-			resultList.remove(aggregatedCaseCountDto);
-			aggregatedCaseCountDto
-				.setNewCases(aggregatedCaseCountDtos.stream().mapToLong(a -> a.getNewCases()).sum() + aggregatedCaseCountDto.getNewCases());
-			aggregatedCaseCountDto
-				.setDeaths(aggregatedCaseCountDtos.stream().mapToLong(a -> a.getDeaths()).sum() + aggregatedCaseCountDto.getDeaths());
-			aggregatedCaseCountDto.setLabConfirmations(
-				aggregatedCaseCountDtos.stream().mapToLong(a -> a.getLabConfirmations()).sum() + aggregatedCaseCountDto.getLabConfirmations());
-			if (aggregatedCaseCountDto.getHealthFacilityId() != null || aggregatedCaseCountDto.getPointOfEntryId() != null) {
-				aggregatedCaseCountDto.setHealthFacilityId(null);
-				aggregatedCaseCountDto.setHealthFacilityName(null);
-				aggregatedCaseCountDto.setPointOfEntryId(null);
-				aggregatedCaseCountDto.setPointOfEntryName(null);
-			} else if (aggregatedCaseCountDto.getDistrictId() != null
-				&& aggregatedCaseCountDto.getPointOfEntryId() == null
-				&& aggregatedCaseCountDto.getHealthFacilityId() == null) {
-				aggregatedCaseCountDto.setDistrictId(null);
-				aggregatedCaseCountDto.setDistrictName(null);
-			}
-			aggregatedCaseCountDto.setReportingUser(null);
-			resultList.add(aggregatedCaseCountDto);
-		});
-
-		resultList.forEach(aggregatedCaseCountDto -> {
-			if (aggregatedCaseCountDto.getReportingUser() != null
-				&& AggregateReportGroupingLevel.getByJurisdictionLevel(aggregatedCaseCountDto.getJurisdictionlevel()) != finalGroupingLevel) {
-				aggregatedCaseCountDto.setReportingUser(null);
-			}
-		});
+		List<AggregatedCaseCountDto> resultList = summarizeAggregateData(groupingLevel, queryResult);
 
 		for (AggregatedCaseCountDto result : resultList) {
 			reportSet.put(result.getDisease(), result);
@@ -423,6 +350,87 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 						: StringUtils.EMPTY)
 				.thenComparing(
 					r -> r.getAgeGroup() != null ? Integer.parseInt(r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0));
+		return resultList;
+	}
+
+	private List<AggregatedCaseCountDto> summarizeAggregateData(
+		final AggregateReportGroupingLevel finalGroupingLevel,
+		List<AggregatedCaseCountDto> queryResult) {
+		final List<AggregatedCaseCountDto> resultList = new ArrayList<>();
+		final Map<AggregatedCaseCountDto, List<AggregatedCaseCountDto>> reportsToBeSummed = new HashMap<>();
+
+		// extract relevant aggregate data and prepare what needs to be sumed
+		for (AggregatedCaseCountDto dto : queryResult) {
+
+			final Optional<AggregatedCaseCountDto> optionalDto = resultList.stream().filter(a -> dto.similar(a, finalGroupingLevel)).findAny();
+			if (optionalDto.isPresent()) {
+				final AggregatedCaseCountDto similar = optionalDto.get();
+				if (dto.equalJurisdiction(similar)) { // for exact same jurisdiction we use the most recent data
+					if (dto.getChangeDate().getTime() > similar.getChangeDate().getTime()) {
+						resultList.remove(similar);
+						resultList.add(dto);
+					}
+				} else {
+					if (dto.higherJurisdictionLevel(similar)) { // higher jurisdiction level data exists we do not take into consideration lower level data
+						resultList.remove(similar);
+						resultList.add(dto);
+					} else if (dto.sameJurisdictionLevel(similar)) { // same jurisdiction level we sum data (for example data for 2 facilities in one district)
+						if (reportsToBeSummed.containsKey(similar)) {
+							final List<AggregatedCaseCountDto> sumList = reportsToBeSummed.get(similar);
+							final Optional<AggregatedCaseCountDto> equalReportOptional =
+								sumList.stream().filter(a -> a.equalJurisdiction(dto)).findAny();
+							if (equalReportOptional.isPresent()) {
+								final AggregatedCaseCountDto duplicateReport = equalReportOptional.get();
+								if (dto.getChangeDate().getTime() > duplicateReport.getChangeDate().getTime()) {
+									sumList.remove(duplicateReport);
+									sumList.add(dto);
+								}
+							} else {
+								sumList.add(dto);
+							}
+						} else {
+							List<AggregatedCaseCountDto> arrayList = new ArrayList();
+							arrayList.add(dto);
+							reportsToBeSummed.put(similar, arrayList);
+						}
+					}
+				}
+			} else {
+				resultList.add(dto);
+			}
+		}
+
+		// sumarize data
+		reportsToBeSummed.forEach((aggregatedCaseCountDto, aggregatedCaseCountDtos) -> {
+			resultList.remove(aggregatedCaseCountDto);
+			aggregatedCaseCountDto
+				.setNewCases(aggregatedCaseCountDtos.stream().mapToLong(a -> a.getNewCases()).sum() + aggregatedCaseCountDto.getNewCases());
+			aggregatedCaseCountDto
+				.setDeaths(aggregatedCaseCountDtos.stream().mapToLong(a -> a.getDeaths()).sum() + aggregatedCaseCountDto.getDeaths());
+			aggregatedCaseCountDto.setLabConfirmations(
+				aggregatedCaseCountDtos.stream().mapToLong(a -> a.getLabConfirmations()).sum() + aggregatedCaseCountDto.getLabConfirmations());
+			if (aggregatedCaseCountDto.getHealthFacilityId() != null || aggregatedCaseCountDto.getPointOfEntryId() != null) {
+				aggregatedCaseCountDto.setHealthFacilityId(null);
+				aggregatedCaseCountDto.setHealthFacilityName(null);
+				aggregatedCaseCountDto.setPointOfEntryId(null);
+				aggregatedCaseCountDto.setPointOfEntryName(null);
+			} else if (aggregatedCaseCountDto.getDistrictId() != null
+				&& aggregatedCaseCountDto.getPointOfEntryId() == null
+				&& aggregatedCaseCountDto.getHealthFacilityId() == null) {
+				aggregatedCaseCountDto.setDistrictId(null);
+				aggregatedCaseCountDto.setDistrictName(null);
+			}
+			aggregatedCaseCountDto.setReportingUser(null);
+			resultList.add(aggregatedCaseCountDto);
+		});
+
+		// remove reporting user from rows that have been summerized/aggregated
+		resultList.forEach(aggregatedCaseCountDto -> {
+			if (aggregatedCaseCountDto.getReportingUser() != null
+				&& AggregateReportGroupingLevel.getByJurisdictionLevel(aggregatedCaseCountDto.getJurisdictionlevel()) != finalGroupingLevel) {
+				aggregatedCaseCountDto.setReportingUser(null);
+			}
+		});
 		return resultList;
 	}
 
