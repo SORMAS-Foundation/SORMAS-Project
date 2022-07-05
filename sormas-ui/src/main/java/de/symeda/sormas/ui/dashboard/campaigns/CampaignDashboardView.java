@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.Page;
@@ -110,8 +111,8 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		final List<String> tabs = new ArrayList<>(dataProvider.getTabIds());
 		tabs.forEach(tabId -> {
 			tabSwitcher.addItem(tabId);
-			tabSwitcher.setItemCaption(tabId, tabId);
-		});
+			tabSwitcher.setItemCaption(tabId, WordUtils.capitalizeFully(tabId)); 
+		});																		 
 		if (!(tabs.size() > 1)) {
 			tabSwitcherLayout.setVisible(false);
 		}

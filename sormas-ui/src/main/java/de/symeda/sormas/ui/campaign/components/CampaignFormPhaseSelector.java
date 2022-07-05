@@ -4,6 +4,8 @@ package de.symeda.sormas.ui.campaign.components;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.text.WordUtils;
+
 import com.vaadin.data.HasValue;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComboBox;
@@ -41,13 +43,13 @@ public class CampaignFormPhaseSelector extends HorizontalLayout {
 			
 			List<String> phases = new ArrayList();
 			//phases.add("ALL PHASES");
-			phases.add(CampaignPhase.PRE.toString());
-			phases.add(CampaignPhase.INTRA.toString());
-			phases.add(CampaignPhase.POST.toString());
+			phases.add(WordUtils.capitalizeFully(CampaignPhase.PRE.toString()));
+			phases.add(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));
+			phases.add(WordUtils.capitalizeFully(CampaignPhase.POST.toString()));
 			
 			
 			phaseComboBox.setItems(phases);
-			phaseComboBox.setValue(CampaignPhase.INTRA.toString());
+			phaseComboBox.setValue(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));
 			phaseComboBox.setEmptySelectionAllowed(false);
 			//phaseComboBox.setEmptySelectionCaption(I18nProperties.getCaption(Captions.campaignAllCampaigns));
 			//final CampaignReferenceDto lastStartedCampaign = FacadeProvider.getCampaignFacade().getLastStartedCampaign();
@@ -78,13 +80,13 @@ public class CampaignFormPhaseSelector extends HorizontalLayout {
 			
 			List<String> phases = new ArrayList();
 			//phases.add("ALL PHASES");
-			phases.add(CampaignPhase.PRE.toString());
-			phases.add(CampaignPhase.INTRA.toString());
-			phases.add(CampaignPhase.POST.toString());
+			phases.add(WordUtils.capitalizeFully(CampaignPhase.PRE.toString()));
+			phases.add(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));
+			phases.add(WordUtils.capitalizeFully(CampaignPhase.POST.toString()));
 			
 			
 			phaseComboBox.setItems(phases);
-			phaseComboBox.setValue(CampaignPhase.INTRA.toString());
+			phaseComboBox.setValue(WordUtils.capitalizeFully(CampaignPhase.INTRA.toString()));
 			phaseComboBox.setEmptySelectionAllowed(false);
 			//phaseComboBox.setEmptySelectionCaption(I18nProperties.getCaption(Captions.campaignAllCampaigns));
 			//final CampaignReferenceDto lastStartedCampaign = FacadeProvider.getCampaignFacade().getLastStartedCampaign();

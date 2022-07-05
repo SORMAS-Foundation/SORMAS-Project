@@ -25,7 +25,7 @@
           border-top-width: 3px;
           border-top-color: transparent;
           color: $v-selection-color;
-          font-weight: 600;
+         
           text-decoration: none;
 
           a {
@@ -45,7 +45,8 @@
         &.selected {
           .v-caption {
            /* border-top-color: $v-selection-color;*/
-            font-size: 16px;
+            border-bottom-color: #F28A35  !important;
+            font-weight: bold;
           }
         } 
       }

@@ -166,7 +166,7 @@ public class AboutView extends VerticalLayout implements View {
 						configFacade.getCustomBrandingName())
 				: "";
 		Label infoLabel = new Label(
-				I18nProperties.getCaption(Captions.aboutApmisVersion) + ": " + InfoProvider.InfoProvider_apmis(),
+				I18nProperties.getCaption(Captions.aboutApmisVersion) + " " + InfoProvider.InfoProvider_apmis(),
 				ContentMode.HTML);
 		Label aboutText = new Label(I18nProperties.getCaption(Captions.aboutText), ContentMode.HTML); 
 		aboutText.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
@@ -488,7 +488,7 @@ public class AboutView extends VerticalLayout implements View {
 		
 
 		TabSheet tabs = new TabSheet();
-		tabs.addStyleName("");
+		//tabs.addStyleName("");
 		tabs.addTab(apmisguideLayout, I18nProperties.getCaption(Captions.apmisaboutguides));
 		// tabs.addTab(hziguideLayout,
 		// I18nProperties.getCaption(Captions.apmishziguides));

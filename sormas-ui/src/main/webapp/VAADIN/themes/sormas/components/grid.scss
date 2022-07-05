@@ -179,7 +179,7 @@ $v-grid-cell-focused-border: none !default;
     
       background-color: $v-background-color; 
 
-	  .v-grid-cell,
+	  .v-grid-cell, 
 	  .v-treegrid-cell {
 	    border-left: none;
 	    border-bottom: none;
@@ -189,7 +189,7 @@ $v-grid-cell-focused-border: none !default;
       .v-grid-column-header-content,
       .v-treegrid-column-header-content {
         text-transform: uppercase;
-        font-weight: 600;
+        font-weight: bolder;
 	    border-bottom: $v-border;
 	    min-height: $v-grid-row-height;
 
