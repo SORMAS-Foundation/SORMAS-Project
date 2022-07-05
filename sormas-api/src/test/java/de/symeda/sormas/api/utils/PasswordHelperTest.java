@@ -84,6 +84,7 @@ public class PasswordHelperTest {
 
 		password = "QTj]qF90U~-CMLa/";
 
+		// Check a reasonable amount of iterations that the password results in a stable length hash
 		for (int i = 1; i <= 1_024; i++) {
 			seed = PasswordHelper.createPass(16);
 			String passwordHash = PasswordHelper.encodePassword(password, seed);

@@ -64,7 +64,7 @@ public final class PasswordHelper {
 		}
 	}
 
-	private static final String HEX_ALPHABET = "0123456789abcdef";
+	private static final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
 
 	public static String createPass(final int length) {
 
@@ -96,10 +96,12 @@ public final class PasswordHelper {
 
 	public static String hexEncode(byte[] data) {
 
-		StringBuilder hex = new StringBuilder(2 * data.length);
-		for (final byte b : data) {
-			hex.append(HEX_ALPHABET.charAt((b & 0xF0) >> 4)).append(HEX_ALPHABET.charAt((b & 0x0F)));
+		char[] hexChars = new char[data.length * 2];
+		for (int j = 0; j < data.length; j++) {
+			int v = data[j] & 0xFF;
+			hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+			hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
 		}
-		return hex.toString();
+		return new String(hexChars);
 	}
 }
