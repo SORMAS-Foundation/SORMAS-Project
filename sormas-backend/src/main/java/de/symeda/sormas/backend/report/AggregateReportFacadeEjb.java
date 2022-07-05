@@ -486,6 +486,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._AGGREGATE_REPORT_EDIT)
 	public void deleteAggregatedReports(List<String> aggregatedReportUuids) {
 		for (String aggregatedReportUuid : aggregatedReportUuids) {
 			deleteReport(aggregatedReportUuid);
