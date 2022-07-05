@@ -220,10 +220,10 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 			List<String> ageGroups = DatabaseHelper.getDiseaseConfigurationDao().getDiseaseConfiguration(disease).getAgeGroups();
 			if (ageGroups != null) {
 				ageGroups.forEach(ageGroup -> {
-					diseaseAgeGroupsWithoutReport.add(new DiseaseAgeGroup(disease.toString(), ageGroup));
+					diseaseAgeGroupsWithoutReport.add(new DiseaseAgeGroup(disease, ageGroup));
 				});
 			} else {
-				diseaseAgeGroupsWithoutReport.add(new DiseaseAgeGroup(disease.toString(), null));
+				diseaseAgeGroupsWithoutReport.add(new DiseaseAgeGroup(disease, null));
 			}
 		});
 
@@ -238,7 +238,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 				reportsByDisease.put(disease, aggregateReports);
 			}
 			diseasesWithoutReport.remove(disease.toString());
-			diseaseAgeGroupsWithoutReport.remove(new DiseaseAgeGroup(disease.toString(), report.getAgeGroup()));
+			diseaseAgeGroupsWithoutReport.remove(new DiseaseAgeGroup(disease, report.getAgeGroup()));
 		}
 
 		for (Map.Entry<Disease, List<AggregateReport>> entry : reportsByDisease.entrySet()) {
