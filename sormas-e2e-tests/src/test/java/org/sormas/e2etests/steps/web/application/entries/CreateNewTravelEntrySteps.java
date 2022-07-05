@@ -639,7 +639,7 @@ public class CreateNewTravelEntrySteps implements En {
               webDriverHelpers.getValueFromWebElement(
                   EditTravelEntryPage.POINT_OF_ENTRY_DETAILS_INPUT),
               "[System] Automatisch bef\u00FCllter Einreiseort",
-              "Point of Entry is not set properly");
+              "Point of Entry Details are not set properly");
           softly.assertAll();
         });
 
