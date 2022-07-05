@@ -67,6 +67,7 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.TYPE_OF_PLACE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.WEARING_MASK_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.WEARING_PPE_OPTIONS;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ACTION_MERGE_CONTACT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ACTIVE_CONTACT_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ALL_BUTTON_CONTACT;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
@@ -286,6 +287,19 @@ public class ContactDirectorySteps implements En {
               getMergeDuplicatesButtonById(leadingContactUUID));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
         });
+
+      And(
+              "I click on Merge button of first leading Contact in Merge Duplicate Contact page",
+              () -> {
+                  webDriverHelpers.clickOnWebElementBySelector(ACTION_MERGE_CONTACT_DIRECTORY);
+                  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
+              });
+      And(
+              "I filter by Case ID used during Contact creation",
+              () -> {
+                  webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, apiState.getCreatedCase().getUuid());
+                  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
+              });
     When(
         "I open the last created contact",
         () -> {
