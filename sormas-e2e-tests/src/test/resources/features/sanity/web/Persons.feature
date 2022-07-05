@@ -144,3 +144,16 @@ Feature: Edit Persons
     Given I log in with National User
     And I click on the Persons button from navbar
     Then I check that the Person table structure is correct
+
+
+  @issue=SORDEV-7424 @env_main
+  Scenario: Test event participant person sex required
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When I log in with National User
+    And I click on the Events button from navbar
+    And I navigate to the last created through API Event page via URL
+    And I click on the Event participant tab
+    And I add only first and last name data and check is sex combobox required for event participant creation
+    When I check if error display correctly expecting sex error

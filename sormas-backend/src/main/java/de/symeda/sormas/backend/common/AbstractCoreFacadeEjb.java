@@ -184,7 +184,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		Object[] deletionData = getDeletionData(uuid, deletionConfiguration);
 		Date referenceDate = (Date) deletionData[0];
 		Date deletiondate = DateHelper.addDays(referenceDate, deletionConfiguration.getDeletionPeriod());
-		return new DeletionInfoDto(deletiondate, (Date) deletionData[1], deletionConfiguration.getDeletionPeriod());
+		return new DeletionInfoDto(deletiondate, referenceDate, deletionConfiguration.getDeletionPeriod());
 	}
 
 	@Override

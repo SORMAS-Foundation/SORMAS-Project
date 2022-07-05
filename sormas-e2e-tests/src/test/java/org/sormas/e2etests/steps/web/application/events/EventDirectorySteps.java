@@ -110,6 +110,9 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SE
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.TEXT_FROM_BULK_DELETE_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.TOTAL_EVENTS_COUNTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.UNLINK_EVENT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.VALUE_SEPARATOR_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.VALUE_SEPARATOR_COMBOBOX_LIST;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.VALUE_SEPARATOR_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByIndex;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByUUID;
@@ -1252,6 +1255,23 @@ public class EventDirectorySteps implements En {
               headers.contains("HERDKENNUNG (INTERNES AKTENZEICHEN)"),
               "The German INTERNAL TOKEN column is not displayed!");
           softly.assertAll();
+        });
+
+    When(
+        "I check if default Value Separator is set to {string}",
+        (String option) -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(VALUE_SEPARATOR_INPUT),
+              option,
+              "Unexpected default Value Separator");
+          softly.assertAll();
+        });
+
+    When(
+        "I check is possible to set Value Separator to ([^\"]*)",
+        (String option) -> {
+          webDriverHelpers.clickOnWebElementBySelector(VALUE_SEPARATOR_COMBOBOX);
+          webDriverHelpers.clickOnWebElementBySelector(VALUE_SEPARATOR_COMBOBOX_LIST(option));
         });
   }
 
