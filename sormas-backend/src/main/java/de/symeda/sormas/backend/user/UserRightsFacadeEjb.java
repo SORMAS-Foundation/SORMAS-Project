@@ -142,7 +142,7 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 		sheet.createFreezePane(2, 2, 2, 2);
 		int columnIndex = 3;
 		for (UserRoleDto userRole : userRoleRights.keySet()) {
-			String columnCaption = userRole.toString();
+			String columnCaption = userRole.getCaption();
 			Cell headerCell = headerRow.createCell(columnIndex);
 			headerCell.setCellValue(columnCaption);
 			headerCell.setCellStyle(boldStyle);
