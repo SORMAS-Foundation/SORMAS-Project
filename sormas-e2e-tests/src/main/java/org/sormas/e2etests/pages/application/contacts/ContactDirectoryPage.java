@@ -67,6 +67,8 @@ public class ContactDirectoryPage {
       By.cssSelector("[id='followUpStatus'] [class='v-filterselect-button']");
   public static final By CONTACT_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON =
       By.cssSelector("div#actionApplyFilters");
+  public static final By CONTACT_DIRECTORY_DETAILED_PAGE_CONFIRM_FILTER_BUTTON =
+          By.cssSelector("div#actionConfirmFilters");
   public static final By GRID_RESULTS_COUNTER_CONTACT_DIRECTORY = By.cssSelector(".badge");
   public static final By CONTACTS_WITH_QUARANTINE_ORDERED_VERBALLY_CHECKBOX =
       By.id("quarantineOrderedVerbally");

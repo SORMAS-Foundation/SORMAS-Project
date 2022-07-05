@@ -248,7 +248,7 @@ Feature: Vaccination tests
     And I check that displayed vaccination date in form is equal to date from duplicated entry
 
   @issue=SORDEV-11753 @env_de
-  Scenario: Duplicate detection for vaccinations when merging contactsss tests [4]
+  Scenario: Duplicate detection for vaccinations when merging contacts[4]
     Given API: I create a new person
     And API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
@@ -289,7 +289,7 @@ Feature: Vaccination tests
     And I click on the More button on Contact directory page
     Then I click on Merge Duplicates on Contact directory page
     And I filter by Case ID used during Contact creation
-    And I click APPLY BUTTON in Contact Directory Page
+    And I click APPLY BUTTON in Merge Duplicates View on Contact Directory Page
     And I click on Merge button of first leading Contact in Merge Duplicate Contact page
     Then I click to Confirm action in Merge Duplicates Cases popup
     And I click on the Contacts button from navbar
@@ -346,7 +346,7 @@ Feature: Vaccination tests
     Then I click on Merge Duplicates on Contact directory page
     And I click on Merge button of first leading Contact in Merge Duplicate Contact page
     And I filter by Case ID used during Contact creation
-    And I click APPLY BUTTON in Contact Directory Page
+    And I click APPLY BUTTON in Merge Duplicates View on Contact Directory Page
     Then I click to Confirm action in Merge Duplicates Cases popup
     And I click on the Contacts button from navbar
     And I filter by Person's full name of last created duplicated line listing contact on Contact Directory Page

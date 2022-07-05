@@ -86,6 +86,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_CLASSIFICATION_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DATA_TAB;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DIRECTORY_DETAILED_PAGE_CONFIRM_FILTER_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DIRECTORY_DETAILED_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DISEASE_FILTER_COMBOBOX;
@@ -757,6 +758,13 @@ public class ContactDirectorySteps implements En {
               CONTACT_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
           TimeUnit.SECONDS.sleep(3); // needed for table refresh
         });
+      And(
+              "I click APPLY BUTTON in Merge Duplicates View on Contact Directory Page",
+              () -> {
+                  webDriverHelpers.clickOnWebElementBySelector(
+                          CONTACT_DIRECTORY_DETAILED_PAGE_CONFIRM_FILTER_BUTTON);
+                  TimeUnit.SECONDS.sleep(3); // needed for table refresh
+              });
 
     And(
         "I click {string} checkbox on Contact directory page",
