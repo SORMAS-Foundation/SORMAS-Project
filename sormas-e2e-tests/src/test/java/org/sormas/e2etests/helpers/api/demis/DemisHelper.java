@@ -20,7 +20,6 @@ package org.sormas.e2etests.helpers.api.demis;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
-import io.restassured.config.EncoderConfig;
 import io.restassured.filter.Filter;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
@@ -71,20 +70,22 @@ public class DemisHelper {
     }
     requestSpecification =
         RestAssured.given()
+            // .config(RestAssured.config().sslConfig(new SSLConfig().allowAllHostnames()))
+            .relaxedHTTPSValidation()
             .trustStore(
                 "C:\\Users\\Razvan\\Downloads\\demis\\DEMIS-Adapter-2.0.1\\config\\DEMIS-test-lab999_CSM026304641.p12",
-                "demisLoginCertificate")
+                "W7JDGJOVJ7")
             .contentType("application/x-www-form-urlencoded; charset=utf-8")
             .formParam("client_secret", "secret_client_secret")
             .formParam("username", "test-lab999")
             .formParam("grant_type", "password");
 
     return requestSpecification
-        .config(
-            RestAssured.config()
-                .encoderConfig(
-                    EncoderConfig.encoderConfig()
-                        .appendDefaultContentCharsetToContentTypeIfUndefined(false)))
+        //        .config(
+        //            RestAssured.config()
+        //                .encoderConfig(
+        //                    EncoderConfig.encoderConfig()
+        //                        .appendDefaultContentCharsetToContentTypeIfUndefined(false)))
         .contentType(ContentType.JSON)
         .accept(ContentType.JSON)
         .filters(Arrays.asList(filters).get(0));
