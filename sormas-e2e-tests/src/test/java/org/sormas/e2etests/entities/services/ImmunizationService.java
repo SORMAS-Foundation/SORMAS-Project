@@ -69,12 +69,13 @@ public class ImmunizationService {
         .build();
   }
 
-  public Immunization buildImmunizationWithSpecificResponsibleLocation() {
+  public Immunization buildImmunizationWithSpecificResponsibleLocation(
+      String responsibleRegion, String responsibleDistrict) {
     return Immunization.builder()
         .dateOfReport(LocalDate.now().minusDays(1))
         .externalId(UUID.randomUUID().toString())
-        .responsibleRegion("Berlin")
-        .responsibleDistrict("SK Berlin Mitte")
+        .responsibleRegion(responsibleRegion)
+        .responsibleDistrict(responsibleDistrict)
         .meansOfImmunization("Vaccination")
         .build();
   }

@@ -172,7 +172,7 @@ Feature: Immunization end to end tests
     And I click on save case button
     And I check the created data is correctly displayed on Edit case page
     And I click on the NEW IMMUNIZATION button from Edit case page
-    And I fill a new immunization form with specific responsible location
+    And I fill a new immunization form with "Berlin" as a responsible region and "SK Berlin Mitte" as a responsible district
     And I click on save button in New Immunization form
     And I check the specific created data is correctly displayed on Edit immunization page
     And I click on logout button from navbar

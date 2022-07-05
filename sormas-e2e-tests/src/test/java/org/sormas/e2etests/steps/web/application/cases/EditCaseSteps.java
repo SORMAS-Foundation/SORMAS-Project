@@ -1941,8 +1941,6 @@ public class EditCaseSteps implements En {
         "^I navigate to linked immunization on Edit case page$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(REPORT_DATE_INPUT);
-          System.out.print(
-              "IMMUNIZATION UUID " + EditImmunizationSteps.collectedImmunization.getUuid());
           webDriverHelpers.clickOnWebElementBySelector(
               getByImmunizationUuid(EditImmunizationSteps.collectedImmunization.getUuid()));
 

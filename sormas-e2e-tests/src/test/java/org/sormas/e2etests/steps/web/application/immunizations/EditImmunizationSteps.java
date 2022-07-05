@@ -359,7 +359,7 @@ public class EditImmunizationSteps implements En {
         "^I check that Immunization data is displayed as read-only on Edit immunization page$",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          TimeUnit.SECONDS.sleep(15);
+          TimeUnit.SECONDS.sleep(5);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(IMMUNIZATION_PERSON_TAB);
           softly.assertEquals(
               webDriverHelpers.isElementEnabled(DISEASE_INPUT),
