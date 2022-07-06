@@ -99,7 +99,7 @@ public class CriteriaBuilderHelper {
 	/**
 	 * @param cb
 	 *            The builder of the query to filter.
-	 * @param fromSupplier
+	 * @param joinSupplier
 	 *            Provides a join that is called if {@code hasUuid != null}. Not executing the {@link Supplier} prevents a superfluous join.
 	 * @param filter
 	 *            The filter to amend.
@@ -109,11 +109,11 @@ public class CriteriaBuilderHelper {
 	 */
 	public static Predicate andEquals(
 		CriteriaBuilder cb,
-		Supplier<Join<?, ?>> fromSupplier,
+		Supplier<Join<?, ?>> joinSupplier,
 		Predicate filter,
 		HasUuid hasUuid) {
 
-		return hasUuid == null ? filter : andEquals(cb, fromSupplier.get(), filter, hasUuid.getUuid(), AbstractDomainObject.UUID);
+		return hasUuid == null ? filter : andEquals(cb, joinSupplier.get(), filter, hasUuid.getUuid(), AbstractDomainObject.UUID);
 	}
 
 	public static Predicate andInValues(Collection<?> values, Predicate filter, CriteriaBuilder cb, Path<Object> path) {
