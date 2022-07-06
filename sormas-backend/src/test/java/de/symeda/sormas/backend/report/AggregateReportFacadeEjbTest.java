@@ -28,10 +28,10 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.report.AggregateCaseCountDto;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
 import de.symeda.sormas.api.report.AggregateReportGroupingLevel;
-import de.symeda.sormas.api.report.AggregatedCaseCountDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -105,7 +105,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		criteria.setShowZeroRowsForGrouping(true);
 		criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
 
-		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
+		List<AggregateCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
 		Assert.assertEquals(24, indexList.size());
 		Assert.assertEquals(1, indexList.stream().filter(aggregatedCaseCountDto -> aggregatedCaseCountDto.getDeaths() == 3).count());
 	}
@@ -129,7 +129,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		criteria.setShowZeroRowsForGrouping(true);
 		criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
 
-		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
+		List<AggregateCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
 		Assert.assertEquals(31, indexList.size());
 
 		Assert.assertEquals("0D_30D", indexList.get(5).getAgeGroup());
@@ -205,13 +205,13 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
 
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.DISTRICT);
-		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
+		List<AggregateCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
 		Assert.assertEquals(1, indexList.size());
 		Assert.assertEquals(2, indexList.get(0).getNewCases());
 		Assert.assertEquals(informant1.toReference(), indexList.get(0).getReportingUser());
 
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.REGION);
-		List<AggregatedCaseCountDto> indexListRegionGrouping = getAggregateReportFacade().getIndexList(criteria);
+		List<AggregateCaseCountDto> indexListRegionGrouping = getAggregateReportFacade().getIndexList(criteria);
 		Assert.assertEquals(1, indexListRegionGrouping.size());
 		Assert.assertEquals(2, indexListRegionGrouping.get(0).getNewCases());
 		Assert.assertNull(indexListRegionGrouping.get(0).getReportingUser());
@@ -230,14 +230,14 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
 
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.DISTRICT);
-		List<AggregatedCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
+		List<AggregateCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
 		Assert.assertEquals(1, indexList.size());
 		Assert.assertEquals(6, indexList.get(0).getNewCases());
 		Assert.assertEquals(13, indexList.get(0).getDeaths());
 		Assert.assertNull(indexList.get(0).getReportingUser());
 
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.HEALTH_FACILITY);
-		List<AggregatedCaseCountDto> indexListFacilityGrouping = getAggregateReportFacade().getIndexList(criteria);
+		List<AggregateCaseCountDto> indexListFacilityGrouping = getAggregateReportFacade().getIndexList(criteria);
 		Assert.assertEquals(2, indexListFacilityGrouping.size());
 		Assert.assertEquals(2, indexListFacilityGrouping.get(0).getNewCases());
 		Assert.assertEquals(2, indexListFacilityGrouping.get(0).getDeaths());
@@ -245,13 +245,13 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(1, indexListFacilityGrouping.get(1).getDeaths());
 
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.POINT_OF_ENTRY);
-		List<AggregatedCaseCountDto> indexListPoeGrouping = getAggregateReportFacade().getIndexList(criteria);
+		List<AggregateCaseCountDto> indexListPoeGrouping = getAggregateReportFacade().getIndexList(criteria);
 		Assert.assertEquals(1, indexListPoeGrouping.size());
 		Assert.assertEquals(3, indexListPoeGrouping.get(0).getNewCases());
 		Assert.assertEquals(10, indexListPoeGrouping.get(0).getDeaths());
 
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.REGION);
-		List<AggregatedCaseCountDto> indexListRegionGrouping = getAggregateReportFacade().getIndexList(criteria);
+		List<AggregateCaseCountDto> indexListRegionGrouping = getAggregateReportFacade().getIndexList(criteria);
 		Assert.assertEquals(1, indexListRegionGrouping.size());
 		Assert.assertEquals(6, indexListRegionGrouping.get(0).getNewCases());
 		Assert.assertEquals(13, indexListRegionGrouping.get(0).getDeaths());
@@ -259,7 +259,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 
 		createAggregateReport(4, 4, 4, rdcf.region, null, null, null);
 
-		List<AggregatedCaseCountDto> indexListRegionGroupingWhenRegionaData = getAggregateReportFacade().getIndexList(criteria);
+		List<AggregateCaseCountDto> indexListRegionGroupingWhenRegionaData = getAggregateReportFacade().getIndexList(criteria);
 		Assert.assertEquals(1, indexListRegionGroupingWhenRegionaData.size());
 		Assert.assertEquals(4, indexListRegionGroupingWhenRegionaData.get(0).getNewCases());
 		Assert.assertEquals(4, indexListRegionGroupingWhenRegionaData.get(0).getDeaths());

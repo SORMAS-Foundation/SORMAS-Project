@@ -35,11 +35,11 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.report.AggregateCaseCountDto;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.AggregateReportGroupingLevel;
-import de.symeda.sormas.api.report.AggregatedCaseCountDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AgeGroupUtils;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -147,10 +147,10 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 
 	@Override
-	public List<AggregatedCaseCountDto> getIndexList(AggregateReportCriteria criteria) {
+	public List<AggregateCaseCountDto> getIndexList(AggregateReportCriteria criteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<AggregatedCaseCountDto> cq = cb.createQuery(AggregatedCaseCountDto.class);
+		CriteriaQuery<AggregateCaseCountDto> cq = cb.createQuery(AggregateCaseCountDto.class);
 		Root<AggregateReport> root = cq.from(AggregateReport.class);
 		AggregateReportQueryContext queryContext = new AggregateReportQueryContext(cb, cq, root);
 		AggregateReportJoins joins = queryContext.getJoins();
@@ -251,12 +251,12 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 
 		cq.groupBy(expressions);
 
-		List<AggregatedCaseCountDto> queryResult = em.createQuery(cq).getResultList();
-		Map<Disease, AggregatedCaseCountDto> reportSet = new HashMap<>();
+		List<AggregateCaseCountDto> queryResult = em.createQuery(cq).getResultList();
+		Map<Disease, AggregateCaseCountDto> reportSet = new HashMap<>();
 
-		List<AggregatedCaseCountDto> resultList = summarizeAggregateData(groupingLevel, queryResult);
+		List<AggregateCaseCountDto> resultList = summarizeAggregateData(groupingLevel, queryResult);
 
-		for (AggregatedCaseCountDto result : resultList) {
+		for (AggregateCaseCountDto result : resultList) {
 			reportSet.put(result.getDisease(), result);
 		}
 
@@ -282,7 +282,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 						}
 					} else {
 						for (EpiWeek epiWeek : epiWeekList) {
-							Optional<AggregatedCaseCountDto> resultForEpiWeekAndDisease = resultList.stream()
+							Optional<AggregateCaseCountDto> resultForEpiWeekAndDisease = resultList.stream()
 								.filter(
 									report -> report.getDisease().equals(disease)
 										&& report.getYear() == epiWeek.getYear()
@@ -315,7 +315,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 					}
 				} else {
 					for (EpiWeek epiWeek : epiWeekList) {
-						Optional<AggregatedCaseCountDto> resultForEpiWeekAndDisease = resultList.stream()
+						Optional<AggregateCaseCountDto> resultForEpiWeekAndDisease = resultList.stream()
 							.filter(
 								report -> report.getDisease().equals(criteria.getDisease())
 									&& report.getYear() == epiWeek.getYear()
@@ -337,13 +337,13 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		}
 
 		resultList.sort(
-			Comparator.comparing(AggregatedCaseCountDto::getDisease, Comparator.nullsFirst(Comparator.comparing(Disease::toString)))
-				.thenComparing(AggregatedCaseCountDto::getYear, Comparator.nullsFirst(Comparator.naturalOrder()))
-				.thenComparing(AggregatedCaseCountDto::getEpiWeek, Comparator.nullsFirst(Comparator.naturalOrder()))
-				.thenComparing(AggregatedCaseCountDto::getRegionName, Comparator.nullsFirst(Comparator.naturalOrder()))
-				.thenComparing(AggregatedCaseCountDto::getDistrictName, Comparator.nullsFirst(Comparator.naturalOrder()))
-				.thenComparing(AggregatedCaseCountDto::getHealthFacilityName, Comparator.nullsFirst(Comparator.naturalOrder()))
-				.thenComparing(AggregatedCaseCountDto::getPointOfEntryName, Comparator.nullsFirst(Comparator.naturalOrder()))
+			Comparator.comparing(AggregateCaseCountDto::getDisease, Comparator.nullsFirst(Comparator.comparing(Disease::toString)))
+				.thenComparing(AggregateCaseCountDto::getYear, Comparator.nullsFirst(Comparator.naturalOrder()))
+				.thenComparing(AggregateCaseCountDto::getEpiWeek, Comparator.nullsFirst(Comparator.naturalOrder()))
+				.thenComparing(AggregateCaseCountDto::getRegionName, Comparator.nullsFirst(Comparator.naturalOrder()))
+				.thenComparing(AggregateCaseCountDto::getDistrictName, Comparator.nullsFirst(Comparator.naturalOrder()))
+				.thenComparing(AggregateCaseCountDto::getHealthFacilityName, Comparator.nullsFirst(Comparator.naturalOrder()))
+				.thenComparing(AggregateCaseCountDto::getPointOfEntryName, Comparator.nullsFirst(Comparator.naturalOrder()))
 				.thenComparing(
 					r -> r.getAgeGroup() != null
 						? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
@@ -353,34 +353,35 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		return resultList;
 	}
 
-	private List<AggregatedCaseCountDto> summarizeAggregateData(
+	private List<AggregateCaseCountDto> summarizeAggregateData(
 		final AggregateReportGroupingLevel finalGroupingLevel,
-		List<AggregatedCaseCountDto> queryResult) {
-		final List<AggregatedCaseCountDto> resultList = new ArrayList<>();
-		final Map<AggregatedCaseCountDto, List<AggregatedCaseCountDto>> reportsToBeSummed = new HashMap<>();
+		List<AggregateCaseCountDto> queryResult) {
+		final List<AggregateCaseCountDto> resultList = new ArrayList<>();
+		final Map<AggregateCaseCountDto, List<AggregateCaseCountDto>> reportsToBeSummed = new HashMap<>();
 
 		// extract relevant aggregate data and prepare what needs to be sumed
-		for (AggregatedCaseCountDto dto : queryResult) {
+		for (AggregateCaseCountDto dto : queryResult) {
 
-			final Optional<AggregatedCaseCountDto> optionalDto = resultList.stream().filter(a -> dto.similar(a, finalGroupingLevel)).findAny();
+			// Would be faster to sort the query results by jurisdiction and only check the last resultList entry for similarity instead of always going through the whole list.
+			final Optional<AggregateCaseCountDto> optionalDto = resultList.stream().filter(a -> dto.similar(a, finalGroupingLevel)).findAny();
 			if (optionalDto.isPresent()) {
-				final AggregatedCaseCountDto similar = optionalDto.get();
-				if (dto.equalJurisdiction(similar)) { // for exact same jurisdiction we use the most recent data
+				final AggregateCaseCountDto similar = optionalDto.get();
+				if (dto.hasEqualJurisdiction(similar)) { // for exact same jurisdiction we use the most recent data
 					if (dto.getChangeDate().getTime() > similar.getChangeDate().getTime()) {
 						resultList.remove(similar);
 						resultList.add(dto);
 					}
 				} else {
-					if (dto.higherJurisdictionLevel(similar)) { // higher jurisdiction level data exists we do not take into consideration lower level data
+					if (dto.hasHigherJurisdictionLevel(similar)) { // higher jurisdiction level data exists we do not take into consideration lower level data
 						resultList.remove(similar);
 						resultList.add(dto);
-					} else if (dto.sameJurisdictionLevel(similar)) { // same jurisdiction level we sum data (for example data for 2 facilities in one district)
+					} else if (dto.hasSameJurisdictionLevel(similar)) { // same jurisdiction level we sum data (for example data for 2 facilities in one district)
 						if (reportsToBeSummed.containsKey(similar)) {
-							final List<AggregatedCaseCountDto> sumList = reportsToBeSummed.get(similar);
-							final Optional<AggregatedCaseCountDto> equalReportOptional =
-								sumList.stream().filter(a -> a.equalJurisdiction(dto)).findAny();
+							final List<AggregateCaseCountDto> sumList = reportsToBeSummed.get(similar);
+							final Optional<AggregateCaseCountDto> equalReportOptional =
+								sumList.stream().filter(a -> a.hasEqualJurisdiction(dto)).findAny();
 							if (equalReportOptional.isPresent()) {
-								final AggregatedCaseCountDto duplicateReport = equalReportOptional.get();
+								final AggregateCaseCountDto duplicateReport = equalReportOptional.get();
 								if (dto.getChangeDate().getTime() > duplicateReport.getChangeDate().getTime()) {
 									sumList.remove(duplicateReport);
 									sumList.add(dto);
@@ -389,7 +390,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 								sumList.add(dto);
 							}
 						} else {
-							List<AggregatedCaseCountDto> arrayList = new ArrayList();
+							List<AggregateCaseCountDto> arrayList = new ArrayList();
 							arrayList.add(dto);
 							reportsToBeSummed.put(similar, arrayList);
 						}
@@ -511,7 +512,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 
 	private void addZeroRowToList(
-		List<AggregatedCaseCountDto> resultList,
+		List<AggregateCaseCountDto> resultList,
 		Region selectedRegion,
 		District selectedDistrict,
 		Facility selectedFacility,
@@ -529,7 +530,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		String pointOfEntryName = selectedPoindOfEntry != null ? selectedPoindOfEntry.getName() : null;
 
 		resultList.add(
-			new AggregatedCaseCountDto(
+			new AggregateCaseCountDto(
 				disease,
 				0L,
 				0L,

@@ -8,7 +8,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
-public class AggregatedCaseCountDto implements Serializable {
+public class AggregateCaseCountDto implements Serializable {
 
 	public static final String I18N_PREFIX = "AggregateReport";
 
@@ -48,10 +48,10 @@ public class AggregatedCaseCountDto implements Serializable {
 	private UserReferenceDto reportingUser;
 	private Date changeDate;
 
-	public AggregatedCaseCountDto() {
+	public AggregateCaseCountDto() {
 	}
 
-	public AggregatedCaseCountDto(
+	public AggregateCaseCountDto(
 		Disease disease,
 		long newCases,
 		long labConfirmations,
@@ -75,7 +75,7 @@ public class AggregatedCaseCountDto implements Serializable {
 		this.changeDate = changeDate;
 	}
 
-	public AggregatedCaseCountDto(
+	public AggregateCaseCountDto(
 		Disease disease,
 		long newCases,
 		long labConfirmations,
@@ -115,6 +115,91 @@ public class AggregatedCaseCountDto implements Serializable {
 		this.healthFacilityId = healthFacilityId;
 		this.pointOfEntryName = pointOfEntryName;
 		this.pointOfEntryId = pointOfEntryId;
+	}
+
+	public boolean similar(AggregateCaseCountDto that, AggregateReportGroupingLevel groupingLevel) {
+
+		if (this == that) {
+			return true;
+		}
+
+		boolean similar = year == that.year && epiWeek == that.epiWeek && disease == that.disease && Objects.equals(ageGroup, that.ageGroup);
+
+		if (groupingLevel != null) {
+			switch (groupingLevel) {
+			case REGION:
+				similar = similar && Objects.equals(regionId, that.regionId);
+				break;
+			case DISTRICT:
+				similar = similar && Objects.equals(districtId, that.districtId);
+				break;
+			case HEALTH_FACILITY:
+				similar = similar && Objects.equals(healthFacilityId, that.healthFacilityId);
+				break;
+			case POINT_OF_ENTRY:
+				similar = similar && Objects.equals(pointOfEntryId, that.pointOfEntryId);
+				break;
+			default:
+			}
+		}
+
+		return similar;
+	}
+
+	public boolean hasEqualJurisdiction(AggregateCaseCountDto that) {
+
+		if (this == that) {
+			return true;
+		} else {
+			return Objects.equals(regionId, that.regionId)
+				&& Objects.equals(districtId, that.districtId)
+				&& Objects.equals(healthFacilityId, that.healthFacilityId)
+				&& Objects.equals(pointOfEntryId, that.pointOfEntryId);
+		}
+	}
+
+	public boolean hasHigherJurisdictionLevel(AggregateCaseCountDto that) {
+
+		if (this == that) {
+			return true;
+		}
+
+		if (regionId == null && that.regionId != null) {
+			return true;
+		}
+		if (districtId == null && that.districtId != null) {
+			return true;
+		}
+		if (healthFacilityId == null && pointOfEntryId == null && (that.healthFacilityId != null || that.pointOfEntryId != null)) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean hasSameJurisdictionLevel(AggregateCaseCountDto that) {
+
+		if (this == that) {
+			return true;
+		} else {
+			return this.getJurisdictionlevel() == that.getJurisdictionlevel();
+		}
+	}
+
+	public JurisdictionLevel getJurisdictionlevel() {
+
+		if (pointOfEntryId != null) {
+			return JurisdictionLevel.POINT_OF_ENTRY;
+		}
+		if (healthFacilityId != null) {
+			return JurisdictionLevel.HEALTH_FACILITY;
+		}
+		if (districtId != null) {
+			return JurisdictionLevel.DISTRICT;
+		}
+		if (regionId != null) {
+			return JurisdictionLevel.REGION;
+		}
+		return JurisdictionLevel.NATION;
 	}
 
 	public String getRegionName() {
@@ -259,7 +344,7 @@ public class AggregatedCaseCountDto implements Serializable {
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
-		AggregatedCaseCountDto that = (AggregatedCaseCountDto) o;
+		AggregateCaseCountDto that = (AggregateCaseCountDto) o;
 		return year == that.year
 			&& epiWeek == that.epiWeek
 			&& newCases == that.newCases
@@ -295,123 +380,6 @@ public class AggregatedCaseCountDto implements Serializable {
 			labConfirmations,
 			deaths,
 			ageGroup);
-	}
-
-	public boolean similar(Object o, AggregateReportGroupingLevel groupingLevel) {
-
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		AggregatedCaseCountDto that = (AggregatedCaseCountDto) o;
-		boolean similar = year == that.year && epiWeek == that.epiWeek && disease == that.disease && Objects.equals(ageGroup, that.ageGroup);
-		if (groupingLevel != null) {
-			switch (groupingLevel) {
-
-			case REGION:
-				similar = similar && Objects.equals(regionName, that.regionName) && Objects.equals(regionId, that.regionId);
-				break;
-			case DISTRICT:
-				similar = similar && Objects.equals(districtName, that.districtName) && Objects.equals(districtId, that.districtId);
-				break;
-			case HEALTH_FACILITY:
-				similar =
-					similar && Objects.equals(healthFacilityName, that.healthFacilityName) && Objects.equals(healthFacilityId, that.healthFacilityId);
-				break;
-			case POINT_OF_ENTRY:
-				similar = similar && Objects.equals(pointOfEntryName, that.pointOfEntryName) && Objects.equals(pointOfEntryId, that.pointOfEntryId);
-				break;
-			default:
-			}
-		}
-		return similar;
-	}
-
-	public boolean equalJurisdiction(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		AggregatedCaseCountDto that = (AggregatedCaseCountDto) o;
-		return Objects.equals(regionName, that.regionName)
-			&& Objects.equals(regionId, that.regionId)
-			&& Objects.equals(districtName, that.districtName)
-			&& Objects.equals(districtId, that.districtId)
-			&& Objects.equals(healthFacilityName, that.healthFacilityName)
-			&& Objects.equals(healthFacilityId, that.healthFacilityId)
-			&& Objects.equals(pointOfEntryName, that.pointOfEntryName)
-			&& Objects.equals(pointOfEntryId, that.pointOfEntryId);
-	}
-
-	public boolean higherJurisdictionLevel(Object o) {
-
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		AggregatedCaseCountDto that = (AggregatedCaseCountDto) o;
-
-		if (regionId == null && that.regionId != null) {
-			return true;
-		}
-		if (districtId == null && that.districtId != null) {
-			return true;
-		}
-		if (healthFacilityId == null && that.healthFacilityId != null && pointOfEntryId == null && that.pointOfEntryId == null) {
-			return true;
-		}
-		if (pointOfEntryId == null && that.pointOfEntryId != null && healthFacilityId == null && that.healthFacilityId == null) {
-			return true;
-		}
-		return false;
-	}
-
-	public boolean sameJurisdictionLevel(Object o) {
-
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		AggregatedCaseCountDto that = (AggregatedCaseCountDto) o;
-
-		if (regionId == null && that.regionId == null) {
-			return true;
-		}
-		if (districtId == null && that.districtId == null && regionId != null && that.regionId != null) {
-			return true;
-		}
-		if (districtId != null && that.districtId != null && regionId != null && that.regionId != null) {
-			if (healthFacilityId != null && that.healthFacilityId != null && pointOfEntryId == null && that.pointOfEntryId == null) {
-				return true;
-			}
-			if (healthFacilityId == null && that.healthFacilityId == null && pointOfEntryId != null && that.pointOfEntryId != null) {
-				return true;
-			}
-			if (healthFacilityId == null && that.healthFacilityId == null && pointOfEntryId == null && that.pointOfEntryId == null) {
-				return true;
-			}
-			if ((healthFacilityId != null || pointOfEntryId != null) && (that.healthFacilityId != null || that.pointOfEntryId != null)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public JurisdictionLevel getJurisdictionlevel() {
-
-		if (pointOfEntryId != null) {
-			return JurisdictionLevel.POINT_OF_ENTRY;
-		}
-		if (healthFacilityId != null) {
-			return JurisdictionLevel.HEALTH_FACILITY;
-		}
-		if (districtId != null) {
-			return JurisdictionLevel.DISTRICT;
-		}
-		if (regionId != null) {
-			return JurisdictionLevel.REGION;
-		}
-		return JurisdictionLevel.NATION;
 	}
 
 }
