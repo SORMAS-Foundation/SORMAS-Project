@@ -1977,6 +1977,68 @@ public class EditCaseSteps implements En {
         (String label) ->
             webDriverHelpers.isElementVisibleWithTimeout(
                 getReasonForDeletionDetailsFieldLabel(label), 1));
+
+    And(
+        "^I validate immunization period is present on immunization card$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(REPORT_DATE_INPUT);
+          String displayedPeriod =
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_IMMUNIZATION_PERIOD);
+          LocalDate startDate = EditImmunizationSteps.collectedImmunization.getStartDate();
+          LocalDate endDate = EditImmunizationSteps.collectedImmunization.getEndDate();
+          DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          softly.assertEquals(
+              "Immunization period: "
+                  + dateFormatter.format(startDate)
+                  + " - "
+                  + dateFormatter.format(endDate),
+              displayedPeriod,
+              "Immunization period is not equal");
+          softly.assertAll();
+        });
+
+    And(
+        "^I validate immunization status is present on immunization card$",
+        () -> {
+          String actualImmunizationStatus =
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_IMMUNIZATION_STATUS);
+          String expectedImmunizationStatus =
+              EditImmunizationSteps.collectedImmunization.getImmunizationStatus();
+          softly.assertEquals(
+              "Immunization status: " + expectedImmunizationStatus,
+              actualImmunizationStatus,
+              "Immunization status is not equal");
+          softly.assertAll();
+        });
+
+    And(
+        "^I validate management status is present on immunization card$",
+        () -> {
+          String actualManagementStatus =
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_MANAGEMENT_STATUS);
+          String expectedManagementStatus =
+              EditImmunizationSteps.collectedImmunization.getManagementStatus();
+          softly.assertEquals(
+              "Management status: " + expectedManagementStatus,
+              actualManagementStatus,
+              "Management status is not equal");
+          softly.assertAll();
+        });
+
+    And(
+        "^I validate means of immunization is present on immunization card$",
+        () -> {
+          String actualMeansOfImmunization =
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_MEANS_OF_IMMUNIZATION);
+          String expectedMeansOfImmunization =
+              EditImmunizationSteps.collectedImmunization.getMeansOfImmunization();
+          softly.assertEquals(
+              "Means of immunization: " + expectedMeansOfImmunization,
+              actualMeansOfImmunization,
+              "Means of immunization is not equal");
+          softly.assertAll();
+        });
   }
 
   private Case collectCasePersonUuid() {
