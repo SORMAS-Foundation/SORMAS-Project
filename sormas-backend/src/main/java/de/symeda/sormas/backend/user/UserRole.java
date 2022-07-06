@@ -31,10 +31,13 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.UniqueConstraint;
 
 import de.symeda.auditlog.api.Audited;
@@ -45,6 +48,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity(name = UserRole.TABLE_NAME)
 @Audited
+@EntityListeners(UserRole.UserRoleListener.class)
 public class UserRole extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 9053095630718041842L;
@@ -204,5 +208,14 @@ public class UserRole extends AbstractDomainObject {
 	public static Set<UserRight> getUserRights(Collection<UserRole> userRoles) {
 
 		return userRoles.stream().flatMap(role -> role.getUserRights().stream()).collect(Collectors.toSet());
+	}
+
+	static class UserRoleListener {
+
+		@PrePersist
+		@PreUpdate
+		private void beforeAnyUpdate(UserRole userRole) {
+			UserCache.getInstance().flush();
+		}
 	}
 }

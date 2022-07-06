@@ -114,6 +114,15 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.captionNotUnique));
 		}
 
+		Set<UserRight> userRights = source.getUserRights();
+		Set<UserRight> requiredUserRights = UserRight.getRequiredUserRights(userRights);
+		if (!userRights.containsAll(requiredUserRights)) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(
+					Validations.missingRequiredUserRights,
+					requiredUserRights.stream().filter(r -> !userRights.contains(r)).map(UserRight::toString).collect(Collectors.joining(", "))));
+		}
+
 		User currentUser = userService.getCurrentUser();
 		if (currentUser.getUserRoles().stream().anyMatch(r -> DataHelper.isSame(r, source))) {
 			Set<UserRole> currentUserRoles = currentUser.getUserRoles();

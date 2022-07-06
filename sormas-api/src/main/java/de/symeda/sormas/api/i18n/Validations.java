@@ -126,6 +126,7 @@ public interface Validations {
 	String importWrongDataTypeError = "importWrongDataTypeError";
 	String infrastructureDataLocked = "infrastructureDataLocked";
 	String investigationStatusUnclassifiedCase = "investigationStatusUnclassifiedCase";
+	String missingRequiredUserRights = "missingRequiredUserRights";
 	String nameOrAnyOtherFieldShouldBeFilled = "nameOrAnyOtherFieldShouldBeFilled";
 	String noAddressCommunityInAddressDistrict = "noAddressCommunityInAddressDistrict";
 	String noAddressDistrictInAddressRegion = "noAddressDistrictInAddressRegion";

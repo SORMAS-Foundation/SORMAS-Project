@@ -11669,4 +11669,10 @@ update userroles_emailnotificationtypes set notificationtype = 'CONTACT_VISIT_CO
 
 INSERT INTO schema_version (version_number, comment) VALUES (472, 'Edit and create user roles #4463');
 
+-- 2022-07-05 Implement user right dependencies #5058
+
+delete from userroles_userrights where userright in ('CONTACT_CLASSIFY', 'CONTACT_ASSIGN');
+
+INSERT INTO schema_version (version_number, comment) VALUES (473, 'Implement user right dependencies #5058');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
