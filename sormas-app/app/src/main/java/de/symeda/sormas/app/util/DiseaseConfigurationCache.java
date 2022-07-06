@@ -115,7 +115,7 @@ public final class DiseaseConfigurationCache {
 	public List<Disease> getAllDiseases(Boolean active, Boolean primary, Boolean caseBased) {
 
 		// not an ideal solution, but will be changed with #9629 anyway
-		if (!caseBased && primary != null) {
+		if (Boolean.FALSE.equals(caseBased) && primary != null) {
 			primary = null;
 			Log.w(getClass().getSimpleName(), "primary should not be used for non-case-based diseases");
 		}

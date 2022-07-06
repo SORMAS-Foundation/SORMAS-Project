@@ -75,7 +75,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	public List<Disease> getAllDiseases(Boolean active, Boolean primary, Boolean caseBased) {
 
 		// not an ideal solution, but will be changed with #9629 anyway
-		if (!caseBased && primary != null) {
+		if (Boolean.FALSE.equals(caseBased) && primary != null) {
 			primary = null;
 			logger.warn("primary should not be used for non-case-based diseases");
 		}
