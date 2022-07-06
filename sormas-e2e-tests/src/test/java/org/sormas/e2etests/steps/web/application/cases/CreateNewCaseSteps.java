@@ -479,8 +479,8 @@ public class CreateNewCaseSteps implements En {
     When(
         "I save a new case",
         () -> {
-          webDriverHelpers.scrollToElement(CONTACT_CASE_SAVE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
+          webDriverHelpers.scrollToElement(CONFIRM_BUTTON_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
