@@ -72,6 +72,15 @@ public class GridExportStreamResource {
 			.getStreamResource();
 	}
 
+	public static StreamResource createStreamResourceWithSelectedItems(
+		Grid<?> grid,
+		Supplier<Set<?>> getSelectedRows,
+		ExportEntityName entityName,
+		List<String> excludePropertyIds,
+		List<String> includePropertyIds) {
+		return new GridExportStreamResource(grid, getSelectedRows, entityName, excludePropertyIds, includePropertyIds).getStreamResource();
+	}
+
 	public static StreamResource createStreamResource(
 		Grid<?> grid,
 		ExportEntityName entityName,
