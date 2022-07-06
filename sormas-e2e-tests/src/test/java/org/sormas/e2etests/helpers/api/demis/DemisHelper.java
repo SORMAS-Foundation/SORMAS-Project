@@ -132,30 +132,22 @@ public class DemisHelper {
 
   private List<X509Certificate> getCertificatesFromTrustStore() throws Exception {
     KeyStore truststore = KeyStore.getInstance("JKS");
-    truststore.load(new FileInputStream("d:\certs.jsk"), "mypassword".toCharArray());
+    truststore.load(
+        new FileInputStream(
+            "C:\\Users\\Razvan\\Downloads\\demis\\DEMIS-Adapter-2.0.1\\config\\DEMIS-test-lab999_CSM026304641.p12"),
+        "mypassword".toCharArray());
 
     PKIXParameters params = new PKIXParameters(truststore);
     Set<TrustAnchor> trustAnchors = params.getTrustAnchors();
 
-
-    List<X509Certificate> certificates = trustAnchors.stream()
-            .map(TrustAnchor::getTrustedCert)
-            .collect(Collectors.toList());
+    List<X509Certificate> certificates =
+        trustAnchors.stream().map(TrustAnchor::getTrustedCert).collect(Collectors.toList());
     return certificates;
   }
 
   @SneakyThrows
   public void okHttp() {
-    List<X509Certificate> certificates = getCertificatesFromTrustStore();
-
-    Builder certificateBuilder =  new HandshakeCertificates.Builder();
-    for (X509Certificate x509Certificate : certificates) {
-      certificateBuilder.addTrustedCertificate(x509Certificate);
-    }
-    HandshakeCertificates handshakeCertificates =  certificateBuilder.build();
-
-
-
+    // generated from postman
     OkHttpClient.Builder builder = new OkHttpClient.Builder();
     builder = configureToIgnoreCertificate(builder);
 
@@ -179,6 +171,7 @@ public class DemisHelper {
 
   @SneakyThrows
   public void loginRequest() {
+    newRestassured();
     okHttp();
     // request().post().then().extract().response().getBody().asString();
 
@@ -234,5 +227,58 @@ public class DemisHelper {
     } catch (Exception e) {
     }
     return builder;
+  }
+
+  @SneakyThrows
+  public void newRestassured() {
+    RestAssured mockClient = new RestAssured();
+    mockClient
+        .config()
+        .getSSLConfig()
+        .with()
+        .keyStore(
+            "C:\\Users\\Razvan\\Downloads\\demis\\DEMIS-Adapter-2.0.1\\config\\DEMIS-test-lab999_CSM026304641.p12",
+            "W7JDGJOVJ7")
+        .allowAllHostnames();
+    mockClient
+        .when()
+        .post("https://10.210.11.214:443/auth/realms/LAB/protocol/openid-connect/token")
+        .then()
+        .extract()
+        .response();
+
+    KeyStore keyStore = null;
+    SSLConfig config = null;
+
+    try {
+      keyStore = KeyStore.getInstance("PKCS12");
+      keyStore.load(
+          new FileInputStream(
+              "C:\\Users\\Razvan\\Downloads\\demis\\DEMIS-Adapter-2.0.1\\config\\DEMIS-test-lab999_CSM026304641.p12"),
+          "W7JDGJOVJ7".toCharArray());
+
+    } catch (Exception ex) {
+      System.out.println("Error while loading keystore >>>>>>>>>");
+      ex.printStackTrace();
+    }
+    if (keyStore != null) {
+
+      org.apache.http.conn.ssl.SSLSocketFactory clientAuthFactory =
+          new org.apache.http.conn.ssl.SSLSocketFactory(keyStore, "W7JDGJOVJ7");
+      // set the config in rest assured
+      config = new SSLConfig().with().sslSocketFactory(clientAuthFactory).and().allowAllHostnames();
+
+      RestAssured.config = RestAssured.config().sslConfig(config);
+      RestAssured.given()
+          // .contentType("application/x-www-form-urlencoded; charset=utf-8")
+          //          .formParam("client_secret", "secret_client_secret")
+          //          .formParam("username", "test-lab999")
+          //          .formParam("grant_type", "password")
+          .when()
+          .post("https://10.210.11.214:443/auth/realms/LAB/protocol/openid-connect/token")
+          .then()
+          .extract()
+          .response();
+    }
   }
 }
