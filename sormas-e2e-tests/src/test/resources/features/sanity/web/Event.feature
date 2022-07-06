@@ -574,9 +574,10 @@ Feature: Create events
     And I search for the last created person via Api by uuid in popup on Select Person window
     And I open the first found result in the popup of Select Person window
     And I save changes in participant window
-    And I confirm navigation popup
+#    navigation popup dissapeared
+#    And I confirm navigation popup
     And I navigate to EVENT PARTICIPANT from edit event page
-    And I confirm navigation popup
+#    And I confirm navigation popup
     Then I click on Apply filters button in event participant list
     Then I check if filtered participant for existing person appears in the event participants list
     When I click on the Persons button from navbar

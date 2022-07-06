@@ -100,6 +100,7 @@ public class TravelEntryDirectorySteps implements En {
         "I click on the Import button from Travel Entries directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(IMPORT_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FILE_PICKER);
         });
 
     When(
