@@ -1026,6 +1026,7 @@ public class EditCaseSteps implements En {
     When(
         "I check if ([^\"]*) quarantine popup is displayed",
         (String option) -> {
+          TimeUnit.SECONDS.sleep(2);
           String quarantineText;
           String expectedTextReduce = "Are you sure you want to reduce the quarantine?";
           String expectedTextExtend = "Are you sure you want to extend the quarantine?";
@@ -1680,9 +1681,7 @@ public class EditCaseSteps implements En {
               "Date of follow-up status change is invalid!");
 
           softly.assertEquals(
-              responsibleUserForFollowUpStatusChange,
-              "Autoation NATIONAL",
-              "Responsible User is invalid!");
+              responsibleUserForFollowUpStatusChange, "Nat USER", "Responsible User is invalid!");
 
           softly.assertAll();
         });
