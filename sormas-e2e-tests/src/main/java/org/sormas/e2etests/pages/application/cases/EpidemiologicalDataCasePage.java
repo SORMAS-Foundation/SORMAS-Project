@@ -112,8 +112,12 @@ public class EpidemiologicalDataCasePage {
   public static final By SAVE_BUTTON_EPIDEMIOLOGICAL_DATA = By.id("commit");
   public static final By OPEN_SAVED_EXPOSURE_BUTTON =
       By.xpath("//div[contains(@id, 'de.symeda.sormas.api.exposure')]");
+  public static final By EDIT_SAVED_EXPOSURE_BUTTON =
+      By.xpath("//div[contains(@id, 'ExposureDto')]");
   public static final By OPEN_SAVED_ACTIVITY_BUTTON =
       By.xpath("//div[contains(@id, 'de.symeda.sormas.api.activityascase')]");
+  public static final By EDIT_SAVED_ACTIVITY_BUTTON =
+      By.xpath("//div[contains(@id, 'ActivityAsCaseDto')]");
   public static final By CONTACT_TO_CASE_COMBOBOX = By.cssSelector(".v-window #contactToCase div");
   public static final By EXPOSURE_PROBABLE_INFECTION_ENVIRONMENT_CHECKBOX =
       By.cssSelector(".v-window #probableInfectionEnvironment label");

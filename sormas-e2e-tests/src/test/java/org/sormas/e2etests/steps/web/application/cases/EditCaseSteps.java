@@ -1899,7 +1899,6 @@ public class EditCaseSteps implements En {
           webDriverHelpers.fillInWebElement(INTERNAL_TOKEN_INPUT, token);
         });
 
-
     When(
         "I check if Type of sample has not a ([^\"]*) option",
         (String option) -> {

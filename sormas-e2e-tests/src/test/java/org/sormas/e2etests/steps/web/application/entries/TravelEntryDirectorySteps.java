@@ -218,7 +218,7 @@ public class TravelEntryDirectorySteps implements En {
         "I filter by Person ID on Travel Entry directory page",
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(
-              PERSON_FILTER_INPUT, CreateNewTravelEntrySteps.aTravelEntry.getUuid());
+              PERSON_FILTER_INPUT, CreateNewTravelEntrySteps.aTravelEntry.getPersonUuid());
         });
     When(
         "I check if popup deletion message appeared",
