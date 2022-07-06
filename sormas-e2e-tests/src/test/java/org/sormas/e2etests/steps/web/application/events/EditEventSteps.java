@@ -145,6 +145,7 @@ import static org.sormas.e2etests.pages.application.events.EventParticipantsPage
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.SELECT_PERSON_ID_INPUT_AT_ADD_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.SELECT_PERSON_SEARCH_BUTTON_AT_ADD_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.SEX_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.SEX_COMBOBOX_REQUIRED;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.getEventsByCaseUuid;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_DAY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_MONTH_COMBOBOX;
@@ -1503,6 +1504,15 @@ public class EditEventSteps implements En {
           Assert.assertTrue(
               webDriverHelpers.checkCheckboxIsCheckedByHTMLFromParent(
                   EVENT_IDENTIFICATION_SOURCE_COMBOBOX, text, expected));
+        });
+    When(
+        "I add only first and last name data and check is sex combobox required for event participant creation",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
+          webDriverHelpers.fillInWebElement(PARTICIPANT_FIRST_NAME_INPUT, faker.name().firstName());
+          webDriverHelpers.fillInWebElement(PARTICIPANT_LAST_NAME_INPUT, faker.name().lastName());
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEX_COMBOBOX_REQUIRED);
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
         });
   }
 
