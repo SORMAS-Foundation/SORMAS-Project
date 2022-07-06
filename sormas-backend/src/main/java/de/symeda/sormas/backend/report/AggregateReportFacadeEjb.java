@@ -272,7 +272,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 			selectedPoindOfEntry = criteria.getPointOfEntry() != null ? pointOfEntryService.getByUuid(criteria.getPointOfEntry().getUuid()) : null;
 		}
 
-		if (criteria != null && criteria.getShowZeroRowsForGrouping()) {
+		if (criteria != null && criteria.getShowZeroRows()) {
 			List<EpiWeek> epiWeekList = DateHelper.createEpiWeekListFromInterval(criteria.getEpiWeekFrom(), criteria.getEpiWeekTo());
 			if (criteria.getDisease() == null) {
 				for (Disease disease : diseaseConfigurationFacade.getAllDiseases(true, false, false)) {

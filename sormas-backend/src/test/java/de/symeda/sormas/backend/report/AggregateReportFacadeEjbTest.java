@@ -102,7 +102,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		getAggregateReportFacade().saveAggregateReport(aggregateReportDto);
 
 		AggregateReportCriteria criteria = new AggregateReportCriteria().healthFacility(rdcf.facility);
-		criteria.setShowZeroRowsForGrouping(true);
+		criteria.setShowZeroRows(true);
 		criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
 
 		List<AggregateCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
@@ -126,7 +126,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		createAggregateReport(epiWeek, "1M_59M");
 
 		AggregateReportCriteria criteria = new AggregateReportCriteria().healthFacility(rdcf.facility);
-		criteria.setShowZeroRowsForGrouping(true);
+		criteria.setShowZeroRows(true);
 		criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
 
 		List<AggregateCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
@@ -201,7 +201,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		createAggregateReport(3, 3, 3, rdcf.region, rdcf.district, rdcf.facility, null);
 
 		AggregateReportCriteria criteria = new AggregateReportCriteria();
-		criteria.setShowZeroRowsForGrouping(false);
+		criteria.setShowZeroRows(false);
 		criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
 
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.DISTRICT);
@@ -226,7 +226,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		createAggregateReport(3, 10, 3, rdcf.region, rdcf.district, null, rdcf.pointOfEntry);
 
 		AggregateReportCriteria criteria = new AggregateReportCriteria();
-		criteria.setShowZeroRowsForGrouping(false);
+		criteria.setShowZeroRows(false);
 		criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
 
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.DISTRICT);

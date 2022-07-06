@@ -181,7 +181,7 @@ public interface Captions {
 	String aggregateReportNewCasesShort = "aggregateReportNewCasesShort";
 	String aggregateReportReportFound = "aggregateReportReportFound";
 	String aggregateReportShowOnlyDuplicateReports = "aggregateReportShowOnlyDuplicateReports";
-	String aggregateReportShowZeroRowsForGrouping = "aggregateReportShowZeroRowsForGrouping";
+	String aggregateReportShowZeroRows = "aggregateReportShowZeroRows";
 	String aggregateReportThisWeek = "aggregateReportThisWeek";
 	String all = "all";
 	String area = "area";

@@ -20,7 +20,7 @@ public class AggregateReportCriteria extends BaseCriteria implements Serializabl
 	public static final String EPI_WEEK_FROM = "epiWeekFrom";
 	public static final String EPI_WEEK_TO = "epiWeekTo";
 	public static final String DISEASE = "disease";
-	public static final String SHOW_ZERO_ROWS_FOR_GROUPING = "showZeroRowsForGrouping";
+	public static final String SHOW_ZERO_ROWS = "showZeroRows";
 	public static final String SHOW_ONLY_DUPLICATES = "showOnlyDuplicates";
 
 	private EpiWeek epiWeekFrom;
@@ -30,7 +30,7 @@ public class AggregateReportCriteria extends BaseCriteria implements Serializabl
 	private FacilityReferenceDto healthFacility;
 	private PointOfEntryReferenceDto pointOfEntry;
 	private Disease disease;
-	private Boolean showZeroRowsForGrouping = Boolean.FALSE;
+	private Boolean showZeroRows = Boolean.FALSE;
 	private Boolean showOnlyDuplicates = Boolean.FALSE;
 
 	private AggregateReportGroupingLevel aggregateReportGroupingLevel;
@@ -129,12 +129,12 @@ public class AggregateReportCriteria extends BaseCriteria implements Serializabl
 		this.aggregateReportGroupingLevel = aggregateReportGroupingLevel;
 	}
 
-	public Boolean getShowZeroRowsForGrouping() {
-		return showZeroRowsForGrouping;
+	public Boolean getShowZeroRows() {
+		return showZeroRows;
 	}
 
-	public void setShowZeroRowsForGrouping(Boolean showZeroRowsForGrouping) {
-		this.showZeroRowsForGrouping = showZeroRowsForGrouping;
+	public void setShowZeroRows(Boolean showZeroRows) {
+		this.showZeroRows = showZeroRows;
 	}
 
 	public Boolean getShowOnlyDuplicates() {
