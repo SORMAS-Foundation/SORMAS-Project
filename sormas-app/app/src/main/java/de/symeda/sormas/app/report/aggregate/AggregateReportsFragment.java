@@ -212,7 +212,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 			.collect(Collectors.toList());
 		DatabaseHelper.getAggregateReportDao().sortAggregateReports(userReports);
 
-		List<Disease> diseaseList = DiseaseConfigurationCache.getInstance().getAllDiseases(true, false, false);
+		List<Disease> diseaseList = DiseaseConfigurationCache.getInstance().getAllDiseases(true, null, false);
 		Map<String, Disease> diseaseMap = diseaseList.stream().collect(Collectors.toMap(Disease::toString, disease -> disease));
 		Map<String, Disease> diseasesWithoutReport = new HashMap<>(diseaseMap);
 		List<DiseaseAgeGroup> diseaseAgeGroupsWithoutReport = new ArrayList<>();

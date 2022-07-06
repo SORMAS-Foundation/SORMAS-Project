@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.util;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,6 +33,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.dashboard.caze.CaseSummaryFragment;
 
 public final class DiseaseConfigurationCache {
 
@@ -110,6 +113,13 @@ public final class DiseaseConfigurationCache {
 	}
 
 	public List<Disease> getAllDiseases(Boolean active, Boolean primary, Boolean caseBased) {
+
+		// not an ideal solution, but will be changed with #9629 anyway
+		if (!caseBased && primary != null) {
+			primary = null;
+			Log.w(getClass().getSimpleName(), "primary should not be used for non-case-based diseases");
+		}
+
 		User currentUser = ConfigProvider.getUser();
 		Set<Disease> diseases = new HashSet<>();
 
