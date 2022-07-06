@@ -20,7 +20,6 @@ package de.symeda.sormas.backend.person;
 import static de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect.SIMILARITY_OPERATOR;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEquals;
-import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEqualsReferenceDto;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -106,9 +105,7 @@ import de.symeda.sormas.backend.immunization.ImmunizationJoins;
 import de.symeda.sormas.backend.immunization.ImmunizationQueryContext;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
-import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
-import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
@@ -335,9 +332,6 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 		final PersonJoins personJoins = personQueryContext.getJoins();
 		final Join<Person, Location> location = personJoins.getAddress();
-		final Join<Location, Region> region = personJoins.getAddressJoins().getRegion();
-		final Join<Location, District> district = personJoins.getAddressJoins().getDistrict();
-		final Join<Location, Community> community = personJoins.getAddressJoins().getCommunity();
 
 		Predicate filter = null;
 		filter = andEquals(cb, personFrom, filter, personCriteria.getBirthdateYYYY(), Person.BIRTHDATE_YYYY);
@@ -368,9 +362,9 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			}
 		}
 		filter = andEquals(cb, personFrom, filter, personCriteria.getPresentCondition(), Person.PRESENT_CONDITION);
-		filter = andEqualsReferenceDto(cb, region, filter, personCriteria.getRegion());
-		filter = andEqualsReferenceDto(cb, district, filter, personCriteria.getDistrict());
-		filter = andEqualsReferenceDto(cb, community, filter, personCriteria.getCommunity());
+		filter = andEquals(cb, () -> personJoins.getAddressJoins().getRegion(), filter, personCriteria.getRegion());
+		filter = andEquals(cb, () -> personJoins.getAddressJoins().getDistrict(), filter, personCriteria.getDistrict());
+		filter = andEquals(cb, () -> personJoins.getAddressJoins().getCommunity(), filter, personCriteria.getCommunity());
 
 		return filter;
 	}
