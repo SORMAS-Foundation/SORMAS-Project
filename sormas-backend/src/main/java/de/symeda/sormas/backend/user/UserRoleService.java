@@ -123,7 +123,11 @@ public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
 		return false;
 	}
 
-	public Predicate buildCriteriaFilter(UserRoleCriteria userRoleCriteria, CriteriaBuilder cb, Root<UserRole> from) {
+	public Predicate buildCriteriaFilter(
+		UserRoleCriteria userRoleCriteria,
+		CriteriaBuilder cb,
+		Root<UserRole> from,
+		Join<UserRole, UserRight> userRightsJoin) {
 
 		Predicate filter = null;
 
@@ -132,12 +136,13 @@ public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
 		}
 
 		if (userRoleCriteria.getUserRight() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.in(from.get(UserRole.USER_RIGHTS)).value(userRoleCriteria.getUserRight()));
+			Predicate userRightsFilter = userRightsJoin.in(userRoleCriteria.getUserRight());
+			filter = CriteriaBuilderHelper.and(cb, filter, userRightsFilter);
 		}
 
 		if (userRoleCriteria.getJurisdictionLevel() != null) {
-		   filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(UserRole.JURISDICTION_LEVEL), userRoleCriteria.getJurisdictionLevel()));
-        }
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(UserRole.JURISDICTION_LEVEL), userRoleCriteria.getJurisdictionLevel()));
+		}
 
 		if (userRoleCriteria.getFreeText() != null) {
 			String[] textFilters = userRoleCriteria.getFreeText().split("\\s+");

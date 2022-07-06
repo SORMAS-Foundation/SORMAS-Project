@@ -37,12 +37,12 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleCriteria;
@@ -276,18 +276,19 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<UserRole> root = cq.from(UserRole.class);
+		Join<UserRole, UserRight> userRightsJoin = root.join(UserRole.USER_RIGHTS);
 
 		Predicate filter = null;
 
 		if (userRoleCriteria != null) {
-			filter = userRoleService.buildCriteriaFilter(userRoleCriteria, cb, root);
+			filter = userRoleService.buildCriteriaFilter(userRoleCriteria, cb, root, userRightsJoin);
 		}
 
 		if (filter != null) {
 			cq.where(filter);
 		}
 
-		cq.select(cb.count(root));
+		cq.select(cb.countDistinct(root));
 		return em.createQuery(cq).getSingleResult();
 	}
 
@@ -296,26 +297,26 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<UserRole> cq = cb.createQuery(UserRole.class);
 		Root<UserRole> userRole = cq.from(UserRole.class);
+		Join<UserRole, UserRight> userRightsJoin = userRole.join(UserRole.USER_RIGHTS);
 
 		Predicate filter = null;
 
 		if (userRoleCriteria != null) {
-			filter = userRoleService.buildCriteriaFilter(userRoleCriteria, cb, userRole);
+			filter = userRoleService.buildCriteriaFilter(userRoleCriteria, cb, userRole, userRightsJoin);
 		}
 
 		if (filter != null) {
 			cq.where(filter);
 		}
 
+		cq.distinct(true);
 		if (sortProperties != null && !sortProperties.isEmpty()) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
-				case EntityDto.UUID:
-				case UserRoleDto.ENABLED:
-				case UserRoleDto.JURISDICTION_LEVEL:
 				case UserRoleDto.CAPTION:
+				case UserRoleDto.JURISDICTION_LEVEL:
 				case UserRoleDto.DESCRIPTION:
 					expression = userRole.get(sortProperty.propertyName);
 					break;

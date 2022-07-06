@@ -12,6 +12,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleCriteria;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -60,7 +61,6 @@ public class UserRolesView extends AbstractUserView {
 
 		addComponent(gridLayout);
 
-		//TODO: check if rights should be added to the buttons
 		btnExport = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
 		addHeaderComponent(btnExport);
 
@@ -109,6 +109,17 @@ public class UserRolesView extends AbstractUserView {
 		filterLayout.setSpacing(true);
 		filterLayout.setSizeUndefined();
 
+		userRightsFilter = ComboBoxHelper.createComboBoxV7();
+		userRightsFilter.setId(UserRoleDto.USER_RIGHTS);
+		userRightsFilter.setWidth(200, Unit.PIXELS);
+		userRightsFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserRoleDto.I18N_PREFIX, UserRoleDto.USER_RIGHTS));
+		userRightsFilter.addItems((Object[]) UserRight.values());
+		userRightsFilter.addValueChangeListener(e -> {
+			criteria.userRight((UserRight) e.getProperty().getValue());
+			navigateTo(criteria);
+		});
+		filterLayout.addComponent(userRightsFilter);
+
 		jurisdictionFilter = ComboBoxHelper.createComboBoxV7();
 		jurisdictionFilter.setId(UserRoleDto.JURISDICTION_LEVEL);
 		jurisdictionFilter.setWidth(200, Unit.PIXELS);
@@ -144,6 +155,7 @@ public class UserRolesView extends AbstractUserView {
 
 		jurisdictionFilter.setValue(criteria.getJurisdictionLevel() == null ? null : criteria.getJurisdictionLevel());
 		enabledFilter.setValue(criteria.getEnabled() == null ? null : criteria.getEnabled() ? ENABLED_FILTER : DISABLED_FILTER);
+		userRightsFilter.setValue(criteria.getUserRight() == null ? null : criteria.getUserRight());
 
 		// searchField.setValue(criteria.getFreeText());
 		applyingCriteria = false;

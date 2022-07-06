@@ -19,12 +19,9 @@ public class UserRoleGrid extends FilteredGrid<UserRoleDto, UserRoleCriteria> {
 		setSizeFull();
 		setLazyDataProvider();
 
-		//TODO: enabled column will be removed after testing the filter
 		//TODO: check if description column should be user rights
 		//TODO: change the CAPTION Column name to User Roles
-		setColumns(UserRoleDto.CAPTION, UserRoleDto.JURISDICTION_LEVEL, UserRoleDto.DESCRIPTION, UserRoleDto.ENABLED);
-
-		((Column<UserRoleDto, Boolean>) getColumn(UserRoleDto.ENABLED)).setRenderer(new BooleanRenderer());
+		setColumns(UserRoleDto.CAPTION, UserRoleDto.JURISDICTION_LEVEL, UserRoleDto.DESCRIPTION);
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(UserRoleDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
