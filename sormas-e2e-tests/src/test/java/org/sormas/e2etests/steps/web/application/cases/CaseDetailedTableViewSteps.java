@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,7 @@ public class CaseDetailedTableViewSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   private static BaseSteps baseSteps;
   static final String DATE_FORMAT_DE = "dd.MM.yyyy";
+  static Map<String, Integer> headersMap;
 
   @Inject
   public CaseDetailedTableViewSteps(
@@ -215,6 +217,27 @@ public class CaseDetailedTableViewSteps implements En {
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
           }
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID);
+        });
+
+    When(
+        "I check that the Internal Token column is present",
+        () -> {
+          TimeUnit.SECONDS.sleep(3); // For preventing premature data collection
+          headersMap = extractColumnHeadersHashMap();
+          String headers = headersMap.toString();
+          softly.assertTrue(
+              headers.contains("INTERNAL TOKEN"), "The INTERNAL TOKEN column is not displayed!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check that at least one SAMPLE TOKEN is displayed in table",
+        () -> {
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          Map<String, String> detailedCaseDTableRow = tableRowsData.get(0);
+          softly.assertTrue(
+              detailedCaseDTableRow.containsValue("SAMPLE TOKEN"), "SAMPLE TOKEN was not found!");
+          softly.assertAll();
         });
   }
 

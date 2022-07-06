@@ -923,6 +923,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		ANTHRAX })
 	@DependantOn(LESIONS)
 	@HideForCountries
+	@SymptomGrouping(SymptomGroup.SKIN)
 	private Date lesionsOnsetDate;
 
 	@Diseases({
@@ -941,23 +942,27 @@ public class SymptomsDto extends PseudonymizableDto {
 		MONKEYPOX })
 	@DependantOn(LESIONS)
 	@HideForCountries
+	@SymptomGrouping(SymptomGroup.SKIN)
 	private SymptomState lesionsResembleImg1;
 	@Diseases({
 		MONKEYPOX })
 	@DependantOn(LESIONS)
 	@HideForCountries
+	@SymptomGrouping(SymptomGroup.SKIN)
 	private SymptomState lesionsResembleImg2;
 
 	@Diseases({
 		MONKEYPOX })
 	@DependantOn(LESIONS)
 	@HideForCountries
+	@SymptomGrouping(SymptomGroup.SKIN)
 	private SymptomState lesionsResembleImg3;
 
 	@Diseases({
 		MONKEYPOX })
 	@DependantOn(LESIONS)
 	@HideForCountries
+	@SymptomGrouping(SymptomGroup.SKIN)
 	private SymptomState lesionsResembleImg4;
 
 	@Diseases({
@@ -969,6 +974,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@DependantOn(LESIONS)
 	@HideForCountries
+	@SymptomGrouping(SymptomGroup.SKIN)
 	private SymptomState lesionsSameSize;
 
 	@Diseases({
@@ -980,6 +986,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@DependantOn(LESIONS)
 	@HideForCountries
+	@SymptomGrouping(SymptomGroup.SKIN)
 	private SymptomState lesionsSameState;
 
 	@Diseases({
@@ -991,6 +998,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@DependantOn(LESIONS)
 	@HideForCountries
+	@SymptomGrouping(SymptomGroup.SKIN)
 	private Boolean lesionsSolesFeet;
 
 	@Diseases({
@@ -1002,6 +1010,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@DependantOn(LESIONS)
 	@HideForCountries
+	@SymptomGrouping(SymptomGroup.SKIN)
 	private SymptomState lesionsThatItch;
 
 	@Diseases({
@@ -1013,6 +1022,7 @@ public class SymptomsDto extends PseudonymizableDto {
 		OTHER })
 	@DependantOn(LESIONS)
 	@HideForCountries
+	@SymptomGrouping(SymptomGroup.SKIN)
 	private Boolean lesionsThorax;
 
 	@Diseases({

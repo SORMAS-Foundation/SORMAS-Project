@@ -37,7 +37,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
@@ -46,6 +45,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseFacade;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
@@ -108,36 +108,44 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	}
 
 	@Override
-	protected void validateEntitiesBeforeShare(List<Case> entities, boolean handOverOwnership) throws SormasToSormasException {
-		List<ValidationErrors> validationErrors = new ArrayList<>();
-		for (Case caze : entities) {
-			if (!caseService.getEditPermissionType(caze).equals(EditPermissionType.ALLOWED)) {
-				validationErrors.add(
-					new ValidationErrors(
-						buildCaseValidationGroupName(caze),
-						ValidationErrors
-							.create(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasNotEditable))));
-			}
-			if (handOverOwnership && caze.getPerson().isEnrolledInExternalJournal()) {
-				validationErrors.add(
-					new ValidationErrors(
-						buildCaseValidationGroupName(caze),
-						ValidationErrors.create(
-							new ValidationErrorGroup(Captions.CaseData),
-							new ValidationErrorMessage(Validations.sormasToSormasPersonEnrolled))));
-			}
+	protected void validateEntitiesBeforeShareInner(
+		Case caze,
+		boolean handOverOwnership,
+		String targetOrganizationId,
+		List<ValidationErrors> validationErrors) {
+		if (handOverOwnership && caze.getPerson().isEnrolledInExternalJournal()) {
+			validationErrors.add(
+				new ValidationErrors(
+					buildCaseValidationGroupName(caze),
+					ValidationErrors
+						.create(new ValidationErrorGroup(Captions.CaseData), new ValidationErrorMessage(Validations.sormasToSormasPersonEnrolled))));
 		}
 
-		if (!validationErrors.isEmpty()) {
-			throw SormasToSormasException.fromStringProperty(validationErrors, Strings.errorSormasToSormasShare);
-		}
 	}
 
 	@Override
-	protected void validateEntitiesBeforeShare(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {
-		validateEntitiesBeforeShare(
-			shares.stream().map(SormasToSormasShareInfo::getCaze).filter(Objects::nonNull).collect(Collectors.toList()),
-			shares.get(0).isOwnershipHandedOver());
+	protected SormasToSormasShareInfo getByTypeAndOrganization(Case caze, String targetOrganizationId) {
+		return shareInfoService.getByCaseAndOrganization(caze.getUuid(), targetOrganizationId);
+	}
+
+	@Override
+	protected ValidationErrorGroup buildEntityValidationGroupNameForAdo(Case caze) {
+		return buildCaseValidationGroupName(caze);
+	}
+
+	@Override
+	protected EditPermissionType isEntityEditAllowed(Case ado) {
+		return caseService.isEditAllowed(ado);
+	}
+
+	@Override
+	public Case extractFromShareInfo(SormasToSormasShareInfo shareInfo) {
+		return shareInfo.getCaze();
+	}
+
+	@Override
+	protected void validateShareRequestBeforeAccept(SormasToSormasShareRequestDto shareRequest) throws SormasToSormasException {
+
 	}
 
 	@Override

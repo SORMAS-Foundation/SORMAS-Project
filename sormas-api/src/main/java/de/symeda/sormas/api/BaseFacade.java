@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public interface BaseFacade<DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, CRITERIA extends BaseCriteria> {
@@ -29,4 +30,6 @@ public interface BaseFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 	List<DTO> getAllAfter(Date date);
 
 	List<String> getObsoleteUuidsSince(Date since);
+
+	void validate(DTO dto) throws ValidationRuntimeException;
 }

@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.sormastosormas.sharerequest;
 
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import java.util.List;
 
 import javax.ejb.Remote;
@@ -43,4 +44,6 @@ public interface SormasToSormasShareRequestFacade {
 		Integer offset,
 		Integer size,
 		List<SortProperty> sortProperties);
+
+	List<SormasToSormasShareRequestDto> getShareRequestsForCase(CaseReferenceDto caze);
 }

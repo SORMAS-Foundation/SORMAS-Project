@@ -28,8 +28,6 @@ import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.RequestContextHolder;
-import de.symeda.sormas.api.RequestContextTO;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
@@ -39,6 +37,8 @@ import com.google.common.collect.Lists;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.RequestContextHolder;
+import de.symeda.sormas.api.RequestContextTO;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.externaljournal.UserConfig;

@@ -16,7 +16,6 @@ import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -67,6 +66,7 @@ import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "DashboardFacade")
 public class DashboardFacadeEjb implements DashboardFacade {
@@ -96,7 +96,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	private DashboardService dashboardService;
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
 		UserRight._DASHBOARD_CONTACT_VIEW })
 	public List<DashboardCaseDto> getCases(DashboardCriteria dashboardCriteria) {
@@ -104,7 +104,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
 		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<CaseClassification, Integer> getCasesCountByClassification(DashboardCriteria dashboardCriteria) {
@@ -112,7 +112,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
 		UserRight._DASHBOARD_CONTACT_VIEW })
 	public String getLastReportedDistrictName(DashboardCriteria dashboardCriteria) {
@@ -120,14 +120,14 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
 		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<PathogenTestResultType, Long> getTestResultCountByResultType(DashboardCriteria dashboardCriteria) {
 		return dashboardService.getNewTestResultCountByResultType(dashboardCriteria);
 	}
 
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
 		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<Date, Map<CaseClassification, Integer>> getEpiCurveSeriesElementsPerCaseClassification(DashboardCriteria dashboardCriteria) {
@@ -147,7 +147,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		return epiCurveSeriesElements;
 	}
 
-	@RolesAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
+	@RightsAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
 	public Map<Date, Map<PresentCondition, Integer>> getEpiCurveSeriesElementsPerPresentCondition(DashboardCriteria dashboardCriteria) {
 		Map<Date, Map<PresentCondition, Integer>> epiCurveSeriesElements = new TreeMap<>();
 		List<Date> dates = buildListOfFilteredDates(
@@ -167,7 +167,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		return epiCurveSeriesElements;
 	}
 
-	@RolesAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
+	@RightsAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
 	public Map<Date, Map<ContactClassification, Long>> getEpiCurveSeriesElementsPerContactClassification(DashboardCriteria dashboardCriteria) {
 		Map<Date, Map<ContactClassification, Long>> epiCurveSeriesElements = new TreeMap<>();
 		List<Date> criteriaIntervalStartDates = buildListOfFilteredDates(
@@ -189,7 +189,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 
 	}
 
-	@RolesAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
+	@RightsAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
 	public Map<Date, Map<String, Long>> getEpiCurveSeriesElementsPerContactFollowUpStatus(DashboardCriteria dashboardCriteria) {
 		Map<Date, Map<String, Long>> epiCurveSeriesElements = new TreeMap<>();
 		List<Date> criteriaIntervalStartDates = buildListOfFilteredDates(
@@ -215,7 +215,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 
 	}
 
-	@RolesAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
+	@RightsAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
 	public Map<Date, Integer> getEpiCurveSeriesElementsPerContactFollowUpUntil(DashboardCriteria dashboardCriteria) {
 		Map<Date, Integer> epiCurveSeriesElements = new TreeMap<>();
 		List<Date> criteriaIntervalStartDates = buildListOfFilteredDates(
@@ -235,7 +235,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		return epiCurveSeriesElements;
 	}
 
-	@RolesAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
+	@RightsAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
 	public DashboardCaseMeasureDto getCaseMeasurePerDistrict(DashboardCriteria dashboardCriteria) {
 		Map<DistrictDto, BigDecimal> caseMeasurePerDistrictMap = new LinkedHashMap<>();
 		BigDecimal districtValuesLowerQuartile;
@@ -289,7 +289,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
 		UserRight._DASHBOARD_CONTACT_VIEW })
 	public long countCasesConvertedFromContacts(DashboardCriteria dashboardCriteria) {
@@ -297,13 +297,13 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
+	@RightsAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
 	public Map<PresentCondition, Integer> getCasesCountPerPersonCondition(DashboardCriteria dashboardCriteria) {
 		return dashboardService.getCasesCountPerPersonCondition(dashboardCriteria);
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
 		UserRight._DASHBOARD_CONTACT_VIEW })
 	public List<DashboardEventDto> getNewEvents(DashboardCriteria dashboardCriteria) {
@@ -311,7 +311,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
 		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<EventStatus, Long> getEventCountByStatus(DashboardCriteria dashboardCriteria) {
@@ -427,7 +427,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		};
 	}
 
-	@RolesAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
+	@RightsAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
 	public DashboardCaseStatisticDto getDashboardCaseStatistic(DashboardCriteria dashboardCriteria) {
 		List<DashboardCaseDto> dashboardCases = dashboardService.getCases(dashboardCriteria);
 		long newCases = dashboardCases.size();
@@ -474,7 +474,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 			dashboardService.getLastReportedDistrictName(dashboardCriteria));
 	}
 
-	@RolesAllowed(UserRight._DASHBOARD_CONTACT_VIEW)
+	@RightsAllowed(UserRight._DASHBOARD_CONTACT_VIEW)
 	public DashboardContactStatisticDto getDashboardContactStatistic(DashboardCriteria dashboardCriteria) {
 
 		List<DashboardContactDto> dashboardContacts = contactFacade.getContactsForDashboard(
@@ -727,7 +727,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
 		UserRight._DASHBOARD_CONTACT_VIEW })
 	public List<DiseaseBurdenDto> getDiseaseBurden(

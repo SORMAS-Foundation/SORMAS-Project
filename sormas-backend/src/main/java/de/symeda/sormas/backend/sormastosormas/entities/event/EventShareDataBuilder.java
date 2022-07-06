@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
@@ -57,6 +58,11 @@ public class EventShareDataBuilder
 		EventDto eventDto = getEventDto(data, pseudonymizer);
 
 		return new SormasToSormasEventDto(eventDto);
+	}
+
+	@Override
+	public void doBusinessValidation(SormasToSormasEventDto sormasToSormasEventDto) throws ValidationRuntimeException {
+		eventFacade.validate(sormasToSormasEventDto.getEntity());
 	}
 
 	@Override

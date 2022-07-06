@@ -6,6 +6,8 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import org.apache.commons.lang3.StringUtils;
+
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
@@ -14,7 +16,6 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
-import org.apache.commons.lang3.StringUtils;
 
 @Stateless
 @LocalBean

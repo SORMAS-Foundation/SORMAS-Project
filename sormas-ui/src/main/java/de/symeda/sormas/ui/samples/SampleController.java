@@ -19,7 +19,6 @@ package de.symeda.sormas.ui.samples;
 
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_NONE;
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 import java.util.Collection;
 import java.util.List;
@@ -159,7 +158,8 @@ public class SampleController {
 	 * @param callback
 	 *            use it to define additional actions that need to be taken after the pathogen test is saved (e.g. refresh the UI)
 	 * @param isNew
-	 *            for existing pathogen tests, the 'remove this pathogen test' button is hidden for users without UserRight.PATHOGEN_TEST_DELETE permission.
+	 *            for existing pathogen tests, the 'remove this pathogen test' button is hidden for users without
+	 *            UserRight.PATHOGEN_TEST_DELETE permission.
 	 * @return the pathogen test create component added.
 	 */
 	public PathogenTestForm addPathogenTestComponent(
@@ -207,8 +207,7 @@ public class SampleController {
 		};
 		sampleComponent.addCommitListener(savePathogenTest);
 		// Discard button configuration
-		if (isNew || isNull(pathogenTest) ||
-				UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_DELETE)) {
+		if (isNew || isNull(pathogenTest) || UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_DELETE)) {
 			Button discardButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.pathogenTestRemove));
 			VerticalLayout buttonLayout = new VerticalLayout(discardButton);
 			buttonLayout.setComponentAlignment(discardButton, Alignment.TOP_LEFT);
@@ -246,12 +245,20 @@ public class SampleController {
 	}
 
 	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(SampleDto sampleDto, Disease disease, Runnable callback) {
+
+		return getSampleCreateComponent(sampleDto, disease, UserRight.SAMPLE_CREATE, callback);
+	}
+
+	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
+		SampleDto sampleDto,
+		Disease disease,
+		UserRight userRight,
+		Runnable callback) {
+
 		final SampleCreateForm createForm = new SampleCreateForm(disease);
 		createForm.setValue(sampleDto);
-		final CommitDiscardWrapperComponent<SampleCreateForm> editView = new CommitDiscardWrapperComponent<>(
-			createForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE),
-			createForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<SampleCreateForm> editView =
+			new CommitDiscardWrapperComponent<>(createForm, UserProvider.getCurrent().hasUserRight(userRight), createForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
@@ -297,7 +304,8 @@ public class SampleController {
 	public CommitDiscardWrapperComponent<SampleCreateForm> getSampleReferralCreateComponent(SampleDto existingSample, Disease disease) {
 		final SampleDto referralSample = SampleDto.buildReferralDto(UserProvider.getCurrent().getUserReference(), existingSample);
 
-		final CommitDiscardWrapperComponent<SampleCreateForm> createView = getSampleCreateComponent(referralSample, disease, null);
+		final CommitDiscardWrapperComponent<SampleCreateForm> createView =
+			getSampleCreateComponent(referralSample, disease, UserRight.SAMPLE_TRANSFER, null);
 
 		createView.addCommitListener(() -> {
 			if (!createView.getWrappedComponent().getFieldGroup().isModified()) {
@@ -368,13 +376,13 @@ public class SampleController {
 
 	private void updateAssociationsForSample(SampleDto sampleDto) {
 		final CaseReferenceDto associatedCase = sampleDto.getAssociatedCase();
-		if (associatedCase != null) {
+		if (associatedCase != null && UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
 			final CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
 			FacadeProvider.getCaseFacade().save(caseDataByUuid);
 		}
 
 		final ContactReferenceDto associatedContact = sampleDto.getAssociatedContact();
-		if (associatedContact != null) {
+		if (associatedContact != null && UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
 			final ContactDto contactDataByUuid = FacadeProvider.getContactFacade().getByUuid(associatedContact.getUuid());
 			FacadeProvider.getContactFacade().save(contactDataByUuid);
 		}
@@ -397,6 +405,7 @@ public class SampleController {
 		Disease disease,
 		Consumer<Disease> createReferral,
 		Consumer<SampleDto> openReferredSample) {
+
 		Button referOrLinkToOtherLabButton = null;
 		SampleDto sample = editForm.getWrappedComponent().getValue();
 		if (sample.getReferredTo() == null) {

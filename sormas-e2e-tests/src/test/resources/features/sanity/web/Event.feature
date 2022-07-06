@@ -976,4 +976,57 @@ Feature: Create events
       | Contact Supervisor        |
       | Surveillance Supervisor   |
 
+  @issue=SORDEV-6609 @env_de
+  Scenario: Test for event internal token
+    Given I log in as a National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data for DE version
+    And I navigate to EVENT from edit event page
+    When I fill in the Internal Token field in Edit Case page with SAMPLE TOKEN
+    And I click on save button in the case popup
+    And I click on the Events button from navbar
+    And I check that the German Internal Token column is present
+    And I filter for SAMPLE TOKEN in Events Directory
+    Then I check that at least one SAMPLE TOKEN is displayed in table
 
+  @issue=SORDEV-11455 @env_main
+  Scenario: Add reason for deletion to confirmation dialogue
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When I log in with National User
+    And I click on the Events button from navbar
+    And I navigate to the last created through API Event page via URL
+    And I click Delete button on Edit Event page
+    And I click on No option in Confirm deletion on Edit Event Page
+    And I click Delete button on Edit Event page
+    And I click on Yes option in Confirm deletion on Edit Event Page
+    And I check that error message is equal to "Please choose a reason for deletion" in Reason for Deletion in popup
+    And I click on No option in Confirm deletion on Edit Event Page
+    And I click Delete button on Edit Event page
+    And I set Reason for deletion to "Other reason" on Edit Event Page
+    And I click on Yes option in Confirm deletion on Edit Event Page
+    And I check that error message is equal to "Please add a reason for deletion" in Reason for Deletion in popup
+    And I click on No option in Confirm deletion on Edit Event Page
+    And I click Delete button on Edit Event page
+    And I set Reason for deletion to "Entity created without legal reason" on Edit Event Page
+    And I click on Yes option in Confirm deletion on Edit Event Page
+    And I am accessing the event tab using the created event via api
+    And I check if Reason for deletion is set to "Entity created without legal reason" on Edit Event Page
+    And I check if Delete button on Edit Event Page is disabled
+
+    @issue=SORDEV-8055 @env_main
+    Scenario Outline: Allow users to select the used delimiter when importing files
+      Given I log in as a Admin User
+      And I click on the Events button from navbar
+      When I click on the Import button from Events directory
+      Then I check if default Value Separator is set to "Default (Comma)"
+      And I check is possible to set Value Separator to <option>
+
+      Examples:
+        | option          |
+        | Comma           |
+        | Semicolon       |
+        | Tab             |
+        | Default (Comma) |

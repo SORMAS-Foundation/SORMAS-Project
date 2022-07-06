@@ -546,15 +546,6 @@ public class Sample extends DeletableAdo implements SormasToSormasShareable {
 		this.samplingReasonDetails = samplingReasonDetails;
 	}
 
-	@Override
-	public String toString() {
-		return SampleReferenceDto.buildCaption(
-			getSampleMaterial(),
-			getAssociatedCase() != null ? getAssociatedCase().getUuid() : null,
-			getAssociatedContact() != null ? getAssociatedContact().getUuid() : null,
-			getAssociatedEventParticipant() != null ? getAssociatedEventParticipant().getUuid() : null);
-	}
-
 	public SampleReferenceDto toReference() {
 		return new SampleReferenceDto(
 			getUuid(),

@@ -1058,6 +1058,16 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(uuidLocator);
         });
+
+    When(
+        "I filter for SAMPLE TOKEN in Contacts Directory",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, "SAMPLE TOKEN");
+          webDriverHelpers.clickOnWebElementBySelector(
+              CONTACT_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
   }
 
   private void searchAfterContactByMultipleOptions(String idPhoneNameEmail) {

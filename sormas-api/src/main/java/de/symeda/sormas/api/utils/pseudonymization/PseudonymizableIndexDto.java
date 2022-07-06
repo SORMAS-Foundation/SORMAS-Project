@@ -17,9 +17,12 @@ package de.symeda.sormas.api.utils.pseudonymization;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class PseudonymizableIndexDto implements Pseudonymizable, Serializable {
 
 	private boolean pseudonymized;
+	private String uuid;
 
 	public boolean isPseudonymized() {
 		return pseudonymized;
@@ -27,5 +30,33 @@ public class PseudonymizableIndexDto implements Pseudonymizable, Serializable {
 
 	public void setPseudonymized(boolean pseudonymized) {
 		this.pseudonymized = pseudonymized;
+	}
+
+	public PseudonymizableIndexDto() {
+	}
+
+	public PseudonymizableIndexDto(String uuid) {
+		this.uuid = uuid;
+	}
+
+	public String getUuid() {
+		return uuid;
+	}
+
+	public void setUuid(String uuid) {
+		this.uuid = uuid;
+	}
+
+	public String getCaption() {
+		return toString();
+	}
+
+	public String i18nPrefix() {
+		return null;
+	}
+
+	@Override
+	public String toString() {
+		return (i18nPrefix() != null ? i18nPrefix() : getClass().getSimpleName()) + StringUtils.SPACE + this.getUuid();
 	}
 }

@@ -36,6 +36,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.location.Location;
+import android.os.Build;
 import android.text.Html;
 import android.util.Log;
 
@@ -410,7 +411,11 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
 			Intent notificationIntent = new Intent(context, CaseReadActivity.class);
 			notificationIntent.putExtras(CaseReadActivity.buildBundle(mergedCase.getUuid(), false).get());
-			PendingIntent pi = PendingIntent.getActivity(context, mergedCase.getId().intValue(), notificationIntent, 0);
+			PendingIntent pi = PendingIntent.getActivity(
+				context,
+				mergedCase.getId().intValue(),
+				notificationIntent,
+				Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_IMMUTABLE : PendingIntent.FLAG_ONE_SHOT);
 			Resources r = context.getResources();
 
 			NotificationCompat.Builder notificationBuilder =

@@ -56,24 +56,29 @@ public class ProcessedSampleDataPersister extends ProcessedDataPersister<SampleD
 		return shareInfoService;
 	}
 
-	@Override
 	public void persistSharedData(SormasToSormasSampleDto processedData, Sample existingSample) throws SormasToSormasValidationException {
 		SampleDto sample = processedData.getEntity();
 
-		handleValidationError(() -> sampleFacade.saveSample(sample, true, false, false), Captions.Sample, buildSampleValidationGroupName(sample));
+		handleValidationError(
+			() -> sampleFacade.saveSample(sample, true, false, false),
+			Captions.Sample,
+			buildSampleValidationGroupName(sample),
+			sample);
 
 		for (PathogenTestDto pathogenTest : processedData.getPathogenTests()) {
 			handleValidationError(
 				() -> pathogenTestFacade.savePathogenTest(pathogenTest, false, false),
 				Captions.PathogenTest,
-				buildPathogenTestValidationGroupName(pathogenTest));
+				buildPathogenTestValidationGroupName(pathogenTest),
+				pathogenTest);
 		}
 
 		for (AdditionalTestDto additionalTest : processedData.getAdditionalTests()) {
 			handleValidationError(
 				() -> additionalTestFacade.saveAdditionalTest(additionalTest, false),
 				Captions.AdditionalTest,
-				buildValidationGroupName(Captions.AdditionalTest, additionalTest));
+				buildValidationGroupName(Captions.AdditionalTest, additionalTest),
+				additionalTest);
 		}
 	}
 

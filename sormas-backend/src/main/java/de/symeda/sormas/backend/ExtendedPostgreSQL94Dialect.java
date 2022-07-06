@@ -12,6 +12,8 @@ import com.vladmihalcea.hibernate.type.json.JsonStringType;
 public class ExtendedPostgreSQL94Dialect extends PostgreSQL94Dialect {
 
 	public final static String SIMILARITY_OPERATOR = "similarity_operator";
+	public final static String ARRAY_CONTAINS_TEXT = "array_contains_operator";
+	public final static String JSON_EXTRACT_PATH_TEXT = "json_extract_path_text";
 	public final static String ARRAY_TO_STRING = "array_to_string";
 	public final static String ARRAY_AGG = "array_agg";
 	// forces the use of the concat function, by default hibernate uses `||` operator
@@ -44,5 +46,7 @@ public class ExtendedPostgreSQL94Dialect extends PostgreSQL94Dialect {
 				StandardBasicTypes.LONG,
 				"COUNT(?1) OVER (PARTITION BY ?2 RANGE BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING)"));
 		registerFunction(GREATEST, new StandardSQLFunction(GREATEST));
+		registerFunction(ARRAY_CONTAINS_TEXT, new SQLFunctionTemplate(StandardBasicTypes.BOOLEAN, "?1 @> array[?2]::text[]"));
+		registerFunction(JSON_EXTRACT_PATH_TEXT, new SQLFunctionTemplate(StandardBasicTypes.STRING, "json_extract_path_text(?1, ?2)"));
 	}
 }

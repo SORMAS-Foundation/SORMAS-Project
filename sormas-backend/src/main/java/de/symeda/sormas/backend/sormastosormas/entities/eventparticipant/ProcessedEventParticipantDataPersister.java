@@ -24,6 +24,7 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -54,18 +55,21 @@ public class ProcessedEventParticipantDataPersister
 
 	@Override
 	public void persistSharedData(SormasToSormasEventParticipantDto processedData, EventParticipant existingEventParticipant)
+
 		throws SormasToSormasValidationException {
 		EventParticipantDto eventParticipant = processedData.getEntity();
-
+		PersonDto person = eventParticipant.getPerson();
 		handleValidationError(
-			() -> personFacade.savePerson(eventParticipant.getPerson(), false, false, false),
+			() -> personFacade.savePerson(person, false, false, false),
 			Captions.EventParticipant,
-			buildEventParticipantValidationGroupName(eventParticipant));
+			buildEventParticipantValidationGroupName(eventParticipant),
+			person);
 
 		handleValidationError(
 			() -> eventParticipantFacade.saveEventParticipant(eventParticipant, false, false),
 			Captions.EventParticipant,
-			buildEventParticipantValidationGroupName(eventParticipant));
+			buildEventParticipantValidationGroupName(eventParticipant),
+			eventParticipant);
 	}
 
 	@Override

@@ -66,6 +66,7 @@ public class EditCasePage {
       By.cssSelector("#investigationStatus label");
   public static final By INVESTIGATED_DATE_FIELD = By.cssSelector("#investigatedDate");
   public static final By EXTERNAL_TOKEN_INPUT = By.id("externalToken");
+  public static final By INTERNAL_TOKEN_INPUT = By.id("internalToken");
   public static final By DISEASE_COMBOBOX = By.cssSelector("#disease div");
   public static final By REINFECTION_OPTIONS = By.cssSelector("#reInfection label");
   public static final By OUTCOME_OF_CASE_OPTIONS = By.cssSelector("#outcome label");
@@ -251,6 +252,24 @@ public class EditCasePage {
       By.xpath("(//div[@location='samples']//div[@class='v-label v-widget v-label-undef-w'])[4]");
   public static final By SAMPLES_CARD_TEST_TYPE =
       By.xpath("(//div[@location='samples']//div[@class='v-label v-widget v-label-undef-w'])[5]");
+  public static final By FOLLOW_UP_STATUS_INPUT = By.cssSelector("#followUpStatus input");
+  public static final By CANCEL_FOLLOW_UP_BUTTON = By.cssSelector("#contactCancelFollowUp");
+  public static final By DATE_OF_FOLLOW_UP_STATUS_CHANGE =
+      By.cssSelector("[location='followUpStatusChangeDate'] [class='v-captiontext']");
+  public static final By DATE_OF_FOLLOW_UP_STATUS_CHANGE_INPUT =
+      By.cssSelector("#followUpStatusChangeDate input");
+  public static final By RESPONSIBLE_USER_FOR_FOLLOW_UP_STATUS_CHANGE =
+      By.cssSelector("[location='followUpStatusChangeUser'] [class='v-captiontext']");
+  public static final By RESPONSIBLE_USER_FOR_FOLLOW_UP_STATUS_CHANGE_INPUT =
+      By.cssSelector("#followUpStatusChangeUser input");
+  public static final By FOLLOW_UP_COMMENT_FIELD = By.cssSelector("#followUpComment");
+  public static final By RESUME_FOLLOW_UP_BUTTON = By.cssSelector("#contactResumeFollowUp");
+  public static final By LOST_TO_FOLLOW_UP_BUTTON = By.cssSelector("#contactLostToFollowUp");
+  public static final By EXPECTED_FOLLOW_UP_UNTIL_DATE_INPUT =
+      By.cssSelector("[location='expectedFollowUpUntilDateLoc'] input");
+  public static final By OVERWRITE_FOLLOW_UP_UNTIL_DATE_LABEL =
+      By.cssSelector("#overwriteFollowUpUntil label");
+  public static final By FOLLOW_UP_UNTIL_DATE_INPUT = By.cssSelector("#followUpUntil input");
   public static final By POINT_OF_ENTRY_TEXT = By.cssSelector("#pointOfEntry input");
   public static final By POINT_OF_ENTRY_DETAILS = By.cssSelector("#pointOfEntryDetails");
   public static final By REFER_CASE_FROM_POINT_OF_ENTRY =
@@ -265,6 +284,10 @@ public class EditCasePage {
   public static final By REFER_CASE_FROM_POINT_OF_ENTRY_SAVE_BUTTON =
       By.cssSelector(".popupContent #commit");
   public static final By CASE_ORIGIN = By.cssSelector("#caseOrigin input");
+  public static final By NEW_IMMUNIZATION_BUTTON = By.cssSelector("[id='New immunization']");
+  public static final By EDIT_IMMUNIZATION_BUTTON =
+      By.xpath(
+          "//div[@location='immunizations']//div[@class='v-slot v-slot-link v-slot-compact v-align-right']");
 
   public static By getCaseIDPathByIndex(int index) {
     return By.xpath(String.format("//table/tbody/tr[%s]/td[1]/a", index));

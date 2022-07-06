@@ -19,10 +19,10 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 
 public class LocationJoins extends QueryJoins<Location> {

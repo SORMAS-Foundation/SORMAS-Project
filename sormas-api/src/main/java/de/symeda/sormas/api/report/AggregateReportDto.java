@@ -2,9 +2,9 @@ package de.symeda.sormas.api.report;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -28,6 +28,7 @@ public class AggregateReportDto extends EntityDto {
 	public static final String NEW_CASES = "newCases";
 	public static final String LAB_CONFIRMATIONS = "labConfirmations";
 	public static final String DEATHS = "deaths";
+	public static final String AGE_GROUP = "ageGroup";
 
 	private UserReferenceDto reportingUser;
 	private Disease disease;
@@ -41,6 +42,7 @@ public class AggregateReportDto extends EntityDto {
 	private Integer labConfirmations;
 	private Integer deaths;
 	private String ageGroup;
+	private boolean duplicate;
 
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;
@@ -136,6 +138,14 @@ public class AggregateReportDto extends EntityDto {
 
 	public void setAgeGroup(String ageGroup) {
 		this.ageGroup = ageGroup;
+	}
+
+	public boolean isDuplicate() {
+		return duplicate;
+	}
+
+	public void setDuplicate(boolean duplicate) {
+		this.duplicate = duplicate;
 	}
 
 	public static AggregateReportDto build() {
