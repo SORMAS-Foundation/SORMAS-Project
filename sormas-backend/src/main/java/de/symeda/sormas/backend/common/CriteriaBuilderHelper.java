@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -74,16 +73,27 @@ public class CriteriaBuilderHelper {
 		return cb.and(cb.greaterThan(path, date), cb.isNotNull(path));
 	}
 
+	/**
+	 * @param cb
+	 *            The builder of the query to filter.
+	 * @param entityPath
+	 *            The path in which {@code entityProperty} will to be applied.
+	 * @param filter
+	 *            The filter to amend.
+	 * @param filterValue
+	 *            The value to filter by.
+	 * @param entityProperty
+	 *            The property on which to filter.
+	 * @return The original filter if {@code filterValue == null} or the amended filter combined with AND.
+	 */
 	public static Predicate andEquals(
 		CriteriaBuilder cb,
-		From<?, ? extends AbstractDomainObject> entityFrom,
+		Path<?> entityPath,
 		Predicate filter,
 		Object filterValue,
 		String entityProperty) {
-		if (filterValue != null) {
-			filter = and(cb, filter, cb.equal(entityFrom.get(entityProperty), filterValue));
-		}
-		return filter;
+
+		return filterValue == null ? filter : and(cb, filter, cb.equal(entityPath.get(entityProperty), filterValue));
 	}
 
 	/**
@@ -99,7 +109,7 @@ public class CriteriaBuilderHelper {
 	 */
 	public static Predicate andEquals(
 		CriteriaBuilder cb,
-		Supplier<Join<? extends AbstractDomainObject, ? extends AbstractDomainObject>> fromSupplier,
+		Supplier<Join<?, ?>> fromSupplier,
 		Predicate filter,
 		HasUuid hasUuid) {
 
