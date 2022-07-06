@@ -157,17 +157,25 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		return createUserFilter(taskQueryContext, null);
 	}
 
-	private boolean isContextCriteriaOrHasNoContext(TaskCriteria taskCriteria, TaskContext taskContext) {
+	private boolean hasContextOrNoContext(TaskCriteria taskCriteria, TaskContext taskContext) {
 
 		switch (taskContext) {
 		case CASE:
-			return taskCriteria == null || !taskCriteria.hasContextCriteria() || taskCriteria.getTaskContext() == TaskContext.CASE;
+			return taskCriteria == null
+				|| !taskCriteria.hasContextCriteria()
+				|| (taskCriteria.getTaskContext() == TaskContext.CASE || taskCriteria.getCaze() != null);
 		case CONTACT:
-			return taskCriteria == null || !taskCriteria.hasContextCriteria() || taskCriteria.getTaskContext() == TaskContext.CONTACT;
+			return taskCriteria == null
+				|| !taskCriteria.hasContextCriteria()
+				|| (taskCriteria.getTaskContext() == TaskContext.CONTACT || taskCriteria.getContact() != null);
 		case EVENT:
-			return taskCriteria == null || !taskCriteria.hasContextCriteria() || taskCriteria.getTaskContext() == TaskContext.EVENT;
+			return taskCriteria == null
+				|| !taskCriteria.hasContextCriteria()
+				|| (taskCriteria.getTaskContext() == TaskContext.EVENT || taskCriteria.getEvent() != null);
 		case TRAVEL_ENTRY:
-			return taskCriteria == null || !taskCriteria.hasContextCriteria() || taskCriteria.getTaskContext() == TaskContext.TRAVEL_ENTRY;
+			return taskCriteria == null
+				|| !taskCriteria.hasContextCriteria()
+				|| (taskCriteria.getTaskContext() == TaskContext.TRAVEL_ENTRY || taskCriteria.getTravelEntry() != null);
 		case GENERAL:
 			return taskCriteria == null || !taskCriteria.hasContextCriteria() || taskCriteria.getTaskContext() == TaskContext.GENERAL;
 		default:
@@ -205,7 +213,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), currentUser);
 		filter = cb.or(filter, cb.equal(taskPath.get(Task.ASSIGNEE_USER), currentUser));
 
-		Predicate caseFilter = isContextCriteriaOrHasNoContext(taskCriteria, TaskContext.CASE)
+		Predicate caseFilter = hasContextOrNoContext(taskCriteria, TaskContext.CASE)
 			? caseService.createUserFilter(
 				new CaseQueryContext(cb, cq, joins.getCaseJoins()),
 				taskCriteria != null
@@ -215,7 +223,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		if (caseFilter != null) {
 			filter = cb.or(filter, caseFilter);
 		}
-		Predicate contactFilter = isContextCriteriaOrHasNoContext(taskCriteria, TaskContext.CONTACT)
+		Predicate contactFilter = hasContextOrNoContext(taskCriteria, TaskContext.CONTACT)
 			? contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()))
 			: null;
 		if (contactFilter != null) {
@@ -224,13 +232,13 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 				CriteriaBuilderHelper
 					.or(cb, contactFilter, createAssigneeOrObserverFilter(cb, joins.getAssignee(), joins.getTaskObservers(), currentUser)));
 		}
-		Predicate eventFilter = isContextCriteriaOrHasNoContext(taskCriteria, TaskContext.EVENT)
+		Predicate eventFilter = hasContextOrNoContext(taskCriteria, TaskContext.EVENT)
 			? eventService.createUserFilter(new EventQueryContext(cb, cq, joins.getEventJoins()))
 			: null;
 		if (eventFilter != null) {
 			filter = cb.or(filter, eventFilter);
 		}
-		Predicate travelEntryFilter = isContextCriteriaOrHasNoContext(taskCriteria, TaskContext.TRAVEL_ENTRY)
+		Predicate travelEntryFilter = hasContextOrNoContext(taskCriteria, TaskContext.TRAVEL_ENTRY)
 			? travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq, joins.getTravelEntryJoins()))
 			: null;
 		if (travelEntryFilter != null) {
