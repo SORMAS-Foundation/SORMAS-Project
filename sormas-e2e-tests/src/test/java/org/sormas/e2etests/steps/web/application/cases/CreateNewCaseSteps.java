@@ -31,6 +31,7 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_ORIGIN_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_UPLOADED_TEST_FILE;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONFIRM_BUTTON_POPUP;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_CASE_CONFIRMATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON;
@@ -776,7 +777,7 @@ public class CreateNewCaseSteps implements En {
           fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.GERMAN);
           webDriverHelpers.selectFromCombobox(
               CASE_DISEASE_VARIANT_COMBOBOX, caze.getDiseaseVariant());
-          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_POPUP_SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
