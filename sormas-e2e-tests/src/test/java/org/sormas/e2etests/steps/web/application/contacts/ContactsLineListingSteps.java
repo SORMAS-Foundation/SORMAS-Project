@@ -89,7 +89,9 @@ public class ContactsLineListingSteps implements En {
           selectRelationshipWithCase(contactsLineListing.getRelationshipWithCase());
           fillFirstName(contactsLineListing.getFirstName());
           fillLastName(contactsLineListing.getLastName());
-          filldateOfBirth(contactsLineListing.getDateOfBirth(), Locale.GERMAN);
+            selectBirthYear(contactsLineListing.getBirthYear());
+            selectBirthMonth(contactsLineListing.getBirthMonth());
+            selectBirthDay(contactsLineListing.getBirthDay());
           selectSex(contactsLineListing.getSex());
         });
     When(
@@ -158,7 +160,7 @@ public class ContactsLineListingSteps implements En {
             webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONTACT_SAVED_POPUP);
             webDriverHelpers.clickOnWebElementBySelector(CONTACT_SAVED_POPUP);
           }
-          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilIdentifiedElementDisappear(CONTACT_SAVED_POPUP);
         });
     When(
         "I save the new contacts from Event Participants using line listing feature in Event Participant tab",
