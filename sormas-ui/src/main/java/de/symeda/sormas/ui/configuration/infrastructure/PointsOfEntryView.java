@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import java.util.Collections;
+import java.util.Set;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
@@ -120,8 +123,8 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource =
-				GridExportStreamResource.createStreamResource(grid, ExportEntityName.POINTS_OF_ENTRY, PointsOfEntryGrid.EDIT_BTN_ID);
+			StreamResource streamResource = GridExportStreamResource
+				.createStreamResourceWithSelectedItems(grid, this::getSelectedRows, ExportEntityName.POINTS_OF_ENTRY, PointsOfEntryGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
@@ -166,6 +169,11 @@ public class PointsOfEntryView extends AbstractConfigurationView {
 		}
 
 		addComponent(gridLayout);
+	}
+
+	private Set<PointOfEntryDto> getSelectedRows() {
+		PointsOfEntryGrid facilitiesGrid = this.grid;
+		return this.viewConfiguration.isInEagerMode() ? facilitiesGrid.asMultiSelect().getSelectedItems() : Collections.emptySet();
 	}
 
 	private HorizontalLayout createFilterBar() {

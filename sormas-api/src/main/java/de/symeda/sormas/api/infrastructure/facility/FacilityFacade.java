@@ -76,5 +76,5 @@ public interface FacilityFacade extends InfrastructureFacade<FacilityDto, Facili
 
 	Page<FacilityIndexDto> getIndexPage(FacilityCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 
-	List<FacilityExportDto> getExportList(FacilityCriteria facilityCriteria, Integer first, Integer max);
+	List<FacilityExportDto> getExportList(FacilityCriteria facilityCriteria, Collection<String> selectedRows, Integer first, Integer max);
 }

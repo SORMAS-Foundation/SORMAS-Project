@@ -711,6 +711,7 @@ public class SurveillanceDashboardSteps implements En {
     Then(
         "^I validate chart download options on Surveillance Dashboard Page$",
         () -> {
+          webDriverHelpers.scrollToElement(SurveillanceDashboardPage.LEGEND_CHART_DOWNLOAD_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(
               SurveillanceDashboardPage.LEGEND_CHART_DOWNLOAD_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(

@@ -215,6 +215,7 @@ public class EditImmunizationSteps implements En {
           webDriverHelpers.scrollToElement(ARCHIVE_DEARCHIVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_DEARCHIVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
     When(

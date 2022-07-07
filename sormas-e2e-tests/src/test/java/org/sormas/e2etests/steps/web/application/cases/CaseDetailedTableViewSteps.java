@@ -4,7 +4,6 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_LIST_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_DATA_TITLE;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_INFORMATION_TITLE;
-import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static recorders.StepsLogger.PROCESS_ID_STRING;
 
 import cucumber.api.java8.En;
@@ -26,7 +25,6 @@ import org.sormas.e2etests.enums.ContactOutcome;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
-import org.sormas.e2etests.enums.UserRoles;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -148,9 +146,7 @@ public class CaseDetailedTableViewSteps implements En {
           }
           softly.assertEquals(
               detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.REPORTING_USER.toString()),
-              runningConfiguration
-                  .getUserByRole(locale, UserRoles.RestUser.getRole())
-                  .getUserRole(),
+              "Rest AUTO",
               "Reporting user is not correct");
           softly.assertAll();
         });
