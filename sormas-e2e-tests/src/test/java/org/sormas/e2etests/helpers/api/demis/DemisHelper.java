@@ -17,6 +17,8 @@
  */
 package org.sormas.e2etests.helpers.api.demis;
 
+import static io.restassured.config.SSLConfig.sslConfig;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
@@ -28,6 +30,7 @@ import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import java.io.FileInputStream;
 import java.security.KeyStore;
+import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.PKIXParameters;
 import java.security.cert.TrustAnchor;
@@ -231,54 +234,42 @@ public class DemisHelper {
 
   @SneakyThrows
   public void newRestassured() {
-    RestAssured mockClient = new RestAssured();
-    mockClient
-        .config()
-        .getSSLConfig()
-        .with()
-        .keyStore(
-            "C:\\Users\\Razvan\\Downloads\\demis\\DEMIS-Adapter-2.0.1\\config\\DEMIS-test-lab999_CSM026304641.p12",
-            "W7JDGJOVJ7")
-        .allowAllHostnames();
-    mockClient
-        .when()
-        .post("https://10.210.11.214:443/auth/realms/LAB/protocol/openid-connect/token")
-        .then()
-        .extract()
-        .response();
 
-    KeyStore keyStore = null;
-    SSLConfig config = null;
+    String clientPassword = "W7JDGJOVJ7";
+    String clientCertificatePath =
+        "C:\\Users\\Razvan\\Downloads\\demis\\DEMIS-Adapter-2.0.1\\config\\DEMIS-test-lab999_CSM026304641.p12";
+    String trustStorePath =
+        "C:\\Program Files\\java\\zulu11.54.23-ca-jdk11.0.14-win_x64\\lib\\security\\cacerts";
+    String trustStorePassword = "check"; // default trust store password
 
-    try {
-      keyStore = KeyStore.getInstance("PKCS12");
-      keyStore.load(
-          new FileInputStream(
-              "C:\\Users\\Razvan\\Downloads\\demis\\DEMIS-Adapter-2.0.1\\config\\DEMIS-test-lab999_CSM026304641.p12"),
-          "W7JDGJOVJ7".toCharArray());
+    KeyStore clientStore = KeyStore.getInstance("PKCS12");
+    clientStore.load(new FileInputStream(clientCertificatePath), clientPassword.toCharArray());
 
-    } catch (Exception ex) {
-      System.out.println("Error while loading keystore >>>>>>>>>");
-      ex.printStackTrace();
-    }
-    if (keyStore != null) {
+    KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+    kmf.init(clientStore, clientPassword.toCharArray());
+    KeyManager[] kms = kmf.getKeyManagers();
 
-      org.apache.http.conn.ssl.SSLSocketFactory clientAuthFactory =
-          new org.apache.http.conn.ssl.SSLSocketFactory(keyStore, "W7JDGJOVJ7");
-      // set the config in rest assured
-      config = new SSLConfig().with().sslSocketFactory(clientAuthFactory).and().allowAllHostnames();
+    KeyStore trustStore = KeyStore.getInstance("JKS");
+    trustStore.load(new FileInputStream(trustStorePath), trustStorePassword.toCharArray());
 
-      RestAssured.config = RestAssured.config().sslConfig(config);
-      RestAssured.given()
-          // .contentType("application/x-www-form-urlencoded; charset=utf-8")
-          //          .formParam("client_secret", "secret_client_secret")
-          //          .formParam("username", "test-lab999")
-          //          .formParam("grant_type", "password")
-          .when()
-          .post("https://10.210.11.214:443/auth/realms/LAB/protocol/openid-connect/token")
-          .then()
-          .extract()
-          .response();
-    }
+    TrustManagerFactory tmf =
+        TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+    tmf.init(trustStore);
+    TrustManager[] tms = tmf.getTrustManagers();
+
+    SSLContext sslContext = SSLContext.getInstance("TLS");
+    sslContext.init(kms, tms, new SecureRandom());
+
+    org.apache.http.conn.ssl.SSLSocketFactory lSchemeSocketFactory =
+        new org.apache.http.conn.ssl.SSLSocketFactory(clientStore, clientPassword, trustStore);
+
+    RestAssured.config =
+        RestAssured.config()
+            .sslConfig(
+                sslConfig()
+                    .with()
+                    .sslSocketFactory(lSchemeSocketFactory)
+                    .and()
+                    .allowAllHostnames());
   }
 }
