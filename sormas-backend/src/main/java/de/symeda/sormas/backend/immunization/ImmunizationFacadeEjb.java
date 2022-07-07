@@ -356,13 +356,9 @@ public class ImmunizationFacadeEjb
 					.findAny()
 					.orElse(null);
 			}
-			Date oldRelevantVaccineDate = existingVaccination != null ? vaccinationService.getRelevantVaccineDate(existingVaccination) : null;
-			Date newRelevantVaccineDate = vaccinationService.getRelevantVaccineDate(vaccination);
-			vaccinationFacade.updateVaccinationStatuses(
-				newRelevantVaccineDate,
-				oldRelevantVaccineDate,
-				immunization.getPerson().getId(),
-				immunization.getDisease());
+
+			vaccinationFacade
+				.updateVaccinationStatuses(vaccination, existingVaccination, immunization.getPerson().getId(), immunization.getDisease());
 		});
 
 		service.ensurePersisted(immunization);

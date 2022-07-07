@@ -112,21 +112,20 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 		Vaccination existingVaccination = dto.getUuid() != null ? vaccinationService.getByUuid(dto.getUuid()) : null;
 		VaccinationDto existingDto = toDto(existingVaccination);
-		Date oldRelevantVaccineDate = existingVaccination != null ? vaccinationService.getRelevantVaccineDate(existingVaccination) : null;
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		restorePseudonymizedDto(dto, existingDto, existingVaccination, pseudonymizer);
 
 		validate(dto, false);
 
-		existingVaccination = fillOrBuildEntity(dto, existingVaccination, true);
-		vaccinationService.ensurePersisted(existingVaccination);
-		Date newRelevantVaccineDate = vaccinationService.getRelevantVaccineDate(existingVaccination);
+		Vaccination vaccination = fillOrBuildEntity(dto, existingVaccination, true);
+		vaccinationService.ensurePersisted(vaccination);
+
 		updateVaccinationStatuses(
-			newRelevantVaccineDate,
-			oldRelevantVaccineDate,
-			existingVaccination.getImmunization().getPerson().getId(),
-			existingVaccination.getImmunization().getDisease());
+			vaccination,
+			existingDto,
+			vaccination.getImmunization().getPerson().getId(),
+			vaccination.getImmunization().getDisease());
 
 		return convertToDto(existingVaccination, pseudonymizer);
 	}
@@ -176,11 +175,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 
 		vaccinationService.ensurePersisted(vaccination);
 
-		updateVaccinationStatuses(
-			vaccinationService.getRelevantVaccineDate(vaccination),
-			null,
-			vaccination.getImmunization().getPerson().getId(),
-			disease);
+		updateVaccinationStatuses(vaccination, null, vaccination.getImmunization().getPerson().getId(), disease);
 
 		return convertToDto(vaccination, Pseudonymizer.getDefault(userService::hasRight));
 	}
@@ -396,10 +391,12 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	}
 
 	@RightsAllowed(UserRight._IMMUNIZATION_EDIT)
-	public void updateVaccinationStatuses(Date newRelevantVaccineDate, Date oldRelevantVaccineDate, Long personId, Disease disease) {
+	public void updateVaccinationStatuses(Vaccination newVaccination, VaccinationDto oldRelevantVaccination, Long personId, Disease disease) {
+		Date newRelevantVaccineDate = vaccinationService.getRelevantVaccineDate(newVaccination);
+		Date oldRelevantVaccineDate = oldRelevantVaccination != null ? vaccinationService.getRelevantVaccineDate(oldRelevantVaccination) : null;
 
 		if (newRelevantVaccineDate != oldRelevantVaccineDate) {
-			caseService.updateVaccinationStatuses(personId, disease, newRelevantVaccineDate);
+			caseService.updateVaccinationStatuses(personId, disease, newVaccination);
 			contactService.updateVaccinationStatuses(personId, disease, newRelevantVaccineDate);
 			eventParticipantService.updateVaccinationStatuses(personId, disease, newRelevantVaccineDate);
 		}
@@ -463,6 +460,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		Vaccination vaccination = vaccinationService.getByUuid(uuid);
 		Immunization immunization = vaccination.getImmunization();
 		immunization.getVaccinations().remove(vaccination);
+		immunizationService.incrementChangeDate(immunization);
 		immunizationService.ensurePersisted(immunization);
 
 		if (immunization.getVaccinations().isEmpty()) {

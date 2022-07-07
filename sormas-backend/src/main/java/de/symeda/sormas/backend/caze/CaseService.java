@@ -124,6 +124,7 @@ import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -154,6 +155,7 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
@@ -898,7 +900,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				cb,
 				from,
 				ExternalShareInfo.CAZE,
-				(latestShareDate) -> createChangeDateFilter(cb, from, latestShareDate, false)));
+				(latestShareDate) -> createChangeDateFilter(cq, cb, from, latestShareDate, true, true)));
 
 		return filter;
 	}
@@ -1139,13 +1141,32 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			.build();
 	}
 
-	public Predicate createChangeDateFilter(
+	private Predicate createChangeDateFilter(
+		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
 		From<?, Case> casePath,
 		Expression<? extends Date> dateExpression,
-		boolean includeExtendedChangeDateFilters) {
+		boolean includeExtendedChangeDateFilters,
+		boolean includeRelevantVaccinations) {
 
-		return addChangeDates(new ChangeDateFilterBuilder(cb, dateExpression), casePath, includeExtendedChangeDateFilters).build();
+		ChangeDateFilterBuilder builder = addChangeDates(new ChangeDateFilterBuilder(cb, dateExpression), casePath, includeExtendedChangeDateFilters);
+
+		if (includeRelevantVaccinations) {
+			Subquery<Symptoms> symptomsSq = cq.subquery(Symptoms.class);
+			Root<Symptoms> symptomsSqRoot = symptomsSq.from(Symptoms.class);
+			symptomsSq.select(symptomsSqRoot.get(Symptoms.ONSET_DATE));
+			symptomsSq.where(cb.equal(symptomsSqRoot, casePath.get(Case.SYMPTOMS)));
+
+			Join<Person, Immunization> immunizationJoin = casePath.join(Case.PERSON, JoinType.LEFT).join(Person.IMMUNIZATIONS, JoinType.LEFT);
+			Join<Immunization, Vaccination> vaccinationsJoin = immunizationJoin.join(Immunization.VACCINATIONS, JoinType.LEFT);
+
+			builder.add(vaccinationsJoin.on(vaccinationService.getRelevantVaccinationPredicate(casePath, cq, cb, vaccinationsJoin)));
+			// also consider the immunization of relevant vaccinations
+			builder.add(vaccinationsJoin, Vaccination.IMMUNIZATION);
+
+		}
+
+		return builder.build();
 	}
 
 	@Override
@@ -2000,17 +2021,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	 *            The ID of the case person
 	 * @param disease
 	 *            The disease of the cases
-	 * @param vaccinationDate
-	 *            The vaccination date of the created or updated vaccination
+	 * @param vaccination
+	 *            The created or updated vaccination
 	 */
-	public void updateVaccinationStatuses(Long personId, Disease disease, Date vaccinationDate) {
-
-		// Only consider cases with relevance date at least one day after the vaccination date
-		if (vaccinationDate == null) {
-			return;
-		} else {
-			vaccinationDate = DateHelper.getEndOfDay(vaccinationDate);
-		}
+	public void updateVaccinationStatuses(Long personId, Disease disease, Vaccination vaccination) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
@@ -2024,11 +2038,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		cu.set(root.get(Case.VACCINATION_STATUS), VaccinationStatus.VACCINATED);
 		cu.set(root.get(AbstractDomainObject.CHANGE_DATE), new Date());
 
-		Predicate datePredicate = vaccinationDate != null
-			? cb.or(
-				cb.greaterThan(symptomsSq.getSelection().as(Date.class), vaccinationDate),
-				cb.and(cb.isNull(symptomsSq.getSelection()), cb.greaterThan(root.get(Case.REPORT_DATE), vaccinationDate)))
-			: null;
+		Predicate datePredicate = vaccinationService.getRelevantVaccinationPredicate(root, cu, cb, vaccination);
 
 		cu.where(CriteriaBuilderHelper.and(cb, cb.equal(root.get(Case.PERSON), personId), cb.equal(root.get(Case.DISEASE), disease), datePredicate));
 
