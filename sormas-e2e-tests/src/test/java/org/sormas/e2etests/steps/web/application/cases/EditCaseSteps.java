@@ -1982,7 +1982,7 @@ public class EditCaseSteps implements En {
         "^I validate immunization period is present on immunization card$",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(REPORT_DATE_INPUT);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAVE_BUTTON);
           String displayedPeriod =
               webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_IMMUNIZATION_PERIOD);
           LocalDate startDate = EditImmunizationSteps.collectedImmunization.getStartDate();

@@ -153,6 +153,21 @@ Feature: Immunization end to end tests
     And I validate immunization status is present on immunization card
     And I validate management status is present on immunization card
     And I validate means of immunization is present on immunization card
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click on SAVE new contact button
+    And I collect the contact person UUID displayed on Edit contact page
+    And I click on the NEW IMMUNIZATION button in Edit contact
+    And I fill mandatory fields and immunization period in a new immunization popup
+    And I check the specific created data with immunization period is correctly displayed on Edit immunization page
+    And I click on the Contacts button from navbar
+    And I filter by last collected from UI specific Contact uuid
+    And I click on the first Contact ID from Contacts Directory
+    And I validate immunization period is present on immunization card
+    And I validate immunization status is present on immunization card
+    And I validate management status is present on immunization card
+    And I validate means of immunization is present on immunization card
 
   @issue=SORDEV-8061 @env_main
   Scenario: Immunizations V: Link recovery immunizations to recovered cases
