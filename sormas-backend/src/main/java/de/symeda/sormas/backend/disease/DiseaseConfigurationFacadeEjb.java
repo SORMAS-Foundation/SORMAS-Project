@@ -248,6 +248,11 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		return service.getDiseaseConfiguration(disease).getAgeGroups();
 	}
 
+	@Override
+	public String getFirstAgeGroup(Disease disease) {
+		return getAgeGroups(disease) != null ? getAgeGroups(disease).get(0) : null;
+	}
+
 	public DiseaseConfiguration fromDto(@NotNull DiseaseConfigurationDto source, boolean checkChangeDate) {
 
 		DiseaseConfiguration target =
