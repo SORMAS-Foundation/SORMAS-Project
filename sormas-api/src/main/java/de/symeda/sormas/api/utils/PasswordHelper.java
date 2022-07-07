@@ -17,13 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
-import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 import javax.validation.ValidationException;
+
+import org.apache.commons.codec.binary.Hex;
 
 public final class PasswordHelper {
 
@@ -84,16 +85,11 @@ public final class PasswordHelper {
 			digest = MessageDigest.getInstance("SHA-256");
 			digest.reset();
 			byte[] digested = digest.digest((password + seed).getBytes(StandardCharsets.UTF_8));
-			String encoded = hexEncode(digested);
-
+			String encoded = Hex.encodeHexString(digested);
 			return encoded;
 
 		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	public static String hexEncode(byte[] aData) {
-		return new BigInteger(1, aData).toString(16);
 	}
 }

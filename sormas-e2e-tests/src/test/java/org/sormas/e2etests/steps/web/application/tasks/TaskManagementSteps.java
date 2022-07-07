@@ -278,7 +278,7 @@ public class TaskManagementSteps implements En {
         "I click to bulk change assignee for selected tasks",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CHANGE_ASSIGNEE_CHECKBOX);
-          webDriverHelpers.selectFromCombobox(TASK_ASSIGNEE_COMBOBOX, "Surveillance OFFICER");
+          webDriverHelpers.selectFromCombobox(TASK_ASSIGNEE_COMBOBOX, "Surveillance SUPERVISOR");
         });
     When(
         "I click to bulk change priority for selected tasks",
