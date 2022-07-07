@@ -291,4 +291,8 @@ public class EditCasePage {
   public static By getCaseIDPathByIndex(int index) {
     return By.xpath(String.format("//table/tbody/tr[%s]/td[1]/a", index));
   }
+
+  public static By getByImmunizationUuid(String immunizationUuid) {
+    return By.id("edit-immunization-" + immunizationUuid);
+  }
 }
