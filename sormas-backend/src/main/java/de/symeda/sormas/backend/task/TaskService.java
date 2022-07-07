@@ -157,6 +157,32 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		return createUserFilter(taskQueryContext, null);
 	}
 
+	private boolean hasContextOrNoContext(TaskCriteria taskCriteria, TaskContext taskContext) {
+
+		switch (taskContext) {
+		case CASE:
+			return taskCriteria == null
+				|| !taskCriteria.hasContextCriteria()
+				|| (taskCriteria.getTaskContext() == TaskContext.CASE || taskCriteria.getCaze() != null);
+		case CONTACT:
+			return taskCriteria == null
+				|| !taskCriteria.hasContextCriteria()
+				|| (taskCriteria.getTaskContext() == TaskContext.CONTACT || taskCriteria.getContact() != null);
+		case EVENT:
+			return taskCriteria == null
+				|| !taskCriteria.hasContextCriteria()
+				|| (taskCriteria.getTaskContext() == TaskContext.EVENT || taskCriteria.getEvent() != null);
+		case TRAVEL_ENTRY:
+			return taskCriteria == null
+				|| !taskCriteria.hasContextCriteria()
+				|| (taskCriteria.getTaskContext() == TaskContext.TRAVEL_ENTRY || taskCriteria.getTravelEntry() != null);
+		case GENERAL:
+			return taskCriteria == null || !taskCriteria.hasContextCriteria() || taskCriteria.getTaskContext() == TaskContext.GENERAL;
+		default:
+			throw new IllegalArgumentException(taskContext.toString());
+		}
+	}
+
 	public Predicate createUserFilter(TaskQueryContext taskQueryContext, TaskCriteria taskCriteria) {
 
 		User currentUser = getCurrentUser();
@@ -187,29 +213,39 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), currentUser);
 		filter = cb.or(filter, cb.equal(taskPath.get(Task.ASSIGNEE_USER), currentUser));
 
-		Predicate caseFilter = caseService.createUserFilter(
-			new CaseQueryContext(cb, cq, joins.getCaseJoins()),
-			taskCriteria != null
-				? new CaseUserFilterCriteria().excludeLimitedSyncRestrictions(taskCriteria.isExcludeLimitedSyncRestrictions())
-				: null);
+		Predicate caseFilter = hasContextOrNoContext(taskCriteria, TaskContext.CASE)
+			? caseService.createUserFilter(
+				new CaseQueryContext(cb, cq, joins.getCaseJoins()),
+				taskCriteria != null
+					? new CaseUserFilterCriteria().excludeLimitedSyncRestrictions(taskCriteria.isExcludeLimitedSyncRestrictions())
+					: null)
+			: null;
 		if (caseFilter != null) {
 			filter = cb.or(filter, caseFilter);
 		}
-		Predicate contactFilter = contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()));
+		Predicate contactFilter = hasContextOrNoContext(taskCriteria, TaskContext.CONTACT)
+			? contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()))
+			: null;
 		if (contactFilter != null) {
 			filter = cb.or(
 				filter,
 				CriteriaBuilderHelper
 					.or(cb, contactFilter, createAssigneeOrObserverFilter(cb, joins.getAssignee(), joins.getTaskObservers(), currentUser)));
 		}
-		Predicate eventFilter = eventService.createUserFilter(new EventQueryContext(cb, cq, joins.getEventJoins()));
+		Predicate eventFilter = hasContextOrNoContext(taskCriteria, TaskContext.EVENT)
+			? eventService.createUserFilter(new EventQueryContext(cb, cq, joins.getEventJoins()))
+			: null;
 		if (eventFilter != null) {
 			filter = cb.or(filter, eventFilter);
 		}
-		Predicate travelEntryFilter = travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq, joins.getTravelEntryJoins()));
+		Predicate travelEntryFilter = hasContextOrNoContext(taskCriteria, TaskContext.TRAVEL_ENTRY)
+			? travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq, joins.getTravelEntryJoins()))
+			: null;
 		if (travelEntryFilter != null) {
 			filter = cb.or(filter, travelEntryFilter);
 		}
+
+		filter = cb.or(filter, assigneeFilter);
 
 		if ((taskCriteria == null || !taskCriteria.isExcludeLimitedSyncRestrictions())
 			&& featureConfigurationFacade
@@ -221,9 +257,9 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 				caseService.createLimitedSyncCasePredicate(cb, joins.getCaze(), currentUser),
 				caseService.createLimitedSyncCasePredicate(cb, joins.getContactCase(), currentUser));
 
-			return CriteriaBuilderHelper.and(cb, filter, relatedEntityNotDeletedFilter, limitedCaseSyncPredicate, assigneeFilter);
+			return CriteriaBuilderHelper.and(cb, filter, relatedEntityNotDeletedFilter, limitedCaseSyncPredicate);
 		} else {
-			return CriteriaBuilderHelper.and(cb, filter, relatedEntityNotDeletedFilter, assigneeFilter);
+			return CriteriaBuilderHelper.and(cb, filter, relatedEntityNotDeletedFilter);
 		}
 	}
 
