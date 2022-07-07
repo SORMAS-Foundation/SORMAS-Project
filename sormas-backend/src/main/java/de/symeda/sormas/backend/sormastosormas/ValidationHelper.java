@@ -75,17 +75,20 @@ public class ValidationHelper {
 		return buildValidationGroupName(Captions.ExternalMessage, externalMessageDto);
 	}
 
-	public static <T> T handleValidationError(Supplier<T> saveOperation, String validationGroupCaption, ValidationErrorGroup parentValidationGroup)
-		throws SormasToSormasValidationException {
+	public static <T> T handleValidationError(
+			Supplier<T> saveOperation,
+			String validationGroupCaption,
+			ValidationErrorGroup parentValidationGroup,
+			HasUuid context)
+			throws SormasToSormasValidationException {
 		try {
 			return saveOperation.get();
 		} catch (ValidationRuntimeException exception) {
 			List<ValidationErrors> errors = new ArrayList<>();
-
 			ValidationErrors validationErrors = new ValidationErrors(parentValidationGroup);
 			validationErrors.add(
-				new ValidationErrorGroup(validationGroupCaption),
-				new ValidationErrorMessage(Validations.sormasToSormasSaveException, exception.getMessage()));
+					new ValidationErrorGroup(validationGroupCaption),
+					new ValidationErrorMessage(Validations.sormasToSormasSaveException, String.format("%s (UUID: %s)", validationGroupCaption, context.getUuid()), exception.getMessage()));
 			errors.add(validationErrors);
 
 			throw new SormasToSormasValidationException(errors, exception);

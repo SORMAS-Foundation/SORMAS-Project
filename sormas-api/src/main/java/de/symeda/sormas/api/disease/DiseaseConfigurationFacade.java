@@ -39,6 +39,8 @@ public interface DiseaseConfigurationFacade {
 
 	List<String> getAgeGroups(Disease disease);
 
+	String getFirstAgeGroup(Disease disease);
+
 	int getCaseFollowUpDuration(Disease disease);
 
 	int getEventParticipantFollowUpDuration(Disease disease);

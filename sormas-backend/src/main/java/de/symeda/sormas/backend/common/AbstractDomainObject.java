@@ -40,6 +40,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.TypeDef;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
@@ -179,6 +180,11 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 	@Override
 	public int hashCode() {
 		return getUuid().hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + StringUtils.SPACE + getUuid();
 	}
 
 	static class AdoListener {

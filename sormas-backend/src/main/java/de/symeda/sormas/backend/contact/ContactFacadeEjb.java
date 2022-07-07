@@ -42,7 +42,6 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -202,6 +201,7 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.vaccination.VaccinationService;
@@ -211,7 +211,7 @@ import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless(name = "ContactFacade")
-@RolesAllowed(UserRight._CONTACT_VIEW)
+@RightsAllowed(UserRight._CONTACT_VIEW)
 public class ContactFacadeEjb
 	extends AbstractCoreFacadeEjb<Contact, ContactDto, ContactIndexDto, ContactReferenceDto, ContactService, ContactCriteria>
 	implements ContactFacade {
@@ -322,7 +322,7 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._CONTACT_CREATE,
 		UserRight._CONTACT_EDIT })
 	public ContactDto save(@Valid @NotNull ContactDto dto) {
@@ -330,14 +330,14 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._CONTACT_CREATE,
 		UserRight._CONTACT_EDIT })
 	public ContactDto save(@Valid ContactDto dto, boolean handleChanges, boolean handleCaseChanges) {
 		return save(dto, handleChanges, handleCaseChanges, true, true);
 	}
 
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._CONTACT_CREATE,
 		UserRight._CONTACT_EDIT })
 	public CoreAndPersonDto<ContactDto> save(@Valid @NotNull CoreAndPersonDto<ContactDto> coreAndPersonDto) throws ValidationRuntimeException {
@@ -353,13 +353,13 @@ public class ContactFacadeEjb
 		return savedCoreAndPersonDto;
 	}
 
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._CONTACT_CREATE,
 		UserRight._CONTACT_EDIT })
 	public ContactDto save(ContactDto dto, boolean handleChanges, boolean handleCaseChanges, boolean checkChangeDate, boolean internal) {
 		final Contact existingContact = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
-		if (internal && existingContact != null && !service.isContactEditAllowed(existingContact).equals(EditPermissionType.ALLOWED)) {
+		if (internal && existingContact != null && !service.isEditAllowed(existingContact).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorContactNotEditable));
 		}
 
@@ -406,6 +406,7 @@ public class ContactFacadeEjb
 					entity,
 					existingContactDto != null && entity.getFollowUpStatus() != existingContactDto.getFollowUpStatus());
 			}
+
 			service.udpateContactStatus(entity);
 
 			if (handleCaseChanges && entity.getCaze() != null) {
@@ -442,7 +443,7 @@ public class ContactFacadeEjb
 		}
 	}
 
-	@RolesAllowed(UserRight._CONTACT_EDIT)
+	@RightsAllowed(UserRight._CONTACT_EDIT)
 	public void syncSharesAsync(ShareTreeCriteria criteria) {
 		executorService.schedule(() -> {
 			sormasToSormasContactFacade.syncShares(criteria);
@@ -532,7 +533,7 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CONTACT_DELETE)
+	@RightsAllowed(UserRight._CONTACT_DELETE)
 	public void delete(String contactUuid, DeletionDetails deletionDetails) {
 		Contact contact = service.getByUuid(contactUuid);
 		deleteContact(contact, deletionDetails);
@@ -546,7 +547,7 @@ public class ContactFacadeEjb
 		}
 	}
 
-	@RolesAllowed(UserRight._CONTACT_DELETE)
+	@RightsAllowed(UserRight._CONTACT_DELETE)
 	public List<String> deleteContacts(List<String> contactUuids, DeletionDetails deletionDetails) {
 		List<String> deletedContactUuids = new ArrayList<>();
 		List<Contact> contactsToBeDeleted = service.getByUuids(contactUuids);
@@ -563,25 +564,25 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CONTACT_ARCHIVE)
+	@RightsAllowed(UserRight._CONTACT_ARCHIVE)
 	public void archive(String entityUuid, Date endOfProcessingDate) {
 		super.archive(entityUuid, endOfProcessingDate);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CONTACT_ARCHIVE)
+	@RightsAllowed(UserRight._CONTACT_ARCHIVE)
 	public void archive(List<String> entityUuids) {
 		super.archive(entityUuids);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CONTACT_ARCHIVE)
+	@RightsAllowed(UserRight._CONTACT_ARCHIVE)
 	public void dearchive(List<String> entityUuids, String dearchiveReason) {
 		super.dearchive(entityUuids, dearchiveReason);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CONTACT_EXPORT)
+	@RightsAllowed(UserRight._CONTACT_EXPORT)
 	public List<ContactExportDto> getExportList(
 		ContactCriteria contactCriteria,
 		Collection<String> selectedRows,
@@ -927,7 +928,7 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed(UserRight._VISIT_EXPORT)
+	@RightsAllowed(UserRight._VISIT_EXPORT)
 	public List<VisitSummaryExportDto> getVisitSummaryExportList(
 		ContactCriteria contactCriteria,
 		Collection<String> selectedRows,
@@ -1452,7 +1453,7 @@ public class ContactFacadeEjb
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	@RolesAllowed(UserRight._SYSTEM)
+	@RightsAllowed(UserRight._SYSTEM)
 	public void archiveAllArchivableContacts(int daysAfterContactsGetsArchived) {
 		archiveAllArchivableContacts(daysAfterContactsGetsArchived, LocalDate.now());
 	}
@@ -1609,7 +1610,7 @@ public class ContactFacadeEjb
 		return source.toReference();
 	}
 
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._CONTACT_VIEW,
 		UserRight._EXTERNAL_VISITS })
 	public ContactDto toDto(Contact source) {
@@ -1733,7 +1734,7 @@ public class ContactFacadeEjb
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	@RolesAllowed(UserRight._SYSTEM)
+	@RightsAllowed(UserRight._SYSTEM)
 	public void generateContactFollowUpTasks() {
 
 		// get all contacts that are followed up
@@ -1937,14 +1938,7 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	public EditPermissionType isContactEditAllowed(String contactUuid) {
-		Contact contact = service.getByUuid(contactUuid);
-
-		return service.isContactEditAllowed(contact);
-	}
-
-	@Override
-	@RolesAllowed(UserRight._CONTACT_MERGE)
+	@RightsAllowed(UserRight._CONTACT_MERGE)
 	public void mergeContact(String leadUuid, String otherUuid) {
 		ContactDto leadContactDto = getContactWithoutPseudonyimizationByUuid(leadUuid);
 		ContactDto otherContactDto = getContactWithoutPseudonyimizationByUuid(otherUuid);
@@ -2017,7 +2011,7 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CONTACT_MERGE)
+	@RightsAllowed(UserRight._CONTACT_MERGE)
 	public void deleteContactAsDuplicate(String uuid, String duplicateOfUuid) {
 		Contact contact = service.getByUuid(uuid);
 		Contact duplicateOfContact = service.getByUuid(duplicateOfUuid);
@@ -2172,7 +2166,7 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CONTACT_EDIT)
+	@RightsAllowed(UserRight._CONTACT_EDIT)
 	public void updateCompleteness(String uuid) {
 		Contact contact = service.getByUuid(uuid);
 		contact.setCompleteness(calculateCompleteness(contact));
@@ -2180,13 +2174,13 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CONTACT_EDIT)
+	@RightsAllowed(UserRight._CONTACT_EDIT)
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		service.updateExternalData(externalData);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CONTACT_EDIT)
+	@RightsAllowed(UserRight._CONTACT_EDIT)
 	public int saveBulkContacts(
 		List<String> contactUuidlist,
 		ContactBulkEditData updatedContactBulkEditData,
@@ -2198,7 +2192,7 @@ public class ContactFacadeEjb
 		for (String contactUuid : contactUuidlist) {
 			Contact contact = service.getByUuid(contactUuid);
 
-			if (service.isContactEditAllowed(contact).equals(EditPermissionType.ALLOWED)) {
+			if (service.isEditAllowed(contact).equals(EditPermissionType.ALLOWED)) {
 				ContactDto existingContactDto = toDto(contact);
 				if (classificationChange) {
 					existingContactDto.setContactClassification(updatedContactBulkEditData.getContactClassification());

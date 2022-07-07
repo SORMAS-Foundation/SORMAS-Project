@@ -60,6 +60,7 @@ public class EditImmunizationSteps implements En {
   public static Immunization collectedImmunization;
   private static Immunization createdImmunization;
   private final WebDriverHelpers webDriverHelpers;
+  private static String currentUrl;
 
   @SneakyThrows
   @Inject
@@ -214,6 +215,7 @@ public class EditImmunizationSteps implements En {
           webDriverHelpers.scrollToElement(ARCHIVE_DEARCHIVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_DEARCHIVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
     When(
@@ -258,6 +260,89 @@ public class EditImmunizationSteps implements En {
               webDriverHelpers.isElementEnabled(DELETE_BUTTON),
               true,
               "Delete button is not editable state but it should be since archived entities default value is true!");
+          softly.assertAll();
+        });
+
+    When(
+        "I copy url of current immunization case", () -> currentUrl = webDriverHelpers.returnURL());
+
+    When(
+        "I click on Delete button from immunization case",
+        () -> {
+          webDriverHelpers.scrollToElement(DELETE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+        });
+
+    When(
+        "I check if reason for deletion as {string} is available",
+        (String reason) -> {
+          softly.assertTrue(
+              webDriverHelpers.checkIfElementExistsInCombobox(DELETION_REASON_COMBOBOX, reason),
+              "Deletion option does not exists: " + reason);
+          softly.assertAll();
+        });
+
+    When(
+        "I click on No option in Confirm deletion popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL_BUTTON));
+
+    When(
+        "I click on Yes option in Confirm deletion popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_BUTTON);
+          TimeUnit.SECONDS.sleep(1); // wait for page loaded
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I check if exclamation mark with message {string} appears next to Reason for deletion",
+        (String message) -> {
+          String hoverMessage;
+          webDriverHelpers.hoverToElement(REASON_FOR_DELETION_EXCLAMATION_MARK);
+          hoverMessage = webDriverHelpers.getTextFromWebElement(REASON_FOR_DELETION_MESSAGE);
+          softly.assertEquals(message, hoverMessage, "Messages are not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "I set Reason for deletion as {string}",
+        (String reason) ->
+            webDriverHelpers.selectFromComboboxEqual(DELETION_REASON_COMBOBOX, reason));
+
+    When(
+        "I check if {string} field is available in Confirm deletion popup in Immunization",
+        (String label) ->
+            webDriverHelpers.isElementVisibleWithTimeout(
+                getReasonForDeletionDetailsFieldLabel(label), 1));
+
+    When(
+        "I back to deleted immunization case by url",
+        () -> webDriverHelpers.accessWebSite(currentUrl));
+
+    When(
+        "I check if reason of deletion is set to {string}",
+        (String reason) -> {
+          String collectedReason;
+          collectedReason =
+              webDriverHelpers.getValueFromWebElement(REASON_FOR_DELETION_DISABLED_REASON_INPUT);
+          softly.assertEquals(reason, collectedReason, "Reasons of deletion are not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if External ID input on immunization edit page is disabled",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementEnabled(EXTERNAL_ID_INPUT), "External ID input is enabled");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if Additional details text area on immunization edit page is disabled",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementEnabled(ADDITIONAL_DETAILS),
+              "Additional details text area is enabled");
           softly.assertAll();
         });
   }

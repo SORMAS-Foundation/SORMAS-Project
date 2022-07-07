@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -37,11 +36,11 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.common.DeletionDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -78,6 +77,7 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "PathogenTestFacade")
 public class PathogenTestFacadeEjb implements PathogenTestFacade {
@@ -242,27 +242,27 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 		onPathogenTestChanged(existingSampleTestDto, pathogenTest);
 
-		handleAssotiatedObjectChanges(pathogenTest, syncShares);
+		handleAssociatedEntityChanges(pathogenTest, syncShares);
 
 		return convertToDto(pathogenTest, Pseudonymizer.getDefault(userService::hasRight));
 	}
 
-	private void handleAssotiatedObjectChanges(PathogenTest pathogenTest, boolean syncShares) {
+	private void handleAssociatedEntityChanges(PathogenTest pathogenTest, boolean syncShares) {
 		// Update case classification if necessary
 		final Case associatedCase = pathogenTest.getSample().getAssociatedCase();
-		if (associatedCase != null) {
+		if (associatedCase != null && userService.hasRight(UserRight.CASE_EDIT)) {
 			caseFacade.onCaseChanged(caseFacade.toDto(associatedCase), associatedCase, syncShares);
 		}
 
 		// update contact if necessary
 		Contact associatedContact = pathogenTest.getSample().getAssociatedContact();
-		if (associatedContact != null) {
+		if (associatedContact != null && userService.hasRight(UserRight.CONTACT_EDIT)) {
 			contactFacade.onContactChanged(contactFacade.toDto(associatedContact), syncShares);
 		}
 
 		// update event participant if necessary
 		EventParticipant associatedEventParticipant = pathogenTest.getSample().getAssociatedEventParticipant();
-		if (associatedEventParticipant != null) {
+		if (associatedEventParticipant != null && userService.hasRight(UserRight.EVENTPARTICIPANT_EDIT)) {
 			eventParticipantFacade.onEventParticipantChanged(
 				eventFacade.toDto(associatedEventParticipant.getEvent()),
 				eventParticipantFacade.toDto(associatedEventParticipant),
@@ -272,13 +272,13 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._PATHOGEN_TEST_DELETE)
+	@RightsAllowed(UserRight._PATHOGEN_TEST_DELETE)
 	public void deletePathogenTest(String pathogenTestUuid, DeletionDetails deletionDetails) {
 
 		PathogenTest pathogenTest = pathogenTestService.getByUuid(pathogenTestUuid);
 		pathogenTestService.delete(pathogenTest, deletionDetails);
 
-		handleAssotiatedObjectChanges(pathogenTest, true);
+		handleAssociatedEntityChanges(pathogenTest, true);
 	}
 
 	@Override

@@ -31,7 +31,7 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_ORIGIN_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_UPLOADED_TEST_FILE;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONFIRM_BUTTON_POPUP;
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_CASE_CONFIRMATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_BIRTH_DAY_COMBOBOX;
@@ -144,6 +144,7 @@ public class CreateNewCaseSteps implements En {
   private static BaseSteps baseSteps;
   protected static Case oneCase;
   public static final String userDirPath = System.getProperty("user.dir");
+  public static List<String> casesUUID = new ArrayList<>();
 
   @Inject
   public CreateNewCaseSteps(
@@ -168,7 +169,7 @@ public class CreateNewCaseSteps implements En {
             faker.number().numberBetween(1, 27));
     UUID randomUUID_first_user = UUID.randomUUID();
     UUID randomUUID_second_user = UUID.randomUUID();
-    List<String> casesUUID = new ArrayList<>();
+
     oneCase = caseService.buildGeneratedCaseForOnePerson(firstName, lastName, dateOfBirth);
     oneCase = oneCase.toBuilder().disease("COVID-19").build();
 
@@ -258,6 +259,15 @@ public class CreateNewCaseSteps implements En {
         () -> {
           webDriverHelpers.fillInWebElement(
               PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT, firstName + " " + lastName);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I filter for SAMPLE TOKEN in Cases Directory",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, "SAMPLE TOKEN");
           webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
@@ -469,8 +479,8 @@ public class CreateNewCaseSteps implements En {
     When(
         "I save a new case",
         () -> {
-          webDriverHelpers.scrollToElement(CONTACT_CASE_SAVE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
+          webDriverHelpers.scrollToElement(CONFIRM_BUTTON_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
@@ -662,7 +672,9 @@ public class CreateNewCaseSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX);
             webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
           }
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
+          TimeUnit.SECONDS.sleep(1);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          //   webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
     When(
         "^I check if National Health Id, Nickname and Passport number appear in Pick or create person popup$",
@@ -742,7 +754,7 @@ public class CreateNewCaseSteps implements En {
           selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
           fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
 
-          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_POPUP_SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
@@ -764,7 +776,7 @@ public class CreateNewCaseSteps implements En {
           fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.GERMAN);
           webDriverHelpers.selectFromCombobox(
               CASE_DISEASE_VARIANT_COMBOBOX, caze.getDiseaseVariant());
-          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_POPUP_SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
@@ -927,6 +939,16 @@ public class CreateNewCaseSteps implements En {
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(POINT_OF_ENTRY_REGION_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(POINT_OF_ENTRY_DISTRICT_BUTTON);
+        });
+
+    When(
+        "I check if collected case UUID is equal with current",
+        () -> {
+          softly.assertEquals(
+              casesUUID.get(0),
+              webDriverHelpers.getValueFromWebElement(UUID_INPUT),
+              "UUIDs of cases are not equal");
+          softly.assertAll();
         });
   }
 

@@ -207,7 +207,7 @@ public class EventDataView extends AbstractEventView {
 			layout.setEnabled(false);
 		}
 
-		EditPermissionType eventEditAllowed = FacadeProvider.getEventFacade().isEventEditAllowed(event.getUuid());
+		EditPermissionType eventEditAllowed = FacadeProvider.getEventFacade().isEditAllowed(event.getUuid());
 
 		if (eventEditAllowed == EditPermissionType.ARCHIVING_STATUS_ONLY) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);

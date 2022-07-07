@@ -15,6 +15,11 @@
 
 package org.sormas.e2etests.steps.web.application.dashboard.contacts;
 
+import static org.sormas.e2etests.pages.application.dashboard.Contacts.ContactsDashboardPage.CONFIRMED_COUNTER_LABEL_ON_CONTACTS_DASHBOARD;
+import static org.sormas.e2etests.pages.application.dashboard.Contacts.ContactsDashboardPage.CONFIRMED_COUNTER_LABEL_ON_CONTACTS_DASHBOARD_DE;
+import static org.sormas.e2etests.pages.application.dashboard.Contacts.ContactsDashboardPage.CONFIRMED_COUNTER_ON_CONTACTS_DASHBOARD;
+import static org.sormas.e2etests.pages.application.dashboard.Contacts.ContactsDashboardPage.CONFIRMED_COUNTER_ON_CONTACTS_DASHBOARD_DE;
+import static org.sormas.e2etests.pages.application.dashboard.Contacts.ContactsDashboardPage.UNDER_FU_CHART_ON_CONTACTS_DASHBOARD;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.ContactsDashboardPage.CONTACTS_COVID19_COUNTER;
 
 import cucumber.api.java8.En;
@@ -28,6 +33,8 @@ public class ContactsDashboardSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   private int covid19ContactsCounterAfter;
   private int covid19ContactsCounterBefore;
+  public static String confirmedContact_EN;
+  public static String confirmedContact_DE;
 
   @Inject
   public ContactsDashboardSteps(WebDriverHelpers webDriverHelpers) {
@@ -56,6 +63,37 @@ public class ContactsDashboardSteps implements En {
           Assert.assertTrue(
               covid19ContactsCounterBefore < covid19ContactsCounterAfter,
               "COVID-19 contacts counter in Contacts dashboard hasn't  been incremented");
+        });
+
+    Then(
+        "I get Confirmed Contact labels and value from Contact Dashboard with English language",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              CONFIRMED_COUNTER_LABEL_ON_CONTACTS_DASHBOARD);
+          webDriverHelpers.getWebElement(CONFIRMED_COUNTER_LABEL_ON_CONTACTS_DASHBOARD);
+          confirmedContact_EN =
+              webDriverHelpers.getWebElement(CONFIRMED_COUNTER_ON_CONTACTS_DASHBOARD).getText();
+
+          webDriverHelpers.getWebElement(UNDER_FU_CHART_ON_CONTACTS_DASHBOARD);
+        });
+    Then(
+        "I get Confirmed Contact labels and value from Contact Dashboard with Deutsch language",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              CONFIRMED_COUNTER_LABEL_ON_CONTACTS_DASHBOARD_DE);
+          webDriverHelpers.getWebElement(CONFIRMED_COUNTER_LABEL_ON_CONTACTS_DASHBOARD_DE);
+          confirmedContact_DE =
+              webDriverHelpers.getWebElement(CONFIRMED_COUNTER_ON_CONTACTS_DASHBOARD_DE).getText();
+
+          webDriverHelpers.getWebElement(UNDER_FU_CHART_ON_CONTACTS_DASHBOARD);
+        });
+    And(
+        "I compare English and German confirmed contacts counter",
+        () -> {
+          Assert.assertEquals(
+              confirmedContact_EN,
+              confirmedContact_DE,
+              "Counters for confirmed contacts are not equal!");
         });
   }
 }

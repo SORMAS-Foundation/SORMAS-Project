@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -52,9 +51,10 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "SurveillanceReportFacade")
-@RolesAllowed(UserRight._CASE_VIEW)
+@RightsAllowed(UserRight._CASE_VIEW)
 public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -97,7 +97,7 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CASE_EDIT)
+	@RightsAllowed(UserRight._CASE_EDIT)
 	public SurveillanceReportDto saveSurveillanceReport(@Valid SurveillanceReportDto dto) {
 		return saveSurveillanceReport(dto, true);
 	}
@@ -116,7 +116,7 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CASE_EDIT)
+	@RightsAllowed(UserRight._CASE_EDIT)
 	public void deleteSurveillanceReport(String surveillanceReportUuid) {
 		service.deletePermanent(service.getByUuid(surveillanceReportUuid));
 	}

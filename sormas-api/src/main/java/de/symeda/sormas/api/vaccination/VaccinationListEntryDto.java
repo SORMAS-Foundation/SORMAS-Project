@@ -15,36 +15,28 @@
 
 package de.symeda.sormas.api.vaccination;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.utils.DataHelper;
 import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.Vaccine;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFormatHelper;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
+import org.apache.commons.lang3.StringUtils;
 
 public class VaccinationListEntryDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 5665903874736291912L;
 
-	private String uuid;
 	private Vaccine vaccineName;
 	private String otherVaccineName;
 	private Date vaccinationDate;
 	private Disease disease;
 	private boolean isRelevant;
 	private String nonRelevantMessage;
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
 
 	public Vaccine getVaccineName() {
 		return vaccineName;
@@ -95,11 +87,11 @@ public class VaccinationListEntryDto extends PseudonymizableIndexDto implements 
 	}
 
 	public VaccinationReferenceDto toReference() {
-		return new VaccinationReferenceDto(uuid, toString());
+		return new VaccinationReferenceDto(getUuid(), toString());
 	}
 
 	@Override
-	public String toString() {
+	public String getCaption() {
 		String date = DateFormatHelper.formatLocalDate(vaccinationDate);
 
 		final String vaccine;
@@ -109,6 +101,6 @@ public class VaccinationListEntryDto extends PseudonymizableIndexDto implements 
 			vaccine = I18nProperties.getString(Strings.labelNoVaccineName);
 		}
 
-		return (date.isEmpty() ? "" : date + " - ") + vaccine + " (" + DataHelper.getShortUuid(uuid) +")";
+		return (date.isEmpty() ? "" : date + " - ") + vaccine + " (" + DataHelper.getShortUuid(getUuid()) +")";
 	}
 }

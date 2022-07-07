@@ -7,7 +7,9 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 @SuppressWarnings("serial")
@@ -21,6 +23,8 @@ public class AggregateReportCriteria extends BaseCriteria implements Serializabl
 	public static final String EPI_WEEK_TO = "epiWeekTo";
 	public static final String DISEASE = "disease";
 	public static final String SHOW_ZERO_ROWS_FOR_GROUPING = "showZeroRowsForGrouping";
+	public static final String SHOW_ONLY_DUPLICATES = "showOnlyDuplicates";
+	public static final String REPORTING_USER = "reportingUser";
 
 	private EpiWeek epiWeekFrom;
 	private EpiWeek epiWeekTo;
@@ -30,6 +34,9 @@ public class AggregateReportCriteria extends BaseCriteria implements Serializabl
 	private PointOfEntryReferenceDto pointOfEntry;
 	private Disease disease;
 	private Boolean showZeroRowsForGrouping = Boolean.FALSE;
+	private Boolean showOnlyDuplicates = Boolean.FALSE;
+	private UserReferenceDto reportingUser;
+	private Boolean forceJurisdictionCheck = false;
 
 	private AggregateReportGroupingLevel aggregateReportGroupingLevel;
 
@@ -133,5 +140,30 @@ public class AggregateReportCriteria extends BaseCriteria implements Serializabl
 
 	public void setShowZeroRowsForGrouping(Boolean showZeroRowsForGrouping) {
 		this.showZeroRowsForGrouping = showZeroRowsForGrouping;
+	}
+
+	public Boolean getShowOnlyDuplicates() {
+		return showOnlyDuplicates;
+	}
+
+	public void setShowOnlyDuplicates(Boolean showOnlyDuplicates) {
+		this.showOnlyDuplicates = showOnlyDuplicates;
+	}
+
+	public UserReferenceDto getReportingUser() {
+		return reportingUser;
+	}
+
+	public void setReportingUser(UserReferenceDto reportingUser) {
+		this.reportingUser = reportingUser;
+	}
+
+	@IgnoreForUrl
+	public Boolean isForceJurisdictionCheck() {
+		return forceJurisdictionCheck;
+	}
+
+	public void setForceJurisdictionCheck(Boolean forceJurisdictionCheck) {
+		this.forceJurisdictionCheck = forceJurisdictionCheck;
 	}
 }

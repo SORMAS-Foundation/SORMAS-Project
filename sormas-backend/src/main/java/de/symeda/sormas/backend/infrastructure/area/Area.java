@@ -37,9 +37,4 @@ public class Area extends InfrastructureAdo {
 	public void setExternalId(String externalId) {
 		this.externalId = externalId;
 	}
-
-	@Override
-	public String toString() {
-		return getName();
-	}
 }

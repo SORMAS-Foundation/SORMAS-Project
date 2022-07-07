@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import java.util.Collections;
+import java.util.Set;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
@@ -40,6 +43,7 @@ import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictCriteria;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictIndexDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -124,8 +128,8 @@ public class DistrictsView extends AbstractConfigurationView {
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource =
-				GridExportStreamResource.createStreamResource(grid, ExportEntityName.DISTRICTS, DistrictsGrid.EDIT_BTN_ID);
+			StreamResource streamResource = GridExportStreamResource
+				.createStreamResourceWithSelectedItems(grid, this::getSelectedRows, ExportEntityName.DISTRICTS, DistrictsGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
@@ -171,6 +175,11 @@ public class DistrictsView extends AbstractConfigurationView {
 		}
 
 		addComponent(gridLayout);
+	}
+
+	private Set<DistrictIndexDto> getSelectedRows() {
+		DistrictsGrid districtsGrid = this.grid;
+		return this.viewConfiguration.isInEagerMode() ? districtsGrid.asMultiSelect().getSelectedItems() : Collections.emptySet();
 	}
 
 	private HorizontalLayout createFilterBar() {

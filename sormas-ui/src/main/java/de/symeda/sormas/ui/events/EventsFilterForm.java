@@ -172,7 +172,9 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		addField(FieldConfiguration.pixelSized(EventIndexDto.DISEASE, 140));
 		addField(FieldConfiguration.pixelSized(EventIndexDto.DISEASE_VARIANT, 140), ComboBox.class);
 
-		addField(FieldConfiguration.withCaptionAndPixelSized(EventCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
+		ComboBox reportedByField = addField(
+			FieldConfiguration.withCaptionAndPixelSized(EventCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
+		reportedByField.addItems(FacadeProvider.getUserRoleFacade().getAllActiveAsReference());
 
 		TextField searchField = addField(
 			FieldConfiguration.withCaptionAndPixelSized(EventCriteria.FREE_TEXT, I18nProperties.getString(Strings.promptEventsSearchField), 200));

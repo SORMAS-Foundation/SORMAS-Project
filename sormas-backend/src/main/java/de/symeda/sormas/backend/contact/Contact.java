@@ -505,17 +505,6 @@ public class Contact extends CoreAdo implements SormasToSormasShareable, HasExte
 		this.resultingCase = resultingCase;
 	}
 
-	@Override
-	public String toString() {
-		Person contactPerson = getPerson();
-		return ContactReferenceDto.buildCaption(
-			contactPerson.getFirstName(),
-			contactPerson.getLastName(),
-			getCaze() != null ? getCaze().getPerson().getFirstName() : null,
-			getCaze() != null ? getCaze().getPerson().getLastName() : null,
-			getUuid());
-	}
-
 	public ContactReferenceDto toReference() {
 		Person contactPerson = getPerson();
 		return new ContactReferenceDto(

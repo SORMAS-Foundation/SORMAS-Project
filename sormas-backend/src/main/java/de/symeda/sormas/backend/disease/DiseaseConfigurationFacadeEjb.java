@@ -16,6 +16,9 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
@@ -25,6 +28,8 @@ import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "DiseaseConfigurationFacade")
 public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade {
+
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
 	private DiseaseConfigurationService service;
@@ -68,6 +73,12 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 
 	@Override
 	public List<Disease> getAllDiseases(Boolean active, Boolean primary, Boolean caseBased) {
+
+		// not an ideal solution, but will be changed with #9629 anyway
+		if (Boolean.FALSE.equals(caseBased) && primary != null) {
+			primary = null;
+			logger.warn("primary should not be used for non-case-based diseases");
+		}
 
 		User currentUser = userService.getCurrentUser();
 
@@ -232,8 +243,14 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		return null;
 	}
 
-	@Override public List<String> getAgeGroups(Disease disease) {
+	@Override
+	public List<String> getAgeGroups(Disease disease) {
 		return service.getDiseaseConfiguration(disease).getAgeGroups();
+	}
+
+	@Override
+	public String getFirstAgeGroup(Disease disease) {
+		return getAgeGroups(disease) != null ? getAgeGroups(disease).get(0) : null;
 	}
 
 	public DiseaseConfiguration fromDto(@NotNull DiseaseConfigurationDto source, boolean checkChangeDate) {

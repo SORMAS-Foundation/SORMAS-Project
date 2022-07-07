@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -41,9 +40,10 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "PrescriptionFacade")
-@RolesAllowed(UserRight._CASE_VIEW)
+@RightsAllowed(UserRight._CASE_VIEW)
 public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -103,7 +103,9 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	}
 
 	@Override
-	@RolesAllowed({UserRight._PRESCRIPTION_CREATE, UserRight._PRESCRIPTION_EDIT})
+	@RightsAllowed({
+		UserRight._PRESCRIPTION_CREATE,
+		UserRight._PRESCRIPTION_EDIT })
 	public PrescriptionDto savePrescription(@Valid PrescriptionDto prescription) {
 		Prescription existingPrescription = service.getByUuid(prescription.getUuid());
 		PrescriptionDto existingPrescriptionDto = toDto(existingPrescription);
@@ -118,7 +120,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._PRESCRIPTION_DELETE)
+	@RightsAllowed(UserRight._PRESCRIPTION_DELETE)
 	public void deletePrescription(String prescriptionUuid) {
 		Prescription prescription = service.getByUuid(prescriptionUuid);
 		service.deletePermanent(prescription);

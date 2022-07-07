@@ -7,7 +7,6 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
 public class ContactListEntryDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
 
-	private String uuid;
 	private ContactStatus contactStatus;
 	private Disease disease;
 	private ContactClassification contactClassification;
@@ -22,20 +21,12 @@ public class ContactListEntryDto extends PseudonymizableIndexDto implements Seri
 		ContactClassification contactClassification,
 		ContactCategory contactCategory,
 		boolean isInJurisdiction) {
-		this.uuid = uuid;
+		super(uuid);
 		this.contactStatus = contactStatus;
 		this.disease = disease;
 		this.contactClassification = contactClassification;
 		this.contactCategory = contactCategory;
 		this.isInJurisdiction = isInJurisdiction;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public ContactStatus getContactStatus() {

@@ -103,6 +103,7 @@ public class EditContactPage {
   public static final By FOLLOW_UP_VISITS = By.id("tab-contacts-visits");
   public static final By CHOOSE_SOURCE_CASE_BUTTON = By.id("contactChooseSourceCase");
   public static final By POPUP_YES_BUTTON = By.id("actionConfirm");
+  public static final By ACTION_CANCEL_POPUP = By.cssSelector(".popupContent #actionCancel");
   public static final By SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON = By.id("caseSearchCase");
   public static final By SOURCE_CASE_WINDOW_CASE_INPUT = By.cssSelector(".v-window-wrap input");
   public static final By SOURCE_CASE_WINDOW_CASE_INPUT_NESTED =
