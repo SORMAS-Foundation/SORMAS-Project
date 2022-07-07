@@ -112,6 +112,8 @@ public enum DatabaseTable {
 	USER_ROLES(DatabaseTableType.SORMAS, USERS, "userroles"),
 	USERS_USERROLES(DatabaseTableType.SORMAS, USERS, "users_userroles"),
 	USERROLES_USERRIGHTS(DatabaseTableType.SORMAS, USERS, "userroles_userrights"),
+	USERROLES_EMAILNOTIFICATIONTYPES(DatabaseTableType.SORMAS, USERS, "userroles_emailnotificationtypes"),
+	USERROLES_SMSNOTIFICATIONTYPES(DatabaseTableType.SORMAS, USERS, "userroles_smsnotificationtypes"),
 
 	POPULATION_DATA(DatabaseTableType.INFRASTRUCTURE, "population_data", null),
 	AGGREGATE_REPORTS(DatabaseTableType.SORMAS, "aggregate_reports", dependingOnFeature(FeatureType.AGGREGATE_REPORTING)),

@@ -68,6 +68,8 @@ public class User extends AbstractDomainObject {
 	public static final String TABLE_NAME_USERROLES = "userroles";
 	public static final String TABLE_NAME_USERS_USERROLES = "users_userroles";
 	public static final String TABLE_NAME_USERROLES_USERRIGHTS = "userroles_userrights";
+	public static final String TABLE_NAME_USERROLES_EMAILNOTIFICATIONTYPES = "userroles_emailnotificationtypes";
+	public static final String TABLE_NAME_USERROLES_SMSNOTIFICATIONTYPES = "userroles_smsnotificationtypes";
 
 	public static final String USER_NAME = "userName";
 	public static final String PASSWORD = "password";
