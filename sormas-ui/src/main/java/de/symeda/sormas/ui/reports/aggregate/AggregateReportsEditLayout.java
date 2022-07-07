@@ -198,7 +198,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			comboBoxPoe.setValue(selectedAggregateReport.getPointOfEntry());
 			comboBoxPoe.setEnabled(false);
 
-			reports = FacadeProvider.getAggregateReportFacade().getAllAggregatedReportsFromSameEpiWeekUserAndJurisdiction(selectedAggregateReport);
+			reports = FacadeProvider.getAggregateReportFacade().getSimilarAggregateReports(selectedAggregateReport);
 		}
 
 		List<Disease> diseaseList = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, null, false);
@@ -279,7 +279,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		buttonsPanel.setWidth(100, Unit.PERCENTAGE);
 
 		deleteButton = ButtonHelper.createButton(Captions.actionDelete, clickEvent -> {
-			deleteAggregateReportForm();
+			deleteAggregateReports();
 		});
 		buttonsPanel.addComponent(deleteButton);
 		buttonsPanel.setComponentAlignment(deleteButton, Alignment.BOTTOM_RIGHT);
@@ -315,7 +315,9 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			criteria.setHealthFacility(comboBoxFacility.getValue());
 			criteria.setPointOfEntry(comboBoxPoe.getValue());
 			criteria.setRegion(comboBoxRegion.getValue());
-			reports = FacadeProvider.getAggregateReportFacade().getList(criteria);
+			criteria.setForceJurisdictionCheck(true);
+//			reports = FacadeProvider.getAggregateReportFacade().getList(criteria);
+			reports = FacadeProvider.getAggregateReportFacade().getAggregateReports(criteria);
 			if (!reports.isEmpty()) {
 				popUpIsShown = true;
 				Consumer<Boolean> resultConsumer = new Consumer<Boolean>() {
@@ -390,11 +392,18 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 	}
 
 	private Optional<AggregateReportDto> getReportByDiseaseAndAgeGroup(Disease disease, String ageGroup) {
-		return reports.stream().filter(dto -> {
+
+		List<AggregateReportDto> foundReports = new ArrayList<>();
+		reports.stream().filter(dto -> {
 			boolean ageGroupMatches = dto.getAgeGroup() != null ? dto.getAgeGroup().equals(ageGroup) : ageGroup == null;
 			boolean diseaseMatches = dto.getDisease() != null ? dto.getDisease().equals(disease) : disease == null;
 			return diseaseMatches && ageGroupMatches;
-		}).findFirst();
+		}).max(Comparator.comparing(AggregateReportDto::getChangeDate)).ifPresent(foundReports::add);
+
+		if (foundReports.isEmpty()) {
+			return Optional.empty();
+		}
+		return Optional.ofNullable(foundReports.get(0));
 	}
 
 	private void save() {
@@ -490,10 +499,10 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		return valid;
 	}
 
-	private void deleteAggregateReportForm() {
+	private void deleteAggregateReports() {
 		List<String> aggregateReportUuidList = reports.stream().map(AggregateReportDto::getUuid).collect(Collectors.toList());
 
-		FacadeProvider.getAggregateReportFacade().deleteAggregatedReports(aggregateReportUuidList);
+		FacadeProvider.getAggregateReportFacade().deleteAggregateReports(aggregateReportUuidList);
 		window.close();
 	}
 

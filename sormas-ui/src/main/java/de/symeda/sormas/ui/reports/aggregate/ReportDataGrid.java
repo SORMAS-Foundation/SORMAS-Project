@@ -4,6 +4,7 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
@@ -69,6 +70,7 @@ public class ReportDataGrid extends FilteredGrid<AggregateReportDto, AggregateRe
 	private Button createEditButton(AggregateReportDto aggregateReport) {
 		if (!aggregateReport.isDuplicate()) {
 			Button editButton = ButtonHelper.createIconButton(VaadinIcons.EDIT);
+			editButton.addStyleName(ValoTheme.BUTTON_BORDERLESS);
 			editButton.addClickListener(clickEvent -> {
 				ControllerProvider.getAggregateReportController().openEditOrCreateWindow(this::reload, true, aggregateReport);
 				reload();
@@ -86,11 +88,12 @@ public class ReportDataGrid extends FilteredGrid<AggregateReportDto, AggregateRe
 	private Button createDeleteButton(AggregateReportDto aggregateReport) {
 
 		if (aggregateReport.isDuplicate()) {
-			Button iconButton = ButtonHelper.createIconButton(VaadinIcons.TRASH);
-			iconButton.addClickListener(clickEvent -> {
+			Button deleteButton = ButtonHelper.createIconButton(VaadinIcons.TRASH);
+			deleteButton.addStyleName(ValoTheme.BUTTON_BORDERLESS);
+			deleteButton.addClickListener(clickEvent -> {
 				ControllerProvider.getAggregateReportController().deleteAggregateReport(aggregateReport.getUuid(), this::reload);
 			});
-			return iconButton;
+			return deleteButton;
 		}
 		return null;
 

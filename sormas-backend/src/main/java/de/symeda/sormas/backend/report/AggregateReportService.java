@@ -91,6 +91,11 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(AggregateReport.DISEASE), criteria.getDisease()));
 		}
 
+		if (criteria.getReportingUser() != null) {
+			Join<AggregateReport, User> aggregateReportUserJoin = from.join(AggregateReport.REPORTING_USER, JoinType.INNER);
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(aggregateReportUserJoin.get(User.UUID), criteria.getReportingUser().getUuid()));
+		}
+
 		return filter;
 	}
 

@@ -446,7 +446,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 
 	@Override
-	public List<AggregateReportDto> getAllAggregatedReportsFromSameEpiWeekUserAndJurisdiction(AggregateReportDto aggregateReportDto) {
+	public List<AggregateReportDto> getSimilarAggregateReports(AggregateReportDto aggregateReportDto) {
 
 		AggregateReportCriteria criteria = new AggregateReportCriteria();
 		criteria.setRegion(aggregateReportDto.getRegion());
@@ -458,7 +458,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		criteria.setReportingUser(aggregateReportDto.getReportingUser());
 		criteria.setForceJurisdictionCheck(true);
 
-		List<AggregateReportDto> report = getAggregateReports(criteria);
+		List<AggregateReportDto> reports = getAggregateReports(criteria);
 
 		List<Disease> diseaseList = diseaseConfigurationFacade.getAllDiseases(true, false, false);
 
@@ -468,14 +468,14 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 
 			if (diseaseAgeGroups != null) {
 				diseaseAgeGroups.forEach(ageGroup -> {
-					report.stream()
+					reports.stream()
 						.filter(aggregateReport -> disease.equals(aggregateReport.getDisease()) && ageGroup.equals(aggregateReport.getAgeGroup()))
 						.max(Comparator.comparing(AggregateReportDto::getChangeDate))
 						.ifPresent(userList::add);
 
 				});
 			} else {
-				report.stream()
+				reports.stream()
 					.filter(aggregateReport -> disease.equals(aggregateReport.getDisease()))
 					.max(Comparator.comparing(AggregateReportDto::getChangeDate))
 					.ifPresent(userList::add);
@@ -487,7 +487,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 
 	@Override
 	@RightsAllowed(UserRight._AGGREGATE_REPORT_EDIT)
-	public void deleteAggregatedReports(List<String> aggregatedReportUuids) {
+	public void deleteAggregateReports(List<String> aggregatedReportUuids) {
 		for (String aggregatedReportUuid : aggregatedReportUuids) {
 			deleteReport(aggregatedReportUuid);
 		}
