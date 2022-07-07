@@ -240,7 +240,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		if (criteria != null && criteria.getShowZeroRowsForGrouping()) {
 			if (criteria.getDisease() == null) {
 				List<EpiWeek> epiWeekList = DateHelper.createEpiWeekListFromInterval(criteria.getEpiWeekFrom(), criteria.getEpiWeekTo());
-				for (Disease disease : diseaseConfigurationFacade.getAllDiseases(true, false, false)) {
+				for (Disease disease : diseaseConfigurationFacade.getAllDiseases(true, null, false)) {
 					if (!reportSet.containsKey(disease)) {
 						for (EpiWeek epiWeek : epiWeekList) {
 							addToList(resultList, selectedRegion, selectedDistrict, selectedFacility, selectedPoindOfEntry, disease, epiWeek);
