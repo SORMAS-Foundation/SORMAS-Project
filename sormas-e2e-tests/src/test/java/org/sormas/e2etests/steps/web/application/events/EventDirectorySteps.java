@@ -1286,6 +1286,15 @@ public class EventDirectorySteps implements En {
                   getByShortEventUuid(createdEventUUID), 1),
               "Event not deleted.");
         });
+
+    And(
+        "^I search for the collected event uuid$",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              SEARCH_EVENT_BY_FREE_TEXT, EditEventSteps.collectedEvent.getUuid());
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(EVENTS_COLUMN_HEADERS);
+        });
   }
 
   private List<Map<String, String>> getTableRowsData() {

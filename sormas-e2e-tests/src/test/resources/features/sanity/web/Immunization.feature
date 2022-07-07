@@ -168,6 +168,34 @@ Feature: Immunization end to end tests
     And I validate immunization status is present on immunization card
     And I validate management status is present on immunization card
     And I validate means of immunization is present on immunization card
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data
+    And I back to the Event tab
+    And I collect the UUID displayed on Edit event page
+    And I set Disease combobox to "" value from Edit Event Page
+    And I click on Save Button in Edit Event directory
+    And I add a participant to the event
+    And I check that New immunization card is not available
+    And I click on the Event participant tab
+    And I back to the Event tab
+    And I set Disease combobox to "COVID-19" value from Edit Event Page
+    And I click on Save Button in Edit Event directory
+    And I click on the Event participant tab
+    And I click on the created event participant from the list
+    And I click on the NEW IMMUNIZATION button in Edit event participant
+    And I fill mandatory fields and immunization period in a new immunization popup
+    And I check the specific created data with immunization period is correctly displayed on Edit immunization page
+    And I click on the Events button from navbar
+    And I search for the collected event uuid
+    And I click on the searched event
+    And I click on the Event participant tab
+    And I click on the first result in table from event participant
+    And I validate immunization period is present on immunization card
+    And I validate immunization status is present on immunization card
+    And I validate management status is present on immunization card
+    And I validate means of immunization is present on immunization card
+
 
   @issue=SORDEV-8061 @env_main
   Scenario: Immunizations V: Link recovery immunizations to recovered cases
