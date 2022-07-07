@@ -2408,6 +2408,8 @@ public interface Captions {
 	String UserRight_jurisdiction = "UserRight.jurisdiction";
 	String UserRight_jurisdictionOfRole = "UserRight.jurisdictionOfRole";
 	String userRights = "userRights";
+	String userRole = "userRole";
+	String userRoles = "userRoles";
 	String UserRole_caption = "UserRole.caption";
 	String UserRole_description = "UserRole.description";
 	String UserRole_emailNotificationTypes = "UserRole.emailNotificationTypes";

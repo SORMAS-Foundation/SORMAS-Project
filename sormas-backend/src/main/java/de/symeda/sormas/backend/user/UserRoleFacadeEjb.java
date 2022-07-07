@@ -17,6 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,17 +49,35 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleCriteria;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleFacade;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.XssfHelper;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.util.WorkbookUtil;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder;
 
 @Stateless(name = "UserRoleFacade")
 public class UserRoleFacadeEjb implements UserRoleFacade {
@@ -65,6 +89,8 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	private UserRoleService userRoleService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	@Override
 	public List<UserRoleDto> getAllAfter(Date since) {
@@ -333,6 +359,148 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		cq.select(userRole);
 
 		return QueryHelper.getResultList(em, cq, first, max, UserRoleFacadeEjb::toDto);
+	}
+
+	@Override
+	public String generateUserRolesDocument() throws IOException {
+		Path documentPath = generateUserRolesDocumentTempPath();
+
+		if (Files.exists(documentPath)) {
+			throw new IOException("File already exists: " + documentPath);
+		}
+
+		try (OutputStream fos = Files.newOutputStream(documentPath)) {
+			generateUserRolesDocument(getUserRoleRights(), fos);
+		} catch (IOException e) {
+			Files.deleteIfExists(documentPath);
+			throw e;
+		}
+
+		return documentPath.toString();
+	}
+
+	private void generateUserRolesDocument(Map<UserRoleDto, Set<UserRight>> userRoleRights, OutputStream outStream) throws IOException {
+		XSSFWorkbook workbook = new XSSFWorkbook();
+
+		// Create User Rights sheet
+		String safeName = WorkbookUtil.createSafeSheetName(I18nProperties.getCaption(Captions.userRole));
+		XSSFSheet sheet = workbook.createSheet(safeName);
+
+		// Define colors
+		final XSSFColor green = XssfHelper.createColor(0, 153, 0);
+		final XSSFColor red = XssfHelper.createColor(255, 0, 0);
+		final XSSFColor black = XssfHelper.createColor(0, 0, 0);
+
+		// Initialize cell styles
+		// Authorized style
+		XSSFCellStyle authorizedStyle = workbook.createCellStyle();
+		authorizedStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		authorizedStyle.setFillForegroundColor(green);
+		authorizedStyle.setBorderBottom(BorderStyle.THIN);
+		authorizedStyle.setBorderLeft(BorderStyle.THIN);
+		authorizedStyle.setBorderTop(BorderStyle.THIN);
+		authorizedStyle.setBorderRight(BorderStyle.THIN);
+		authorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.BOTTOM, black);
+		authorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.LEFT, black);
+		authorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.TOP, black);
+		authorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.RIGHT, black);
+		// Unauthorized style
+		XSSFCellStyle unauthorizedStyle = workbook.createCellStyle();
+		unauthorizedStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		unauthorizedStyle.setFillForegroundColor(red);
+		unauthorizedStyle.setBorderBottom(BorderStyle.THIN);
+		unauthorizedStyle.setBorderLeft(BorderStyle.THIN);
+		unauthorizedStyle.setBorderTop(BorderStyle.THIN);
+		unauthorizedStyle.setBorderRight(BorderStyle.THIN);
+		unauthorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.BOTTOM, black);
+		unauthorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.LEFT, black);
+		unauthorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.TOP, black);
+		unauthorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.RIGHT, black);
+		// Bold style
+		XSSFFont boldFont = workbook.createFont();
+		boldFont.setBold(true);
+		XSSFCellStyle boldStyle = workbook.createCellStyle();
+		boldStyle.setFont(boldFont);
+
+		int rowCounter = 0;
+
+		// Header
+		Row headerRow = sheet.createRow(rowCounter++);
+
+		Cell userRightHeadlineCell = headerRow.createCell(0);
+		userRightHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.userRole));
+		userRightHeadlineCell.setCellStyle(boldStyle);
+
+		Cell captionHeadlineCell = headerRow.createCell(1);
+		captionHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_jurisdictionLevel));
+		captionHeadlineCell.setCellStyle(boldStyle);
+
+		Cell descHeadlineCell = headerRow.createCell(2);
+		descHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_description));
+		descHeadlineCell.setCellStyle(boldStyle);
+
+		sheet.setColumnWidth(0, 256 * 35);
+		sheet.setColumnWidth(1, 256 * 50);
+		sheet.setColumnWidth(2, 256 * 50);
+		sheet.createFreezePane(2, 2, 2, 2);
+
+		int columnIndex = 3;
+
+		for (UserRight userRight : UserRight.values()) {
+			//TODO: test internationalization
+			String columnCaption = userRight.name();
+			Cell headerCell = headerRow.createCell(columnIndex);
+			headerCell.setCellValue(columnCaption);
+			headerCell.setCellStyle(boldStyle);
+			sheet.setColumnWidth(columnIndex, 256 * 14);
+			columnIndex++;
+		}
+
+		//User roles rows
+		for (UserRoleDto userRole : userRoleRights.keySet()) {
+			Row row = sheet.createRow(rowCounter++);
+
+			// User role name (caption)
+			Cell nameCell = row.createCell(0);
+			nameCell.setCellValue(userRole.getCaption());
+			nameCell.setCellStyle(boldStyle);
+
+			// User role jurisdiction
+			Cell captionCell = row.createCell(1);
+			captionCell.setCellValue(userRole.getJurisdictionLevel().toString());
+
+			// User right description
+			Cell descCell = row.createCell(2);
+			descCell.setCellValue(userRole.getDescription());
+
+			columnIndex = 3;
+			for (UserRight userRight : UserRight.values()) {
+				Cell roleRightCell = row.createCell(columnIndex);
+
+				if (hasUserRight(Collections.singletonList(userRole), userRight)) {
+					roleRightCell.setCellStyle(authorizedStyle);
+					roleRightCell.setCellValue(I18nProperties.getString(Strings.yes));
+				} else {
+					roleRightCell.setCellStyle(unauthorizedStyle);
+					roleRightCell.setCellValue(I18nProperties.getString(Strings.no));
+				}
+				columnIndex++;
+			}
+		}
+
+		XssfHelper.addAboutSheet(workbook);
+
+		workbook.write(outStream);
+		workbook.close();
+	}
+
+	private Path generateUserRolesDocumentTempPath() {
+
+		Path path = Paths.get(configFacade.getTempFilesPath());
+		String fileName = ImportExportUtils.TEMP_FILE_PREFIX + "_userroles_" + DateHelper.formatDateForExport(new Date()) + "_"
+			+ new Random().nextInt(Integer.MAX_VALUE) + ".xlsx";
+
+		return path.resolve(fileName);
 	}
 
 	@LocalBean

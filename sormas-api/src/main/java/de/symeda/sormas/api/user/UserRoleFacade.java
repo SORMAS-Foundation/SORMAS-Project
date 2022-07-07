@@ -19,6 +19,7 @@ package de.symeda.sormas.api.user;
 
 import de.symeda.sormas.api.utils.SortProperty;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -72,4 +73,6 @@ public interface UserRoleFacade {
 	long count(UserRoleCriteria userRoleCriteria);
 
 	List<UserRoleDto> getIndexList(UserRoleCriteria userRoleCriteria, int first, int max, List<SortProperty> sortProperties);
+
+	String generateUserRolesDocument() throws IOException;
 }
