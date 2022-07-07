@@ -101,7 +101,7 @@ public class DistrictDto extends InfrastructureDto {
 	}
 
 	@Override
-	public String getCaption() {
+	public String buildCaption() {
 		return getName();
 	}
 
@@ -137,7 +137,6 @@ public class DistrictDto extends InfrastructureDto {
 	public DistrictReferenceDto toReference() {
 		return new DistrictReferenceDto(getUuid(), name, externalID);
 	}
-
 
 	public static DistrictDto build() {
 		DistrictDto dto = new DistrictDto();

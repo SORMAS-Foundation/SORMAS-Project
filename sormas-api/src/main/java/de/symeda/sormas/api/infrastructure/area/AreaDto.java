@@ -61,7 +61,7 @@ public class AreaDto extends InfrastructureDto {
 	}
 
 	@Override
-	public String getCaption() {
+	public String buildCaption() {
 		return getName();
 	}
 

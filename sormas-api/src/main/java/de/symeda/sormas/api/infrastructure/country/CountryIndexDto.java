@@ -82,7 +82,7 @@ public class CountryIndexDto extends EntityDto {
 	}
 
 	@Override
-	public String getCaption() {
+	public String buildCaption() {
 		return getDefaultName();
 	}
 
