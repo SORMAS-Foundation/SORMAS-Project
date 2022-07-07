@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.configuration.infrastructure;
 
 import java.util.Collections;
+import java.util.Set;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
@@ -124,8 +125,9 @@ public class ContinentsView extends AbstractConfigurationView {
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource = GridExportStreamResource.createStreamResource(
+			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
 				grid,
+				this::getSelectedRows,
 				ExportEntityName.CONTINENTS,
 				Collections.singletonList(ContinentsGrid.EDIT_BTN_ID),
 				Collections.singletonList(ContinentIndexDto.DEFAULT_NAME));
@@ -175,6 +177,11 @@ public class ContinentsView extends AbstractConfigurationView {
 		addComponent(gridLayout);
 	}
 
+	private Set<ContinentIndexDto> getSelectedRows() {
+		ContinentsGrid facilitiesGrid = this.grid;
+		return this.viewConfiguration.isInEagerMode() ? facilitiesGrid.asMultiSelect().getSelectedItems() : Collections.emptySet();
+	}
+
 	private HorizontalLayout createFilterBar() {
 		filterLayout = new HorizontalLayout();
 		filterLayout.setMargin(false);
@@ -219,22 +226,30 @@ public class ContinentsView extends AbstractConfigurationView {
 				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchiveInfrastructure), VaadinIcons.ARCHIVE, selectedItem -> {
-							ControllerProvider.getInfrastructureController()
-								.archiveOrDearchiveAllSelectedItems(
-									true,
-									grid.asMultiSelect().getSelectedItems(),
-									InfrastructureType.CONTINENT,
-									() -> navigateTo(criteria));
-						}, EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchiveInfrastructure), VaadinIcons.ARCHIVE, selectedItem -> {
-							ControllerProvider.getInfrastructureController()
-								.archiveOrDearchiveAllSelectedItems(
-									false,
-									grid.asMultiSelect().getSelectedItems(),
-									InfrastructureType.CONTINENT,
-									() -> navigateTo(criteria));
-						}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.actionArchiveInfrastructure),
+							VaadinIcons.ARCHIVE,
+							selectedItem -> {
+								ControllerProvider.getInfrastructureController()
+									.archiveOrDearchiveAllSelectedItems(
+										true,
+										grid.asMultiSelect().getSelectedItems(),
+										InfrastructureType.CONTINENT,
+										() -> navigateTo(criteria));
+							},
+							EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.actionDearchiveInfrastructure),
+							VaadinIcons.ARCHIVE,
+							selectedItem -> {
+								ControllerProvider.getInfrastructureController()
+									.archiveOrDearchiveAllSelectedItems(
+										false,
+										grid.asMultiSelect().getSelectedItems(),
+										InfrastructureType.CONTINENT,
+										() -> navigateTo(criteria));
+							},
+							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
 					bulkOperationsDropdown.setVisible(isBulkOperationsDropdownVisible());
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
@@ -281,7 +296,7 @@ public class ContinentsView extends AbstractConfigurationView {
 		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
 
 		return viewConfiguration.isInEagerMode()
-				&& (EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())
+			&& (EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())
 				|| (infrastructureDataEditable && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 	}
 }

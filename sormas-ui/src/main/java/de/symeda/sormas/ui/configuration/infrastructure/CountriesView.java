@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.configuration.infrastructure;
 
 import java.util.Collections;
+import java.util.Set;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
@@ -132,8 +133,9 @@ public class CountriesView extends AbstractConfigurationView {
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource = GridExportStreamResource.createStreamResource(
+			StreamResource streamResource = GridExportStreamResource.createStreamResourceWithSelectedItems(
 				grid,
+				this::getSelectedRows,
 				ExportEntityName.COUNTRIES,
 				Collections.singletonList(CountriesGrid.EDIT_BTN_ID),
 				Collections.singletonList(CountryIndexDto.DEFAULT_NAME));
@@ -181,6 +183,12 @@ public class CountriesView extends AbstractConfigurationView {
 		}
 
 		addComponent(gridLayout);
+	}
+
+	private Set<CountryIndexDto> getSelectedRows() {
+		CountriesGrid countriesGrid = this.grid;
+		return this.viewConfiguration.isInEagerMode() ? countriesGrid.asMultiSelect().getSelectedItems() : Collections.emptySet();
+
 	}
 
 	private HorizontalLayout createFilterBar() {
@@ -238,22 +246,30 @@ public class CountriesView extends AbstractConfigurationView {
 				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchiveInfrastructure), VaadinIcons.ARCHIVE, selectedItem -> {
-							ControllerProvider.getInfrastructureController()
-								.archiveOrDearchiveAllSelectedItems(
-									true,
-									grid.asMultiSelect().getSelectedItems(),
-									InfrastructureType.COUNTRY,
-									() -> navigateTo(criteria));
-						}, EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchiveInfrastructure), VaadinIcons.ARCHIVE, selectedItem -> {
-							ControllerProvider.getInfrastructureController()
-								.archiveOrDearchiveAllSelectedItems(
-									false,
-									grid.asMultiSelect().getSelectedItems(),
-									InfrastructureType.COUNTRY,
-									() -> navigateTo(criteria));
-						}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.actionArchiveInfrastructure),
+							VaadinIcons.ARCHIVE,
+							selectedItem -> {
+								ControllerProvider.getInfrastructureController()
+									.archiveOrDearchiveAllSelectedItems(
+										true,
+										grid.asMultiSelect().getSelectedItems(),
+										InfrastructureType.COUNTRY,
+										() -> navigateTo(criteria));
+							},
+							EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.actionDearchiveInfrastructure),
+							VaadinIcons.ARCHIVE,
+							selectedItem -> {
+								ControllerProvider.getInfrastructureController()
+									.archiveOrDearchiveAllSelectedItems(
+										false,
+										grid.asMultiSelect().getSelectedItems(),
+										InfrastructureType.COUNTRY,
+										() -> navigateTo(criteria));
+							},
+							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
 					bulkOperationsDropdown.setVisible(isBulkOperationsDropdownVisible());
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
@@ -296,7 +312,7 @@ public class CountriesView extends AbstractConfigurationView {
 
 		applyingCriteria = false;
 	}
-	
+
 	private boolean isBulkOperationsDropdownVisible() {
 		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
 
