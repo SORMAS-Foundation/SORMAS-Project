@@ -1312,6 +1312,7 @@ public class EditEventSteps implements En {
         () -> {
           webDriverHelpers.scrollToElement(CONFIRM_DEARCHIVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_DEARCHIVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(5);
         });
 
     When(
@@ -1513,6 +1514,16 @@ public class EditEventSteps implements En {
           webDriverHelpers.fillInWebElement(PARTICIPANT_LAST_NAME_INPUT, faker.name().lastName());
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEX_COMBOBOX_REQUIRED);
           webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
+        });
+
+    And(
+        "I check event is it archived",
+        () -> {
+          TimeUnit.SECONDS.sleep(3);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ARCHIVE_EVENT_PARTICIPANT_BUTTON);
+          String archiveDearchive =
+              webDriverHelpers.getTextFromWebElement(ARCHIVE_EVENT_PARTICIPANT_BUTTON);
+          Assert.assertEquals(archiveDearchive, "De-Archive");
         });
   }
 

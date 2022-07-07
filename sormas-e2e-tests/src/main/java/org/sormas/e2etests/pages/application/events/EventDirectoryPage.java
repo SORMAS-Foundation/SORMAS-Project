@@ -161,4 +161,8 @@ public class EventDirectoryPage {
   public static By getByEventUuid(String eventUuid) {
     return By.xpath(String.format("//a[@title='%s']", eventUuid));
   }
+
+  public static By getByShortEventUuid(String eventUuid) {
+    return By.xpath(String.format("//*[contains(text(), '%s')]", eventUuid));
+  }
 }
