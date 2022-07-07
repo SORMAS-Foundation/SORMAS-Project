@@ -305,4 +305,7 @@ public class EditCasePage {
       By.xpath("//div[contains(text(),'Management status:')]");
   public static final By IMMUNIZATION_CARD_MEANS_OF_IMMUNIZATION =
       By.xpath("//div[contains(text(),'Means of immunization:')]");
+  public static final By IMMUNIZATION_CARD_IMMUNIZATION_UUID =
+      By.xpath(
+          "//div[@location='immunizations']//div[@class='v-slot v-slot-bold v-slot-uppercase v-align-middle']");
 }

@@ -2039,6 +2039,19 @@ public class EditCaseSteps implements En {
               "Means of immunization is not equal");
           softly.assertAll();
         });
+
+    And(
+        "^I validate immunization UUID is present on immunization card$",
+        () -> {
+          String actualImmunizationUUID =
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_IMMUNIZATION_UUID);
+          String expectedImmunizationUUID = EditImmunizationSteps.collectedImmunization.getUuid();
+          softly.assertEquals(
+              expectedImmunizationUUID.substring(0, 6),
+              actualImmunizationUUID,
+              "Means of immunization is not equal");
+          softly.assertAll();
+        });
   }
 
   private Case collectCasePersonUuid() {
