@@ -23,8 +23,8 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.report.AggregateCaseCountDto;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
-import de.symeda.sormas.api.report.AggregatedCaseCountDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -56,7 +56,7 @@ public class AggregateReportsFilterForm extends AbstractFilterForm<AggregateRepo
 	protected AggregateReportsFilterForm() {
 		super(
 			AggregateReportCriteria.class,
-			AggregatedCaseCountDto.I18N_PREFIX,
+			AggregateCaseCountDto.I18N_PREFIX,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
 	}
 
