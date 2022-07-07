@@ -178,11 +178,32 @@ public class AggregateCaseCountDto implements Serializable {
 
 	public boolean hasSameJurisdictionLevel(AggregateCaseCountDto that) {
 
-		if (this == that) {
+		if (this == that)
 			return true;
-		} else {
-			return this.getJurisdictionlevel() == that.getJurisdictionlevel();
+		if (that == null || getClass() != that.getClass())
+			return false;
+
+		if (regionId == null && that.regionId == null) {
+			return true;
 		}
+		if (districtId == null && that.districtId == null && regionId != null && that.regionId != null) {
+			return true;
+		}
+		if (districtId != null && that.districtId != null && regionId != null && that.regionId != null) {
+			if (healthFacilityId != null && that.healthFacilityId != null && pointOfEntryId == null && that.pointOfEntryId == null) {
+				return true;
+			}
+			if (healthFacilityId == null && that.healthFacilityId == null && pointOfEntryId != null && that.pointOfEntryId != null) {
+				return true;
+			}
+			if (healthFacilityId == null && that.healthFacilityId == null && pointOfEntryId == null && that.pointOfEntryId == null) {
+				return true;
+			}
+			if ((healthFacilityId != null || pointOfEntryId != null) && (that.healthFacilityId != null || that.pointOfEntryId != null)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public JurisdictionLevel getJurisdictionlevel() {
