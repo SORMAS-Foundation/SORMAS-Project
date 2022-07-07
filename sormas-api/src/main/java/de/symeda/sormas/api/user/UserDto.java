@@ -184,7 +184,7 @@ public class UserDto extends EntityDto {
 	}
 
 	@Override
-	public String getCaption() {
+	public String buildCaption() {
 		return UserReferenceDto.buildCaption(firstName, lastName);
 	}
 
