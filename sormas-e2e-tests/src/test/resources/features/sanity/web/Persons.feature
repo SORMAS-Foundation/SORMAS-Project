@@ -152,5 +152,5 @@ Feature: Edit Persons
     And API: I check that POST call status code is 200
     Given I log in as a National User
     Then I navigate to the last created via api Person page via URL
-    And I check General comment field
+    And I check General comment field is enabled on Edit Person page
 

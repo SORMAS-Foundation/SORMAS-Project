@@ -443,7 +443,7 @@ public class EditPersonSteps implements En {
           softly.assertAll();
         });
     And(
-        "I check General comment field",
+        "I check General comment field is enabled on Edit Person page",
         () -> {
           Assert.assertTrue(
               webDriverHelpers.isElementEnabled(GENERAL_COMMENT_FIELD),
