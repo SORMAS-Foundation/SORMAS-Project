@@ -27,8 +27,6 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.event.Event;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +39,10 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRes
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.share.ExternalShareStatus;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 
@@ -72,7 +72,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 		params.setCaseUuids(caseUuids);
 		params.setArchived(archived);
 
-//		sendRequest(params);
+		sendRequest(params);
 
 		caseUuids.forEach(uuid -> {
 			Case caze = caseService.getByUuid(uuid);
