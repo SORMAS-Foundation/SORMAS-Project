@@ -133,7 +133,6 @@ public class SampleService {
         .testedDisease(disease)
         .dateOfResult(LocalDate.now().minusDays(1))
         .timeOfResult(LocalTime.of(11, 30))
-        // .laboratory(LaboratoryValues.OTHER_FACILITY.getCaptionEnglish())
         .resultVerifiedByLabSupervisor("YES")
         .testResultsComment(currentTimeMillis + "Comment on new Pathogen requests or received")
         .build();
