@@ -1280,7 +1280,8 @@ public class EventDirectorySteps implements En {
         () -> {
           Assert.assertFalse(
               webDriverHelpers.isElementVisibleWithTimeout(
-                  getByShortEventUuid(createdEventUUID), 1));
+                  getByShortEventUuid(createdEventUUID), 1),
+              "Event not deleted.");
         });
   }
 

@@ -1521,11 +1521,11 @@ public class EditEventSteps implements En {
     And(
         "I check event is it archived",
         () -> {
-          TimeUnit.SECONDS.sleep(3);
+          TimeUnit.SECONDS.sleep(1);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(ARCHIVE_EVENT_PARTICIPANT_BUTTON);
           String archiveDearchive =
               webDriverHelpers.getTextFromWebElement(ARCHIVE_EVENT_PARTICIPANT_BUTTON);
-          Assert.assertEquals(archiveDearchive, "De-Archive");
+          Assert.assertEquals(archiveDearchive, "De-Archive", "Event is not archived.");
         });
   }
 
