@@ -66,4 +66,8 @@ public class CreateNewUserPage {
           "//div[@class='v-label v-widget bold v-label-bold vspace-top-none v-label-vspace-top-none align-right v-label-align-right v-label-undef-w']");
   public static final By ACTIVE_USER_COMBOBOX =
       By.cssSelector("[id='active'] [class='v-filterselect-button']");
+  public static final By SURVEILLANCE_REGION =
+      By.xpath("(//div[@location='region']//div[@class='v-captionwrapper'])[2]/div[2]/div");
+  public static final By SURVEILLANCE_DISTRICT =
+      By.xpath("(//div[@location='district']//div[@class='v-captionwrapper'])[2]/div[2]/div");
 }

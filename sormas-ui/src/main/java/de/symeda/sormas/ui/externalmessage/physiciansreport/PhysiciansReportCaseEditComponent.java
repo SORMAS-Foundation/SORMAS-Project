@@ -34,6 +34,7 @@ import de.symeda.sormas.api.person.PersonContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
+import de.symeda.sormas.ui.caze.CaseDataForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DirtyCheckPopup;
@@ -64,6 +65,7 @@ public class PhysiciansReportCaseEditComponent extends CommitDiscardWrapperCompo
 		tabsMenu = new SubMenu();
 		tabConfigs = createTabConfigs();
 
+		// setup buttons
 		backButton = ButtonHelper.createButton(Captions.actionBack, (e) -> {
 			if (activeTabIndex > 0) {
 				String previousTab = tabConfigs.get(activeTabIndex - 1).captionTag;
@@ -88,7 +90,7 @@ public class PhysiciansReportCaseEditComponent extends CommitDiscardWrapperCompo
 		getButtonsPanel().addComponent(nextButton);
 
 		saveAndOpenCaseButton = ButtonHelper.createButton(Captions.actionSaveAndOpenCase, (b) -> {
-			if (activeTabComponent.commitAndHandle()) {
+			if (!activeTabComponent.isDirty() || activeTabComponent.commitAndHandle()) {
 				commit();
 				ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
 			}
@@ -96,6 +98,13 @@ public class PhysiciansReportCaseEditComponent extends CommitDiscardWrapperCompo
 
 		getButtonsPanel().addComponent(saveAndOpenCaseButton, getButtonsPanel().getComponentIndex(getCommitButton()));
 
+		setPrimaryCommitListener(() -> {
+			if (activeTabComponent.isDirty()) {
+				activeTabComponent.commitAndHandle();
+			}
+		});
+
+		// configure submenu
 		for (TabConfig tabConfig : tabConfigs) {
 			tabsMenu.addView(tabConfig.captionTag, I18nProperties.getCaption(tabConfig.captionTag), () -> {
 				if (activeTabComponent.isDirty()) {
@@ -127,18 +136,28 @@ public class PhysiciansReportCaseEditComponent extends CommitDiscardWrapperCompo
 
 	private void setActiveTab(String tabCaptionTag) {
 		tabsMenu.setActiveView(tabCaptionTag);
-		TabConfig tabConfig = tabConfigs.stream()
+		TabConfig tabConfig = getTabConfig(tabCaptionTag);
+		setActiveTabComponent(tabConfig.contentSupplier.get(), tabConfigs.indexOf(tabConfig));
+
+	}
+
+	private TabConfig getTabConfig(String tabCaptionTag) {
+		return tabConfigs.stream()
 			.filter(c -> c.captionTag.equals(tabCaptionTag))
 			.findFirst()
 			.orElseThrow(() -> new RuntimeException("Tab [" + tabCaptionTag + "] not found"));
 
-		setActiveTabComponent(tabConfig.contentSupplier.get(), tabConfigs.indexOf(tabConfig));
 	}
 
 	private List<TabConfig> createTabConfigs() {
 		List<TabConfig> configs = new ArrayList<>();
 
-		configs.add(TabConfig.of(Captions.CaseData, () -> ControllerProvider.getCaseController().getCaseDataEditComponent(caze.getUuid(), viewMode)));
+		configs.add(TabConfig.of(Captions.CaseData, () -> {
+			CommitDiscardWrapperComponent<CaseDataForm> caseDataForm =
+				ControllerProvider.getCaseController().getCaseDataEditComponent(caze.getUuid(), viewMode);
+			caseDataForm.getWrappedComponent().getField(CaseDataDto.DISEASE).setEnabled(false);
+			return caseDataForm;
+		}));
 		configs.add(
 			TabConfig.of(
 				Captions.CaseData_person,

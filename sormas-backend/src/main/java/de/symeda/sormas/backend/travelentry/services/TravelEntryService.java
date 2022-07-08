@@ -195,7 +195,8 @@ public class TravelEntryService extends BaseTravelEntryService {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public EditPermissionType isTravelEntryEditAllowed(TravelEntry travelEntry) {
+	@Override
+	public EditPermissionType isEditAllowed(TravelEntry travelEntry) {
 
 		if (!userService.hasRight(UserRight.TRAVEL_ENTRY_EDIT) || !inJurisdictionOrOwned(travelEntry)) {
 			return EditPermissionType.REFUSED;

@@ -2,6 +2,8 @@ package de.symeda.sormas.api.infrastructure.subcontinent;
 
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureDto;
@@ -67,7 +69,12 @@ public class SubcontinentDto extends InfrastructureDto {
 	}
 
 	@Override
-	public String toString() {
+	public String buildCaption() {
 		return getDefaultName();
+	}
+
+	@JsonIgnore
+	public String i18nPrefix() {
+		return I18N_PREFIX;
 	}
 }

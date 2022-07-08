@@ -711,6 +711,7 @@ public class SurveillanceDashboardSteps implements En {
     Then(
         "^I validate chart download options on Surveillance Dashboard Page$",
         () -> {
+          webDriverHelpers.scrollToElement(SurveillanceDashboardPage.LEGEND_CHART_DOWNLOAD_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(
               SurveillanceDashboardPage.LEGEND_CHART_DOWNLOAD_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
@@ -1068,7 +1069,8 @@ public class SurveillanceDashboardSteps implements En {
     And(
         "I compare English and German confirmed counter",
         () -> {
-          Assert.assertEquals(confirmedCases_EN, confirmedCases_DE, "Counters for confirmed cases are not equal!");
+          Assert.assertEquals(
+              confirmedCases_EN, confirmedCases_DE, "Counters for confirmed cases are not equal!");
         });
   }
 }

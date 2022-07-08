@@ -91,3 +91,13 @@ Feature: Case hospitalization tab e2e test cases
     And I click on TRANSFER CASE in Infrastructure Data Has Change popup
     And I navigate to Hospitalization tab in Cases
     Then I check the edited and saved current hospitalization is correctly displayed in previous hospitalization window
+
+  @env_main @issue=SORDEV-8034
+  Scenario: Test Hospitalization caption refinements
+    Given I log in with National User
+    Then I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with Facility as a Place of stay
+    And I check the created data for Facility is correctly displayed on Edit case page
+    And I navigate to Hospitalization tab in Cases
+    And I check Hospitalization tab have Current hospitalization heading

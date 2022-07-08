@@ -27,7 +27,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 
 import de.symeda.sormas.api.infrastructure.area.AreaType;
-import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -246,10 +245,5 @@ public class Facility extends InfrastructureAdo {
 
 	public void setExternalID(String externalID) {
 		this.externalID = externalID;
-	}
-
-	@Override
-	public String toString() {
-		return FacilityHelper.buildFacilityString(getUuid(), name);
 	}
 }

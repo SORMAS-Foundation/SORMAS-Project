@@ -21,12 +21,12 @@ import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
-public class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> {
+public abstract class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> {
 
 	@EJB
 	protected UserService userService;
 
-	public BaseTravelEntryService() {
+	protected BaseTravelEntryService() {
 		super(TravelEntry.class);
 	}
 
@@ -102,4 +102,5 @@ public class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> 
 
 		return super.addChangeDates(builder, travelEntryFrom, includeExtendedChangeDateFilters);
 	}
+
 }

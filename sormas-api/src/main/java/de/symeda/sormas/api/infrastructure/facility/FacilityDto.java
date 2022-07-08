@@ -22,6 +22,8 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureDto;
@@ -321,7 +323,7 @@ public class FacilityDto extends InfrastructureDto {
 	}
 
 	public FacilityReferenceDto toReference() {
-		return new FacilityReferenceDto(getUuid(), toString(), externalID);
+		return new FacilityReferenceDto(getUuid(), buildCaption(), externalID);
 	}
 
 	public String getExternalID() {
@@ -333,8 +335,13 @@ public class FacilityDto extends InfrastructureDto {
 	}
 
 	@Override
-	public String toString() {
+	public String buildCaption() {
 		return FacilityHelper.buildFacilityString(getUuid(), name);
+	}
+
+	@JsonIgnore
+	public String i18nPrefix() {
+		return I18N_PREFIX;
 	}
 
 	public static FacilityDto build() {

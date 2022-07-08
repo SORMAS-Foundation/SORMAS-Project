@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -61,9 +60,10 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "BAGExportFacade")
-@RolesAllowed(UserRight._BAG_EXPORT)
+@RightsAllowed(UserRight._BAG_EXPORT)
 public class BAGExportFacadeEjb implements BAGExportFacade {
 
 	private static final String TODO_VALUE = "";

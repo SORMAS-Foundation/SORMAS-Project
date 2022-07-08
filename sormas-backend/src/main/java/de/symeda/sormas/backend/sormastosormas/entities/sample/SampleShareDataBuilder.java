@@ -26,6 +26,7 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.Sample;
@@ -71,6 +72,13 @@ public class SampleShareDataBuilder
 			return pathogenTestDto;
 		}).collect(Collectors.toList()),
 			data.getAdditionalTests().stream().map(t -> additionalTestFacade.convertToDto(t, pseudonymizer)).collect(Collectors.toList()));
+	}
+
+	@Override
+	public void doBusinessValidation(SormasToSormasSampleDto sormasToSormasSampleDto) throws ValidationRuntimeException {
+		sampleFacade.validate(sormasToSormasSampleDto.getEntity(), true);
+		sormasToSormasSampleDto.getPathogenTests().forEach(pathogenTestFacade::validate);
+		// additional test facade has no validation method
 	}
 
 	@Override

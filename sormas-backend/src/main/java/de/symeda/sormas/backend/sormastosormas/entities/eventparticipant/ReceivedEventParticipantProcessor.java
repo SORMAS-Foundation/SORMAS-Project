@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.eventparticipant;
 
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import java.util.Optional;
 
 import javax.ejb.LocalBean;
@@ -25,6 +24,7 @@ import javax.inject.Inject;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParticipantPreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;

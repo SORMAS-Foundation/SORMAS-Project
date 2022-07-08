@@ -28,7 +28,6 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 	public static final String ORIGIN = "origin";
 
 	private Long id;
-	private String uuid;
 	private Date visitDateTime;
 	private VisitStatus visitStatus;
 	@SensitiveData
@@ -58,8 +57,8 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 		String visitUserLastName,
 		boolean isInJurisdiction) {
 
+		super(uuid);
 		this.id = id;
-		this.uuid = uuid;
 		this.visitDateTime = visitDateTime;
 		this.visitStatus = visitStatus;
 		this.visitRemarks = visitRemarks;
@@ -74,14 +73,6 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public Long getId() {
 		return id;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public Date getVisitDateTime() {

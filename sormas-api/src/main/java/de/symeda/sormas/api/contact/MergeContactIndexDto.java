@@ -54,7 +54,6 @@ public class MergeContactIndexDto extends PseudonymizableIndexDto implements Mer
 	public static final String REPORT_DATE_TIME = "reportDateTime";
 
 	private long id;
-	private String uuid;
 	@PersonalData
 	private String firstName;
 	@PersonalData
@@ -95,8 +94,9 @@ public class MergeContactIndexDto extends PseudonymizableIndexDto implements Mer
 		ContactClassification contactClassification,
 		Float completeness,
 		Date reportDateTime) {
+
+		super(uuid);
 		this.id = id;
-		this.uuid = uuid;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.ageAndBirthDate = new AgeAndBirthDateDto(age, ageType, birthdateDD, birthdateMM, birthdateYYYY);
@@ -121,14 +121,6 @@ public class MergeContactIndexDto extends PseudonymizableIndexDto implements Mer
 
 	public void setId(long id) {
 		this.id = id;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public String getFirstName() {

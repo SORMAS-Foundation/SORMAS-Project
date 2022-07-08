@@ -39,6 +39,7 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.COUNTRY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DONE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EDIT_SAVED_EXPOSURE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.END_OF_EXPOSURE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EXPOSURE_DESCRIPTION_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EXPOSURE_DETAILS_KNOWN_OPTIONS;
@@ -374,7 +375,7 @@ public class ContactDirectorySteps implements En {
     When(
         "I click on edit Exposure vision button",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_EXPOSURE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_SAVED_EXPOSURE_BUTTON);
         });
 
     When(
@@ -911,8 +912,8 @@ public class ContactDirectorySteps implements En {
     When(
         "I am checking all Location data in Exposure are saved and displayed",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(OPEN_SAVED_EXPOSURE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_EXPOSURE_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EDIT_SAVED_EXPOSURE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_SAVED_EXPOSURE_BUTTON);
           Exposure actualLocationData = collectLocationData();
           ComparisonHelper.compareEqualFieldsOfEntities(
               actualLocationData,
@@ -1013,6 +1014,16 @@ public class ContactDirectorySteps implements En {
               CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, contactUuid);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(uuidLocator);
+        });
+
+    When(
+        "I filter for SAMPLE TOKEN in Contacts Directory",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, "SAMPLE TOKEN");
+          webDriverHelpers.clickOnWebElementBySelector(
+              CONTACT_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
   }
 

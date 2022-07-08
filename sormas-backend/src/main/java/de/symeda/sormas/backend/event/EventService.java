@@ -45,12 +45,14 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolExc
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb;
+import de.symeda.sormas.backend.user.UserRole;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventCriteriaDateType;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -322,7 +324,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		List<ExternalShareInfo> result = externalShareInfoService.getShareInfoByEvent(entityUuid);
 		return result.stream().anyMatch(info -> info.getStatus().equals(ExternalShareStatus.DELETED));
 	}
-    
+
 	public List<String> getArchivedUuidsSince(Date since) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -588,8 +590,9 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		Predicate filter = null;
 		if (eventCriteria.getReportingUserRole() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.isMember(eventCriteria.getReportingUserRole(), joins.getReportingUser().get(User.USER_ROLES)));
+			Join<Event, User> reportingUser = joins.getReportingUser();
+			Join<User, UserRole> rolesJoin = reportingUser.join(User.USER_ROLES, JoinType.LEFT);
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(rolesJoin.get(UserRole.UUID), eventCriteria.getReportingUserRole().getUuid()));
 		}
 		if (eventCriteria.getDisease() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.DISEASE), eventCriteria.getDisease()));
@@ -931,7 +934,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return eventSummaryDetailsList;
 	}
 
-	public EditPermissionType isEventEditAllowed(Event event) {
+	@Override
+	public EditPermissionType isEditAllowed(Event event) {
 
 		if (event.getSormasToSormasOriginInfo() != null && !event.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
 			return EditPermissionType.REFUSED;
@@ -939,7 +943,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		if (!inJurisdictionOrOwned(event) || sormasToSormasShareInfoService.isEventOwnershipHandedOver(event)) {
 			return EditPermissionType.REFUSED;
-		} ;
+		}
 
 		return super.getEditPermissionType(event);
 	}

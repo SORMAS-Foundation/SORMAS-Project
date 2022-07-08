@@ -433,9 +433,17 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	public Button getDeleteWithReasonButton(String entityName) {
 		if (deleteButton == null) {
 			deleteButton = ButtonHelper.createButton("delete", I18nProperties.getCaption(Captions.actionDelete), (ClickListener) event -> {
-				DeletableUtils.showDeleteWithReasonPopup(
-					String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
-					this::onDeleteWithReason);
+				if (isDirty()) {
+					DirtyCheckPopup.show(this, () -> {
+						DeletableUtils.showDeleteWithReasonPopup(
+							String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
+							this::onDeleteWithReason);
+					});
+				} else {
+					DeletableUtils.showDeleteWithReasonPopup(
+						String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
+						this::onDeleteWithReason);
+				}
 			}, ValoTheme.BUTTON_DANGER, CssStyles.BUTTON_BORDER_NEUTRAL);
 		}
 
@@ -588,7 +596,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 					}
 					if (multipleCausesFound) {
 						htmlMsg.append("<ul>");
-						// Alle nochmal
+						// All again
 						for (int i = 0; i < causes.length; i++) {
 							if (!causes[i].isInvisible()) {
 								htmlMsg.append("<li style=\"color: #FFF;\">").append(findHtmlMessage(causes[i])).append("</li>");
