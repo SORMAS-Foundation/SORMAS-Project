@@ -173,7 +173,7 @@ public class EditContactPersonSteps implements En {
                   CreateNewContactSteps.contact.getPrimaryPhoneNumber());
         });
     When(
-        "I check that ([^\"]*) is visible on Edit Contact Person Page",
+        "I check that Type of Contact details with ([^\"]*) as an option is visible on Edit Contact Person Page",
         (String option) -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
           By selector = null;
@@ -186,11 +186,7 @@ public class EditContactPersonSteps implements En {
               selector = EMAIL_PRIMARY;
               break;
           }
-          try {
-            webDriverHelpers.scrollToElementUntilIsVisible(selector);
-          } catch (Throwable ignored) {
-            elementVisible = false;
-          }
+          webDriverHelpers.isElementVisibleWithTimeout(selector, 5);
           softly.assertTrue(elementVisible, option + " is not visible!");
           softly.assertAll();
         });

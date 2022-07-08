@@ -231,7 +231,7 @@ public class EditCasePersonSteps implements En {
           webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);
         });
     When(
-        "I check that ([^\"]*) is visible on Edit Case Person Page",
+        "I check that Type of Contacts details with ([^\"]*) as a option is visible on Edit Case Person Page",
         (String option) -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
           By selector = null;
@@ -244,11 +244,7 @@ public class EditCasePersonSteps implements En {
               selector = EMAIL_PRIMARY;
               break;
           }
-          try {
-            webDriverHelpers.scrollToElementUntilIsVisible(selector);
-          } catch (Throwable ignored) {
-            elementVisible = false;
-          }
+          webDriverHelpers.isElementVisibleWithTimeout(selector, 5);
           softly.assertTrue(elementVisible, option + " is not visible!");
           softly.assertAll();
         });

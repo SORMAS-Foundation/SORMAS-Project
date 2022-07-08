@@ -107,19 +107,19 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getC
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getMergeDuplicatesButtonById;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getResultByIndex;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FIRST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LAST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE_DEFINITION_TEXT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.getCaseIDPathByIndex;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.COMMIT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.FIRST_RESULT_IN_GRID_IMPORT_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.IMPORT_CASE_CONTACTS_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.IMPORT_POPUP_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditContactsPage.FIRST_RESULT_IN_GRID_IMPORT_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_OPTIONS;
@@ -129,9 +129,9 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
-import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.SELECT_ANOTHER_PERSON_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPORT_SUCCESS_DE;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.SELECT_ANOTHER_PERSON_DE;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.github.javafaker.Faker;
@@ -585,10 +585,12 @@ public class CaseDirectorySteps implements En {
         () -> {
           softly.assertEquals(
               CaseReinfectionSteps.caze.getFirstName(),
-              webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT), "Prefilled first name is not equal");
+              webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT),
+              "Prefilled first name is not equal");
           softly.assertEquals(
               CaseReinfectionSteps.caze.getLastName(),
-              webDriverHelpers.getValueFromWebElement(LAST_NAME_INPUT), "Prefilled last name is not equal");
+              webDriverHelpers.getValueFromWebElement(LAST_NAME_INPUT),
+              "Prefilled last name is not equal");
           softly.assertAll();
         });
     And(

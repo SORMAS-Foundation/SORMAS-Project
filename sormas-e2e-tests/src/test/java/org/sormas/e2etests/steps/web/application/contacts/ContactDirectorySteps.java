@@ -330,7 +330,7 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
     When(
-        "I click to create new person from the Contact Import popup",
+        "I click to create new person from the Contact Import popup if Pick or create popup appears",
         () -> {
           if (webDriverHelpers.isElementVisibleWithTimeout(COMMIT_BUTTON, 20)) {
             webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX_DE);

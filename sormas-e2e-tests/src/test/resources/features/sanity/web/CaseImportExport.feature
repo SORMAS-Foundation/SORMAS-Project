@@ -51,5 +51,6 @@ Feature: Case import and export tests
     And I click APPLY BUTTON in Case Directory Page
     And I open last created case
     Then I navigate to case person tab
-    And I check that Primary telephone is visible on Edit Case Person Page
-    And I check that Primary email address is visible on Edit Case Person Page
+    And I check that Type of Contacts details with Primary telephone as a option is visible on Edit Case Person Page
+    And I check that Type of Contacts details with Primary email address as a option is visible on Edit Case Person Page
+

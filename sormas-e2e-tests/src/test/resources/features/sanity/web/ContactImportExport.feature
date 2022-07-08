@@ -44,12 +44,12 @@ Feature: Contact import and export tests
     And I click on the Import button from Contact directory
     Then I select the "ImportContactPrio.csv" CSV file in the file picker
     And I click on the "DATENIMPORT STARTEN" button from the Import Contact popup
-    Then I click to create new person from the Contact Import popup
+    Then I click to create new person from the Contact Import popup if Pick or create popup appears
     And I check that an import success notification appears in the Import Contact popup
     Then I close Import Contact form
     And I filter by "UpdateTestContact ImportPrio" as a Person's full name on Contact Directory Page
     And I click APPLY BUTTON in Contact Directory Page
     And I open the last created UI Contact
     Then I open Contact Person tab
-    And I check that Primary telephone is visible on Edit Contact Person Page
-    And I check that Primary email address is visible on Edit Contact Person Page
+    And I check that Type of Contact details with Primary telephone as an option is visible on Edit Contact Person Page
+    And I check that Type of Contact details with Primary email address as an option is visible on Edit Contact Person Page
