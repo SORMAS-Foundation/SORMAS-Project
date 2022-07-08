@@ -38,6 +38,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -52,7 +53,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.common.AbstractBaseEjb;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -123,6 +123,7 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractBaseEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
@@ -185,8 +186,6 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	private EntityManager em;
 
 	@EJB
-	private PersonService personService;
-	@EJB
 	private CaseService caseService;
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
@@ -206,8 +205,6 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	private LocationFacadeEjbLocal locationFacade;
 	@EJB
 	private PersonContactDetailService personContactDetailService;
-	@EJB
-	private UserService userService;
 	@EJB
 	private ExternalJournalService externalJournalService;
 	@EJB
@@ -233,10 +230,18 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	@EJB
 	private ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacade;
 
+	public PersonFacadeEjb() {
+	}
+
+	@Inject
+	protected PersonFacadeEjb(PersonService service, UserService userService) {
+		super(Person.class, PersonDto.class, service, userService);
+	}
+
 	@Override
 	public List<SimilarPersonDto> getSimilarPersonDtos(PersonSimilarityCriteria criteria) {
 
-		return personService.getSimilarPersonDtos(criteria, null);
+		return service.getSimilarPersonDtos(criteria, null);
 	}
 
 	@Override
@@ -247,7 +252,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			return false;
 		}
 
-		return !personService.getSimilarPersonDtos(criteria, 1).isEmpty();
+		return !service.getSimilarPersonDtos(criteria, 1).isEmpty();
 	}
 
 	@Override
@@ -255,7 +260,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		UserRight._PERSON_VIEW,
 		UserRight._EXTERNAL_VISITS })
 	public Boolean isValidPersonUuid(String personUuid) {
-		return personService.exists(personUuid);
+		return service.exists(personUuid);
 	}
 
 	@Override
@@ -270,23 +275,23 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	@Override
 	public List<PersonDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-		return toPseudonymizedDtos(personService.getAllAfter(date, batchSize, lastSynchronizedUuid));
+		return toPseudonymizedDtos(service.getAllAfter(date, batchSize, lastSynchronizedUuid));
 	}
 
 	@Override
 	public List<PersonDto> getByUuids(List<String> uuids) {
-		return toPseudonymizedDtos(personService.getByUuids(uuids));
+		return toPseudonymizedDtos(service.getByUuids(uuids));
 	}
 
 	@Override
 	public List<PersonDto> getByExternalIds(List<String> externalIds) {
-		return toPseudonymizedDtos(personService.getByExternalIds(externalIds));
+		return toPseudonymizedDtos(service.getByExternalIds(externalIds));
 	}
 
 	@Override
 	@RightsAllowed(UserRight._PERSON_EDIT)
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
-		personService.updateExternalData(externalData);
+		service.updateExternalData(externalData);
 	}
 
 	@Override
@@ -296,11 +301,11 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			return Collections.emptyList();
 		}
 		final District district = districtService.getByReferenceDto(districtRef);
-		return toPseudonymizedDtos(personService.getDeathsBetween(fromDate, toDate, district, disease, user));
+		return toPseudonymizedDtos(service.getDeathsBetween(fromDate, toDate, district, disease, user));
 	}
 
 	public Long getPersonIdByUuid(String uuid) {
-		return Optional.of(uuid).map(u -> personService.getIdByUuid(u)).orElse(null);
+		return Optional.of(uuid).map(u -> service.getIdByUuid(u)).orElse(null);
 	}
 
 	@Override
@@ -310,8 +315,8 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	public PersonDto getByUuid(String uuid) {
 		final Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return Optional.of(uuid)
-			.map(u -> personService.getByUuid(u))
-			.map(p -> convertToDto(p, pseudonymizer, personService.inJurisdictionOrOwned(p)))
+			.map(u -> service.getByUuid(u))
+			.map(p -> convertToDto(p, pseudonymizer, service.inJurisdictionOrOwned(p)))
 			.orElse(null);
 	}
 
@@ -321,7 +326,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		UserRight._EXTERNAL_VISITS,
 		UserRight._SYSTEM })
 	public JournalPersonDto getPersonForJournal(String uuid) {
-		PersonDto detailedPerson = Optional.of(uuid).map(u -> personService.getByUuid(u)).map(PersonFacadeEjb::toPersonDto).orElse(null);
+		PersonDto detailedPerson = Optional.of(uuid).map(u -> service.getByUuid(u)).map(PersonFacadeEjb::toPersonDto).orElse(null);
 		return getPersonForJournal(detailedPerson);
 	}
 
@@ -331,7 +336,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		UserRight._EXTERNAL_VISITS,
 		UserRight._SYSTEM })
 	public boolean isEnrolledInExternalJournal(String uuid) {
-		Person person = personService.getByUuid(uuid);
+		Person person = service.getByUuid(uuid);
 		return person != null && person.isEnrolledInExternalJournal();
 	}
 
@@ -436,7 +441,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	 */
 	public PersonDto save(@Valid PersonDto source, boolean checkChangeDate, boolean syncShares, boolean skipValidation)
 		throws ValidationRuntimeException {
-		Person person = personService.getByUuid(source.getUuid());
+		Person person = service.getByUuid(source.getUuid());
 
 		PersonDto existingPerson = toDto(person);
 
@@ -456,14 +461,11 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		person = fillOrBuildEntity(source, person, checkChangeDate);
 
-		personService.ensurePersisted(person);
+		service.ensurePersisted(person);
 
 		onPersonChanged(existingPerson, person, syncShares);
 
-		return convertToDto(
-			person,
-			Pseudonymizer.getDefault(userService::hasRight),
-			existingPerson == null || personService.inJurisdictionOrOwned(person));
+		return convertToDto(person, Pseudonymizer.getDefault(userService::hasRight), existingPerson == null || service.inJurisdictionOrOwned(person));
 	}
 
 	/**
@@ -487,7 +489,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@RightsAllowed(UserRight._PERSON_EDIT)
 	public Pair<CaseClassification, PersonDto> savePersonWithoutNotifyingExternalJournal(@Valid PersonDto source) throws ValidationRuntimeException {
-		Person existingPerson = personService.getByUuid(source.getUuid());
+		Person existingPerson = service.getByUuid(source.getUuid());
 		PersonDto existingPersonDto = toDto(existingPerson);
 
 		List<CaseDataDto> personCases = caseFacade.getAllCasesOfPerson(source.getUuid());
@@ -504,7 +506,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		existingPerson = fillOrBuildEntity(source, existingPerson, true);
 
-		personService.ensurePersisted(existingPerson);
+		service.ensurePersisted(existingPerson);
 
 		onPersonChanged(existingPersonDto, existingPerson);
 
@@ -1046,12 +1048,12 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	@Override
 	public boolean exists(String uuid) {
-		return personService.exists(uuid);
+		return service.exists(uuid);
 	}
 
 	@Override
 	public boolean doesExternalTokenExist(String externalToken, String personUuid) {
-		return personService.exists(
+		return service.exists(
 			(cb, personRoot, cq) -> CriteriaBuilderHelper
 				.and(cb, cb.equal(personRoot.get(Person.EXTERNAL_TOKEN), externalToken), cb.notEqual(personRoot.get(Person.UUID), personUuid)));
 	}
@@ -1066,7 +1068,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 		// Run updates in batches to avoid large JPA cache
 		List<Long> batchResults = new ArrayList<>();
 		IterableHelper.executeBatched(personUuidList, 100, batchedUuids -> {
-			batchResults.add(personService.updateGeoLocation(batchedUuids, overwriteExistingCoordinates));
+			batchResults.add(service.updateGeoLocation(batchedUuids, overwriteExistingCoordinates));
 		});
 		return batchResults.stream().reduce(0L, Long::sum);
 	}
@@ -1258,9 +1260,9 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
 			Predicate noLatitude = cb.isNull(location.get(Location.LATITUDE));
 			Predicate noLongitude = cb.isNull(location.get(Location.LONGITUDE));
-			cq.where(cb.and(personService.createUserFilter(personQueryContext, null), cb.or(noLatitude, noLongitude)));
+			cq.where(cb.and(service.createUserFilter(personQueryContext, null), cb.or(noLatitude, noLongitude)));
 		} else {
-			cq.where(personService.createUserFilter(personQueryContext, null));
+			cq.where(service.createUserFilter(personQueryContext, null));
 		}
 		cq.orderBy(cb.desc(person.get(Person.UUID)));
 
@@ -1333,7 +1335,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 			phoneSubQuery.alias(PersonIndexDto.PHONE),
 			emailSubQuery.alias(PersonIndexDto.EMAIL_ADDRESS),
 			person.get(Person.CHANGE_DATE),
-			JurisdictionHelper.booleanSelector(cb, personService.inJurisdictionOrOwned(personQueryContext)));
+			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(personQueryContext)));
 
 		Predicate filter = createIndexListFilter(criteria, personQueryContext);
 		if (filter != null) {
@@ -1476,7 +1478,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 			person.get(Person.ADDITIONAL_DETAILS),
 
-			JurisdictionHelper.booleanSelector(cb, personService.inJurisdictionOrOwned(personQueryContext)));
+			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(personQueryContext)));
 
 		Predicate filter = createIndexListFilter(criteria, personQueryContext);
 		if (filter != null) {
@@ -1506,9 +1508,9 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		CriteriaBuilder cb = personQueryContext.getCriteriaBuilder();
 		Predicate filter;
-		filter = personService.createUserFilter(personQueryContext, criteria);
+		filter = service.createUserFilter(personQueryContext, criteria);
 		if (criteria != null) {
-			final Predicate criteriaFilter = personService.buildCriteriaFilter(criteria, personQueryContext);
+			final Predicate criteriaFilter = service.buildCriteriaFilter(criteria, personQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -1523,7 +1525,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	private List<PersonDto> toPseudonymizedDtos(List<Person> persons) {
 		final Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		final List<Long> inJurisdictionIDs = personService.getInJurisdictionIDs(persons);
+		final List<Long> inJurisdictionIDs = service.getInJurisdictionIDs(persons);
 
 		return persons.stream().map(p -> convertToDto(p, pseudonymizer, inJurisdictionIDs.contains(p.getId()))).collect(Collectors.toList());
 	}
@@ -1547,7 +1549,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 	private void restorePseudonymizedDto(PersonDto source, Person person, PersonDto existingPerson) {
 		if (person != null && existingPerson != null) {
-			boolean isInJurisdiction = personService.inJurisdictionOrOwned(person);
+			boolean isInJurisdiction = service.inJurisdictionOrOwned(person);
 			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 			pseudonymizer.restorePseudonymizedValues(PersonDto.class, source, existingPerson, isInJurisdiction);
 			pseudonymizer.restorePseudonymizedValues(LocationDto.class, source.getAddress(), existingPerson.getAddress(), isInJurisdiction);
@@ -1584,7 +1586,7 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 	@Override
 	public Person fillOrBuildEntity(@NotNull PersonDto source, Person target, boolean checkChangeDate) {
 
-		target = DtoHelper.fillOrBuildEntity(source, target, personService::createPerson, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, service::createPerson, checkChangeDate);
 
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());
@@ -1770,12 +1772,19 @@ public class PersonFacadeEjb extends AbstractBaseEjb<Person, PersonDto, PersonIn
 
 		Person person = em.createQuery(cq).getSingleResult();
 
-		return convertToDto(person, Pseudonymizer.getDefault(userService::hasRight), personService.inJurisdictionOrOwned(person));
+		return convertToDto(person, Pseudonymizer.getDefault(userService::hasRight), service.inJurisdictionOrOwned(person));
 	}
 
 	@LocalBean
 	@Stateless
 	public static class PersonFacadeEjbLocal extends PersonFacadeEjb {
 
+		public PersonFacadeEjbLocal() {
+		}
+
+		@Inject
+		protected PersonFacadeEjbLocal(PersonService service, UserService userService) {
+			super(service, userService);
+		}
 	}
 }
