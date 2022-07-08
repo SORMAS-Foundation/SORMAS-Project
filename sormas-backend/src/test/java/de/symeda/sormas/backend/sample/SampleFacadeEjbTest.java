@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.sample;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
@@ -25,7 +26,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.text.SimpleDateFormat;
@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.common.DeletionReason;
 import org.hamcrest.MatcherAssert;
@@ -126,6 +127,13 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(PathogenTestType.CQ_VALUE_DETECTION, sampleIndexDtos.get(1).getTypeOfLastTest());
 		assertTrue(sampleIndexDtos.get(1).getLastTestCqValue().equals(1.5F));
+
+		// Referenced user has to find his samples
+		loginWith(user);
+		List<SampleIndexDto> result = getSampleFacade().getIndexList(new SampleCriteria(), 0, 100, null);
+		assertThat(
+			result.stream().map(e -> e.getUuid()).collect(Collectors.toList()),
+			containsInAnyOrder(sample.getUuid(), referredSample.getUuid()));
 	}
 
 	@Test
