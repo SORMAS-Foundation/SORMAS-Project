@@ -189,7 +189,7 @@ public class EventParticipantJoins extends QueryJoins<EventParticipant> {
 	}
 
 	public EventJoins getEventJoins() {
-		return getOrCreate(eventJoins, () -> new EventJoins(getEvent()), this::setEventJoins);
+		return getOrCreate(eventJoins, () -> new EventJoins(getRoot(), getEvent()), this::setEventJoins);
 	}
 
 	private void setEventJoins(EventJoins eventJoins) {
