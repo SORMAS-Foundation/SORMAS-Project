@@ -183,7 +183,7 @@ public class ImmunizationFacadeEjb
 		if (dto == null) {
 			return null;
 		}
-		return new ImmunizationReferenceDto(dto.getUuid(), dto.getCaption(), dto.getExternalId());
+		return new ImmunizationReferenceDto(dto.getUuid(), dto.buildCaption(), dto.getExternalId());
 	}
 
 	public ImmunizationDto toDto(Immunization entity) {

@@ -97,7 +97,9 @@ public class LocationDto extends PseudonymizableDto {
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_FRANCE })
 	private String details;
 	@PersonalData
 	@SensitiveData
@@ -366,7 +368,7 @@ public class LocationDto extends PseudonymizableDto {
 	}
 
 	@Override
-	public String getCaption() {
+	public String buildCaption() {
 		return LocationReferenceDto.buildCaption(
 			region != null ? region.getCaption() : null,
 			district != null ? district.getCaption() : null,

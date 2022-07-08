@@ -1111,18 +1111,26 @@ public class SymptomsForm extends AbstractEditForm<SymptomsDto> {
 			}
 			for (Object symptomId : lesionsFieldIds) {
 				Field<Object> symptom = (Field<Object>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && (Set.class.isAssignableFrom(symptom.getValue().getClass()) && ((Set) symptom.getValue()).size() == 0)) {
-					Set<SymptomState> value = (Set<SymptomState>) symptom.getValue();
-					value.add(symptomState);
-					symptom.setValue(value);
+				if (symptom.isVisible()) {
+					if (symptom.isRequired() && symptom.getValue() == null) {
+						symptom.setValue(symptomState);
+					} else if (Set.class.isAssignableFrom(symptom.getValue().getClass()) && ((Set) symptom.getValue()).size() == 0) {
+						Set<SymptomState> value = (Set<SymptomState>) symptom.getValue();
+						value.add(symptomState);
+						symptom.setValue(value);
+					}
 				}
 			}
 			for (Object symptomId : monkeypoxImageFieldIds) {
 				Field<Object> symptom = (Field<Object>) getFieldGroup().getField(symptomId);
-				if (symptom.isVisible() && (Set.class.isAssignableFrom(symptom.getValue().getClass()) && ((Set) symptom.getValue()).size() == 0)) {
-					Set<SymptomState> value = (Set<SymptomState>) symptom.getValue();
-					value.add(symptomState);
-					symptom.setValue(value);
+				if (symptom.isVisible()) {
+					if (symptom.isRequired() && symptom.getValue() == null) {
+						symptom.setValue(symptomState);
+					} else if (Set.class.isAssignableFrom(symptom.getValue().getClass()) && ((Set) symptom.getValue()).size() == 0) {
+						Set<SymptomState> value = (Set<SymptomState>) symptom.getValue();
+						value.add(symptomState);
+						symptom.setValue(value);
+					}
 				}
 			}
 		}, ValoTheme.BUTTON_LINK);

@@ -574,16 +574,17 @@ Feature: Create events
     And I search for the last created person via Api by uuid in popup on Select Person window
     And I open the first found result in the popup of Select Person window
     And I save changes in participant window
-    And I confirm navigation popup
+#    navigation popup dissapeared
+#    And I confirm navigation popup
     And I navigate to EVENT PARTICIPANT from edit event page
-    And I confirm navigation popup
+#    And I confirm navigation popup
     Then I click on Apply filters button in event participant list
     Then I check if filtered participant for existing person appears in the event participants list
     When I click on the Persons button from navbar
     And I open the last created Person via API
     And I check that SEE EVENTS FOR THIS PERSON button appears on Edit Person page
 
-  @env_main @#8555
+  @env_main @#8555 @ignore
   Scenario: Add back a person to an event who was previously deleted as event participant
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -877,7 +878,7 @@ Feature: Create events
     Then I click on edit button for the last searched facility
     And I archive facility
 
-    @env_main @#8556
+    @env_main @#8556 @ignore
   Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of an Event Participant
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -1015,3 +1016,18 @@ Feature: Create events
     And I am accessing the event tab using the created event via api
     And I check if Reason for deletion is set to "Entity created without legal reason" on Edit Event Page
     And I check if Delete button on Edit Event Page is disabled
+
+    @issue=SORDEV-8055 @env_main
+    Scenario Outline: Allow users to select the used delimiter when importing files
+      Given I log in as a Admin User
+      And I click on the Events button from navbar
+      When I click on the Import button from Events directory
+      Then I check if default Value Separator is set to "Default (Comma)"
+      And I check is possible to set Value Separator to <option>
+
+      Examples:
+        | option          |
+        | Comma           |
+        | Semicolon       |
+        | Tab             |
+        | Default (Comma) |

@@ -69,7 +69,7 @@ public class SubcontinentDto extends InfrastructureDto {
 	}
 
 	@Override
-	public String getCaption() {
+	public String buildCaption() {
 		return getDefaultName();
 	}
 

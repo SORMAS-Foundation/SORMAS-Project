@@ -207,7 +207,7 @@ public class PointOfEntryDto extends InfrastructureDto {
 	}
 
 	@Override
-	public String getCaption() {
+	public String buildCaption() {
 		return InfrastructureHelper.buildPointOfEntryString(getUuid(), name);
 	}
 
