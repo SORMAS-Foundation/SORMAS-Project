@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -32,12 +33,13 @@ import de.symeda.sormas.backend.AbstractBeanTest;
  */
 public class UserRightsGenerator extends AbstractBeanTest {
 
+    @Ignore
 	@Test
 	public void generateUserRights() throws IOException {
-		File output = new File("../sormas-api/src/main/resources/doc/SORMAS_User_Rights.xlsx");
+		/*File output = new File("../sormas-api/src/main/resources/doc/SORMAS_User_Rights.xlsx");
 
 		String documentPath = getUserRightsFacade().generateUserRightsDocument();
 
-		Files.copy(Paths.get(documentPath), output.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		Files.copy(Paths.get(documentPath), output.toPath(), StandardCopyOption.REPLACE_EXISTING);*/
 	}
 }

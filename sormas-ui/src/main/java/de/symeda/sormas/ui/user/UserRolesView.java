@@ -2,12 +2,17 @@ package de.symeda.sormas.ui.user;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.Page;
+import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -20,6 +25,14 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.ExportEntityName;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 public class UserRolesView extends AbstractUserView {
 
@@ -33,7 +46,6 @@ public class UserRolesView extends AbstractUserView {
 	private UserRoleCriteria criteria;
 
 	private UserRoleGrid grid;
-	private Button btnExport;
 	private Button createButton;
 
 	private ComboBox userRightsFilter;
@@ -61,8 +73,26 @@ public class UserRolesView extends AbstractUserView {
 
 		addComponent(gridLayout);
 
-		btnExport = ButtonHelper.createIconButton(Captions.export, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
-		addHeaderComponent(btnExport);
+		//DELETE remained things after the old export 4882
+		Button exportUserRightsButton = ButtonHelper.createIconButton(Captions.exportUserRoles, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
+
+		new FileDownloader(new StreamResource(() -> new DownloadUtil.DelayedInputStream((out) -> {
+			try {
+				// String documentPath = FacadeProvider.getUserRightsFacade().generateUserRightsDocument();
+				String documentPath = FacadeProvider.getUserRoleFacade().generateUserRolesDocument();
+				IOUtils.copy(Files.newInputStream(new File(documentPath).toPath()), out);
+			} catch (IOException e) {
+				LoggerFactory.getLogger(DownloadUtil.class).error(e.getMessage(), e);
+				new Notification(
+					I18nProperties.getString(Strings.headingExportUserRightsFailed),
+					I18nProperties.getString(Strings.messageUserRightsExportFailed),
+					Notification.Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
+			}
+		}, (e) -> {
+		}), createFileNameWithCurrentDate(ExportEntityName.USER_ROLES, ".xlsx"))).extend(exportUserRightsButton);
+
+		addHeaderComponent(exportUserRightsButton);
 
 		createButton = ButtonHelper.createIconButton(
 			Captions.userRoleNewUserRole,
@@ -157,6 +187,7 @@ public class UserRolesView extends AbstractUserView {
 		enabledFilter.setValue(criteria.getEnabled() == null ? null : criteria.getEnabled() ? ENABLED_FILTER : DISABLED_FILTER);
 		userRightsFilter.setValue(criteria.getUserRight() == null ? null : criteria.getUserRight());
 
+		//TODO: check if it's necessary
 		// searchField.setValue(criteria.getFreeText());
 		applyingCriteria = false;
 	}

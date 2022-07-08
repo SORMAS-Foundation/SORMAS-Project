@@ -456,6 +456,26 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 			columnIndex++;
 		}
 
+		Cell uuidHeadlineCell = headerRow.createCell(columnIndex++);
+		uuidHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_uuid));
+		uuidHeadlineCell.setCellStyle(boldStyle);
+
+		Cell portHealthUserHeadlineCell = headerRow.createCell(columnIndex++);
+		portHealthUserHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_portHealthUser));
+		portHealthUserHeadlineCell.setCellStyle(boldStyle);
+
+		Cell hasAssociatedDistrictUserHeadlineCell = headerRow.createCell(columnIndex++);
+		hasAssociatedDistrictUserHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_hasAssociatedDistrictUser));
+		hasAssociatedDistrictUserHeadlineCell.setCellStyle(boldStyle);
+
+		Cell hasOptionalHealthFacilityHeadlineCell = headerRow.createCell(columnIndex++);
+		hasOptionalHealthFacilityHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_hasOptionalHealthFacility));
+		hasOptionalHealthFacilityHeadlineCell.setCellStyle(boldStyle);
+
+		Cell enabledHeadlineCell = headerRow.createCell(columnIndex++);
+		enabledHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole_enabled));
+		enabledHeadlineCell.setCellStyle(boldStyle);
+
 		//User roles rows
 		for (UserRoleDto userRole : userRoleRights.keySet()) {
 			Row row = sheet.createRow(rowCounter++);
@@ -486,6 +506,22 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 				}
 				columnIndex++;
 			}
+
+			// User role uuid
+			Cell uuidCell = row.createCell(columnIndex++);
+			uuidCell.setCellValue(userRole.getUuid());
+
+			Cell portHealthUserCell = row.createCell(columnIndex++);
+			portHealthUserCell.setCellValue(userRole.isPortHealthUser());
+
+			Cell hasAssociatedDistrictUserCell = row.createCell(columnIndex++);
+			hasAssociatedDistrictUserCell.setCellValue(userRole.hasAssociatedDistrictUser());
+
+			Cell hasOptionalHealthFacilityCell = row.createCell(columnIndex++);
+			hasOptionalHealthFacilityCell.setCellValue(userRole.hasOptionalHealthFacility());
+
+			Cell enabledCell = row.createCell(columnIndex++);
+			enabledCell.setCellValue(userRole.isEnabled());
 		}
 
 		XssfHelper.addAboutSheet(workbook);
