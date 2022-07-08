@@ -1192,7 +1192,10 @@ public class EventDirectorySteps implements En {
 
     When(
         "I click on the Export Event button",
-        () -> webDriverHelpers.clickOnWebElementBySelector(EVENT_EXPORT_BUTTON));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_EXPORT_BUTTON);
+          TimeUnit.SECONDS.sleep(2);
+        });
 
     When(
         "I click on the Basic Event Export button",
