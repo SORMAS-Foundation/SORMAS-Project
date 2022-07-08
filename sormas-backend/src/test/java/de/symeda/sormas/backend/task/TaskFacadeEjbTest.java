@@ -52,6 +52,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskCriteria;
@@ -379,6 +380,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	public void testFilterTasksByUserJurisdiction() {
 
 		RDCF rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
+		CommunityDto c2 = creator.createCommunity("Community 2", rdcf1.district);
 
 		// 1. Region level user without a task
 		UserDto survSup = creator
@@ -417,7 +419,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		UserDto commInf = creator.createUser(
 			rdcf1.region.getUuid(),
 			rdcf1.district.getUuid(),
-			rdcf1.community.getUuid(),
+			c2.getUuid(),
 			null,
 			"Comm",
 			"Inf",
@@ -440,17 +442,17 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator
 			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		user.setDistrict(null);
+		user.setCommunity(null);
+		user.setHealthFacility(null);
+		getUserFacade().saveUser(user);
 		UserDto userCaseOfficer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.CASE_OFFICER));
 		loginWith(user);
 
 		PersonDto person = creator.createPerson("case person", "ln");
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 
-		ContactDto contact = creator.createContact(
-			user.toReference(),
-			person.toReference(),
-			caze.getDisease(),
-			contactDto -> contactDto.setResultingCase(caze.toReference()));
+		ContactDto contact = creator.createContact(user.toReference(), person.toReference(), caze.getDisease());
 
 		creator.createTask(TaskContext.CONTACT, contact.toReference(), t -> {
 			t.setTaskStatus(TaskStatus.PENDING);
@@ -471,7 +473,6 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		tasks = getTaskFacade().getIndexList(null, 0, 100, null);
 		contactTasks = tasks.stream().filter(t -> t.getTaskContext().equals(TaskContext.CONTACT)).collect(Collectors.toList());
 		assertEquals(1, contactTasks.size());
-
 	}
 
 	@Test

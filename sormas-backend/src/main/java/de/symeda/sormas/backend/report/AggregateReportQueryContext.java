@@ -13,43 +13,27 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.api.report;
+package de.symeda.sormas.backend.report;
 
-import java.io.Serializable;
-import java.util.Objects;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
 
-import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.backend.common.QueryContext;
 
-public class DiseaseAgeGroup implements Serializable {
+public class AggregateReportQueryContext extends QueryContext<AggregateReport, AggregateReportJoins> {
 
-	private Disease disease;
-	private String ageGroup;
-
-	public DiseaseAgeGroup(Disease disease, String ageGroup) {
-		this.disease = disease;
-		this.ageGroup = ageGroup;
+	protected AggregateReportQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, AggregateReport> root) {
+		this(cb, query, new AggregateReportJoins(root));
 	}
 
-	public Disease getDisease() {
-		return disease;
-	}
-
-	public String getAgeGroup() {
-		return ageGroup;
+	public AggregateReportQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, AggregateReportJoins joins) {
+		super(cb, query, joins.getRoot(), joins);
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (o == null || getClass() != o.getClass())
-			return false;
-		DiseaseAgeGroup that = (DiseaseAgeGroup) o;
-		return Objects.equals(disease, that.disease) && Objects.equals(ageGroup, that.ageGroup);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(disease, ageGroup);
+	protected Expression<?> createExpression(String name) {
+		return null;
 	}
 }

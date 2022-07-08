@@ -58,7 +58,7 @@ public class ContinentDto extends InfrastructureDto {
 	}
 
 	@Override
-	public String getCaption() {
+	public String buildCaption() {
 		return getDefaultName();
 	}
 

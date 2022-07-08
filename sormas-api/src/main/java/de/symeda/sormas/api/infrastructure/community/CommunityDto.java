@@ -131,7 +131,7 @@ public class CommunityDto extends InfrastructureDto {
 	}
 
 	@Override
-	public String getCaption() {
+	public String buildCaption() {
 		return getName();
 	}
 

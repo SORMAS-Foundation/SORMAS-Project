@@ -349,7 +349,10 @@ public class FacilityFacadeEjb
 			return null;
 		}
 
-		return new FacilityReferenceDto(entity.getUuid(), FacilityHelper.buildFacilityString(entity.getUuid(), entity.getName()), entity.getExternalID());
+		return new FacilityReferenceDto(
+			entity.getUuid(),
+			FacilityHelper.buildFacilityString(entity.getUuid(), entity.getName()),
+			entity.getExternalID());
 	}
 
 	@Override
@@ -471,7 +474,7 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
-	public List<FacilityExportDto> getExportList(FacilityCriteria facilityCriteria, Integer first, Integer max) {
+	public List<FacilityExportDto> getExportList(FacilityCriteria facilityCriteria, Collection<String> selectedRows, Integer first, Integer max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<FacilityExportDto> cq = cb.createQuery(FacilityExportDto.class);
 		Root<Facility> facility = cq.from(Facility.class);
@@ -508,6 +511,8 @@ public class FacilityFacadeEjb
 			Predicate criteriaFilter = service.buildCriteriaFilter(facilityCriteria, cb, facility);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
+
+		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, facility.get(Facility.UUID));
 
 		cq.where(filter);
 		cq.orderBy(
