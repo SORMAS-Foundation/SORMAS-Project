@@ -13,40 +13,25 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 package org.sormas.e2etests.helpers.api.demis;
 
-import static io.restassured.config.SSLConfig.sslConfig;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.qameta.allure.restassured.AllureRestAssured;
-import io.restassured.RestAssured;
-import io.restassured.config.SSLConfig;
-import io.restassured.filter.Filter;
-import io.restassured.filter.log.RequestLoggingFilter;
-import io.restassured.filter.log.ResponseLoggingFilter;
-import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import java.io.FileInputStream;
 import java.security.KeyStore;
-import java.security.SecureRandom;
 import java.security.cert.CertificateException;
-import java.security.cert.PKIXParameters;
-import java.security.cert.TrustAnchor;
-import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.net.ssl.*;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.RestAssuredClient;
 
+@Slf4j
 public class DemisHelper {
 
   private final RestAssuredClient restAssuredClient;
@@ -68,130 +53,40 @@ public class DemisHelper {
   }
 
   @SneakyThrows
-  private RequestSpecification request() {
-    RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-    String baseDemis = "https://10.210.11.214:443";
-    final String restEndpoint = "/auth/realms/LAB/protocol/openid-connect/token";
-    // RestAssured.baseURI = runningConfiguration.getEnvironmentUrlForMarket(locale) + restEndpoint;
-    RestAssured.baseURI = baseDemis + restEndpoint;
-    Filter filters[];
-    if (logRestAssuredInfo) {
-      filters =
-          new Filter[] {
-            new RequestLoggingFilter(), new ResponseLoggingFilter(), new AllureRestAssured()
-          };
-    } else {
-      filters = new Filter[] {new AllureRestAssured()};
-    }
-
-    KeyStore keyStore = KeyStore.getInstance("PKCS12");
-    keyStore.load(
-        new FileInputStream(
-            "C:\\Users\\Razvan\\Downloads\\demis\\DEMIS-Adapter-2.0.1\\config\\DEMIS-test-lab999_CSM026304641.p12"),
-        "W7JDGJOVJ7".toCharArray());
-
-    org.apache.http.conn.ssl.SSLSocketFactory clientAuthFactory =
-        new org.apache.http.conn.ssl.SSLSocketFactory(keyStore, "W7JDGJOVJ7");
-
-    // set the config in rest assured
-    SSLConfig config =
-        new SSLConfig().with().sslSocketFactory(clientAuthFactory).and().allowAllHostnames();
-
-    requestSpecification =
-        RestAssured.given()
-            .config(RestAssured.config().sslConfig(config))
-            .relaxedHTTPSValidation()
-            //            .config(
-            //                RestAssured.config()
-            //                    .sslConfig(
-            //                        new SSLConfig()
-            //                            .trustStore(
-            //                                new File(
-            //
-            // "C:\\Users\\Razvan\\Downloads\\demis\\DEMIS-Adapter-2.0.1\\config\\DEMIS-test-lab999_CSM026304641.p12"),
-            //                                "W7JDGJOVJ7")
-            //                            .allowAllHostnames()))
-            //            .relaxedHTTPSValidation()
-
-            //            .trustStore(
-            //
-            // "C:\\Users\\Razvan\\Downloads\\demis\\DEMIS-Adapter-2.0.1\\config\\DEMIS-test-lab999_CSM026304641.p12",
-            //                "W7JDGJOVJ7")
-            .contentType("application/x-www-form-urlencoded; charset=utf-8")
-            .formParam("client_secret", "secret_client_secret")
-            .formParam("username", "test-lab999")
-            .formParam("grant_type", "password");
-
-    return requestSpecification
-        //        .config(
-        //            RestAssured.config()
-        //                .encoderConfig(
-        //                    EncoderConfig.encoderConfig()
-        //                        .appendDefaultContentCharsetToContentTypeIfUndefined(false)))
-        .contentType(ContentType.JSON)
-        .accept(ContentType.JSON)
-        .filters(Arrays.asList(filters).get(0));
-  }
-
-  private List<X509Certificate> getCertificatesFromTrustStore() throws Exception {
-    KeyStore truststore = KeyStore.getInstance("JKS");
-    truststore.load(
-        new FileInputStream(
-            "C:\\Users\\Razvan\\Downloads\\demis\\DEMIS-Adapter-2.0.1\\config\\DEMIS-test-lab999_CSM026304641.p12"),
-        "mypassword".toCharArray());
-
-    PKIXParameters params = new PKIXParameters(truststore);
-    Set<TrustAnchor> trustAnchors = params.getTrustAnchors();
-
-    List<X509Certificate> certificates =
-        trustAnchors.stream().map(TrustAnchor::getTrustedCert).collect(Collectors.toList());
-    return certificates;
-  }
-
-  @SneakyThrows
   public void okHttp() {
-    // generated from postman
-    OkHttpClient.Builder builder = new OkHttpClient.Builder();
-    builder = configureToIgnoreCertificate(builder);
 
-    OkHttpClient client = builder.build();
+    OkHttpClient.Builder newBuilder = new OkHttpClient.Builder();
+    newBuilder = configureToIgnoreCertificate(newBuilder);
 
-    // OkHttpClient client = new OkHttpClient().newBuilder().build();
+    OkHttpClient client = newBuilder.build();
 
-    MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-    RequestBody body =
-        RequestBody.create(
-            mediaType,
-            "client_id=demis-adapter&client_secret=secret_client_secret&username=test-lab999&grant_type=password");
     Request request =
         new Request.Builder()
             .url("https://10.210.11.214:443/auth/realms/LAB/protocol/openid-connect/token")
-            .method("POST", body)
             .addHeader("Content-Type", "application/x-www-form-urlencoded")
+            .post(
+                RequestBody.create(
+                    MediaType.parse("application/x-www-form-urlencoded"),
+                    "client_id=demis-adapter&client_secret=secret_client_secret&username=test-lab999&grant_type=password"))
             .build();
     Response response = client.newCall(request).execute();
-  }
 
-  @SneakyThrows
-  public void loginRequest() {
-    newRestassured();
-    okHttp();
-    // request().post().then().extract().response().getBody().asString();
-
-    // restAssuredClient.sendRequest();
-    //    final ByteArrayOutputStream out = new ByteArrayOutputStream();
-    //    List<Task> listOfContacts = List.of(task);
-    //    objectMapper.writeValue(out, listOfContacts);
-    //    restAssuredClient.sendRequest(
-    //        Request.builder()
-    //            .method(Method.POST)
-    //            .path(TASKS_PATH + "push")
-    //            .body(out.toString())
-    //            .build());
+    System.out.println("Response body: " + response.body().string());
   }
 
   private static OkHttpClient.Builder configureToIgnoreCertificate(OkHttpClient.Builder builder) {
     try {
+
+      KeyStore keyStore = KeyStore.getInstance("PKCS12");
+      FileInputStream clientCertificateContent =
+          new FileInputStream(
+              "C:\\Users\\Razvan\\Downloads\\demis\\DEMIS-Adapter-2.0.1\\config\\DEMIS-test-lab999_CSM026304641.p12");
+      keyStore.load(clientCertificateContent, "W7JDGJOVJ7".toCharArray());
+
+      KeyManagerFactory keyManagerFactory =
+          KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+      keyManagerFactory.init(keyStore, "W7JDGJOVJ7".toCharArray());
+
       // Create a trust manager that does not validate certificate chains
       final TrustManager[] trustAllCerts =
           new TrustManager[] {
@@ -215,7 +110,8 @@ public class DemisHelper {
 
       // Install the all-trusting trust manager
       final SSLContext sslContext = SSLContext.getInstance("SSL");
-      sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+      sslContext.init(
+          keyManagerFactory.getKeyManagers(), trustAllCerts, new java.security.SecureRandom());
       // Create an ssl socket factory with our all-trusting manager
       final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
@@ -228,48 +124,13 @@ public class DemisHelper {
             }
           });
     } catch (Exception e) {
+      log.error("Certificate problem: " + e);
     }
     return builder;
   }
 
   @SneakyThrows
-  public void newRestassured() {
-
-    String clientPassword = "W7JDGJOVJ7";
-    String clientCertificatePath =
-        "C:\\Users\\Razvan\\Downloads\\demis\\DEMIS-Adapter-2.0.1\\config\\DEMIS-test-lab999_CSM026304641.p12";
-    String trustStorePath =
-        "C:\\Program Files\\java\\zulu11.54.23-ca-jdk11.0.14-win_x64\\lib\\security\\cacerts";
-    String trustStorePassword = "check"; // default trust store password
-
-    KeyStore clientStore = KeyStore.getInstance("PKCS12");
-    clientStore.load(new FileInputStream(clientCertificatePath), clientPassword.toCharArray());
-
-    KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-    kmf.init(clientStore, clientPassword.toCharArray());
-    KeyManager[] kms = kmf.getKeyManagers();
-
-    KeyStore trustStore = KeyStore.getInstance("JKS");
-    trustStore.load(new FileInputStream(trustStorePath), trustStorePassword.toCharArray());
-
-    TrustManagerFactory tmf =
-        TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-    tmf.init(trustStore);
-    TrustManager[] tms = tmf.getTrustManagers();
-
-    SSLContext sslContext = SSLContext.getInstance("TLS");
-    sslContext.init(kms, tms, new SecureRandom());
-
-    org.apache.http.conn.ssl.SSLSocketFactory lSchemeSocketFactory =
-        new org.apache.http.conn.ssl.SSLSocketFactory(clientStore, clientPassword, trustStore);
-
-    RestAssured.config =
-        RestAssured.config()
-            .sslConfig(
-                sslConfig()
-                    .with()
-                    .sslSocketFactory(lSchemeSocketFactory)
-                    .and()
-                    .allowAllHostnames());
+  public void loginRequest() {
+    okHttp();
   }
 }
