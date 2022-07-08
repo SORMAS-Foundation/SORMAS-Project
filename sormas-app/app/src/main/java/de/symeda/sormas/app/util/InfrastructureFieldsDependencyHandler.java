@@ -383,19 +383,21 @@ public class InfrastructureFieldsDependencyHandler {
 				TypeOfPlace selectedType = (TypeOfPlace) field.getValue();
 				if (selectedType == null) {
 					typeGroupField.setSpinnerData(null);
+					facilityDetailsField.setValue(null);
 					facilityDetailsField.setVisibility(GONE);
 				} else if (TypeOfPlace.HOME.equals(selectedType)) {
 					typeGroupField.setSpinnerData(null);
 					typeField.setSpinnerData(null);
 					Facility noneFacility = DatabaseHelper.getFacilityDao().queryUuid(FacilityDto.NONE_FACILITY_UUID);
-					facilityField.setSpinnerData(DataUtils.toItems(Arrays.asList(noneFacility)), noneFacility);
-					facilityDetailsField.setValue(null);
+					facilityField.setSpinnerData(DataUtils.toItems(Arrays.asList(noneFacility)));
+					facilityField.setValue(noneFacility);
 					if (caze != null) {
 						caze.setHealthFacility(noneFacility);
 						caze.setFacilityType(null);
 					}
 				} else if (TypeOfPlace.FACILITY.equals(selectedType)) {
 					typeGroupField.setSpinnerData(typeGroups);
+					facilityDetailsField.setValue(null);
 					facilityDetailsField.setVisibility(GONE);
 				}
 			});

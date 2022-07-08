@@ -45,17 +45,7 @@ Changing these entries overrides that default value. Unlike with features, disea
 
 **Important: If you're using the mobile app, you also need to update the `changedate` to the current date and time whenever you change a disease configuration!** Otherwise the mobile applications will not be notified about the change.
 
-It is possible to adjust the following properties that define how the diseases are handled:
-
-* **`active`:** Whether this disease is used in this SORMAS instance. The concrete type of usage is specified by the other properties.
-* **`primaryDisease`:** Primary diseases are enabled for case surveillance while non-primary diseases can only be used for pathogen testing.
-* **`caseBased`:** Case-based diseases can be used to create cases while non-case-based diseases can be used for aggregate reporting.
-* **`followUpEnabled`:** Whether follow-up is enabled for this disease, i.e. the follow-up status can be managed and visits can be created.
-* **`followUpDuration`:** The minimum duration of follow-up for contacts of this disease.
-* **`caseFollowUpDuration`:** The minimum duration of follow-up for cases of this disease.
-* **`eventParticipantFollowUpDuration`:** The minimum duration of follow-up for event participants of this disease. Please note that event participant follow-up is not yet implemented.
-* **`extendedClassification`:** Whether this disease uses an extended case classification system that allows users to specify whether a case has been clinically, epidemiologically or laboratory-diagnostically confirmed.
-* **`extendedClassificationMulti`:** Whether the three confirmation properties used for extended classification can be specified individually, i.e. users can enter multiple sources of confirmation.
+[This Wiki page](https://github.com/hzi-braunschweig/SORMAS-Project/wiki/Disease-Configuration-Options) contains a list and explanation of all currently configurable disease properties.
 
 ## Deletion Configuration
 SORMAS can be set up to automatically delete entities after a specific time period. There are seven core entities for which automatic deletion can be enabled and configured: *Case, Contact, Event, Event Participant, Immunization, Travel Entry, and Campaign.* This configuration is currently only possible directly in the database via the `deleteconfiguration` table, which already contains rows for each of these entities. The table consists of the following columns:

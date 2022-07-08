@@ -2,6 +2,7 @@ package de.symeda.sormas.backend;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.fields;
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -57,6 +58,7 @@ import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb;
 import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
+import de.symeda.sormas.backend.util.RightsAllowed;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 
@@ -69,6 +71,17 @@ public class ArchitectureTest {
 	@ArchTest
 	public static final ArchRule dontUseFacadeProviderRule =
 		ArchRuleDefinition.theClass(FacadeProvider.class).should().onlyBeAccessed().byClassesThat().belongToAnyOf(FacadeProvider.class);
+
+	/**
+	 * @RolesAllowed annotation was replaced by @RightsAllowed for performance reasons
+	 */
+	@ArchTest
+	public static final ArchRule dontUseRolesAllowedClassAnnotationRule =
+		classes().should().notBeAnnotatedWith(RolesAllowed.class);
+
+	@ArchTest
+	public static final ArchRule dontUseRolesAllowedMethodAnnotationRule =
+		methods().should().notBeAnnotatedWith(RolesAllowed.class);
 
 	private static final DescribedPredicate<JavaClass> classesInDataDictionary =
 		new DescribedPredicate<JavaClass>("are used as data dictionary entity") {
@@ -269,19 +282,19 @@ public class ArchitectureTest {
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, AuthMode authMode, @NotNull List<String> exceptedMethods, JavaClasses classes) {
 		if (authMode != AuthMode.METHODS_ONLY) {
-			ArchRuleDefinition.theClass(facadeEjbClass).should().beAnnotatedWith(RolesAllowed.class).check(classes);
+			ArchRuleDefinition.theClass(facadeEjbClass).should().beAnnotatedWith(RightsAllowed.class).check(classes);
 		}
 
 		GivenMethodsConjunction methods = ArchRuleDefinition.methods().that().areDeclaredIn(facadeEjbClass).and().arePublic();
 		String exceptedMethodsMatcher = "^(" + String.join("|", exceptedMethods) + ")$";
 
 		if (authMode == AuthMode.CLASS_ONLY) {
-			methods.and().haveNameNotMatching(exceptedMethodsMatcher).should().notBeAnnotatedWith(RolesAllowed.class).check(classes);
-			methods.and().haveNameMatching(exceptedMethodsMatcher).should().beAnnotatedWith(RolesAllowed.class).check(classes);
+			methods.and().haveNameNotMatching(exceptedMethodsMatcher).should().notBeAnnotatedWith(RightsAllowed.class).check(classes);
+			methods.and().haveNameMatching(exceptedMethodsMatcher).should().beAnnotatedWith(RightsAllowed.class).check(classes);
 		} else {
 			// TODO - add exceptedMethods handling when needed
 
-			MethodsShouldConjunction methodChecks = methods.should().beAnnotatedWith(RolesAllowed.class).orShould().beAnnotatedWith(PermitAll.class);
+			MethodsShouldConjunction methodChecks = methods.should().beAnnotatedWith(RightsAllowed.class).orShould().beAnnotatedWith(PermitAll.class);
 
 			if (authMode == AuthMode.CLASS_AND_METHODS) {
 				methodChecks = methodChecks.orShould()

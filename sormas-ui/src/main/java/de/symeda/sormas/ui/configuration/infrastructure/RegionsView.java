@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import java.util.Collections;
+import java.util.Set;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
@@ -38,6 +41,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.infrastructure.region.RegionCriteria;
+import de.symeda.sormas.api.infrastructure.region.RegionIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -122,7 +126,8 @@ public class RegionsView extends AbstractConfigurationView {
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.REGIONS, RegionsGrid.EDIT_BTN_ID);
+			StreamResource streamResource = GridExportStreamResource
+				.createStreamResourceWithSelectedItems(grid, this::getSelectedRows, ExportEntityName.REGIONS, RegionsGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
@@ -167,6 +172,11 @@ public class RegionsView extends AbstractConfigurationView {
 		}
 
 		addComponent(gridLayout);
+	}
+
+	private Set<RegionIndexDto> getSelectedRows() {
+		RegionsGrid facilitiesGrid = this.grid;
+		return this.viewConfiguration.isInEagerMode() ? facilitiesGrid.asMultiSelect().getSelectedItems() : Collections.emptySet();
 	}
 
 	private HorizontalLayout createFilterBar() {
@@ -219,22 +229,30 @@ public class RegionsView extends AbstractConfigurationView {
 				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchiveInfrastructure), VaadinIcons.ARCHIVE, selectedItem -> {
-							ControllerProvider.getInfrastructureController()
-								.archiveOrDearchiveAllSelectedItems(
-									true,
-									grid.asMultiSelect().getSelectedItems(),
-									InfrastructureType.REGION,
-									() -> navigateTo(criteria));
-						}, EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchiveInfrastructure), VaadinIcons.ARCHIVE, selectedItem -> {
-							ControllerProvider.getInfrastructureController()
-								.archiveOrDearchiveAllSelectedItems(
-									false,
-									grid.asMultiSelect().getSelectedItems(),
-									InfrastructureType.REGION,
-									() -> navigateTo(criteria));
-						}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.actionArchiveInfrastructure),
+							VaadinIcons.ARCHIVE,
+							selectedItem -> {
+								ControllerProvider.getInfrastructureController()
+									.archiveOrDearchiveAllSelectedItems(
+										true,
+										grid.asMultiSelect().getSelectedItems(),
+										InfrastructureType.REGION,
+										() -> navigateTo(criteria));
+							},
+							EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.actionDearchiveInfrastructure),
+							VaadinIcons.ARCHIVE,
+							selectedItem -> {
+								ControllerProvider.getInfrastructureController()
+									.archiveOrDearchiveAllSelectedItems(
+										false,
+										grid.asMultiSelect().getSelectedItems(),
+										InfrastructureType.REGION,
+										() -> navigateTo(criteria));
+							},
+							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
 					bulkOperationsDropdown.setVisible(isBulkOperationsDropdownVisible());
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
@@ -281,7 +299,7 @@ public class RegionsView extends AbstractConfigurationView {
 		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
 
 		return viewConfiguration.isInEagerMode()
-				&& (EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())
+			&& (EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())
 				|| (infrastructureDataEditable && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 	}
 }

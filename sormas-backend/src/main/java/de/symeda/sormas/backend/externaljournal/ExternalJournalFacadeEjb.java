@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.externaljournal;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
@@ -13,9 +12,10 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "ExternalJournalFacade")
-@RolesAllowed(UserRight._MANAGE_EXTERNAL_SYMPTOM_JOURNAL)
+@RightsAllowed(UserRight._MANAGE_EXTERNAL_SYMPTOM_JOURNAL)
 public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
 
 	@EJB
@@ -67,7 +67,7 @@ public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._MANAGE_EXTERNAL_SYMPTOM_JOURNAL,
 		UserRight._PERSON_EDIT })
 	public ExternalJournalSyncResponseDto notifyExternalJournal(PersonDto personDto) {

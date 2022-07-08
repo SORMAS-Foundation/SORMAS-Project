@@ -1,3 +1,4 @@
+#!/bin/bash
 #*******************************************************************************
 # SORMAS® - Surveillance Outbreak Response Management & Analysis System
 # Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
@@ -16,7 +17,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #*******************************************************************************
 
-#!/bin/bash
+
 
 rm -f keycloak_setup.log
 exec > >(tee -ia keycloak_setup.log)
@@ -98,7 +99,6 @@ fi
 ASADMIN="${PAYARA_HOME}/bin/asadmin --port ${PORT_ADMIN}"
 
 # Keycloak settings
-KEYCLOAK_VERSION=16.1.0
 KEYCLOAK_PORT=7080
 
 DB_HOST=localhost
@@ -174,17 +174,17 @@ echo "Updating Payara with Keycloak configurations"
 ${ASADMIN} set-config-property --propertyName=payara.security.openid.clientId --propertyValue=sormas-ui --source=domain
 ${ASADMIN} set-config-property --propertyName=payara.security.openid.clientSecret --propertyValue=${KEYCLOAK_SORMAS_UI_SECRET} --source=domain
 ${ASADMIN} set-config-property --propertyName=payara.security.openid.scope --propertyValue=openid --source=domain
-${ASADMIN} set-config-property --propertyName=payara.security.openid.providerURI --propertyValue=http://localhost:${KEYCLOAK_PORT}/keycloak/auth/realms/SORMAS --source=domain
+${ASADMIN} set-config-property --propertyName=payara.security.openid.providerURI --propertyValue=http://localhost:${KEYCLOAK_PORT}/keycloak/realms/SORMAS --source=domain
 ${ASADMIN} set-config-property --propertyName=payara.security.openid.provider.notify.logout --propertyValue=true --source=domain
 ${ASADMIN} set-config-property --propertyName=payara.security.openid.logout.redirectURI --propertyValue=http://${SORMAS_SERVER_URL}/sormas-ui
-${ASADMIN} set-config-property --propertyName=sormas.rest.security.oidc.json --propertyValue="{\"realm\":\"SORMAS\",\"auth-server-url\":\"http://localhost:${KEYCLOAK_PORT}/keycloak/auth\",\"ssl-required\":\"external\",\"resource\":\"sormas-rest\",\"credentials\":{\"secret\":\"${KEYCLOAK_SORMAS_REST_SECRET}\"},\"confidential-port\":0,\"principal-attribute\":\"preferred_username\",\"enable-basic-auth\":true}" --source=domain
-${ASADMIN} set-config-property --propertyName=sormas.backend.security.oidc.json --propertyValue="{\"realm\":\"SORMAS\",\"auth-server-url\":\"http://localhost:${KEYCLOAK_PORT}/keycloak/auth/\",\"ssl-required\":\"external\",\"resource\":\"sormas-backend\",\"credentials\":{\"secret\":\"${KEYCLOAK_SORMAS_BACKEND_SECRET}\"},\"confidential-port\":0}" --source=domain
+${ASADMIN} set-config-property --propertyName=sormas.rest.security.oidc.json --propertyValue="{\"realm\":\"SORMAS\",\"auth-server-url\":\"http://localhost:${KEYCLOAK_PORT}/keycloak\",\"ssl-required\":\"external\",\"resource\":\"sormas-rest\",\"credentials\":{\"secret\":\"${KEYCLOAK_SORMAS_REST_SECRET}\"},\"confidential-port\":0,\"principal-attribute\":\"preferred_username\",\"enable-basic-auth\":true}" --source=domain
+${ASADMIN} set-config-property --propertyName=sormas.backend.security.oidc.json --propertyValue="{\"realm\":\"SORMAS\",\"auth-server-url\":\"http://localhost:${KEYCLOAK_PORT}/keycloak/\",\"ssl-required\":\"external\",\"resource\":\"sormas-backend\",\"credentials\":{\"secret\":\"${KEYCLOAK_SORMAS_BACKEND_SECRET}\"},\"confidential-port\":0}" --source=domain
 
 echo "Setup is done and Keycloak is starting up (in case of any error you can go again trough the keycloak_setup.sh script)"
 echo "You can start Keycloak by using the following command"
 echo "  docker run ${KEYCLOAK_DOCKER_CMD}"
 echo "Please make sure to perform the following steps:"
-echo "  - Update email settings in Keycloak Admin http://localhost:${KEYCLOAK_PORT}/keycloak/auth"
+echo "  - Update email settings in Keycloak Admin http://localhost:${KEYCLOAK_PORT}/keycloak"
 echo "  - Make sure the clients rootUrl are setup correctly"
 echo "  - Create an admin user in Keycloak which can be used to Sync other users"
 echo "  - In order to user Keycloak with Payara set 'authentication.provider=KEYCLOAK' property in sormas.properties"

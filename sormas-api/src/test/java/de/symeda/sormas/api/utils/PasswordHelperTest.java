@@ -1,4 +1,4 @@
-/*
+/**
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
@@ -17,6 +17,8 @@
  */
 package de.symeda.sormas.api.utils;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -49,5 +51,23 @@ public class PasswordHelperTest {
 				assertFalse("Unerlaubtes Zeichen " + FORBIDDEN[j] + " enthalten: " + password, password.contains(FORBIDDEN[j]));
 			}
 		}
+	}
+
+	@Test
+	public void testEncodePasswordGeneratesConsistentHash() {
+
+		String password;
+		String seed;
+		String passwordHashExpected;
+
+		password = "QTj]qF90U~-CMLa/";
+
+		seed = "xPQCk3J5psSOkLcp";
+		passwordHashExpected = "35472f3b451e136556597ec82c16236c85a77dd1718173f2bedd1b1ab3737277";
+		assertThat(PasswordHelper.encodePassword(password, seed), equalTo(passwordHashExpected));
+
+		seed = "eqQ8HaXBkmjqqBgt";
+		passwordHashExpected = "0daf0f39b9f32cc81462f8c4a9f12ac96552474769768aa6811f672692945d98";
+		assertThat(PasswordHelper.encodePassword(password, seed), equalTo(passwordHashExpected));
 	}
 }

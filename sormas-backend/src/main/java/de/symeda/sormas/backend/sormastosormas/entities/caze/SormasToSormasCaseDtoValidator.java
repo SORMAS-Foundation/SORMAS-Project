@@ -1,5 +1,11 @@
 package de.symeda.sormas.backend.sormastosormas.entities.caze;
 
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
+
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.hospitalization.HospitalizationDto;
@@ -10,12 +16,6 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.data.validation.ValidationDirection;
-
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.inject.Inject;
-
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
 
 @Stateless
 @LocalBean

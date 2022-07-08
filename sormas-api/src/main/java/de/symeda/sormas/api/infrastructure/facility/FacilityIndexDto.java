@@ -23,6 +23,7 @@ import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import org.apache.commons.lang3.StringUtils;
 
 public class FacilityIndexDto implements Serializable, HasUuid {
 
@@ -164,12 +165,17 @@ public class FacilityIndexDto implements Serializable, HasUuid {
 		this.externalID = externalID;
 	}
 
-	@Override
-	public String toString() {
+	public String getCaption() {
 		return FacilityHelper.buildFacilityString(getUuid(), name);
 	}
 
+	@Override
+	public String toString() {
+		return I18N_PREFIX + StringUtils.SPACE + getUuid();
+	}
+
+
 	public FacilityReferenceDto toReference() {
-		return new FacilityReferenceDto(getUuid(), toString(), getExternalID());
+		return new FacilityReferenceDto(getUuid(), getCaption(), getExternalID());
 	}
 }

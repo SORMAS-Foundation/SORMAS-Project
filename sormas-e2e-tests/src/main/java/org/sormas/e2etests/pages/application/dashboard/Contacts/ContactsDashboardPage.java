@@ -24,8 +24,23 @@ public class ContactsDashboardPage {
 
   public static final By CONTACTS_DASHBOARD_NAME =
       By.xpath("//div[contains(text(),'Contacts Dashboard')]");
+  public static final By CONTACTS_DASHBOARD_NAME_DE =
+      By.xpath("//div[contains(text(),'Kontakt\u00FCbersicht')]");
   public static final By SURVEILLANCE_BUTTON =
       By.xpath("(//div[contains(@class,'v-select-optiongroup')]//span)[1]");
   public static final By CONTACTS_BUTTON =
       By.xpath("(//div[contains(@class,'v-select-optiongroup')]//span)[2]");
+
+  public static final By CONFIRMED_COUNTER_LABEL_ON_CONTACTS_DASHBOARD =
+      By.xpath("//div[contains(text(),'Confirmed contact')]/parent::div/parent::div");
+  public static final By CONFIRMED_COUNTER_ON_CONTACTS_DASHBOARD =
+      By.xpath("//div[contains(text(),'Confirmed contact')]/parent::div/parent::div/div[1]/div");
+  public static final By CONFIRMED_COUNTER_LABEL_ON_CONTACTS_DASHBOARD_DE =
+      By.xpath("//div[contains(text(),'Best\u00E4tigter Kontakt')]/parent::div/parent::div");
+  public static final By CONFIRMED_COUNTER_ON_CONTACTS_DASHBOARD_DE =
+      By.xpath(
+          "//div[contains(text(),'Best\u00E4tigter Kontakt')]/parent::div/parent::div/div[1]/div");
+  public static final By UNDER_FU_CHART_ON_CONTACTS_DASHBOARD =
+      By.cssSelector(
+          "svg > g.highcharts-legend > g > g > g.highcharts-legend-item.highcharts-column-series.highcharts-color-undefined.highcharts-series-0 > text > tspan");
 }

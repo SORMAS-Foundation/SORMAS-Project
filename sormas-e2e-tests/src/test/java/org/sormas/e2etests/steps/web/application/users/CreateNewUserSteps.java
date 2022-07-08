@@ -301,6 +301,53 @@ public class CreateNewUserSteps implements En {
           webDriverHelpers.scrollToElement(CreateNewUserPage.SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CreateNewUserPage.SAVE_BUTTON);
         });
+    When(
+        "I create new ([^\"]*) for test",
+        (String role) -> {
+          user = userService.buildGeneratedUserWithRole(role);
+          fillFirstName(user.getFirstName());
+          fillLastName(user.getLastName());
+          fillEmailAddress(user.getEmailAddress());
+          fillPhoneNumber(user.getPhoneNumber());
+          selectLanguage(user.getLanguage());
+          selectCountry(user.getCountry());
+          selectRegion(user.getRegion());
+          selectDistrict(user.getDistrict());
+          selectCommunity(user.getCommunity());
+          selectFacilityCategory(user.getFacilityCategory());
+          selectFacilityType(user.getFacilityType());
+          selectFacility(user.getFacility());
+          fillFacilityNameAndDescription(user.getFacilityNameAndDescription());
+          fillStreet(user.getStreet());
+          fillHouseNr(user.getHouseNumber());
+          fillAdditionalInformation(user.getAdditionalInformation());
+          fillPostalCode(user.getPostalCode());
+          fillCity(user.getCity());
+          selectAreaType(user.getAreaType());
+          fillGpsLatitude(user.getGpsLatitude());
+          fillGpsLongitude(user.getGpsLongitude());
+          fillGpsAccuracy(user.getGpsAccuracy());
+          selectActive(user.getActive());
+          fillUserName(user.getUserName());
+          selectUserRole(role);
+          userName = user.getUserName();
+          webDriverHelpers.scrollToElement(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          userPass = webDriverHelpers.getTextFromWebElement(PASSWORD_FIELD);
+          closeNewPasswordPopUp();
+        });
+
+    When(
+        "As a new created user I log in",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
+          webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, userName);
+          webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, userPass);
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 30);
+        });
   }
 
   private void fillFirstName(String firstName) {
@@ -329,6 +376,14 @@ public class CreateNewUserSteps implements En {
 
   private void selectRegion(String region) {
     webDriverHelpers.selectFromCombobox(REGION_COMBOBOX, region);
+  }
+
+  private void selectSurveillanceRegion(String surveillanceRegion) {
+    webDriverHelpers.selectFromCombobox(SURVEILLANCE_REGION, surveillanceRegion);
+  }
+
+  private void selectSurveillanceDistrict(String surveillanceDistrict) {
+    webDriverHelpers.selectFromCombobox(SURVEILLANCE_DISTRICT, surveillanceDistrict);
   }
 
   private void selectDistrict(String district) {

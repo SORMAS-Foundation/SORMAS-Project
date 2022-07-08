@@ -239,21 +239,20 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 	}
 
 	protected void mockS2Snetwork() throws SormasToSormasException {
-		Mockito.when(MockProducer.getSormasToSormasClient().get(anyString(), eq("/sormasToSormas/cert"), any()))
-			.thenAnswer(invocation -> {
-				if (invocation.getArgument(0, String.class).equals(DEFAULT_SERVER_ID)) {
-					mockDefaultServerAccess();
-				} else {
-					mockSecondServerAccess();
-				}
-				X509Certificate cert = getSormasToSormasEncryptionFacade().loadOwnCertificate();
-				if (invocation.getArgument(0, String.class).equals(DEFAULT_SERVER_ID)) {
-					mockSecondServerAccess();
-				} else {
-					mockDefaultServerAccess();
-				}
-				return cert.getEncoded();
-			});
+		Mockito.when(MockProducer.getSormasToSormasClient().get(anyString(), eq("/sormasToSormas/cert"), any())).thenAnswer(invocation -> {
+			if (invocation.getArgument(0, String.class).equals(DEFAULT_SERVER_ID)) {
+				mockDefaultServerAccess();
+			} else {
+				mockSecondServerAccess();
+			}
+			X509Certificate cert = getSormasToSormasEncryptionFacade().loadOwnCertificate();
+			if (invocation.getArgument(0, String.class).equals(DEFAULT_SERVER_ID)) {
+				mockSecondServerAccess();
+			} else {
+				mockDefaultServerAccess();
+			}
+			return cert.getEncoded();
+		});
 	}
 
 	protected void mockDefaultServerAccess() {

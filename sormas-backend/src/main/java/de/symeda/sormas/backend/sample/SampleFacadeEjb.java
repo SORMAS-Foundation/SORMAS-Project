@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -117,9 +116,10 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "SampleFacade")
-@RolesAllowed(UserRight._SAMPLE_VIEW)
+@RightsAllowed(UserRight._SAMPLE_VIEW)
 public class SampleFacadeEjb implements SampleFacade {
 
 	private static final int DELETED_BATCH_SIZE = 1000;
@@ -342,14 +342,14 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._SAMPLE_CREATE,
 		UserRight._SAMPLE_EDIT })
 	public SampleDto saveSample(@Valid SampleDto dto) {
 		return saveSample(dto, true, true, true);
 	}
 
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._SAMPLE_CREATE,
 		UserRight._SAMPLE_EDIT })
 	public SampleDto saveSample(@Valid SampleDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal) {
@@ -360,7 +360,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorSampleNotEditable));
 		}
 
-		validate(dto);
+		validate(dto, true);
 
 		SampleDto existingSampleDto = toDto(existingSample);
 
@@ -411,18 +411,22 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		return sampleService.findBy(criteria, userService.getCurrentUser(), AbstractDomainObject.CREATION_DATE, false)
 			.stream()
-			.collect(Collectors.toMap(s -> associatedObjectFn.apply(s).getUuid(), s -> s, (s1, s2) -> {
+			.collect(
+				Collectors.toMap(
+					s -> associatedObjectFn.apply(s).getUuid(),
+					s -> s,
+					(s1, s2) -> {
 
-				// keep the positive one
-				if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-					return s1;
-				} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-					return s2;
-				}
+						// keep the positive one
+						if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+							return s1;
+						} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+							return s2;
+						}
 
-				// ordered by creation date by default, so always keep the first one
-				return s1;
-			}))
+						// ordered by creation date by default, so always keep the first one
+						return s1;
+					}))
 			.values()
 			.stream()
 			.map(s -> convertToDto(s, pseudonymizer))
@@ -430,7 +434,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public void validate(SampleDto sample) throws ValidationRuntimeException {
+	public void validate(SampleDto sample, boolean checkAssociatedEntities) throws ValidationRuntimeException {
 
 		if (sample.getAssociatedCase() == null && sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCaseContactOrEventParticipant));
@@ -458,6 +462,29 @@ public class SampleFacadeEjb implements SampleFacade {
 		if (sample.getSamplePurpose() == SamplePurpose.EXTERNAL && sample.getLab() == null) {
 			throw new ValidationRuntimeException(
 				I18nProperties.getValidationError(Validations.required, I18nProperties.getPrefixCaption(SampleDto.I18N_PREFIX, SampleDto.LAB)));
+		}
+
+		if (checkAssociatedEntities) {
+			validateSampleAssociatedEntities(sample);
+		}
+
+	}
+
+	private void validateSampleAssociatedEntities(SampleDto sample) {
+		if (sample.getAssociatedCase() != null && !caseService.exists(sample.getAssociatedCase().getUuid())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noCaseWithUuid));
+		}
+		if (sample.getAssociatedContact() != null && !contactService.exists(sample.getAssociatedContact().getUuid())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noContactWithUuid));
+		}
+		if (sample.getAssociatedEventParticipant() != null && !eventParticipantService.exists(sample.getAssociatedEventParticipant().getUuid())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noEventParticipantWithUuid));
+		}
+		if (sample.getLab() != null && !facilityService.exists(sample.getLab().getUuid())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noLaboratoryWithUuid));
+		}
+		if (!userService.exists(sample.getReportingUser().getUuid())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noReportingUserWithUuid));
 		}
 	}
 
@@ -664,13 +691,13 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._SAMPLE_EXPORT)
+	@RightsAllowed(UserRight._SAMPLE_EXPORT)
 	public List<SampleExportDto> getExportList(SampleCriteria criteria, Collection<String> selectedRows, int first, int max) {
 		return getExportList(criteria, null, selectedRows, first, max);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._SAMPLE_EXPORT)
+	@RightsAllowed(UserRight._SAMPLE_EXPORT)
 	public List<SampleExportDto> getExportList(CaseCriteria criteria, Collection<String> selectedRows, int first, int max) {
 		return getExportList(null, criteria, selectedRows, first, max);
 	}
@@ -703,16 +730,16 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._SAMPLE_DELETE)
+	@RightsAllowed(UserRight._SAMPLE_DELETE)
 	public void deleteSample(SampleReferenceDto sampleRef, DeletionDetails deletionDetails) {
 		Sample sample = sampleService.getByReferenceDto(sampleRef);
 		sampleService.delete(sample, deletionDetails);
 
-		handleAssotiatedObjectChanges(sample, true);
+		handleAssociatedEntityChanges(sample, true);
 	}
 
 	@Override
-	@RolesAllowed(UserRight._SAMPLE_DELETE)
+	@RightsAllowed(UserRight._SAMPLE_DELETE)
 	public void deleteAllSamples(List<String> sampleUuids, DeletionDetails deletionDetails) {
 		long startTime = DateHelper.startTime();
 
@@ -721,7 +748,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		logger.debug("deleteAllSamples(sampleUuids) finished. samplesCount = {}, {}ms", sampleUuids.size(), DateHelper.durationMillies(startTime));
 	}
 
-	@RolesAllowed(UserRight._SAMPLE_DELETE)
+	@RightsAllowed(UserRight._SAMPLE_DELETE)
 	public List<String> deleteSamples(List<String> sampleUuids, DeletionDetails deletionDetails) {
 		List<String> deletedSampleUuids = new ArrayList<>();
 		List<Sample> samplesToBeDeleted = sampleService.getByUuids(sampleUuids);
@@ -923,7 +950,13 @@ public class SampleFacadeEjb implements SampleFacade {
 			return null;
 		}
 
-		return new SampleReferenceDto(entity.getUuid(), entity.toString());
+		return new SampleReferenceDto(
+			entity.getUuid(),
+			SampleReferenceDto.buildCaption(
+				entity.getSampleMaterial(),
+				entity.getAssociatedCase() != null ? entity.getAssociatedCase().getUuid() : null,
+				entity.getAssociatedContact() != null ? entity.getAssociatedContact().getUuid() : null,
+				entity.getAssociatedEventParticipant() != null ? entity.getAssociatedEventParticipant().getUuid() : null));
 	}
 
 	private void onSampleChanged(SampleDto existingSample, Sample newSample, boolean syncShares) {
@@ -937,7 +970,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			}
 		}
 
-		handleAssotiatedObjectChanges(newSample, syncShares);
+		handleAssociatedEntityChanges(newSample, syncShares);
 
 		// Send an email to the lab user when a sample has been shipped to their lab
 		if (newSample.isShipped()
@@ -979,17 +1012,19 @@ public class SampleFacadeEjb implements SampleFacade {
 		return messageContent;
 	}
 
-	private void handleAssotiatedObjectChanges(Sample newSample, boolean syncShares) {
-		if (newSample.getAssociatedCase() != null) {
+	private void handleAssociatedEntityChanges(Sample newSample, boolean syncShares) {
+
+		if (newSample.getAssociatedCase() != null && userService.hasRight(UserRight.CASE_EDIT)) {
 			caseFacade.onCaseChanged(caseFacade.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase(), syncShares);
 		}
 
-		if (newSample.getAssociatedContact() != null) {
-			contactFacade.onContactChanged(contactFacade.toDto(newSample.getAssociatedContact()), syncShares);
+		if (newSample.getAssociatedContact() != null && userService.hasRight(UserRight.CONTACT_EDIT)) {
+			contactService.updateFollowUpDetails(newSample.getAssociatedContact(), false);
+			contactFacade.onContactChanged(contactFacade.toDto(newSample.getAssociatedContact()), newSample.getAssociatedContact(), syncShares);
 		}
 
 		EventParticipant associatedEventParticipant = newSample.getAssociatedEventParticipant();
-		if (associatedEventParticipant != null) {
+		if (associatedEventParticipant != null && userService.hasRight(UserRight.EVENTPARTICIPANT_EDIT)) {
 			eventParticipantFacade.onEventParticipantChanged(
 				eventFacade.toDto(associatedEventParticipant.getEvent()),
 				eventParticipantFacade.toDto(associatedEventParticipant),
@@ -1017,7 +1052,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		return sampleService.isSampleEditAllowed(sample);
 	}
 
-	@RolesAllowed({
+	@RightsAllowed({
 		UserRight._SAMPLE_CREATE,
 		UserRight._CASE_CREATE })
 	public void cloneSampleForCase(Sample sample, Case caze) {

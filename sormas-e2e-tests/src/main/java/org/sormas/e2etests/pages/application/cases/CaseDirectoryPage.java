@@ -49,6 +49,12 @@ public class CaseDirectoryPage {
       By.cssSelector("[id='diseaseVariant'] [class='v-filterselect-button']");
   public static final By CASE_APPLY_FILTERS_BUTTON = By.cssSelector("[id='actionApplyFilters']");
   public static final By CASE_RESET_FILTERS_BUTTON = By.cssSelector("[id='actionResetFilters']");
+  public static final By ACTION_RESET_POPUP = By.cssSelector(".popupContent #actionReset");
+  public static final By ACTION_SEARCH_POPUP = By.cssSelector(".popupContent #actionSearch");
+  public static final By EXCLAMATION_MARK_PICK_OR_CREATE_PERSON_POPUP =
+      By.cssSelector(".popupContent span[class='v-errorindicator v-errorindicator-error']");
+  public static final By EXCLAMATION_MARK_MESSAGE_PICK_OR_CREATE_PERSON_POPUP =
+      By.xpath("//div[@class='v-errormessage v-errormessage-error']");
 
   public static final By getCaseResultsUuidLocator(String uuid) {
     return By.cssSelector(String.format("[title = '%s']", uuid));

@@ -22,13 +22,17 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class ShareDataBuilder<DTO extends SormasToSormasShareableDto, ADO extends SormasToSormasShareable, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW extends PseudonymizableDto, VALIDATOR extends SormasToSormasDtoValidator<DTO, SHARED, PREVIEW>> {
 
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	VALIDATOR validator;
 
 	protected ShareDataBuilder(VALIDATOR validator) {
@@ -40,9 +44,18 @@ public abstract class ShareDataBuilder<DTO extends SormasToSormasShareableDto, A
 
 	protected abstract SHARED doBuildShareData(ADO data, ShareRequestInfo requestInfo);
 
-	public SHARED buildShareData(ADO data, ShareRequestInfo requestInfo) throws SormasToSormasValidationException {
+	public SHARED buildShareData(ADO data, ShareRequestInfo requestInfo) throws SormasToSormasValidationException, ValidationRuntimeException {
 		SHARED shared = doBuildShareData(data, requestInfo);
+		logger.info("Run validation for S2S shares based on BaseFacade::validate for {}", data.getUuid());
+		try {
+			doBusinessValidation(shared);
+		} catch (ValidationRuntimeException e){
+			logger.error("THIS IS A BUG: a share was constructed which properties does not pass the validation logic of their dedicated facade: %s ", e);
+			throw e;
+		}
+
 		ValidationErrors errors = validator.validateOutgoing(shared);
+
 		if (errors.hasError()) {
 			List<ValidationErrors> validationErrors = new ArrayList<>();
 			validationErrors.add(errors);
@@ -50,6 +63,8 @@ public abstract class ShareDataBuilder<DTO extends SormasToSormasShareableDto, A
 		}
 		return shared;
 	}
+
+	protected abstract void doBusinessValidation(SHARED shared) throws ValidationRuntimeException;
 
 	protected abstract PREVIEW doBuildShareDataPreview(ADO data, ShareRequestInfo requestInfo);
 
@@ -63,4 +78,5 @@ public abstract class ShareDataBuilder<DTO extends SormasToSormasShareableDto, A
 		}
 		return shared;
 	}
+
 }

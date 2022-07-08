@@ -20,6 +20,9 @@ import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.EVE
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventValidationGroupName;
 
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -98,28 +101,37 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	}
 
 	@Override
-	protected void validateEntitiesBeforeShare(List<Event> entities, boolean handOverOwnership) throws SormasToSormasException {
-		List<ValidationErrors> validationErrors = new ArrayList<>();
-		for (Event event : entities) {
-			if (!eventService.isEventEditAllowed(event).equals(EditPermissionType.ALLOWED)) {
-				validationErrors.add(
-					new ValidationErrors(
-						buildEventValidationGroupName(event),
-						ValidationErrors
-							.create(new ValidationErrorGroup(Captions.Event), new ValidationErrorMessage(Validations.sormasToSormasNotEditable))));
-			}
-		}
-
-		if (!validationErrors.isEmpty()) {
-			throw SormasToSormasException.fromStringProperty(validationErrors, Strings.errorSormasToSormasShare);
-		}
+	protected void validateEntitiesBeforeShareInner(
+		Event event,
+		boolean handOverOwnership,
+		String targetOrganizationId,
+		List<ValidationErrors> validationErrors) {
+		// nothing to do besides the standard validation in super
 	}
 
 	@Override
-	protected void validateEntitiesBeforeShare(List<SormasToSormasShareInfo> shares) throws SormasToSormasException {
-		validateEntitiesBeforeShare(
-			shares.stream().map(SormasToSormasShareInfo::getEvent).filter(Objects::nonNull).collect(Collectors.toList()),
-			shares.get(0).isOwnershipHandedOver());
+	protected SormasToSormasShareInfo getByTypeAndOrganization(Event event, String targetOrganizationId) {
+		return shareInfoService.getByEventAndOrganization(event.getUuid(), targetOrganizationId);
+	}
+
+	@Override
+	protected ValidationErrorGroup buildEntityValidationGroupNameForAdo(Event event) {
+		return buildEventValidationGroupName(event);
+	}
+
+	@Override
+	protected EditPermissionType isEntityEditAllowed(Event event) {
+		return eventService.isEditAllowed(event);
+	}
+
+	@Override
+	public Event extractFromShareInfo(SormasToSormasShareInfo shareInfo) {
+		return shareInfo.getEvent();
+	}
+
+	@Override
+	protected void validateShareRequestBeforeAccept(SormasToSormasShareRequestDto shareRequest) throws SormasToSormasException {
+
 	}
 
 	@Override
@@ -157,7 +169,7 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 
 		Stream<SormasToSormasShareInfo> sampleShareInfos = Stream.empty();
 		Stream<SormasToSormasShareInfo> immunizationShareInfos = Stream.empty();
-		if (eventParticipants.size() > 0) {
+		if (!eventParticipants.isEmpty()) {
 			if (options.isWithSamples()) {
 				List<String> eventParticipantUuids = eventParticipants.stream().map(EventParticipant::getUuid).collect(Collectors.toList());
 				sampleShareInfos = sampleService.getByEventParticipantUuids(eventParticipantUuids)

@@ -4,11 +4,13 @@ import java.io.Serializable;
 import java.util.Date;
 
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
+import org.apache.commons.lang3.StringUtils;
 
 public class PersonIndexDto extends PseudonymizableIndexDto implements Serializable, Cloneable {
 
@@ -27,7 +29,6 @@ public class PersonIndexDto extends PseudonymizableIndexDto implements Serializa
 	public static final String PHONE = "phone";
 	public static final String EMAIL_ADDRESS = "emailAddress";
 
-	private String uuid;
 	@PersonalData
 	@SensitiveData
 	private String firstName;
@@ -77,7 +78,7 @@ public class PersonIndexDto extends PseudonymizableIndexDto implements Serializa
 		Date changeDate,
 		boolean isInJurisdiction) {
 
-		this.uuid = uuid;
+		super(uuid);
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.ageAndBirthDate = new AgeAndBirthDateDto(age, ageType, birthdateDD, birthdateMM, birthdateYYYY);
@@ -91,14 +92,6 @@ public class PersonIndexDto extends PseudonymizableIndexDto implements Serializa
 		this.emailAddress = email;
 		this.changeDate = changeDate;
 		this.isInJurisdiction = isInJurisdiction;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public String getFirstName() {
@@ -206,7 +199,7 @@ public class PersonIndexDto extends PseudonymizableIndexDto implements Serializa
 	}
 
 	@Override
-	public String toString() {
+	public String getCaption() {
 		return PersonDto.buildCaption(getFirstName(), getLastName());
 	}
 

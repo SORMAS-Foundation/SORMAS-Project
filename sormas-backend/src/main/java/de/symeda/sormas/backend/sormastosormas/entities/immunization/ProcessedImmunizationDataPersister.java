@@ -24,7 +24,6 @@ import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal;
@@ -55,7 +54,8 @@ public class ProcessedImmunizationDataPersister extends ProcessedDataPersister<I
 		handleValidationError(
 			() -> immunizationFacade.save(immunuzation, false, false),
 			Captions.Immunization,
-			buildImmunizationValidationGroupName(immunuzation));
+			buildImmunizationValidationGroupName(immunuzation),
+			immunuzation);
 	}
 
 	@Override

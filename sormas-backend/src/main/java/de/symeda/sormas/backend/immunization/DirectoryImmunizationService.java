@@ -1,7 +1,6 @@
 package de.symeda.sormas.backend.immunization;
 
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEquals;
-import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.andEqualsReferenceDto;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -248,13 +247,13 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 		if (criteria.getImmunizationStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Immunization.IMMUNIZATION_STATUS), criteria.getImmunizationStatus()));
 		}
-		filter = andEqualsReferenceDto(cb, joins.getResponsibleRegion(), filter, criteria.getRegion());
-		filter = andEqualsReferenceDto(cb, joins.getResponsibleDistrict(), filter, criteria.getDistrict());
-		filter = andEqualsReferenceDto(cb, joins.getResponsibleCommunity(), filter, criteria.getCommunity());
+		filter = andEquals(cb, () -> joins.getResponsibleRegion(), filter, criteria.getRegion());
+		filter = andEquals(cb, () -> joins.getResponsibleDistrict(), filter, criteria.getDistrict());
+		filter = andEquals(cb, () -> joins.getResponsibleCommunity(), filter, criteria.getCommunity());
 		if (criteria.getFacilityType() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Immunization.FACILITY_TYPE), criteria.getFacilityType()));
 		}
-		filter = andEqualsReferenceDto(cb, joins.getHealthFacility(), filter, criteria.getHealthFacility());
+		filter = andEquals(cb, () -> joins.getHealthFacility(), filter, criteria.getHealthFacility());
 		if (Boolean.TRUE.equals(criteria.getOnlyPersonsWithOverdueImmunization())) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(from.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS), ImmunizationManagementStatus.ONGOING));

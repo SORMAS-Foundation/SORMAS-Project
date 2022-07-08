@@ -21,7 +21,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;

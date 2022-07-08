@@ -382,7 +382,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 				jurisdictionLevel = baseInfrastructure instanceof Facility && ((Facility) baseInfrastructure).getCommunity() != null
 					? JurisdictionLevel.COMMUNITY
 					: InfrastructureHelper.getSuperordinateJurisdiction(jurisdictionLevel);
-				if (jurisdictionLevel.getOrder() > 1) {
+				if (jurisdictionLevel.getOrder() > 1 && baseInfrastructure != null) {
 					baseInfrastructure = JurisdictionHelper.getParentInfrastructure(baseInfrastructure, jurisdictionLevel);
 				}
 			} else {
@@ -706,24 +706,21 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 
 		User currentUser = getCurrentUser();
 
-		Predicate regionalOrNationalFilter = cb.equal(from.get(User.JURISDICTION_LEVEL), JurisdictionLevel.NATION);
-
-		Predicate jurisdictionFilter = cb.conjunction();
 		if (currentUser.getHealthFacility() != null) {
-			jurisdictionFilter = cb.equal(from.get(User.HEALTH_FACILITY), currentUser.getHealthFacility());
+			return cb.equal(from.get(User.HEALTH_FACILITY), currentUser.getHealthFacility());
 		} else if (currentUser.getPointOfEntry() != null) {
-			jurisdictionFilter = cb.equal(from.get(User.POINT_OF_ENTRY), currentUser.getPointOfEntry());
+			return cb.equal(from.get(User.POINT_OF_ENTRY), currentUser.getPointOfEntry());
 		} else if (currentUser.getLaboratory() != null) {
-			jurisdictionFilter = cb.equal(from.get(User.LABORATORY), currentUser.getLaboratory());
+			return cb.equal(from.get(User.LABORATORY), currentUser.getLaboratory());
 		} else if (currentUser.getCommunity() != null) {
-			jurisdictionFilter = cb.equal(from.get(User.COMMUNITY), currentUser.getCommunity());
+			return cb.equal(from.get(User.COMMUNITY), currentUser.getCommunity());
 		} else if (currentUser.getDistrict() != null) {
-			jurisdictionFilter = cb.equal(from.get(User.DISTRICT), currentUser.getDistrict());
+			return cb.equal(from.get(User.DISTRICT), currentUser.getDistrict());
 		} else if (currentUser.getRegion() != null) {
-			jurisdictionFilter = cb.equal(from.get(User.REGION), currentUser.getRegion());
+			return cb.equal(from.get(User.REGION), currentUser.getRegion());
+		} else {
+			return cb.conjunction();
 		}
-
-		return CriteriaBuilderHelper.or(cb, regionalOrNationalFilter, jurisdictionFilter);
 	}
 
 	public Predicate buildUserRightsFilter(Root<User> from, Collection<UserRight> userRights) {

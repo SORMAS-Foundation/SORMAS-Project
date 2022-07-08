@@ -9,11 +9,9 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
-public interface PointOfEntryFacade
-	extends InfrastructureFacade<PointOfEntryDto, PointOfEntryDto, PointOfEntryReferenceDto, PointOfEntryCriteria> {
+public interface PointOfEntryFacade extends InfrastructureFacade<PointOfEntryDto, PointOfEntryDto, PointOfEntryReferenceDto, PointOfEntryCriteria> {
 
 	/**
 	 * @param includeOthers
@@ -21,8 +19,6 @@ public interface PointOfEntryFacade
 	 *            point of entry is not in the database.
 	 */
 	List<PointOfEntryReferenceDto> getAllActiveByDistrict(String districtUuid, boolean includeOthers);
-
-	void validate(PointOfEntryDto pointOfEntry) throws ValidationRuntimeException;
 
 	List<PointOfEntryReferenceDto> getByName(String name, DistrictReferenceDto district, boolean includeArchivedEntities);
 

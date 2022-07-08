@@ -17,4 +17,15 @@ public class EditImmunizationPersonPage {
   public static final By DATE_OF_BIRTH_YEAR_INPUT = By.cssSelector("#birthdateYYYY input");
   public static final By DATE_OF_BIRTH_MONTH_INPUT = By.cssSelector("#birthdateMM input");
   public static final By DATE_OF_BIRTH_DAY_INPUT = By.cssSelector("#birthdateDD input");
+  public static final By LINK_CASE_BUTTON = By.cssSelector("#linkImmunizationToCaseButton");
+  public static final By SEARCH_SPECIFIC_CASE_INPUT =
+      By.xpath("//div[@class='v-slot v-slot-vspace-2'][2]//input");
+  public static final By SEARCH_SPECIFIC_CASE_BUTTON =
+      By.cssSelector(".popupContent #actionConfirm");
+  public static final By LINK_CASE_CASE_FOUND_HEADER = By.xpath("//*[text()='Case found']");
+  public static final By OKAY_LINK_CASE_BUTTON = By.cssSelector(".popupContent #actionOkay");
+  public static final By OPEN_CASE_BUTTON = By.id("openLinkedCaseToImmunizationButton");
+  public static final By DATE_OF_FIRST_POSITIVE_TEST_RESULT_INPUT =
+      By.cssSelector("[id='positiveTestResultDate'] input");
+  public static final By DATE_OF_RECOVERY_INPUT = By.cssSelector("[id='recoveryDate'] input");
 }

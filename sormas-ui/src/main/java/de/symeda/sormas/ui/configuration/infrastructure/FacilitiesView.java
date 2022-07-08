@@ -15,7 +15,10 @@
 
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.vaadin.hene.popupbutton.PopupButton;
 
@@ -43,6 +46,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityExportDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityIndexDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -138,8 +142,8 @@ public class FacilitiesView extends AbstractConfigurationView {
 			exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
 			addHeaderComponent(exportPopupButton);
 
-			StreamResource basicExportStreamResource =
-				GridExportStreamResource.createStreamResource(grid, ExportEntityName.FACILITIES, FacilitiesGrid.EDIT_BTN_ID);
+			StreamResource basicExportStreamResource = GridExportStreamResource
+				.createStreamResourceWithSelectedItems(grid, this::getSelectedRows, ExportEntityName.FACILITIES, FacilitiesGrid.EDIT_BTN_ID);
 
 			addExportButton(
 				basicExportStreamResource,
@@ -154,7 +158,12 @@ public class FacilitiesView extends AbstractConfigurationView {
 			StreamResource detailedExportStreamResource = DownloadUtil.createCsvExportStreamResource(
 				FacilityExportDto.class,
 				null,
-				(Integer start, Integer max) -> FacadeProvider.getFacilityFacade().getExportList(grid.getCriteria(), start, max),
+				(Integer start, Integer max) -> FacadeProvider.getFacilityFacade()
+					.getExportList(
+						grid.getCriteria(),
+						getSelectedRows().stream().map(FacilityIndexDto::getUuid).collect(Collectors.toList()),
+						start,
+						max),
 				(propertyId, type) -> {
 					String caption = I18nProperties.findPrefixCaption(propertyId, FacilityExportDto.I18N_PREFIX, FacilityDto.I18N_PREFIX);
 					if (Date.class.isAssignableFrom(type)) {
@@ -226,6 +235,11 @@ public class FacilitiesView extends AbstractConfigurationView {
 	//
 	//		return headerLayout;
 	//	}
+
+	private Set<FacilityIndexDto> getSelectedRows() {
+		FacilitiesGrid facilitiesGrid = this.grid;
+		return this.viewConfiguration.isInEagerMode() ? facilitiesGrid.asMultiSelect().getSelectedItems() : Collections.emptySet();
+	}
 
 	private HorizontalLayout createFilterBar() {
 		filterLayout = new HorizontalLayout();

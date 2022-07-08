@@ -21,9 +21,9 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 
 import de.symeda.sormas.api.immunization.ImmunizationDto;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.immunization.SormasToSormasImmunizationDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
@@ -61,6 +61,11 @@ public class ImmunizationShareDataBuilder
 		dataBuilderHelper.clearIgnoredProperties(immunizationDto);
 
 		return new SormasToSormasImmunizationDto(immunizationDto);
+	}
+
+	@Override
+	public void doBusinessValidation(SormasToSormasImmunizationDto sormasToSormasImmunizationDto) throws ValidationRuntimeException {
+		immunizationFacade.validate(sormasToSormasImmunizationDto.getEntity());
 	}
 
 	@Override

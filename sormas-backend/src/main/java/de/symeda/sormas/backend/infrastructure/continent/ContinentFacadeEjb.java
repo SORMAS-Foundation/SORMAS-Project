@@ -78,14 +78,14 @@ public class ContinentFacadeEjb
 		if (entity == null) {
 			return null;
 		}
-		return new ContinentReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalId());
+		return new ContinentReferenceDto(entity.getUuid(), entity.getDefaultName(), entity.getExternalId());
 	}
 
 	public static ContinentReferenceDto toReferenceDto(ContinentDto dto) {
 		if (dto == null) {
 			return null;
 		}
-		return new ContinentReferenceDto(dto.getUuid(), dto.toString(), dto.getExternalId());
+		return new ContinentReferenceDto(dto.getUuid(), dto.buildCaption(), dto.getExternalId());
 	}
 
 	@Override

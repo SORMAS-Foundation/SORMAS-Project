@@ -35,8 +35,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.InfrastructureAdo;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.ReferenceDto;
@@ -49,6 +47,8 @@ import de.symeda.sormas.api.infrastructure.district.DistrictIndexDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
@@ -280,7 +280,7 @@ public class DistrictFacadeEjb
 			return null;
 		}
 
-		return new DistrictReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
+		return new DistrictReferenceDto(entity.getUuid(), entity.getName(), entity.getExternalID());
 	}
 
 	@Override

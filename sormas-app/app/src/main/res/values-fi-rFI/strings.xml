@@ -163,6 +163,7 @@
     <string name="caption_drawer_open">Avaa navigointipalkki</string>
     <string name="caption_dropped">Poistettu</string>
     <string name="caption_epi_week">Epidemiaviikko</string>
+    <string name="caption_report">Report</string>
     <string name="caption_event_description">Description</string>
     <string name="caption_event_location">Location</string>
     <string name="caption_event_period">Date of event</string>
@@ -272,6 +273,7 @@
     <string name="description_sormas_logo">SORMAS-logo</string>
     <string name="description_username">Käyttäjätunnus</string>
     <string name="description_year">Vuosi</string>
+    <string name="description_report">Report</string>
     <string name="entity_case">Potilas</string>
     <string name="entity_contact">Kontakti</string>
     <string name="entity_event">Tapahtuma</string>
@@ -444,6 +446,7 @@
     <string name="hint_select_month">Valitse kuukausi</string>
     <string name="hint_select_epi_week">Valitse epidemiaviikko</string>
     <string name="hint_select_year">Valitse vuosi</string>
+    <string name="hint_select_report">Select Report</string>
     <string name="hint_settings_server_url">esim. https://sormas.helmholtz-hzi.de/sormas-rest/</string>
     <string name="hint_weekly_report_confirmation_required">Sinun täytyy vahvistaa viime viikon raportti.</string>
     <string name="hint_weekly_report_no_data">Tietoja ei ole saatavilla tälle epidemiaviikolle.</string>

@@ -66,9 +66,4 @@ public class Country extends InfrastructureAdo {
 	public void setSubcontinent(Subcontinent subcontinent) {
 		this.subcontinent = subcontinent;
 	}
-
-	@Override
-	public String toString() {
-		return this.defaultName;
-	}
 }

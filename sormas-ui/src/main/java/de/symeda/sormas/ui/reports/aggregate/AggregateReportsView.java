@@ -42,7 +42,7 @@ public class AggregateReportsView extends AbstractAggregateReportsView {
 	private Button btnCreate;
 	private Button btnEdit;
 
-	private CheckBox showZeroRowsGrouping;
+	private CheckBox showZeroRows;
 
 	private AggregateReportsFilterForm aggregateReportsFilterForm;
 
@@ -80,7 +80,7 @@ public class AggregateReportsView extends AbstractAggregateReportsView {
 			btnCreate = ButtonHelper.createIconButton(
 				Captions.aggregateReportNewAggregateReport,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getAggregateReportController().openEditOrCreateWindow(() -> grid.reload(), false),
+				e -> ControllerProvider.getAggregateReportController().openEditOrCreateWindow(() -> grid.reload(), false, null),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(btnCreate);
@@ -88,7 +88,7 @@ public class AggregateReportsView extends AbstractAggregateReportsView {
 			btnEdit = ButtonHelper.createIconButton(
 				Captions.aggregateReportEditAggregateReport,
 				VaadinIcons.EDIT,
-				e -> ControllerProvider.getAggregateReportController().openEditOrCreateWindow(() -> grid.reload(), true),
+				e -> ControllerProvider.getAggregateReportController().openEditOrCreateWindow(() -> grid.reload(), true, null),
 				ValoTheme.BUTTON_PRIMARY);
 			btnEdit.setVisible(false);
 
@@ -119,18 +119,19 @@ public class AggregateReportsView extends AbstractAggregateReportsView {
 		});
 		jurisdictionLayout.addComponent(aggregateReportGroupingSelector);
 
-		showZeroRowsGrouping = new CheckBox();
-		showZeroRowsGrouping.setId(AggregateReportCriteria.SHOW_ZERO_ROWS_FOR_GROUPING);
-		showZeroRowsGrouping.setCaption(I18nProperties.getCaption(Captions.aggregateReportShowZeroRowsForGrouping));
-		showZeroRowsGrouping.addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
+		showZeroRows = new CheckBox();
+		showZeroRows.setId(AggregateReportCriteria.SHOW_ZERO_ROWS);
+		showZeroRows.setCaption(I18nProperties.getCaption(Captions.aggregateReportShowZeroRows));
+		showZeroRows.addStyleName(CssStyles.FORCE_CAPTION_CHECKBOX);
 
-		showZeroRowsGrouping.setValue(criteria.getShowZeroRowsForGrouping());
+		showZeroRows.setValue(criteria.getShowZeroRows());
 
-		showZeroRowsGrouping.addValueChangeListener(e -> {
-			criteria.setShowZeroRowsForGrouping(e.getValue());
+		showZeroRows.addValueChangeListener(e -> {
+			criteria.setShowZeroRows(e.getValue());
+			grid.reload();
 		});
 
-		jurisdictionLayout.addComponent(showZeroRowsGrouping);
+		jurisdictionLayout.addComponent(showZeroRows);
 
 		return jurisdictionLayout;
 	}

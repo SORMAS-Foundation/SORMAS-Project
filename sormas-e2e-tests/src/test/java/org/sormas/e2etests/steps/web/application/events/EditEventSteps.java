@@ -20,12 +20,14 @@ package org.sormas.e2etests.steps.web.application.events;
 
 import static org.sormas.e2etests.pages.application.actions.CreateNewActionPage.NEW_ACTION_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_POPUP_YES_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SELECT_MATCHING_PERSON_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.ACTION_CANCEL_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.ARCHIVE_POPUP_WINDOW_HEADER;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.EVENT_IDENTIFICATION_SOURCE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.START_DATA_TIME;
@@ -36,9 +38,12 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.CONTACT
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CONTACT_TO_SICK_PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.COUNTRY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.COUNTRY_COMBOBOX_DIABLED;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.COUNTRY_COMBOBOX_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.COUNTRY_INFO_ICON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.COUNTRY_INFO_POPUP_TEXT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CREATE_CONTACTS_BULK_EDIT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.DEFAULT_COMBOBOX_VALUE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.DELETE_BUTTON_DISABLED;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DESCRIPTIVE_ANALYSIS_OF_ASCETAINED_DATA_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DISEASE_INPUT;
@@ -82,6 +87,9 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.PATHOGE
 import static org.sormas.e2etests.pages.application.events.EditEventPage.PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.PLACE_OF_STAY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.PRIMARY_MODE_OF_TRANSMISSION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.REASON_FOR_DELETION_INPUT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.REASON_FOR_DELETION_MARK;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.REASON_FOR_DELETION_MESSAGE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.REPORT_DATE_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.RISK_LEVEL_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.RISK_LEVEL_INPUT;
@@ -139,18 +147,19 @@ import static org.sormas.e2etests.pages.application.events.EventParticipantsPage
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.SELECT_PERSON_ID_INPUT_AT_ADD_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.SELECT_PERSON_SEARCH_BUTTON_AT_ADD_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.SEX_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.SEX_COMBOBOX_REQUIRED;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.getEventsByCaseUuid;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_DAY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_MONTH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_YEAR_COMBOBOX;
-import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DISTRICT_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_DATA_ADDED_AS_A_PARTICIPANT_MESSAGE;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_DATA_SAVED;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_PERSON_ID;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_RESPONSIBLE_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_RESPONSIBLE_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_SAVE;
-import static org.sormas.e2etests.pages.application.persons.EditPersonPage.REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.REGION_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SECOND_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SECOND_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_EVENTS_FOR_PERSON;
@@ -885,6 +894,44 @@ public class EditEventSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(NAVIGATE_TO_EVENT_PARTICIPANTS_BUTTON);
         });
     When(
+        "I click Delete button on Edit Event page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(DELETE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+        });
+    When(
+        "I click on No option in Confirm deletion on Edit Event Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL_POPUP));
+    When(
+        "I click on Yes option in Confirm deletion on Edit Event Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_POPUP_BUTTON));
+    When(
+        "I check that error message is equal to {string} in Reason for Deletion in popup",
+        (String expected) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(REASON_FOR_DELETION_MARK);
+          webDriverHelpers.hoverToElement(REASON_FOR_DELETION_MARK);
+          String message = webDriverHelpers.getTextFromWebElement(REASON_FOR_DELETION_MESSAGE);
+          softly.assertEquals(message, expected, "Error messages are not equal");
+          softly.assertAll();
+        });
+    When(
+        "I check if Reason for deletion is set to {string} on Edit Event Page",
+        (String expected) -> {
+          String collectedReason =
+              webDriverHelpers.getValueFromWebElement(REASON_FOR_DELETION_INPUT);
+          softly.assertEquals(expected, collectedReason, "Reasons for deletion are not equal");
+          softly.assertAll();
+        });
+    When(
+        "I check if Delete button on Edit Event Page is disabled",
+        () -> webDriverHelpers.waitUntilIdentifiedElementIsPresent(DELETE_BUTTON_DISABLED));
+
+    When(
+        "I set Reason for deletion to {string} on Edit Event Page",
+        (String text) -> {
+          webDriverHelpers.selectFromCombobox(DELETE_SAMPLE_REASON_POPUP, text);
+        });
+    When(
         "I check if generated document for Event Participant based on {string} was downloaded properly",
         (String name) -> {
           String eventParticipantData =
@@ -1316,14 +1363,14 @@ public class EditEventSteps implements En {
     When(
         "I set Country combobox to empty value from Edit Event Page",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(COUNTRY_COMBOBOX);
-          webDriverHelpers.selectFromCombobox(COUNTRY_COMBOBOX, "");
+          webDriverHelpers.clearComboboxInput(COUNTRY_COMBOBOX_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(DEFAULT_COMBOBOX_VALUE);
         });
     When(
         "I clear Region and District fields from Edit Event Directory",
         () -> {
-          webDriverHelpers.selectFromCombobox(DISTRICT_COMBOBOX, "");
-          webDriverHelpers.selectFromCombobox(REGION_COMBOBOX, "");
+          webDriverHelpers.clearComboboxInput(DISTRICT_INPUT);
+          webDriverHelpers.clearComboboxInput(REGION_INPUT);
         });
 
     When(
@@ -1459,6 +1506,15 @@ public class EditEventSteps implements En {
           Assert.assertTrue(
               webDriverHelpers.checkCheckboxIsCheckedByHTMLFromParent(
                   EVENT_IDENTIFICATION_SOURCE_COMBOBOX, text, expected));
+        });
+    When(
+        "I add only first and last name data and check is sex combobox required for event participant creation",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
+          webDriverHelpers.fillInWebElement(PARTICIPANT_FIRST_NAME_INPUT, faker.name().firstName());
+          webDriverHelpers.fillInWebElement(PARTICIPANT_LAST_NAME_INPUT, faker.name().lastName());
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEX_COMBOBOX_REQUIRED);
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
         });
   }
 

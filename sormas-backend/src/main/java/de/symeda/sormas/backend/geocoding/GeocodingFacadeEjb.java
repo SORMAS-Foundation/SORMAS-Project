@@ -22,8 +22,8 @@ import javax.ejb.Stateless;
 
 import org.apache.commons.lang3.StringUtils;
 
-import de.symeda.sormas.api.geocoding.GeocodingFacade;
 import de.symeda.sormas.api.geo.GeoLatLon;
+import de.symeda.sormas.api.geocoding.GeocodingFacade;
 
 @Stateless(name = "GeocodingFacade")
 public class GeocodingFacadeEjb implements GeocodingFacade {

@@ -23,6 +23,9 @@ import java.util.Date;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import de.symeda.sormas.api.i18n.Validations;
@@ -127,5 +130,19 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 		}
 
 		return (EntityDto) super.clone();
+	}
+
+	@JsonIgnore
+	public String buildCaption() {
+		return toString();
+	}
+
+	public String i18nPrefix() {
+		return null;
+	}
+
+	@Override
+	public String toString() {
+		return (i18nPrefix() != null ? i18nPrefix() : getClass().getSimpleName()) + StringUtils.SPACE + this.getUuid();
 	}
 }

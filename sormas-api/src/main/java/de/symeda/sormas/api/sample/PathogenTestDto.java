@@ -14,17 +14,18 @@
  */
 package de.symeda.sormas.api.sample;
 
-import de.symeda.sormas.api.common.DeletionReason;
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import java.util.Date;
 
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.ImportIgnore;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
@@ -33,6 +34,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFormatHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Required;
@@ -316,8 +318,14 @@ public class PathogenTestDto extends PseudonymizableDto {
 		this.cqValue = cqValue;
 	}
 
-	public String toString() {
+	@Override
+	public String buildCaption() {
 		return DateFormatHelper.formatLocalDateTime(testDateTime) + " - " + testType + " (" + testedDisease + "): " + testResult;
+	}
+
+	@JsonIgnore
+	public String i18nPrefix() {
+		return I18N_PREFIX;
 	}
 
 	public Date getReportDate() {

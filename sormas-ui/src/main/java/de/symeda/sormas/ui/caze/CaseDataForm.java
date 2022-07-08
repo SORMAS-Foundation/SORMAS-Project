@@ -867,7 +867,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_SHARE), CaseDataDto.SHARED_TO_COUNTRY);
 		}
 
-		ComboBox pointOfEntry = addInfrastructureField(CaseDataDto.POINT_OF_ENTRY);
+		ComboBox pointOfEntry = addInfrastructureField(CaseDataDto.POINT_OF_ENTRY, false);
 		addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 
 		Button btnReferFromPointOfEntry = ButtonHelper.createButton(Captions.caseReferFromPointOfEntry);
@@ -915,7 +915,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			tfExpectedFollowUpUntilDate = new TextField();
 			tfExpectedFollowUpUntilDate.setCaption(I18nProperties.getCaption(Captions.CaseData_expectedFollowUpUntil));
 			getContent().addComponent(tfExpectedFollowUpUntilDate, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC);
-			cbOverwriteFollowUpUntil = addField(ContactDto.OVERWRITE_FOLLOW_UP_UTIL, CheckBox.class);
+			cbOverwriteFollowUpUntil = addField(CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL, CheckBox.class);
 
 			setReadOnly(true, CaseDataDto.FOLLOW_UP_STATUS, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER);
 
@@ -937,7 +937,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		}
 		if (cbOverwriteFollowUpUntil != null) {
 			cbOverwriteFollowUpUntil.addValueChangeListener(e -> {
-				if (e.getProperty().getValue() != Boolean.TRUE) {
+				if (!Boolean.TRUE.equals(e.getProperty().getValue())) {
 					dfFollowUpUntil.discard();
 					if (expectedFollowUpPeriodDto != null && expectedFollowUpPeriodDto.getFollowUpEndDate() != null) {
 						dfFollowUpUntil.setValue(expectedFollowUpPeriodDto.getFollowUpEndDate());
