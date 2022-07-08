@@ -24,12 +24,18 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_MEANS_OF_TRANSPORT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_MEANS_OF_TRANSPORT_DETAILS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_SEAT_NUMBER;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CREATE_NEW_PERSON_CHECKBOX_DE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ENTER_BULK_EDIT_MODE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FACILITY_ACTIVITY_AS_CASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LEAVE_BULK_EDIT_MODE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MORE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getMergeDuplicatesButtonById;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.COMMIT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.IMPORT_CASE_CONTACTS_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.IMPORT_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_TYPE_OF_ACTIVITY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ADDITIONAL_INFORMATION_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CITY_INPUT;
@@ -127,6 +133,8 @@ import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPag
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_DETAILS;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_PLACE_DETAILS;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPORT_SUCCESS_DE;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.contacts.EditContactSteps.aContact;
 import static org.sormas.e2etests.steps.web.application.contacts.EditContactSteps.collectedContact;
@@ -310,7 +318,43 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.fillAndSubmitInWebElement(
               CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, contactUuid);
         });
-
+    When(
+        "I click on the Import button from Contact directory",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(IMPORT_CASE_CONTACTS_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(IMPORT_CASE_CONTACTS_BUTTON);
+        });
+    When(
+        "I click on the {string} button from the Import Contact popup",
+        (String buttonName) -> {
+          webDriverHelpers.clickWebElementByText(IMPORT_POPUP_BUTTON, buttonName);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+    When(
+        "I click to create new person from the Contact Import popup if Pick or create popup appears",
+        () -> {
+          if (webDriverHelpers.isElementVisibleWithTimeout(COMMIT_BUTTON, 20)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX_DE);
+            webDriverHelpers.clickOnWebElementBySelector(COMMIT_BUTTON);
+          }
+        });
+    When(
+        "I check that an import success notification appears in the Import Contact popup",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(IMPORT_SUCCESS_DE);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
+        });
+    And(
+        "I filter by {string} as a Person's full name on Contact Directory Page",
+        (String fullName) ->
+            webDriverHelpers.fillAndSubmitInWebElement(
+                PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT, fullName));
+    When(
+        "I close Import Contact form",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON);
+        });
     When(
         "I click on the More button on Contact directory page",
         () -> {
