@@ -108,6 +108,7 @@ public class NavBarSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(
               EventDirectoryPage.EVENT_ACTIONS_RADIOBUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
+          TimeUnit.SECONDS.sleep(2);
         });
 
     When(
