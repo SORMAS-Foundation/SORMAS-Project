@@ -160,7 +160,7 @@ public class ContactsLineListingSteps implements En {
             webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONTACT_SAVED_POPUP);
             webDriverHelpers.clickOnWebElementBySelector(CONTACT_SAVED_POPUP);
           }
-          webDriverHelpers.waitUntilIdentifiedElementDisappear(CONTACT_SAVED_POPUP);
+          TimeUnit.SECONDS.sleep(2);
         });
     When(
         "I save the new contacts from Event Participants using line listing feature in Event Participant tab",
