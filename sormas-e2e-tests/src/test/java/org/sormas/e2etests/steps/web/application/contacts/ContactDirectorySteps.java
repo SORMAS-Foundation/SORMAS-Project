@@ -73,6 +73,7 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.TYPE_OF_PLACE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.WEARING_MASK_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.WEARING_PPE_OPTIONS;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ACTION_MERGE_CONTACT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ACTIVE_CONTACT_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ALL_BUTTON_CONTACT;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
@@ -91,12 +92,14 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_CLASSIFICATION_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DATA_TAB;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DIRECTORY_DETAILED_PAGE_CONFIRM_FILTER_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DIRECTORY_DETAILED_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DISEASE_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DISEASE_VARIANT_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DISPLAY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_FOLLOW_UP_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_GRID_RESULTS_ROWS;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_MERGE_DUPLICATES;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONVERTED_TO_CASE_BUTTON;
@@ -179,6 +182,7 @@ public class ContactDirectorySteps implements En {
 
   public static String contactID1;
   public static String contactID2;
+  public static String leadingContactUUID;
 
   @Inject
   public ContactDirectorySteps(
@@ -276,11 +280,35 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
+    When(
+        "I collect the leading contact UUID displayed on Contact Directory Page",
+        () -> leadingContactUUID = getContactIDByIndex(1));
     And(
         "I click on Merge button of leading case in Merge Duplicate Contact page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
               getMergeDuplicatesButtonById(collectedContact.getUuid()));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
+        });
+    And(
+        "I click on Merge button of leading duplicated line listing Contact in Merge Duplicate Contact page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              getMergeDuplicatesButtonById(leadingContactUUID));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
+        });
+
+    And(
+        "I click on Merge button of first leading Contact in Merge Duplicate Contact page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_MERGE_CONTACT_DIRECTORY);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
+        });
+    And(
+        "I filter by Case ID used during Contact creation",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              MULTIPLE_OPTIONS_SEARCH_INPUT, apiState.getCreatedCase().getUuid());
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
         });
     When(
@@ -364,6 +392,7 @@ public class ContactDirectorySteps implements En {
         "I click on Merge Duplicates on Contact directory page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_MERGE_DUPLICATES);
+          TimeUnit.SECONDS.sleep(2);
         });
     When(
         "I click Leave Bulk Edit Mode on Contact directory page",
@@ -775,6 +804,14 @@ public class ContactDirectorySteps implements En {
               CONTACT_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
           TimeUnit.SECONDS.sleep(3); // needed for table refresh
         });
+    And(
+        "I click APPLY BUTTON in Merge Duplicates View on Contact Directory Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              CONTACT_DIRECTORY_DETAILED_PAGE_CONFIRM_FILTER_BUTTON);
+          //TODO -> replace with wait for counter to change implementation
+          TimeUnit.SECONDS.sleep(2);
+        });
 
     And(
         "I click {string} checkbox on Contact directory page",
@@ -849,11 +886,19 @@ public class ContactDirectorySteps implements En {
               break;
           }
         });
+    And(
+        "I filter by Person's full name of last created duplicated line listing contact on Contact Directory Page",
+        () ->
+            webDriverHelpers.fillAndSubmitInWebElement(
+                PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
+                ContactsLineListingSteps.duplicatedContactLineListingDE.getFirstName()
+                    + " "
+                    + ContactsLineListingSteps.duplicatedContactLineListingDE.getLastName()));
     When(
         "^I click on Line Listing button$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LINE_LISTING);
-          webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING);
+          webDriverHelpers.doubleClickOnWebElementBySelector(LINE_LISTING);
         });
 
     And(
