@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.vaccination;
 
+import static de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect.AT_END_OF_DAY;
 import static de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect.TIMESTAMP_SUBTRACT_DAYS;
 
 import java.util.ArrayList;
@@ -130,11 +131,11 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 
 	/**
 	 * HEADS UP! When this method gets changed, most probably the database logic in
-	 * {@link getRelevantVaccinationPredicate(From<?, Case>, CriteriaQuery<?>, CriteriaBuilder, Path<Vaccination>)}
-	 * {@link getRelevantVaccinationPredicate(From<?, Case>, CommonAbstractCriteria, CriteriaBuilder, Vaccination)}
+	 * {@link de.symeda.sormas.backend.vaccination.VaccinationService#getRelevantVaccinationPredicate(From, CriteriaQuery, CriteriaBuilder, Path)}
+	 * {@link de.symeda.sormas.backend.vaccination.VaccinationService#getRelevantVaccinationPredicate(From, CommonAbstractCriteria, CriteriaBuilder, Vaccination)}
 	 *
 	 * will also need an update.
-	 * 
+	 *
 	 * @param caze
 	 *            to decide whether the vaccination is relevant for
 	 * @param vaccination
@@ -147,8 +148,8 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 
 	/**
 	 * HEADS UP! When this method gets changed, most probably the database logic in
-	 * {@link isVaccinationRelevant(Case, Vaccination)}
-	 * {@link getRelevantVaccinationPredicate(From<?, Case>, CommonAbstractCriteria, CriteriaBuilder, Vaccination)}
+	 * {@link de.symeda.sormas.backend.vaccination.VaccinationService#isVaccinationRelevant(Case, Vaccination)}
+	 * {@link de.symeda.sormas.backend.vaccination.VaccinationService#getRelevantVaccinationPredicate(From, CommonAbstractCriteria, CriteriaBuilder, Vaccination)}
 	 *
 	 * will also need an update
 	 *
@@ -169,8 +170,8 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 
 	/**
 	 * HEADS UP! When this method gets changed, most probably the database logic in
-	 * {@link isVaccinationRelevant(Case, Vaccination)}
-	 * {@link getRelevantVaccinationPredicate(From<?, Case>, CriteriaQuery<?>, CriteriaBuilder, Path<Vaccination>)}
+	 * {@link de.symeda.sormas.backend.vaccination.VaccinationService#isVaccinationRelevant(Case, Vaccination)}
+	 * {@link de.symeda.sormas.backend.vaccination.VaccinationService#getRelevantVaccinationPredicate(From, CriteriaQuery, CriteriaBuilder, Path)}
 	 *
 	 * will also need an update
 	 *
@@ -198,7 +199,7 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 	 * HEADS UP! When this method gets changed, most probably the database logic in
 	 * {@link de.symeda.sormas.backend.contact.ContactService#updateVaccinationStatuses(Long, Disease, Date)}
 	 * will also need an update.
-	 * 
+	 *
 	 * @param contact
 	 *            to decide whether the vaccination is relevant for
 	 * @param vaccination
@@ -233,7 +234,6 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 
 	/*
 	 * HEADS UP! If you make changes here, you most probably also need to update the database queries in
-	 * CaseService.updateVaccinationStatuses(...),
 	 * ContactService.updateVaccinationStatuses(...) and
 	 * EventParticipantService.updateVaccinationStatuses(...).
 	 */
@@ -269,15 +269,22 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 		return getRelevantVaccinationPredicate(cb, cb.literal(getRelevantVaccineDate(vaccination)), primaryDatePath, fallbackDatePath);
 	}
 
+	/**
+	 * HEADS UP! When this method gets changed, most probably the database logic in
+	 * {@link de.symeda.sormas.backend.vaccination.VaccinationService#isVaccinationRelevant(Vaccination, Date, Date)}
+	 * will also need an update.
+	 */
 	private Predicate getRelevantVaccinationPredicate(
 		CriteriaBuilder cb,
 		Expression<Date> vaccinationDate,
 		Expression<Date> primaryDatePath,
 		Expression<Date> fallbackDatePath) {
 
+		Expression<Date> vaccinationDateEndOfDay = cb.function(AT_END_OF_DAY, Date.class, vaccinationDate);
+
 		return cb.or(
-			cb.greaterThan(primaryDatePath, vaccinationDate),
-			cb.and(cb.isNull(primaryDatePath), cb.greaterThan(fallbackDatePath, vaccinationDate)));
+			cb.greaterThan(primaryDatePath, vaccinationDateEndOfDay),
+			cb.and(cb.isNull(primaryDatePath), cb.greaterThan(fallbackDatePath, vaccinationDateEndOfDay)));
 	}
 
 	/**

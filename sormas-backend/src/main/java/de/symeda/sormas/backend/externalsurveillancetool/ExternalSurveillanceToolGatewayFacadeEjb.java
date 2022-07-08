@@ -72,7 +72,7 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 		params.setCaseUuids(caseUuids);
 		params.setArchived(archived);
 
-		sendRequest(params);
+//		sendRequest(params);
 
 		caseUuids.forEach(uuid -> {
 			Case caze = caseService.getByUuid(uuid);

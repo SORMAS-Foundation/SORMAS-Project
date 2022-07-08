@@ -403,7 +403,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		}
 	}
 
-	public void incrementChangeDate(ADO ado) {
+	public void updateChangeDateToNow(ADO ado) {
 		Session session = em.unwrap(Session.class);
 		session.lock(ado, LockMode.OPTIMISTIC_FORCE_INCREMENT);
 

@@ -24,6 +24,7 @@ public class ExtendedPostgreSQL94Dialect extends PostgreSQL94Dialect {
 	public final static String WINDOW_COUNT = "window_count";
 	public final static String GREATEST = "greatest";
 	public final static String TIMESTAMP_SUBTRACT_DAYS = "timestamp_subtract_days";
+	public final static String AT_END_OF_DAY = "at_end_of_day";
 
 	public ExtendedPostgreSQL94Dialect() {
 		super();
@@ -50,5 +51,6 @@ public class ExtendedPostgreSQL94Dialect extends PostgreSQL94Dialect {
 		registerFunction(ARRAY_CONTAINS_TEXT, new SQLFunctionTemplate(StandardBasicTypes.BOOLEAN, "?1 @> array[?2]::text[]"));
 		registerFunction(JSON_EXTRACT_PATH_TEXT, new SQLFunctionTemplate(StandardBasicTypes.STRING, "json_extract_path_text(?1, ?2)"));
 		registerFunction(TIMESTAMP_SUBTRACT_DAYS, new SQLFunctionTemplate(StandardBasicTypes.DATE, "?1 - interval '?2 days'"));
+		registerFunction(AT_END_OF_DAY, new SQLFunctionTemplate(StandardBasicTypes.DATE, "?1::date + interval '1 day' - interval '1 microsecond'"));
 	}
 }

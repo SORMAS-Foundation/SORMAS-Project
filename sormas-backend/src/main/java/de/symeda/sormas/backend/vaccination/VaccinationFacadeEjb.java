@@ -127,7 +127,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			vaccination.getImmunization().getPerson().getId(),
 			vaccination.getImmunization().getDisease());
 
-		return convertToDto(existingVaccination, pseudonymizer);
+		return convertToDto(vaccination, pseudonymizer);
 	}
 
 	@Override
@@ -460,7 +460,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		Vaccination vaccination = vaccinationService.getByUuid(uuid);
 		Immunization immunization = vaccination.getImmunization();
 		immunization.getVaccinations().remove(vaccination);
-		immunizationService.incrementChangeDate(immunization);
+		immunizationService.updateChangeDateToNow(immunization);
 		immunizationService.ensurePersisted(immunization);
 
 		if (immunization.getVaccinations().isEmpty()) {

@@ -2030,11 +2030,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
 		Root<Case> root = cu.from(Case.class);
 
-		Subquery<Symptoms> symptomsSq = cu.subquery(Symptoms.class);
-		Root<Symptoms> symptomsSqRoot = symptomsSq.from(Symptoms.class);
-		symptomsSq.select(symptomsSqRoot.get(Symptoms.ONSET_DATE));
-		symptomsSq.where(cb.equal(symptomsSqRoot, root.get(Case.SYMPTOMS)));
-
 		cu.set(root.get(Case.VACCINATION_STATUS), VaccinationStatus.VACCINATED);
 		cu.set(root.get(AbstractDomainObject.CHANGE_DATE), new Date());
 
