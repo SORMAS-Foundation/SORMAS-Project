@@ -38,20 +38,26 @@ public class VaccinationListComponent extends SideComponent {
 	}
 
 	public VaccinationListComponent(VaccinationListCriteria criteria, Consumer<Runnable> actionCallback) {
+		this(criteria, actionCallback, true);
+	}
+
+	public VaccinationListComponent(VaccinationListCriteria criteria, Consumer<Runnable> actionCallback, boolean allowNewVaccine) {
 
 		super(I18nProperties.getString(Strings.entityVaccinations), actionCallback);
 
-		addCreateButton(
-			I18nProperties.getCaption(Captions.vaccinationNewVaccination),
-			() -> ControllerProvider.getVaccinationController()
-				.create(
-					criteria.getRegion(),
-					criteria.getDistrict(),
-					criteria.getPerson(),
-					criteria.getDisease(),
-					UiFieldAccessCheckers.getNoop(),
-					v -> SormasUI.refreshView()),
-			UserRight.IMMUNIZATION_CREATE);
+		if (allowNewVaccine) {
+			addCreateButton(
+				I18nProperties.getCaption(Captions.vaccinationNewVaccination),
+				() -> ControllerProvider.getVaccinationController()
+					.create(
+						criteria.getRegion(),
+						criteria.getDistrict(),
+						criteria.getPerson(),
+						criteria.getDisease(),
+						UiFieldAccessCheckers.getNoop(),
+						v -> SormasUI.refreshView()),
+				UserRight.IMMUNIZATION_CREATE);
+		}
 
 		Function<Integer, List<VaccinationListEntryDto>> entriesListSupplier;
 
