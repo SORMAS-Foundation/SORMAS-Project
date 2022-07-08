@@ -154,8 +154,6 @@ Feature: Edit Persons
     Then I navigate to the last created via api Person page via URL
     And I check General comment field is enabled on Edit Person page
 
-
-
   @issue=SORDEV-7424 @env_main
   Scenario: Test event participant person sex required
     Given API: I create a new event
