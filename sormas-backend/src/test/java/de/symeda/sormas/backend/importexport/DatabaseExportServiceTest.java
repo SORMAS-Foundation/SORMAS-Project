@@ -58,15 +58,14 @@ public class DatabaseExportServiceTest {
 	}
 
 	private static final List<Class<?>> NOT_EXPORTED_ENTITIES = Arrays.asList(
-		DirectoryImmunization.class,
-		LastVaccinationDate.class,
-		ManualMessageLog.class,
-		UserReference.class,
-		LastVaccineType.class,
-		SystemEvent.class,
-		FirstVaccinationDate.class,
-		AuditLogEntry.class,
-		UserRole.class);
+			DirectoryImmunization.class,
+			LastVaccinationDate.class,
+			ManualMessageLog.class,
+			UserReference.class,
+			LastVaccineType.class,
+			SystemEvent.class,
+			FirstVaccinationDate.class,
+			AuditLogEntry.class);
 
 	@Test
 	public void test_all_entities_have_export_configuration() {
