@@ -46,8 +46,8 @@ public class SymptomsTabPage {
       By.cssSelector("#respiratoryDiseaseVentilation label");
   public static final By RUNNY_NOSE_OPTIONS = By.cssSelector("#runnyNose label");
   public static final By SORE_THROAT_OPTIONS = By.cssSelector("#soreThroat label");
-  public static final By SORE_THROAT_YES_OPTION =
-      By.xpath("//div[@id='soreThroat']//label[contains(text(), 'Yes')]");
+  public static final By SORE_THROAT_YES_OPTION_DE =
+      By.xpath("//div[@id='soreThroat']//label[contains(text(), 'Ja')]");
   public static final By FAST_HEART_RATE_OPTIONS = By.cssSelector("#fastHeartRate label");
   public static final By DIARRHEA_OPTIONS = By.cssSelector("#diarrhea label");
   public static final By NAUSEA_OPTIONS = By.cssSelector("#nausea label");

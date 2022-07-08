@@ -306,6 +306,7 @@ public class CreateNewTravelEntrySteps implements En {
         "^I fill the required fields in a new case travel entry form$",
         () -> {
           travelEntry = travelEntryService.buildGeneratedEntryDE();
+          fillDateOfArrival(travelEntry.getDateOfArrival(), Locale.GERMAN);
           selectResponsibleRegion(travelEntry.getResponsibleRegion());
           selectResponsibleDistrict(travelEntry.getResponsibleDistrict());
           selectResponsibleCommunity(travelEntry.getResponsibleCommunity());
@@ -675,7 +676,6 @@ public class CreateNewTravelEntrySteps implements En {
           String uuid;
           if (option.equals("first")) uuid = TravelEntryUuidList.get(0).getUuid();
           else uuid = TravelEntryUuidList.get(1).getUuid();
-          webDriverHelpers.clearWebElement(PERSON_FILTER_INPUT);
           TimeUnit.SECONDS.sleep(2); // wait for filter
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.fillAndSubmitInWebElement(PERSON_FILTER_INPUT, uuid);

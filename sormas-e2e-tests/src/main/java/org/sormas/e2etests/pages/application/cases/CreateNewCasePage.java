@@ -65,6 +65,7 @@ public class CreateNewCasePage {
   public static final By PRIMARY_PHONE_NUMBER_INPUT = By.cssSelector(".v-window #phone");
   public static final By PRIMARY_EMAIL_ADDRESS_INPUT = By.cssSelector(".v-window #emailAddress");
   public static final By CONTACT_CASE_SAVE_BUTTON = By.xpath("//div[@id='commit']");
+  public static final By CONTACT_CASE_POPUP_SAVE_BUTTON = By.cssSelector(".popupContent #commit");
   public static final By ENTER_HOME_ADDRESS_CHECKBOX =
       By.cssSelector("[location='enterHomeAddressNow'] span.v-checkbox");
   public static final By CASE_DISEASE_VARIANT_COMBOBOX =

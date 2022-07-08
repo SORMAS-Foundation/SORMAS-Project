@@ -76,7 +76,7 @@ public class TaskService {
         .suggestedStartTime(LocalTime.of(12, 30))
         .dueDateDate(LocalDate.now().plusDays(2))
         .dueDateTime(LocalTime.of(13, 30))
-        .assignedTo("Surveillance OFFICER")
+        .assignedTo("Surveillance SUPERVISOR")
         .priority("High")
         .commentsOnTask("Task comment-" + timeStamp)
         .commentsOnExecution("Execution comment-" + timeStamp)
@@ -88,7 +88,7 @@ public class TaskService {
     return buildGeneratedTask().toBuilder()
         .taskContext("EVENT")
         .taskType("vaccination activities")
-        .assignedTo("National USER")
+        .assignedTo("Nat USER")
         .build();
   }
 }

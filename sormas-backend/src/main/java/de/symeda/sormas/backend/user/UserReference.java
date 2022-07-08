@@ -83,7 +83,9 @@ public class UserReference extends AbstractDomainObject {
 	}
 
 	@ManyToMany(cascade = {}, fetch = FetchType.EAGER)
-	@JoinTable(name = User.TABLE_NAME_USERROLES, joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "userrole_id"))
+	@JoinTable(name = User.TABLE_NAME_USERS_USERROLES,
+		joinColumns = @JoinColumn(name = "user_id"),
+		inverseJoinColumns = @JoinColumn(name = "userrole_id"))
 	public Set<UserRole> getUserRoles() {
 		return userRoles;
 	}

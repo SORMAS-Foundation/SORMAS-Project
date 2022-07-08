@@ -162,3 +162,23 @@ Feature: Immunization end to end tests
     And I check if Date of recovery is equal with created case
     Then I click on Open Case button in Edit immunization
     Then I check if collected case UUID is equal with current
+
+  @issue=SORDEV-8536 @env_main
+  Scenario: Test pseudonymization in immunization
+    Given I log in as a National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I fill new case form with specific data
+    And I click on save case button
+    And I check the created data is correctly displayed on Edit case page
+    And I click on the NEW IMMUNIZATION button from Edit case page
+    And I fill a new immunization form with "Berlin" as a responsible region and "SK Berlin Mitte" as a responsible district
+    And I click on save button in New Immunization form
+    And I check the specific created data is correctly displayed on Edit immunization page
+    And I click on logout button from navbar
+    And I log in as a Surveillance Officer
+    Then I click on the Cases button from navbar
+    And I filter by CaseID of last created UI Case on Case directory page
+    And I click on the first Case ID from Case Directory
+    And I navigate to linked immunization on Edit case page
+    Then I check that Immunization data is displayed as read-only on Edit immunization page

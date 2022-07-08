@@ -4,25 +4,25 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ContinentIndexDto extends ContinentDto {
 
-    public static final String DISPLAY_NAME = "displayName";
+	public static final String DISPLAY_NAME = "displayName";
 
-    private String displayName;
+	private String displayName;
 
-    public String getDisplayName() {
-        return displayName;
-    }
+	public String getDisplayName() {
+		return displayName;
+	}
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
 
-    @Override
-    public String getCaption() {
-        return getDefaultName();
-    }
+	@Override
+	public String buildCaption() {
+		return getDefaultName();
+	}
 
-    @JsonIgnore
-    public String i18nPrefix() {
-        return I18N_PREFIX;
-    }
+	@JsonIgnore
+	public String i18nPrefix() {
+		return I18N_PREFIX;
+	}
 }

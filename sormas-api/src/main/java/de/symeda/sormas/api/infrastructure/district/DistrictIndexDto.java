@@ -73,7 +73,7 @@ public class DistrictIndexDto extends EntityDto {
 	}
 
 	@Override
-	public String getCaption() {
+	public String buildCaption() {
 		return getName();
 	}
 

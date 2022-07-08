@@ -22,6 +22,8 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DATE_EXPOSURE_TABLE;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DONE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EDIT_SAVED_ACTIVITY_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EDIT_SAVED_EXPOSURE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EDIT_TRAVEL_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.END_OF_EXPOSURE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EPIDEMIOLOGICAL_DATA_ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON;
@@ -156,7 +158,7 @@ public class EpidemiologicalDataCaseSteps implements En {
     When(
         "I check if created Activity as Case appears in a grid for Epidemiological data tab in Cases",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(OPEN_SAVED_ACTIVITY_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EDIT_SAVED_ACTIVITY_BUTTON);
         });
 
     When(
@@ -523,8 +525,8 @@ public class EpidemiologicalDataCaseSteps implements En {
     When(
         "I am checking all Exposure data is saved and displayed",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(OPEN_SAVED_EXPOSURE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_EXPOSURE_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EDIT_SAVED_EXPOSURE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_SAVED_EXPOSURE_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(START_OF_EXPOSURE_INPUT);
           Exposure generatedExposureData =
               epidemiologicalData.getExposures().stream()
@@ -546,7 +548,7 @@ public class EpidemiologicalDataCaseSteps implements En {
 
     Then(
         "I open saved activity from Epidemiological Data",
-        () -> webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_ACTIVITY_BUTTON));
+        () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_SAVED_ACTIVITY_BUTTON));
 
     Then(
         "I check that Date field displays start date and end date in table Exposure on Epidemiological data tab",

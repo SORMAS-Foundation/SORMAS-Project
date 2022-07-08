@@ -378,6 +378,14 @@ public class CreateNewUserSteps implements En {
     webDriverHelpers.selectFromCombobox(REGION_COMBOBOX, region);
   }
 
+  private void selectSurveillanceRegion(String surveillanceRegion) {
+    webDriverHelpers.selectFromCombobox(SURVEILLANCE_REGION, surveillanceRegion);
+  }
+
+  private void selectSurveillanceDistrict(String surveillanceDistrict) {
+    webDriverHelpers.selectFromCombobox(SURVEILLANCE_DISTRICT, surveillanceDistrict);
+  }
+
   private void selectDistrict(String district) {
     webDriverHelpers.waitUntilElementIsVisibleAndClickable(DISTRICT_COMBOBOX);
     webDriverHelpers.selectFromCombobox(DISTRICT_COMBOBOX, district);

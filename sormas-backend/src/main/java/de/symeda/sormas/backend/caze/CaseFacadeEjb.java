@@ -2032,8 +2032,14 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 
 		District survOffDistrict = newCase.getSurveillanceOfficer() != null ? newCase.getSurveillanceOfficer().getDistrict() : null;
-		if (survOffDistrict == null
-			|| (!survOffDistrict.equals(newCase.getResponsibleDistrict()) && !survOffDistrict.equals(newCase.getDistrict()))) {
+		Region survOffRegion = newCase.getSurveillanceOfficer() != null ? newCase.getSurveillanceOfficer().getRegion() : null;
+
+		boolean missingSurvOffDistrict =
+			survOffDistrict == null || (!survOffDistrict.equals(newCase.getResponsibleDistrict()) && !survOffDistrict.equals(newCase.getDistrict()));
+		boolean missingSurvOffRegion =
+			survOffRegion == null || (!survOffRegion.equals(newCase.getResponsibleRegion()) && !survOffRegion.equals(newCase.getRegion()));
+
+		if (missingSurvOffDistrict && missingSurvOffRegion) {
 			setCaseResponsible(newCase);
 		}
 
