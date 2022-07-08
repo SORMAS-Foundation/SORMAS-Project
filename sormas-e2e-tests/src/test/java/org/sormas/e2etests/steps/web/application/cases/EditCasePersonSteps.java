@@ -120,10 +120,10 @@ public class EditCasePersonSteps implements En {
         (String expectedCaseClassification) -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 30);
           String caseClassificationValue =
-              webDriverHelpers.getTextFromWebElement(CASE_CLASSIFICATION_SPAN);
+              webDriverHelpers.getValueFromWebElement(CASE_CLASSIFICATION_INPUT);
           Assert.assertEquals(
               caseClassificationValue,
-              CaseClassification.getUIValueFor(expectedCaseClassification).toUpperCase(),
+              CaseClassification.getDeUIValueFor(expectedCaseClassification),
               "Case classification value is wrong");
         });
 

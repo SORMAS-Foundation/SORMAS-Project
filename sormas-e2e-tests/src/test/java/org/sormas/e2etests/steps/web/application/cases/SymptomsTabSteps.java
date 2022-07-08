@@ -71,6 +71,7 @@ public class SymptomsTabSteps implements En {
       RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
     String firstSymptom = "Sore throat/pharyngitis";
+    String firstSymptomDE = "Halsentz\u00FCndung/Pharyngitis";
 
     When(
         "I check the created data is correctly displayed on Symptoms tab page",
@@ -199,13 +200,13 @@ public class SymptomsTabSteps implements En {
     // TODO refactor this to be provide the checkbox and select any option not only yes
     And(
         "I check Yes Option for Soar Throat on Symptoms tab page",
-        () -> webDriverHelpers.clickOnWebElementBySelector(SORE_THROAT_YES_OPTION));
+        () -> webDriverHelpers.clickOnWebElementBySelector(SORE_THROAT_YES_OPTION_DE));
 
     And(
         "I select sore throat option",
         () -> {
           webDriverHelpers.scrollToElement(FIRST_SYMPTOM_COMBOBOX);
-          selectFistSymptom(firstSymptom);
+          selectFistSymptom(firstSymptomDE);
           // TODO refactor this to allow selecting any option from this view
         });
 

@@ -164,6 +164,7 @@ Feature: Create travel entries
     And I collect travel UUID from travel entry
     And I navigate to person tab in Edit travel entry page
     And I check the created data is correctly displayed on Edit travel entry person page for DE version
+    And I collect the Travel Entry person UUID displayed on Travel Entry Person page
     And I navigate to Edit travel entry page
     When I click on new case button for travel entry
     Then I check if data from travel entry for new case is correct

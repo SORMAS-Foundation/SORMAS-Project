@@ -147,6 +147,8 @@ public class EditEventPage {
       By.xpath("//span[contains(@class, 'v-icon-info_circle')]");
   public static final By COUNTRY_COMBOBOX =
       By.cssSelector("[id='country'] [class='v-filterselect-button']");
+  public static final By DEFAULT_COMBOBOX_VALUE = By.cssSelector(".v-filterselect-suggestmenu td");
+  public static final By COUNTRY_COMBOBOX_INPUT = By.cssSelector("#country input");
   public static final By COUNTRY_COMBOBOX_DIABLED =
       By.xpath("//div[@id=\"country\" and contains(@class, 'v-disabled')]");
   public static final By REASON_FOR_DELETION_MARK =

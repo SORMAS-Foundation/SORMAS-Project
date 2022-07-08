@@ -63,7 +63,8 @@ public class CreateNewContactPage {
       By.cssSelector(".popupContent #contactCategory> span label");
   public static final By SAVE_BUTTON = By.id("commit");
   public static final By MULTI_DAY_CONTACT_LABEL = By.xpath("//*[@id='multiDayContact']/label");
-  public static final By FIRST_DAY_CONTACT_DATE = By.cssSelector("#firstContactDate input");
+  public static final By FIRST_DAY_CONTACT_DATE =
+      By.cssSelector(".popupContent #firstContactDate input");
   public static final By CHOOSE_CASE_BUTTON = By.id("contactChooseCase");
   public static final By SOURCE_CASE_WINDOW_CONTACT_DE =
       By.xpath("//div[contains(@class, 'popupContent')]//input[@placeholder='Suche...']");

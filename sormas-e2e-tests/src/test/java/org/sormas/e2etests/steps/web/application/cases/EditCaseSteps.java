@@ -242,7 +242,9 @@ import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.pages.application.events.EditEventPage;
+import org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage;
 import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.web.application.immunizations.EditImmunizationSteps;
 import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
@@ -1026,6 +1028,7 @@ public class EditCaseSteps implements En {
     When(
         "I check if ([^\"]*) quarantine popup is displayed",
         (String option) -> {
+          TimeUnit.SECONDS.sleep(2);
           String quarantineText;
           String expectedTextReduce = "Are you sure you want to reduce the quarantine?";
           String expectedTextExtend = "Are you sure you want to extend the quarantine?";
@@ -1680,9 +1683,7 @@ public class EditCaseSteps implements En {
               "Date of follow-up status change is invalid!");
 
           softly.assertEquals(
-              responsibleUserForFollowUpStatusChange,
-              "Autoation NATIONAL",
-              "Responsible User is invalid!");
+              responsibleUserForFollowUpStatusChange, "Nat USER", "Responsible User is invalid!");
 
           softly.assertAll();
         });
@@ -1918,6 +1919,33 @@ public class EditCaseSteps implements En {
     When(
         "I click on Edit Immunization button on Edit Case",
         () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_IMMUNIZATION_BUTTON));
+
+    And(
+        "^I click on the NEW IMMUNIZATION button from Edit case page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              NEW_IMMUNIZATION_BUTTON, 30);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_IMMUNIZATION_BUTTON);
+        });
+
+    And(
+        "^I click on save button in New Immunization form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EditImmunizationPage.UUID);
+        });
+
+    And(
+        "^I navigate to linked immunization on Edit case page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(
+              getByImmunizationUuid(EditImmunizationSteps.collectedImmunization.getUuid()));
+
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              EditImmunizationPage.DATE_OF_REPORT_INPUT);
+        });
   }
 
   private Case collectCasePersonUuid() {
