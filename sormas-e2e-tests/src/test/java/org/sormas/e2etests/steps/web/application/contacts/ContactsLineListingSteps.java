@@ -89,9 +89,9 @@ public class ContactsLineListingSteps implements En {
           selectRelationshipWithCase(contactsLineListing.getRelationshipWithCase());
           fillFirstName(contactsLineListing.getFirstName());
           fillLastName(contactsLineListing.getLastName());
-            selectBirthYear(contactsLineListing.getBirthYear());
-            selectBirthMonth(contactsLineListing.getBirthMonth());
-            selectBirthDay(contactsLineListing.getBirthDay());
+          selectBirthYear(contactsLineListing.getBirthYear());
+          selectBirthMonth(contactsLineListing.getBirthMonth());
+          selectBirthDay(contactsLineListing.getBirthDay());
           selectSex(contactsLineListing.getSex());
         });
     When(
