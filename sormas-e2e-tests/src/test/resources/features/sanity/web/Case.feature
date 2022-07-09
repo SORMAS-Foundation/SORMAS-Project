@@ -1426,7 +1426,7 @@ Feature: Case end to end tests
     And I check if General comment test area is disabled in Edit Case
 
   @issue=SORDEV-11422 @env_de
-  Scenario: Add reason for deletion to confirmation dialogue
+  Scenario: Add reason for deletion to confirmation dialogue in DE version
     Given I log in as a Admin User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
