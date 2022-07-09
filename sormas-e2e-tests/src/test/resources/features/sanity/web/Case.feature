@@ -1425,7 +1425,7 @@ Feature: Case end to end tests
     And I check if EPID number input is disabled in Edit Case
     And I check if General comment test area is disabled in Edit Case
 
-  @issue=SORDEV-11422 @env_de @testIt
+  @issue=SORDEV-11422 @env_de
   Scenario: Add reason for deletion to confirmation dialogue
     Given I log in as a Admin User
     And I click on the Cases button from navbar
@@ -1453,5 +1453,4 @@ Feature: Case end to end tests
     And I click on Yes option in Confirm deletion popup
     When I back to deleted case by url
     Then I check if reason of deletion is set to "Löschen auf Anforderung der betroffenen Person nach DSGVO"
-    And I check if EPID number input is disabled in Edit Case
     And I check if General comment test area is disabled in Edit Case
