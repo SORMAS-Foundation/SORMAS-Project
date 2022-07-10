@@ -20,12 +20,13 @@ public class CaseLineListingSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   protected static Case caze;
   public static Case caseLineListing;
+  public static Case duplicateCaseLineListingDe;
 
   @Inject
   public CaseLineListingSteps(
       WebDriverHelpers webDriverHelpers, CaseService caseService, final SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
-
+    duplicateCaseLineListingDe = caseService.buildCaseForLineListingFeatureDE();
     When(
         "^I create a new case in line listing feature popup for DE version$",
         () -> {
@@ -43,6 +44,24 @@ public class CaseLineListingSteps implements En {
           fillDateOfBirth(caze.getDateOfBirth(), Locale.GERMAN);
           selectSex(caze.getSex());
           fillDateOfSymptom(caze.getDateOfSymptomOnset(), Locale.GERMAN);
+        });
+
+    When(
+        "^I create a new duplicate case in line listing feature popup for DE version$",
+        () -> {
+          selectRegion(duplicateCaseLineListingDe.getRegion());
+          selectDistrict(duplicateCaseLineListingDe.getDistrict());
+          selectFacilityCategory(duplicateCaseLineListingDe.getFacilityCategory());
+          selectFacilityType(duplicateCaseLineListingDe.getFacilityType());
+          fillDateOfReport(duplicateCaseLineListingDe.getDateOfReport(), Locale.GERMAN);
+          selectCommunity(duplicateCaseLineListingDe.getCommunity());
+          selectFacility("Andere Einrichtung");
+          fillFacilityName(duplicateCaseLineListingDe.getPlaceDescription());
+          fillFirstName(duplicateCaseLineListingDe.getFirstName());
+          fillLastName(duplicateCaseLineListingDe.getLastName());
+          fillDateOfBirth(duplicateCaseLineListingDe.getDateOfBirth(), Locale.GERMAN);
+          selectSex(duplicateCaseLineListingDe.getSex());
+          fillDateOfSymptom(duplicateCaseLineListingDe.getDateOfSymptomOnset(), Locale.GERMAN);
         });
 
     When(

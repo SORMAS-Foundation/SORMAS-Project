@@ -73,6 +73,7 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.TYPE_OF_PLACE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.WEARING_MASK_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.WEARING_PPE_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.LineListingPopup.LINE_LISTING_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ACTION_MERGE_CONTACT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ACTIVE_CONTACT_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ALL_BUTTON_CONTACT;
@@ -99,7 +100,6 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DISEASE_VARIANT_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DISPLAY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_FOLLOW_UP_FILTER_COMBOBOX;
-import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_GRID_RESULTS_ROWS;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_MERGE_DUPLICATES;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONVERTED_TO_CASE_BUTTON;
@@ -809,7 +809,7 @@ public class ContactDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
               CONTACT_DIRECTORY_DETAILED_PAGE_CONFIRM_FILTER_BUTTON);
-          //TODO -> replace with wait for counter to change implementation
+          // TODO -> replace with wait for counter to change implementation
           TimeUnit.SECONDS.sleep(2);
         });
 
@@ -899,6 +899,7 @@ public class ContactDirectorySteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LINE_LISTING);
           webDriverHelpers.doubleClickOnWebElementBySelector(LINE_LISTING);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(LINE_LISTING_SAVE_BUTTON);
         });
 
     And(
