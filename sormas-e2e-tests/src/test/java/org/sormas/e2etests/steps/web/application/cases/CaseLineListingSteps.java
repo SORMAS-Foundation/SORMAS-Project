@@ -92,7 +92,7 @@ public class CaseLineListingSteps implements En {
         "^I save the new line listing case$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(25);
+          TimeUnit.SECONDS.sleep(2);
         });
 
     When(
