@@ -25,6 +25,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
+import com.vaadin.ui.renderers.NumberRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -44,6 +45,8 @@ import de.symeda.sormas.ui.utils.ShowDetailsListener;
 public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, CampaignFormDataCriteria> {
 
 	private static final long serialVersionUID = 8045806100043073638L;
+	
+	NumberRenderer numberRenderer = new NumberRenderer();
 
 	public CampaignDataGrid(CampaignFormDataCriteria criteria) {
 		
@@ -89,11 +92,12 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 
 		((Column<CampaignFormDataIndexDto, Date>) getColumn(CampaignFormDataIndexDto.FORM_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(I18nProperties.getUserLanguage())));
+		
 
 		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
+			column.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataIndexDto.I18N_PREFIX, column.getId(), column.getCaption())).setSortable(true);
 			column.setDescriptionGenerator(CampaignFormDataIndexDto -> column.getCaption()); //set the description of default columns #94-iyanuu
-			
+			column.setSortable(true);
 		}
 	}
 

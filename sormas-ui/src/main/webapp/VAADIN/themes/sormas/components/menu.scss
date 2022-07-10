@@ -18,11 +18,11 @@ $valo-menu-background-color: $s-default-color !default;
       color: $s-default-color;
       cursor: pointer;
       font-weight: bold;
-      font-size: 32px;
+      font-size: 32px; 
       line-height: 32px;
       font-family: 'Source Sans Pro';
       letter-spacing: -1px;  
-      border-bottom: 3px solid $s-critical-color;
+      border-bottom: 2px solid #F28A35 ;
     }
     
     .valo-menu-part {
