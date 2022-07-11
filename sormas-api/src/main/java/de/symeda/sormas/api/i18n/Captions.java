@@ -2409,11 +2409,9 @@ public interface Captions {
 	String UserRight_jurisdictionOfRole = "UserRight.jurisdictionOfRole";
 	String userRights = "userRights";
 	String userRole = "userRole";
-	String userRoles = "userRoles";
 	String UserRole_caption = "UserRole.caption";
 	String UserRole_description = "UserRole.description";
 	String UserRole_emailNotificationTypes = "UserRole.emailNotificationTypes";
-	String UserRole_uuid = "UserRole.uuid";
 	String UserRole_enabled = "UserRole.enabled";
 	String UserRole_hasAssociatedDistrictUser = "UserRole.hasAssociatedDistrictUser";
 	String UserRole_hasOptionalHealthFacility = "UserRole.hasOptionalHealthFacility";
@@ -2421,7 +2419,9 @@ public interface Captions {
 	String UserRole_portHealthUser = "UserRole.portHealthUser";
 	String UserRole_smsNotificationTypes = "UserRole.smsNotificationTypes";
 	String UserRole_userRights = "UserRole.userRights";
+	String UserRole_uuid = "UserRole.uuid";
 	String userRoleNewUserRole = "userRoleNewUserRole";
+	String userRoles = "userRoles";
 	String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";
 	String Vaccination = "Vaccination";
 	String Vaccination_otherVaccineManufacturer = "Vaccination.otherVaccineManufacturer";
@@ -2543,8 +2543,8 @@ public interface Captions {
 	String View_tasks_archive = "View.tasks.archive";
 	String View_tasks_sub = "View.tasks.sub";
 	String View_travelEntries = "View.travelEntries";
-    String View_user_users = "View.user.users";
-    String View_user_userroles = "View.user.userroles";
+	String View_user_userroles = "View.user.userroles";
+	String View_user_users = "View.user.users";
 	String View_users_sub = "View.users.sub";
 	String Visit = "Visit";
 	String Visit_disease = "Visit.disease";
