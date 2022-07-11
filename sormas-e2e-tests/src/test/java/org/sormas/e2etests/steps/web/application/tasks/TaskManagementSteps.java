@@ -421,15 +421,14 @@ public class TaskManagementSteps implements En {
     When(
         "I click on the Detailed Task Export button",
         () -> {
-          String file =
-              "C:\\Users\\lukas\\Downloads\\sormas_tasks_"
-                  + LocalDate.now().format(formatter)
-                  + "_.csv";
+
+          //String file = "C:\\Users\\lukas\\Downloads\\sormas_tasks_" + LocalDate.now().format(formatter) + "_.csv";
+
+          String file = "./downloads/sormas_tasks_" + LocalDate.now().format(formatter) + "_.csv";
+
           Path file_path = Paths.get(file);
 
-          // String file = "./downloads/sormas_tasks_" + LocalDate.now().format(formatter) +
-          // "_.csv";
-          TimeUnit.SECONDS.sleep(8); // wait for basic download if in parallel
+            TimeUnit.SECONDS.sleep(8); // wait for basic download if in parallel
           webDriverHelpers.clickOnWebElementBySelector(DETAILED_EXPORT_BUTTON);
           TimeUnit.SECONDS.sleep(8); // wait for download start
           webDriverHelpers.waitForFileExists(file_path, 90);
