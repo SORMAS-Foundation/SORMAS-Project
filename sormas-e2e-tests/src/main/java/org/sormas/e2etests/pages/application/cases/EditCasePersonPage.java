@@ -66,4 +66,10 @@ public class EditCasePersonPage {
   public static final By MOTHERS_MAIDEN_NAME_INPUT = By.cssSelector("#mothersMaidenName");
   public static final By MOTHERS_NAME_INPUT = By.cssSelector("#mothersName");
   public static final By FATHERS_NAME_INPUT = By.cssSelector("#fathersName");
+  public static final By TELEPHONE_PRIMARY =
+      By.xpath(
+          "//div[@id=\"personContactDetails\"]//td[@class=\"v-table-cell-content\"]//div[text()=\"Telefon \"]");
+  public static final By EMAIL_PRIMARY =
+      By.xpath(
+          "//div[@id=\"personContactDetails\"]//td[@class=\"v-table-cell-content\"]//div[text()=\"E-Mail\"]");
 }

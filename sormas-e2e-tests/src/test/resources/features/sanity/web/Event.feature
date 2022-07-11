@@ -1031,3 +1031,30 @@ Feature: Create events
         | Semicolon       |
         | Tab             |
         | Default (Comma) |
+
+  @issue=SORQA-7093 @env_main
+  Scenario: Allow the admin surveillance supervisor to delete events
+    Given API: I create a new event
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I navigate to SORMAS login page
+    Then I log in as a Admin Surveillance Supervisor
+    And I click on the Events button from navbar
+    And I navigate to the last created through API Event page via URL
+    When I click Delete button on Edit Event page
+    When I set Reason for deletion to "Deletion request by affected person according to GDPR" on Edit Event Page
+    When I confirm popup window
+    And I check that previous opened Event was deleted
+
+  @issue=SORQA-7093 @env_main
+  Scenario: Allow the admin surveillance supervisor to archive events
+    Given API: I create a new event
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I navigate to SORMAS login page
+    Then I log in as a Admin Surveillance Supervisor
+    And I click on the Events button from navbar
+    And I navigate to the last created through API Event page via URL
+    When I click on the Archive event button
+    When I confirm Archive event popup
+    And I check event is it archived
