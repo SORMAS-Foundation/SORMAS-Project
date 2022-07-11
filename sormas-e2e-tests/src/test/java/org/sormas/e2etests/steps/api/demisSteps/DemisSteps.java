@@ -20,18 +20,18 @@ package org.sormas.e2etests.steps.api.demisSteps;
 import cucumber.api.java8.En;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import org.sormas.e2etests.helpers.api.demis.DemisHelper;
+import org.sormas.e2etests.entities.services.api.demis.DemisApiService;
 
 @Slf4j
-public class DemisLoginSteps implements En {
+public class DemisSteps implements En {
 
   @Inject
-  public DemisLoginSteps(DemisHelper demisHelper) {
+  public DemisSteps(DemisApiService demisApiService) {
 
     Given(
-        "calule mananci ovaz",
+        "API : Login to DEMIS server",
         () -> {
-          demisHelper.loginRequest();
+          demisApiService.loginRequest();
         });
   }
 }

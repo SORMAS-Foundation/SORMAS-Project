@@ -160,7 +160,3 @@ Feature: Check basic POSTs RestApi endpoints
       | numberOfImmunizations |
       | 1                     |
       | 5                     |
-
-  @env_main
-  Scenario: Check demis token
-    Given calule mananci ovaz
