@@ -1,9 +1,9 @@
 package de.symeda.sormas.api.user;
 
+import java.io.Serializable;
+
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
-
-import java.io.Serializable;
 
 public class UserRoleCriteria extends BaseCriteria implements Serializable {
 

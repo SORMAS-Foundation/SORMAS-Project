@@ -2421,7 +2421,6 @@ public interface Captions {
 	String UserRole_userRights = "UserRole.userRights";
 	String UserRole_uuid = "UserRole.uuid";
 	String userRoleNewUserRole = "userRoleNewUserRole";
-	String userRoles = "userRoles";
 	String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";
 	String Vaccination = "Vaccination";
 	String Vaccination_otherVaccineManufacturer = "Vaccination.otherVaccineManufacturer";

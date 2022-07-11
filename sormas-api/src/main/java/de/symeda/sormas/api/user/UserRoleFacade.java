@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
-import de.symeda.sormas.api.utils.SortProperty;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
@@ -28,6 +26,8 @@ import java.util.Set;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+
+import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface UserRoleFacade {
