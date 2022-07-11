@@ -107,7 +107,7 @@ public class UserProvider {
 	}
 
 	public boolean isAdmin() {
-		return (user.getUserRoles().stream().filter(i->i.getCaption().contains(I18nProperties.getEnumCaption(DefaultUserRole.ADMIN))).count() == 1);
+		return (user.getUserRoles().stream().filter(i -> i.getCaption().contains(I18nProperties.getEnumCaption(DefaultUserRole.ADMIN))).count() == 1);
 	}
 
 	public boolean hasRegionJurisdictionLevel() {
