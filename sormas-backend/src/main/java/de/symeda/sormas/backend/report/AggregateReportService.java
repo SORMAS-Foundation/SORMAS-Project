@@ -38,7 +38,7 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 		From<AggregateReport, AggregateReport> from) {
 
 		Predicate filter = null;
-		boolean isForcedJurisdictionCheck = Boolean.TRUE.equals(criteria.isForceJurisdictionCheck());
+		boolean isForcedJurisdictionCheck = Boolean.TRUE.equals(criteria.isConsiderNullJurisdictionCheck());
 
 		if (criteria.getRegion() != null) {
 			filter = CriteriaBuilderHelper

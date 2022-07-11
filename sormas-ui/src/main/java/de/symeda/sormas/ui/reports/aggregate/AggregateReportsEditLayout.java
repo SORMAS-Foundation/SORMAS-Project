@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.utils.AgeGroupUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.ErrorMessage;
@@ -261,12 +262,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		editForms.stream()
 			.sorted(
 				Comparator.comparing(AggregateReportEditForm::getDisease, Comparator.nullsFirst(Comparator.comparing(Disease::toString)))
-					.thenComparing(
-						r -> r.getAgeGroup() != null
-							? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
-							: StringUtils.EMPTY)
-					.thenComparing(
-						r -> r.getAgeGroup() != null ? Integer.parseInt(r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0))
+					.thenComparing(AggregateReportEditForm::getAgeGroup, AgeGroupUtils.getComparator()))
 			.forEach(this::addComponent);
 
 		if (!editForms.isEmpty()) {
@@ -317,7 +313,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			criteria.setHealthFacility(comboBoxFacility.getValue());
 			criteria.setPointOfEntry(comboBoxPoe.getValue());
 			criteria.setRegion(comboBoxRegion.getValue());
-			criteria.setForceJurisdictionCheck(true);
+			criteria.setConsiderNullJurisdictionCheck(true);
 			reports = FacadeProvider.getAggregateReportFacade().getAggregateReports(criteria);
 			if (!reports.isEmpty()) {
 				popUpIsShown = true;

@@ -591,7 +591,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		criteria.setEpiWeekFrom(new EpiWeek(aggregateReportDto.getYear(), aggregateReportDto.getEpiWeek()));
 		criteria.setEpiWeekTo(new EpiWeek(aggregateReportDto.getYear(), aggregateReportDto.getEpiWeek()));
 		criteria.setReportingUser(aggregateReportDto.getReportingUser());
-		criteria.setForceJurisdictionCheck(true);
+		criteria.setConsiderNullJurisdictionCheck(true);
 
 		List<AggregateReportDto> reports = getAggregateReports(criteria);
 
