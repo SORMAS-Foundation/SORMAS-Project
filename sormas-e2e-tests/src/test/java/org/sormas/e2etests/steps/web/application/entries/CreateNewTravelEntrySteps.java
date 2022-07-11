@@ -306,6 +306,7 @@ public class CreateNewTravelEntrySteps implements En {
         "^I fill the required fields in a new case travel entry form$",
         () -> {
           travelEntry = travelEntryService.buildGeneratedEntryDE();
+          fillDateOfArrival(travelEntry.getDateOfArrival(), Locale.GERMAN);
           selectResponsibleRegion(travelEntry.getResponsibleRegion());
           selectResponsibleDistrict(travelEntry.getResponsibleDistrict());
           selectResponsibleCommunity(travelEntry.getResponsibleCommunity());
@@ -628,6 +629,20 @@ public class CreateNewTravelEntrySteps implements En {
               "User name is invalid");
           softly.assertAll();
         });
+    When(
+        "I check that Point of Entry and Point of Entry details are generated automatically by system and appear on Edit Travel Entry page",
+        () -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromCombobox(EditTravelEntryPage.POINT_OF_ENTRY_COMBOBOX),
+              "Anderer Einreiseort",
+              "Point of Entry is not set properly");
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(
+                  EditTravelEntryPage.POINT_OF_ENTRY_DETAILS_INPUT),
+              "[System] Automatisch bef\u00FCllter Einreiseort",
+              "Point of Entry Details are not set properly");
+          softly.assertAll();
+        });
 
     When(
         "^I check Pick an existing case in Pick or create person popup in travel entry$",
@@ -675,7 +690,6 @@ public class CreateNewTravelEntrySteps implements En {
           String uuid;
           if (option.equals("first")) uuid = TravelEntryUuidList.get(0).getUuid();
           else uuid = TravelEntryUuidList.get(1).getUuid();
-          webDriverHelpers.clearWebElement(PERSON_FILTER_INPUT);
           TimeUnit.SECONDS.sleep(2); // wait for filter
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.fillAndSubmitInWebElement(PERSON_FILTER_INPUT, uuid);

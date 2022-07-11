@@ -120,6 +120,24 @@ public class SampleService {
         .build();
   }
 
+  public Sample buildGeneratedSampleWithTestResultForSelectedDiseaseAndTestType(
+      String disease, String testType) {
+    long currentTimeMillis = System.currentTimeMillis();
+    return Sample.builder()
+        .purposeOfTheSample("INTERNAL/IN-HOUSE TESTING")
+        .dateOfCollection(LocalDate.now())
+        .sampleTestResults("Positive")
+        .sampleType("Blood")
+        .laboratory("Voreingestelltes Labor")
+        .typeOfTest(testType)
+        .testedDisease(disease)
+        .dateOfResult(LocalDate.now().minusDays(1))
+        .timeOfResult(LocalTime.of(11, 30))
+        .resultVerifiedByLabSupervisor("YES")
+        .testResultsComment(currentTimeMillis + "Comment on new Pathogen requests or received")
+        .build();
+  }
+
   public Sample buildEditSample() {
     long currentTimeMillis = System.currentTimeMillis();
     return Sample.builder()
@@ -181,6 +199,21 @@ public class SampleService {
         //   .reportDate(LocalDate.now().minusDays(2))
         .typeOfTest(testType)
         .testedDisease("COVID-19")
+        .dateOfResult(LocalDate.now().minusDays(1))
+        .timeOfResult(LocalTime.of(15, 15))
+        .laboratory("Other facility")
+        .laboratoryName("Test laboratory - " + currentTimeMillis)
+        .sampleTestResults("Positive")
+        .resultVerifiedByLabSupervisor("YES")
+        .testResultsComment("Comment on Edit Pathogen requests or received " + currentTimeMillis)
+        .build();
+  }
+
+  public Sample buildPathogenTestResultTypeVerified(String disease, String testType) {
+    long currentTimeMillis = System.currentTimeMillis();
+    return Sample.builder()
+        .typeOfTest(testType)
+        .testedDisease(disease)
         .dateOfResult(LocalDate.now().minusDays(1))
         .timeOfResult(LocalTime.of(15, 15))
         .laboratory("Other facility")

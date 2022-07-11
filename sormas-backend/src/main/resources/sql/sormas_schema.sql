@@ -11675,4 +11675,10 @@ delete from userroles_userrights where userright in ('CONTACT_CLASSIFY', 'CONTAC
 
 INSERT INTO schema_version (version_number, comment) VALUES (473, 'Implement user right dependencies #5058');
 
+
+-- 2022-07-05 Adjust password hashes with leading zeros #9726
+UPDATE users SET password = LPAD(password, 64, '0') WHERE LENGTH(password) < 64;
+INSERT INTO schema_version (version_number, comment) VALUES (472, 'Adjust password hashes with leading zeros #9726');
+
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

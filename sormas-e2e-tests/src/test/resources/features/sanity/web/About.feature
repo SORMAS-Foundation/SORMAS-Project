@@ -1,7 +1,7 @@
 @UI @Sanity @About
 Feature: About end to end tests
 
-  @issue=SORDEV-6474 @env_main
+  @issue=SORDEV-6474 @env_main @ignore
   Scenario: Check language options in Data Dictionary depending on the user language setting
     Given  I log in as a National Language User
     And I click on the About button from navbar

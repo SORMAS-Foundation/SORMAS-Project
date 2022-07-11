@@ -75,7 +75,7 @@ public class ReportDataView extends AbstractAggregateReportsView {
 			btnCreate = ButtonHelper.createIconButton(
 				Captions.aggregateReportNewAggregateReport,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getAggregateReportController().openEditOrCreateWindow(() -> grid.reload(), false),
+				e -> ControllerProvider.getAggregateReportController().openEditOrCreateWindow(() -> grid.reload(), false, null),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(btnCreate);
@@ -83,7 +83,7 @@ public class ReportDataView extends AbstractAggregateReportsView {
 			btnEdit = ButtonHelper.createIconButton(
 				Captions.aggregateReportEditAggregateReport,
 				VaadinIcons.EDIT,
-				e -> ControllerProvider.getAggregateReportController().openEditOrCreateWindow(() -> grid.reload(), true),
+				e -> ControllerProvider.getAggregateReportController().openEditOrCreateWindow(() -> grid.reload(), true, null),
 				ValoTheme.BUTTON_PRIMARY);
 			btnEdit.setVisible(false);
 

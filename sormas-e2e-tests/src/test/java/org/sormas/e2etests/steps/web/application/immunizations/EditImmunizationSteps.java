@@ -215,6 +215,7 @@ public class EditImmunizationSteps implements En {
           webDriverHelpers.scrollToElement(ARCHIVE_DEARCHIVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_DEARCHIVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
     When(
@@ -344,6 +345,49 @@ public class EditImmunizationSteps implements En {
               "Additional details text area is enabled");
           softly.assertAll();
         });
+    When(
+        "I check the specific created data is correctly displayed on Edit immunization page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID);
+          collectedImmunization = collectSpecificImmunizationData();
+          createdImmunization = CreateNewImmunizationSteps.immunization;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              collectedImmunization,
+              createdImmunization,
+              List.of("dateOfReport", "responsibleRegion", "responsibleDistrict"));
+        });
+    Then(
+        "^I check that Immunization data is displayed as read-only on Edit immunization page$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          TimeUnit.SECONDS.sleep(5);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(IMMUNIZATION_PERSON_TAB);
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DISEASE_INPUT),
+              false,
+              "Disease input shouldn't be editable, but it is!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(MEANS_OF_IMMUNIZATIONS_INPUT),
+              false,
+              "Means of immunization input shouldn't be editable, but it is!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RESPONSIBLE_REGION_INPUT),
+              false,
+              "Responsible region input shouldn't be editable, but it is!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RESPONSIBLE_DISTRICT_INPUT),
+              false,
+              "Responsible district input shouldn't be editable, but it is!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(RESPONSIBLE_COMMUNITY_INPUT),
+              false,
+              "Responsible community input shouldn't be editable, but it is!");
+          softly.assertEquals(
+              webDriverHelpers.isElementEnabled(DATE_OF_REPORT_INPUT),
+              false,
+              "Date of report input shouldn't be editable, but it is!");
+          softly.assertAll();
+        });
   }
 
   private Immunization collectImmunizationData() {
@@ -363,6 +407,16 @@ public class EditImmunizationSteps implements En {
         .managementStatus(
             webDriverHelpers.getValueFromWebElement(IMMUNIZATION_MANAGEMENT_STATUS_INPUT))
         .immunizationStatus(webDriverHelpers.getValueFromWebElement(IMMUNIZATION_STATUS_INPUT))
+        .build();
+  }
+
+  private Immunization collectSpecificImmunizationData() {
+    return Immunization.builder()
+        .dateOfReport(getDateOfReport())
+        .meansOfImmunization(webDriverHelpers.getValueFromWebElement(MEANS_OF_IMMUNIZATIONS_INPUT))
+        .responsibleRegion(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_REGION_INPUT))
+        .responsibleDistrict(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_DISTRICT_INPUT))
+        .uuid((webDriverHelpers.getValueFromWebElement(UUID_INPUT)))
         .build();
   }
 

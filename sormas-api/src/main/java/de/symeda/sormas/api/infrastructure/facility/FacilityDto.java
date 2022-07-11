@@ -323,7 +323,7 @@ public class FacilityDto extends InfrastructureDto {
 	}
 
 	public FacilityReferenceDto toReference() {
-		return new FacilityReferenceDto(getUuid(), getCaption(), externalID);
+		return new FacilityReferenceDto(getUuid(), buildCaption(), externalID);
 	}
 
 	public String getExternalID() {
@@ -335,7 +335,7 @@ public class FacilityDto extends InfrastructureDto {
 	}
 
 	@Override
-	public String getCaption() {
+	public String buildCaption() {
 		return FacilityHelper.buildFacilityString(getUuid(), name);
 	}
 

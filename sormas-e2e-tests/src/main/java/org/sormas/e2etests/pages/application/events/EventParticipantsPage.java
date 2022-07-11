@@ -29,6 +29,8 @@ public class EventParticipantsPage {
       By.cssSelector(".popupContent #district div");
   public static final By SEX_COMBOBOX =
       By.cssSelector(".v-window [location='sex'] [role='combobox'] div");
+  public static final By SEX_COMBOBOX_REQUIRED =
+      By.xpath("//div[@id='sex' and contains(@class, 'v-required v-filterselect-required')]");
   public static final By PICK_OR_CREATE_PERSON_POPUP =
       By.xpath("//*[contains(text(),'Pick or create person')]");
   public static final By PICK_OR_CREATE_CONTACT_POPUP =

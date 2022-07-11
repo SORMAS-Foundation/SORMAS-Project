@@ -100,6 +100,7 @@ public class TravelEntryDirectorySteps implements En {
         "I click on the Import button from Travel Entries directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(IMPORT_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FILE_PICKER);
         });
 
     When(
@@ -218,7 +219,7 @@ public class TravelEntryDirectorySteps implements En {
         "I filter by Person ID on Travel Entry directory page",
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(
-              PERSON_FILTER_INPUT, CreateNewTravelEntrySteps.aTravelEntry.getUuid());
+              PERSON_FILTER_INPUT, CreateNewTravelEntrySteps.aTravelEntry.getPersonUuid());
         });
     When(
         "I check if popup deletion message appeared",

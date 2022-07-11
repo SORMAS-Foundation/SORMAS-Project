@@ -570,7 +570,7 @@ Feature: Case end to end tests
     And I check if Cause of death is Other cause
     And I check if Date of dead for specified case is correct
 
-  @issue=SORDEV-6612 @env_main
+  @issue=SORDEV-6612 @env_main @ignore
   Scenario: Manually triggered calculation of case classification
     When API: I create a new person
     Then API: I check that POST call body is "OK"
