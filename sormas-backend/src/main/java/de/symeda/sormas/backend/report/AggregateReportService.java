@@ -38,18 +38,18 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 		From<AggregateReport, AggregateReport> from) {
 
 		Predicate filter = null;
-		boolean isForcedJurisdictionCheck = Boolean.TRUE.equals(criteria.isConsiderNullJurisdictionCheck());
+		boolean considerNullJurisdictionCheck = Boolean.TRUE.equals(criteria.isConsiderNullJurisdictionCheck());
 
 		if (criteria.getRegion() != null) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(from.join(AggregateReport.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
-		} else if (isForcedJurisdictionCheck) {
+		} else if (considerNullJurisdictionCheck) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(AggregateReport.REGION)));
 		}
 		if (criteria.getDistrict() != null) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(from.join(AggregateReport.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
-		} else if (isForcedJurisdictionCheck) {
+		} else if (considerNullJurisdictionCheck) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(AggregateReport.DISTRICT)));
 		}
 		if (criteria.getHealthFacility() != null) {
@@ -57,7 +57,7 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 				cb,
 				filter,
 				cb.equal(from.join(AggregateReport.HEALTH_FACILITY, JoinType.LEFT).get(Facility.UUID), criteria.getHealthFacility().getUuid()));
-		} else if (isForcedJurisdictionCheck) {
+		} else if (considerNullJurisdictionCheck) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(AggregateReport.HEALTH_FACILITY)));
 		}
 		if (criteria.getPointOfEntry() != null) {
@@ -65,7 +65,7 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 				cb,
 				filter,
 				cb.equal(from.join(AggregateReport.POINT_OF_ENTRY, JoinType.LEFT).get(PointOfEntry.UUID), criteria.getPointOfEntry().getUuid()));
-		} else if (isForcedJurisdictionCheck) {
+		} else if (considerNullJurisdictionCheck) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(AggregateReport.POINT_OF_ENTRY)));
 		}
 		if (criteria.getEpiWeekFrom() != null || criteria.getEpiWeekTo() != null) {
