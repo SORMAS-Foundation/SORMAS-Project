@@ -21,6 +21,7 @@ import cucumber.api.java8.En;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.entities.services.api.demis.DemisApiService;
+import org.testng.Assert;
 
 @Slf4j
 public class DemisSteps implements En {
@@ -31,7 +32,8 @@ public class DemisSteps implements En {
     Given(
         "API : Login to DEMIS server",
         () -> {
-          demisApiService.loginRequest();
+          String loginToken = demisApiService.loginRequest();
+            Assert.assertFalse(loginToken.isEmpty(), "DEMIS token wasn't received");
         });
   }
 }

@@ -17,13 +17,17 @@
  */
 package org.sormas.e2etests.entities.services.api.demis;
 
+import static org.sormas.e2etests.steps.BaseSteps.locale;
+
 import java.net.SocketTimeoutException;
 import javax.inject.Inject;
+
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.sormas.e2etests.envconfig.dto.demis.DemisData;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.api.demis.okhttpclient.SormasOkHttpClient;
 
@@ -31,6 +35,11 @@ import org.sormas.e2etests.helpers.api.demis.okhttpclient.SormasOkHttpClient;
 public class DemisApiService {
 
   private final RunningConfiguration runningConfiguration;
+  private final String FORM_PARAM_TYPE = "application/x-www-form-urlencoded";
+  private final String CONTENT_TYPE = "Content-Type";
+  private final String TOKEN_IDENTIFIER = "access_token";
+
+  private JSONObject jsonObject;
 
   @Inject
   public DemisApiService(RunningConfiguration runningConfiguration) {
@@ -39,26 +48,25 @@ public class DemisApiService {
 
   @SneakyThrows
   public String getAuthToken() {
+    DemisData demisData = runningConfiguration.getDemisData(locale);
 
     OkHttpClient client =
         SormasOkHttpClient.getClient(
-            "C:\\Users\\Razvan\\Downloads\\demis\\DEMIS-Adapter-2.0.1\\config\\DEMIS-test-lab999_CSM026304641.p12",
-            "W7JDGJOVJ7");
+            demisData.getCertificatePath(), demisData.getCertificatePassword());
 
     Request request =
         new Request.Builder()
-            .url("https://10.210.11.214:443/auth/realms/LAB/protocol/openid-connect/token")
-            .addHeader("Content-Type", "application/x-www-form-urlencoded")
+            .url(demisData.getDemisUrl() + demisData.getAuthPath())
+            .addHeader(CONTENT_TYPE, FORM_PARAM_TYPE)
             .post(
                 RequestBody.create(
-                    MediaType.parse("application/x-www-form-urlencoded"),
-                    "client_id=demis-adapter&client_secret=secret_client_secret&username=test-lab999&grant_type=password"))
+                    MediaType.parse(FORM_PARAM_TYPE),
+                    demisData.getAuthRequestBody()))
             .build();
     try {
       Response response = client.newCall(request).execute();
-      //System.out.println("Response body: " + );
-      JSONObject jsonObject = (JSONObject) JSONValue.parse(response.body().string());
-      return (String) jsonObject.get("token");
+      jsonObject = (JSONObject) JSONValue.parse(response.body().string());
+      return (String) jsonObject.get(TOKEN_IDENTIFIER);
 
     } catch (SocketTimeoutException socketTimeoutException) {
       throw new Exception(
@@ -68,8 +76,9 @@ public class DemisApiService {
     }
   }
 
+  /** Delete method once we start adding tests */
   @SneakyThrows
-  public void loginRequest() {
-    getAuthToken();
+  public String loginRequest() {
+    return getAuthToken();
   }
 }
