@@ -319,7 +319,7 @@ public class PathogenTestDto extends PseudonymizableDto {
 	}
 
 	@Override
-	public String getCaption() {
+	public String buildCaption() {
 		return DateFormatHelper.formatLocalDateTime(testDateTime) + " - " + testType + " (" + testedDisease + "): " + testResult;
 	}
 

@@ -574,16 +574,17 @@ Feature: Create events
     And I search for the last created person via Api by uuid in popup on Select Person window
     And I open the first found result in the popup of Select Person window
     And I save changes in participant window
-    And I confirm navigation popup
+#    navigation popup dissapeared
+#    And I confirm navigation popup
     And I navigate to EVENT PARTICIPANT from edit event page
-    And I confirm navigation popup
+#    And I confirm navigation popup
     Then I click on Apply filters button in event participant list
     Then I check if filtered participant for existing person appears in the event participants list
     When I click on the Persons button from navbar
     And I open the last created Person via API
     And I check that SEE EVENTS FOR THIS PERSON button appears on Edit Person page
 
-  @env_main @#8555
+  @env_main @#8555 @ignore
   Scenario: Add back a person to an event who was previously deleted as event participant
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -877,7 +878,7 @@ Feature: Create events
     Then I click on edit button for the last searched facility
     And I archive facility
 
-    @env_main @#8556
+    @env_main @#8556 @ignore
   Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of an Event Participant
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -1030,3 +1031,30 @@ Feature: Create events
         | Semicolon       |
         | Tab             |
         | Default (Comma) |
+
+  @issue=SORQA-7093 @env_main
+  Scenario: Allow the admin surveillance supervisor to delete events
+    Given API: I create a new event
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I navigate to SORMAS login page
+    Then I log in as a Admin Surveillance Supervisor
+    And I click on the Events button from navbar
+    And I navigate to the last created through API Event page via URL
+    When I click Delete button on Edit Event page
+    When I set Reason for deletion to "Deletion request by affected person according to GDPR" on Edit Event Page
+    When I confirm popup window
+    And I check that previous opened Event was deleted
+
+  @issue=SORQA-7093 @env_main
+  Scenario: Allow the admin surveillance supervisor to archive events
+    Given API: I create a new event
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I navigate to SORMAS login page
+    Then I log in as a Admin Surveillance Supervisor
+    And I click on the Events button from navbar
+    And I navigate to the last created through API Event page via URL
+    When I click on the Archive event button
+    When I confirm Archive event popup
+    And I check event is it archived
