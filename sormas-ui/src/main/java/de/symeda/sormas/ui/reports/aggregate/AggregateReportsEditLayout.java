@@ -278,12 +278,14 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		buttonsPanel.setSpacing(true);
 		buttonsPanel.setWidth(100, Unit.PERCENTAGE);
 
-		deleteButton = ButtonHelper.createButton(Captions.actionDelete, clickEvent -> {
-			deleteAggregateReports();
-		});
-		buttonsPanel.addComponent(deleteButton);
-		buttonsPanel.setComponentAlignment(deleteButton, Alignment.BOTTOM_RIGHT);
-		buttonsPanel.setExpandRatio(deleteButton, 0);
+		if (edit) {
+			deleteButton = ButtonHelper.createButton(Captions.actionDelete, clickEvent -> {
+				deleteAggregateReports();
+			});
+			buttonsPanel.addComponent(deleteButton);
+			buttonsPanel.setComponentAlignment(deleteButton, Alignment.BOTTOM_RIGHT);
+			buttonsPanel.setExpandRatio(deleteButton, 0);
+		}
 
 		cancelButton = ButtonHelper.createButton(Captions.actionDiscard, e -> window.close());
 
@@ -316,7 +318,6 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			criteria.setPointOfEntry(comboBoxPoe.getValue());
 			criteria.setRegion(comboBoxRegion.getValue());
 			criteria.setForceJurisdictionCheck(true);
-//			reports = FacadeProvider.getAggregateReportFacade().getList(criteria);
 			reports = FacadeProvider.getAggregateReportFacade().getAggregateReports(criteria);
 			if (!reports.isEmpty()) {
 				popUpIsShown = true;
