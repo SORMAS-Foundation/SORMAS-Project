@@ -403,11 +403,9 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		}
 	}
 
-	public void updateChangeDateToNow(ADO ado) {
+	public void incrementChangeDate(ADO ado) {
 		Session session = em.unwrap(Session.class);
 		session.lock(ado, LockMode.OPTIMISTIC_FORCE_INCREMENT);
-
-		ado.setChangeDate(new Timestamp(new Date().getTime()));
 	}
 
 	public interface ExistsPredicateBuilder<ADO extends AbstractDomainObject> {

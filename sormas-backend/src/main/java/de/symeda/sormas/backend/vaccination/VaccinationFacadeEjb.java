@@ -460,7 +460,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		Vaccination vaccination = vaccinationService.getByUuid(uuid);
 		Immunization immunization = vaccination.getImmunization();
 		immunization.getVaccinations().remove(vaccination);
-		immunizationService.updateChangeDateToNow(immunization);
+		immunizationService.incrementChangeDate(immunization);
 		immunizationService.ensurePersisted(immunization);
 
 		if (immunization.getVaccinations().isEmpty()) {
