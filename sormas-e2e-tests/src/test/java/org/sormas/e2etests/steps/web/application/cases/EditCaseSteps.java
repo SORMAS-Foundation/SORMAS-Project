@@ -198,7 +198,9 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.FOL
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DISCARD_BUTTON;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.getVaccinationByIndex;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EVENT_PARTICIPANTS_DATA_TAB;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
@@ -1662,7 +1664,26 @@ public class EditCaseSteps implements En {
               caseFollowUpStatus, "In der Nachverfolgung", "The follow-up status is incorrect!");
           softly.assertAll();
         });
-
+    When(
+        "I click to edit {int} vaccination on Edit Case page",
+        (Integer index) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              getVaccinationByIndex(String.valueOf(index + 1)));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getVaccinationByIndex(String.valueOf(index + 1)));
+        });
+    When(
+        "I close vaccination form in Edit Case directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CLOSE_IMPORT_TRAVEL_ENTRY_POPUP));
+    When(
+        "I check that number of added Vaccinations is {int} on Edit Case Page",
+        (Integer expected) ->
+            assertHelpers.assertWithPoll20Second(
+                () ->
+                    Assert.assertEquals(
+                        webDriverHelpers.getNumberOfElements(BUTTONS_IN_VACCINATIONS_LOCATION),
+                        (int) expected,
+                        "Number of vaccinations is different than expected")));
     When(
         "^I click on the Cancel Follow-up button from Edit case page$",
         () -> webDriverHelpers.clickOnWebElementBySelector(CANCEL_FOLLOW_UP_BUTTON));
