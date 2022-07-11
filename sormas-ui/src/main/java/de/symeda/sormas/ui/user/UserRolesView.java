@@ -1,5 +1,11 @@
 package de.symeda.sormas.ui.user;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+
+import org.apache.commons.io.IOUtils;
+import org.slf4j.LoggerFactory;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileDownloader;
@@ -27,12 +33,6 @@ import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
 import de.symeda.sormas.ui.utils.ExportEntityName;
-import org.apache.commons.io.IOUtils;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 
 public class UserRolesView extends AbstractUserView {
 
@@ -187,8 +187,6 @@ public class UserRolesView extends AbstractUserView {
 		enabledFilter.setValue(criteria.getEnabled() == null ? null : criteria.getEnabled() ? ENABLED_FILTER : DISABLED_FILTER);
 		userRightsFilter.setValue(criteria.getUserRight() == null ? null : criteria.getUserRight());
 
-		//TODO: check if it's necessary
-		// searchField.setValue(criteria.getFreeText());
 		applyingCriteria = false;
 	}
 

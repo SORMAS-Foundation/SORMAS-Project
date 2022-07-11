@@ -38,7 +38,6 @@ import de.symeda.sormas.api.user.NotificationProtocol;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleCriteria;
-import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -142,20 +141,6 @@ public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
 
 		if (userRoleCriteria.getJurisdictionLevel() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(UserRole.JURISDICTION_LEVEL), userRoleCriteria.getJurisdictionLevel()));
-		}
-
-		if (userRoleCriteria.getFreeText() != null) {
-			String[] textFilters = userRoleCriteria.getFreeText().split("\\s+");
-			for (String textFilter : textFilters) {
-				if (DataHelper.isNullOrEmpty(textFilter)) {
-					continue;
-				}
-
-				Predicate likeFilters = cb.or(
-					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(UserRole.CAPTION), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(UserRole.DESCRIPTION), textFilter));
-				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
-			}
 		}
 
 		return filter;

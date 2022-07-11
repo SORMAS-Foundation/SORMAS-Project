@@ -382,7 +382,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	private void generateUserRolesDocument(Map<UserRoleDto, Set<UserRight>> userRoleRights, OutputStream outStream) throws IOException {
 		XSSFWorkbook workbook = new XSSFWorkbook();
 
-		// Create User Rights sheet
+		// Create User Role sheet
 		String safeName = WorkbookUtil.createSafeSheetName(I18nProperties.getCaption(Captions.userRole));
 		XSSFSheet sheet = workbook.createSheet(safeName);
 
@@ -447,7 +447,6 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		int columnIndex = 3;
 
 		for (UserRight userRight : UserRight.values()) {
-			//TODO: test internationalization
 			String columnCaption = userRight.name();
 			Cell headerCell = headerRow.createCell(columnIndex);
 			headerCell.setCellValue(columnCaption);
@@ -480,16 +479,13 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		for (UserRoleDto userRole : userRoleRights.keySet()) {
 			Row row = sheet.createRow(rowCounter++);
 
-			// User role name (caption)
 			Cell nameCell = row.createCell(0);
 			nameCell.setCellValue(userRole.getCaption());
 			nameCell.setCellStyle(boldStyle);
 
-			// User role jurisdiction
 			Cell captionCell = row.createCell(1);
 			captionCell.setCellValue(userRole.getJurisdictionLevel().toString());
 
-			// User right description
 			Cell descCell = row.createCell(2);
 			descCell.setCellValue(userRole.getDescription());
 
@@ -507,7 +503,6 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 				columnIndex++;
 			}
 
-			// User role uuid
 			Cell uuidCell = row.createCell(columnIndex++);
 			uuidCell.setCellValue(userRole.getUuid());
 

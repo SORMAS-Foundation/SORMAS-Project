@@ -2,7 +2,6 @@ package de.symeda.sormas.api.user;
 
 import java.io.Serializable;
 
-import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class UserRoleCriteria extends BaseCriteria implements Serializable {
@@ -10,7 +9,6 @@ public class UserRoleCriteria extends BaseCriteria implements Serializable {
 	private Boolean enabled;
 	private UserRight userRight;
 	private JurisdictionLevel jurisdictionLevel;
-	private String freeText;
 
 	public UserRoleCriteria enabled(Boolean enabled) {
 		this.enabled = enabled;
@@ -41,15 +39,5 @@ public class UserRoleCriteria extends BaseCriteria implements Serializable {
 
 	public void setUserRight(UserRight userRight) {
 		this.userRight = userRight;
-	}
-
-	public UserRoleCriteria freeText(String freeText) {
-		this.freeText = freeText;
-		return this;
-	}
-
-	@IgnoreForUrl
-	public String getFreeText() {
-		return freeText;
 	}
 }

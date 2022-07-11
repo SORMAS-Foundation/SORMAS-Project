@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.user;
 
+import java.util.stream.Collectors;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 import de.symeda.sormas.api.FacadeProvider;
@@ -7,10 +8,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRoleCriteria;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.FilteredGrid;
-
-import java.util.stream.Collectors;
 
 public class UserRoleGrid extends FilteredGrid<UserRoleDto, UserRoleCriteria> {
 
@@ -19,8 +17,6 @@ public class UserRoleGrid extends FilteredGrid<UserRoleDto, UserRoleCriteria> {
 		setSizeFull();
 		setLazyDataProvider();
 
-		//TODO: check if description column should be user rights
-		//TODO: change the CAPTION Column name to User Roles
 		setColumns(UserRoleDto.CAPTION, UserRoleDto.JURISDICTION_LEVEL, UserRoleDto.DESCRIPTION);
 
 		for (Column<?, ?> column : getColumns()) {
