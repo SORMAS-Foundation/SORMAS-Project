@@ -145,6 +145,7 @@ public class CreateNewCaseSteps implements En {
   protected static Case oneCase;
   public static final String userDirPath = System.getProperty("user.dir");
   public static List<String> casesUUID = new ArrayList<>();
+  private static String currentUrl;
 
   @Inject
   public CreateNewCaseSteps(
@@ -976,6 +977,10 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
+
+    When("I copy url of current case", () -> currentUrl = webDriverHelpers.returnURL());
+
+    When("I back to deleted case by url", () -> webDriverHelpers.accessWebSite(currentUrl));
   }
 
   private void fillPointOfEntryDetails(String pointOfEntryDetails) {
