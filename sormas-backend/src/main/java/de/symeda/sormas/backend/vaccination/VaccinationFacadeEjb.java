@@ -578,6 +578,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	private boolean isDuplicateOf(VaccinationDto vaccination1, VaccinationDto vaccination2) {
 
 		return !vaccination1.getUuid().equals(vaccination2.getUuid())
+			&& vaccination1.getVaccineName() != null
+			&& vaccination2.getVaccineName() != null
 			&& vaccination1.getVaccineName() != Vaccine.UNKNOWN
 			&& vaccination2.getVaccineName() != Vaccine.UNKNOWN
 			&& vaccination1.getVaccinationDate() != null

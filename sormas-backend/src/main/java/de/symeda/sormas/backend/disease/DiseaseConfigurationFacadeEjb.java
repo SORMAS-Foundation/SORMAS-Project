@@ -16,6 +16,9 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
@@ -25,6 +28,8 @@ import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "DiseaseConfigurationFacade")
 public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade {
+
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
 	private DiseaseConfigurationService service;
@@ -67,17 +72,24 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	}
 
 	@Override
-	public List<Disease> getAllDiseases(Boolean active, Boolean primary, Boolean caseBased) {
+	public List<Disease> getAllDiseases(Boolean active, Boolean primary, boolean caseBased) {
+
+		// not an ideal solution, but will be changed with #9629 anyway
+		if (!caseBased && primary != null) {
+			primary = null;
+			logger.warn("primary should not be used for non-case-based diseases");
+		}
 
 		User currentUser = userService.getCurrentUser();
 
 		Set<Disease> diseases = EnumSet.noneOf(Disease.class);
 
-		if (currentUser.getLimitedDisease() == null) {
-			if (isTrue(active)) {
-				diseases.addAll(activeDiseases);
-			} else if (isFalse(active)) {
-				diseases.addAll(inactiveDiseases);
+		if (caseBased) {
+			if (currentUser.getLimitedDisease() != null) {
+				Disease limitedDisease = currentUser.getLimitedDisease();
+				diseases.add(limitedDisease);
+			} else {
+				diseases.addAll(caseBasedDiseases);
 			}
 
 			if (isTrue(primary)) {
@@ -85,25 +97,14 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 			} else if (isFalse(primary)) {
 				diseases.retainAll(nonPrimaryDiseases);
 			}
+		} else {
+			diseases.addAll(aggregateDiseases);
+		}
 
-			if (isTrue(caseBased)) {
-				diseases.retainAll(caseBasedDiseases);
-			} else if (isFalse(caseBased)) {
-				diseases.retainAll(aggregateDiseases);
-			}
-		} else if (active != null || primary != null || caseBased != null) {
-			Disease limitedDisease = currentUser.getLimitedDisease();
-			if ((active == null
-				|| (isTrue(active) && activeDiseases.contains(limitedDisease))
-				|| (isFalse(active) && inactiveDiseases.contains(limitedDisease)))
-				&& (primary == null
-					|| (isTrue(primary) && primaryDiseases.contains(limitedDisease))
-					|| (isFalse(primary) && nonPrimaryDiseases.contains(limitedDisease)))
-				&& (caseBased == null
-					|| (isTrue(caseBased) && caseBasedDiseases.contains(limitedDisease))
-					|| (isFalse(caseBased) && aggregateDiseases.contains(limitedDisease)))) {
-				diseases.add(limitedDisease);
-			}
+		if (isTrue(active)) {
+			diseases.retainAll(activeDiseases);
+		} else if (isFalse(active)) {
+			diseases.retainAll(inactiveDiseases);
 		}
 
 		return diseases.stream().sorted(Comparator.comparing(Disease::toString)).collect(Collectors.toList());
@@ -118,7 +119,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 	}
 
 	@Override
-	public List<Disease> getAllDiseasesWithFollowUp(Boolean active, Boolean primary, Boolean caseBased) {
+	public List<Disease> getAllDiseasesWithFollowUp(Boolean active, Boolean primary, boolean caseBased) {
 		return getAllDiseases(active, primary, caseBased).stream().filter(d -> followUpEnabledDiseases.contains(d)).collect(Collectors.toList());
 	}
 
@@ -134,13 +135,7 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 
 	@Override
 	public List<Disease> getAllActiveDiseases() {
-
-		User currentUser = userService.getCurrentUser();
-		if (currentUser.getLimitedDisease() != null) {
-			return activeDiseases.stream().filter(d -> d == currentUser.getLimitedDisease()).collect(Collectors.toList());
-		} else {
-			return activeDiseases;
-		}
+		return activeDiseases;
 	}
 
 	@Override
@@ -232,8 +227,14 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 		return null;
 	}
 
-	@Override public List<String> getAgeGroups(Disease disease) {
+	@Override
+	public List<String> getAgeGroups(Disease disease) {
 		return service.getDiseaseConfiguration(disease).getAgeGroups();
+	}
+
+	@Override
+	public String getFirstAgeGroup(Disease disease) {
+		return getAgeGroups(disease) != null ? getAgeGroups(disease).get(0) : null;
 	}
 
 	public DiseaseConfiguration fromDto(@NotNull DiseaseConfigurationDto source, boolean checkChangeDate) {

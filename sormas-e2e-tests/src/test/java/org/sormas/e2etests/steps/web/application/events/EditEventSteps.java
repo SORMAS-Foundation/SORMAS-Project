@@ -38,9 +38,11 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.CONTACT
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CONTACT_TO_SICK_PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.COUNTRY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.COUNTRY_COMBOBOX_DIABLED;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.COUNTRY_COMBOBOX_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.COUNTRY_INFO_ICON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.COUNTRY_INFO_POPUP_TEXT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CREATE_CONTACTS_BULK_EDIT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.DEFAULT_COMBOBOX_VALUE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DELETE_BUTTON_DISABLED;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DESCRIPTIVE_ANALYSIS_OF_ASCETAINED_DATA_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DISEASE_COMBOBOX;
@@ -150,14 +152,14 @@ import static org.sormas.e2etests.pages.application.events.EventParticipantsPage
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_DAY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_MONTH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_YEAR_COMBOBOX;
-import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DISTRICT_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_DATA_ADDED_AS_A_PARTICIPANT_MESSAGE;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_DATA_SAVED;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_PERSON_ID;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_RESPONSIBLE_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_RESPONSIBLE_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_SAVE;
-import static org.sormas.e2etests.pages.application.persons.EditPersonPage.REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.REGION_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SECOND_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SECOND_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_EVENTS_FOR_PERSON;
@@ -1312,6 +1314,7 @@ public class EditEventSteps implements En {
         () -> {
           webDriverHelpers.scrollToElement(CONFIRM_DEARCHIVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_DEARCHIVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(5);
         });
 
     When(
@@ -1361,14 +1364,14 @@ public class EditEventSteps implements En {
     When(
         "I set Country combobox to empty value from Edit Event Page",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(COUNTRY_COMBOBOX);
-          webDriverHelpers.selectFromCombobox(COUNTRY_COMBOBOX, "");
+          webDriverHelpers.clearComboboxInput(COUNTRY_COMBOBOX_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(DEFAULT_COMBOBOX_VALUE);
         });
     When(
         "I clear Region and District fields from Edit Event Directory",
         () -> {
-          webDriverHelpers.selectFromCombobox(DISTRICT_COMBOBOX, "");
-          webDriverHelpers.selectFromCombobox(REGION_COMBOBOX, "");
+          webDriverHelpers.clearComboboxInput(DISTRICT_INPUT);
+          webDriverHelpers.clearComboboxInput(REGION_INPUT);
         });
 
     When(
@@ -1513,6 +1516,16 @@ public class EditEventSteps implements En {
           webDriverHelpers.fillInWebElement(PARTICIPANT_LAST_NAME_INPUT, faker.name().lastName());
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEX_COMBOBOX_REQUIRED);
           webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
+        });
+
+    And(
+        "I check event is it archived",
+        () -> {
+          TimeUnit.SECONDS.sleep(1);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ARCHIVE_EVENT_PARTICIPANT_BUTTON);
+          String archiveDearchive =
+              webDriverHelpers.getTextFromWebElement(ARCHIVE_EVENT_PARTICIPANT_BUTTON);
+          Assert.assertEquals(archiveDearchive, "De-Archive", "Event is not archived.");
         });
   }
 

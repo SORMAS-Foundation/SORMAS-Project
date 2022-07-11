@@ -68,4 +68,15 @@ public class ImmunizationService {
         .meansOfImmunization(meansOfImmunization)
         .build();
   }
+
+  public Immunization buildImmunizationWithSpecificResponsibleLocation(
+      String responsibleRegion, String responsibleDistrict) {
+    return Immunization.builder()
+        .dateOfReport(LocalDate.now().minusDays(1))
+        .externalId(UUID.randomUUID().toString())
+        .responsibleRegion(responsibleRegion)
+        .responsibleDistrict(responsibleDistrict)
+        .meansOfImmunization("Vaccination")
+        .build();
+  }
 }

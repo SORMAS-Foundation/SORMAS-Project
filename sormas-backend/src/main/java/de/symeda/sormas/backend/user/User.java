@@ -65,7 +65,11 @@ public class User extends AbstractDomainObject {
 	private static final long serialVersionUID = -629432920970152112L;
 
 	public static final String TABLE_NAME = "users";
-	public static final String TABLE_NAME_USERROLES = "users_userroles";
+	public static final String TABLE_NAME_USERROLES = "userroles";
+	public static final String TABLE_NAME_USERS_USERROLES = "users_userroles";
+	public static final String TABLE_NAME_USERROLES_USERRIGHTS = "userroles_userrights";
+	public static final String TABLE_NAME_USERROLES_EMAILNOTIFICATIONTYPES = "userroles_emailnotificationtypes";
+	public static final String TABLE_NAME_USERROLES_SMSNOTIFICATIONTYPES = "userroles_smsnotificationtypes";
 
 	public static final String USER_NAME = "userName";
 	public static final String PASSWORD = "password";
@@ -218,7 +222,7 @@ public class User extends AbstractDomainObject {
 	}
 
 	@ManyToMany(cascade = {}, fetch = FetchType.LAZY)
-	@JoinTable(name = TABLE_NAME_USERROLES, joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "userrole_id"))
+	@JoinTable(name = TABLE_NAME_USERS_USERROLES, joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "userrole_id"))
 	public Set<UserRole> getUserRoles() {
 		return userRoles;
 	}
@@ -239,7 +243,7 @@ public class User extends AbstractDomainObject {
 
 	@Transient
 	public boolean isAdmin() {
-		return (this.getUserRoles().stream().filter(i->i.getCaption().contains(I18nProperties.getEnumCaption(DefaultUserRole.ADMIN))).count() == 1);
+		return (this.getUserRoles().stream().filter(i -> i.getCaption().contains(I18nProperties.getEnumCaption(DefaultUserRole.ADMIN))).count() == 1);
 	}
 
 	public void setJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {

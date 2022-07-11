@@ -76,11 +76,9 @@ public class ContactsLineListingService {
         .relationshipWithCase("Leben im selben Haushalt")
         .firstName(firstName)
         .lastName(lastName)
-        .dateOfBirth(
-            LocalDate.of(
-                faker.number().numberBetween(1900, 2002),
-                faker.number().numberBetween(1, 12),
-                faker.number().numberBetween(1, 27)))
+        .birthYear(String.valueOf(faker.number().numberBetween(1900, 2008)))
+        .birthMonth("Mai")
+        .birthDay(String.valueOf(faker.number().numberBetween(1, 27)))
         .sex(GenderValues.getRandomGenderDE())
         .build();
   }

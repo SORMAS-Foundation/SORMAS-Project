@@ -242,7 +242,9 @@ import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.pages.application.events.EditEventPage;
+import org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage;
 import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.web.application.immunizations.EditImmunizationSteps;
 import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
@@ -1917,6 +1919,33 @@ public class EditCaseSteps implements En {
     When(
         "I click on Edit Immunization button on Edit Case",
         () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_IMMUNIZATION_BUTTON));
+
+    And(
+        "^I click on the NEW IMMUNIZATION button from Edit case page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              NEW_IMMUNIZATION_BUTTON, 30);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_IMMUNIZATION_BUTTON);
+        });
+
+    And(
+        "^I click on save button in New Immunization form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EditImmunizationPage.UUID);
+        });
+
+    And(
+        "^I navigate to linked immunization on Edit case page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(
+              getByImmunizationUuid(EditImmunizationSteps.collectedImmunization.getUuid()));
+
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              EditImmunizationPage.DATE_OF_REPORT_INPUT);
+        });
   }
 
   private Case collectCasePersonUuid() {

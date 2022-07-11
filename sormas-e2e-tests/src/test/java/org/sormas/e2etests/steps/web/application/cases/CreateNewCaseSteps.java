@@ -32,7 +32,6 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_UPLOADED_TEST_FILE;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONFIRM_BUTTON_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_POPUP_SAVE_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_CASE_CONFIRMATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_BIRTH_DAY_COMBOBOX;
@@ -755,7 +754,7 @@ public class CreateNewCaseSteps implements En {
           selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
           fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
 
-          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_POPUP_SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
@@ -950,6 +949,32 @@ public class CreateNewCaseSteps implements En {
               webDriverHelpers.getValueFromWebElement(UUID_INPUT),
               "UUIDs of cases are not equal");
           softly.assertAll();
+        });
+
+    When(
+        "I create new case with COVID-19 and variant {string}",
+        (String variant) -> {
+          caze = caseService.buildGeneratedCaseWithCovidVariant(variant);
+          fillDisease(caze.getDisease());
+          fillDiseaseVariant(caze.getDiseaseVariant());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
+          selectSex(caze.getSex());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
+          fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+          fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+          fillPlaceDescription(caze.getPlaceDescription());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
   }
 

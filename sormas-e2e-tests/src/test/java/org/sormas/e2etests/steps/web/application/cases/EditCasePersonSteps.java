@@ -120,10 +120,10 @@ public class EditCasePersonSteps implements En {
         (String expectedCaseClassification) -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 30);
           String caseClassificationValue =
-              webDriverHelpers.getTextFromWebElement(CASE_CLASSIFICATION_SPAN);
+              webDriverHelpers.getValueFromWebElement(CASE_CLASSIFICATION_INPUT);
           Assert.assertEquals(
               caseClassificationValue,
-              CaseClassification.getUIValueFor(expectedCaseClassification).toUpperCase(),
+              CaseClassification.getDeUIValueFor(expectedCaseClassification),
               "Case classification value is wrong");
         });
 
@@ -229,6 +229,24 @@ public class EditCasePersonSteps implements En {
         "^I set case person's sex as ([^\"]*)$",
         (String sex) -> {
           webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);
+        });
+    When(
+        "I check that Type of Contacts details with ([^\"]*) as a option is visible on Edit Case Person Page",
+        (String option) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          By selector = null;
+          Boolean elementVisible = true;
+          switch (option) {
+            case "Primary telephone":
+              selector = TELEPHONE_PRIMARY;
+              break;
+            case "Primary email address":
+              selector = EMAIL_PRIMARY;
+              break;
+          }
+          webDriverHelpers.isElementVisibleWithTimeout(selector, 5);
+          softly.assertTrue(elementVisible, option + " is not visible!");
+          softly.assertAll();
         });
 
     When(

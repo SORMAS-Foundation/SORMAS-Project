@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.vaccination;
 
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DATE_OF_REPORT_INPUT;
 import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.ATC_CODE_INPUT;
 import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.BATCH_NUMBER_INPUT;
 import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.INN_INPUT;
@@ -26,30 +27,39 @@ import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccin
 import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.UNII_CODE_INPUT;
 import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.VACCINATION_DATE_INPUT;
 import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.VACCINATION_INFO_SOURCE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.VACCINATION_INFO_SOURCE_INPUT;
 import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.VACCINATION_MANUFACTURER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.VACCINATION_MANUFACTURER_INPUT;
 import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.VACCINATION_NAME_COMBOBOX;
+import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.VACCINATION_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.VACCINATION_TYPE_INPUT;
 import static org.sormas.e2etests.pages.application.vaccinations.CreateNewVaccinationPage.VACCINE_DOSE_INPUT;
+import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.DATE_FORMATTER_DE;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
 import javax.inject.Inject;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Vaccination;
 import org.sormas.e2etests.entities.services.VaccinationService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.testng.asserts.SoftAssert;
 
 public class CreateNewVaccinationSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   public static Vaccination vaccination;
+  public static Vaccination duplicatedVacinationDe;
+  public static Vaccination collectedVaccination;
 
   @Inject
   public CreateNewVaccinationSteps(
-      WebDriverHelpers webDriverHelpers, VaccinationService vaccinationService) {
+      WebDriverHelpers webDriverHelpers, VaccinationService vaccinationService, SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
-
+    duplicatedVacinationDe = vaccinationService.buildGeneratedVaccinationDE();
     When(
         "I fill new vaccination data in new Vaccination form for DE",
         () -> {
@@ -66,6 +76,18 @@ public class CreateNewVaccinationSteps implements En {
           fillAtcCode(vaccination.getAtcCode());
         });
     When(
+        "I fill new duplicate vaccination data in new Vaccination form for DE without vaccination date and name",
+        () -> {
+          selectVaccineManufacturer(duplicatedVacinationDe.getVaccineManufacturer());
+          fillVaccineType(duplicatedVacinationDe.getVaccineType());
+          selectVaccinationInfoSource(duplicatedVacinationDe.getVaccinationInfoSource());
+          fillVaccineDose(duplicatedVacinationDe.getVaccineDose());
+          fillInn(duplicatedVacinationDe.getInn());
+          fillUniiCode(duplicatedVacinationDe.getUniiCode());
+          fillBatchNumber(duplicatedVacinationDe.getBatchNumber());
+          fillAtcCode(duplicatedVacinationDe.getAtcCode());
+        });
+    When(
         "I fill new vaccination data in new Vaccination form",
         () -> {
           vaccination = vaccinationService.buildGeneratedVaccination();
@@ -79,6 +101,72 @@ public class CreateNewVaccinationSteps implements En {
           fillUniiCode(vaccination.getUniiCode());
           fillBatchNumber(vaccination.getBatchNumber());
           fillAtcCode(vaccination.getAtcCode());
+        });
+
+    When(
+        "I fill new vaccination data for duplicates in new Vaccination form for DE",
+        () -> {
+          fillVaccinationDate(duplicatedVacinationDe.getVaccinationDate(), Locale.GERMAN);
+          selectVaccineName(duplicatedVacinationDe.getVaccineName());
+          selectVaccineManufacturer(duplicatedVacinationDe.getVaccineManufacturer());
+          fillVaccineType(duplicatedVacinationDe.getVaccineType());
+          selectVaccinationInfoSource(duplicatedVacinationDe.getVaccinationInfoSource());
+          fillVaccineDose(duplicatedVacinationDe.getVaccineDose());
+          fillInn(duplicatedVacinationDe.getInn());
+          fillUniiCode(duplicatedVacinationDe.getUniiCode());
+          fillBatchNumber(duplicatedVacinationDe.getBatchNumber());
+          fillAtcCode(duplicatedVacinationDe.getAtcCode());
+        });
+    When(
+        "I check that displayed data in form is equal to whole data from duplicated entry",
+        () -> {
+          collectedVaccination = collectVaccinationData();
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              duplicatedVacinationDe,
+              collectedVaccination,
+              List.of(
+                  "vaccinationDate",
+                  "vaccineName",
+                  "vaccineManufacturer",
+                  "vaccineType",
+                  "vaccinationInfoSource",
+                  "vaccineDose",
+                  "inn",
+                  "uniiCode",
+                  "batchNumber",
+                  "atcCode"));
+        });
+    When(
+        "I check that displayed vaccination date in form is equal to date from duplicated entry",
+        () -> {
+          collectedVaccination = collectVaccinationData();
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              duplicatedVacinationDe, collectedVaccination, List.of("vaccinationDate"));
+        });
+    When(
+        "I check that displayed vaccination date in form is equal to name from duplicated entry",
+        () -> {
+          collectedVaccination = collectVaccinationData();
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              duplicatedVacinationDe, collectedVaccination, List.of("vaccinationName"));
+        });
+    When(
+        "I check that displayed vaccination form has empty vaccination date and name",
+        () -> {
+          collectedVaccination = collectVaccinationData();
+          softly.assertEquals(collectedVaccination.getVaccinationDate(), null);
+          softly.assertEquals(collectedVaccination.getVaccineName(), "");
+          softly.assertAll();
+        });
+    When(
+        "I set new vaccination name the same as duplicate for DE",
+        () -> {
+          selectVaccineName(duplicatedVacinationDe.getVaccineName());
+        });
+    When(
+        "I set new vaccination date the same as duplicate for DE",
+        () -> {
+          fillVaccinationDate(duplicatedVacinationDe.getVaccinationDate(), Locale.GERMAN);
         });
     When(
         "I click SAVE button in new Vaccination form",
@@ -130,5 +218,39 @@ public class CreateNewVaccinationSteps implements En {
 
   private void fillAtcCode(String atcCode) {
     webDriverHelpers.fillInWebElement(ATC_CODE_INPUT, atcCode);
+  }
+
+  private LocalDate getDateOfReport() {
+    String dateOfReport = webDriverHelpers.getValueFromWebElement(DATE_OF_REPORT_INPUT);
+    if (dateOfReport != "") {
+      return LocalDate.parse(dateOfReport, DATE_FORMATTER_DE);
+    }
+    return null;
+  }
+
+  private LocalDate getVaccinationDate() {
+    String dateOfReport = webDriverHelpers.getValueFromWebElement(VACCINATION_DATE_INPUT);
+    if (!dateOfReport.isEmpty()) {
+      return LocalDate.parse(dateOfReport, DATE_FORMATTER_DE);
+    }
+    return null;
+  }
+
+  private Vaccination collectVaccinationData() {
+    return Vaccination.builder()
+        .reportDate(getDateOfReport())
+        .vaccinationDate(getVaccinationDate())
+        .vaccineName(webDriverHelpers.getValueFromWebElement(VACCINATION_NAME_INPUT))
+        .vaccineManufacturer(
+            webDriverHelpers.getValueFromWebElement(VACCINATION_MANUFACTURER_INPUT))
+        .vaccineType(webDriverHelpers.getValueFromWebElement(VACCINATION_TYPE_INPUT))
+        .vaccinationInfoSource(
+            webDriverHelpers.getValueFromWebElement(VACCINATION_INFO_SOURCE_INPUT))
+        .vaccineDose(webDriverHelpers.getValueFromWebElement(VACCINE_DOSE_INPUT))
+        .inn(webDriverHelpers.getValueFromWebElement(INN_INPUT))
+        .uniiCode(webDriverHelpers.getValueFromWebElement(UNII_CODE_INPUT))
+        .batchNumber(webDriverHelpers.getValueFromWebElement(BATCH_NUMBER_INPUT))
+        .atcCode(webDriverHelpers.getValueFromWebElement(ATC_CODE_INPUT))
+        .build();
   }
 }

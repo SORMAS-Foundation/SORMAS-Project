@@ -833,6 +833,21 @@ public class WebDriverHelpers {
     }
   }
 
+  public void clearComboboxInput(By selector) {
+    Instant start = Instant.now();
+    waitUntilElementIsVisibleAndClickable(selector);
+    scrollToElement(selector);
+    WebElement webElement = baseSteps.getDriver().findElement(selector);
+    while (!"".contentEquals(getValueFromWebElement(selector))) {
+      log.info(PID + "Deleted char: {}", getValueFromWebElement(selector));
+      webElement.sendKeys(Keys.chord(Keys.CONTROL, "a", Keys.BACK_SPACE));
+      webElement.click();
+      if (Instant.now().isAfter(start.plus(1, ChronoUnit.MINUTES))) {
+        throw new Error("The field " + selector + "didn't clear");
+      }
+    }
+  }
+
   public String getTextFromLabelIfCheckboxIsChecked(By checkbox) {
     scrollToElement(checkbox);
     if (getAttributeFromWebElement(checkbox, "checked").equals("true")) {
