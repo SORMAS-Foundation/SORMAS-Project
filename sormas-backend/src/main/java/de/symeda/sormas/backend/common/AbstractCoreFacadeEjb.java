@@ -181,8 +181,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 			return null;
 		}
 
-		Object[] deletionData = getDeletionData(uuid, deletionConfiguration);
-		Date referenceDate = (Date) deletionData[0];
+		Date referenceDate = getDeletionReferenceDate(uuid, deletionConfiguration);
 		Date deletiondate = DateHelper.addDays(referenceDate, deletionConfiguration.getDeletionPeriod());
 		return new DeletionInfoDto(deletiondate, referenceDate, deletionConfiguration.getDeletionPeriod());
 	}
@@ -198,10 +197,9 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 			return null;
 		}
 
-		Object[] deletionData = getDeletionData(uuid, deletionConfiguration);
-		Date referenceDate = (Date) deletionData[0];
+		Date referenceDate = getDeletionReferenceDate(uuid, deletionConfiguration);
 		Date deletiondate = DateHelper.addDays(referenceDate, deletionConfiguration.getDeletionPeriod());
-		return new DeletionInfoDto(deletiondate, (Date) deletionData[1], deletionConfiguration.getDeletionPeriod());
+		return new DeletionInfoDto(deletiondate, referenceDate, deletionConfiguration.getDeletionPeriod());
 	}
 
 	protected String getDeleteReferenceField(DeletionReference deletionReference) {
@@ -217,7 +215,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		}
 	}
 
-	private Object[] getDeletionData(String uuid, DeletionConfiguration entityConfig) {
+	private Date getDeletionReferenceDate(String uuid, DeletionConfiguration entityConfig) {
 
 		if (entityConfig.getDeletionReference() == null) {
 			return null;
@@ -227,10 +225,11 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<ADO> from = cq.from(adoClass);
 
-		cq.multiselect(from.get(getDeleteReferenceField(entityConfig.getDeletionReference())), from.get(AbstractDomainObject.CHANGE_DATE));
+		cq.select(from.get(getDeleteReferenceField(entityConfig.getDeletionReference())));
 		cq.where(cb.equal(from.get(AbstractDomainObject.UUID), uuid));
 
-		return em.createQuery(cq).getSingleResult();
+		Object result = em.createQuery(cq).getSingleResult();
+		return (Date) result;
 	}
 
 	protected abstract CoreEntityType getCoreEntityType();

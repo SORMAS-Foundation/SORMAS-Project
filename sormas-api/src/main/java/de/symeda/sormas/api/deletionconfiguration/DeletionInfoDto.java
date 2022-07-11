@@ -6,12 +6,12 @@ import java.util.Date;
 public class DeletionInfoDto implements Serializable {
 
 	private Date deletionDate;
-	private Date endOfProcessing;
+	private Date referenceDate;
 	private int deletionPeriod;
 
-	public DeletionInfoDto(Date deletionDate, Date endOfProcessing, int deletionPeriod) {
+	public DeletionInfoDto(Date deletionDate, Date referenceDate, int deletionPeriod) {
 		this.deletionDate = deletionDate;
-		this.endOfProcessing = endOfProcessing;
+		this.referenceDate = referenceDate;
 		this.deletionPeriod = deletionPeriod;
 	}
 
@@ -23,12 +23,12 @@ public class DeletionInfoDto implements Serializable {
 		this.deletionDate = deletionDate;
 	}
 
-	public Date getEndOfProcessing() {
-		return endOfProcessing;
+	public Date getReferenceDate() {
+		return referenceDate;
 	}
 
-	public void setEndOfProcessing(Date endOfProcessing) {
-		this.endOfProcessing = endOfProcessing;
+	public void setReferenceDate(Date referenceDate) {
+		this.referenceDate = referenceDate;
 	}
 
 	public int getDeletionPeriod() {

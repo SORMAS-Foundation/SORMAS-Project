@@ -45,7 +45,7 @@ public class DeletionLabel extends HorizontalLayout {
 		String infoIconDesciption = String.format(
 			I18nProperties.getString(Strings.infoAutomaticDeletionTooltip),
 			DateFormatHelper.formatDate(deletionInfoDto.getDeletionDate()),
-			DateFormatHelper.formatDate(deletionInfoDto.getEndOfProcessing()),
+			DateFormatHelper.formatDate(deletionInfoDto.getReferenceDate()),
 			formatDeletionPeriod(deletionInfoDto.getDeletionPeriod()));
 		Label infoIcon = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 		infoIcon.setDescription(infoIconDesciption, ContentMode.HTML);
