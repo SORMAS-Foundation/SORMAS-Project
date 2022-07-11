@@ -20,6 +20,8 @@ import static java.time.Duration.ofSeconds;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -1021,5 +1023,20 @@ public class WebDriverHelpers {
       throw new NotFoundException(
           "Cannot close active window and switch to parent window because only one is available!");
     }
+  }
+
+  public boolean isFileExists(Path file_path) {
+    boolean file_exists;
+
+    return Files.exists(file_path);
+  }
+
+  public void waitForFileExists(Path file_path, int seconds) {
+    assertHelpers.assertWithPoll(
+        () ->
+            Assert.assertTrue(
+                Files.exists(file_path),
+                String.format("File %s not exists after %s", file_path, seconds)),
+        seconds);
   }
 }

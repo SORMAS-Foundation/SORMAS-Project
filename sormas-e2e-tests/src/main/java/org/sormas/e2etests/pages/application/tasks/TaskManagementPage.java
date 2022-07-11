@@ -46,6 +46,13 @@ public class TaskManagementPage {
   public static final By EDIT_FIRST_SEARCH_RESULT = By.xpath("//table/tbody/tr[1]/td[1]");
   public static final By TASK_CONTEXT_FIRST_RESULT = By.xpath("//td[3]");
   public static final By ASSOCIATED_LINK_FIRST_RESULT = By.xpath("//td/a");
+  public static final By TASK_EXPORT_BUTTON = By.id("export");
+  public static final By BASIC_EXPORT_BUTTON = By.id("exportBasic");
+  public static final By DETAILED_EXPORT_BUTTON = By.id("exportDetailed");
+
+  public static final By CUSTOM_EXPORT_BUTTON = By.id("exportCustom");
+  public static final By DETAILED_EXPORT_POPUP_LABEL =
+      By.xpath("//div[contains(text(),'Detailed Export')]");
 
   public static By getCheckboxByIndex(String idx) {
     return By.xpath(String.format("(//input[@type=\"checkbox\"])[%s]", idx));
