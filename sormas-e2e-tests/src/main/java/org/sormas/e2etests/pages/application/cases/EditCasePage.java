@@ -297,13 +297,13 @@ public class EditCasePage {
     return By.id("edit-immunization-" + immunizationUuid);
   }
 
-  public static final By IMMUNIZATION_CARD_IMMUNIZATION_PERIOD =
+  public static final By IMMUNIZATION_CARD_IMMUNIZATION_PERIOD_LABEL =
       By.xpath("//div[contains(text(),'Immunization period:')]");
-  public static final By IMMUNIZATION_CARD_IMMUNIZATION_STATUS =
+  public static final By IMMUNIZATION_CARD_IMMUNIZATION_STATUS_LABEL =
       By.xpath("//div[contains(text(),'Immunization status:')]");
-  public static final By IMMUNIZATION_CARD_MANAGEMENT_STATUS =
+  public static final By IMMUNIZATION_CARD_MANAGEMENT_STATUS_LABEL =
       By.xpath("//div[contains(text(),'Management status:')]");
-  public static final By IMMUNIZATION_CARD_MEANS_OF_IMMUNIZATION =
+  public static final By IMMUNIZATION_CARD_MEANS_OF_IMMUNIZATION_LABEL =
       By.xpath("//div[contains(text(),'Means of immunization:')]");
   public static final By IMMUNIZATION_CARD_IMMUNIZATION_UUID =
       By.xpath(
