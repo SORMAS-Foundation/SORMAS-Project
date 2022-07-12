@@ -18,5 +18,9 @@ public class AreaReferenceDto extends InfrastructureDataReferenceDto {
 		setUuid(uuid);
 		setCaption(caption);
 	}
+	
+	public AreaReferenceDto(String uuid, String caption, Long externalId) {
+		super(uuid, caption, externalId);
+	}
 
 }

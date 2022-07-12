@@ -75,38 +75,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginBottom="@dimen/serviceMarginBottom">
-
-                    <TextView
-                        android:id="@+id/sub_heading_1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/heading_disease_prevention"
-                        style="@style/LoginSubHeadingText" />
-
-                    <View
-                        android:id="@+id/sub_heading_separator_1"
-                        style="@style/LoginSubHeadingSeparator" />
-
-                    <TextView
-                        android:id="@+id/sub_heading_2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/heading_disease_detection"
-                        style="@style/LoginSubHeadingText" />
-
-                    <View
-                        android:id="@+id/sub_heading_separator_2"
-                        style="@style/LoginSubHeadingSeparator" />
-
-                    <TextView
-                        android:id="@+id/sub_heading_3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/heading_outbreak_response"
-                        style="@style/LoginSubHeadingText" />
-
-                </LinearLayout>
+                    android:layout_marginBottom="@dimen/serviceMarginBottom"/>
 
                 <!-- Sign In -->
 

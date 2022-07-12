@@ -161,7 +161,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 			country.get(Country.UUID),
 			country.get(Country.DEFAULT_NAME),
 			country.get(Country.ISO_CODE),
-			area.get(Area.UUID));
+			area.get(Area.UUID)); //AreaIndex
 	}
 
 	@Override

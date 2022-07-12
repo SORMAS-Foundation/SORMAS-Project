@@ -369,7 +369,7 @@
     <string name="heading_previous_hospitalizations">Previous Hospitalizations</string>
     <string name="heading_refer_case_from_poe">Refer Case from Point of Entry</string>
     <string name="heading_reset_PIN">Reset PIN</string>
-    <string name="heading_response_management">Response Management &amp; Analysis System</string>
+    <string name="heading_response_management">Management Information System</string>
     <string name="heading_sample_edit">Edit Sample</string>
     <string name="heading_sample_new">New Sample</string>
     <string name="heading_sample_read">Read Sample</string>
@@ -388,7 +388,7 @@
     <string name="heading_social_events">Social Events</string>
     <string name="heading_source_case">Source Case</string>
     <string name="heading_source_of_information">Source of Information</string>
-    <string name="heading_surveillance_outbreak">Surveillance Outbreak</string>
+    <string name="heading_surveillance_outbreak">Afghanistan Polio</string>
     <string name="heading_symptoms">Signs &amp; Symptoms</string>
     <string name="heading_sync_conflicts">Synchronization Conflicts</string>
     <string name="heading_synchronization">Synchronization</string>

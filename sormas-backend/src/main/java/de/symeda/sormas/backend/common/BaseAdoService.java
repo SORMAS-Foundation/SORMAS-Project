@@ -147,7 +147,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> from = cq.from(getElementClass());
 		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
-		//System.out.println("DEBUGGER 5678ijhyuio __________________________________________ "+SQLExtractor.from(em.createQuery(cq)));
+	//	System.out.println("DEBUGGER 5678ijhyuio __________________________________________ "+SQLExtractor.from(em.createQuery(cq)));
 		return em.createQuery(cq).getResultList();
 	}
 	

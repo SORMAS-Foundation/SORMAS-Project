@@ -2,7 +2,8 @@ package de.symeda.sormas.api.campaign.form;
 
 public enum CampaignFormElementEnumOptions {
 	
-	OPTION1(CampaignFormElementOptions.getOpt1()),
+	OPTION1;
+	/*(CampaignFormElementOptions.getOpt1()),
 	OPTION2(CampaignFormElementOptions.getOpt2()),
 	OPTION3(CampaignFormElementOptions.getOpt3()),
 	OPTION4(CampaignFormElementOptions.getOpt4()),
@@ -33,7 +34,7 @@ public enum CampaignFormElementEnumOptions {
     public String toString() { 
         return this.label; 
     }
-	
+	*/
 	/*
 	public String toString() {
 		return name().toLowerCase().replaceAll("_", "-");

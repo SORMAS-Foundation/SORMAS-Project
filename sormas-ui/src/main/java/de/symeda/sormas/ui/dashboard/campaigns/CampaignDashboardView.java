@@ -225,6 +225,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 					diagramData,
 					dataProvider.getCampaignFormTotalsMap(tabId, subTabId).get(campaignDashboardDiagramDto),
 					dataProvider.getCampaignJurisdictionLevelGroupBy());
+				
 				styles.add(createDiagramStyle(diagramCssClass, diagramId));
 				diagramComponent.setStyleName(diagramCssClass);
 

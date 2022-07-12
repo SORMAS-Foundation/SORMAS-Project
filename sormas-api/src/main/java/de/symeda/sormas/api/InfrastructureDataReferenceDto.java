@@ -18,7 +18,7 @@ package de.symeda.sormas.api;
 public abstract class InfrastructureDataReferenceDto extends ReferenceDto implements Cloneable {
 
 	private static final long serialVersionUID = -3451269378082767059L;
-	private Long externalId;
+	private transient Long externalId;
 
 	protected InfrastructureDataReferenceDto() {
 	}
@@ -28,12 +28,12 @@ public abstract class InfrastructureDataReferenceDto extends ReferenceDto implem
 	}
 
 	protected InfrastructureDataReferenceDto(String uuid, String caption, Long externalId) {
-		super(uuid, caption);
+		super(uuid, caption); 
 		this.externalId = externalId;
 	}
 
 	public Long getExternalId() {
-		return externalId;
+	return externalId;
 	}
 
 	@Override

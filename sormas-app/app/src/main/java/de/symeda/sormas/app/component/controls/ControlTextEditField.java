@@ -255,10 +255,10 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 	protected void onFinishInflate() {
 		super.onFinishInflate();
 
-		initInput();
+		initInput(false);
 	}
 
-	protected void initInput() {
+	protected void initInput(Boolean isIntegerFlag) {
 		input = (EditText) this.findViewById(R.id.text_input);
 		if (getImeOptions() == EditorInfo.IME_NULL) {
 			setImeOptions(EditorInfo.IME_ACTION_DONE);
@@ -269,7 +269,14 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 		if (getTextAlignment() == View.TEXT_ALIGNMENT_GRAVITY) {
 			input.setGravity(getGravity());
 		}
-		input.setInputType(inputType);
+		if(isIntegerFlag) {
+			input.setInputType(InputType.TYPE_CLASS_NUMBER |
+					InputType.TYPE_NUMBER_FLAG_DECIMAL |
+					InputType.TYPE_NUMBER_FLAG_SIGNED);
+		} else {
+
+			input.setInputType(inputType);
+		}
 		setSingleLine(singleLine);
 		if (getMaxLength() >= 0) {
 			input.setFilters(

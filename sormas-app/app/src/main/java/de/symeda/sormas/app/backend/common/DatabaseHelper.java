@@ -1964,6 +1964,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 					+ "		formDate BIGINT,"
 					+ "		formValues VARCHAR,"
 					+ "		region_id BIGINT,"
+					+ "		area_id BIGINT,"
 					+ "		pseudonymized SMALLINT,"
 					+ "		changeDate BIGINT NOT NULL,"
 					+ "		creationDate BIGINT NOT NULL,"

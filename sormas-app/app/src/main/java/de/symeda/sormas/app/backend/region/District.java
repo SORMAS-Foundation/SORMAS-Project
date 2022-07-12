@@ -38,6 +38,7 @@ public class District extends InfrastructureAdo {
 	public static final String NAME = "name";
 	public static final String EPID_CODE = "epidCode";
 	public static final String REGION = "region";
+	public static final String RISK = "risk";
 
 	public District() {
 	}
@@ -51,6 +52,9 @@ public class District extends InfrastructureAdo {
 
 	@Column
 	private String epidCode;
+
+	@Column
+	private String risk;
 
 	@DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false, maxForeignAutoRefreshLevel = 3)
 	@ManyToOne(cascade = CascadeType.REFRESH, optional = false)
@@ -73,9 +77,7 @@ public class District extends InfrastructureAdo {
 		this.epidCode = epidCode;
 	}
 	
-	public String getRisk() {
-		return risk;
-	}
+	public String getRisk() { return risk; }
 
 	public void setRisk(String risk) {
 		this.risk = risk;

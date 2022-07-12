@@ -421,7 +421,6 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	}
 
 	public List<CampaignDiagramDataDto> getDiagramDataByAgeGroup(
-
 			CampaignDiagramSeries diagramSeriesTotal, CampaignDiagramSeries diagramSeries,
 			CampaignDiagramCriteria campaignDiagramCriteria) {
 		List<CampaignDiagramDataDto> resultData = new ArrayList<>();
@@ -436,6 +435,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			areas.forEach(areaItem -> {
 				Integer population = populationDataFacadeEjb.getAreaPopulation(areaItem.getUuid(),
 						diagramSeriesTotal.getPopulationGroup());
+				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>> "+population);
 				if (population == 0) {
 					resultData.add(new CampaignDiagramDataDto(areaItem.getName(), 0, areaItem.getUuid(),
 							areaItem.getName(), diagramSeries.getFieldId(), diagramSeries.getFormId(), false));
@@ -534,7 +534,122 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		return resultData;
 	}
 
-	
+	public List<CampaignDiagramDataDto> getDiagramDataByAgeGroupCard(
+			CampaignDiagramSeries diagramSeriesTotal, CampaignDiagramSeries diagramSeries,
+			CampaignDiagramCriteria campaignDiagramCriteria) {
+		List<CampaignDiagramDataDto> resultData = new ArrayList<>();
+		final AreaReferenceDto area = campaignDiagramCriteria.getArea();
+		final RegionReferenceDto region = campaignDiagramCriteria.getRegion();
+		final DistrictReferenceDto district = campaignDiagramCriteria.getDistrict();
+		final CampaignJurisdictionLevel grouping = campaignDiagramCriteria.getCampaignJurisdictionLevelGroupBy();
+		// final String formTyper = campaignDiagramCriteria.getFormType();
+
+		if (grouping == CampaignJurisdictionLevel.AREA) {
+			List<Area> areas = areaService.getAll();
+			areas.forEach(areaItem -> {
+				Integer population = populationDataFacadeEjb.getAreaPopulationParent(areaItem.getUuid(),
+						diagramSeriesTotal.getPopulationGroup());
+				
+			//	System.out.println(">>>>>>>>>>>>>>>YEAH>>>>>>>>>>>> "+population);
+				
+				if (population == 0) {
+					resultData.add(new CampaignDiagramDataDto(areaItem.getName(), 0, areaItem.getUuid(),
+							areaItem.getName(), diagramSeries.getFieldId(), diagramSeries.getFormId(), false));
+				} else {
+					resultData.add(new CampaignDiagramDataDto(areaItem.getName(), population, areaItem.getUuid(),
+							areaItem.getName(), diagramSeries.getFieldId(), diagramSeries.getFormId(), true));
+				}
+			});
+		} else if (grouping == CampaignJurisdictionLevel.REGION) {
+			List<RegionReferenceDto> regions;
+			if (area != null)
+				regions = regionFacadeEjb.getAllActiveByArea(area.getUuid());
+			else
+				regions = regionFacadeEjb.getAllActiveAsReference();
+
+			// this should not be needed
+//			if (regions.isEmpty()) {
+//				resultData.add(
+//					new CampaignDiagramDataDto(
+//						area.getCaption(),
+//						0,
+//						area.getUuid(),
+//						area.getCaption(),
+//						diagramSeries.getFieldId(),
+//						diagramSeries.getFormId(),
+//						false));
+//			} else {
+			regions.stream().forEach(regionReferenceDto -> {
+				PopulationDataCriteria criteria = new PopulationDataCriteria();
+				criteria.sexIsNull(true);
+				criteria.region(regionReferenceDto);
+				criteria.ageGroup(diagramSeriesTotal.getPopulationGroup());
+				List<PopulationDataDto> populationDataDto = populationDataFacadeEjb.getPopulationData(criteria);
+				Integer populationSum = 0;
+				if (!populationDataDto.isEmpty()) {
+					populationSum = populationDataDto.stream().mapToInt(e -> e.getPopulation()).sum();
+					resultData.add(new CampaignDiagramDataDto(regionReferenceDto.getCaption(), populationSum,
+							regionReferenceDto.getUuid(), regionReferenceDto.getCaption(), diagramSeries.getFieldId(),
+							diagramSeries.getFormId(), true));
+				} else {
+					resultData.add(new CampaignDiagramDataDto(regionReferenceDto.getCaption(), 0,
+							regionReferenceDto.getUuid(), regionReferenceDto.getCaption(), diagramSeries.getFieldId(),
+							diagramSeries.getFormId(), false));
+				}
+			});
+//			}
+		} else if (grouping == CampaignJurisdictionLevel.DISTRICT || Objects.isNull(district)) {
+
+			List<DistrictReferenceDto> districts;
+			if (region != null) {
+				districts = districtFacadeEjb.getAllActiveByRegion(region.getUuid());
+			} else if (area != null) {
+				districts = districtFacadeEjb.getAllActiveByArea(area.getUuid());
+			} else {
+				districts = districtFacadeEjb.getAllActiveAsReference();
+			}
+
+			// this should not be needed
+//			if (districts.isEmpty()) {
+//				resultData.add(
+//					new CampaignDiagramDataDto(
+//						region.getCaption(),
+//						0,
+//						region.getUuid(),
+//						region.getCaption(),
+//						diagramSeries.getFieldId(),
+//						diagramSeries.getFormId(),
+//						false));
+//			} else {
+			districts.stream().forEach(districtReferenceDto -> {
+				PopulationDataCriteria criteria = new PopulationDataCriteria();
+				criteria.sexIsNull(true);
+				criteria.district(districtReferenceDto);
+				criteria.region(region);
+				criteria.ageGroup(diagramSeriesTotal.getPopulationGroup());
+				List<PopulationDataDto> populationDataDtoList = populationDataFacadeEjb.getPopulationData(criteria);
+				Integer populationSum = 0;
+				if (!populationDataDtoList.isEmpty()) {
+					populationSum = populationDataDtoList.stream().mapToInt(e -> e.getPopulation()).sum();
+					resultData.add(new CampaignDiagramDataDto(districtReferenceDto.getCaption(), populationSum,
+							districtReferenceDto.getUuid(), districtReferenceDto.getCaption(),
+							diagramSeries.getFieldId(), diagramSeries.getFormId(), true));
+				} else {
+					resultData.add(new CampaignDiagramDataDto(districtReferenceDto.getCaption(), populationSum,
+							districtReferenceDto.getUuid(), districtReferenceDto.getCaption(),
+							diagramSeries.getFieldId(), diagramSeries.getFormId(), false));
+				}
+			});
+//			}
+		} else if (district != null) {
+			resultData.add(new CampaignDiagramDataDto(district.getCaption(), 0, district.getUuid(),
+					district.getCaption(), diagramSeries.getFieldId(), diagramSeries.getFormId(), true));
+		}
+		
+		//System.out.println("dddddddddddddddddddddd"+resultData);
+		return resultData;
+	}
+
 	
 	
 
@@ -902,7 +1017,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			}
 			
 
-			System.out.println("getDiagramDataByGroups"+selectBuilder.toString() + " FROM " + CampaignFormData.TABLE_NAME +" "+ joinBuilder +" "+ whereBuilder +" "+ groupByBuilder);
+	//		System.out.println("getDiagramDataByGroups"+selectBuilder.toString() + " FROM " + CampaignFormData.TABLE_NAME +" "+ joinBuilder +" "+ whereBuilder +" "+ groupByBuilder);
 		
 			@SuppressWarnings("unchecked")
 			List<Object[]> resultList = seriesDataQuery.getResultList(); 

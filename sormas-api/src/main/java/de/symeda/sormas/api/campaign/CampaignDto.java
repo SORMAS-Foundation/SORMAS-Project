@@ -130,7 +130,7 @@ public class CampaignDto extends EntityDto {
 	
 	public Set<CampaignFormMetaReferenceDto> getCampaignFormMetas(String formType) {
 	
-		return campaignFormMetas.stream().filter(e -> e.getFormtype().equals(formType)).collect(Collectors.toSet());
+		return campaignFormMetas.stream().filter(e -> e.getFormType().equals(formType)).collect(Collectors.toSet());
 	}
 
 	public void setCampaignFormMetas(Set<CampaignFormMetaReferenceDto> campaignFormMetas) {

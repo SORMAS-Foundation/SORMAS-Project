@@ -37,7 +37,7 @@ public class Area extends InfrastructureAdo {
 		this.name = name;
 	}
 	
-	@OneToMany(mappedBy = Region.AREA, cascade = {}, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = Region.AREA, cascade = {}, fetch = FetchType.LAZY) //AreaReferenceDto externalID
 	@OrderBy(Region.NAME)
 	public List<Region> getRegions() {
 		return regions;

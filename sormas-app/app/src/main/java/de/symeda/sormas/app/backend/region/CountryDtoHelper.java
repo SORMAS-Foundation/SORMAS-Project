@@ -25,12 +25,12 @@ public class CountryDtoHelper extends AdoDtoHelper<Country, CountryDto> {
 
 	@Override
 	protected Call<List<CountryDto>> pullAllSince(long since) throws NoConnectionException {
-		return RetroProvider.getCountryFacade().pullAllSince(since);
+		return null;//RetroProvider.getCountryFacade().pullAllSince(since);
 	}
 
 	@Override
 	protected Call<List<CountryDto>> pullByUuids(List<String> uuids) throws NoConnectionException {
-		return RetroProvider.getCountryFacade().pullByUuids(uuids);
+		return null;//RetroProvider.getCountryFacade().pullByUuids(uuids);
 	}
 
 	@Override

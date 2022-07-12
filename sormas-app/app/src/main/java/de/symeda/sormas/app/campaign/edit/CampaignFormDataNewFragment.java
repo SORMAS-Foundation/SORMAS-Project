@@ -93,8 +93,11 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
                 ControlPropertyField dynamicField;
                 if (type == CampaignFormElementType.YES_NO) {
                     dynamicField = createControlCheckBoxField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
-                } else {
-                    dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
+                } else  if (type == CampaignFormElementType.NUMBER || type == CampaignFormElementType.DECIMAL || type == CampaignFormElementType.RANGE){
+                    dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true);
+
+                }else{
+                    dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false);
                 }
                 fieldMap.put(campaignFormElement.getId(), dynamicField);
                 dynamicField.setShowCaption(true);

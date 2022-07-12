@@ -65,19 +65,19 @@ public class CampaignFormsGridComponent extends AbstractEditableGrid<CampaignFor
 
 		if (event.getTabSheet().getSelectedTab().getCaption().equals("Pre-Campaign Phase")) {
 			gridItems = gridItemss;
-			gridItems.removeIf(n -> (n.getFormtype().contains("Pre-Campaign")));
+			gridItems.removeIf(n -> (n.getFormType().contains("Pre-Campaign")));
 			//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  --  "+gridItems);
 			
 			grid.setItems(gridItems);
 			
 		} else if (event.getTabSheet().getSelectedTab().getCaption() == "Intra-Campaign Phase") {
 			gridItems = gridItemss;
-			gridItems.removeIf(n -> (n.getFormtype().contains("Intra-Campaign")));
+			gridItems.removeIf(n -> (n.getFormType().contains("Intra-Campaign")));
 			grid.setItems(gridItems);
 			
 		} else if (event.getTabSheet().getSelectedTab().getCaption() == "Post-Campaign Phase") {
 			gridItems = gridItemss;
-			gridItems.removeIf(n -> (n.getFormtype().contains("Post-Campaign")));
+			gridItems.removeIf(n -> (n.getFormType().contains("Post-Campaign")));
 			grid.setItems(gridItems);
 			
 		}
@@ -122,11 +122,11 @@ public class CampaignFormsGridComponent extends AbstractEditableGrid<CampaignFor
 					return !items.contains(campaignFormMetaReferenceDto);
 				}, I18nProperties.getValidationError(Validations.campaignDashboardDataFormValueDuplicate))
 				.bind(campaignFormMetaReferenceDto -> new CampaignFormMetaReferenceDto(
-						campaignFormMetaReferenceDto.getUuid(), campaignFormMetaReferenceDto.getCaption(), campaignFormMetaReferenceDto.getFormtype()),
+						campaignFormMetaReferenceDto.getUuid(), campaignFormMetaReferenceDto.getCaption(), campaignFormMetaReferenceDto.getFormType()),
 						(bindedCampaignFormMeta, selectedCampaignFormMeta) -> {
 							bindedCampaignFormMeta.setUuid(selectedCampaignFormMeta.getUuid());
 							bindedCampaignFormMeta.setCaption(selectedCampaignFormMeta.getCaption());
-							bindedCampaignFormMeta.setFormType(selectedCampaignFormMeta.getFormtype());
+							bindedCampaignFormMeta.setFormType(selectedCampaignFormMeta.getFormType());
 							// workarround: grid doesn't refresh itself for unknown reason
 							grid.getDataProvider().refreshAll();
 						});
