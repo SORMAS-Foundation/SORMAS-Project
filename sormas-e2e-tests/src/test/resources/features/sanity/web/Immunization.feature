@@ -245,3 +245,19 @@ Feature: Immunization end to end tests
     And I click on the first Case ID from Case Directory
     And I navigate to linked immunization on Edit case page
     Then I check that Immunization data is displayed as read-only on Edit immunization page
+
+  @issue=SORDEV-8759 @env_de
+  Scenario: Test Reduced entry option for vaccinations
+    Given I log in as a National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    And I set current date as a date of report on Edit case page for DE version
+    And I click on save button from Edit Case page
+    And I collect uuid of the case
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data in new Vaccination form with vaccination date 7 days before the current day for DE
+    And I click SAVE button in new Vaccination form
+    And I check that displayed vaccination card has correct vaccination date and name
+    Then I check if an edit icon is available on vaccination card on Edit Case page
+    And I check if Vaccination Status is set to "Geimpft" on Edit Case page

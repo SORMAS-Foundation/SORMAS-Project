@@ -311,4 +311,13 @@ public class EditCasePage {
   public static final By IMMUNIZATION_CARD_IMMUNIZATION_UUID =
       By.xpath(
           "//div[@location='immunizations']//div[@class='v-slot v-slot-bold v-slot-uppercase v-align-middle']");
+
+  public static final By VACCINATION_CARD_VACCINATION_NAME =
+      By.xpath("//div[contains(text(),'Impfstoffname:')]");
+  public static final By VACCINATION_CARD_VACCINATION_DATE =
+      By.xpath(
+          "//div[@location='vaccinations']//div[@class='v-slot v-slot-bold v-slot-uppercase v-align-right v-align-middle']/div");
+  public static final By EDIT_VACCINATION_BUTTON =
+      By.xpath(
+          "//div[@location='vaccinations']//div[@class='v-button v-widget link v-button-link compact v-button-compact']");
 }

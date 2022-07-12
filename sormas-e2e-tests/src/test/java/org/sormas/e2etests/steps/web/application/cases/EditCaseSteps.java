@@ -236,6 +236,7 @@ import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.pojo.web.QuarantineOrder;
+import org.sormas.e2etests.entities.pojo.web.Vaccination;
 import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
 import org.sormas.e2etests.entities.services.CaseDocumentService;
 import org.sormas.e2etests.entities.services.CaseService;
@@ -2139,6 +2140,48 @@ public class EditCaseSteps implements En {
           softly.assertEquals(message, hoverMessage, "Messages are not equal");
           softly.assertAll();
         });
+
+    And(
+        "^I set current date as a date of report on Edit case page for DE version$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(REPORT_DATE_INPUT);
+          fillDateOfReportDE(LocalDate.now());
+        });
+
+    And(
+        "^I check that displayed vaccination card has correct vaccination date and name$",
+        () -> {
+          softly.assertEquals(
+              CreateNewVaccinationSteps.vaccination.getVaccinationDate(),
+              collectVaccinationData().getVaccinationDate(),
+              "Vaccination date is incorrect");
+          softly.assertEquals(
+              "Impfstoffname: " + CreateNewVaccinationSteps.vaccination.getVaccineName(),
+              collectVaccinationData().getVaccineName(),
+              "Vaccination name is incorrect");
+          softly.assertAll();
+        });
+
+    Then(
+        "^I check if an edit icon is available on vaccination card on Edit Case page$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EDIT_VACCINATION_BUTTON);
+        });
+  }
+
+  private Vaccination collectVaccinationData() {
+    return Vaccination.builder()
+        .vaccinationDate(getVaccinationDate())
+        .vaccineName(webDriverHelpers.getTextFromWebElement(VACCINATION_CARD_VACCINATION_NAME))
+        .build();
+  }
+
+  private LocalDate getVaccinationDate() {
+    String dateOfReport = webDriverHelpers.getTextFromWebElement(VACCINATION_CARD_VACCINATION_DATE);
+    if (!dateOfReport.isEmpty()) {
+      return LocalDate.parse(dateOfReport, DATE_FORMATTER_DE);
+    }
+    return null;
   }
 
   private Case collectCasePersonUuid() {
@@ -2430,6 +2473,12 @@ public class EditCaseSteps implements En {
 
   private void fillDateOfReport(LocalDate date) {
     webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, DATE_FORMATTER.format(date));
+  }
+
+  private void fillDateOfReportDE(LocalDate date) {
+    DateTimeFormatter formatter;
+    formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, formatter.format(date));
   }
 
   private void fillFollowUpUntilDateDE(LocalDate newDate) {

@@ -199,6 +199,25 @@ public class CreateNewVaccinationSteps implements En {
     When(
         "I click NEW VACCINATION button for DE",
         () -> webDriverHelpers.clickOnWebElementBySelector(NEW_VACCINATION_DE_BUTTON));
+
+    And(
+        "^I fill new vaccination data in new Vaccination form with vaccination date (\\d+) days before the current day for DE$",
+        (Integer numberOfDays) -> {
+          LocalDate vaccinationDate = LocalDate.now().minusDays(numberOfDays);
+          vaccination =
+              vaccinationService.buildGeneratedVaccinationWithSpecificVaccinationDateDE(
+                  vaccinationDate);
+          fillVaccinationDate(vaccination.getVaccinationDate(), Locale.GERMAN);
+          selectVaccineName(vaccination.getVaccineName());
+          selectVaccineManufacturer(vaccination.getVaccineManufacturer());
+          fillVaccineType(vaccination.getVaccineType());
+          selectVaccinationInfoSource(vaccination.getVaccinationInfoSource());
+          fillVaccineDose(vaccination.getVaccineDose());
+          fillInn(vaccination.getInn());
+          fillUniiCode(vaccination.getUniiCode());
+          fillBatchNumber(vaccination.getBatchNumber());
+          fillAtcCode(vaccination.getAtcCode());
+        });
   }
 
   private void fillVaccinationDate(LocalDate date, Locale locale) {
