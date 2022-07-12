@@ -307,6 +307,16 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(ACTION_OKAY);
           webDriverHelpers.clickOnWebElementBySelector(ACTION_OKAY);
         });
+      When(
+              "I click on Merge Duplicates on Case directory for DE",
+              () -> {
+                  webDriverHelpers.clickOnWebElementBySelector(MERGE_DUPLICATES_BUTTON);
+              });
+      When(
+              "I check if message about long loading times appear for DE",
+              () -> {
+                  webDriverHelpers.clickOnWebElementBySelector(MERGE_DUPLICATES_BUTTON);
+              });
     When(
         "I click Enter Bulk Edit Mode on Case directory page",
         () -> {

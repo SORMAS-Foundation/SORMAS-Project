@@ -1454,3 +1454,12 @@ Feature: Case end to end tests
     When I back to deleted case by url
     Then I check if reason of deletion is set to "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I check if General comment test area is disabled in Edit Case
+
+  @issue=SORDEV-5567 @env_de
+  Scenario: Don't automatically load duplicates when switching to the case merge duplicates view
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the More button on Case directory page
+    Then I click on Merge Duplicates on Case directory for DE
+    And I check if message about long loading times appear for DE
+    And I click on New Sample
