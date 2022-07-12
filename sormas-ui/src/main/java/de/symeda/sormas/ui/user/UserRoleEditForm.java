@@ -19,6 +19,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,6 +29,7 @@ import java.util.stream.Stream;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
 
@@ -84,6 +86,7 @@ public class UserRoleEditForm extends AbstractEditForm<UserRoleDto> {
 		templateItems.addAll(defaultUserRoles);
 
 		FieldHelper.updateItems(templateRoleCombo, templateItems);
+		templateItems.forEach(t -> templateRoleCombo.setItemCaption(t, t.getCaption()));
 		templateRoleCombo.addValueChangeListener(e -> applyTemplateData((UserRoleDto) e.getProperty().getValue()));
 
 		addField(UserRoleDto.CAPTION).setRequired(true);
@@ -106,6 +109,13 @@ public class UserRoleEditForm extends AbstractEditForm<UserRoleDto> {
 		CheckboxSet<UserRight> userRightCbSet = addField(UserRoleDto.USER_RIGHTS, CheckboxSet.class);
 		userRightCbSet.setCaption(null);
 		userRightCbSet.setItems(getSortedUserRights(), r -> r.getUserRightGroup().toString());
+		userRightCbSet.addCheckboxValueChangeListener(e -> {
+			CheckBox checkbox = e.getCheckbox();
+			if (Boolean.TRUE.equals(checkbox.getValue())) {
+				Set<UserRight> requiredUserRights = UserRight.getRequiredUserRights(Collections.singleton((UserRight) checkbox.getData()));
+				requiredUserRights.forEach(r -> userRightCbSet.getCheckboxByData(r).ifPresent(cb -> cb.setValue(true)));
+			}
+		});
 
 		UserRoleFormHelper.createFieldDependencies(this);
 	}

@@ -15,14 +15,19 @@
 
 package de.symeda.sormas.ui.utils.components;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.vaadin.event.SerializableEventListener;
+import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -30,6 +35,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.util.ReflectTools;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.CustomField;
 
@@ -44,6 +50,9 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 	private static final long serialVersionUID = 4425620663378339988L;
 
 	private VerticalLayout layout;
+
+	private List<CheckboxRow> rows;
+
 	private List<T> items;
 	private Function<T, String> groupingFunction;
 
@@ -54,7 +63,7 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 		layout.setMargin(new MarginInfo(true, false));
 
 		if (items != null) {
-			buildCheckboxes(items);
+			rows = buildCheckboxRows(items);
 		}
 
 		return layout;
@@ -66,11 +75,11 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 
 		if (layout != null) {
 			layout.removeAllComponents();
-			buildCheckboxes(items);
+			rows = buildCheckboxRows(items);
 		}
 	}
 
-	private void buildCheckboxes(List<T> items) {
+	private List<CheckboxRow> buildCheckboxRows(List<T> items) {
 		List<String> groups;
 		if (groupingFunction != null) {
 			groups = items.stream().map(i -> groupingFunction.apply(i)).distinct().collect(Collectors.toList());
@@ -78,17 +87,18 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 			groups = Collections.singletonList(null);
 		}
 
-		groups.forEach((group) -> {
-			List<CheckboxRow> rows;
+		return groups.stream().map((group) -> {
+			List<CheckboxRow> groupRows;
 			if (group != null) {
-				rows = createRows(items.stream().filter(i -> group.equals(groupingFunction.apply(i))).collect(Collectors.toList()));
-				layout.addComponent(createGroupHeader(group, rows));
+				groupRows = createRows(items.stream().filter(i -> group.equals(groupingFunction.apply(i))).collect(Collectors.toList()));
+				layout.addComponent(createGroupHeader(group, groupRows));
 			} else {
-				rows = createRows(items);
+				groupRows = createRows(items);
 			}
 
-			layout.addComponents(rows.toArray(new Component[] {}));
-		});
+			layout.addComponents(groupRows.toArray(new Component[] {}));
+			return groupRows;
+		}).flatMap(List::stream).collect(Collectors.toList());
 	}
 
 	private List<CheckboxRow> createRows(List<T> groupItems) {
@@ -97,7 +107,13 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 			T item1 = groupItems.get(i);
 			T item2 = i < size - 1 ? groupItems.get(i + 1) : null;
 
-			rows.add(new CheckboxRow(item1, item2));
+			CheckboxRow checkboxRow = new CheckboxRow(item1, item2);
+
+			checkboxRow.checkBoxes.forEach(cb -> cb.addValueChangeListener(e -> {
+				fireEvent(new CheckboxValueChangeEvent(cb));
+			}));
+
+			rows.add(checkboxRow);
 		}
 
 		return rows;
@@ -112,12 +128,12 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 
 		Button yesAllBurron = ButtonHelper.createButton(
 			I18nProperties.getCaption(Captions.actionYesAll),
-			(e) -> rows.forEach(r -> r.setAllChecked(true)),
+			(e) -> rows.forEach(r -> r.setValuForAll(true)),
 			ValoTheme.BUTTON_LINK,
 			CssStyles.BUTTON_COMPACT);
 		Button noAllButton = ButtonHelper.createButton(
 			I18nProperties.getCaption(Captions.actionNoAll),
-			(e) -> rows.forEach(r -> r.setAllChecked(false)),
+			(e) -> rows.forEach(r -> r.setValuForAll(false)),
 			ValoTheme.BUTTON_LINK,
 			CssStyles.BUTTON_COMPACT);
 
@@ -134,9 +150,9 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 		return headerLayout;
 	}
 
-	private CheckBox createCheckbox(T item1) {
-		CheckBox checkBox = new CheckBox(item1.toString(), createDataSource(item1));
-
+	private CheckBox createCheckbox(T item) {
+		CheckBox checkBox = new CheckBox(item.toString(), createDataSource(item));
+		checkBox.setData(item);
 		checkBox.addValueChangeListener(e -> fireValueChange(false));
 
 		return checkBox;
@@ -153,37 +169,6 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 		});
 	}
 
-	private final class CheckboxRow extends HorizontalLayout {
-
-		private static final long serialVersionUID = -3874252190392021250L;
-
-		private final CheckBox left;
-		private final CheckBox right;
-
-		public CheckboxRow(T leftItem, T rightItem) {
-			setWidthFull();
-			setMargin(false);
-
-			left = createCheckbox(leftItem);
-			addComponent(left);
-
-			if (rightItem != null) {
-				right = createCheckbox(rightItem);
-				addComponent(right);
-			} else {
-				right = null;
-			}
-		}
-
-		public void setAllChecked(boolean checked) {
-			left.setValue(checked);
-
-			if (right != null) {
-				right.setValue(checked);
-			}
-		}
-	}
-
 	@Override
 	public Class<? extends Set<T>> getType() {
 		//noinspection unchecked,InstantiatingObjectToGetClassObject,InstantiatingObjectToGetClassObject
@@ -195,4 +180,60 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 		super.setInternalValue(new HashSet<>(newValue));
 	}
 
+	public Registration addCheckboxValueChangeListener(CheckboxValueChangeListener listener) {
+		return addListener(CheckboxValueChangeEvent.class, listener, CheckboxValueChangeListener.CHECKBOX_CHANGE_METHOD);
+	}
+
+	public Optional<CheckBox> getCheckboxByData(T data) {
+		return rows.stream().map(r -> r.checkBoxes).flatMap(Collection::stream).filter(checkBox -> data.equals(checkBox.getData())).findFirst();
+	}
+
+	public interface CheckboxValueChangeListener extends SerializableEventListener {
+
+		Method CHECKBOX_CHANGE_METHOD =
+			ReflectTools.findMethod(CheckboxValueChangeListener.class, "checkboxValueChange", CheckboxValueChangeEvent.class);
+
+		void checkboxValueChange(CheckboxValueChangeEvent event);
+
+	}
+
+	public static final class CheckboxValueChangeEvent extends Component.Event {
+
+		private static final long serialVersionUID = 7689979222604280185L;
+
+		public CheckboxValueChangeEvent(CheckBox source) {
+			super(source);
+		}
+
+		public CheckBox getCheckbox() {
+			return (CheckBox) getComponent();
+		}
+	}
+
+	private final class CheckboxRow extends HorizontalLayout {
+
+		private static final long serialVersionUID = -3874252190392021250L;
+
+		private final List<CheckBox> checkBoxes;
+
+		public CheckboxRow(T leftItem, T rightItem) {
+			checkBoxes = new ArrayList<>(2);
+			setWidthFull();
+			setMargin(false);
+
+			CheckBox cb1 = createCheckbox(leftItem);
+			checkBoxes.add(cb1);
+			addComponent(cb1);
+
+			if (rightItem != null) {
+				CheckBox cb2 = createCheckbox(rightItem);
+				addComponent(cb2);
+				checkBoxes.add(cb2);
+			}
+		}
+
+		public void setValuForAll(boolean checked) {
+			checkBoxes.forEach(cb -> cb.setValue(checked));
+		}
+	}
 }

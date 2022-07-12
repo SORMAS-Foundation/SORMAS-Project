@@ -33,7 +33,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRoleDto;
-import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -68,7 +67,7 @@ public class UserRoleCreateForm extends AbstractEditForm<UserRoleDto> {
 			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getDescription(Descriptions.userRoleTemplate), ContentMode.HTML),
 			TEMPLATE_INFO_LOC);
 
-		ComboBox templateRoleCombo = addCustomField(TEMPLATE_USER_ROLE, UserRoleReferenceDto.class, ComboBox.class);
+		ComboBox templateRoleCombo = addCustomField(TEMPLATE_USER_ROLE, UserRoleDto.class, ComboBox.class);
 		setSoftRequired(true, TEMPLATE_USER_ROLE);
 		List<UserRoleDto> existingUserRoles = FacadeProvider.getUserRoleFacade().getAll();
 		Set<UserRoleDto> defaultUserRoles = FacadeProvider.getUserRoleFacade().getDefaultUserRolesAsDto();
@@ -78,6 +77,7 @@ public class UserRoleCreateForm extends AbstractEditForm<UserRoleDto> {
 		templateItems.addAll(defaultUserRoles);
 
 		FieldHelper.updateItems(templateRoleCombo, templateItems);
+		templateItems.forEach(t -> templateRoleCombo.setItemCaption(t, t.getCaption()));
 		templateRoleCombo.addValueChangeListener(e -> applyTemplateData((UserRoleDto) e.getProperty().getValue()));
 
 		addField(UserRoleDto.CAPTION).setRequired(true);

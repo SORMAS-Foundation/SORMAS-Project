@@ -11648,8 +11648,12 @@ INSERT INTO schema_version (version_number, comment) VALUES (470, 'Allow surveil
 
 -- 2022-06-27 Allow external lab users to edit samples #8892
 INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (471, 'Allow external lab users to edit samples #8892', true);
--- 2022-07-1 Edit and create user roles #4463
 
+-- 2022-07-05 Adjust password hashes with leading zeros #9726
+UPDATE users SET password = LPAD(password, 64, '0') WHERE LENGTH(password) < 64;
+INSERT INTO schema_version (version_number, comment) VALUES (472, 'Adjust password hashes with leading zeros #9726');
+
+-- 2022-07-1 Edit and create user roles #4463
 DO $$
     DECLARE rec RECORD;
     BEGIN
@@ -11667,18 +11671,11 @@ update userroles_emailnotificationtypes set notificationtype = 'CASE_DISEASE_CHA
 update userroles_smsnotificationtypes set notificationtype = 'CONTACT_VISIT_COMPLETED' where notificationtype = 'VISIT_COMPLETED';
 update userroles_emailnotificationtypes set notificationtype = 'CONTACT_VISIT_COMPLETED' where notificationtype = 'VISIT_COMPLETED';
 
-INSERT INTO schema_version (version_number, comment) VALUES (472, 'Edit and create user roles #4463');
+INSERT INTO schema_version (version_number, comment) VALUES (473, 'Edit and create user roles #4463');
 
 -- 2022-07-05 Implement user right dependencies #5058
-
 delete from userroles_userrights where userright in ('CONTACT_CLASSIFY', 'CONTACT_ASSIGN');
 
-INSERT INTO schema_version (version_number, comment) VALUES (473, 'Implement user right dependencies #5058');
-
-
--- 2022-07-05 Adjust password hashes with leading zeros #9726
-UPDATE users SET password = LPAD(password, 64, '0') WHERE LENGTH(password) < 64;
-INSERT INTO schema_version (version_number, comment) VALUES (472, 'Adjust password hashes with leading zeros #9726');
-
+INSERT INTO schema_version (version_number, comment) VALUES (474, 'Implement user right dependencies #5058');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
