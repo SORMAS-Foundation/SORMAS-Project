@@ -1462,4 +1462,3 @@ Feature: Case end to end tests
     And I click on the More button on Case directory page
     Then I click on Merge Duplicates on Case directory for DE
     And I check if message about long loading times appear for DE
-    And I click on New Sample
