@@ -408,6 +408,7 @@ public class SurveillanceDashboardSteps implements En {
     Then(
         "^I validate fatalities of diseases is shown on Surveillance Dashboard Page$",
         () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NavBarPage.DASHBOARD_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
           softly.assertEquals(
               webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.FATALITIES),
