@@ -101,7 +101,7 @@ public class PersonDirectorySteps implements En {
           webDriverHelpers.fillAndSubmitInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, PersonFullName);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               PERSON_RESULTS_UUID_LOCATOR_FROM_GRID);
-          webDriverHelpers.clickOnWebElementBySelector(PERSON_RESULTS_UUID_LOCATOR_FROM_GRID);
+          webDriverHelpers.doubleClickOnWebElementBySelector(PERSON_RESULTS_UUID_LOCATOR_FROM_GRID);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
