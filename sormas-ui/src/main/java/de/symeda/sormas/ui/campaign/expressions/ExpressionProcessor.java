@@ -96,12 +96,19 @@ public class ExpressionProcessor {
 				final Object value = expression.getValue(context, valueType); 
 				//final Object valx = Precision.round((double) value, 3);
 				final List <String> opt = null;
+				if(valueType.isAssignableFrom(Double.class)) {
+				//	System.out.println(Double.isFinite((double) value) +" = "+ value);
 				campaignFormBuilder
-					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), CampaignFormElementType.fromString(e.getType()), Precision.round((double) value, 2), opt);
+					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
+							CampaignFormElementType.fromString(e.getType()),
+							!Double.isFinite((double) value) ? 0.0 : Precision.round((double) value, 2),
+							opt);
+				} 
 			} catch (SpelEvaluationException evaluationException) {
-				LOG.error("Error evaluating expression: {} / {}", evaluationException.getMessageCode(), evaluationException.getMessage());
+				//LOG.error("Error evaluating expression: {} / {}", evaluationException.getMessageCode(), evaluationException.getMessage());
 			}
 		});
 	}
 
 }
+

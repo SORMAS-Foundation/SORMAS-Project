@@ -99,8 +99,11 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                 if (type == CampaignFormElementType.YES_NO) {
                     dynamicField = createControlCheckBoxField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
                     ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, Boolean.valueOf(value));
-                } else {
-                    dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
+                } else  if (type == CampaignFormElementType.NUMBER || type == CampaignFormElementType.DECIMAL || type == CampaignFormElementType.RANGE){
+                    dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true);
+                    ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
+                }else{
+                    dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta),false);
                     ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
                 }
 

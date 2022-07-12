@@ -72,6 +72,6 @@ public class NumberValidator extends AbstractValidator<Number> {
 		System.out.println("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy" +getErrorMessage());
 		Notification.show(getErrorMessage());
 		
-		return false;
+		return true;
 	}
 }

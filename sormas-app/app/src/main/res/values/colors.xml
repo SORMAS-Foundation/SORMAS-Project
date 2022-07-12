@@ -44,18 +44,18 @@
     <color name="red50">#80e10002</color>
 
     <color name="green">#ff15AB89</color>
-    <color name="green10">#1A15AB89</color>
-    <color name="green50">#8015AB89</color>
+    <color name="green10">#f28a35</color>
+    <color name="green50">#0e693a</color>
     <color name="gray">#ff878a8d</color>
     <color name="orange">#fff99135</color>
     <color name="orange10">#1Af99135</color>
     <color name="lightOrange">#99f99135</color>
     <color name="noColor">@color/transparent</color>
-    <color name="blue">#FF005a9c</color>
-    <color name="lightBlue">#ff6691c4</color>
-    <color name="lightBlue10">#1A6691c4</color>
-    <color name="lightBlue50">#806691c4</color>
-    <color name="lighterBlue">#ffcdd8ec</color>
+    <color name="blue">#0e693a</color>
+    <color name="lightBlue">#008000</color>
+    <color name="lightBlue10">#69AC69</color>
+    <color name="lightBlue50">#90ee90</color>
+    <color name="lighterBlue">#A9E4A9</color>
     <color name="lighterBlue40">#66cdd8ec</color>
     <color name="normalText">#FF374b5a</color>
     <color name="normalText30">#4D374b5a</color>
@@ -94,8 +94,8 @@
     <color name="switchDisabledBackground">@color/disabled</color>
     <color name="switchCheckedBackground">@color/lighterBlue</color>
     <color name="switchUnheckedBackground">@color/transparent</color>
-    <color name="switchCheckedText">@color/blue</color>
-    <color name="switchUnheckedText">@color/normalText</color>
+    <color name="switchCheckedText">@color/green</color>
+    <color name="switchUnheckedText">@color/green50</color>
     <color name="switchCheckedDisabledText">@color/whiteOpaque</color>
     <color name="switchUnheckedDisabledText">@color/disabled</color>
 
@@ -184,7 +184,7 @@
     <color name="colorControlReadOnly">@color/lighterBlue40</color>
     <color name="colorControlError">@color/watchOut</color>
     <color name="textSelectionHandle">@color/blue</color>
-    <color name="controlTextColor">@color/normalText</color>
+    <color name="controlTextColor">@color/green50</color>
     <color name="controlLabelColor">@color/lightBlue</color>
     <color name="controlTextViewStroke">@color/lighterBlue</color>
     <color name="controlTextViewAlternateBackground">#FFFFFFFF</color>
@@ -220,7 +220,7 @@
     <color name="unreadIcon">@color/lightBlue</color>
     <!-- Action Bar -->
     <color name="actionBarBackgroundColor">@color/whiteOpaque</color>
-    <color name="toolbarTextColor">#FF005a9c</color>
+    <color name="toolbarTextColor">#0e693a</color>
 
     <color name="popupBackground">@color/whiteOpaque</color>
     <color name="popupMenuListDivider">@color/lighterBlue40</color>
@@ -250,15 +250,15 @@
     <color name="activeState">@color/blue</color>
 
     <!-- PIN Heading -->
-    <color name="pinHeading1">@color/lightBlue</color>
-    <color name="pinMask">@color/blue</color>
+    <color name="pinHeading1">@color/green10</color>
+    <color name="pinMask">@color/green50</color>
     <color name="pinButton">@color/whiteOpaque</color>
     <color name="pinButtonFocused">@color/lighterBlue40</color>
     <color name="pinButtonPressed">@color/lighterBlue40</color>
-    <color name="textPinButton">@color/normalText</color>
+    <color name="textPinButton">@color/green50</color>
     <color name="textPinButtonDisabled">@color/gray_30</color>
-    <color name="textPinButtonFocused">@color/blue</color>
-    <color name="textPinButtonPressed">@color/blue</color>
+    <color name="textPinButtonFocused">@color/green10</color>
+    <color name="textPinButtonPressed">@color/green10</color>
 
 
 
@@ -433,10 +433,10 @@
 
 
     <!-- Link Button -->
-    <color name="linkButtonFocused">@color/blue</color>
-    <color name="linkButtonPressed">@color/blue</color>
+    <color name="linkButtonFocused">@color/green50</color>
+    <color name="linkButtonPressed">@color/green50</color>
     <color name="linkButtonDisabled">@color/gray_30</color>
-    <color name="linkButtonNormal">@color/lightBlue</color>
+    <color name="linkButtonNormal">@color/green10</color>
 
 
     <!-- Read Activity Link -->

@@ -325,6 +325,7 @@ public class CampaignController {
 		final CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 
 		component.addCommitListener(() -> {
+			System.out.println("))))saving)))))");
 			if (!form.getFieldGroup().isModified()) {
 				
 				try {
@@ -348,7 +349,7 @@ public class CampaignController {
 		
 		 // TODO duplicate form
 		component.addCommitandContListener(() -> {
-			
+			System.out.println("))))))))))))))))");
 			if (!form.getFieldGroup().isModified()) {
 				try {
 					form.validate();
@@ -360,11 +361,18 @@ public class CampaignController {
 				CampaignFormDataDto formData = form.getValue();
 				FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(formData);
 				if (saveandcontdCallback != null) {
+					
+					System.out.println("))))))))))))))))))))))))))) = "+campaign.getUuid() +"    _______      "+campaignForm.getUuid());
+					
 					saveandcontdCallback.run();
 					form.resetFormValues();
 					
 					discardCallback.run();
-					ControllerProvider.getCampaignController().createCampaignDataForm(campaign, campaignForm);
+					
+					
+					
+					ControllerProvider.getCampaignController().navigateToFormDataView(campaign.getUuid(), campaignForm.getUuid());
+					//ControllerProvider.getCampaignController().createCampaignDataForm(campaign, campaignForm);
 					
 					
 					

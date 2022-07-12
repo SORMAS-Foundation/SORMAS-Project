@@ -27,7 +27,7 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.Required;
 
 @SuppressWarnings("serial")
-public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<ReferenceDto> {
+public abstract class ReferenceDto_2 implements Serializable, HasUuid, Comparable<ReferenceDto> {
 
 	public static final String CAPTION = "caption";
 
@@ -35,40 +35,37 @@ public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<
 	@Pattern(regexp = UUID_REGEX, message = Validations.uuidPatternNotMatching)
 	private String uuid;
 	private String caption;
-	private String formType;
-//	private Long externalId;
+	private String formtype;
+	private Long externalId;
 
-	public ReferenceDto() {
+	public ReferenceDto_2() {
 
 	}
 
-	public ReferenceDto(String uuid) {
+	public ReferenceDto_2(String uuid) {
 		this.uuid = uuid;
 	}
 
-	public ReferenceDto(String uuid, String caption) {
-		this.uuid = uuid;
-		this.caption = caption;
-	}
-	
-	public ReferenceDto(String uuid, String caption, String type) {
+	public ReferenceDto_2(String uuid, String caption) {
 		this.uuid = uuid;
 		this.caption = caption;
-		this.formType = type; 
 	}
 	
-	/*public ReferenceDto(String uuid, Long externalId) {
-		this.uuid = uuid;
-		this.externalId = externalId;
-	}
-	
-	public ReferenceDto(String uuid, String caption, Long externalId) {
+	public ReferenceDto_2(String uuid, String caption, Long externalId) {
+		//System.out.println(caption+" ddddddddd555555555555555555    externalId     dddddddddddddddddddd "+externalId);
 		this.uuid = uuid;
 		this.caption = caption;
 		this.externalId = externalId;
 	}
 	
-	*/
+	public ReferenceDto_2(String uuid, String caption, String type) {
+		
+	//	System.out.println(caption+" ddddddddd5555555555555555555555555555555555555555555dddddddddddddddddddddddddddd "+type);
+		this.uuid = uuid;
+		this.caption = caption;
+		this.formtype = type;
+	}
+	
 	
 
 	@Override
@@ -91,25 +88,11 @@ public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<
 	
 
 	public String getFormType() {
-		return formType;
+		return formtype;
 	}
 
-	public void setFormtype(String formType) {
-		this.formType = formType;
-	}
-
-	/*public Long getExternalID() {
-		return externalId;
-	}
-
-	public void setExternalID(Long externalId) {
-		this.externalId = externalId;
-	}
-*/
-	
-
-	public void setFormType(String formType) {
-		this.formType = formType;
+	public void setFormType(String formtype) {
+		this.formtype = formtype;
 	}
 
 	@Override

@@ -64,7 +64,7 @@ public class FacilityExportDto implements Serializable {
 	private String contactPersonEmail;
 	private Double latitude;
 	private Double longitude;
-	private String externalID;
+	private Long externalID;
 
 	public FacilityExportDto(
 		String uuid,
@@ -85,7 +85,7 @@ public class FacilityExportDto implements Serializable {
 		String contactPersonEmail,
 		Double latitude,
 		Double longitude,
-		String externalID) {
+		Long externalID) {
 
 		this.uuid = uuid;
 		this.name = name;
@@ -271,11 +271,11 @@ public class FacilityExportDto implements Serializable {
 	}
 
 	@Order(22)
-	public String getExternalID() {
+	public Long getExternalID() {
 		return externalID;
 	}
 
-	public void setExternalID(String externalID) {
+	public void setExternalID(Long externalID) {
 		this.externalID = externalID;
 	}
 }

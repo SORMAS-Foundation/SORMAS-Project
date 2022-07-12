@@ -156,7 +156,8 @@ public class CampaignFormDataFragmentUtils {
 	public static ControlTextEditField createControlTextEditField(
 		CampaignFormElement campaignFormElement,
 		Context context,
-		Map<String, String> userTranslations) {
+		Map<String, String> userTranslations,
+		Boolean isIntegerField) {
 		return new ControlTextEditField(context) {
 
 			@Override
@@ -194,7 +195,7 @@ public class CampaignFormDataFragmentUtils {
 				super.inflateView(context, attrs, defStyle);
 				initLabel();
 				initLabelAndValidationListeners();
-				initInput();
+				initInput(isIntegerField);
 			}
 		};
 	}

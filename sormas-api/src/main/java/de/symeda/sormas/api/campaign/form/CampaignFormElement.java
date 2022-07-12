@@ -60,6 +60,7 @@ public class CampaignFormElement implements Serializable {
 	private String dependingOn;
 	private String[] dependingOnValues;
 	private boolean important;
+	private boolean warnonerror;
 
 	public String getType() {
 		return type;
@@ -160,6 +161,16 @@ public class CampaignFormElement implements Serializable {
 	public void setMin(String min) {
 		this.min = min;
 	}
+	
+	
+
+	public boolean isWarnonerror() {
+		return warnonerror;
+	}
+
+	public void setWarnonerror(boolean warnonerror) {
+		this.warnonerror = warnonerror;
+	}
 
 	/**
 	 * Needed. Otherwise hibernate will persist whenever loading, because hibernate
@@ -178,12 +189,13 @@ public class CampaignFormElement implements Serializable {
 				&& Arrays.equals(styles, that.styles) && Arrays.equals(options, that.options)
 				&& Arrays.equals(constraints, that.constraints)
 				&& Objects.equals(dependingOn, that.dependingOn)
-				&& Arrays.equals(dependingOnValues, that.dependingOnValues);
+				&& Arrays.equals(dependingOnValues, that.dependingOnValues)
+				&& Objects.equals(warnonerror, that.warnonerror);
 	}
 
 	@Override
 	public int hashCode() {
-		int result = Objects.hash(type, id, caption, expression, dependingOn, important);
+		int result = Objects.hash(type, id, caption, expression, dependingOn, important, warnonerror);
 		result = 31 * result + Arrays.hashCode(styles);
 		result = 31 * result + Arrays.hashCode(options);
 		result = 31 * result + Arrays.hashCode(constraints);

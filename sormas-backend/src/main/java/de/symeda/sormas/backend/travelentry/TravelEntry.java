@@ -78,7 +78,7 @@ public class TravelEntry extends CoreAdo {
 	private PointOfEntry pointOfEntry;
 	private String pointOfEntryDetails;
 	private Case resultingCase;
-	private String externalId;
+	private Long externalId;
 	private boolean recovered;
 	private boolean vaccinated;
 	private boolean testedNegative;
@@ -262,11 +262,11 @@ public class TravelEntry extends CoreAdo {
 	}
 
 	@Column(columnDefinition = "text")
-	public String getExternalId() {
+	public Long getExternalId() {
 		return externalId;
 	}
 
-	public void setExternalId(String externalId) {
+	public void setExternalId(Long externalId) {
 		this.externalId = externalId;
 	}
 

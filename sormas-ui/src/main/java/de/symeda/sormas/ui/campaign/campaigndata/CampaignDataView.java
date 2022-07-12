@@ -150,35 +150,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		mainLayout.setExpandRatio(grid, 1);
 		mainLayout.setStyleName("crud-main-layout");
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_FORM_DATA_EXPORT)) {
-			VerticalLayout exportLayout = new VerticalLayout();
-			{
-				exportLayout.setSpacing(true);
-				exportLayout.setMargin(true);
-				exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-				exportLayout.setWidth(250, Unit.PIXELS);
-			}
-
-			PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
-			addHeaderComponent(exportPopupButton);
-
-			{
-				StreamResource streamResource = GridExportStreamResource.createStreamResource("","",grid, ExportEntityName.CAMPAIGN_DATA, EDIT_BTN_ID);
-				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
-				
-				
-			}
-			
-			exportPopupButton.addClickListener(e -> {
-				exportLayout.removeAllComponents();
-				String formNamee = criteria.getCampaignFormMeta() == null ? "All_Forms" : criteria.getCampaignFormMeta().getCaption();
-				String camNamee = campaignSelector.getValue() == null ? "All_Campaigns" : campaignSelector.getValue().toString();
-				StreamResource streamResourcex = GridExportStreamResource.createStreamResource(camNamee+"_"+formNamee,"APMIS",grid, ExportEntityName.CAMPAIGN_DATA, EDIT_BTN_ID);
-			//	streamResource = GridExportStreamResource.createStreamResource("", "", grid, ExportEntityName.CAMPAIGN_DATA, EDIT_BTN_ID);
-				addExportButton(streamResourcex, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
-			});
-			
-		}
+	
 		
 		
 
@@ -215,9 +187,39 @@ public class CampaignDataView extends AbstractCampaignView {
 			importCampaignButton.setId("campaign-form-import");
 			addHeaderComponent(importCampaignButton);
 		}
+		
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_FORM_DATA_EXPORT)) {
+			VerticalLayout exportLayout = new VerticalLayout();
+			{
+				exportLayout.setSpacing(true);
+				exportLayout.setMargin(true);
+				exportLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
+				exportLayout.setWidth(250, Unit.PIXELS);
+			}
+
+			PopupButton exportPopupButton = ButtonHelper.createIconPopupButton(Captions.export, VaadinIcons.DOWNLOAD, exportLayout);
+			addHeaderComponent(exportPopupButton);
+
+			{
+				StreamResource streamResource = GridExportStreamResource.createStreamResource("","",grid, ExportEntityName.CAMPAIGN_DATA, EDIT_BTN_ID);
+				addExportButton(streamResource, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
+				
+				
+			}
+			
+			exportPopupButton.addClickListener(e -> {
+				exportLayout.removeAllComponents();
+				String formNamee = criteria.getCampaignFormMeta() == null ? "All_Forms" : criteria.getCampaignFormMeta().getCaption();
+				String camNamee = campaignSelector.getValue() == null ? "All_Campaigns" : campaignSelector.getValue().toString();
+				StreamResource streamResourcex = GridExportStreamResource.createStreamResource(camNamee+"_"+formNamee,"APMIS",grid, ExportEntityName.CAMPAIGN_DATA, EDIT_BTN_ID);
+			//	streamResource = GridExportStreamResource.createStreamResource("", "", grid, ExportEntityName.CAMPAIGN_DATA, EDIT_BTN_ID);
+				addExportButton(streamResourcex, exportPopupButton, exportLayout, VaadinIcons.TABLE, Captions.export, Strings.infoBasicExport);
+			});
+			
+		}
 
 		campaignSelector.addValueChangeListener(e -> {
-			System.out.println("@!@!@!@#!@!@!~!@!@!~!@!@!~!@!~!@!~@!~@!~@@!~");
+		//	System.out.println("@!@!@!@#!@!@!~!@!@!~!@!@!~!@!~!@!~@!~@!~@@!~");
 			//addHeaderComponent(new CampaignFormPhaseSelector());
 			campaignFormPhaseSelector.clear();
 			((VerticalLayout) importFormPanel.getContent()).removeAllComponents();
@@ -238,7 +240,7 @@ public class CampaignDataView extends AbstractCampaignView {
 		
 		
 		campaignFormPhaseSelector.addValueChangeListener(e -> {
-			System.out.println("@!@!@-------------------------------------------!~@!~@@!~");
+			//System.out.println("@!@!@-------------------------------------------!~@!~@@!~");
 			((VerticalLayout) newFormPanel.getContent()).removeAllComponents();
 			if (!Objects.isNull(campaignSelector.getValue())) {
 				fillNewFormDropdown(newFormPanel);
@@ -251,7 +253,7 @@ public class CampaignDataView extends AbstractCampaignView {
 			filterForm.setPhaseFilterContent(e.getValue().toString());
 			filterForm.setValue(criteria);
 			grid.reload();
-			System.out.println(filterForm.getPhaseFilterContent() +"   =  2222222222222222222222222@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+			//System.out.println(filterForm.getPhaseFilterContent() +"   =  2222222222222222222222222@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 		});
 		
 		
@@ -263,15 +265,17 @@ public class CampaignDataView extends AbstractCampaignView {
 			newFormButton.setEnabled(false);
 		}
 
-		addComponent(mainLayout);
+		addComponent(mainLayout);	
 		
 		JavaScript js = Page.getCurrent().getJavaScript();
 		js.execute("$(document).ready(function() {\n"
 				+ "	if ($(window).width() <= 825) {\n"
 				+ "document.querySelector(\".v-label.v-widget.h1.v-label-h1.vspace-none.v-label-vspace-none.v-label-undef-w\").style.display='none';\n"
-				+ "document.querySelector(\".v-horizontallayout-view-headerxxxx :nth-child(9)\").style.display='none';\n"
+			
 				+ "document.querySelector(\".v-horizontallayout-view-headerxxxx :nth-child(12)\").style.display='none';"
 				+ "document.querySelector(\".v-horizontallayout-view-headerxxxx :nth-child(13)\").style.display='none';"
+				+ "document.querySelector(\".v-horizontallayout-view-headerxxxx :nth-child(10)\").style.display='none';\n"
+				+ "document.querySelector(\".v-horizontallayout-view-headerxxxx :nth-child(11)\").style.display='none';\n"
 				+ "	}"
 				 
 				+ "});");
@@ -324,13 +328,13 @@ public class CampaignDataView extends AbstractCampaignView {
 			List<CampaignFormMetaReferenceDto> campagaignFormReferences =
 				FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferencesByRoundandCampaign(campaignReferenceDto.toLowerCase(),  campaignReferenceDtx.getUuid());
 			Collections.sort(campagaignFormReferences);
-			System.out.println(campaignReferenceDtx.getUuid() + " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>___________"+campaignReferenceDto+"____________>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  "+ campagaignFormReferences);
+		//	System.out.println(campaignReferenceDtx.getUuid() + " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>___________"+campaignReferenceDto+"____________>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  "+ campagaignFormReferences);
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
 				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), el -> {
 					ControllerProvider.getCampaignController().navigateToFormDataView(criteria.getCampaign().getUuid(), campaignForm.getUuid());
 					newFormButton.setPopupVisible(false);
 				});
-				//ControllerProvider.getCampaignController().createCampaignDataForm(criteria.getCampaign(), campaignForm);
+			//	ControllerProvider.getCampaignController().createCampaignDataForm(criteria.getCampaign(), campaignForm);
 				
 				// e -> ControllerProvider.getCampaignController().navigateToFormDataView(e.getUuid())));
 

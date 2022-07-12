@@ -56,9 +56,6 @@ android {
     productFlavors {
     }
 
-    lintOptions {
-        abortOnError false
-    }
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
     }
@@ -71,6 +68,9 @@ android {
     useLibrary 'android.test.runner'
     useLibrary 'android.test.base'
     useLibrary 'android.test.mock'
+    lintOptions {
+        abortOnError false
+    }
 }
 
 repositories {
