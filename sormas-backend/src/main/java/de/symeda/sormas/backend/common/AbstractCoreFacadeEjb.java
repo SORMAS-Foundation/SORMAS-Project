@@ -183,7 +183,8 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 		Date referenceDate = getDeletionReferenceDate(uuid, deletionConfiguration);
 		Date deletiondate = DateHelper.addDays(referenceDate, deletionConfiguration.getDeletionPeriod());
-		return new DeletionInfoDto(deletiondate, referenceDate, deletionConfiguration.getDeletionPeriod());
+		String deletionReferenceField = getDeleteReferenceField(deletionConfiguration.getDeletionReference());
+		return new DeletionInfoDto(deletiondate, referenceDate, deletionConfiguration.getDeletionPeriod(), deletionReferenceField);
 	}
 
 	@Override
@@ -199,7 +200,8 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 		Date referenceDate = getDeletionReferenceDate(uuid, deletionConfiguration);
 		Date deletiondate = DateHelper.addDays(referenceDate, deletionConfiguration.getDeletionPeriod());
-		return new DeletionInfoDto(deletiondate, referenceDate, deletionConfiguration.getDeletionPeriod());
+		String deletionReferenceField = getDeleteReferenceField(deletionConfiguration.getDeletionReference());
+		return new DeletionInfoDto(deletiondate, referenceDate, deletionConfiguration.getDeletionPeriod(), deletionReferenceField);
 	}
 
 	protected String getDeleteReferenceField(DeletionReference deletionReference) {

@@ -8,11 +8,13 @@ public class DeletionInfoDto implements Serializable {
 	private Date deletionDate;
 	private Date referenceDate;
 	private int deletionPeriod;
+	private String deletionReferenceField;
 
-	public DeletionInfoDto(Date deletionDate, Date referenceDate, int deletionPeriod) {
+	public DeletionInfoDto(Date deletionDate, Date referenceDate, int deletionPeriod, String deletionReferenceField) {
 		this.deletionDate = deletionDate;
 		this.referenceDate = referenceDate;
 		this.deletionPeriod = deletionPeriod;
+		this.deletionReferenceField = deletionReferenceField;
 	}
 
 	public Date getDeletionDate() {
@@ -37,5 +39,13 @@ public class DeletionInfoDto implements Serializable {
 
 	public void setDeletionPeriod(int deletionPeriod) {
 		this.deletionPeriod = deletionPeriod;
+	}
+
+	public String getDeletionReferenceField() {
+		return deletionReferenceField;
+	}
+
+	public void setDeletionReferenceField(String deletionReferenceField) {
+		this.deletionReferenceField = deletionReferenceField;
 	}
 }

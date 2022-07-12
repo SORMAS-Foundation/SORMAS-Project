@@ -887,7 +887,8 @@ public class CaseController {
 			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
 			caseEditForm.getFieldGroup());
 
-		editView.getButtonsPanel().addComponentAsFirst(new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, caze.isDeleted()));
+		editView.getButtonsPanel()
+			.addComponentAsFirst(new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, caze.isDeleted(), CaseDataDto.I18N_PREFIX));
 
 		if (caze.isDeleted()) {
 			editView.getWrappedComponent().getField(CaseDataDto.DELETION_REASON).setVisible(true);

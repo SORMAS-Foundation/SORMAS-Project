@@ -16,35 +16,36 @@ import de.symeda.sormas.ui.utils.DateFormatHelper;
 
 public class DeletionLabel extends HorizontalLayout {
 
-	public DeletionLabel(DeletionInfoDto deletionInfoDto) {
+	public DeletionLabel(DeletionInfoDto deletionInfoDto, String classPrefix) {
 		if (deletionInfoDto != null) {
-			setDeleteLabel(deletionInfoDto);
+			setDeleteLabel(deletionInfoDto, classPrefix);
 		}
 	}
 
-	public DeletionLabel(DeletionInfoDto automaticDeletionInfoDto, DeletionInfoDto manuallyDeletionInfoDto, boolean entityDeleted) {
+	public DeletionLabel(DeletionInfoDto automaticDeletionInfoDto, DeletionInfoDto manuallyDeletionInfoDto, boolean entityDeleted, String classPrefix) {
 		if (manuallyDeletionInfoDto != null && entityDeleted) {
 			if (automaticDeletionInfoDto != null) {
 				if (manuallyDeletionInfoDto.getDeletionDate().before(automaticDeletionInfoDto.getDeletionDate())) {
-					setDeleteLabel(manuallyDeletionInfoDto);
+					setDeleteLabel(manuallyDeletionInfoDto, classPrefix);
 				} else {
-					setDeleteLabel(automaticDeletionInfoDto);
+					setDeleteLabel(automaticDeletionInfoDto, classPrefix);
 				}
 			} else {
-				setDeleteLabel(manuallyDeletionInfoDto);
+				setDeleteLabel(manuallyDeletionInfoDto, classPrefix);
 			}
 		} else if (automaticDeletionInfoDto != null) {
-			setDeleteLabel(automaticDeletionInfoDto);
+			setDeleteLabel(automaticDeletionInfoDto, classPrefix);
 		}
 	}
 
-	private void setDeleteLabel(DeletionInfoDto deletionInfoDto) {
+	private void setDeleteLabel(DeletionInfoDto deletionInfoDto, String classPrefix) {
 		setMargin(false);
 		setSpacing(false);
 
 		String infoIconDesciption = String.format(
 			I18nProperties.getString(Strings.infoAutomaticDeletionTooltip),
 			DateFormatHelper.formatDate(deletionInfoDto.getDeletionDate()),
+			I18nProperties.getPrefixCaption(classPrefix, deletionInfoDto.getDeletionReferenceField()),
 			DateFormatHelper.formatDate(deletionInfoDto.getReferenceDate()),
 			formatDeletionPeriod(deletionInfoDto.getDeletionPeriod()));
 		Label infoIcon = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
