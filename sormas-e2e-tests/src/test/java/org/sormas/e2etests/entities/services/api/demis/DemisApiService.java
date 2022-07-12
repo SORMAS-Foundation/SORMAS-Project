@@ -21,7 +21,6 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import java.net.SocketTimeoutException;
 import javax.inject.Inject;
-
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
@@ -60,8 +59,7 @@ public class DemisApiService {
             .addHeader(CONTENT_TYPE, FORM_PARAM_TYPE)
             .post(
                 RequestBody.create(
-                    MediaType.parse(FORM_PARAM_TYPE),
-                    demisData.getAuthRequestBody()))
+                    MediaType.parse(FORM_PARAM_TYPE), demisData.getAuthRequestBody()))
             .build();
     try {
       Response response = client.newCall(request).execute();
