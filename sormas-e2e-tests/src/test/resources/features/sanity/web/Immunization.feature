@@ -137,7 +137,7 @@ Feature: Immunization end to end tests
     And I check if Additional details text area on immunization edit page is disabled
 
   @issue=SORDEV-8059 @env_main
-  Scenario: Check the extension of the case form, contact form and event participant form with immunization list
+  Scenario: Immunization III: List for cases, contacts and event participants
     Given I log in as a National user
     And I click on the Cases button from navbar
     And I click on the NEW CASE button

@@ -1984,7 +1984,7 @@ public class EditCaseSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAVE_BUTTON);
           String displayedPeriod =
-              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_IMMUNIZATION_PERIOD_LABEL);
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_IMMUNIZATION_PERIOD);
           LocalDate startDate = EditImmunizationSteps.collectedImmunization.getStartDate();
           LocalDate endDate = EditImmunizationSteps.collectedImmunization.getEndDate();
           DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("M/d/yyyy");
@@ -2002,7 +2002,7 @@ public class EditCaseSteps implements En {
         "^I validate immunization status is present on immunization card$",
         () -> {
           String actualImmunizationStatus =
-              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_IMMUNIZATION_STATUS_LABEL);
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_IMMUNIZATION_STATUS);
           String expectedImmunizationStatus =
               EditImmunizationSteps.collectedImmunization.getImmunizationStatus();
           softly.assertEquals(
@@ -2016,7 +2016,7 @@ public class EditCaseSteps implements En {
         "^I validate management status is present on immunization card$",
         () -> {
           String actualManagementStatus =
-              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_MANAGEMENT_STATUS_LABEL);
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_MANAGEMENT_STATUS);
           String expectedManagementStatus =
               EditImmunizationSteps.collectedImmunization.getManagementStatus();
           softly.assertEquals(
@@ -2030,7 +2030,7 @@ public class EditCaseSteps implements En {
         "^I validate means of immunization is present on immunization card$",
         () -> {
           String actualMeansOfImmunization =
-              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_MEANS_OF_IMMUNIZATION_LABEL);
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_MEANS_OF_IMMUNIZATION);
           String expectedMeansOfImmunization =
               EditImmunizationSteps.collectedImmunization.getMeansOfImmunization();
           softly.assertEquals(
