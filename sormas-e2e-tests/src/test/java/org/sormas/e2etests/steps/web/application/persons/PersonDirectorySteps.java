@@ -94,6 +94,7 @@ public class PersonDirectorySteps implements En {
     Then(
         "I open the last created person linked with Case",
         () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MULTIPLE_OPTIONS_SEARCH_INPUT);
           aCase = EditCaseSteps.aCase;
           String PersonFullName = aCase.getFirstName() + " " + aCase.getLastName();
           TimeUnit.SECONDS.sleep(5); // waiting for event table grid reloaded
