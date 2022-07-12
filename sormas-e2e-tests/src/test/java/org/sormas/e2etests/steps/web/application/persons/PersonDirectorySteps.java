@@ -99,6 +99,7 @@ public class PersonDirectorySteps implements En {
           String PersonFullName = aCase.getFirstName() + " " + aCase.getLastName();
           TimeUnit.SECONDS.sleep(5); // waiting for event table grid reloaded
           webDriverHelpers.fillAndSubmitInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, PersonFullName);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               PERSON_RESULTS_UUID_LOCATOR_FROM_GRID);
           webDriverHelpers.doubleClickOnWebElementBySelector(PERSON_RESULTS_UUID_LOCATOR_FROM_GRID);
