@@ -826,6 +826,7 @@ public class EventDirectorySteps implements En {
           final String personUuid = EditEventSteps.person.getUuid();
           webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
+          TimeUnit.SECONDS.sleep(2);
         });
 
     When(
