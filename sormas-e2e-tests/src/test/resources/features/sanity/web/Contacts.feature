@@ -927,7 +927,7 @@ Feature: Contacts end to end tests
     And I click on Yes option in Confirm deletion popup
     Then I check if exclamation mark with message "Please add a reason for deletion" appears next to Reason for deletion
     Then I click on No option in Confirm deletion popup
-    Then I click on Delete button from immunization case
+    Then I click on Delete button from contact
     And I set Reason for deletion as "Deletion request by affected person according to GDPR"
     And I click on Yes option in Confirm deletion popup
     When I back to deleted contact by url
@@ -959,7 +959,7 @@ Feature: Contacts end to end tests
     And I click on Yes option in Confirm deletion popup
     Then I check if exclamation mark with message "Bitte geben Sie einen Grund fürs Löschen an" appears next to Reason for deletion
     Then I click on No option in Confirm deletion popup
-    Then I click on Delete button from immunization case
+    Then I click on Delete button from contact
     And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I click on Yes option in Confirm deletion popup
     When I back to deleted contact by url

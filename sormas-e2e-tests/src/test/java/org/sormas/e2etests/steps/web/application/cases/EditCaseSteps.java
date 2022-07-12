@@ -199,6 +199,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOU
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DISCARD_BUTTON;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.getReasonForDeletionDetailsFieldLabel;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EVENT_PARTICIPANTS_DATA_TAB;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
@@ -1946,6 +1947,36 @@ public class EditCaseSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               EditImmunizationPage.DATE_OF_REPORT_INPUT);
         });
+
+    When(
+        "I click on Delete button from case",
+        () -> {
+          webDriverHelpers.scrollToElement(DELETE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+        });
+
+    When(
+        "I check if EPID number input is disabled in Edit Case",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementEnabled(EPID_NUMBER_INPUT), "EPID number input is enabled");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if General comment test area is disabled in Edit Case",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementEnabled(GENERAL_COMMENT_TEXT_AREA),
+              "General comment test area is enabled");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if {string} field is available in Confirm deletion popup in Edit Case",
+        (String label) ->
+            webDriverHelpers.isElementVisibleWithTimeout(
+                getReasonForDeletionDetailsFieldLabel(label), 1));
   }
 
   private Case collectCasePersonUuid() {

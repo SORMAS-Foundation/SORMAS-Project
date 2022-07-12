@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.entities.pojo.api.Immunization;
 import org.sormas.e2etests.entities.pojo.api.Person;
 import org.sormas.e2etests.entities.services.api.ImmunizationApiService;
-import org.sormas.e2etests.helpers.api.ImmunizationHelper;
+import org.sormas.e2etests.helpers.api.sormasrest.ImmunizationHelper;
 import org.sormas.e2etests.state.ApiState;
 
 @Slf4j

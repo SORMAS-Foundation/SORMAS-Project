@@ -17,8 +17,8 @@ import de.symeda.sormas.ui.utils.FilteredGrid;
 
 public class ReportDataGrid extends FilteredGrid<AggregateReportDto, AggregateReportCriteria> {
 
-	private static final String EDIT_AGGREGATE_REPORT = "showAggregateReport";
-	private static final String DELETE_AGGREGATE_REPORT = "deleteAggregateReport";
+	public static final String EDIT_AGGREGATE_REPORT = "showAggregateReport";
+	public static final String DELETE_AGGREGATE_REPORT = "deleteAggregateReport";
 
 	public ReportDataGrid(AggregateReportCriteria criteria) {
 		super(AggregateReportDto.class);

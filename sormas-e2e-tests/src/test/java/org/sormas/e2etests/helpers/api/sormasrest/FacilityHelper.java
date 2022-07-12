@@ -1,4 +1,4 @@
-package org.sormas.e2etests.helpers.api;
+package org.sormas.e2etests.helpers.api.sormasrest;
 
 import static org.sormas.e2etests.constants.api.Endpoints.FACILITIES_PATH;
 

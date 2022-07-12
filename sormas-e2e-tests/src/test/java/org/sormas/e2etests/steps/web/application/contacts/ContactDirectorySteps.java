@@ -99,7 +99,6 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DISEASE_VARIANT_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DISPLAY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_FOLLOW_UP_FILTER_COMBOBOX;
-import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_GRID_RESULTS_ROWS;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_MERGE_DUPLICATES;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONVERTED_TO_CASE_BUTTON;
@@ -809,7 +808,7 @@ public class ContactDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
               CONTACT_DIRECTORY_DETAILED_PAGE_CONFIRM_FILTER_BUTTON);
-          //TODO -> replace with wait for counter to change implementation
+          // TODO -> replace with wait for counter to change implementation
           TimeUnit.SECONDS.sleep(2);
         });
 
