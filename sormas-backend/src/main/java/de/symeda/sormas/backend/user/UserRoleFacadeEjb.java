@@ -49,6 +49,18 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.util.WorkbookUtil;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFColor;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder;
+
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -67,17 +79,6 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.util.XssfHelper;
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.util.WorkbookUtil;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder;
 
 @Stateless(name = "UserRoleFacade")
 public class UserRoleFacadeEjb implements UserRoleFacade {
@@ -391,6 +392,8 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		final XSSFColor red = XssfHelper.createColor(255, 0, 0);
 		final XSSFColor black = XssfHelper.createColor(0, 0, 0);
 
+		ArrayList<XSSFCellStyle> cellStyles = new ArrayList();
+
 		// Initialize cell styles
 		// Authorized style
 		XSSFCellStyle authorizedStyle = workbook.createCellStyle();
@@ -404,6 +407,8 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		authorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.LEFT, black);
 		authorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.TOP, black);
 		authorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.RIGHT, black);
+		cellStyles.add(authorizedStyle);
+
 		// Unauthorized style
 		XSSFCellStyle unauthorizedStyle = workbook.createCellStyle();
 		unauthorizedStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
@@ -416,11 +421,14 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		unauthorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.LEFT, black);
 		unauthorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.TOP, black);
 		unauthorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.RIGHT, black);
+		cellStyles.add(unauthorizedStyle);
+
 		// Bold style
 		XSSFFont boldFont = workbook.createFont();
 		boldFont.setBold(true);
 		XSSFCellStyle boldStyle = workbook.createCellStyle();
 		boldStyle.setFont(boldFont);
+		cellStyles.add(boldStyle);
 
 		int rowCounter = 0;
 
@@ -494,11 +502,9 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 				Cell roleRightCell = row.createCell(columnIndex);
 
 				if (hasUserRight(Collections.singletonList(userRole), userRight)) {
-					roleRightCell.setCellStyle(authorizedStyle);
-					roleRightCell.setCellValue(I18nProperties.getString(Strings.yes));
+					setCellValueAndStyleForBooleans(roleRightCell, true, cellStyles);
 				} else {
-					roleRightCell.setCellStyle(unauthorizedStyle);
-					roleRightCell.setCellValue(I18nProperties.getString(Strings.no));
+					setCellValueAndStyleForBooleans(roleRightCell, false, cellStyles);
 				}
 				columnIndex++;
 			}
@@ -507,22 +513,32 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 			uuidCell.setCellValue(userRole.getUuid());
 
 			Cell portHealthUserCell = row.createCell(columnIndex++);
-			portHealthUserCell.setCellValue(userRole.isPortHealthUser());
+			setCellValueAndStyleForBooleans(portHealthUserCell, userRole.isPortHealthUser(), cellStyles);
 
 			Cell hasAssociatedDistrictUserCell = row.createCell(columnIndex++);
-			hasAssociatedDistrictUserCell.setCellValue(userRole.hasAssociatedDistrictUser());
+			setCellValueAndStyleForBooleans(hasAssociatedDistrictUserCell, userRole.hasAssociatedDistrictUser(), cellStyles);
 
 			Cell hasOptionalHealthFacilityCell = row.createCell(columnIndex++);
-			hasOptionalHealthFacilityCell.setCellValue(userRole.hasOptionalHealthFacility());
+			setCellValueAndStyleForBooleans(hasOptionalHealthFacilityCell, userRole.hasOptionalHealthFacility(), cellStyles);
 
 			Cell enabledCell = row.createCell(columnIndex++);
-			enabledCell.setCellValue(userRole.isEnabled());
+			setCellValueAndStyleForBooleans(enabledCell, userRole.isEnabled(), cellStyles);
 		}
 
 		XssfHelper.addAboutSheet(workbook);
 
 		workbook.write(outStream);
 		workbook.close();
+	}
+
+	private void setCellValueAndStyleForBooleans(Cell cell, boolean value, ArrayList<XSSFCellStyle> cellStyles) {
+		if (value) {
+			cell.setCellStyle(cellStyles.get(0));
+			cell.setCellValue(I18nProperties.getString(Strings.yes));
+		} else {
+			cell.setCellStyle(cellStyles.get(1));
+			cell.setCellValue(I18nProperties.getString(Strings.no));
+		}
 	}
 
 	private Path generateUserRolesDocumentTempPath() {
