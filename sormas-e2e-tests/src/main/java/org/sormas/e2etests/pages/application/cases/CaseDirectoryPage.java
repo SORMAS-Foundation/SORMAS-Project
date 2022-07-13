@@ -166,6 +166,9 @@ public class CaseDirectoryPage {
   public static final By DOWNLOAD_DATA_DICTIONARY_BUTTON = By.id("importDownloadDataDictionary");
   public static final By FACILITY_ACTIVITY_AS_CASE_COMBOBOX =
       By.cssSelector(".v-window #typeOfPlace div");
+  public static final By MERGE_DUPLICATES_WARNING_DE =
+      By.xpath(
+          "  //div[contains(text(), \"Die Berechnung und Anzeige m\u00F6glicher Duplikat-F\u00E4lle ist eine sehr komplexe Aufgabe und kann viel Zeit in Anspruch nehmen.\")]");
   public static final By CASE_MEANS_OF_TRANSPORT =
       By.cssSelector(".v-window #meansOfTransport div");
   public static final By CASE_MEANS_OF_TRANSPORT_DETAILS = By.id("meansOfTransportDetails");
