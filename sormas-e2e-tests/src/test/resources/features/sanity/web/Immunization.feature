@@ -136,6 +136,69 @@ Feature: Immunization end to end tests
     And I check if External ID input on immunization edit page is disabled
     And I check if Additional details text area on immunization edit page is disabled
 
+  @issue=SORDEV-8059 @env_main
+  Scenario: Check the extension of the case form, contact form and event participant form with immunization list
+    Given I log in as a National user
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with specific data
+    And I collect uuid of the case
+    And I click on the NEW IMMUNIZATION button in Edit case
+    When I fill mandatory fields and immunization period in a new immunization popup
+    Then I check the specific created data with immunization period is correctly displayed on Edit immunization page
+    And I click on the Cases button from navbar
+    And I filter with first Case ID
+    And I click on the first Case ID from Case Directory
+    And I validate immunization period is present on immunization card
+    And I validate immunization status is present on immunization card
+    And I validate management status is present on immunization card
+    And I validate means of immunization is present on immunization card
+    And I validate immunization UUID is present on immunization card
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click on SAVE new contact button
+    And I collect the contact person UUID displayed on Edit contact page
+    And I click on the NEW IMMUNIZATION button in Edit contact
+    And I fill mandatory fields and immunization period in a new immunization popup
+    And I check the specific created data with immunization period is correctly displayed on Edit immunization page
+    And I click on the Contacts button from navbar
+    And I filter by last collected from UI specific Contact uuid
+    And I click on the first Contact ID from Contacts Directory
+    And I validate immunization period is present on immunization card
+    And I validate immunization status is present on immunization card
+    And I validate management status is present on immunization card
+    And I validate means of immunization is present on immunization card
+    And I validate immunization UUID is present on immunization card
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data
+    And I back to the Event tab
+    And I collect the UUID displayed on Edit event page
+    And I set Disease combobox to "" value from Edit Event Page
+    And I click on Save Button in Edit Event directory
+    And I add a participant to the event
+    And I check that New immunization card is not available
+    And I click on the Event participant tab
+    And I back to the Event tab
+    And I set Disease combobox to "COVID-19" value from Edit Event Page
+    And I click on Save Button in Edit Event directory
+    And I click on the Event participant tab
+    And I click on the created event participant from the list
+    And I click on the NEW IMMUNIZATION button in Edit event participant
+    And I fill mandatory fields and immunization period in a new immunization popup
+    And I check the specific created data with immunization period is correctly displayed on Edit immunization page
+    And I click on the Events button from navbar
+    And I search for the collected event uuid
+    And I click on the searched event
+    And I click on the Event participant tab
+    And I click on the first result in table from event participant
+    And I validate immunization period is present on immunization card
+    And I validate immunization status is present on immunization card
+    And I validate management status is present on immunization card
+    And I validate means of immunization is present on immunization card
+    And I validate immunization UUID is present on immunization card
+
   @issue=SORDEV-8061 @env_main
   Scenario: Immunizations V: Link recovery immunizations to recovered cases
     Given I log in with National User

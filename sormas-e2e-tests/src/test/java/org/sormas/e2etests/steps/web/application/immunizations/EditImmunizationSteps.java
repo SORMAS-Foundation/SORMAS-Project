@@ -345,6 +345,7 @@ public class EditImmunizationSteps implements En {
               "Additional details text area is enabled");
           softly.assertAll();
         });
+
     When(
         "I check the specific created data is correctly displayed on Edit immunization page",
         () -> {
@@ -356,6 +357,7 @@ public class EditImmunizationSteps implements En {
               createdImmunization,
               List.of("dateOfReport", "responsibleRegion", "responsibleDistrict"));
         });
+
     Then(
         "^I check that Immunization data is displayed as read-only on Edit immunization page$",
         () -> {
@@ -388,6 +390,31 @@ public class EditImmunizationSteps implements En {
               "Date of report input shouldn't be editable, but it is!");
           softly.assertAll();
         });
+
+    Then(
+        "^I check the specific created data with immunization period is correctly displayed on Edit immunization page$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(IMMUNIZATION_PERSON_TAB);
+          collectedImmunization = collectImmunizationDataWithImmunizationPeriod();
+          createdImmunization = CreateNewImmunizationSteps.immunization;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              collectedImmunization,
+              createdImmunization,
+              List.of("meansOfImmunization", "startDate", "endDate"));
+        });
+  }
+
+  private Immunization collectImmunizationDataWithImmunizationPeriod() {
+    return Immunization.builder()
+        .dateOfReport(getDateOfReport())
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .meansOfImmunization(webDriverHelpers.getValueFromWebElement(MEANS_OF_IMMUNIZATIONS_INPUT))
+        .managementStatus(
+            webDriverHelpers.getValueFromWebElement(IMMUNIZATION_MANAGEMENT_STATUS_INPUT))
+        .immunizationStatus(webDriverHelpers.getValueFromWebElement(IMMUNIZATION_STATUS_INPUT))
+        .startDate(getStartDate())
+        .endDate(getEndDate())
+        .build();
   }
 
   private Immunization collectImmunizationData() {
@@ -423,5 +450,15 @@ public class EditImmunizationSteps implements En {
   private LocalDate getDateOfReport() {
     String dateOfReport = webDriverHelpers.getValueFromWebElement(DATE_OF_REPORT_INPUT);
     return LocalDate.parse(dateOfReport, DATE_FORMATTER);
+  }
+
+  private LocalDate getStartDate() {
+    String startDate = webDriverHelpers.getValueFromWebElement(START_DATE_INPUT);
+    return LocalDate.parse(startDate, DATE_FORMATTER);
+  }
+
+  private LocalDate getEndDate() {
+    String endDate = webDriverHelpers.getValueFromWebElement(END_DATE_INPUT);
+    return LocalDate.parse(endDate, DATE_FORMATTER);
   }
 }

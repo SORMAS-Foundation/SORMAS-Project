@@ -25,6 +25,7 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
@@ -41,6 +42,7 @@ import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventJoins;
@@ -66,9 +68,10 @@ public class DashboardService {
 
 	@EJB
 	private CaseService caseService;
-
 	@EJB
 	private EventService eventService;
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
 	public List<DashboardCaseDto> getCases(DashboardCriteria dashboardCriteria) {
 
@@ -169,9 +172,14 @@ public class DashboardService {
 			cq.where(filter);
 			cq.groupBy(caze.get(Case.CASE_CLASSIFICATION));
 
-			result = em.createQuery(cq)
-				.getResultStream()
-				.collect(Collectors.toMap(tuple -> (CaseClassification) tuple[0], tuple -> ((Number) tuple[1]).intValue()));
+			result = em.createQuery(cq).getResultStream().collect(Collectors.toMap(tuple -> {
+				if (!configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+					&& CaseClassification.getConfirmedClassifications().contains((CaseClassification) tuple[0])) {
+					return CaseClassification.CONFIRMED;
+				} else {
+					return (CaseClassification) tuple[0];
+				}
+			}, tuple -> ((Number) tuple[1]).intValue()));
 		} else {
 			result = Collections.emptyMap();
 		}

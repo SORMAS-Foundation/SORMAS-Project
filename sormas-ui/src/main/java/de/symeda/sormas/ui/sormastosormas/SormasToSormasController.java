@@ -160,6 +160,11 @@ public class SormasToSormasController {
 			List<SormasToSormasContactPreview> contacts = shareRequest.getContacts();
 			for (int i = 0, contactsSize = contacts.size(); i < contactsSize && !hasErrors; i++) {
 				SormasToSormasContactPreview c = contacts.get(i);
+
+				if (FacadeProvider.getCaseFacade().exists(c.getCaze().getUuid())) {
+					continue;
+				}
+
 				List<SormasToSormasShareRequestDto> caseRequests =
 					FacadeProvider.getSormasToSormasShareRequestFacade().getShareRequestsForCase(c.getCaze());
 				if (caseRequests.isEmpty()) {

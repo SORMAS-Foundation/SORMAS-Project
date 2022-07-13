@@ -21,7 +21,7 @@ import cucumber.api.java8.En;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.api.Sample;
 import org.sormas.e2etests.entities.services.api.SampleApiService;
-import org.sormas.e2etests.helpers.api.SampleHelper;
+import org.sormas.e2etests.helpers.api.sormasrest.SampleHelper;
 import org.sormas.e2etests.state.ApiState;
 
 public class SamplesSteps implements En {
