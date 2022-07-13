@@ -753,7 +753,8 @@ public class EventController {
 			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT),
 			eventEditForm.getFieldGroup());
 
-		editView.getButtonsPanel().addComponentAsFirst(new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, event.isDeleted()));
+		editView.getButtonsPanel()
+			.addComponentAsFirst(new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, event.isDeleted(), EventDto.I18N_PREFIX));
 
 		if (event.isDeleted()) {
 			editView.getWrappedComponent().getField(EventDto.DELETION_REASON).setVisible(true);
@@ -924,7 +925,9 @@ public class EventController {
 				Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
-			DeletableUtils.showDeleteWithReasonPopup(String.format(I18nProperties.getString(Strings.confirmationDeleteEvents), selectedRows.size()), (deleteDetails) -> {
+			DeletableUtils.showDeleteWithReasonPopup(
+				String.format(I18nProperties.getString(Strings.confirmationDeleteEvents), selectedRows.size()),
+				(deleteDetails) -> {
 					StringBuilder nonDeletableEventsWithParticipants = new StringBuilder();
 					int countNotDeletedEventsWithParticipants = 0;
 					StringBuilder nonDeletableEventsFromExternalTool = new StringBuilder();
@@ -937,7 +940,7 @@ public class EventController {
 						} else {
 							try {
 								FacadeProvider.getEventFacade().delete(eventDto.getUuid(), deleteDetails);
-						} catch (ExternalSurveillanceToolRuntimeException e) {
+							} catch (ExternalSurveillanceToolRuntimeException e) {
 								countNotDeletedEventsFromExternalTool = countNotDeletedEventsFromExternalTool + 1;
 								nonDeletableEventsFromExternalTool.append(selectedRow.getUuid(), 0, 6).append(", ");
 							}
