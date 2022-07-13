@@ -47,4 +47,5 @@ public class Event {
   String facility;
   String facilityCategory;
   String facilityType;
+  String actionDate;
 }

@@ -114,6 +114,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.VA
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.VALUE_SEPARATOR_COMBOBOX_LIST;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.VALUE_SEPARATOR_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByShortEventUuid;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByIndex;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByUUID;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DESCRIPTION_OF_CREATE_CASE_FROM_EVENT_PARTICIPANT;
@@ -170,6 +171,7 @@ public class EventDirectorySteps implements En {
   public static final String userDirPath = System.getProperty("user.dir");
   private final List<String> oldEventUUIDs = new ArrayList<>();
   static Map<String, Integer> headersMap;
+  public String createdEventUUID;
 
   @Inject
   public EventDirectorySteps(
@@ -198,7 +200,7 @@ public class EventDirectorySteps implements En {
         "I navigate to the last created through API Event page via URL",
         () -> {
           String eventLinkPath = "/sormas-ui/#!events/data/";
-          String createdEventUUID = apiState.getCreatedEvent().getUuid();
+          createdEventUUID = apiState.getCreatedEvent().getUuid();
           webDriverHelpers.accessWebSite(
               runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + eventLinkPath
@@ -366,7 +368,7 @@ public class EventDirectorySteps implements En {
         "I navigate to the last created Event page via URL",
         () -> {
           String eventLinkPath = "/sormas-ui/#!events/data/";
-          String createdEventUUID = CreateNewEventSteps.newEvent.getUuid();
+          createdEventUUID = CreateNewEventSteps.newEvent.getUuid();
           webDriverHelpers.accessWebSite(
               runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + eventLinkPath
@@ -824,6 +826,7 @@ public class EventDirectorySteps implements En {
           final String personUuid = EditEventSteps.person.getUuid();
           webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
+          TimeUnit.SECONDS.sleep(2);
         });
 
     When(
@@ -1190,7 +1193,10 @@ public class EventDirectorySteps implements En {
 
     When(
         "I click on the Export Event button",
-        () -> webDriverHelpers.clickOnWebElementBySelector(EVENT_EXPORT_BUTTON));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_EXPORT_BUTTON);
+          TimeUnit.SECONDS.sleep(2);
+        });
 
     When(
         "I click on the Basic Event Export button",
@@ -1272,6 +1278,23 @@ public class EventDirectorySteps implements En {
         (String option) -> {
           webDriverHelpers.clickOnWebElementBySelector(VALUE_SEPARATOR_COMBOBOX);
           webDriverHelpers.clickOnWebElementBySelector(VALUE_SEPARATOR_COMBOBOX_LIST(option));
+        });
+    And(
+        "I check that previous opened Event was deleted",
+        () -> {
+          Assert.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(
+                  getByShortEventUuid(createdEventUUID), 1),
+              "Event not deleted.");
+        });
+
+    And(
+        "^I search for the collected event uuid$",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              SEARCH_EVENT_BY_FREE_TEXT, EditEventSteps.collectedEvent.getUuid());
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(EVENTS_COLUMN_HEADERS);
         });
   }
 

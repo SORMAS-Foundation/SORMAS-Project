@@ -174,6 +174,11 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 		}
 	}
 
+	public void refreshAggregateReports() {
+		fillReportsDropdown();
+		showReportData();
+	}
+
 	private void fillReportsDropdown() {
 
 		if (contentBinding.aggregateReportsWeek.getValue() == null) {

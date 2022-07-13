@@ -21,7 +21,7 @@ import cucumber.api.java8.En;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.api.Event;
 import org.sormas.e2etests.entities.services.api.EventApiService;
-import org.sormas.e2etests.helpers.api.EventHelper;
+import org.sormas.e2etests.helpers.api.sormasrest.EventHelper;
 import org.sormas.e2etests.state.ApiState;
 
 public class EventSteps implements En {
