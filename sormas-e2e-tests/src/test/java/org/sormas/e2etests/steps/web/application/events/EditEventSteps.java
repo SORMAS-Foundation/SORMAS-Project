@@ -1372,6 +1372,7 @@ public class EditEventSteps implements En {
         "I set Country combobox to empty value from Edit Event Page",
         () -> {
           webDriverHelpers.clearComboboxInput(COUNTRY_COMBOBOX_INPUT);
+          TimeUnit.MILLISECONDS.sleep(500);
           webDriverHelpers.clickOnWebElementBySelector(DEFAULT_COMBOBOX_VALUE);
         });
     When(
