@@ -572,7 +572,7 @@ public class ContactController {
 			editForm.getFieldGroup());
 
 		editComponent.getButtonsPanel()
-			.addComponentAsFirst(new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, contact.isDeleted()));
+			.addComponentAsFirst(new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, contact.isDeleted(), ContactDto.I18N_PREFIX));
 
 		if (contact.isDeleted()) {
 			editComponent.getWrappedComponent().getField(ContactDto.DELETION_REASON).setVisible(true);
