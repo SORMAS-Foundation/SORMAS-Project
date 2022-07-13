@@ -175,7 +175,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 	public void testGetIndexListBySampleAssociationType() {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = useSurveillanceOfficerLogin(rdcf);
+		UserDto user = useNationalAdminLogin();
 		PersonDto cazePerson = creator.createPerson("Case", "Person1");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),

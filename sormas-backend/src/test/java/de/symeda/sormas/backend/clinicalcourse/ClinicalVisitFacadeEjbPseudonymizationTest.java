@@ -49,7 +49,7 @@ public class ClinicalVisitFacadeEjbPseudonymizationTest extends AbstractBeanTest
 	private TestDataCreator.RDCF rdcf2;
 	private UserDto user1;
 	private UserDto user2;
-	private UserDto observerUser;
+	private UserDto nationalClinician;
 
 	@Override
 	public void init() {
@@ -62,6 +62,7 @@ public class ClinicalVisitFacadeEjbPseudonymizationTest extends AbstractBeanTest
 			rdcf1.facility.getUuid(),
 			"Surv",
 			"Off1",
+			creator.getUserRoleReference(DefaultUserRole.CASE_OFFICER),
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
@@ -71,10 +72,11 @@ public class ClinicalVisitFacadeEjbPseudonymizationTest extends AbstractBeanTest
 			rdcf2.facility.getUuid(),
 			"Surv",
 			"Off2",
+			creator.getUserRoleReference(DefaultUserRole.CASE_OFFICER),
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
-		observerUser = creator
-			.createUser(null, null, null, null, "National", "Observer", creator.getUserRoleReference(DefaultUserRole.NATIONAL_OBSERVER));
+		nationalClinician =
+			creator.createUser(null, null, null, null, "National", "Clinician", creator.getUserRoleReference(DefaultUserRole.NATIONAL_CLINICIAN));
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}
@@ -174,7 +176,7 @@ public class ClinicalVisitFacadeEjbPseudonymizationTest extends AbstractBeanTest
 		CaseDataDto caze = createCase(user2, rdcf2);
 		ClinicalVisitDto visit = createClinicalVisit(caze);
 
-		loginWith(observerUser);
+		loginWith(nationalClinician);
 
 		visit.setVisitRemarks(null);
 		visit.setVisitingPerson(null);

@@ -30,7 +30,6 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.api.location.LocationDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -50,6 +49,7 @@ import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -162,8 +162,6 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 	public void testShareEventWithSamples() throws SormasToSormasException {
 		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
-		useSurveillanceOfficerLogin(rdcf);
-
 		EventDto event = creator
 			.createEvent(EventStatus.SCREENING, EventInvestigationStatus.ONGOING, "Test event title", "Test description", user.toReference(), (e) -> {
 				e.getEventLocation().setRegion(rdcf.region);
@@ -232,7 +230,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 			getSormasToSormasShareInfoFacade().getIndexList(new SormasToSormasShareInfoCriteria().event(event.toReference()), 0, 100);
 		assertThat(shareInfoList.size(), is(1));
 		assertThat(shareInfoList.get(0).getTargetDescriptor().getId(), is(SECOND_SERVER_ID));
-		assertThat(shareInfoList.get(0).getSender().getCaption(), is("Surv OFF"));
+		assertThat(shareInfoList.get(0).getSender().getCaption(), is("ad MIN"));
 		assertThat(shareInfoList.get(0).getComment(), is("Test comment"));
 	}
 
@@ -371,9 +369,8 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testReturnEvent() throws SormasToSormasException {
-		useSurveillanceOfficerLogin(rdcf);
-
 		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		useSurveillanceOfficerLogin(rdcf);
 
 		EventDto event =
 			creator.createEvent(EventStatus.SCREENING, EventInvestigationStatus.ONGOING, "Test event title", "Test description", officer, (e) -> {
@@ -491,9 +488,8 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testSyncEvent() throws SormasToSormasException {
-		useSurveillanceOfficerLogin(rdcf);
-
 		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		useSurveillanceOfficerLogin(rdcf);
 
 		EventDto event =
 			creator.createEvent(EventStatus.SCREENING, EventInvestigationStatus.ONGOING, "Test event title", "Test description", officer, e -> {

@@ -207,6 +207,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb.MaternalHistoryFacadeEjbLocal;
@@ -1586,6 +1587,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		throws ValidationRuntimeException {
 
 		Case existingCase = service.getByUuid(dto.getUuid());
+		FacadeHelper.checkCreateAndEditRights(existingCase, userService, UserRight.CASE_CREATE, UserRight.CASE_EDIT);
 
 		if (!systemSave && internal && existingCase != null && !service.getEditPermissionType(existingCase).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorCaseNotEditable));

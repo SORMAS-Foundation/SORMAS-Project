@@ -81,6 +81,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
@@ -331,6 +332,7 @@ public class ImmunizationFacadeEjb
 		UserRight._IMMUNIZATION_EDIT })
 	public ImmunizationDto save(@Valid @NotNull ImmunizationDto dto, boolean checkChangeDate, boolean internal) {
 		Immunization existingImmunization = service.getByUuid(dto.getUuid());
+		FacadeHelper.checkCreateAndEditRights(existingImmunization, userService, UserRight.IMMUNIZATION_CREATE, UserRight.IMMUNIZATION_EDIT);
 
 		if (internal && existingImmunization != null && !service.isEditAllowed(existingImmunization).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorImmunizationNotEditable));
