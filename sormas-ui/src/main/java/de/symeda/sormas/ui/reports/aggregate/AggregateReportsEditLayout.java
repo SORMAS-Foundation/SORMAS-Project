@@ -2,11 +2,15 @@ package de.symeda.sormas.ui.reports.aggregate;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import de.symeda.sormas.api.utils.AgeGroupUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.shared.ui.ErrorLevel;
@@ -65,6 +69,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 	private ComboBox<DistrictReferenceDto> comboBoxDistrict;
 	private ComboBox<FacilityReferenceDto> comboBoxFacility;
 	private ComboBox<PointOfEntryReferenceDto> comboBoxPoe;
+	private Button deleteButton;
 	private Button cancelButton;
 	private Button saveButton;
 	private List<AggregateReportEditForm> editForms = new ArrayList<>();
@@ -74,7 +79,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 	private List<AggregateReportDto> reports;
 	private boolean popUpIsShown = false;
 
-	public AggregateReportsEditLayout(Window window, AggregateReportCriteria criteria, boolean edit) {
+	public AggregateReportsEditLayout(Window window, boolean edit, AggregateReportDto selectedAggregateReport) {
 
 		setWidth(560, Unit.PIXELS);
 		setSpacing(false);
@@ -181,19 +186,20 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		addComponent(new HorizontalLayout(comboBoxFacility, comboBoxPoe));
 
 		if (edit) {
-			comboBoxYear.setValue(criteria.getEpiWeekFrom().getYear());
+			comboBoxYear.setValue(selectedAggregateReport.getYear());
 			comboBoxYear.setEnabled(false);
-			comboBoxEpiWeek.setValue(criteria.getEpiWeekFrom());
+			comboBoxEpiWeek.setValue(new EpiWeek(selectedAggregateReport.getYear(), selectedAggregateReport.getEpiWeek()));
 			comboBoxEpiWeek.setEnabled(false);
-			comboBoxRegion.setValue(criteria.getRegion());
+			comboBoxRegion.setValue(selectedAggregateReport.getRegion());
 			comboBoxRegion.setEnabled(false);
-			comboBoxDistrict.setValue(criteria.getDistrict());
+			comboBoxDistrict.setValue(selectedAggregateReport.getDistrict());
 			comboBoxDistrict.setEnabled(false);
-			comboBoxFacility.setValue(criteria.getHealthFacility());
+			comboBoxFacility.setValue(selectedAggregateReport.getHealthFacility());
 			comboBoxFacility.setEnabled(false);
-			comboBoxPoe.setValue(criteria.getPointOfEntry());
+			comboBoxPoe.setValue(selectedAggregateReport.getPointOfEntry());
 			comboBoxPoe.setEnabled(false);
-			reports = FacadeProvider.getAggregateReportFacade().getList(criteria);
+
+			reports = FacadeProvider.getAggregateReportFacade().getSimilarAggregateReports(selectedAggregateReport);
 		}
 
 		List<Disease> diseaseList = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, null, false);
@@ -202,38 +208,40 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			List<String> ageGroups = FacadeProvider.getDiseaseConfigurationFacade().getAgeGroups(disease);
 			if (ageGroups != null) {
 				ageGroups.forEach(ageGroup -> {
-					diseaseAgeGroupsWithoutReport.add(new DiseaseAgeGroup(disease.toString(), ageGroup));
+					diseaseAgeGroupsWithoutReport.add(new DiseaseAgeGroup(disease, ageGroup));
 				});
 			} else {
-				diseaseAgeGroupsWithoutReport.add(new DiseaseAgeGroup(disease.toString(), null));
+				diseaseAgeGroupsWithoutReport.add(new DiseaseAgeGroup(disease, null));
 			}
 			diseasesWithoutReport.add(disease);
 		});
+
 		if (reports != null) {
 			for (AggregateReportDto report : reports) {
-				String disease = report.getDisease().toString();
-				AggregateReportEditForm editForm = new AggregateReportEditForm(disease, null, false);
+
+				String firstAgeGroup = FacadeProvider.getDiseaseConfigurationFacade().getFirstAgeGroup(report.getDisease());
+
+				boolean isFirstAgeGroup = report.getAgeGroup() != null && report.getAgeGroup().equals(firstAgeGroup);
+
+				AggregateReportEditForm editForm = new AggregateReportEditForm(report.getDisease(), report.getAgeGroup(), isFirstAgeGroup);
 				editForm.setNewCases(report.getNewCases());
 				editForm.setLabConfirmations(report.getLabConfirmations());
 				editForm.setDeaths(report.getDeaths());
 				editForms.add(editForm);
-				diseaseAgeGroupsWithoutReport.remove(new DiseaseAgeGroup(disease, report.getAgeGroup()));
-				diseasesWithoutReport.remove(disease);
+				diseaseAgeGroupsWithoutReport.remove(new DiseaseAgeGroup(report.getDisease(), report.getAgeGroup()));
+				diseasesWithoutReport.remove(report.getDisease());
 			}
 		}
 
-
 		for (Disease disease : diseasesWithoutReport) {
-
-			String diseaseString = disease.toString();
 
 			List<String> ageGroups = FacadeProvider.getDiseaseConfigurationFacade().getAgeGroups(disease);
 			if (ageGroups == null || ageGroups.isEmpty()) {
-				editForms.add(new AggregateReportEditForm(diseaseString, null, false));
+				editForms.add(new AggregateReportEditForm(disease, null, false));
 			} else {
 				int i = 0;
 				for (String ageGroup : ageGroups) {
-					editForms.add(new AggregateReportEditForm(diseaseString, ageGroup, i == 0));
+					editForms.add(new AggregateReportEditForm(disease, ageGroup, i == 0));
 					i++;
 				}
 			}
@@ -251,10 +259,11 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		addComponent(legend);
 		legend.addStyleName(CssStyles.VSPACE_TOP_1);
 
-		editForms.sort((e1, e2) -> e1.getDisease().compareTo(e2.getDisease()));
-		for (AggregateReportEditForm editForm : editForms) {
-			addComponent(editForm);
-		}
+		editForms.stream()
+			.sorted(
+				Comparator.comparing(AggregateReportEditForm::getDisease, Comparator.nullsFirst(Comparator.comparing(Disease::toString)))
+					.thenComparing(AggregateReportEditForm::getAgeGroup, AgeGroupUtils.getComparator()))
+			.forEach(this::addComponent);
 
 		if (!editForms.isEmpty()) {
 			editForms.get(0).addStyleName(CssStyles.VSPACE_TOP_1);
@@ -264,6 +273,15 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		buttonsPanel.setMargin(false);
 		buttonsPanel.setSpacing(true);
 		buttonsPanel.setWidth(100, Unit.PERCENTAGE);
+
+		if (edit) {
+			deleteButton = ButtonHelper.createButton(Captions.actionDelete, clickEvent -> {
+				deleteAggregateReports();
+			});
+			buttonsPanel.addComponent(deleteButton);
+			buttonsPanel.setComponentAlignment(deleteButton, Alignment.BOTTOM_RIGHT);
+			buttonsPanel.setExpandRatio(deleteButton, 0);
+		}
 
 		cancelButton = ButtonHelper.createButton(Captions.actionDiscard, e -> window.close());
 
@@ -295,7 +313,8 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			criteria.setHealthFacility(comboBoxFacility.getValue());
 			criteria.setPointOfEntry(comboBoxPoe.getValue());
 			criteria.setRegion(comboBoxRegion.getValue());
-			reports = FacadeProvider.getAggregateReportFacade().getList(criteria);
+			criteria.setConsiderNullJurisdictionCheck(true);
+			reports = FacadeProvider.getAggregateReportFacade().getAggregateReports(criteria);
 			if (!reports.isEmpty()) {
 				popUpIsShown = true;
 				Consumer<Boolean> resultConsumer = new Consumer<Boolean>() {
@@ -350,15 +369,14 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 
 		window.setCaption(I18nProperties.getString(Strings.headingEditAggregateReport));
 		for (AggregateReportEditForm editForm : editForms) {
-			String disease = editForm.getDisease();
 			String ageGroup = editForm.getAgeGroup();
-			Optional<AggregateReportDto> optionalAggregateReportDto = getReportByDiseaseAndAgeGroup(disease, ageGroup);
+			Optional<AggregateReportDto> optionalAggregateReportDto = getReportByDiseaseAndAgeGroup(editForm.getDisease(), ageGroup);
 			if (optionalAggregateReportDto.isPresent()) {
 				AggregateReportDto report = optionalAggregateReportDto.get();
 				editForm.setNewCases(report.getNewCases());
 				editForm.setLabConfirmations(report.getLabConfirmations());
 				editForm.setDeaths(report.getDeaths());
-				diseaseAgeGroupsWithoutReport.remove(new DiseaseAgeGroup(disease, ageGroup));
+				diseaseAgeGroupsWithoutReport.remove(new DiseaseAgeGroup(editForm.getDisease(), ageGroup));
 			}
 		}
 		removeComponent(epiWeekOptions);
@@ -370,12 +388,19 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		comboBoxPoe.setEnabled(false);
 	}
 
-	private Optional<AggregateReportDto> getReportByDiseaseAndAgeGroup(String disease, String ageGroup) {
-		return reports.stream().filter(dto -> {
-					boolean ageGroupMatches = dto.getAgeGroup() != null ? dto.getAgeGroup().equals(ageGroup) : ageGroup == null;
-					boolean diseaseMatches = dto.getDisease() != null ? dto.getDisease().equals(disease) : disease == null;
-					return diseaseMatches && ageGroupMatches;
-				}).findFirst();
+	private Optional<AggregateReportDto> getReportByDiseaseAndAgeGroup(Disease disease, String ageGroup) {
+
+		List<AggregateReportDto> foundReports = new ArrayList<>();
+		reports.stream().filter(dto -> {
+			boolean ageGroupMatches = dto.getAgeGroup() != null ? dto.getAgeGroup().equals(ageGroup) : ageGroup == null;
+			boolean diseaseMatches = dto.getDisease() != null ? dto.getDisease().equals(disease) : disease == null;
+			return diseaseMatches && ageGroupMatches;
+		}).max(Comparator.comparing(AggregateReportDto::getChangeDate)).ifPresent(foundReports::add);
+
+		if (foundReports.isEmpty()) {
+			return Optional.empty();
+		}
+		return Optional.ofNullable(foundReports.get(0));
 	}
 
 	private void save() {
@@ -441,7 +466,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 				if (deaths > 0 || labConfirmations > 0 || newCases > 0) {
 					AggregateReportDto newReport = AggregateReportDto.build();
 					newReport.setDeaths(deaths);
-					newReport.setDisease(diseaseMap.get(editForm.getDisease()));
+					newReport.setDisease(editForm.getDisease());
 					newReport.setAgeGroup(editForm.getAgeGroup());
 					newReport.setDistrict(comboBoxDistrict.getValue());
 					newReport.setEpiWeek(comboBoxEpiWeek.getValue().getWeek());
@@ -469,6 +494,13 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			}
 		}
 		return valid;
+	}
+
+	private void deleteAggregateReports() {
+		List<String> aggregateReportUuidList = reports.stream().map(AggregateReportDto::getUuid).collect(Collectors.toList());
+
+		FacadeProvider.getAggregateReportFacade().deleteAggregateReports(aggregateReportUuidList);
+		window.close();
 	}
 
 	private void updateEpiWeekFields() {

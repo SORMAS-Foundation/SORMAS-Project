@@ -18,34 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.samples;
 
-import com.github.javafaker.Faker;
-import cucumber.api.java8.En;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.entities.pojo.web.Sample;
-import org.sormas.e2etests.entities.pojo.web.SampleAdditionalTest;
-import org.sormas.e2etests.entities.services.SampleAdditionalTestService;
-import org.sormas.e2etests.entities.services.SampleService;
-import org.sormas.e2etests.enums.PathogenTestResults;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.steps.BaseSteps;
-import org.testng.asserts.SoftAssert;
-
-import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_DATE_AND_TIME_OF_RESULT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_DATE_OF_COLLECTED_SAMPLE;
@@ -66,6 +39,7 @@ import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.COMMENT_AREA_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CONJ_BILIRUBIN_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CREATININE_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_AND_TIME_OF_RESULTS;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_OF_RESULT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_SAMPLE_COLLECTED;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_SAMPLE_RECEIVED;
@@ -126,9 +100,12 @@ import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.TOTAL_BILIRUBIN_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.TYPE_OF_TEST_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.TYPE_OF_TEST_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.UPDATE_CASE_DISEASE_VARIANT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.UREA_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.WBC_INPUT;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.EDIT_PATHOGEN_TEST;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.PCR_TEST_SPECIFICATION_COMBOBOX_DIV;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.TESTED_DISEASE_VARIANT;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.CREATE_CASE_POSITIVE_TEST_RESULT_LABEL;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.EDIT_ADDITIONAL_TEST_RESULTS_BUTTON;
@@ -136,6 +113,33 @@ import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.EDIT_TEST_RESULTS_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.RESULT_VERIFIED_BY_LAB_SUPERVISOR_EDIT_OPTIONS;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_EDIT_PURPOSE_OPTIONS;
+
+import com.github.javafaker.Faker;
+import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.inject.Inject;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Sample;
+import org.sormas.e2etests.entities.pojo.web.SampleAdditionalTest;
+import org.sormas.e2etests.entities.services.SampleAdditionalTestService;
+import org.sormas.e2etests.entities.services.SampleService;
+import org.sormas.e2etests.enums.PathogenTestResults;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.BaseSteps;
+import org.testng.asserts.SoftAssert;
 
 public class CreateNewSampleSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
@@ -235,12 +239,14 @@ public class CreateNewSampleSteps implements En {
           selectTestedDisease(sample.getTestedDisease());
           selectTypeOfTest(sample.getTypeOfTest());
           selectTestResult(sample.getSampleTestResults());
+          fillDateOfResult(sample.getDateOfResult(), Locale.ENGLISH);
+          fillTimeOfResult(sample.getTimeOfResult());
           selectLaboratory(sample.getLaboratory());
           selectResultVerifiedByLabSupervisor(
               sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
           selectTestResult(sample.getTestResults());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
@@ -255,6 +261,67 @@ public class CreateNewSampleSteps implements En {
               sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
           selectTestResult(sample.getTestResults());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I create a new pathogen test result with {string} as disease and {string} as a test type",
+        (String diseaseType, String testType) -> {
+          sample = sampleService.buildPathogenTestResultTypeVerified(diseaseType, testType);
+          selectTypeOfTest(sample.getTypeOfTest());
+          selectTestedDisease(sample.getTestedDisease());
+          selectTestResult(sample.getSampleTestResults());
+          selectResultVerifiedByLabSupervisor(
+              sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+        });
+
+    When(
+        "I create new sample with pathogen test with {string} as disease and {string} as type of test",
+        (String diseaseType, String typeOfTest) -> {
+          sample =
+              sampleService.buildGeneratedSampleWithTestResultForSelectedDiseaseAndTestType(
+                  diseaseType, typeOfTest);
+          selectPurposeOfSample(sample.getPurposeOfTheSample(), SAMPLE_PURPOSE_OPTIONS);
+          fillDateOfCollection(sample.getDateOfCollection());
+          selectSampleType(sample.getSampleType());
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST);
+          selectTestedDisease(sample.getTestedDisease());
+          selectTypeOfTest(sample.getTypeOfTest());
+          selectTestResult(sample.getSampleTestResults());
+          fillDateOfResult(sample.getDateOfResult(), Locale.ENGLISH);
+          selectLaboratory(sample.getLaboratory());
+          selectResultVerifiedByLabSupervisor(
+              sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+        });
+
+    When(
+        "I set PCR RT PCR Test specification to {string} option",
+        (String option) -> {
+          webDriverHelpers.selectFromCombobox(PCR_TEST_SPECIFICATION_COMBOBOX_DIV, option);
+        });
+
+    When(
+        "I set Tested disease variant as {string}",
+        (String variant) -> {
+          webDriverHelpers.selectFromCombobox(TESTED_DISEASE_VARIANT, variant);
+        });
+
+    When(
+        "^I validate date and time is present on sample card$",
+        () -> {
+          String dateAndTimeVisible =
+              webDriverHelpers.getTextFromWebElement(DATE_AND_TIME_OF_RESULTS);
+          LocalDate date = sample.getDateOfResult();
+          LocalTime time = sample.getTimeOfResult();
+          DateTimeFormatter dateFormater = DateTimeFormatter.ofPattern("M/d/yyyy");
+          DateTimeFormatter timeFormater = DateTimeFormatter.ofPattern("hh:mm a");
+          softly.assertEquals(
+              "Date and time of result: "
+                  + dateFormater.format(date)
+                  + " "
+                  + timeFormater.format(time),
+              dateAndTimeVisible,
+              "Date or time is not equal");
+          softly.assertAll();
         });
 
     When(
@@ -613,6 +680,12 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
+        "I confirm case with positive test result",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
+        });
+    When(
         "I confirm the Create case from event participant with positive test result",
         () -> {
           TimeUnit.SECONDS.sleep(5); // weak performance, wait for popup
@@ -635,6 +708,27 @@ public class CreateNewSampleSteps implements En {
           softly.assertEquals(disease, testedDisease, "Diseases are not equal");
           softly.assertAll();
         });
+
+    When(
+        "I set Test Disease as ([^\"]*) in new pathogen result",
+        (String disease) -> webDriverHelpers.selectFromCombobox(TESTED_DISEASE_COMBOBOX, disease));
+
+    When(
+        "I check if Type of test in new pathogen results has no ([^\"]*) option",
+        (String typeOfTest) -> {
+          softly.assertFalse(
+              webDriverHelpers.checkIfElementExistsInCombobox(TYPE_OF_TEST_COMBOBOX, typeOfTest),
+              "Type of test is incorrect");
+          softly.assertAll();
+        });
+
+    When(
+        "I confirm update case result",
+        () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_POPUP_BUTTON));
+
+    When(
+        "I check if Update case disease variant popup is available",
+        () -> webDriverHelpers.isElementVisibleWithTimeout(UPDATE_CASE_DISEASE_VARIANT, 10));
   }
 
   private void selectPurposeOfSample(String samplePurpose, By element) {

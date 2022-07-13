@@ -15,9 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.helpers.api;
+package org.sormas.e2etests.helpers.api.sormasrest;
 
-import static org.sormas.e2etests.constants.api.Endpoints.SAMPLES_PATH;
+import static org.sormas.e2etests.constants.api.Endpoints.EVENTS_PATH;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.Method;
@@ -25,30 +25,30 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
+import org.sormas.e2etests.entities.pojo.api.Event;
 import org.sormas.e2etests.entities.pojo.api.Request;
-import org.sormas.e2etests.entities.pojo.api.Sample;
 import org.sormas.e2etests.helpers.RestAssuredClient;
 
-public class SampleHelper {
+public class EventHelper {
 
   private final RestAssuredClient restAssuredClient;
   private final ObjectMapper objectMapper;
 
   @Inject
-  public SampleHelper(RestAssuredClient restAssuredClient, ObjectMapper objectMapper) {
+  public EventHelper(RestAssuredClient restAssuredClient, ObjectMapper objectMapper) {
     this.restAssuredClient = restAssuredClient;
     this.objectMapper = objectMapper;
   }
 
   @SneakyThrows
-  public void createSample(Sample sample) {
+  public void createEvent(Event event) {
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
-    List<Sample> listOfContacts = List.of(sample);
+    List<Event> listOfContacts = List.of(event);
     objectMapper.writeValue(out, listOfContacts);
     restAssuredClient.sendRequest(
         Request.builder()
             .method(Method.POST)
-            .path(SAMPLES_PATH + "push")
+            .path(EVENTS_PATH + "push")
             .body(out.toString())
             .build());
   }

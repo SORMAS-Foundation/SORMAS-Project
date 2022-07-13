@@ -514,8 +514,8 @@ public class PersonFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	private void assertPseudonymised(PersonDto person) {
 
 		assertThat(person.isPseudonymized(), is(true));
-		assertThat(person.getFirstName(), isEmptyString());
-		assertThat(person.getLastName(), isEmptyString());
+		assertThat(person.getFirstName(), is("James"));
+		assertThat(person.getLastName(), is("Smith"));
 		assertThat(person.getBirthdateDD(), is(nullValue()));
 
 		assertThat(person.getAddress().getRegion().getCaption(), is("Region 1"));

@@ -38,26 +38,35 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 		From<AggregateReport, AggregateReport> from) {
 
 		Predicate filter = null;
+		boolean considerNullJurisdictionCheck = Boolean.TRUE.equals(criteria.isConsiderNullJurisdictionCheck());
 
 		if (criteria.getRegion() != null) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(from.join(AggregateReport.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
+		} else if (considerNullJurisdictionCheck) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(AggregateReport.REGION)));
 		}
 		if (criteria.getDistrict() != null) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(from.join(AggregateReport.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
+		} else if (considerNullJurisdictionCheck) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(AggregateReport.DISTRICT)));
 		}
 		if (criteria.getHealthFacility() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.equal(from.join(AggregateReport.HEALTH_FACILITY, JoinType.LEFT).get(Facility.UUID), criteria.getHealthFacility().getUuid()));
+		} else if (considerNullJurisdictionCheck) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(AggregateReport.HEALTH_FACILITY)));
 		}
 		if (criteria.getPointOfEntry() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
 				cb.equal(from.join(AggregateReport.POINT_OF_ENTRY, JoinType.LEFT).get(PointOfEntry.UUID), criteria.getPointOfEntry().getUuid()));
+		} else if (considerNullJurisdictionCheck) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(AggregateReport.POINT_OF_ENTRY)));
 		}
 		if (criteria.getEpiWeekFrom() != null || criteria.getEpiWeekTo() != null) {
 			if (criteria.getEpiWeekFrom() == null) {
@@ -82,12 +91,25 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(AggregateReport.DISEASE), criteria.getDisease()));
 		}
 
+		if (criteria.getReportingUser() != null) {
+			Join<AggregateReport, User> aggregateReportUserJoin = from.join(AggregateReport.REPORTING_USER, JoinType.INNER);
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(aggregateReportUserJoin.get(User.UUID), criteria.getReportingUser().getUuid()));
+		}
+
 		return filter;
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, AggregateReport> from) {
+		return createUserFilter(new AggregateReportQueryContext(cb, cq, from));
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Predicate createUserFilter(AggregateReportQueryContext queryContext) {
+
+		CriteriaBuilder cb = queryContext.getCriteriaBuilder();
+		From<?, AggregateReport> from = queryContext.getRoot();
+		AggregateReportJoins joins = queryContext.getJoins();
 
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
@@ -100,7 +122,7 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 		}
 
 		// Whoever created the weekly report is allowed to access it
-		Join<AggregateReport, User> reportingUser = from.join(AggregateReport.REPORTING_USER, JoinType.LEFT);
+		Join<AggregateReport, User> reportingUser = joins.getReportingUser();
 		Predicate filter = cb.equal(reportingUser, currentUser);
 
 		switch (jurisdictionLevel) {

@@ -14,15 +14,17 @@
  */
 package de.symeda.sormas.api.infrastructure.district;
 
-import de.symeda.sormas.api.utils.FeatureIndependent;
 import java.util.Date;
 
 import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FeatureIndependent;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
 @FeatureIndependent
@@ -99,8 +101,13 @@ public class DistrictDto extends InfrastructureDto {
 	}
 
 	@Override
-	public String toString() {
+	public String buildCaption() {
 		return getName();
+	}
+
+	@JsonIgnore
+	public String i18nPrefix() {
+		return I18N_PREFIX;
 	}
 
 	public Float getGrowthRate() {
@@ -130,7 +137,6 @@ public class DistrictDto extends InfrastructureDto {
 	public DistrictReferenceDto toReference() {
 		return new DistrictReferenceDto(getUuid(), name, externalID);
 	}
-
 
 	public static DistrictDto build() {
 		DistrictDto dto = new DistrictDto();

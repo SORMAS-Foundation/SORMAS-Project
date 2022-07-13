@@ -32,6 +32,7 @@ public class ContactDirectoryPage {
       By.cssSelector("div#contactsViewSwitcher span:nth-child(2) > label");
   public static final By CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT =
       By.cssSelector("input#contactOrCaseLike");
+  public static final By ACTION_MERGE_CONTACT_DIRECTORY = By.cssSelector("#actionMerge");
   public static final By CONTACTS_DETAILED_COLUMN_HEADERS =
       By.cssSelector("thead .v-grid-column-default-header-content");
   public static final By CONTACTS_COLUMN_HEADERS =
@@ -65,6 +66,8 @@ public class ContactDirectoryPage {
       By.cssSelector("[id='followUpStatus'] [class='v-filterselect-button']");
   public static final By CONTACT_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON =
       By.cssSelector("div#actionApplyFilters");
+  public static final By CONTACT_DIRECTORY_DETAILED_PAGE_CONFIRM_FILTER_BUTTON =
+      By.cssSelector("div#actionConfirmFilters");
   public static final By GRID_RESULTS_COUNTER_CONTACT_DIRECTORY = By.cssSelector(".badge");
   public static final By CONTACTS_WITH_QUARANTINE_ORDERED_VERBALLY_CHECKBOX =
       By.id("quarantineOrderedVerbally");
@@ -93,6 +96,7 @@ public class ContactDirectoryPage {
   public static final By CONTACT_MERGE_DUPLICATES = By.id("contactMergeDuplicates");
   public static final By CONTACT_DISPLAY_FILTER_COMBOBOX =
       By.cssSelector("[id='relevanceStatus'] [class='v-filterselect-button']");
+  public static final By RELATIONSHIP_WITH_CASE_COMBOBOX = By.cssSelector("#relationToCase div");
 
   public static By getCheckboxByUUID(String uuid) {
     return By.xpath(

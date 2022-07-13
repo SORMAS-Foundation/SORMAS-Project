@@ -36,6 +36,8 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.COMMU
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_DAY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_MONTH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_YEAR_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DESCRIPTION_IN_TRAVEL_ENTRY_TAB;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DISEASE_IN_TRAVEL_ENTRY_TAB;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DISTRICT_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EDIT_CASES_BUTTON;
@@ -53,8 +55,14 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACIL
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACILITY_TYPE_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FIRST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.HOUSE_NUMBER_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.IMMUNIZATION_DISEASE_LABEL;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.IMMUNIZATION_ID_LABEL;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.IMMUNIZATION_PERIOD_LABEL;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.IMMUNIZATION_STATUS_LABEL;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.INVALID_DATA_ERROR;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.LAST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.MANAGEMENT_STATUS_LABEL;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.MEANS_OF_IMMUNIZATION_LABEL;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.NAMES_OF_GUARDIANS_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.NO_TRAVEL_ENTRY_LABEL_DE;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_CONTACT_DETAILS_CONTACT_INFORMATION_INPUT;
@@ -72,12 +80,14 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_E
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEX_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.STAFF_OF_ARMED_FORCES_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.STREET_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.TRAVEL_ENTRY_ID_IN_TRAVEL_ENTRY_TAB;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.TYPE_OF_OCCUPATION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.TYPE_OF_OCCUPATION_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.getByImmunizationUuid;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+import static org.sormas.e2etests.steps.web.application.entries.CreateNewTravelEntrySteps.aTravelEntry;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -98,6 +108,7 @@ import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
+import org.sormas.e2etests.steps.web.application.immunizations.EditImmunizationSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
@@ -215,6 +226,72 @@ public class EditPersonSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SEE_CASES_FOR_PERSON_BUTTON);
           //          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
           //          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+        });
+    Then(
+        "I check if data of created immunization is in Immunization tab on Edit Person Page",
+        () -> {
+          String textFromLabel;
+          String[] values;
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_ID_LABEL),
+              EditImmunizationSteps.collectedImmunization.getUuid().substring(0, 6).toUpperCase(),
+              "Immunization Id label is different than expected");
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_DISEASE_LABEL),
+              EditImmunizationSteps.collectedImmunization.getDisease().toUpperCase(),
+              "Immunization Disease label is different than expected");
+          textFromLabel = webDriverHelpers.getTextFromWebElement(MEANS_OF_IMMUNIZATION_LABEL);
+          values = textFromLabel.split(":");
+          softly.assertEquals(
+              values[0],
+              "Means of immunization",
+              "Means of immunization label is different than expected");
+          softly.assertEquals(
+              values[1].trim(),
+              EditImmunizationSteps.collectedImmunization.getMeansOfImmunization(),
+              "Means of immunization value is different than expected");
+          textFromLabel = webDriverHelpers.getTextFromWebElement(IMMUNIZATION_STATUS_LABEL);
+          values = textFromLabel.split(":");
+          softly.assertEquals(
+              values[0],
+              "Immunization status",
+              "Immunization status label is different than expected");
+          softly.assertEquals(
+              values[1].trim(),
+              EditImmunizationSteps.collectedImmunization.getImmunizationStatus(),
+              "Immunization status value is different than expected");
+          textFromLabel = webDriverHelpers.getTextFromWebElement(MANAGEMENT_STATUS_LABEL);
+          values = textFromLabel.split(":");
+          softly.assertEquals(
+              values[0], "Management status", "Management status label is different than expected");
+          softly.assertEquals(
+              values[1].trim(),
+              EditImmunizationSteps.collectedImmunization.getManagementStatus(),
+              "Management status value is different than expected");
+          textFromLabel = webDriverHelpers.getTextFromWebElement(IMMUNIZATION_PERIOD_LABEL);
+          values = textFromLabel.split(":");
+          softly.assertEquals(
+              values[0],
+              "Immunization period",
+              "Immunization period label is different than expected");
+          softly.assertAll();
+        });
+    Then(
+        "I check if data of created Travel Entry is in Travel Entry tab on Edit Person Page for De specific",
+        () -> {
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(TRAVEL_ENTRY_ID_IN_TRAVEL_ENTRY_TAB),
+              aTravelEntry.getUuid().substring(0, 6),
+              "Travel Entry ID is different than expected");
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(DISEASE_IN_TRAVEL_ENTRY_TAB),
+              aTravelEntry.getDisease().toUpperCase(),
+              "Travel Entry Disease is different than expected");
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(DESCRIPTION_IN_TRAVEL_ENTRY_TAB),
+              aTravelEntry.getPointOfEntryDetails(),
+              "Travel Entry Point of entry details is different than expected");
+          softly.assertAll();
         });
 
     Then(

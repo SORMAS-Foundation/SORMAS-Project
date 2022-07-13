@@ -815,3 +815,154 @@ Feature: Contacts end to end tests
     Then I log in with National User
     Then I open last edited contact by API via URL navigation
     Then I check if editable fields are read only for an archived contact
+
+  @env_main @issue=SORDEV-7453
+  Scenario: Check contacts order after contact edit
+    Given I log in as a National User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click on SAVE new contact button
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click on SAVE new contact button
+    And I click on the Contacts button from navbar
+    Then I get two last contacts ID from cases list
+    And I open 2 contact in order from list
+    And I fill general comment in contact edit page with EDITED
+    And I click SAVE button on Edit Contact Page
+    And I click on the Contacts button from navbar
+    Then I compare previous first contact ID on the list with actually second contact ID on list
+
+  @issue=SORDEV-6461 @env_main
+  Scenario: Test the task type in the contact's new task form
+    Given I log in as a National User
+    Then I click on the Contacts button from navbar
+    And I open the first contact from contacts list
+    And I click on the NEW TASK button
+    And I check if New task form is displayed correctly
+    And I check that required fields are marked as mandatory
+    And I clear Due Date field in the New task form
+    And I click SAVE button on New Task form
+    Then I check that all required fields are mandatory in the New task form
+    When I close input data error popup in Contact Directory
+    And I check that values listed in the task type combobox are correct
+    And I choose Other task as described in comments option from task type combobox in the New task form
+    Then I check that Comments on task field is mandatory in the New task form
+
+  @issue=SORDEV-6609 @env_main
+  Scenario: Test for contact internal token
+    Given I log in as a National User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click on SAVE new contact button
+    When I fill in the Internal Token field in Edit Case page with SAMPLE TOKEN
+    And I click on save button in the case popup
+    And I click on the Contacts button from navbar
+    And I check that the Internal Token column is present
+    And I filter for SAMPLE TOKEN in Contacts Directory
+    Then I check that at least one SAMPLE TOKEN is displayed in table
+
+  @issue=SORDEV-6102 @env_main
+  Scenario: Merge duplicate contacts
+    Then API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    When I fill a new contact form for duplicated contact with same person data
+    And I click on SAVE button in create contact form
+    And I click on the CHOOSE SOURCE CASE button from CONTACT page
+    And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
+    And I search for the last case uuid created via Api in the CHOOSE SOURCE Contact window
+    And I open the first found result in the CHOOSE SOURCE window
+    Then I click SAVE button on Edit Contact Page
+    Then I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    When I fill a new contact form for duplicated contact with same person data
+    And I click on SAVE button in create contact form
+    And I Pick a new person in Pick or create person popup during contact creation
+    When I check the created data for duplicated contact is correctly displayed on Edit Contact page
+    And I click on the CHOOSE SOURCE CASE button from CONTACT page
+    And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
+    And I search for the last case uuid created via Api in the CHOOSE SOURCE Contact window
+    And I open the first found result in the CHOOSE SOURCE window
+    Then I click SAVE button on Edit Contact Page
+    And I click on the Contacts button from navbar
+    And I click on the More button on Contact directory page
+    Then I click on Merge Duplicates on Contact directory page
+    And I click on Merge button of leading case in Merge Duplicate Contact page
+    Then I click to Confirm action in Merge Duplicates Cases popup
+    And I click on the Contacts button from navbar
+    And I apply filter by duplicated contact Person data on Contact Directory Page
+    And I check that number of displayed contact results is 1
+
+  @issue=SORDEV-11451 @env_main
+  Scenario: Add reason for deletion to confirmation dialogue
+    Given I log in as a Admin User
+    When I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click on SAVE new contact button
+    And I copy url of current contact
+    Then I click on Delete button from contact
+    And I check if reason for deletion as "Deletion request by affected person according to GDPR" is available
+    And I check if reason for deletion as "Deletion request by another authority" is available
+    And I check if reason for deletion as "Entity created without legal reason" is available
+    And I check if reason for deletion as "Responsibility transferred to another authority" is available
+    And I check if reason for deletion as "Deletion of duplicate entries" is available
+    And I check if reason for deletion as "Other reason" is available
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from contact
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Please choose a reason for deletion" appears next to Reason for deletion
+    When I set Reason for deletion as "Other reason"
+    Then I check if "Reason for deletion details" field is available in Confirm deletion popup in Immunization
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Please add a reason for deletion" appears next to Reason for deletion
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from contact
+    And I set Reason for deletion as "Deletion request by affected person according to GDPR"
+    And I click on Yes option in Confirm deletion popup
+    When I back to deleted contact by url
+    Then I check if reason of deletion is set to "Deletion request by affected person according to GDPR"
+    And I check if External token input on case edit page is disabled
+    And I check if Case or event information text area on case edit page is disabled
+
+  @issue=SORDEV-11451 @env_de
+  Scenario: Add reason for deletion to confirmation dialogue for DE version
+    Given I log in as a Admin User
+    When I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form for DE version without multicontact
+    And I click on SAVE new contact button
+    And I copy url of current contact
+    Then I click on Delete button from contact
+    And I check if reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO" is available
+    And I check if reason for deletion as "Löschen auf Anforderung einer anderen Behörde" is available
+    And I check if reason for deletion as "Entität ohne Rechtsgrund angelegt" is available
+    And I check if reason for deletion as "Abgabe des Vorgangs wegen Nicht-Zuständigkeit" is available
+    And I check if reason for deletion as "Löschen von Duplikaten" is available
+    And I check if reason for deletion as "Anderer Grund" is available
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from contact
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Bitte wählen Sie einen Grund fürs Löschen" appears next to Reason for deletion
+    When I set Reason for deletion as "Anderer Grund"
+    Then I check if "DETAILS ZUM GRUND DES LÖSCHENS" field is available in Confirm deletion popup in Immunization
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Bitte geben Sie einen Grund fürs Löschen an" appears next to Reason for deletion
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from contact
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    When I back to deleted contact by url
+    Then I check if reason of deletion is set to "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I check if External token input on case edit page is disabled
+    And I check if Case or event information text area on case edit page is disabled

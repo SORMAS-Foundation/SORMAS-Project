@@ -406,6 +406,7 @@ public class ContactFacadeEjb
 					entity,
 					existingContactDto != null && entity.getFollowUpStatus() != existingContactDto.getFollowUpStatus());
 			}
+
 			service.udpateContactStatus(entity);
 
 			if (handleCaseChanges && entity.getCaze() != null) {

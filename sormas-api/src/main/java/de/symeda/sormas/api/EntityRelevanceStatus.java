@@ -8,6 +8,7 @@ public enum EntityRelevanceStatus {
 	ARCHIVED,
 	ALL;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

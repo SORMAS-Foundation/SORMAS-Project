@@ -574,16 +574,17 @@ Feature: Create events
     And I search for the last created person via Api by uuid in popup on Select Person window
     And I open the first found result in the popup of Select Person window
     And I save changes in participant window
-    And I confirm navigation popup
+#    navigation popup dissapeared
+#    And I confirm navigation popup
     And I navigate to EVENT PARTICIPANT from edit event page
-    And I confirm navigation popup
+#    And I confirm navigation popup
     Then I click on Apply filters button in event participant list
     Then I check if filtered participant for existing person appears in the event participants list
     When I click on the Persons button from navbar
     And I open the last created Person via API
     And I check that SEE EVENTS FOR THIS PERSON button appears on Edit Person page
 
-  @env_main @#8555
+  @env_main @#8555 @ignore
   Scenario: Add back a person to an event who was previously deleted as event participant
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -877,7 +878,6 @@ Feature: Create events
     Then I click on edit button for the last searched facility
     And I archive facility
 
-    #this testcase needs to be changed when bug 9212 is fixed
     @env_main @#8556 @ignore
   Scenario: Add two positive Pathogen Test Result of different diseases to a Sample of an Event Participant
     Given API: I create a new event
@@ -897,16 +897,14 @@ Feature: Create events
     Then I click on New Sample and discard changes is asked
     Then I collect the sample UUID displayed on create new sample page
     Then I create a new Sample with positive test result with COVID-19 as disease
-    Then I confirm last popup window when there are multiple ones
-#    Then I confirm the Create case from event participant with positive test result
-    Then I create a new case with specific data for positive pathogen test result
-    Then I confirm last popup window when there are multiple ones
+    Then I confirm popup window
+    Then I pick a new case in pick or create a case popup
     Then I click on edit Sample
-    Then I confirm last popup window when there are multiple ones
     Then I click on new test result for pathogen tests
     Then I create a new pathogen test result with Cholera as disease
     Then I confirm the Create case from contact with positive test result
     Then I create a new case with specific data for positive pathogen test result
+    Then I save the new case
     Then I navigate to a specific Event Participant of an Event based on UUID
     Then I validate only one sample is created with two pathogen tests
     Then I click on edit Sample
@@ -925,3 +923,209 @@ Feature: Create events
     Then I log in with National User
     Then I am accessing the event tab using the created event via api
     Then I check if editable fields are read only for an archived event
+
+  @issue=SORDEV-7094 @env_main
+  Scenario Outline: Test Event identification source fields
+    Given I log in with National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with event identification source "<name>"
+    And I back to the Event tab
+    Then I check that checkbox Event Identification source with selected "<name>" have HTML value: "checked"
+
+    Examples:
+      | name             |
+      | UNKNOWN          |
+      | BACKWARD-TRACING |
+      | FORWARD-TRACING  |
+
+  @issue=SORDEV-7095 @env_main
+  Scenario: Test Addition of a Variant field in the "EVENT" part
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When I log in with National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    When I create a new event with specific data
+    And I click on the Events button from navbar
+    And I fill EVENT ID filter by API
+    Then I select random Disease filter among the filter options from API
+    And I select "B.1.617.3" Disease Variant filter on Event Directory Page
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 1
+    And I select "B.1.617.1" Disease Variant filter on Event Directory Page
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 0
+    And I select "B.1.617.3" Disease Variant filter on Event Directory Page
+    And I apply on the APPLY FILTERS button from Event
+
+  @issue=SORDEV-7467 @env_main
+  Scenario Outline: Test Allow surveillance supervisors and contact supervisors to access bulk-edition in the event directory
+    Given I log in as a <user>
+    Then I click on the Events button from navbar
+    And I click on the More button on Event directory page
+    And I click Enter Bulk Edit Mode on Event directory page
+    And I click on Bulk Actions combobox on Event Directory Page
+    And I check that Edit option is visible in Bulk Actions dropdown
+    And I check that Group option is visible in Bulk Actions dropdown
+    And I check that Archive option is visible in Bulk Actions dropdown
+    And I check that Delete option is not visible in Bulk Actions dropdown
+
+    Examples:
+      | user                      |
+      | Contact Supervisor        |
+      | Surveillance Supervisor   |
+
+  @issue=SORDEV-6609 @env_de
+  Scenario: Test for event internal token
+    Given I log in as a National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data for DE version
+    And I navigate to EVENT from edit event page
+    When I fill in the Internal Token field in Edit Case page with SAMPLE TOKEN
+    And I click on save button in the case popup
+    And I click on the Events button from navbar
+    And I check that the German Internal Token column is present
+    And I filter for SAMPLE TOKEN in Events Directory
+    Then I check that at least one SAMPLE TOKEN is displayed in table
+
+  @issue=SORDEV-11455 @env_main
+  Scenario: Add reason for deletion to confirmation dialogue
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When I log in with National User
+    And I click on the Events button from navbar
+    And I navigate to the last created through API Event page via URL
+    And I click Delete button on Edit Event page
+    And I click on No option in Confirm deletion on Edit Event Page
+    And I click Delete button on Edit Event page
+    And I click on Yes option in Confirm deletion on Edit Event Page
+    And I check that error message is equal to "Please choose a reason for deletion" in Reason for Deletion in popup
+    And I click on No option in Confirm deletion on Edit Event Page
+    And I click Delete button on Edit Event page
+    And I set Reason for deletion to "Other reason" on Edit Event Page
+    And I click on Yes option in Confirm deletion on Edit Event Page
+    And I check that error message is equal to "Please add a reason for deletion" in Reason for Deletion in popup
+    And I click on No option in Confirm deletion on Edit Event Page
+    And I click Delete button on Edit Event page
+    And I set Reason for deletion to "Entity created without legal reason" on Edit Event Page
+    And I click on Yes option in Confirm deletion on Edit Event Page
+    And I am accessing the event tab using the created event via api
+    And I check if Reason for deletion is set to "Entity created without legal reason" on Edit Event Page
+    And I check if Delete button on Edit Event Page is disabled
+
+    @issue=SORDEV-8055 @env_main
+    Scenario Outline: Allow users to select the used delimiter when importing files
+      Given I log in as a Admin User
+      And I click on the Events button from navbar
+      When I click on the Import button from Events directory
+      Then I check if default Value Separator is set to "Default (Comma)"
+      And I check is possible to set Value Separator to <option>
+
+      Examples:
+        | option          |
+        | Comma           |
+        | Semicolon       |
+        | Tab             |
+        | Default (Comma) |
+
+  @issue=SORQA-7093 @env_main
+  Scenario: Allow the admin surveillance supervisor to delete events
+    Given API: I create a new event
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I navigate to SORMAS login page
+    Then I log in as a Admin Surveillance Supervisor
+    And I click on the Events button from navbar
+    And I navigate to the last created through API Event page via URL
+    When I click Delete button on Edit Event page
+    When I set Reason for deletion to "Deletion request by affected person according to GDPR" on Edit Event Page
+    When I confirm popup window
+    And I check that previous opened Event was deleted
+
+  @issue=SORQA-7093 @env_main
+  Scenario: Allow the admin surveillance supervisor to archive events
+    Given API: I create a new event
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I navigate to SORMAS login page
+    Then I log in as a Admin Surveillance Supervisor
+    And I click on the Events button from navbar
+    And I navigate to the last created through API Event page via URL
+    When I click on the Archive event button
+    When I confirm Archive event popup
+    And I check event is it archived
+
+  @issue=SORDEV-11452 @env_main
+  Scenario: Add reason for deletion to confirmation dialogue
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    And I collect the UUID displayed on Edit event page
+    Then I add a participant to the event
+    And I copy url of current event participant
+    Then I click on Delete button from event participant
+    And I check if reason for deletion as "Deletion request by affected person according to GDPR" is available
+    And I check if reason for deletion as "Deletion request by another authority" is available
+    And I check if reason for deletion as "Entity created without legal reason" is available
+    And I check if reason for deletion as "Responsibility transferred to another authority" is available
+    And I check if reason for deletion as "Deletion of duplicate entries" is available
+    And I check if reason for deletion as "Other reason" is available
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from event participant
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Please choose a reason for deletion" appears next to Reason for deletion
+    When I set Reason for deletion as "Other reason"
+    Then I check if "Reason for deletion details" field is available in Confirm deletion popup in Immunization
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Please add a reason for deletion" appears next to Reason for deletion
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from immunization case
+    And I set Reason for deletion as "Deletion request by affected person according to GDPR"
+    And I click on Yes option in Confirm deletion popup
+    When I back to deleted event participant by url
+    Then I check if reason of deletion is set to "Deletion request by affected person according to GDPR"
+    And I check if General comment on event participant edit page is disabled
+    And I check if Passport number input on event participant edit page is disabled
+
+  @issue=SORDEV-11452 @env_de
+  Scenario: Add reason for deletion to confirmation dialogue for DE version
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data for DE version
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I click on Add Participant button
+    Then I add Participant to an Event with same person data
+    And I click on save button in Add Participant form
+    And I copy url of current event participant
+    Then I click on Delete button from event participant
+    And I check if reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO" is available
+    And I check if reason for deletion as "Löschen auf Anforderung einer anderen Behörde" is available
+    And I check if reason for deletion as "Entität ohne Rechtsgrund angelegt" is available
+    And I check if reason for deletion as "Abgabe des Vorgangs wegen Nicht-Zuständigkeit" is available
+    And I check if reason for deletion as "Löschen von Duplikaten" is available
+    And I check if reason for deletion as "Anderer Grund" is available
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from contact
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Bitte wählen Sie einen Grund fürs Löschen" appears next to Reason for deletion
+    When I set Reason for deletion as "Anderer Grund"
+    Then I check if "DETAILS ZUM GRUND DES LÖSCHENS" field is available in Confirm deletion popup in Immunization
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Bitte geben Sie einen Grund fürs Löschen an" appears next to Reason for deletion
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from immunization case
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    When I back to deleted event participant by url
+    Then I check if reason of deletion is set to "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I check if General comment on event participant edit page is disabled
+    And I check if Involvement description input on event participant edit page is disabled

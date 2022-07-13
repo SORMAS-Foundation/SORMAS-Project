@@ -31,6 +31,7 @@ public enum WorkEnvironment {
 	LOGISTICS_CENTER,
 	OTHER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

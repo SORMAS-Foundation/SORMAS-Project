@@ -18,8 +18,8 @@
 
 package org.sormas.e2etests.steps.web.application.entries;
 
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DIFFERENT_POINT_OF_ENTRY_JURISDICTION;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CLOSE_FORM_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DIFFERENT_POINT_OF_ENTRY_JURISDICTION;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.POINT_OF_ENTRY_DISTRICT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.POINT_OF_ENTRY_REGION_BUTTON;
@@ -35,16 +35,26 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUI
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.ARRIVAL_DATE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DATE_OF_ARRIVAL_LABEL_DE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DATE_OF_ARRIVAL_POPUP_CLOSE;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DIFFERENT_POINT_OF_ENTRY_CHECKBOX;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DISEASE_COMBOBOX_DISABLED;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DISEASE_VARIANT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_TRAVEL_ENTRY_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_UUID_TABLE_TRAVEL_ENTRIES;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.INPUT_DATA_ERROR_POPUP;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.LAST_NAME_OF_CONTACT_PERSON_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.OPEN_CASE_OF_THIS_TRAVEL_ENTRY_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_CASE_LABEL_DE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_PERSON_LABEL_DE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_OR_CREATE_PERSON_TITLE_DE;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.POINT_OF_ENTRY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.POINT_OF_ENTRY_DISTRICT_INPUT;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.POINT_OF_ENTRY_REGION_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.REPORT_DATE;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.RESPONSIBLE_COMMUNITY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.RESPONSIBLE_DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.RESPONSIBLE_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SEX_COMBOBOX;
@@ -52,15 +62,21 @@ import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CREATE_CASE_FROM_TRAVEL_ENTRY;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CREATE_DOCUMENT_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CREATE_DOCUMENT_POPUP_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DELETE_TASK_BUTTON;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISCARD_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISEASE_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.EDIT_TASK_DE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.FIRST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.GENERATED_DOCUMENT_NAME_DE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.INFO_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.LAST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.NEW_TASK_DE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.PERSON_ID_LABEL;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.POINT_OF_ENTRY_CASE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.SAVE_EDIT_TRAVEL_PAGE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.SAVE_NEW_CASE_FOR_TRAVEL_ENTRY_POPUP;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.SAVE_TASK_BUTTON;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TASK_STATUS_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TRAVEL_ENTRY_PERSON_TAB;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TRAVEL_ENTRY_TAB;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE;
@@ -290,6 +306,7 @@ public class CreateNewTravelEntrySteps implements En {
         "^I fill the required fields in a new case travel entry form$",
         () -> {
           travelEntry = travelEntryService.buildGeneratedEntryDE();
+          fillDateOfArrival(travelEntry.getDateOfArrival(), Locale.GERMAN);
           selectResponsibleRegion(travelEntry.getResponsibleRegion());
           selectResponsibleDistrict(travelEntry.getResponsibleDistrict());
           selectResponsibleCommunity(travelEntry.getResponsibleCommunity());
@@ -401,6 +418,56 @@ public class CreateNewTravelEntrySteps implements En {
                   "responsibleCommunity",
                   "pointOfEntry",
                   "pointOfEntryDetails"));
+        });
+    When(
+        "I click NEW TASK in Edit Travel Entry page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(NEW_TASK_DE);
+        });
+    When(
+        "I check if new task is displayed in Task tab on Edit Travel Entry page",
+        () -> {
+          boolean elementVisible = true;
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(EDIT_TASK_DE);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertTrue(elementVisible, "Task is not visible!");
+          softly.assertAll();
+        });
+    When(
+        "I check that ([^\"]*) option is visible in Edit Task form on Edit Travel Entry page",
+        (String option) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          By selector = null;
+          Boolean elementVisible = true;
+          switch (option) {
+            case "Discard":
+              selector = DISCARD_TASK_BUTTON;
+              break;
+            case "Save":
+              selector = SAVE_TASK_BUTTON;
+              break;
+            case "Delete":
+              selector = DELETE_TASK_BUTTON;
+              break;
+            case "Task status":
+              selector = TASK_STATUS_RADIOBUTTON;
+              break;
+          }
+          try {
+            webDriverHelpers.scrollToElementUntilIsVisible(selector);
+          } catch (Throwable ignored) {
+            elementVisible = false;
+          }
+          softly.assertTrue(elementVisible, option + " is not visible!");
+          softly.assertAll();
+        });
+    When(
+        "I click on Discard button in Task form",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_TASK_BUTTON);
         });
 
     And(
@@ -562,6 +629,20 @@ public class CreateNewTravelEntrySteps implements En {
               "User name is invalid");
           softly.assertAll();
         });
+    When(
+        "I check that Point of Entry and Point of Entry details are generated automatically by system and appear on Edit Travel Entry page",
+        () -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromCombobox(EditTravelEntryPage.POINT_OF_ENTRY_COMBOBOX),
+              "Anderer Einreiseort",
+              "Point of Entry is not set properly");
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(
+                  EditTravelEntryPage.POINT_OF_ENTRY_DETAILS_INPUT),
+              "[System] Automatisch bef\u00FCllter Einreiseort",
+              "Point of Entry Details are not set properly");
+          softly.assertAll();
+        });
 
     When(
         "^I check Pick an existing case in Pick or create person popup in travel entry$",
@@ -609,7 +690,6 @@ public class CreateNewTravelEntrySteps implements En {
           String uuid;
           if (option.equals("first")) uuid = TravelEntryUuidList.get(0).getUuid();
           else uuid = TravelEntryUuidList.get(1).getUuid();
-          webDriverHelpers.clearWebElement(PERSON_FILTER_INPUT);
           TimeUnit.SECONDS.sleep(2); // wait for filter
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.fillAndSubmitInWebElement(PERSON_FILTER_INPUT, uuid);
@@ -682,6 +762,94 @@ public class CreateNewTravelEntrySteps implements En {
               CreateNewCasePage.DATE_OF_REPORT_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
+
+    Then(
+        "^I check that all required fields except person fields are mandatory in the new travel entry form DE specific$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(INPUT_DATA_ERROR_POPUP);
+          webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Einreisedatum");
+          webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Bundesland");
+          webDriverHelpers.checkWebElementContainsText(
+              INPUT_DATA_ERROR_POPUP, "Landkreis/Kreisfreie Stadt");
+          webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Einreiseort");
+          webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Meldedatum");
+          webDriverHelpers.checkWebElementContainsText(
+              INPUT_DATA_ERROR_POPUP, "Zust\u00E4ndige/r Landkreis/Kreisfreie Stadt");
+          webDriverHelpers.checkWebElementContainsText(
+              INPUT_DATA_ERROR_POPUP, "Zust\u00E4ndiges Bundesland");
+          webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Krankheit");
+        });
+
+    And(
+        "^I check that new travel entry form contains all the necessary fields$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(REPORT_DATE);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              CreateNewTravelEntryPage.EXTERNAL_ID_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DISEASE_COMBOBOX);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DISEASE_VARIANT_COMBOBOX);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(RESPONSIBLE_REGION_COMBOBOX);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(RESPONSIBLE_DISTRICT_COMBOBOX);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(RESPONSIBLE_COMMUNITY_COMBOBOX);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DIFFERENT_POINT_OF_ENTRY_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(DIFFERENT_POINT_OF_ENTRY_CHECKBOX);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(POINT_OF_ENTRY_REGION_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(POINT_OF_ENTRY_DISTRICT_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(POINT_OF_ENTRY_COMBOBOX);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(FIRST_NAME_OF_CONTACT_PERSON_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(LAST_NAME_OF_CONTACT_PERSON_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEX_COMBOBOX);
+        });
+
+    And(
+        "^I clear report date and disease fields in the new travel entry form$",
+        () -> {
+          webDriverHelpers.clearWebElement(REPORT_DATE);
+          fillDisease("");
+        });
+
+    When(
+        "^I fill all required fields except person-related fields in the new travel entry form DE specific$",
+        () -> {
+          travelEntry = travelEntryService.buildGeneratedEntryWithDifferentPointOfEntryDE();
+          fillReportDate(travelEntry.getReportDate(), Locale.GERMAN);
+          fillDateOfArrival(travelEntry.getDateOfArrival(), Locale.GERMAN);
+          selectResponsibleRegion(travelEntry.getResponsibleRegion());
+          selectResponsibleDistrict(travelEntry.getResponsibleDistrict());
+          fillDisease(travelEntry.getDisease());
+          disease = travelEntry.getDisease();
+          if (travelEntry.getDisease().equals("Andere epidemische Krankheit"))
+            fillOtherDisease("Test");
+          selectPointOfEntryRegion(travelEntry.getPointOfEntryRegion());
+          selectPointOfEntryDistrict(travelEntry.getPointOfEntryDistrict());
+          fillPointOfEntry(travelEntry.getPointOfEntry());
+          fillPointOfEntryDetails(travelEntry.getPointOfEntryDetails());
+        });
+
+    And(
+        "^I fill the person-related required fields in the new entry form DE specific$",
+        () -> {
+          travelEntry = travelEntryService.buildGeneratedEntryWithDifferentPointOfEntryDE();
+          fillFirstName(travelEntry.getFirstName());
+          fillLastName(travelEntry.getLastName());
+          selectSex(travelEntry.getSex());
+        });
+
+    Then(
+        "^I check that person-related fields are mandatory in the new entry form DE specific$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(INPUT_DATA_ERROR_POPUP);
+          webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Vorname");
+          webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Geschlecht");
+          webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Nachname");
+        });
+
+    And(
+        "^I close input data error popup$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(INPUT_DATA_ERROR_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(INPUT_DATA_ERROR_POPUP);
+        });
   }
 
   private void selectPointOfEntryDistrict(String pointOfEntryDistrict) {
@@ -751,6 +919,7 @@ public class CreateNewTravelEntrySteps implements En {
   }
 
   private TravelEntry collectTravelEntryData() {
+    System.out.println(webDriverHelpers.getValueFromWebElement(UUID_INPUT));
     return TravelEntry.builder()
         .disease(webDriverHelpers.getValueFromCombobox(EditTravelEntryPage.DISEASE_COMBOBOX))
         .responsibleRegion(
@@ -792,7 +961,7 @@ public class CreateNewTravelEntrySteps implements En {
         .firstName(webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT))
         .lastName(webDriverHelpers.getValueFromWebElement(LAST_NAME_INPUT))
         .sex(webDriverHelpers.getValueFromCombobox(EditTravelEntryPage.SEX_COMBOBOX))
-        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .personUuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .build();
   }
 

@@ -255,7 +255,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 			personFacade.validate(entities.getPerson());
 			caseFacade.validate(entities.getCaze());
 			for (SampleDto sample : entities.getSamples()) {
-				sampleFacade.validate(sample);
+				sampleFacade.validate(sample, false);
 			}
 			for (PathogenTestDto pathogenTest : entities.getPathogenTests()) {
 				pathogenTestFacade.validate(pathogenTest);

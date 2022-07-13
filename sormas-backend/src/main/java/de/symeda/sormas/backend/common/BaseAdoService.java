@@ -47,6 +47,8 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.LockMode;
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -399,6 +401,11 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 			// h2 database entity manager throws "NoResultException" if the entity not found
 			return false;
 		}
+	}
+
+	public void incrementChangeDate(ADO ado) {
+		Session session = em.unwrap(Session.class);
+		session.lock(ado, LockMode.OPTIMISTIC_FORCE_INCREMENT);
 	}
 
 	public interface ExistsPredicateBuilder<ADO extends AbstractDomainObject> {

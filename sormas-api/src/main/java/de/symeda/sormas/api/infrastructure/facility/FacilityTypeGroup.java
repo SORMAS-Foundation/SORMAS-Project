@@ -46,6 +46,7 @@ public enum FacilityTypeGroup {
 		return accomodationGroups;
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

@@ -86,6 +86,7 @@ public enum TaskType {
 		return taskContexts;
 	}
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

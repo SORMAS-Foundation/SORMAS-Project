@@ -22,13 +22,16 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.getCheckboxByUUID;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_DATA_IMPORT_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CONVERTE_TO_CASE_ENTRIES;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.DELETE_BULK;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.DELETE_TRAVEL_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.ENTRY_DETAILED_COLUMN_HEADERS;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.ENTRY_IMPORT_TEMPLATE_LABEL;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.EPI_DATA_CASE_NEW_TRAVEL_ENTRY_DE_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.FIRST_NAME_IMPORTED_PERSON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.FIRST_RESULT_ID;
@@ -39,8 +42,10 @@ import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEGA
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_PERSON_RADIOBUTTON_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_TRAVEL_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PERSON_FILTER_INPUT;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PICK_OR_CREATE_PERSON_HEADER_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.RECOVERED_ENTRIES;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.START_DATA_IMPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRIES_IMPORT_SUCCESSFUL_HEADER_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_AGGREGATION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_DATA_FILTER_OPTION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_DIRECTORY_PAGE_APPLY_FILTER_BUTTON;
@@ -95,6 +100,7 @@ public class TravelEntryDirectorySteps implements En {
         "I click on the Import button from Travel Entries directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(IMPORT_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FILE_PICKER);
         });
 
     When(
@@ -213,7 +219,7 @@ public class TravelEntryDirectorySteps implements En {
         "I filter by Person ID on Travel Entry directory page",
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(
-              PERSON_FILTER_INPUT, CreateNewTravelEntrySteps.aTravelEntry.getUuid());
+              PERSON_FILTER_INPUT, CreateNewTravelEntrySteps.aTravelEntry.getPersonUuid());
         });
     When(
         "I check if popup deletion message appeared",
@@ -438,6 +444,49 @@ public class TravelEntryDirectorySteps implements En {
               option + " is not visible!");
           softly.assertAll();
         });
+
+    When(
+        "I check if import Travel Entry popup has not import option in DE version",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(ENTRY_IMPORT_TEMPLATE_LABEL, 1),
+              "Download import template option is available but it shouldn't");
+          softly.assertAll();
+        });
+
+    When(
+        "I select the specific German travel entry CSV file in the file picker with {string} file name",
+        (String fileName) -> {
+          webDriverHelpers.sendFile(FILE_PICKER, userDirPath + "/uploads/" + fileName);
+        });
+
+    When(
+        "I select to create new person from the Import Travel Entries popup DE and Save popup if needed",
+        () -> {
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_HEADER_DE, 10)) {
+            webDriverHelpers.clickOnWebElementBySelector(NEW_PERSON_RADIOBUTTON_DE);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+          }
+          TimeUnit.SECONDS.sleep(1);
+        });
+
+    When(
+        "I check if the New Travel Entry button is displayed in Travel Entries directory",
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_TRAVEL_ENTRY_BUTTON));
+
+    When(
+        "I check if csv file for travel entry is imported successfully",
+        () -> {
+          softly.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(
+                  TRAVEL_ENTRIES_IMPORT_SUCCESSFUL_HEADER_DE, 20),
+              "CSV file has been not imported");
+          softly.assertAll();
+        });
+
+    When(
+        "I close import popup in Travel Entry",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CLOSE_IMPORT_TRAVEL_ENTRY_POPUP));
   }
 
   private Map<String, Integer> extractColumnHeadersHashMap() {

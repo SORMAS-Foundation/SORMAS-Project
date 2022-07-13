@@ -25,6 +25,7 @@ public enum MapCaseDisplayMode {
 	FACILITY_OR_CASE_ADDRESS,
 	FACILITY;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

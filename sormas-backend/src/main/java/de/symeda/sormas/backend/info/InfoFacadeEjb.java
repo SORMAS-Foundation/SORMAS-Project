@@ -356,10 +356,10 @@ public class InfoFacadeEjb implements InfoFacade {
 		DESCRIPTION,
 		SHORT;
 
+		@Override
 		public String toString() {
 			return I18nProperties.getEnumCaption(this);
 		}
-
 	}
 
 	private int createEnumTable(XSSFSheet sheet, int startRow, Class<Enum<?>> enumType, FieldVisibilityCheckers fieldVisibilityCheckers) {

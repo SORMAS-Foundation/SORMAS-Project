@@ -50,6 +50,7 @@ import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 import org.sormas.e2etests.steps.web.application.entries.CreateNewTravelEntrySteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
+import org.sormas.e2etests.steps.web.application.immunizations.CreateNewImmunizationSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
@@ -93,14 +94,17 @@ public class PersonDirectorySteps implements En {
     Then(
         "I open the last created person linked with Case",
         () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MULTIPLE_OPTIONS_SEARCH_INPUT);
           aCase = EditCaseSteps.aCase;
           String PersonFullName = aCase.getFirstName() + " " + aCase.getLastName();
           TimeUnit.SECONDS.sleep(5); // waiting for event table grid reloaded
           webDriverHelpers.fillAndSubmitInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, PersonFullName);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               PERSON_RESULTS_UUID_LOCATOR_FROM_GRID);
-          webDriverHelpers.clickOnWebElementBySelector(PERSON_RESULTS_UUID_LOCATOR_FROM_GRID);
+          webDriverHelpers.doubleClickOnWebElementBySelector(PERSON_RESULTS_UUID_LOCATOR_FROM_GRID);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
 
     When(
@@ -148,6 +152,12 @@ public class PersonDirectorySteps implements En {
                         webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
                         number.intValue(),
                         "Number of displayed cases is not correct")));
+    Then(
+        "I click on Travel Entry aggrgation button in Person Directory for DE specific",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(TRAVEL_ENTRY_AGGREGATION_BUTTON_DE);
+          TimeUnit.SECONDS.sleep(2);
+        });
 
     Then(
         "I fill Year of birth filter in Persons with the year of the last created person via API",
@@ -183,7 +193,7 @@ public class PersonDirectorySteps implements En {
         () -> {
           String personUUID =
               dataOperations.getPartialUuidFromAssociatedLink(
-                  CreateNewTravelEntrySteps.aTravelEntry.getUuid());
+                  CreateNewTravelEntrySteps.collectTravelEntryPersonUuid);
           webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, personUUID);
         });
 
@@ -217,6 +227,22 @@ public class PersonDirectorySteps implements En {
           String communityName = apiState.getLastCreatedPerson().getAddress().getCommunity();
           webDriverHelpers.selectFromCombobox(
               COMMUNITY_PERSON_COMBOBOX, CommunityValues.getNameValueForUuid(communityName));
+        });
+    When(
+        "I filter by Person full name from Immunization on Person Directory Page",
+        () -> {
+          TimeUnit.SECONDS.sleep(3); // waiting for grid refresh
+          webDriverHelpers.fillAndSubmitInWebElement(
+              MULTIPLE_OPTIONS_SEARCH_INPUT,
+              CreateNewImmunizationSteps.immunization.getFirstName()
+                  + " "
+                  + CreateNewImmunizationSteps.immunization.getLastName());
+        });
+    When(
+        "I click Immunization aggregation button on Person Directory Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(IMMUNIZATION_AGGREGATION_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     Then(
@@ -348,6 +374,7 @@ public class PersonDirectorySteps implements En {
         "I click on first person in person directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(By.cssSelector("[role='gridcell'] a"));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(

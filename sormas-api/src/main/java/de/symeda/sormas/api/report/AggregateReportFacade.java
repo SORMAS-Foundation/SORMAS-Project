@@ -17,11 +17,17 @@ public interface AggregateReportFacade {
 
 	List<String> getAllUuids();
 
-	List<AggregatedCaseCountDto> getIndexList(AggregateReportCriteria criteria);
+	List<AggregateCaseCountDto> getIndexList(AggregateReportCriteria criteria);
+
+	List<AggregateReportDto> getAggregateReports(AggregateReportCriteria criteria);
 
 	List<AggregateReportDto> getList(AggregateReportCriteria criteria);
 
+	List<AggregateReportDto> getSimilarAggregateReports(AggregateReportDto aggregateReportDto);
+
 	void deleteReport(String reportUuid);
+
+	void deleteAggregateReports(List<String> uuids);
 
 	long countWithCriteria(AggregateReportCriteria criteria);
 }

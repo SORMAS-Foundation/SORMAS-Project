@@ -177,7 +177,16 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			return null;
 		}
 
-		return new EventReferenceDto(entity.getUuid(), entity.toString());
+		return new EventReferenceDto(entity.getUuid(), getCaption(entity));
+	}
+
+	private static String getCaption(Event entity) {
+		return EventReferenceDto.buildCaption(
+			entity.getDisease(),
+			entity.getDiseaseDetails(),
+			entity.getEventStatus(),
+			entity.getEventInvestigationStatus(),
+			entity.getStartDate());
 	}
 
 	public static EventReferenceDto toDetailedReferenceDto(Event entity) {
@@ -188,7 +197,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		return new EventDetailedReferenceDto(
 			entity.getUuid(),
-			entity.toString(),
+			getCaption(entity),
 			entity.getEventStatus(),
 			entity.getEventTitle(),
 			entity.getReportDateTime());
@@ -1026,6 +1035,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		}
 	}
 
+	@Override
 	public EventDto toDto(Event source) {
 		return toEventDto(source);
 	}

@@ -37,4 +37,9 @@ public class NavBarPage {
   public static final By USER_SETTINGS_BUTTON = By.cssSelector("[id='actionSettings-2']");
   public static final By ENTRIES_BUTTON = By.cssSelector("div#travelEntries");
   public static final By LOGOUT_BUTTON = By.cssSelector("[id='actionLogout-2']");
+  public static final By USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT = By.cssSelector("#language input");
+  public static final By DISCARD_USER_SETTINGS_BUTTON = By.id("discard");
+  public static final By GDPR_CHECKBOX =   By.cssSelector(".popupContent input + label");
+  public static final By ACTION_CONFIRM_GDPR_POPUP = By.cssSelector(".popupContent #Confirm");
+
 }

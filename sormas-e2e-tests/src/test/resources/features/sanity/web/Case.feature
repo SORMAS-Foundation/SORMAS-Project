@@ -570,7 +570,7 @@ Feature: Case end to end tests
     And I check if Cause of death is Other cause
     And I check if Date of dead for specified case is correct
 
-  @issue=SORDEV-6612 @env_main
+  @issue=SORDEV-6612 @env_main @ignore
   Scenario: Manually triggered calculation of case classification
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -1169,6 +1169,44 @@ Feature: Case end to end tests
     And I click on SAVE new contact case button
     Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
 
+  @issue=SORDEV-8413 @env_main
+  Scenario: Test Hide specific enum values based on the related disease
+    Given I log in with National User
+    When I click on the Cases button from navbar
+    Then I click on the NEW CASE button
+    And I create a new case with specific data
+    Then I click on New Task from Case page
+    And I check if Task Type has not a environmental health activities option
+    And I check if Task Type has not a safe burial / cremation option
+    And I check if Task Type has not a depopulation of animals option
+    And I check if Task Type has not a testing of animals option
+    Then I click on discard button from new task
+    And I navigate to epidemiological data tab in Edit case page
+    And I click on Exposure details known with YES option
+    Then I click on New Entry in Exposure Details Known in Cases directory
+    And I check if Exposure Type of activity has not a Burial option
+    And I check if Exposure details has a Animal contact option
+    Then I click on discard button from Epidemiological Data Exposure popup
+    And I navigate to case tab
+    Then I click yes on the DISCARD UNSAVED CHANGES popup if it appears
+    Then I click on New Sample
+    And I check if Type of sample has not a stool option
+    And I check if Type of sample has not a rectal swab option
+    And I check if Type of sample has not a crust option
+    And I check if Type of sample has not a urine option
+    And I check if Type of sample has not a nurchal skin biopsy option
+    And I check if Type of sample has not a brain tissue option
+    Then I create a new Sample with specific data and save
+    And I click on edit Sample
+    And I click on the new pathogen test from the Edit Sample page
+    Then I set Test Disease as COVID-19 in new pathogen result
+    And I check if Type of test in new pathogen results has no incubation time option
+    And I check if Type of test in new pathogen results has no Indirect Fluorescent Antibody time option
+    And I check if Type of test in new pathogen results has no Direct Fluorescent Antibody time option
+    And I check if Type of test in new pathogen results has no Microscopy time option
+    And I check if Type of test in new pathogen results has no Gram Stain time option
+    And I check if Type of test in new pathogen results has no Latex Agglutination time option
+
   @issue=SORDEV-9496 @env_de
   Scenario: Test Handle person related fields and search button for travel entry forms
     Given API: I create a new person
@@ -1202,6 +1240,30 @@ Feature: Case end to end tests
     And I click on Save button from the new travel entry form
     Then I navigate to the last created via api Person page via URL
     And I check if added travel Entry appeared on Edit Person Page
+
+  @issue=SORDEV-5623 @env_de
+  Scenario: Show date and responsible user of last follow-up status change
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with only the required data for DE version
+    Then I check that follow-up status is set to Under follow-up in German on Edit case page
+    When I click on the Cancel Follow-up button from Edit case page
+    Then I provide follow-up status comment from Edit case page
+    And I click on save button from Edit Case page
+    And I check that Date of Follow-up Status Change and Responsible User are correctly displayed on Edit case page
+    When I click on the Resume Follow-up button from Edit case page
+    And I click on save button from Edit Case page
+    And I check that Date of Follow-up Status Change and Responsible User are correctly displayed on Edit case page
+    And I click on the Lost to Follow-up button from Edit case page
+    Then I provide follow-up status comment from Edit case page
+    And I click on save button from Edit Case page
+    And I check that Date of Follow-up Status Change and Responsible User are correctly displayed on Edit case page
+    And I check that Expected Follow-up Until Date is correctly displayed on Edit case page
+    When I select Overwrite Follow-up Until Date checkbox on Edit case page
+    And I set the Follow-up Until Date to exceed the Expected Follow-up Until Date on Edit case page
+    And I click on save button from Edit Case page
+    Then I check if the Follow-up Until Date is correctly displayed on Edit case page
 
   @issue=SORDEV-5563 @env_de
   Scenario: Add contact person details to facilities case person
@@ -1269,3 +1331,134 @@ Feature: Case end to end tests
     Then I log in with National User
     Then I open last edited case by API via URL navigation
     Then I check if editable fields are read only for an archived case
+
+  @env_main @issue=SORDEV-7453
+  Scenario: Check cases order after case edit
+    Given I log in as a National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data
+    When I click on save button in the case popup
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data
+    When I click on save button in the case popup
+    And I click on the Cases button from navbar
+    Then I get two last cases ID from cases list
+    And I open 2 case in order from list
+    And I fill general comment in case edit page with EDITED
+    When I click on save button in the case popup
+    And I click on the Cases button from navbar
+    Then I compare previous first case ID on the list with actually second case ID on list
+
+  @issue=SORDEV-6614 @env_de
+  Scenario: Provide a search alternative aside from the duplicate recognizing
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill a new case form with same person details for DE version
+    And I click on Save button in Case form
+    Then I click on the Cases button from navbar
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill a new case form with same person details for DE version
+    And I click on Save button in Case form
+    And I click to select another person from Pick or create person popup for DE
+    And I check if name and name prefilled in Pick or create person are equal to one used in case creation
+    And I check that External Id is visible in Pick or Create Person popup for De
+    And I check that Reset is visible in Pick or Create Person popup for De
+    And I check that Search is visible in Pick or Create Person popup for De
+    And I click on Reset filters in Pick or create Person popup
+    And I click on Search in Pick or create Person popup
+    And I check that error message is equal to "Mindestens ein Namensfeld oder ein anderes Feld sollte ausgefüllt werden" in Pick or Create person in popup
+    And I fill first and last name with last created peron data in Pick or Create person in popup
+    And I click on Search in Pick or create Person popup
+    And I click on first result in Pick or create Person popup
+
+  @issue=SORDEV-6609 @env_main
+  Scenario: Test for case internal token
+    Given I log in as a National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with specific data
+    When I fill in the Internal Token field in Edit Case page with SAMPLE TOKEN
+    And I click on save button in the case popup
+    And I click on the Cases button from navbar
+    And I check that the Internal Token column is present
+    And I filter for SAMPLE TOKEN in Cases Directory
+    Then I check that at least one SAMPLE TOKEN is displayed in table
+
+  @issue=SORDEV-11422 @env_main
+    Scenario: Add reason for deletion to confirmation dialogue
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with specific data
+    When I copy url of current case
+    Then I click on Delete button from case
+    And I check if reason for deletion as "Deletion request by affected person according to GDPR" is available
+    And I check if reason for deletion as "Deletion request by another authority" is available
+    And I check if reason for deletion as "Entity created without legal reason" is available
+    And I check if reason for deletion as "Responsibility transferred to another authority" is available
+    And I check if reason for deletion as "Deletion of duplicate entries" is available
+    And I check if reason for deletion as "Other reason" is available
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from case
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Please choose a reason for deletion" appears next to Reason for deletion
+    When I set Reason for deletion as "Other reason"
+    Then I check if "Reason for deletion details" field is available in Confirm deletion popup in Edit Case
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Please add a reason for deletion" appears next to Reason for deletion
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from case
+    And I set Reason for deletion as "Deletion request by affected person according to GDPR"
+    And I click on Yes option in Confirm deletion popup
+    When I back to deleted case by url
+    Then I check if reason of deletion is set to "Deletion request by affected person according to GDPR"
+    And I check if EPID number input is disabled in Edit Case
+    And I check if General comment test area is disabled in Edit Case
+
+  @issue=SORDEV-11422 @env_de
+  Scenario: Add reason for deletion to confirmation dialogue in DE version
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with specific data for DE version
+    When I copy url of current case
+    Then I click on Delete button from case
+    And I check if reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO" is available
+    And I check if reason for deletion as "Löschen auf Anforderung einer anderen Behörde" is available
+    And I check if reason for deletion as "Entität ohne Rechtsgrund angelegt" is available
+    And I check if reason for deletion as "Abgabe des Vorgangs wegen Nicht-Zuständigkeit" is available
+    And I check if reason for deletion as "Löschen von Duplikaten" is available
+    And I check if reason for deletion as "Anderer Grund" is available
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from case
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Bitte wählen Sie einen Grund fürs Löschen" appears next to Reason for deletion
+    When I set Reason for deletion as "Anderer Grund"
+    Then I check if "DETAILS ZUM GRUND DES LÖSCHENS" field is available in Confirm deletion popup in Edit Case
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Bitte geben Sie einen Grund fürs Löschen an" appears next to Reason for deletion
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from case
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    When I back to deleted case by url
+    Then I check if reason of deletion is set to "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I check if General comment test area is disabled in Edit Case
+
+  @issue=SORDEV-5567 @env_de
+  Scenario: Don't automatically load duplicates when switching to the case merge duplicates view
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the More button on Case directory page
+    Then I click on Merge Duplicates on Case directory for DE
+    And I check if message about long loading times appear for DE

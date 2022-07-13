@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.infrastructure.district;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -71,8 +73,13 @@ public class DistrictIndexDto extends EntityDto {
 	}
 
 	@Override
-	public String toString() {
+	public String buildCaption() {
 		return getName();
+	}
+
+	@JsonIgnore
+	public String i18nPrefix() {
+		return I18N_PREFIX;
 	}
 
 	public Integer getPopulation() {

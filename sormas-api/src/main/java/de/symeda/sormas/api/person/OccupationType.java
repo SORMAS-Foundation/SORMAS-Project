@@ -163,8 +163,8 @@ public enum OccupationType {
 	@HideForCountries(countries = CountryHelper.COUNTRY_CODE_SWITZERLAND)
 	OTHER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
-
 }

@@ -40,18 +40,21 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 
-import de.symeda.sormas.api.common.DeletionDetails;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventCriteriaDateType;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
+import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -70,6 +73,7 @@ import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -86,6 +90,7 @@ import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasSha
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -111,6 +116,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private ExternalShareInfoService externalShareInfoService;
+	@EJB
+	private ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
 
 	public EventService() {
 		super(Event.class);
@@ -268,6 +275,53 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		cq.where(filter);
 
 		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
+	}
+
+	@Override
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		super.archive(entityUuid, endOfProcessingDate);
+		setArchiveInExternalSurveillanceToolForEntity(entityUuid, true);
+	}
+
+	@Override
+	public void archive(List<String> entityUuids) {
+		super.archive(entityUuids);
+		setArchiveInExternalSurveillanceToolForEntities(entityUuids, true);
+	}
+
+	@Override
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		super.dearchive(entityUuids, dearchiveReason);
+		setArchiveInExternalSurveillanceToolForEntities(entityUuids, false);
+	}
+
+	public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) {
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
+			try {
+				externalSurveillanceToolGatewayFacade
+					.sendEvents(externalShareInfoService.getSharedEventUuidsWithoutDeletedStatus(entityUuids), archived);
+			} catch (ExternalSurveillanceToolException e) {
+				throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+			}
+		}
+	}
+
+	public void setArchiveInExternalSurveillanceToolForEntity(String eventUuid, boolean archived) {
+		Event event = getByUuid(eventUuid);
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()
+			&& externalShareInfoService.isEventShared(event.getId())
+			&& !hasShareInfoWithDeletedStatus(eventUuid)) {
+			try {
+				externalSurveillanceToolGatewayFacade.sendEvents(Collections.singletonList(eventUuid), archived);
+			} catch (ExternalSurveillanceToolException e) {
+				throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+			}
+		}
+	}
+
+	public boolean hasShareInfoWithDeletedStatus(String entityUuid) {
+		List<ExternalShareInfo> result = externalShareInfoService.getShareInfoByEvent(entityUuid);
+		return result.stream().anyMatch(info -> info.getStatus().equals(ExternalShareStatus.DELETED));
 	}
 
 	public List<String> getArchivedUuidsSince(Date since) {
@@ -535,8 +589,9 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		Predicate filter = null;
 		if (eventCriteria.getReportingUserRole() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.isMember(eventCriteria.getReportingUserRole(), joins.getReportingUser().get(User.USER_ROLES)));
+			Join<Event, User> reportingUser = joins.getReportingUser();
+			Join<User, UserRole> rolesJoin = reportingUser.join(User.USER_ROLES, JoinType.LEFT);
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(rolesJoin.get(UserRole.UUID), eventCriteria.getReportingUserRole().getUuid()));
 		}
 		if (eventCriteria.getDisease() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.DISEASE), eventCriteria.getDisease()));
@@ -988,7 +1043,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			CriteriaBuilderHelper.and(
 				cb,
 				cb.equal(eventJoin.get(AbstractDomainObject.UUID), eventUuid),
-				cb.or(cb.isNull(from.get(EventParticipant.REGION)), cb.isNull(from.get(EventParticipant.DISTRICT)))));
+				cb.or(cb.isNull(from.get(EventParticipant.REGION)), cb.isNull(from.get(EventParticipant.DISTRICT))),
+				cb.isFalse(from.get(EventParticipant.DELETED))));
 		cq.select(cb.count(from));
 
 		return em.createQuery(cq).getSingleResult() > 0;

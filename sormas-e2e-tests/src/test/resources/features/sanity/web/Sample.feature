@@ -186,17 +186,79 @@ Feature: Sample Functionalities
     Then I create a new Sample with positive test result with COVID-19 as disease
     Then I confirm the Create case from contact with positive test result
     Then I create a new case with specific data for positive pathogen test result
-    Then I save a new case
+    Then I save the new case
     Then I navigate to the last created contact via the url
     Then I click on edit Sample
     Then I click on new test result for pathogen tests
     Then I create a new pathogen test result with Anthrax as disease
     Then I confirm the Create case from contact with positive test result
     Then I create a new case with specific data for positive pathogen test result
-    Then I save a new case
+    Then I save the new case
     Then I navigate to the last created contact via the url
     Then I validate only one sample is created with two pathogen tests
     Then I click on edit Sample
     Then I validate the existence of two pathogen tests
 
+  @env_main @#8560
+  Scenario: Display date and time for pathogen test result on sample card
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When I log in with National User
+    Then I navigate to the last created contact via the url
+    Then I click on New Sample
+    Then I collect the sample UUID displayed on create new sample page
+    Then I create a new Sample with positive test result with COVID-19 as disease
+    Then I confirm creating a new case
+    Then I navigate to the last created contact via the url
+    Then I validate date and time is present on sample card
 
+  @issue=SORDEV-5669 @env_main
+    Scenario: Add variant specific Nucleic acid detection methods while creating sample
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data
+    And I collect the case person UUID displayed on Edit case page
+    And I click on New Sample
+    And I create new sample with pathogen test with "COVID-19" as disease and "PCR / RT-PCR" as type of test
+    Then I set PCR RT PCR Test specification to "Variant specific" option
+    Then I set PCR RT PCR Test specification to "N501Y mutation detection" option
+    And I save the created sample
+
+  @issue=SORDEV-5669 @env_main
+  Scenario: Add variant specific Nucleic acid detection methods after creating sample
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data
+    And I collect the case person UUID displayed on Edit case page
+    And I click on New Sample
+    When I collect the sample UUID displayed on create new sample page
+    And I create a new Sample with specific data and save
+    Then I click on edit Sample
+    Then I click on the new pathogen test from the Edit Sample page
+    And I create a new pathogen test result with "COVID-19" as disease and "PCR / RT-PCR" as a test type
+    Then I set PCR RT PCR Test specification to "Variant specific" option
+    Then I set PCR RT PCR Test specification to "N501Y mutation detection" option
+    And I save the created sample
+
+  @issue=SORDEV-5669 @env_main
+  Scenario: Add variant specific Nucleic acid detection methods
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create new case with COVID-19 and variant "B.1.1.529.5 - BA.5 (Omicron)"
+    And I click on New Sample
+    When I collect the sample UUID displayed on create new sample page
+    And I create a new Sample with specific data and save
+    Then I click on edit Sample
+    Then I click on the new pathogen test from the Edit Sample page
+    And I create a new pathogen test result with "COVID-19" as disease and "PCR / RT-PCR" as a test type
+    Then I set Tested disease variant as "B.1.617.3"
+    And I save the created sample
+    And I confirm update case result
+    Then I check if Update case disease variant popup is available

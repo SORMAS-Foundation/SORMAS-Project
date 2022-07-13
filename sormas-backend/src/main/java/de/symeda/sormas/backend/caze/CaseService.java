@@ -14,8 +14,6 @@
  */
 package de.symeda.sormas.backend.caze;
 
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,12 +77,15 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
@@ -120,8 +121,10 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
+import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -145,12 +148,15 @@ import de.symeda.sormas.backend.therapy.Treatment;
 import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.ExternalDataUtil;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.vaccination.Vaccination;
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitService;
@@ -203,6 +209,10 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private SurveillanceReportService surveillanceReportService;
 	@EJB
 	private DocumentService documentService;
+	@EJB
+	private ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
+	@EJB
+	private VaccinationService vaccinationService;
 
 	public CaseService() {
 		super(Case.class);
@@ -627,8 +637,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.isMember(caseCriteria.getReportingUserRole(), joins.getReportingUser().get(User.USER_ROLES)));
+			Join<User, UserRole> rolesJoin = reportingUser.join(User.USER_ROLES, JoinType.LEFT);
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(rolesJoin.get(UserRole.UUID), caseCriteria.getReportingUserRole().getUuid()));
 		}
 		if (caseCriteria.getDisease() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE), caseCriteria.getDisease()));
@@ -890,7 +900,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				cb,
 				from,
 				ExternalShareInfo.CAZE,
-				(latestShareDate) -> createChangeDateFilter(cb, from, latestShareDate, false)));
+				(latestShareDate) -> createChangeDateFilter(cq, cb, from, latestShareDate, true, true)));
 
 		return filter;
 	}
@@ -981,6 +991,53 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		deleteCaseLinks(caze);
 
 		super.deletePermanent(caze);
+	}
+
+	@Override
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		super.archive(entityUuid, endOfProcessingDate);
+		setArchiveInExternalSurveillanceToolForEntity(entityUuid, true);
+	}
+
+	@Override
+	public void archive(List<String> entityUuids) {
+		super.archive(entityUuids);
+		setArchiveInExternalSurveillanceToolForEntities(entityUuids, true);
+	}
+
+	@Override
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		super.dearchive(entityUuids, dearchiveReason);
+		setArchiveInExternalSurveillanceToolForEntities(entityUuids, false);
+	}
+
+	public void setArchiveInExternalSurveillanceToolForEntities(List<String> entityUuids, boolean archived) {
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
+			try {
+				externalSurveillanceToolGatewayFacade
+					.sendCases(externalShareInfoService.getSharedCaseUuidsWithoutDeletedStatus(entityUuids), archived);
+			} catch (ExternalSurveillanceToolException e) {
+				throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+			}
+		}
+	}
+
+	public void setArchiveInExternalSurveillanceToolForEntity(String entityUuid, boolean archived) {
+		Case caze = getByUuid(entityUuid);
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()
+			&& externalShareInfoService.isCaseShared(caze.getId())
+			&& !hasShareInfoWithDeletedStatus(entityUuid)) {
+			try {
+				externalSurveillanceToolGatewayFacade.sendCases(Collections.singletonList(entityUuid), archived);
+			} catch (ExternalSurveillanceToolException e) {
+				throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+			}
+		}
+	}
+
+	public boolean hasShareInfoWithDeletedStatus(String entityUuid) {
+		List<ExternalShareInfo> result = externalShareInfoService.getShareInfoByCase(entityUuid);
+		return result.stream().anyMatch(info -> info.getStatus().equals(ExternalShareStatus.DELETED));
 	}
 
 	@Override
@@ -1084,13 +1141,32 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			.build();
 	}
 
-	public Predicate createChangeDateFilter(
+	private Predicate createChangeDateFilter(
+		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
 		From<?, Case> casePath,
 		Expression<? extends Date> dateExpression,
-		boolean includeExtendedChangeDateFilters) {
+		boolean includeExtendedChangeDateFilters,
+		boolean includeRelevantVaccinations) {
 
-		return addChangeDates(new ChangeDateFilterBuilder(cb, dateExpression), casePath, includeExtendedChangeDateFilters).build();
+		ChangeDateFilterBuilder builder = addChangeDates(new ChangeDateFilterBuilder(cb, dateExpression), casePath, includeExtendedChangeDateFilters);
+
+		if (includeRelevantVaccinations) {
+			Subquery<Symptoms> symptomsSq = cq.subquery(Symptoms.class);
+			Root<Symptoms> symptomsSqRoot = symptomsSq.from(Symptoms.class);
+			symptomsSq.select(symptomsSqRoot.get(Symptoms.ONSET_DATE));
+			symptomsSq.where(cb.equal(symptomsSqRoot, casePath.get(Case.SYMPTOMS)));
+
+			Join<Person, Immunization> immunizationJoin = casePath.join(Case.PERSON, JoinType.LEFT).join(Person.IMMUNIZATIONS, JoinType.LEFT);
+			Join<Immunization, Vaccination> vaccinationsJoin = immunizationJoin.join(Immunization.VACCINATIONS, JoinType.LEFT);
+
+			builder.add(vaccinationsJoin.on(vaccinationService.getRelevantVaccinationPredicate(casePath, cq, cb, vaccinationsJoin)));
+			// also consider the immunization of relevant vaccinations
+			builder.add(vaccinationsJoin, Vaccination.IMMUNIZATION);
+
+		}
+
+		return builder.build();
 	}
 
 	@Override
@@ -1945,35 +2021,19 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	 *            The ID of the case person
 	 * @param disease
 	 *            The disease of the cases
-	 * @param vaccinationDate
-	 *            The vaccination date of the created or updated vaccination
+	 * @param vaccination
+	 *            The created or updated vaccination
 	 */
-	public void updateVaccinationStatuses(Long personId, Disease disease, Date vaccinationDate) {
-
-		// Only consider cases with relevance date at least one day after the vaccination date
-		if (vaccinationDate == null) {
-			return;
-		} else {
-			vaccinationDate = DateHelper.getEndOfDay(vaccinationDate);
-		}
+	public void updateVaccinationStatuses(Long personId, Disease disease, Vaccination vaccination) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
 		Root<Case> root = cu.from(Case.class);
 
-		Subquery<Symptoms> symptomsSq = cu.subquery(Symptoms.class);
-		Root<Symptoms> symptomsSqRoot = symptomsSq.from(Symptoms.class);
-		symptomsSq.select(symptomsSqRoot.get(Symptoms.ONSET_DATE));
-		symptomsSq.where(cb.equal(symptomsSqRoot, root.get(Case.SYMPTOMS)));
-
 		cu.set(root.get(Case.VACCINATION_STATUS), VaccinationStatus.VACCINATED);
 		cu.set(root.get(AbstractDomainObject.CHANGE_DATE), new Date());
 
-		Predicate datePredicate = vaccinationDate != null
-			? cb.or(
-				cb.greaterThan(symptomsSq.getSelection().as(Date.class), vaccinationDate),
-				cb.and(cb.isNull(symptomsSq.getSelection()), cb.greaterThan(root.get(Case.REPORT_DATE), vaccinationDate)))
-			: null;
+		Predicate datePredicate = vaccinationService.getRelevantVaccinationPredicate(root, cu, cb, vaccination);
 
 		cu.where(CriteriaBuilderHelper.and(cb, cb.equal(root.get(Case.PERSON), personId), cb.equal(root.get(Case.DISEASE), disease), datePredicate));
 

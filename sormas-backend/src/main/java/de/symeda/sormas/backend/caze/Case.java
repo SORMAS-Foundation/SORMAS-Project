@@ -947,12 +947,6 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 		this.epidNumber = epidNumber;
 	}
 
-	@Override
-	public String toString() {
-		//TODO lga how to pseudonymize
-		return CaseReferenceDto.buildCaption(getUuid(), person.getFirstName(), person.getLastName());
-	}
-
 	public CaseReferenceDto toReference() {
 		return new CaseReferenceDto(getUuid(), person.getFirstName(), person.getLastName());
 	}

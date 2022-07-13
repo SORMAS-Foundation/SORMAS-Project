@@ -7,7 +7,6 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 
 public class EventParticipantListEntryDto extends PseudonymizableIndexDto implements Serializable {
 
-	private String uuid;
 	private String eventUuid;
 	private EventStatus eventStatus;
 	private Disease disease;
@@ -15,20 +14,12 @@ public class EventParticipantListEntryDto extends PseudonymizableIndexDto implem
 	private Boolean isInJurisdictionOrOwned;
 
 	public EventParticipantListEntryDto(String uuid, String eventUuid, EventStatus eventStatus, Disease disease, String eventTitle, boolean isInJurisdictionOrOwned) {
-		this.uuid = uuid;
+		super(uuid);
 		this.eventUuid = eventUuid;
 		this.eventStatus = eventStatus;
 		this.disease = disease;
 		this.eventTitle = eventTitle;
 		this.isInJurisdictionOrOwned = isInJurisdictionOrOwned;
-	}
-
-	public String getUuid() {
-		return uuid;
-	}
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
 	}
 
 	public String getEventUuid() {

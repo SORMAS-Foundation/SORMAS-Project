@@ -27,6 +27,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,7 +37,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.common.DeletionReason;
 import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Test;
@@ -46,6 +46,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -53,7 +54,10 @@ import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -67,12 +71,13 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
@@ -709,4 +714,122 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		MatcherAssert.assertThat(result, hasSize(1));
 		MatcherAssert.assertThat(result, contains(equalTo(sample)));
 	}
+
+	@Test
+	public void testSaveSampleWithUnexistingCase() {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = useSurveillanceOfficerLogin(rdcf);
+		PersonDto cazePerson = creator.createPerson();
+
+		CaseDataDto unexistingCase = CaseDataDto.build(cazePerson.toReference(), Disease.DENGUE);
+
+		SampleDto cazeSample = SampleDto.build(user.toReference(), unexistingCase.toReference());
+		cazeSample.setSampleDateTime(new Date());
+		cazeSample.setSampleMaterial(SampleMaterial.BLOOD);
+		cazeSample.setSamplePurpose(SamplePurpose.INTERNAL);
+
+		try {
+			getSampleFacade().saveSample(cazeSample);
+			fail();
+		} catch (ValidationRuntimeException e) {
+			assertEquals(I18nProperties.getValidationError(Validations.noCaseWithUuid), e.getMessage());
+		}
+	}
+
+	@Test
+	public void testSaveSampleWithUnexistingContact() {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = useSurveillanceOfficerLogin(rdcf);
+		PersonDto cazePerson = creator.createPerson();
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
+		ContactDto unexistingContact = ContactDto.build(caze);
+
+		SampleDto contactSample = SampleDto.build(user.toReference(), unexistingContact.toReference());
+		contactSample.setSampleDateTime(new Date());
+		contactSample.setSampleMaterial(SampleMaterial.BLOOD);
+		contactSample.setSamplePurpose(SamplePurpose.INTERNAL);
+
+		try {
+			getSampleFacade().saveSample(contactSample);
+			fail();
+		} catch (ValidationRuntimeException e) {
+			assertEquals(I18nProperties.getValidationError(Validations.noContactWithUuid), e.getMessage());
+		}
+	}
+
+	@Test
+	public void testSaveSampleWithUnexistingEventParticipant() {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = useSurveillanceOfficerLogin(rdcf);
+		PersonDto cazePerson = creator.createPerson();
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
+		EventDto event = creator.createEvent(user.toReference());
+
+		EventParticipantDto unexstingEventParticipant =
+			EventParticipantDto.buildFromCase(caze.toReference(), cazePerson, event.toReference(), user.toReference());
+
+		SampleDto eventParticipantSample = SampleDto.build(user.toReference(), unexstingEventParticipant.toReference());
+		eventParticipantSample.setSampleDateTime(new Date());
+		eventParticipantSample.setSampleMaterial(SampleMaterial.BLOOD);
+		eventParticipantSample.setSamplePurpose(SamplePurpose.INTERNAL);
+
+		try {
+			getSampleFacade().saveSample(eventParticipantSample);
+			fail();
+		} catch (ValidationRuntimeException e) {
+			assertEquals(I18nProperties.getValidationError(Validations.noEventParticipantWithUuid), e.getMessage());
+		}
+	}
+
+	@Test
+	public void testSaveSampleWithUnexistingLaboratory() {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = useSurveillanceOfficerLogin(rdcf);
+		PersonDto cazePerson = creator.createPerson();
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
+
+		SampleDto cazeSample = SampleDto.build(user.toReference(), caze.toReference());
+		cazeSample.setSampleDateTime(new Date());
+		cazeSample.setSampleMaterial(SampleMaterial.BLOOD);
+		cazeSample.setSamplePurpose(SamplePurpose.INTERNAL);
+
+		FacilityDto unexistingLaboratory = FacilityDto.build();
+		cazeSample.setLab(unexistingLaboratory.toReference());
+
+		try {
+			getSampleFacade().saveSample(cazeSample);
+			fail();
+		} catch (ValidationRuntimeException e) {
+			assertEquals(I18nProperties.getValidationError(Validations.noLaboratoryWithUuid), e.getMessage());
+		}
+	}
+
+	@Test
+	public void testSaveSampleWithUnexistingReportingUser() {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = useSurveillanceOfficerLogin(rdcf);
+		PersonDto cazePerson = creator.createPerson();
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
+
+		SampleDto sample = SampleDto.build(user.toReference(), caze.toReference());
+		sample.setSampleDateTime(new Date());
+		sample.setSampleMaterial(SampleMaterial.BLOOD);
+		sample.setSamplePurpose(SamplePurpose.INTERNAL);
+
+		UserDto unexistingUser = UserDto.build();
+		sample.setReportingUser(unexistingUser.toReference());
+
+		try {
+			getSampleFacade().saveSample(sample);
+			fail();
+		} catch (ValidationRuntimeException e) {
+			assertEquals(I18nProperties.getValidationError(Validations.noReportingUserWithUuid), e.getMessage());
+		}
+	}
+
 }

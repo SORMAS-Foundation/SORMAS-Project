@@ -24,6 +24,7 @@ public enum EndOfIsolationReason {
 	LOST_TO_FOLLOW_UP,
 	OTHER;
 
+	@Override
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}

@@ -23,17 +23,19 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLO
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_DOCUMENT_EMPTY_TEXT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_UPLOADED_TEST_FILE;
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DELETE_LAST_UPDATED_CASE_DOCUMENT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DOWNLOAD_LAST_UPDATED_CASE_DOCUMENT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NEW_DOCUMENT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.START_DATA_IMPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.BUTTONS_IN_VACCINATIONS_LOCATION;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES_POPUP_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_IMMUNIZATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UPLOAD_DOCUMENT_CHECKBOX;
@@ -41,13 +43,18 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFO
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CASE_OR_EVENT_INFORMATION_CONTACT_TEXT_AREA;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.EXTERNAL_TOKEN_CONTACT_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RELATIONSHIP_WITH_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.MULTIPLE_OPTIONS_SEARCH_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_TAB;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.SAVE_BUTTON_FOR_POPUP_WINDOWS;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DELETE_BUTTON;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.GENERAL_SEARCH_INPUT;
 
 import cucumber.api.java8.En;
@@ -70,6 +77,7 @@ import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.pojo.web.QuarantineOrder;
 import org.sormas.e2etests.entities.services.ContactDocumentService;
 import org.sormas.e2etests.entities.services.ContactService;
+import org.sormas.e2etests.enums.TaskTypeValues;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
@@ -88,6 +96,7 @@ public class EditContactSteps implements En {
   public static final String userDirPath = System.getProperty("user.dir");
   public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
   public static final DateTimeFormatter formatterDE = DateTimeFormatter.ofPattern("d.M.yyyy");
+  private static String currentUrl;
 
   @Inject
   public EditContactSteps(
@@ -258,6 +267,18 @@ public class EditContactSteps implements En {
               "Vaccination Info Source value is different than expected");
           softly.assertAll();
         });
+    When(
+        "I check that number of added Vaccinations is {int} on Edit Contact Page",
+        (Integer expected) ->
+            assertHelpers.assertWithPoll20Second(
+                () ->
+                    Assert.assertEquals(
+                        webDriverHelpers.getNumberOfElements(BUTTONS_IN_VACCINATIONS_LOCATION),
+                        (int) expected,
+                        "Number of vaccinations is different than expected")));
+    When(
+        "I close vaccination form in Edit Contact directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CLOSE_IMPORT_TRAVEL_ENTRY_POPUP));
     When(
         "I check the created data is correctly displayed on Edit Contact page",
         () -> {
@@ -760,7 +781,7 @@ public class EditContactSteps implements En {
     When(
         "^I click Yes, for all in conversion to case form$",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_POPUP_SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
     When(
@@ -938,6 +959,127 @@ public class EditContactSteps implements En {
     When(
         "I navigate to follow-up visits tab",
         () -> webDriverHelpers.clickOnWebElementBySelector(FOLLOW_UP_VISITS));
+
+    And(
+        "^I check if New task form is displayed correctly$",
+        () -> {
+          String expectedString = "Create new task";
+          String actualString = webDriverHelpers.getTextFromWebElement(CREATE_NEW_TASK_FORM_HEADER);
+          softly.assertEquals(actualString, expectedString, "Unexpected popup title displayed");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check that values listed in the task type combobox are correct$",
+        () -> {
+          for (TaskTypeValues value : TaskTypeValues.values()) {
+            webDriverHelpers.selectFromCombobox(
+                TASK_TYPE_COMBOBOX, TaskTypeValues.getValueFor(value.toString()));
+          }
+        });
+
+    And(
+        "^I clear Due Date field in the New task form$",
+        () -> webDriverHelpers.clearWebElement(NEW_TASK_DUE_DATE));
+
+    Then(
+        "^I check that all required fields are mandatory in the New task form$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(INPUT_DATA_ERROR_POPUP);
+          webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Task type");
+          webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Due date");
+          webDriverHelpers.checkWebElementContainsText(INPUT_DATA_ERROR_POPUP, "Assigned to");
+        });
+
+    And(
+        "^I click SAVE button on New Task form$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_NEW_TASK_BUTTON));
+
+    And(
+        "^I check that required fields are marked as mandatory$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(TASK_TYPE_TITLE);
+          webDriverHelpers.checkWebElementContainsText(TASK_TYPE_TITLE, "*");
+          webDriverHelpers.checkWebElementContainsText(DUE_DATE_TITLE, "*");
+          webDriverHelpers.checkWebElementContainsText(ASSIGNED_TO_TITLE, "*");
+        });
+
+    When(
+        "^I close input data error popup in Contact Directory$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(INPUT_DATA_ERROR_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(INPUT_DATA_ERROR_POPUP);
+        });
+
+    And(
+        "^I choose Other task as described in comments option from task type combobox in the New task form$",
+        () ->
+            webDriverHelpers.selectFromCombobox(
+                TASK_TYPE_COMBOBOX, "other task as described in comments"));
+
+    Then(
+        "^I check that Comments on task field is mandatory in the New task form$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(COMMENTS_ON_TASK_TITLE);
+          webDriverHelpers.checkWebElementContainsText(COMMENTS_ON_TASK_TITLE, "*");
+        });
+
+    When(
+        "I check if collected contact UUID is the same in opened contact",
+        () -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(UUID_INPUT),
+              aContact.getUuid(),
+              "UUIDs are not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "^I check if relationship with case is set to ([^\"]*)$",
+        (String option) -> {
+          webDriverHelpers.scrollToElement(RELATIONSHIP_WITH_CASE_INPUT);
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(RELATIONSHIP_WITH_CASE_INPUT),
+              option,
+              "Relationships with case are not equal");
+          softly.assertAll();
+        });
+
+    When("I copy url of current contact", () -> currentUrl = webDriverHelpers.returnURL());
+
+    When(
+        "I click on Delete button from contact",
+        () -> {
+          webDriverHelpers.scrollToElement(DELETE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+        });
+
+    When("I back to deleted contact by url", () -> webDriverHelpers.accessWebSite(currentUrl));
+
+    When(
+        "I check if External token input on case edit page is disabled",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementEnabled(EXTERNAL_TOKEN_CONTACT_INPUT),
+              "External token input is enabled");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if Case or event information text area on case edit page is disabled",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementEnabled(CASE_OR_EVENT_INFORMATION_CONTACT_TEXT_AREA),
+              "Case or event information text area is enabled");
+          softly.assertAll();
+        });
+
+    And(
+        "^I click on the NEW IMMUNIZATION button in Edit contact$",
+        () -> {
+          webDriverHelpers.scrollToElement(NEW_IMMUNIZATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_IMMUNIZATION_BUTTON);
+        });
   }
 
   private void selectContactClassification(String classification) {

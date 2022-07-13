@@ -114,6 +114,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.RightsAllowed;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb.VaccinationFacadeEjbLocal;
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 
 @Stateless(name = "ImmunizationFacade")
 @RightsAllowed(UserRight._IMMUNIZATION_VIEW)
@@ -160,6 +161,8 @@ public class ImmunizationFacadeEjb
 	private SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal sormasToSormasContactFacade;
 	@EJB
 	private SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacadeEjbLocal;
+	@EJB
+	private VaccinationService vaccinationService;
 
 	public ImmunizationFacadeEjb() {
 	}
@@ -180,7 +183,7 @@ public class ImmunizationFacadeEjb
 		if (dto == null) {
 			return null;
 		}
-		return new ImmunizationReferenceDto(dto.getUuid(), dto.toString(), dto.getExternalId());
+		return new ImmunizationReferenceDto(dto.getUuid(), dto.buildCaption(), dto.getExternalId());
 	}
 
 	public ImmunizationDto toDto(Immunization entity) {
@@ -353,12 +356,9 @@ public class ImmunizationFacadeEjb
 					.findAny()
 					.orElse(null);
 			}
-			Date oldVaccinationDate = existingVaccination != null ? existingVaccination.getVaccinationDate() : null;
-			vaccinationFacade.updateVaccinationStatuses(
-				vaccination.getVaccinationDate(),
-				oldVaccinationDate,
-				immunization.getPerson().getId(),
-				immunization.getDisease());
+
+			vaccinationFacade
+				.updateVaccinationStatuses(vaccination, existingVaccination, immunization.getPerson().getId(), immunization.getDisease());
 		});
 
 		service.ensurePersisted(immunization);

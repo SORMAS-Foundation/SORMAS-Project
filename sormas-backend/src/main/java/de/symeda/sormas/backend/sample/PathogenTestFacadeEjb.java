@@ -242,27 +242,27 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 		onPathogenTestChanged(existingSampleTestDto, pathogenTest);
 
-		handleAssotiatedObjectChanges(pathogenTest, syncShares);
+		handleAssociatedEntityChanges(pathogenTest, syncShares);
 
 		return convertToDto(pathogenTest, Pseudonymizer.getDefault(userService::hasRight));
 	}
 
-	private void handleAssotiatedObjectChanges(PathogenTest pathogenTest, boolean syncShares) {
+	private void handleAssociatedEntityChanges(PathogenTest pathogenTest, boolean syncShares) {
 		// Update case classification if necessary
 		final Case associatedCase = pathogenTest.getSample().getAssociatedCase();
-		if (associatedCase != null) {
+		if (associatedCase != null && userService.hasRight(UserRight.CASE_EDIT)) {
 			caseFacade.onCaseChanged(caseFacade.toDto(associatedCase), associatedCase, syncShares);
 		}
 
 		// update contact if necessary
 		Contact associatedContact = pathogenTest.getSample().getAssociatedContact();
-		if (associatedContact != null) {
+		if (associatedContact != null && userService.hasRight(UserRight.CONTACT_EDIT)) {
 			contactFacade.onContactChanged(contactFacade.toDto(associatedContact), syncShares);
 		}
 
 		// update event participant if necessary
 		EventParticipant associatedEventParticipant = pathogenTest.getSample().getAssociatedEventParticipant();
-		if (associatedEventParticipant != null) {
+		if (associatedEventParticipant != null && userService.hasRight(UserRight.EVENTPARTICIPANT_EDIT)) {
 			eventParticipantFacade.onEventParticipantChanged(
 				eventFacade.toDto(associatedEventParticipant.getEvent()),
 				eventParticipantFacade.toDto(associatedEventParticipant),
@@ -278,7 +278,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		PathogenTest pathogenTest = pathogenTestService.getByUuid(pathogenTestUuid);
 		pathogenTestService.delete(pathogenTest, deletionDetails);
 
-		handleAssotiatedObjectChanges(pathogenTest, true);
+		handleAssociatedEntityChanges(pathogenTest, true);
 	}
 
 	@Override

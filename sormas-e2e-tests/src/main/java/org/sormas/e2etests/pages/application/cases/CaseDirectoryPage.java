@@ -49,6 +49,12 @@ public class CaseDirectoryPage {
       By.cssSelector("[id='diseaseVariant'] [class='v-filterselect-button']");
   public static final By CASE_APPLY_FILTERS_BUTTON = By.cssSelector("[id='actionApplyFilters']");
   public static final By CASE_RESET_FILTERS_BUTTON = By.cssSelector("[id='actionResetFilters']");
+  public static final By ACTION_RESET_POPUP = By.cssSelector(".popupContent #actionReset");
+  public static final By ACTION_SEARCH_POPUP = By.cssSelector(".popupContent #actionSearch");
+  public static final By EXCLAMATION_MARK_PICK_OR_CREATE_PERSON_POPUP =
+      By.cssSelector(".popupContent span[class='v-errorindicator v-errorindicator-error']");
+  public static final By EXCLAMATION_MARK_MESSAGE_PICK_OR_CREATE_PERSON_POPUP =
+      By.xpath("//div[@class='v-errormessage v-errormessage-error']");
 
   public static final By getCaseResultsUuidLocator(String uuid) {
     return By.cssSelector(String.format("[title = '%s']", uuid));
@@ -160,6 +166,9 @@ public class CaseDirectoryPage {
   public static final By DOWNLOAD_DATA_DICTIONARY_BUTTON = By.id("importDownloadDataDictionary");
   public static final By FACILITY_ACTIVITY_AS_CASE_COMBOBOX =
       By.cssSelector(".v-window #typeOfPlace div");
+  public static final By MERGE_DUPLICATES_WARNING_DE =
+      By.xpath(
+          "  //div[contains(text(), \"Die Berechnung und Anzeige m\u00F6glicher Duplikat-F\u00E4lle ist eine sehr komplexe Aufgabe und kann viel Zeit in Anspruch nehmen.\")]");
   public static final By CASE_MEANS_OF_TRANSPORT =
       By.cssSelector(".v-window #meansOfTransport div");
   public static final By CASE_MEANS_OF_TRANSPORT_DETAILS = By.id("meansOfTransportDetails");
@@ -172,6 +181,8 @@ public class CaseDirectoryPage {
   public static final By CLOSE_FORM_BUTTON = By.xpath("//div[@class='v-window-closebox']");
   public static final By REINFECTION_STATUS_COMBOBOX =
       By.cssSelector("[id='reinfectionStatus'] [class='v-filterselect-button']");
+  public static final By CREATE_NEW_PERSON_CHECKBOX_DE =
+      By.xpath("//label[text()='Eine neue Person anlegen']");
 
   public static By getCheckboxByIndex(String idx) {
     return By.xpath(String.format("(//input[@type=\"checkbox\"])[%s]", idx));

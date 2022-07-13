@@ -78,6 +78,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		super(EventParticipant.class);
 	}
 
+	@Override
 	public List<EventParticipant> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 		return getAllAfter(date, null, batchSize, lastSynchronizedUuid);
 	}

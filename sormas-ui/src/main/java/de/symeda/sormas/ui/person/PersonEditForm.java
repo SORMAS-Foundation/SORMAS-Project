@@ -35,12 +35,12 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.vaadin.v7.data.Property;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
@@ -457,8 +457,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		causeOfDeathDiseaseField.addValueChangeListener(e -> {
 			boolean causeOfDeathVisible = presentCondition.getValue() != PresentCondition.ALIVE
-					&& presentCondition.getValue() != PresentCondition.UNKNOWN
-					&& presentCondition.getValue() != null;
+				&& presentCondition.getValue() != PresentCondition.UNKNOWN
+				&& presentCondition.getValue() != null;
 			toggleCauseOfDeathFields(causeOfDeathVisible);
 		});
 
@@ -546,6 +546,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 	}
 
+	@Override
 	public void setValue(PersonDto newFieldValue) {
 		super.setValue(newFieldValue);
 		initializePresentConditionField();
@@ -862,12 +863,12 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 		if (deathPlaceType.isVisible() && deathPlaceType.getValue() == null) {
 			if (deathPlaceDesc.isVisible() && StringUtils.isBlank(deathPlaceDesc.getValue())) {
-				deathPlaceDesc.setValue(getValue().getAddress().toString());
+				deathPlaceDesc.setValue(getValue().getAddress().buildCaption());
 			}
 		}
 
 		if (burialPlaceDesc.isVisible() && StringUtils.isBlank(burialPlaceDesc.getValue())) {
-			burialPlaceDesc.setValue(getValue().getAddress().toString());
+			burialPlaceDesc.setValue(getValue().getAddress().buildCaption());
 		}
 	}
 
@@ -886,6 +887,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		return super.addFieldToLayout(layout, propertyId, field);
 	}
 
+	@Override
 	public void setHeading(String heading) {
 		personInformationHeadingLabel.setValue(heading);
 	}
@@ -897,13 +899,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			PresentCondition type = (PresentCondition) ((AbstractSelect) getFieldGroup().getField(PersonDto.PRESENT_CONDITION)).getValue();
 			if (type == null) {
 				setVisible(
-						false,
-						PersonDto.DEATH_DATE,
-						PersonDto.DEATH_PLACE_TYPE,
-						PersonDto.DEATH_PLACE_DESCRIPTION,
-						PersonDto.BURIAL_DATE,
-						PersonDto.BURIAL_PLACE_DESCRIPTION,
-						PersonDto.BURIAL_CONDUCTOR);
+					false,
+					PersonDto.DEATH_DATE,
+					PersonDto.DEATH_PLACE_TYPE,
+					PersonDto.DEATH_PLACE_DESCRIPTION,
+					PersonDto.BURIAL_DATE,
+					PersonDto.BURIAL_PLACE_DESCRIPTION,
+					PersonDto.BURIAL_CONDUCTOR);
 				getField(PersonDto.DEATH_DATE).setValue(null);
 				getField(PersonDto.BURIAL_DATE).setValue(null);
 				getField(PersonDto.BURIAL_PLACE_DESCRIPTION).setValue(null);
@@ -911,49 +913,49 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				toggleCauseOfDeathFields(false);
 			} else {
 				switch (type) {
-					case DEAD:
-						setVisible(true, PersonDto.DEATH_DATE, PersonDto.DEATH_PLACE_TYPE, PersonDto.DEATH_PLACE_DESCRIPTION);
-						causeOfDeathField.setValue(CauseOfDeath.EPIDEMIC_DISEASE);
-						toggleCauseOfDeathFields(true);
-						setVisible(false, PersonDto.BURIAL_DATE, PersonDto.BURIAL_PLACE_DESCRIPTION, PersonDto.BURIAL_CONDUCTOR);
+				case DEAD:
+					setVisible(true, PersonDto.DEATH_DATE, PersonDto.DEATH_PLACE_TYPE, PersonDto.DEATH_PLACE_DESCRIPTION);
+					causeOfDeathField.setValue(CauseOfDeath.EPIDEMIC_DISEASE);
+					toggleCauseOfDeathFields(true);
+					setVisible(false, PersonDto.BURIAL_DATE, PersonDto.BURIAL_PLACE_DESCRIPTION, PersonDto.BURIAL_CONDUCTOR);
 
-						getField(PersonDto.BURIAL_DATE).setValue(null);
-						getField(PersonDto.BURIAL_PLACE_DESCRIPTION).setValue(null);
-						getField(PersonDto.BURIAL_CONDUCTOR).setValue(null);
+					getField(PersonDto.BURIAL_DATE).setValue(null);
+					getField(PersonDto.BURIAL_PLACE_DESCRIPTION).setValue(null);
+					getField(PersonDto.BURIAL_CONDUCTOR).setValue(null);
 
-						break;
-					case BURIED:
-						setVisible(true, PersonDto.DEATH_DATE, PersonDto.DEATH_PLACE_TYPE, PersonDto.DEATH_PLACE_DESCRIPTION);
-						causeOfDeathField.setValue(CauseOfDeath.EPIDEMIC_DISEASE);
-						//@formatter:off
+					break;
+				case BURIED:
+					setVisible(true, PersonDto.DEATH_DATE, PersonDto.DEATH_PLACE_TYPE, PersonDto.DEATH_PLACE_DESCRIPTION);
+					causeOfDeathField.setValue(CauseOfDeath.EPIDEMIC_DISEASE);
+					//@formatter:off
 						setVisible(fieldVisibilityCheckers.isVisible(PersonDto.class, PersonDto.BURIAL_DATE), PersonDto.BURIAL_DATE);
 						setVisible(fieldVisibilityCheckers.isVisible(PersonDto.class, PersonDto.BURIAL_PLACE_DESCRIPTION), PersonDto.BURIAL_PLACE_DESCRIPTION);
 						setVisible(fieldVisibilityCheckers.isVisible(PersonDto.class, PersonDto.BURIAL_CONDUCTOR), PersonDto.BURIAL_CONDUCTOR);
 						//@formatter:on
-						toggleCauseOfDeathFields(true);
-						break;
-					default:
-						setVisible(
-								false,
-								PersonDto.DEATH_DATE,
-								PersonDto.DEATH_PLACE_TYPE,
-								PersonDto.DEATH_PLACE_DESCRIPTION,
-								PersonDto.BURIAL_DATE,
-								PersonDto.BURIAL_PLACE_DESCRIPTION,
-								PersonDto.BURIAL_CONDUCTOR);
-						getField(PersonDto.DEATH_DATE).setValue(null);
-						getField(PersonDto.BURIAL_DATE).setValue(null);
-						getField(PersonDto.BURIAL_PLACE_DESCRIPTION).setValue(null);
-						getField(PersonDto.BURIAL_CONDUCTOR).setValue(null);
-						toggleCauseOfDeathFields(false);
-						break;
+					toggleCauseOfDeathFields(true);
+					break;
+				default:
+					setVisible(
+						false,
+						PersonDto.DEATH_DATE,
+						PersonDto.DEATH_PLACE_TYPE,
+						PersonDto.DEATH_PLACE_DESCRIPTION,
+						PersonDto.BURIAL_DATE,
+						PersonDto.BURIAL_PLACE_DESCRIPTION,
+						PersonDto.BURIAL_CONDUCTOR);
+					getField(PersonDto.DEATH_DATE).setValue(null);
+					getField(PersonDto.BURIAL_DATE).setValue(null);
+					getField(PersonDto.BURIAL_PLACE_DESCRIPTION).setValue(null);
+					getField(PersonDto.BURIAL_CONDUCTOR).setValue(null);
+					toggleCauseOfDeathFields(false);
+					break;
 				}
 			}
 
 			fillDeathAndBurialFields(
-					getField(PersonDto.DEATH_PLACE_TYPE),
-					getField(PersonDto.DEATH_PLACE_DESCRIPTION),
-					getField(PersonDto.BURIAL_PLACE_DESCRIPTION));
+				getField(PersonDto.DEATH_PLACE_TYPE),
+				getField(PersonDto.DEATH_PLACE_DESCRIPTION),
+				getField(PersonDto.BURIAL_PLACE_DESCRIPTION));
 		}
 	}
 }
