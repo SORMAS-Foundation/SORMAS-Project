@@ -19,15 +19,12 @@ package org.sormas.e2etests.pages.application.configuration;
 
 import org.openqa.selenium.By;
 
-public class CountriesTabPage {
-  public static final By SEARCH_COUNTRY = By.id("search");
-  public static final By SUBCONTINENT_TABLE_VALUE = By.xpath("//table//tbody//tr[1]/td[4]");
-  public static final By COUNTRY_GRID_RESULTS_ROWS = By.cssSelector("[role=rowgroup] tr a");
-  public static final By NUMBER_OF_COUNTRIES =
+public class ContinentsTabPage {
+  public static final By NUMBER_OF_CONTINENTS =
       By.xpath(
           "/html/body/div[1]/div/div[2]/div/div[2]/div/div/div/div[3]/div/div/div[2]/div/div/div[3]/div");
-  public static final By COUNTRIES_TABLE_DATA = By.tagName("td");
-  public static final By COUNTRIES_TABLE_ROW = By.cssSelector("div.v-grid-tablewrapper tbody tr");
-  public static final By COUNTRIES_COLUMN_HEADERS =
+  public static final By CONTINENTS_TABLE_DATA = By.tagName("td");
+  public static final By CONTINENTS_TABLE_ROW = By.cssSelector("div.v-grid-tablewrapper tbody tr");
+  public static final By CONTINENTS_COLUMN_HEADERS =
       By.cssSelector("thead" + " .v-grid-column-default-header-content");
 }

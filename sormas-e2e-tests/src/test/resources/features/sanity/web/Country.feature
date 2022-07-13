@@ -16,3 +16,11 @@ Feature: Country end to end tests
       And I navigate to countries tab in Configuration
       And I fill search filter with "New Caledonia" country name on Country Configuration Page
       Then I check the "Western Europe" name for the country on Country Configuration Page
+
+  @issue=SORQA-343 @env_main @precon
+  Scenario: Check infrastructure data for countries
+    Given I log in as a Admin User
+    And I click on the Configuration button from navbar
+    When I navigate to countries tab in Configuration
+    Then I check that number of countries is at least 203
+    And I check that Albania is correctly displayed
