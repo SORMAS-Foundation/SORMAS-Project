@@ -54,6 +54,22 @@ public class TaskManagementPage {
   public static final By DETAILED_EXPORT_POPUP_LABEL =
       By.xpath("//div[contains(text(),'Detailed Export')]");
 
+  public static final By NEW_CUSTOM_EXPORT_BUTTON = By.id("exportNewExportConfiguration");
+  public static final By SAVE_CUSTOM_EXPORT_BUTTON = By.id("actionSave");
+  public static final By CUSTOM_TASK_EXPORT_DOWNLOAD_BUTTON =
+      By.xpath("//div[@class='popupContent']//div[contains(@id, '-download')]");
+  public static final By CUSTOM_TASK_EXPORT_EDIT_BUTTON =
+      By.xpath("//div[@class='popupContent']//div[contains(@id, '-edit')]");
+  public static final By CUSTOM_TASK_EXPORT_DELETE_BUTTON =
+      By.xpath(
+          "//div[@class='popupContent']//div[contains(@id, '-delete') and not(contains(@id, 'null-delete'))]");
+  public static final By CUSTOM_EXPORT_CONFIGURATION_NAME_INPUT =
+      By.xpath("//div[@id='sormasui-1655777373-overlays']//input[@type='text']");
+  public static final By CUSTOM_EXPORT_TASK_CONTEXT_CHECKBOX =
+      By.xpath("//span[@class='v-checkbox v-widget']/label[contains(text(), 'Task context')]");
+  public static final By CUSTOM_EXPORT_TASK_TYPE_CHECKBOX =
+      By.xpath("//span[@class='v-checkbox v-widget']/label[contains(text(), 'Task type')]");
+
   public static By getCheckboxByIndex(String idx) {
     return By.xpath(String.format("(//input[@type=\"checkbox\"])[%s]", idx));
   }
