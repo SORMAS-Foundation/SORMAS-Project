@@ -267,6 +267,7 @@ public class CaseController {
 						convertSamePersonContactsAndEventParticipants(caze, null);
 					}
 				});
+				caseCreateComponent.addDiscardListener(() -> SormasUI.refreshView());
 				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
 			} else {
 				CaseDataDto selectedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(uuid);
