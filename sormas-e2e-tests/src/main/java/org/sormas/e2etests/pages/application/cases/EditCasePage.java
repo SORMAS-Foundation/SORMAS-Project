@@ -289,6 +289,10 @@ public class EditCasePage {
           "//div[@location='immunizations']//div[@class='v-slot v-slot-link v-slot-compact v-align-right']");
   public static final By GENERAL_COMMENT_TEXT_AREA = By.id("additionalDetails");
 
+  public static final By SURVEILLANCE_OFFICER_FIELD_ABOVE_GENERAL_COMMENT =
+      By.xpath(
+          "//div[@location= 'generalCommentLoc']/preceding-sibling::div[3]//div[@location='surveillanceOfficer']");
+
   public static By getCaseIDPathByIndex(int index) {
     return By.xpath(String.format("//table/tbody/tr[%s]/td[1]/a", index));
   }

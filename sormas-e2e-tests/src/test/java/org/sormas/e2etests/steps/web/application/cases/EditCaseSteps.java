@@ -2052,6 +2052,13 @@ public class EditCaseSteps implements En {
               "Means of immunization is not equal");
           softly.assertAll();
         });
+    And(
+        "I check elements order on page before General comment field in DE",
+        () -> {
+          System.out.println(
+              webDriverHelpers.getTextFromWebElement(
+                  SURVEILLANCE_OFFICER_FIELD_ABOVE_GENERAL_COMMENT));
+        });
   }
 
   private Case collectCasePersonUuid() {
