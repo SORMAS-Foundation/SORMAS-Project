@@ -407,6 +407,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 					updatePointOfEntryFields(cbPointOfEntry, tfPointOfEntryDetails);
 				}
 			});
+
+			setRequired(true, FACILITY_OR_HOME_LOC);
 		}
 
 		// jurisdiction field valuechangelisteners
@@ -435,11 +437,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
-		
+
 		setRequired(true, CaseDataDto.REPORT_DATE, CaseDataDto.DISEASE, FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE);
-		if (!UserProvider.getCurrent().isPortHealthUser()) {
-			setRequired(true, FACILITY_OR_HOME_LOC);
-		}
 		FieldHelper.addSoftRequiredStyle(plagueType, communityCombo, facilityDetails);
 
 		FieldHelper
