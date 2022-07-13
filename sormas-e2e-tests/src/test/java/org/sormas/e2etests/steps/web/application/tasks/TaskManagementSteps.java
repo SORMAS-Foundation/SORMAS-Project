@@ -425,7 +425,11 @@ public class TaskManagementSteps implements En {
            "_.csv";
 
           Path file_path = Paths.get(file);
+          if(webDriverHelpers.isFileExists(file_path))
+          {
+              Files.delete(file_path);
 
+          }
           TimeUnit.SECONDS.sleep(8); // wait for basic download if in parallel
           webDriverHelpers.clickOnWebElementBySelector(DETAILED_EXPORT_BUTTON);
           TimeUnit.SECONDS.sleep(8); // wait for download start
@@ -436,7 +440,7 @@ public class TaskManagementSteps implements En {
         () -> {
           TimeUnit.SECONDS.sleep(8); // wait for basic download if in parallel
           webDriverHelpers.clickOnWebElementBySelector(CUSTOM_EXPORT_BUTTON);
-          TimeUnit.SECONDS.sleep(2); // wait for download
+          TimeUnit.SECONDS.sleep(2); // wait for load
         });
     When(
         "I click on the New Export Configuration button in Custom Task Export popup",
@@ -472,16 +476,17 @@ public class TaskManagementSteps implements En {
     When(
         "I download last created custom task export file",
         () -> {
-          String file =
-              "C:\\Users\\lukas\\Downloads\\sormas_tasks_"
-                  + LocalDate.now().format(formatter)
-                  + "_.csv";
-          // String file = "./downloads/sormas_tasks_" + LocalDate.now().format(formatter) +
-          // "_.csv";
+           String file = "./downloads/sormas_tasks_" + LocalDate.now().format(formatter) +
+           "_.csv";
+            Path file_path = Paths.get(file);
+            if(webDriverHelpers.isFileExists(file_path))
+            {
+                Files.delete(file_path);
 
+            }
           webDriverHelpers.clickOnWebElementBySelector(CUSTOM_TASK_EXPORT_DOWNLOAD_BUTTON);
 
-          Path file_path = Paths.get(file);
+
           webDriverHelpers.waitForFileExists(file_path, 90);
         });
 
