@@ -87,6 +87,9 @@ Feature: Vaccination tests
     And I check if generated document for Event Participant based on "VaccinationGenerationTest_EventParticipants.docx" contains all required fields
     Then I delete downloaded file created from "VaccinationGenerationTest_EventParticipants.docx" Document Template for Event Participant
 
+  #leading case - only vaccination date and name
+  #discarded case - all fields and same vaccination name and date
+  #expected - one vaccination updated with the information given by the vaccination of the discarded case
   @issue=SORDEV-11570 @env_de
   Scenario: Duplicate detection for vaccinations when merging cases[1]
     Given I log in as a Admin User
@@ -130,6 +133,9 @@ Feature: Vaccination tests
     And I click to edit 1 vaccination on Edit Case page
     And I check that displayed data in form is equal to whole data from duplicated entry
 
+  #leading case - all fields and same vaccination name and date
+  #discarded case - all fields with different value than leading case and same vaccination name and date
+  #expected - one vaccination updated with the information given by the vaccination of the leading case
   @issue=SORDEV-11570 @env_de
   Scenario: Duplicate detection for vaccinations when merging cases[2]
     Given I log in as a Admin User
@@ -174,6 +180,9 @@ Feature: Vaccination tests
     And I click to edit 1 vaccination on Edit Case page
     And I check that displayed vaccination date in form is equal to name from duplicated entry
 
+  #leading case - only vaccination date
+  #discarded case - only vaccination date same as leading
+  #expected - two vaccinations with same vaccination date
   @issue=SORDEV-11570 @env_de
   Scenario: Duplicate detection for vaccinations when merging cases[3]
     Given I log in as a Admin User
@@ -220,6 +229,9 @@ Feature: Vaccination tests
     And I click to edit 2 vaccination on Edit Case page
     And I check that displayed vaccination date in form is equal to date from duplicated entry
 
+  #leading case - only vaccination name
+  #discarded case - only vaccination name same as leading
+  #expected - two vaccinations with same vaccination name
   @issue=SORDEV-11570 @env_de
   Scenario: Duplicate detection for vaccinations when merging cases[4]
     Given I log in as a Admin User
@@ -265,6 +277,9 @@ Feature: Vaccination tests
     And I click to edit 2 vaccination on Edit Case page
     And I check that displayed vaccination date in form is equal to name from duplicated entry
 
+  #leading case - everything but vaccination date and name
+  #discarded case - everything but vaccination date and name
+  #expected - two vaccinations without vaccination name and date
   @issue=SORDEV-11570 @env_de
   Scenario: Duplicate detection for vaccinations when merging cases[5]
     Given I log in as a Admin User
@@ -310,6 +325,9 @@ Feature: Vaccination tests
     And I click to edit 2 vaccination on Edit Case page
     And I check that displayed vaccination form has empty vaccination date and name
 
+  #leading contact - only vaccination date and name
+  #discarded contact - all fields and same vaccination name and date
+  #expected - one vaccination updated with the information given by the vaccination of the discarded contact
   @issue=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts [1]
     Given API: I create a new person
@@ -362,6 +380,9 @@ Feature: Vaccination tests
     And I click to edit 1 vaccination on Edit Contact page
     And I check that displayed data in form is equal to whole data from duplicated entry
 
+  #leading contact - all fields and same vaccination name and date
+  #discarded contact - all fields with different value than leading contact and same vaccination name and date
+  #expected - one vaccination updated with the information given by the vaccination of the leading contact
   @issue=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts [2]
     Given API: I create a new person
@@ -415,6 +436,9 @@ Feature: Vaccination tests
     And I click to edit 1 vaccination on Edit Contact page
     And I check that displayed vaccination date in form is equal to name from duplicated entry
 
+  #leading contact - only vaccination date
+  #discarded contact - only vaccination date same as leading
+  #expected - two vaccinations with same vaccination date
   @issue=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts [3]
     Given API: I create a new person
@@ -470,6 +494,9 @@ Feature: Vaccination tests
     And I click to edit 2 vaccination on Edit Contact page
     And I check that displayed vaccination date in form is equal to date from duplicated entry
 
+  #leading contact - only vaccination name
+  #discarded contact - only vaccination name same as leading
+  #expected - two vaccinations with same vaccination name
   @issue=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts[4]
     Given API: I create a new person
@@ -526,6 +553,9 @@ Feature: Vaccination tests
     And I click to edit 2 vaccination on Edit Contact page
     And I check that displayed vaccination date in form is equal to name from duplicated entry
 
+  #leading contact - everything but vaccination date and name
+  #discarded contact - everything but vaccination date and name
+  #expected - two vaccinations without vaccination name and date
   @issue=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts[5]
     Given API: I create a new person
