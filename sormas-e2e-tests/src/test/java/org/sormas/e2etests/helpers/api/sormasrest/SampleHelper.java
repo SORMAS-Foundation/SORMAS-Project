@@ -15,9 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.helpers.api;
+package org.sormas.e2etests.helpers.api.sormasrest;
 
-import static org.sormas.e2etests.constants.api.Endpoints.TASKS_PATH;
+import static org.sormas.e2etests.constants.api.Endpoints.SAMPLES_PATH;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.http.Method;
@@ -26,29 +26,29 @@ import java.util.List;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.api.Request;
-import org.sormas.e2etests.entities.pojo.api.Task;
+import org.sormas.e2etests.entities.pojo.api.Sample;
 import org.sormas.e2etests.helpers.RestAssuredClient;
 
-public class TaskHelper {
+public class SampleHelper {
 
   private final RestAssuredClient restAssuredClient;
   private final ObjectMapper objectMapper;
 
   @Inject
-  public TaskHelper(RestAssuredClient restAssuredClient, ObjectMapper objectMapper) {
+  public SampleHelper(RestAssuredClient restAssuredClient, ObjectMapper objectMapper) {
     this.restAssuredClient = restAssuredClient;
     this.objectMapper = objectMapper;
   }
 
   @SneakyThrows
-  public void createTask(Task task) {
+  public void createSample(Sample sample) {
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
-    List<Task> listOfContacts = List.of(task);
+    List<Sample> listOfContacts = List.of(sample);
     objectMapper.writeValue(out, listOfContacts);
     restAssuredClient.sendRequest(
         Request.builder()
             .method(Method.POST)
-            .path(TASKS_PATH + "push")
+            .path(SAMPLES_PATH + "push")
             .body(out.toString())
             .build());
   }

@@ -101,6 +101,20 @@ public class CreateNewImmunizationSteps implements En {
           selectResponsibleRegion(immunization.getResponsibleRegion());
           selectResponsibleDistrict(immunization.getResponsibleDistrict());
         });
+
+    When(
+        "^I fill mandatory fields and immunization period in a new immunization popup$",
+        () -> {
+          immunization = immunizationService.buildGeneratedImmunization();
+          fillDateOfReport(immunization.getDateOfReport());
+          fillExternalId(immunization.getExternalId());
+          fillMeansOfImmunization(immunization.getMeansOfImmunization());
+          selectResponsibleRegion(immunization.getResponsibleRegion());
+          selectResponsibleDistrict(immunization.getResponsibleDistrict());
+          fillStartData(immunization.getStartDate());
+          fillEndData(immunization.getEndDate());
+          webDriverHelpers.clickOnWebElementBySelector(IMMUNIZATION_POPUP_SAVE_BUTTON);
+        });
   }
 
   private void fillDateOfReport(LocalDate date) {

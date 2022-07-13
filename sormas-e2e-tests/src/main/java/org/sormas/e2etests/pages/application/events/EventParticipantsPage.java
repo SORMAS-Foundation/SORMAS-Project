@@ -78,6 +78,9 @@ public class EventParticipantsPage {
   public static final By EVENT_TAB = By.id("tab-events-data");
   public static final By DEARCHIVE_REASON_TEXT_AREA = By.cssSelector(".popupContent textarea");
   public static final By CONFIRM_DEARCHIVE_BUTTON = By.id("actionConfirm");
+  public static final By GENERAL_COMMENT_TEXT_AREA = By.id("additionalDetails");
+  public static final By PASSPORT_NUMBER_INPUT = By.id("passportNumber");
+  public static final By INVOLVEMENT_DESCRIPTION_INPUT = By.id("involvementDescription");
 
   public static final By getEventsByCaseUuid(String uuid) {
     return By.cssSelector(String.format("[title = '%s']", uuid));
