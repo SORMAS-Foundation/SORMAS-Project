@@ -86,7 +86,7 @@ public class RemoteDriverFactory implements DriverFactory {
   @SneakyThrows
   private void checkIfDriverExists() {
     File driverPath = new File(remoteDriverPath);
-    if(!driverPath.exists()) {
+    if (!driverPath.exists()) {
       throw new Exception("Unable to find chromedriver!");
     }
   }

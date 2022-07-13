@@ -145,6 +145,7 @@ public class CreateNewCaseSteps implements En {
   protected static Case oneCase;
   public static final String userDirPath = System.getProperty("user.dir");
   public static List<String> casesUUID = new ArrayList<>();
+  private static String currentUrl;
 
   @Inject
   public CreateNewCaseSteps(
@@ -950,6 +951,36 @@ public class CreateNewCaseSteps implements En {
               "UUIDs of cases are not equal");
           softly.assertAll();
         });
+
+    When(
+        "I create new case with COVID-19 and variant {string}",
+        (String variant) -> {
+          caze = caseService.buildGeneratedCaseWithCovidVariant(variant);
+          fillDisease(caze.getDisease());
+          fillDiseaseVariant(caze.getDiseaseVariant());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
+          selectSex(caze.getSex());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
+          fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+          fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+          fillPlaceDescription(caze.getPlaceDescription());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+
+    When("I copy url of current case", () -> currentUrl = webDriverHelpers.returnURL());
+
+    When("I back to deleted case by url", () -> webDriverHelpers.accessWebSite(currentUrl));
   }
 
   private void fillPointOfEntryDetails(String pointOfEntryDetails) {

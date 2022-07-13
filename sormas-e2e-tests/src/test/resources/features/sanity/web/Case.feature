@@ -570,7 +570,7 @@ Feature: Case end to end tests
     And I check if Cause of death is Other cause
     And I check if Date of dead for specified case is correct
 
-  @issue=SORDEV-6612 @env_main
+  @issue=SORDEV-6612 @env_main @ignore
   Scenario: Manually triggered calculation of case classification
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -1380,6 +1380,7 @@ Feature: Case end to end tests
     And I fill first and last name with last created peron data in Pick or Create person in popup
     And I click on Search in Pick or create Person popup
     And I click on first result in Pick or create Person popup
+
   @issue=SORDEV-6609 @env_main
   Scenario: Test for case internal token
     Given I log in as a National User
@@ -1392,3 +1393,64 @@ Feature: Case end to end tests
     And I check that the Internal Token column is present
     And I filter for SAMPLE TOKEN in Cases Directory
     Then I check that at least one SAMPLE TOKEN is displayed in table
+
+  @issue=SORDEV-11422 @env_main
+    Scenario: Add reason for deletion to confirmation dialogue
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with specific data
+    When I copy url of current case
+    Then I click on Delete button from case
+    And I check if reason for deletion as "Deletion request by affected person according to GDPR" is available
+    And I check if reason for deletion as "Deletion request by another authority" is available
+    And I check if reason for deletion as "Entity created without legal reason" is available
+    And I check if reason for deletion as "Responsibility transferred to another authority" is available
+    And I check if reason for deletion as "Deletion of duplicate entries" is available
+    And I check if reason for deletion as "Other reason" is available
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from case
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Please choose a reason for deletion" appears next to Reason for deletion
+    When I set Reason for deletion as "Other reason"
+    Then I check if "Reason for deletion details" field is available in Confirm deletion popup in Edit Case
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Please add a reason for deletion" appears next to Reason for deletion
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from case
+    And I set Reason for deletion as "Deletion request by affected person according to GDPR"
+    And I click on Yes option in Confirm deletion popup
+    When I back to deleted case by url
+    Then I check if reason of deletion is set to "Deletion request by affected person according to GDPR"
+    And I check if EPID number input is disabled in Edit Case
+    And I check if General comment test area is disabled in Edit Case
+
+  @issue=SORDEV-11422 @env_de
+  Scenario: Add reason for deletion to confirmation dialogue in DE version
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I create a new case with specific data for DE version
+    When I copy url of current case
+    Then I click on Delete button from case
+    And I check if reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO" is available
+    And I check if reason for deletion as "Löschen auf Anforderung einer anderen Behörde" is available
+    And I check if reason for deletion as "Entität ohne Rechtsgrund angelegt" is available
+    And I check if reason for deletion as "Abgabe des Vorgangs wegen Nicht-Zuständigkeit" is available
+    And I check if reason for deletion as "Löschen von Duplikaten" is available
+    And I check if reason for deletion as "Anderer Grund" is available
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from case
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Bitte wählen Sie einen Grund fürs Löschen" appears next to Reason for deletion
+    When I set Reason for deletion as "Anderer Grund"
+    Then I check if "DETAILS ZUM GRUND DES LÖSCHENS" field is available in Confirm deletion popup in Edit Case
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Bitte geben Sie einen Grund fürs Löschen an" appears next to Reason for deletion
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from case
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    When I back to deleted case by url
+    Then I check if reason of deletion is set to "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I check if General comment test area is disabled in Edit Case

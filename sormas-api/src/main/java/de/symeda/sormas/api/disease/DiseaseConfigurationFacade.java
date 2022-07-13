@@ -21,7 +21,7 @@ public interface DiseaseConfigurationFacade {
 	 * (e.g. if active and primary are both true, only diseases that are both active and primary
 	 * are returned). Attributes that are set to null are ignored.
 	 */
-	List<Disease> getAllDiseases(Boolean active, Boolean primary, Boolean caseBased);
+	List<Disease> getAllDiseases(Boolean active, Boolean primary, boolean caseBased);
 
 	boolean isActiveDisease(Disease disease);
 
@@ -49,7 +49,7 @@ public interface DiseaseConfigurationFacade {
 
 	Disease getDefaultDisease();
 
-	List<Disease> getAllDiseasesWithFollowUp(Boolean active, Boolean primary, Boolean caseBased);
+	List<Disease> getAllDiseasesWithFollowUp(Boolean active, Boolean primary, boolean caseBased);
 
 	boolean usesExtendedClassification(Disease disease);
 

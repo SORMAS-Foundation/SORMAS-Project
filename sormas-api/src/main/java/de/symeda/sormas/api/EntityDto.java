@@ -133,7 +133,7 @@ public abstract class EntityDto implements Serializable, Cloneable, HasUuid {
 	}
 
 	@JsonIgnore
-	public String getCaption() {
+	public String buildCaption() {
 		return toString();
 	}
 

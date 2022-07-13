@@ -53,13 +53,12 @@ public class EditCasePage {
   public static final By CASE_CLASSIFICATION_COMBOBOX = By.cssSelector("#caseClassification div");
   public static final By CASE_CLASSIFICATION_SPAN =
       By.cssSelector("#caseClassification span input:checked+label");
-  public static final By CASE_CLASSIFICATION_INPUT =
-      By.cssSelector("#caseClassification input:checked+label");
+  public static final By CASE_CLASSIFICATION_INPUT = By.cssSelector("#caseClassification input");
   public static final By CLINICAL_CONFIRMATION_COMBOBOX =
       By.cssSelector("#clinicalConfirmation div");
   public static final By EPIDEMIOLOGICAL_CONFIRMATION_COMBOBOX =
       By.cssSelector("#epidemiologicalConfirmation div");
-  public static final By EPID_NUMBER_INPUT = By.cssSelector("#epidNumber input");
+  public static final By EPID_NUMBER_INPUT = By.cssSelector("#epidNumber");
   public static final By LABORATORY_DIAGNOSTIC_CONFIRMATION_COMBOBOX =
       By.cssSelector("#laboratoryDiagnosticConfirmation div");
   public static final By INVESTIGATION_STATUS_OPTIONS =
@@ -288,8 +287,25 @@ public class EditCasePage {
   public static final By EDIT_IMMUNIZATION_BUTTON =
       By.xpath(
           "//div[@location='immunizations']//div[@class='v-slot v-slot-link v-slot-compact v-align-right']");
+  public static final By GENERAL_COMMENT_TEXT_AREA = By.id("additionalDetails");
 
   public static By getCaseIDPathByIndex(int index) {
     return By.xpath(String.format("//table/tbody/tr[%s]/td[1]/a", index));
   }
+
+  public static By getByImmunizationUuid(String immunizationUuid) {
+    return By.id("edit-immunization-" + immunizationUuid);
+  }
+
+  public static final By IMMUNIZATION_CARD_IMMUNIZATION_PERIOD_LABEL =
+      By.xpath("//div[contains(text(),'Immunization period:')]");
+  public static final By IMMUNIZATION_CARD_IMMUNIZATION_STATUS_LABEL =
+      By.xpath("//div[contains(text(),'Immunization status:')]");
+  public static final By IMMUNIZATION_CARD_MANAGEMENT_STATUS_LABEL =
+      By.xpath("//div[contains(text(),'Management status:')]");
+  public static final By IMMUNIZATION_CARD_MEANS_OF_IMMUNIZATION_LABEL =
+      By.xpath("//div[contains(text(),'Means of immunization:')]");
+  public static final By IMMUNIZATION_CARD_IMMUNIZATION_UUID =
+      By.xpath(
+          "//div[@location='immunizations']//div[@class='v-slot v-slot-bold v-slot-uppercase v-align-middle']");
 }

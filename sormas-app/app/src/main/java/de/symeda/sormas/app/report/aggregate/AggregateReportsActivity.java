@@ -9,6 +9,7 @@ import de.symeda.sormas.app.BaseReportActivity;
 import de.symeda.sormas.app.BaseReportFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
+import de.symeda.sormas.app.util.Callback;
 
 public class AggregateReportsActivity extends BaseReportActivity {
 
@@ -40,5 +41,14 @@ public class AggregateReportsActivity extends BaseReportActivity {
 	@Override
 	protected boolean showTitleBar() {
 		return true;
+	}
+
+	@Override
+	protected Callback getSynchronizeResultCallback() {
+		return () -> {
+			showPreloader();
+			((AggregateReportsFragment) getActiveFragment()).refreshAggregateReports();
+			hidePreloader();
+		};
 	}
 }

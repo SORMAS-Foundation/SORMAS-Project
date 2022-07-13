@@ -22,7 +22,7 @@ import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.api.Contact;
 import org.sormas.e2etests.entities.pojo.api.Task;
 import org.sormas.e2etests.entities.services.api.TaskApiService;
-import org.sormas.e2etests.helpers.api.TaskHelper;
+import org.sormas.e2etests.helpers.api.sormasrest.TaskHelper;
 import org.sormas.e2etests.state.ApiState;
 
 public class TasksSteps implements En {

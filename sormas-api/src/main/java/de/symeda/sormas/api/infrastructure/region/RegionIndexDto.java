@@ -113,7 +113,7 @@ public class RegionIndexDto extends EntityDto {
 	}
 
 	@Override
-	public String getCaption() {
+	public String buildCaption() {
 		return getName();
 	}
 
