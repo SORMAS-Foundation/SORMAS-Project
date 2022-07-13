@@ -160,7 +160,7 @@ public class TestDataCreator {
 			userRoleDto.setEmailNotificationTypes(defaultUserRole.getEmailNotificationTypes());
 			userRoleDto.setSmsNotificationTypes(defaultUserRole.getSmsNotificationTypes());
 			userRoleDto.setJurisdictionLevel(defaultUserRole.getJurisdictionLevel());
-			userRoleDto = beanTest.getUserRoleFacade().saveUserRole(userRoleDto);
+			beanTest.getUserRoleService().persist(beanTest.getUserRoleFacade().fromDto(userRoleDto, false));
 			userRoleDtoMap.put(defaultUserRole, userRoleDto.toReference());
 			UserRole userRole = beanTest.getEagerUserRole(userRoleDto.getUuid());
 			userRoleMap.put(defaultUserRole, userRole);
@@ -179,6 +179,20 @@ public class TestDataCreator {
 			createUserRoles();
 		}
 		return userRoleMap.get(userRole);
+	}
+
+	public UserDto createTestUser() {
+
+		UserDto user = UserDto.build();
+		user.setFirstName("ad");
+		user.setLastName("min");
+		user.setUserName("admin");
+		user.setUserRoles(
+			new HashSet<>(Arrays.asList(getUserRoleReference(DefaultUserRole.ADMIN), getUserRoleReference(DefaultUserRole.NATIONAL_USER))));
+
+		beanTest.getUserService().persist(beanTest.getUserFacade().fromDto(user, false));
+
+		return user;
 	}
 
 	public UserDto createUser(RDCF rdcf, UserRoleReferenceDto userRole, Consumer<UserDto> customConfig) {

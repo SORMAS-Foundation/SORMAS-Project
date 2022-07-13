@@ -35,6 +35,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.Valid;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -304,6 +305,10 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 
 	@Override
 	public Collection<UserRoleDto> getByReferences(Set<UserRoleReferenceDto> references) {
+		if (CollectionUtils.isEmpty(references)) {
+			return Collections.emptyList();
+		}
+
 		return userRoleService.getByUuids(references.stream().map(UserRoleReferenceDto::getUuid).collect(Collectors.toList()))
 			.stream()
 			.map(UserRoleFacadeEjb::toDto)

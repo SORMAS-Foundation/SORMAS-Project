@@ -691,7 +691,7 @@ public class UserFacadeEjb implements UserFacade {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	private User fromDto(UserDto source, boolean checkChangeDate) {
+	public User fromDto(UserDto source, boolean checkChangeDate) {
 
 		User target = DtoHelper.fillOrBuildEntity(source, userService.getByUuid(source.getUuid()), userService::createUser, checkChangeDate);
 
