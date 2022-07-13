@@ -44,7 +44,6 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
@@ -87,7 +86,6 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	private UserDto natUser;
 	private TestDataCreator.RDCF rdcf;
 
-	@Before
 	public void init() {
 		super.init();
 		natUser = creator.createUser("", "", "", "Nat", "Usr", creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));

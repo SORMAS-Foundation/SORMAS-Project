@@ -136,7 +136,7 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 					IMMUNIZATION_LOC);
 			} else {
 				VaccinationListCriteria criteria = new VaccinationListCriteria.Builder(getReference()).build();
-				layout.addComponent(new SideComponentLayout(new VaccinationListComponent(criteria, this::showUnsavedChangesPopup)), VACCINATIONS_LOC);
+				layout.addComponent(new SideComponentLayout(new VaccinationListComponent(criteria, this::showUnsavedChangesPopup, false)), VACCINATIONS_LOC);
 			}
 		}
 	}

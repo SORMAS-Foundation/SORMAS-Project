@@ -94,13 +94,15 @@ public class PersonDirectorySteps implements En {
     Then(
         "I open the last created person linked with Case",
         () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MULTIPLE_OPTIONS_SEARCH_INPUT);
           aCase = EditCaseSteps.aCase;
           String PersonFullName = aCase.getFirstName() + " " + aCase.getLastName();
           TimeUnit.SECONDS.sleep(5); // waiting for event table grid reloaded
           webDriverHelpers.fillAndSubmitInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, PersonFullName);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               PERSON_RESULTS_UUID_LOCATOR_FROM_GRID);
-          webDriverHelpers.clickOnWebElementBySelector(PERSON_RESULTS_UUID_LOCATOR_FROM_GRID);
+          webDriverHelpers.doubleClickOnWebElementBySelector(PERSON_RESULTS_UUID_LOCATOR_FROM_GRID);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
