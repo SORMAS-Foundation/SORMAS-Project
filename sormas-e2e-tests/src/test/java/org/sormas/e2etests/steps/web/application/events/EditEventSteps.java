@@ -88,6 +88,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGAT
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_ACTION_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_EVENT_GROUP_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_GROUP_EVENT_CREATED_MESSAGE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_IMMUNIZATION_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.OTHER_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.PATHOGEN_FINE_TYPING_COMPLIANT_WITH_THE_ONE_OF_CASES_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
@@ -142,10 +143,13 @@ import static org.sormas.e2etests.pages.application.events.EventParticipantsPage
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANT_DISPLAY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANT_UUID;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_TAB;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.GENERAL_COMMENT_TEXT_AREA;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.INVOLVEMENT_DESCRIPTION_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PARTICIPANT_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PARTICIPANT_FIRST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PARTICIPANT_LAST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PARTICIPANT_REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PASSPORT_NUMBER_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_PERSON_POPUP;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.POPUP_DISCARD_CHANGES_BUTTON;
@@ -230,6 +234,7 @@ public class EditEventSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
   public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   public static final String userDirPath = System.getProperty("user.dir");
+  private static String currentUrl;
   LocalDate dateOfBirth;
   List<Person> eventParticipantList = new ArrayList<>();
 
@@ -652,6 +657,8 @@ public class EditEventSteps implements En {
         "I click on save button in Add Participant form",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          TimeUnit.SECONDS.sleep(1); // wait for reaction
+          webDriverHelpers.waitForPageLoaded();
         });
     When(
         "I add a participant to the event",
@@ -1574,6 +1581,70 @@ public class EditEventSteps implements En {
           String archiveDearchive =
               webDriverHelpers.getTextFromWebElement(ARCHIVE_EVENT_PARTICIPANT_BUTTON);
           Assert.assertEquals(archiveDearchive, "De-Archive", "Event is not archived.");
+        });
+
+    When(
+        "I copy url of current event participant", () -> currentUrl = webDriverHelpers.returnURL());
+
+    When(
+        "I click on Delete button from event participant",
+        () -> {
+          webDriverHelpers.scrollToElement(DELETE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+        });
+
+    When(
+        "I back to deleted event participant by url",
+        () -> webDriverHelpers.accessWebSite(currentUrl));
+
+    When(
+        "I check if Passport number input on event participant edit page is disabled",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementEnabled(PASSPORT_NUMBER_INPUT),
+              "Passport number input is enabled");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if General comment on event participant edit page is disabled",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementEnabled(GENERAL_COMMENT_TEXT_AREA),
+              "General comment text area is enabled");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if Involvement description input on event participant edit page is disabled",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementEnabled(INVOLVEMENT_DESCRIPTION_INPUT),
+              "General comment text area is enabled");
+          softly.assertAll();
+        });
+
+    And(
+        "I set Disease combobox to {string} value from Edit Event Page",
+        (String option) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(DISEASE_COMBOBOX);
+          webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, option);
+        });
+
+    And(
+        "^I check that New immunization card is not available$",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(NEW_IMMUNIZATION_BUTTON, 2),
+              "Contacts With Source Case box is visible!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I click on the NEW IMMUNIZATION button in Edit event participant$",
+        () -> {
+          webDriverHelpers.scrollToElement(NEW_IMMUNIZATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_IMMUNIZATION_BUTTON);
         });
   }
 

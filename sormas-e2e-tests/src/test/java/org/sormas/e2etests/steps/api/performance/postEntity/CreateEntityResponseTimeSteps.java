@@ -32,9 +32,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.entities.pojo.api.*;
 import org.sormas.e2etests.entities.services.api.*;
 import org.sormas.e2etests.helpers.RestAssuredClient;
-import org.sormas.e2etests.helpers.api.CaseHelper;
-import org.sormas.e2etests.helpers.api.ContactHelper;
-import org.sormas.e2etests.helpers.api.PersonsHelper;
+import org.sormas.e2etests.helpers.api.sormasrest.CaseHelper;
+import org.sormas.e2etests.helpers.api.sormasrest.ContactHelper;
+import org.sormas.e2etests.helpers.api.sormasrest.PersonsHelper;
 import org.testng.Assert;
 
 @Slf4j

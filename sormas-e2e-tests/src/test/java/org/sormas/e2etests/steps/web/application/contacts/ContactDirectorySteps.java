@@ -808,7 +808,7 @@ public class ContactDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
               CONTACT_DIRECTORY_DETAILED_PAGE_CONFIRM_FILTER_BUTTON);
-          //TODO -> replace with wait for counter to change implementation
+          // TODO -> replace with wait for counter to change implementation
           TimeUnit.SECONDS.sleep(2);
         });
 

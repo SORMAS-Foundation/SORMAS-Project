@@ -23,7 +23,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLO
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_DOCUMENT_EMPTY_TEXT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_UPLOADED_TEST_FILE;
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DELETE_LAST_UPDATED_CASE_DOCUMENT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DOWNLOAD_LAST_UPDATED_CASE_DOCUMENT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NEW_DOCUMENT_BUTTON;
@@ -35,6 +35,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DO
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES_POPUP_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_IMMUNIZATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UPLOAD_DOCUMENT_CHECKBOX;
@@ -780,7 +781,7 @@ public class EditContactSteps implements En {
     When(
         "^I click Yes, for all in conversion to case form$",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_POPUP_SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
     When(
@@ -1071,6 +1072,13 @@ public class EditContactSteps implements En {
               webDriverHelpers.isElementEnabled(CASE_OR_EVENT_INFORMATION_CONTACT_TEXT_AREA),
               "Case or event information text area is enabled");
           softly.assertAll();
+        });
+
+    And(
+        "^I click on the NEW IMMUNIZATION button in Edit contact$",
+        () -> {
+          webDriverHelpers.scrollToElement(NEW_IMMUNIZATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_IMMUNIZATION_BUTTON);
         });
   }
 

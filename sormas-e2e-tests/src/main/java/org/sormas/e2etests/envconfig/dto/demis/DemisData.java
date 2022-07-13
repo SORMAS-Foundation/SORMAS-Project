@@ -15,25 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.envconfig.dto;
+package org.sormas.e2etests.envconfig.dto.demis;
 
-import java.util.List;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.Value;
-import org.sormas.e2etests.envconfig.dto.demis.DemisData;
+import lombok.*;
 
 @Value
 @AllArgsConstructor
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
-public class Environment {
+public class DemisData {
 
-  String name;
-  String identifier;
-  String url;
-  DemisData demisData;
-  List<EnvUser> users;
+  String demisUrl;
+  String authPath;
+  String adapterPath;
+  String certificatePath;
+  String certificatePassword;
+  String authRequestBody;
 }

@@ -36,7 +36,7 @@ public class AggregateReportCriteria extends BaseCriteria implements Serializabl
 	private Boolean showZeroRows = Boolean.FALSE;
 	private Boolean showOnlyDuplicates = Boolean.FALSE;
 	private UserReferenceDto reportingUser;
-	private Boolean forceJurisdictionCheck = false;
+	private Boolean considerNullJurisdictionCheck = false;
 
 	private AggregateReportGroupingLevel aggregateReportGroupingLevel;
 
@@ -159,11 +159,11 @@ public class AggregateReportCriteria extends BaseCriteria implements Serializabl
 	}
 
 	@IgnoreForUrl
-	public Boolean isForceJurisdictionCheck() {
-		return forceJurisdictionCheck;
+	public Boolean isConsiderNullJurisdictionCheck() {
+		return considerNullJurisdictionCheck;
 	}
 
-	public void setForceJurisdictionCheck(Boolean forceJurisdictionCheck) {
-		this.forceJurisdictionCheck = forceJurisdictionCheck;
+	public void setConsiderNullJurisdictionCheck(Boolean considerNullJurisdictionCheck) {
+		this.considerNullJurisdictionCheck = considerNullJurisdictionCheck;
 	}
 }
