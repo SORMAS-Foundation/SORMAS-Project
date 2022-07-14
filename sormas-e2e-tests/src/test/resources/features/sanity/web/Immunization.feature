@@ -261,3 +261,25 @@ Feature: Immunization end to end tests
     And I check that displayed vaccination card has correct vaccination date and name
     Then I check if an edit icon is available on vaccination card on Edit Case page
     And I check if Vaccination Status is set to "Geimpft" on Edit Case page
+    And I navigate to symptoms tab
+    And I set Fever Symptoms to "JA" on the Symptoms tab
+    And I set Date of symptom onset to 7 days before the vaccination date on the Symptoms tab for DE
+    And I click on save case button in Symptoms tab
+    And I navigate to case tab
+    Then I check that vaccination entry is greyed out in the vaccination card
+    And I check if an edit icon is available on vaccination card on Edit Case page
+    And I check the displayed message is correct after hovering over the Vaccination Card Info icon for DE
+    And I click on the Edit Vaccination icon on vaccination card on Edit Case page
+    And I remove the vaccination date in displayed vaccination form
+    And I click SAVE button in new Vaccination form
+    And I check that the vaccination card displays "KEIN IMPFDATUM" in place of the vaccination date
+    And I click on the Edit Vaccination icon on vaccination card on Edit Case page
+    And I set the vaccination date 7 days before the date of symptom in displayed vaccination form
+    And I click SAVE button in new Vaccination form
+    And I check that displayed vaccination card has correct vaccination date and name
+    Then I click Link Event button on Edit Case Page for DE
+
+
+
+
+

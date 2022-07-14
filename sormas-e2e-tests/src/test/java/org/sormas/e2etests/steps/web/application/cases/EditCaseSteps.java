@@ -2151,6 +2151,8 @@ public class EditCaseSteps implements En {
     And(
         "^I check that displayed vaccination card has correct vaccination date and name$",
         () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(REPORT_DATE_INPUT);
           softly.assertEquals(
               CreateNewVaccinationSteps.vaccination.getVaccinationDate(),
               collectVaccinationData().getVaccinationDate(),
@@ -2166,6 +2168,54 @@ public class EditCaseSteps implements En {
         "^I check if an edit icon is available on vaccination card on Edit Case page$",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EDIT_VACCINATION_BUTTON);
+        });
+
+    Then(
+        "^I check that vaccination entry is greyed out in the vaccination card$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(REPORT_DATE_INPUT);
+          webDriverHelpers.isElementGreyedOut(VACCINATION_CARD_VACCINATION_NAME);
+          webDriverHelpers.isElementGreyedOut(VACCINATION_CARD_VACCINATION_DATE);
+        });
+
+    And(
+        "^I check the displayed message is correct after hovering over the Vaccination Card Info icon for DE$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(VACCINATION_CARD_INFO_ICON);
+          webDriverHelpers.hoverToElement(VACCINATION_CARD_INFO_ICON);
+          String displayedText =
+              webDriverHelpers.getTextFromWebElement(VACCINATION_CARD_INFO_POPUP_TEXT);
+          softly.assertEquals(
+              "Diese Impfung ist f\u00FCr diesen Fall nicht relevant, weil das Datum der Impfung nach dem Datum des Symptombeginns oder dem Fall-Meldedatum liegt.",
+              displayedText,
+              "Message is incorrect");
+          softly.assertAll();
+        });
+
+    And(
+        "^I click on the Edit Vaccination icon on vaccination card on Edit Case page$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_VACCINATION_BUTTON);
+        });
+
+    And(
+        "^I check that the vaccination card displays \"([^\"]*)\" in place of the vaccination date$",
+        (String vaccinationDateDescription) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(REPORT_DATE_INPUT);
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(VACCINATION_CARD_VACCINATION_DATE),
+              vaccinationDateDescription,
+              "Vaccination date description is incorrect");
+          softly.assertAll();
+        });
+
+    Then(
+        "^I click Link Event button on Edit Case Page for DE$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(LINK_EVENT_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON_DE);
         });
   }
 

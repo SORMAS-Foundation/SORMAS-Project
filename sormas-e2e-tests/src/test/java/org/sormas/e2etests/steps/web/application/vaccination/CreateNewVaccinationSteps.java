@@ -218,6 +218,22 @@ public class CreateNewVaccinationSteps implements En {
           fillBatchNumber(vaccination.getBatchNumber());
           fillAtcCode(vaccination.getAtcCode());
         });
+
+    And(
+        "^I remove the vaccination date in displayed vaccination form$",
+        () -> {
+          webDriverHelpers.fillInWebElement(VACCINATION_DATE_INPUT, "");
+        });
+
+    And(
+        "^I set the vaccination date (\\d+) days before the date of symptom in displayed vaccination form$",
+        (Integer daysBeforeSymptom) -> {
+          LocalDate vaccinationDate = LocalDate.now().minusDays(14 + daysBeforeSymptom);
+          vaccination =
+              vaccinationService.buildGeneratedVaccinationWithSpecificVaccinationDateDE(
+                  vaccinationDate);
+          fillVaccinationDate(vaccination.getVaccinationDate(), Locale.GERMAN);
+        });
   }
 
   private void fillVaccinationDate(LocalDate date, Locale locale) {
