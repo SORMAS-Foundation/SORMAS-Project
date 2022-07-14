@@ -44,4 +44,12 @@ public class H2Function {
 	public static Date date(Date timestamp) {
 		return DateHelper.getStartOfDay(timestamp);
 	}
+
+	public static Date timestamp_subtract_days(Date timestamp, int days) {
+		return DateHelper.subtractDays(timestamp, days);
+	}
+
+	public static Date at_end_of_day(Date timestamp) {
+		return DateHelper.getEndOfDay(timestamp);
+	}
 }

@@ -91,6 +91,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.INVE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LEAVE_BULK_EDIT_MODE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LINE_LISTING_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MERGE_DUPLICATES_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MERGE_DUPLICATES_WARNING_DE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MORE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NAME_UUID_EPID_NUMBER_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_CASE_BUTTON;
@@ -306,6 +307,16 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(MERGE_DUPLICATES_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(ACTION_OKAY);
           webDriverHelpers.clickOnWebElementBySelector(ACTION_OKAY);
+        });
+    When(
+        "I click on Merge Duplicates on Case directory for DE",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(MERGE_DUPLICATES_BUTTON);
+        });
+    When(
+        "I check if message about long loading times appear for DE",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(MERGE_DUPLICATES_WARNING_DE);
         });
     When(
         "I click Enter Bulk Edit Mode on Case directory page",

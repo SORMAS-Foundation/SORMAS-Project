@@ -1466,3 +1466,11 @@ Feature: Case end to end tests
     Given I log in with National User
     Then I navigate to the last created case via the url
     And I check elements order on page before General comment field in DE
+
+  @issue=SORDEV-5567 @env_de
+  Scenario: Don't automatically load duplicates when switching to the case merge duplicates view
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the More button on Case directory page
+    Then I click on Merge Duplicates on Case directory for DE
+    And I check if message about long loading times appear for DE
