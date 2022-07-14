@@ -53,3 +53,13 @@ Feature: Follow-up new visit functionality
     Then I save the Visit data
     And I navigate to symptoms tab
     Then I check if created data is correctly displayed in Symptoms tab for Set cleared to UNKNOWN
+
+  @issue=SORDEV-5084 @env_main
+  Scenario: Check a new case data
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case and save phone number
+    Then I navigate to follow-up tab
+    And I click on new Visit button
+    Then I check if phone number is displayed in Create new visit popup

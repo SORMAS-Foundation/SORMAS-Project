@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<style>
+table, td, tr, th {
+  width: 100px;
+  text-align: left;
+   border: 1px solid black;
+}
+
+.headers {
+   text-align: left;
+}
+</style>
+
+</head>
+
+<body>
+<div class="container-fluid">
+<div class="row"><div class="col">
+    <div> <img src="images/logo.png" alt="Logo" style="width:200;height:200px"></div>
+<div id="date">
+   <p>Created on: 12-May-2022 12:13 PM</p>
+</div>
+<div class="shadow p-3 mb-5 bg-white rounded" style="width:100%;">
+	<h1 class="font-weight-bold"> Pages loading measurements results  </h1>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-lg-12 col-xl-4">
+<br>
+<table style="width: 40%;">
+	  <thead>
+		  <tr>
+			<th class="headers">Page name</th>
+			<th class="headers">Page loading time (seconds)</th>
+		  </tr>
+	  </thead>
+<tbody>
+ <tr>
+    <td> Samples page </td>
+    <td id="loadingTime"> 4.425 </td> </tr><tr>
+    <td> Cases page </td>
+    <td id="loadingTime"> 6.233 </td> </tr><tr>
+    <td> Tasks page </td>
+    <td> <font color="red"> 20.335 </font> </td> </tr><tr>
+    <td> Persons page </td>
+    <td> <font color="red"> 24.323 </font> </td> </tr><tr>
+    <td> Immunizations page </td>
+    <td> <font color="red"> 33.420 </font> </td> </tr><tr>
+    <td> Surveillance Dashboard page </td>
+    <td> <font color="red"> 38.114 </font> </td> </tr><tr>
+    <td> Contacts page </td>
+    <td> <font color="red"> 52.134 </font> </td> </tr><tr>
+    <td> Events page </td>
+    <td> <font color="red"> 53.28 </font> </td> </tr><tr>
+    <td> Contacts Dashboard page </td>
+    <td id="loadingTime"> 0.483 </td> </tr>
+</tbody>
+</table>
+</div>
+<div class="col-lg-12 col-xl-8">
+    <img src="images/BarChart.jpeg" alt="Chart" style="max-width:60%">
+</div>
+</div>
+</div>
+</body>
+</html>
+

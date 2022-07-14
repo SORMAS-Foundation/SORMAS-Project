@@ -575,8 +575,14 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				}
 			}
 
+			// Aggregate reports
+			if (DtoUserRightsHelper.isViewAllowed(AggregateReportDto.class)) {
+				List<String> aggregateReportUuids = executeUuidCall(RetroProvider.getAggregateReportFacade().pullUuids());
+				DatabaseHelper.getAggregateReportDao().deleteInvalid(aggregateReportUuids);
+			}
+
 			ConfigProvider.setLastObsoleteUuidsSyncDate(new Date());
-		} catch (SQLException e) {
+		} catch (SQLException | DaoException e) {
 			Log.e(SynchronizeDataAsync.class.getSimpleName(), "pullAndRemoveArchivedUuidsSince failed: " + e.getMessage());
 		}
 	}

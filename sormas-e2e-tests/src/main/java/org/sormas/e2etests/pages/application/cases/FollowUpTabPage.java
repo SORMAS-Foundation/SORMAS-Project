@@ -140,4 +140,6 @@ public class FollowUpTabPage {
   public static final By EDIT_VISIT_BUTTON = By.cssSelector("table span");
   public static final By SPECIFY_OTHER_SYMPTOMS =
       By.cssSelector("[id='otherNonHemorrhagicSymptomsText']");
+  public static final By CONTACT_PERSONS_PHONE_NUMBER =
+      By.xpath("//div[@class='v-link v-widget v-has-width']//span");
 }
