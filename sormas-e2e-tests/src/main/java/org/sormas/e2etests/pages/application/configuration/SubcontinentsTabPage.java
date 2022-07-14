@@ -22,7 +22,7 @@ import org.openqa.selenium.By;
 public class SubcontinentsTabPage {
     public static final By NUMBER_OF_SUBCONTINENTS =
             By.xpath(
-                    "/html/body/div[1]/div/div[2]/div/div[2]/div/div/div/div[3]/div/div/div[2]/div/div/div[3]/div");
+                    "//div[@class='v-label v-widget bold v-label-bold vspace-top-none v-label-vspace-top-none align-right v-label-align-right v-label-undef-w']");
     public static final By SUBCONTINENTS_TABLE_DATA = By.tagName("td");
     public static final By SUBCONTINENTS_TABLE_ROW =
             By.cssSelector("div.v-grid-tablewrapper tbody tr");

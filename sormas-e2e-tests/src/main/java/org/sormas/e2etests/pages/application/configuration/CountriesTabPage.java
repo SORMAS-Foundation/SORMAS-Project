@@ -25,7 +25,7 @@ public class CountriesTabPage {
   public static final By COUNTRY_GRID_RESULTS_ROWS = By.cssSelector("[role=rowgroup] tr a");
   public static final By NUMBER_OF_COUNTRIES =
           By.xpath(
-                  "/html/body/div[1]/div/div[2]/div/div[2]/div/div/div/div[3]/div/div/div[2]/div/div/div[3]/div");
+                  "//div[@class='v-label v-widget bold v-label-bold vspace-top-none v-label-vspace-top-none align-right v-label-align-right v-label-undef-w']");
   public static final By COUNTRIES_TABLE_DATA = By.tagName("td");
   public static final By COUNTRIES_TABLE_ROW = By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By COUNTRIES_COLUMN_HEADERS =
