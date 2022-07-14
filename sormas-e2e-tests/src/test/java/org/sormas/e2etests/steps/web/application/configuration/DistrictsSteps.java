@@ -30,14 +30,14 @@ import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPa
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.CREATE_NEW_ENTRY_DISTRICTS_EPID_CODE_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.CREATE_NEW_ENTRY_DISTRICTS_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.CREATE_NEW_ENTRY_DISTRICTS_REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.DISTRICTS_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.DISTRICTS_NEW_ENTRY_BUTTON;
+import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.DISTRICTS_TABLE_DATA;
+import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.DISTRICTS_TABLE_ROW;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.EDIT_DISTRICT_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.RESET_FILTERS_DISTRICTS_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.SAVE_NEW_ENTRY_DISTRICTS;
 import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.SEARCH_DISTRICT_INPUT;
-import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.DISTRICTS_TABLE_DATA;
-import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.DISTRICTS_TABLE_ROW;
-import static org.sormas.e2etests.pages.application.configuration.DistrictsTabPage.DISTRICTS_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.ARRIVAL_DATE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;

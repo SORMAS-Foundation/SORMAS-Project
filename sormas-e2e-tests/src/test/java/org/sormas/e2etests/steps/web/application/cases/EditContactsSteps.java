@@ -84,7 +84,6 @@ import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;

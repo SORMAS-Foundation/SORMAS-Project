@@ -984,28 +984,28 @@ public class CreateNewCaseSteps implements En {
 
     When("I back to deleted case by url", () -> webDriverHelpers.accessWebSite(currentUrl));
 
-      When(
-              "^I create a new case and save phone number$",
-              () -> {
-                  caze = caseService.buildGeneratedCase();
-                  fillAllCaseFields(caze);
-                  phoneNumber = caze.getPrimaryPhoneNumber();
-                  webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-                  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
-                  webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
-                  webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
-              });
+    When(
+        "^I create a new case and save phone number$",
+        () -> {
+          caze = caseService.buildGeneratedCase();
+          fillAllCaseFields(caze);
+          phoneNumber = caze.getPrimaryPhoneNumber();
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
 
-      When(
-              "I check if phone number is displayed in Create new visit popup",
-              () -> {
-                  webDriverHelpers.waitUntilIdentifiedElementIsPresent(CONTACT_PERSONS_PHONE_NUMBER);
-                  softly.assertEquals(
-                          phoneNumber,
-                          webDriverHelpers.getTextFromPresentWebElement(CONTACT_PERSONS_PHONE_NUMBER),
-                          "Phone numbers are not equal");
-                  softly.assertAll();
-              });
+    When(
+        "I check if phone number is displayed in Create new visit popup",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CONTACT_PERSONS_PHONE_NUMBER);
+          softly.assertEquals(
+              phoneNumber,
+              webDriverHelpers.getTextFromPresentWebElement(CONTACT_PERSONS_PHONE_NUMBER),
+              "Phone numbers are not equal");
+          softly.assertAll();
+        });
   }
 
   private void fillPointOfEntryDetails(String pointOfEntryDetails) {

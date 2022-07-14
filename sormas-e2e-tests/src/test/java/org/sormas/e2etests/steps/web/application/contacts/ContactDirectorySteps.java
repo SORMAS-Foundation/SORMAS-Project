@@ -897,7 +897,7 @@ public class ContactDirectorySteps implements En {
     When(
         "^I click on Line Listing button$",
         () -> {
-            TimeUnit.SECONDS.sleep(2);
+          TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LINE_LISTING);
           webDriverHelpers.doubleClickOnWebElementBySelector(LINE_LISTING);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(LINE_LISTING_SAVE_BUTTON);

@@ -29,7 +29,6 @@ import com.google.inject.Inject;
 import cucumber.api.java8.En;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
-import org.openqa.selenium.By;
 import org.sormas.e2etests.enums.UserRoles;
 import org.sormas.e2etests.envconfig.dto.EnvUser;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
@@ -94,8 +93,7 @@ public class LoginSteps implements En {
           log.info("Clicking on login button");
           webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
           webDriverHelpers.waitForPageLoaded();
-          if (webDriverHelpers.isElementVisibleWithTimeout(
-                  GDPR_CHECKBOX, 10)) {
+          if (webDriverHelpers.isElementVisibleWithTimeout(GDPR_CHECKBOX, 10)) {
             webDriverHelpers.clickOnWebElementBySelector(GDPR_CHECKBOX);
             webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_GDPR_POPUP);
           }
