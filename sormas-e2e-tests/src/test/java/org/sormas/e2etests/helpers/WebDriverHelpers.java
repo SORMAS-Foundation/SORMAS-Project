@@ -1009,7 +1009,6 @@ public class WebDriverHelpers {
   }
 
   public void checkIsPopupContainsList(By popup, List popupElements) {
-
     String popupElementXPath;
     String popupXPath = popup.toString();
     By lookingElement;
