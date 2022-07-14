@@ -216,7 +216,6 @@ Feature: Sample Functionalities
     Then I navigate to the last created contact via the url
     Then I validate date and time is present on sample card
 
-
   @env_de @issue=SORDEV-7427
   Scenario: Test Make date fields in sample creation mask and information non-compulsory
     When API: I create a new person

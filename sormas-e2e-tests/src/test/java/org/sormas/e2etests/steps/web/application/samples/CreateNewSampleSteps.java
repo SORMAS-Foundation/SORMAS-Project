@@ -674,18 +674,21 @@ public class CreateNewSampleSteps implements En {
               "Type of test is incorrect");
           softly.assertAll();
         });
+
     And(
         "I select Sent dispatched checkbox",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAMPLE_SHIPPED_CHECKBOX);
           webDriverHelpers.clickOnWebElementBySelector(SAMPLE_SHIPPED_CHECKBOX);
         });
+
     And(
         "I select Received checkbox",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAMPLE_RECEIVED_CHECKBOX);
           webDriverHelpers.clickOnWebElementBySelector(SAMPLE_RECEIVED_CHECKBOX);
         });
+
     Then(
         "I check is Sent dispatched Date and Received Date fields required",
         () -> {
@@ -693,17 +696,18 @@ public class CreateNewSampleSteps implements En {
 
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(DATE_SAMPLE_RECEIVED);
         });
+
     And(
         "I click Add Pathogen test in Sample creation page in German",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST_BUTTON_DE);
-        });
+        () -> webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST_BUTTON_DE));
+
     And(
         "I check DATE AND TIME OF RESULT field",
         () -> {
           TimeUnit.SECONDS.sleep(10);
           webDriverHelpers.getWebElement(DATE_AND_TIME_OF_RESULTS_DE);
         });
+
     And(
         "I click on save sample button",
         () -> {
