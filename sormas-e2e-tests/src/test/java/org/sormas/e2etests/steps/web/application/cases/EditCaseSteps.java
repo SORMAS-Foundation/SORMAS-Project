@@ -2188,6 +2188,14 @@ public class EditCaseSteps implements En {
         });
 
     When(
+        "I change disease to {string} in the case tab",
+        (String disease) -> {
+          webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CHANGE_DISEASE_POPUP_TITLE);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM);
+        });
+
+    When(
         "I check the end of processing date in the archive popup and select Archive cases checkbox",
         () -> {
           String endOfProcessingDate;

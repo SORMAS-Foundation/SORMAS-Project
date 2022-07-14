@@ -1463,6 +1463,30 @@ Feature: Case end to end tests
     Then I click on Merge Duplicates on Case directory for DE
     And I check if message about long loading times appear for DE
 
+    @issue=SORDEV-10361 @env_main @testIt
+    Scenario: Test Hide "buried" within Person present condition for Covid-19 [2] (INT)
+      Given I log in as a Admin User
+      And I click on the Cases button from navbar
+      And I click on the NEW CASE button
+      When I create a new case with specific data
+      Then I check the created data is correctly displayed on Edit case page
+      And I check the created data is correctly displayed on Edit case person page
+      Then I check if Present condition of person combobox has value "Alive"
+      And I check if Present condition of person combobox has value "Dead"
+      And I check if Present condition of person combobox has value "Unknown"
+      Then I check if Present condition of person combobox has no value "Buried"
+      Then I navigate to case tab
+      And I change disease to "Anthrax" in the case tab
+      Then I click on Save button in Case form
+      And I navigate to case person tab
+      Then I check if Present condition of person combobox has value "Alive"
+      And I check if Present condition of person combobox has value "Dead"
+      And I check if Present condition of person combobox has value "Unknown"
+      Then I check if Present condition of person combobox has value "Buried"
+      And I check if "Date of burial" field is present in case person
+      And I check if "Burial conductor" field is present in case person
+      And I check if "Burial place description" field is present in case person
+
     @issue=SORDEV-9792 @env_de
       Scenario: Test CoreAdo: Introduce "end of processing date" for cases
       Given I log in as a Admin User
