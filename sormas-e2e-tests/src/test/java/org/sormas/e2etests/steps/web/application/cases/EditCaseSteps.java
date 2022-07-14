@@ -200,6 +200,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOU
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DISCARD_BUTTON;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.getVaccinationByIndex;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.getReasonForDeletionDetailsFieldLabel;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.getVaccinationByIndex;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EVENT_PARTICIPANTS_DATA_TAB;
@@ -1688,6 +1689,17 @@ public class EditCaseSteps implements En {
     When(
         "^I click on the Cancel Follow-up button from Edit case page$",
         () -> webDriverHelpers.clickOnWebElementBySelector(CANCEL_FOLLOW_UP_BUTTON));
+    When(
+        "I click to edit {int} vaccination on Edit Case page",
+        (Integer index) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              getVaccinationByIndex(String.valueOf(index + 1)));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getVaccinationByIndex(String.valueOf(index + 1)));
+        });
+      When(
+              "I close vaccination form in Edit Case directory",
+              () -> webDriverHelpers.clickOnWebElementBySelector(CLOSE_IMPORT_TRAVEL_ENTRY_POPUP));
 
     Then(
         "^I check that Date of Follow-up Status Change and Responsible User are correctly displayed on Edit case page$",
