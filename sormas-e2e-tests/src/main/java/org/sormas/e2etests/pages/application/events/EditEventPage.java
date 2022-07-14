@@ -176,5 +176,6 @@ public class EditEventPage {
   public static By getGroupEventName(String groupEventName) {
     return By.xpath("//*[contains(text(),\"" + groupEventName + "\")]");
   }
+
   public static final By NEW_IMMUNIZATION_BUTTON = By.cssSelector("[id='New immunization']");
 }

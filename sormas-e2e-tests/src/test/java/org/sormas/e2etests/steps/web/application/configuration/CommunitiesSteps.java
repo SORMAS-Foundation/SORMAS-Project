@@ -41,7 +41,10 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.REPORT_DA
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.ARCHIVE_COMMUNITY_BUTTON;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITIES_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITIES_NEW_ENTRY_BUTTON;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITIES_TABLE_DATA;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITIES_TABLE_ROW;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.CONFIRM_ARCHIVING_COMMUNITY_TEXT;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.CONFIRM_ARCHIVING_YES_BUTTON;
@@ -54,9 +57,6 @@ import static org.sormas.e2etests.pages.application.configuration.CommunitiesTab
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.RESET_FILTERS_COMMUNITIES_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.SAVE_NEW_ENTRY_COMMUNITIES;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.SEARCH_COMMUNITY_INPUT;
-import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITIES_COLUMN_HEADERS;
-import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITIES_TABLE_ROW;
-import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITIES_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.configuration.ConfigurationTabsPage.CONFIGURATION_COMMUNITIES_TAB;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SEX_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
@@ -249,18 +249,18 @@ public class CommunitiesSteps implements En {
             webDriverHelpers.selectFromCombobox(
                 COMMUNITY_COMBOBOX, communities.getCommunityName()));
 
-      When(
-              "I check that Voreingestellte Gemeinde is correctly displayed",
-              () -> {
-                  webDriverHelpers.fillAndSubmitInWebElement(
-                          SEARCH_COMMUNITY_INPUT, "Voreingestellte Gemeinde");
-                  TimeUnit.SECONDS.sleep(2); // wait for filter
-                  List<Map<String, String>> tableRowsData = getTableRowsData();
-                  softly.assertTrue(
-                          tableRowsData.toString().contains("NAME=Voreingestellte Gemeinde"),
-                          "Voreingestellte Gemeinde is not correctly displayed!");
-                  softly.assertAll();
-              });
+    When(
+        "I check that Voreingestellte Gemeinde is correctly displayed",
+        () -> {
+          webDriverHelpers.fillAndSubmitInWebElement(
+              SEARCH_COMMUNITY_INPUT, "Voreingestellte Gemeinde");
+          TimeUnit.SECONDS.sleep(2); // wait for filter
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          softly.assertTrue(
+              tableRowsData.toString().contains("NAME=Voreingestellte Gemeinde"),
+              "Voreingestellte Gemeinde is not correctly displayed!");
+          softly.assertAll();
+        });
   }
 
   private void fillSpecificCaseFields(Case caze, Communities communities) {

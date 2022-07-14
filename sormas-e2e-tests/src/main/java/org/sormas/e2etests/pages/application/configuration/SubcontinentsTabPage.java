@@ -20,12 +20,12 @@ package org.sormas.e2etests.pages.application.configuration;
 import org.openqa.selenium.By;
 
 public class SubcontinentsTabPage {
-    public static final By NUMBER_OF_SUBCONTINENTS =
-            By.xpath(
-                    "//div[@class='v-label v-widget bold v-label-bold vspace-top-none v-label-vspace-top-none align-right v-label-align-right v-label-undef-w']");
-    public static final By SUBCONTINENTS_TABLE_DATA = By.tagName("td");
-    public static final By SUBCONTINENTS_TABLE_ROW =
-            By.cssSelector("div.v-grid-tablewrapper tbody tr");
-    public static final By SUBCONTINENTS_COLUMN_HEADERS =
-            By.cssSelector("thead" + " .v-grid-column-default-header-content");
+  public static final By NUMBER_OF_SUBCONTINENTS =
+      By.xpath(
+          "//div[@class='v-label v-widget bold v-label-bold vspace-top-none v-label-vspace-top-none align-right v-label-align-right v-label-undef-w']");
+  public static final By SUBCONTINENTS_TABLE_DATA = By.tagName("td");
+  public static final By SUBCONTINENTS_TABLE_ROW =
+      By.cssSelector("div.v-grid-tablewrapper tbody tr");
+  public static final By SUBCONTINENTS_COLUMN_HEADERS =
+      By.cssSelector("thead" + " .v-grid-column-default-header-content");
 }
