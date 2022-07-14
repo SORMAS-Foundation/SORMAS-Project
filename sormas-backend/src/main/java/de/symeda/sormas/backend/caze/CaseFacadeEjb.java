@@ -886,16 +886,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		List<Long> resultCaseIds = resultList.stream().map(CaseExportDto::getId).collect(Collectors.toList());
 		if (!resultList.isEmpty()) {
-			Map<Long, Symptoms> symptoms = null;
-			if (ExportHelper.shouldExportFields(exportConfiguration, CaseDataDto.SYMPTOMS)) {
-				List<Symptoms> symptomsList = null;
-				CriteriaQuery<Symptoms> symptomsCq = cb.createQuery(Symptoms.class);
-				Root<Symptoms> symptomsRoot = symptomsCq.from(Symptoms.class);
-				Expression<String> symptomsIdsExpr = symptomsRoot.get(Symptoms.ID);
-				symptomsCq.where(symptomsIdsExpr.in(resultList.stream().map(CaseExportDto::getSymptomsId).collect(Collectors.toList())));
-				symptomsList = em.createQuery(symptomsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-				symptoms = symptomsList.stream().collect(Collectors.toMap(Symptoms::getId, Function.identity()));
-			}
+			List<Symptoms> symptomsList = null;
+			CriteriaQuery<Symptoms> symptomsCq = cb.createQuery(Symptoms.class);
+			Root<Symptoms> symptomsRoot = symptomsCq.from(Symptoms.class);
+			Expression<String> symptomsIdsExpr = symptomsRoot.get(Symptoms.ID);
+			symptomsCq.where(symptomsIdsExpr.in(resultList.stream().map(CaseExportDto::getSymptomsId).collect(Collectors.toList())));
+			symptomsList = em.createQuery(symptomsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
+			Map<Long, Symptoms> symptoms = symptomsList.stream().collect(Collectors.toMap(Symptoms::getId, Function.identity()));
 
 			Map<Long, HealthConditions> healthConditions = null;
 			if (exportType == null || exportType == CaseExportType.CASE_MANAGEMENT) {
@@ -1049,7 +1046,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.COUNTRY)) {
 					exportDto.setCountry(configFacade.getEpidPrefix());
 				}
-				if (symptoms != null) {
+				if (ExportHelper.shouldExportFields(exportConfiguration, CaseDataDto.SYMPTOMS)) {
 					Optional.ofNullable(symptoms.get(exportDto.getSymptomsId()))
 						.ifPresent(symptom -> exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptom)));
 				}
@@ -1144,9 +1141,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
 							Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
 
-							List<Vaccination> relevantSortedVaccinations = getRelevantSortedVaccinations(
-								exportDto.getUuid(),
-								filteredImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList()));
+							List<Vaccination> relevantSortedVaccinations = vaccinationService.getRelevantSortedVaccinations(
+								filteredImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList()),
+								exportDto.getSymptoms().getOnsetDate(),
+								exportDto.getReportDate());
 							Vaccination firstVaccination = null;
 							Vaccination lastVaccination = null;
 
@@ -1287,15 +1285,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 
 		return caseUsers;
-	}
-
-	private List<Vaccination> getRelevantSortedVaccinations(String caseUuid, List<Vaccination> vaccinations) {
-		Case caze = caseService.getByUuid(caseUuid);
-
-		return vaccinations.stream()
-			.filter(v -> vaccinationService.isVaccinationRelevant(caze, v))
-			.sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
-			.collect(Collectors.toList());
 	}
 
 	private String getNumberOfDosesFromVaccinations(Vaccination vaccination) {

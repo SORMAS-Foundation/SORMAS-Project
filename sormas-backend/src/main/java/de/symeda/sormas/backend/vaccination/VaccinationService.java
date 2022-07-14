@@ -19,6 +19,7 @@ import static de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect.AT_END_OF_DAY
 import static de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect.TIMESTAMP_SUBTRACT_DAYS;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -54,6 +55,7 @@ import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
@@ -223,13 +225,7 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 	 * @return true when the vaccination is relevant, false otherwise
 	 */
 	public boolean isVaccinationRelevant(Event event, Vaccination vaccination) {
-		if (event.getStartDate() != null) {
-			return isVaccinationRelevant(vaccination, event.getStartDate(), null);
-
-		} else {
-			return isVaccinationRelevant(vaccination, event.getEndDate(), event.getReportDateTime());
-		}
-
+		return isVaccinationRelevant(vaccination, event.getStartDate(), event.getEndDate(), event.getReportDateTime());
 	}
 
 	/*
@@ -237,11 +233,23 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 	 * ContactService.updateVaccinationStatuses(...) and
 	 * EventParticipantService.updateVaccinationStatuses(...).
 	 */
-	private boolean isVaccinationRelevant(Vaccination vaccination, Date primaryDate, Date fallbackDate) {
+	public boolean isVaccinationRelevant(Vaccination vaccination, Date... relevanceFilterDates) {
+
 		Date relevantVaccineDate = getRelevantVaccineDate(vaccination);
-		return primaryDate != null
-			? DateHelper.getEndOfDay(relevantVaccineDate).before(primaryDate)
-			: DateHelper.getEndOfDay(relevantVaccineDate).before(fallbackDate);
+		for (Date comparisonDate : relevanceFilterDates) {
+			if (comparisonDate != null) {
+				return DateHelper.getEndOfDay(relevantVaccineDate).before(comparisonDate);
+			}
+		}
+		return false;
+	}
+
+	public List<Vaccination> getRelevantSortedVaccinations(List<Vaccination> vaccinations, Date... relevanceFilterDates) {
+
+		return vaccinations.stream()
+			.filter(v -> isVaccinationRelevant(v, relevanceFilterDates))
+			.sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
+			.collect(Collectors.toList());
 	}
 
 	public Predicate getRelevantVaccinationPredicate(
