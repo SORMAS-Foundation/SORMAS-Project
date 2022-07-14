@@ -140,7 +140,8 @@ public class TravelEntryController {
 			travelEntryEditForm.getFieldGroup());
 
 		editComponent.getButtonsPanel()
-			.addComponentAsFirst(new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, travelEntry.isDeleted()));
+			.addComponentAsFirst(
+				new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, travelEntry.isDeleted(), TravelEntryDto.I18N_PREFIX));
 
 		if (travelEntry.isDeleted()) {
 			editComponent.getWrappedComponent().getField(TravelEntryDto.DELETION_REASON).setVisible(true);

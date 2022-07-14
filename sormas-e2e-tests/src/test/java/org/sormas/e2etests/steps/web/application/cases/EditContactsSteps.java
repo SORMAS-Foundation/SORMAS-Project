@@ -73,16 +73,21 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SAV
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.TYPE_OF_CONTACT_OPTIONS;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CREATE_NEW_PERSON_RADIO_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_CONTACT_POPUP;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_PERSON_POPUP;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_POPUP_SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.getVaccinationByIndex;
 import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK_TYPE_COMBOBOX;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -216,6 +221,14 @@ public class EditContactsSteps implements En {
           }
         });
     When(
+        "I click to edit {int} vaccination on Edit Contact page",
+        (Integer index) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              getVaccinationByIndex(String.valueOf(index + 1)));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getVaccinationByIndex(String.valueOf(index + 1)));
+        });
+    When(
         "I select first existing contact from the Case Contact Import popup",
         () -> {
           if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_CONTACT_POPUP, 15)) {
@@ -225,6 +238,9 @@ public class EditContactsSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(COMMIT_BUTTON);
           }
         });
+    When(
+        "I close import popup in Edit Contact directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CLOSE_IMPORT_TRAVEL_ENTRY_POPUP));
 
     When(
         "I confirm the save Case Contact Import popup",
@@ -240,9 +256,9 @@ public class EditContactsSteps implements En {
     When(
         "I delete exported file from Case Contact Directory",
         () -> {
-          File toDelete =
-              new File(userDirPath + "/downloads/sormas_contacts_" + LocalDate.now() + "_.csv");
-          toDelete.deleteOnExit();
+          String toDelete = userDirPath + "/downloads/sormas_contacts_" + LocalDate.now() + "_.csv";
+          Path path = Paths.get(toDelete);
+          Files.delete(path);
         });
 
     When(

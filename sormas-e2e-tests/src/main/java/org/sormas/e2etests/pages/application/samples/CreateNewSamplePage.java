@@ -140,6 +140,8 @@ public class CreateNewSamplePage {
       By.cssSelector(".v-window-contents .v-slot:nth-of-type(1) .v-button");
   public static final By DATE_AND_TIME_OF_RESULTS =
       By.xpath("//div[contains(text(),'Date and time of result:')]");
+  public static final By UPDATE_CASE_DISEASE_VARIANT =
+      By.xpath("//*[text()='Update case disease variant']");
   public static final By DATE_AND_TIME_OF_RESULTS_DE =
       By.xpath("//*[@id='testDateTime_date' and not(contains(@class, 'v-required'))]");
   public static final By ERROR_POPUP =

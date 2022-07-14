@@ -33,6 +33,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CON
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_PERSON_RADIOBUTTON_DE;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -143,6 +144,34 @@ public class CreateNewContactSteps implements En {
           fillRelationshipWithCase(contact.getRelationshipWithCase());
           fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
         });
+
+    When(
+        "^I fill a new contact form for DE version without multicontact$",
+        () -> {
+          contact = contactService.buildGeneratedContactDE();
+          fillFirstName(contact.getFirstName());
+          fillLastName(contact.getLastName());
+          fillDateOfBirth(contact.getDateOfBirth(), Locale.GERMAN);
+          selectSex(contact.getSex());
+          fillPrimaryPhoneNumber(contact.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(contact.getPrimaryEmailAddress());
+          selectReturningTraveler(contact.getReturningTraveler());
+          fillDateOfReport(contact.getReportDate(), Locale.GERMAN);
+          fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
+          fillCaseIdInExternalSystem(contact.getCaseIdInExternalSystem());
+          fillDateOfLastContact(contact.getDateOfLastContact(), Locale.GERMAN);
+          fillCaseOrEventInformation(contact.getCaseOrEventInformation());
+          selectResponsibleRegion(contact.getResponsibleRegion());
+          selectResponsibleDistrict(contact.getResponsibleDistrict());
+          selectResponsibleCommunity(contact.getResponsibleCommunity());
+          selectTypeOfContact(contact.getTypeOfContact());
+          fillAdditionalInformationOnTheTypeOfContact(
+              contact.getAdditionalInformationOnContactType());
+          selectContactCategory(contact.getContactCategory().toUpperCase());
+          fillRelationshipWithCase(contact.getRelationshipWithCase());
+          fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
+        });
+
     When(
         "^I fill a new contact form with same person data for DE version$",
         () -> {
@@ -328,9 +357,22 @@ public class CreateNewContactSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
         });
     When(
+        "^I search for the last case uuid in the CHOOSE SOURCE Contact window for DE$",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              SOURCE_CASE_WINDOW_CONTACT_DE, apiState.getCreatedCase().getUuid());
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
+        });
+    When(
         "^I Pick a new person in Pick or create person popup during contact creation$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+    When(
+        "^I Pick a new person in Pick or create person popup during contact creation for DE$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(NEW_PERSON_RADIOBUTTON_DE);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
     When(
@@ -342,6 +384,17 @@ public class CreateNewContactSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON);
+        });
+    When(
+        "^I open the first found result in the CHOOSE SOURCE Contact window for De$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              SOURCE_CASE_CONTACT_WINDOW_FIRST_RESULT_OPTION);
+          webDriverHelpers.waitForRowToBeSelected(SOURCE_CASE_CONTACT_WINDOW_FIRST_RESULT_OPTION);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(
+              SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON_DE);
         });
     When(
         "^I click on SAVE new contact button$",

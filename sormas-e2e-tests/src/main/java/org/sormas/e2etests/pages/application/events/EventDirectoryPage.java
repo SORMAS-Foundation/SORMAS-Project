@@ -138,6 +138,14 @@ public class EventDirectoryPage {
       By.xpath("//div[@class='v-tooltip-text']");
   public static final By FIRST_GRID_UUID_RESULT = By.xpath("//table/tbody/tr[1]/td[1]");
   public static final By FIRST_GRID_DATE_OF_EVENT = By.xpath("//table/tbody/tr[1]/td[10]");
+  public static final By VALUE_SEPARATOR_INPUT =
+      By.cssSelector(".popupContent [class='v-filterselect v-widget'] input");
+  public static final By VALUE_SEPARATOR_COMBOBOX =
+      By.cssSelector(".popupContent [class='v-filterselect-button']");
+
+  public static By VALUE_SEPARATOR_COMBOBOX_LIST(String option) {
+    return By.xpath("//div[@id='VAADIN_COMBOBOX_OPTIONLIST']//*[text()='" + option + "']");
+  }
 
   public static By getCheckboxByIndex(String idx) {
     return By.xpath(String.format("(//input[@type=\"checkbox\"])[%s]", idx));
@@ -152,5 +160,9 @@ public class EventDirectoryPage {
 
   public static By getByEventUuid(String eventUuid) {
     return By.xpath(String.format("//a[@title='%s']", eventUuid));
+  }
+
+  public static By getByShortEventUuid(String eventUuid) {
+    return By.xpath(String.format("//*[contains(text(), '%s')]", eventUuid));
   }
 }

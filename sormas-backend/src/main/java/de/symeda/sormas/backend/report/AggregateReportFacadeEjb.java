@@ -35,11 +35,11 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.report.AggregateCaseCountDto;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
 import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.AggregateReportGroupingLevel;
-import de.symeda.sormas.api.report.AggregatedCaseCountDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AgeGroupUtils;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -88,6 +88,31 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	@EJB
 	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 
+	public static AggregateReportDto toDto(AggregateReport source) {
+
+		if (source == null) {
+			return null;
+		}
+
+		AggregateReportDto target = new AggregateReportDto();
+		DtoHelper.fillDto(target, source);
+
+		target.setDisease(source.getDisease());
+		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
+		target.setYear(source.getYear());
+		target.setEpiWeek(source.getEpiWeek());
+		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
+		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
+		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
+		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
+		target.setNewCases(source.getNewCases());
+		target.setLabConfirmations(source.getLabConfirmations());
+		target.setDeaths(source.getDeaths());
+		target.setAgeGroup(source.getAgeGroup());
+
+		return target;
+	}
+
 	@Override
 	public List<AggregateReportDto> getAllAggregateReportsAfter(Date date) {
 
@@ -121,46 +146,19 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		return service.getAllUuids();
 	}
 
-	public static AggregateReportDto toDto(AggregateReport source) {
-
-		if (source == null) {
-			return null;
-		}
-
-		AggregateReportDto target = new AggregateReportDto();
-		DtoHelper.fillDto(target, source);
-
-		target.setDisease(source.getDisease());
-		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
-		target.setYear(source.getYear());
-		target.setEpiWeek(source.getEpiWeek());
-		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
-		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
-		target.setHealthFacility(FacilityFacadeEjb.toReferenceDto(source.getHealthFacility()));
-		target.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(source.getPointOfEntry()));
-		target.setNewCases(source.getNewCases());
-		target.setLabConfirmations(source.getLabConfirmations());
-		target.setDeaths(source.getDeaths());
-		target.setAgeGroup(source.getAgeGroup());
-
-		return target;
-	}
-
 	@Override
-	public List<AggregatedCaseCountDto> getIndexList(AggregateReportCriteria criteria) {
+	public List<AggregateCaseCountDto> getIndexList(AggregateReportCriteria criteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<AggregatedCaseCountDto> cq = cb.createQuery(AggregatedCaseCountDto.class);
+		CriteriaQuery<AggregateCaseCountDto> cq = cb.createQuery(AggregateCaseCountDto.class);
 		Root<AggregateReport> root = cq.from(AggregateReport.class);
+		AggregateReportQueryContext queryContext = new AggregateReportQueryContext(cb, cq, root);
+		AggregateReportJoins joins = queryContext.getJoins();
 
-		Predicate filter = service.createUserFilter(cb, cq, root);
+		Predicate filter = service.createUserFilter(queryContext);
 		if (criteria != null) {
 			Predicate criteriaFilter = service.createCriteriaFilter(criteria, cb, cq, root);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-		}
-
-		if (filter != null) {
-			cq.where(filter);
 		}
 
 		List<Selection<?>> selectionList = new ArrayList<>(
@@ -185,43 +183,80 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		if (criteria != null && criteria.getAggregateReportGroupingLevel() != null) {
 			groupingLevel = criteria.getAggregateReportGroupingLevel();
 
-			if (shouldIncludeRegion(groupingLevel)) {
-				Join<AggregateReport, Region> regionJoin = root.join(AggregateReport.REGION, JoinType.LEFT);
-				List<Path<Object>> regionPath = Arrays.asList(regionJoin.get(Region.NAME), regionJoin.get(Region.ID));
-				expressions.addAll(regionPath);
-				selectionList.addAll(regionPath);
+			if (groupingLevel.equals(AggregateReportGroupingLevel.REGION)) {
+				filter = CriteriaBuilderHelper.and(
+					cb,
+					filter,
+					cb.or(
+						cb.isNotNull(root.get(AggregateReport.REGION)),
+						cb.isNotNull(root.get(AggregateReport.DISTRICT)),
+						cb.isNotNull(root.get(AggregateReport.HEALTH_FACILITY)),
+						cb.isNotNull(root.get(AggregateReport.POINT_OF_ENTRY))));
+			}
+			if (groupingLevel.equals(AggregateReportGroupingLevel.DISTRICT)) {
+				filter = CriteriaBuilderHelper.and(
+					cb,
+					filter,
+					cb.or(
+						cb.isNotNull(root.get(AggregateReport.DISTRICT)),
+						cb.isNotNull(root.get(AggregateReport.HEALTH_FACILITY)),
+						cb.isNotNull(root.get(AggregateReport.POINT_OF_ENTRY))));
+			}
+			if (groupingLevel.equals(AggregateReportGroupingLevel.HEALTH_FACILITY)) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.isNotNull(root.get(AggregateReport.HEALTH_FACILITY))));
+			}
+			if (groupingLevel.equals(AggregateReportGroupingLevel.POINT_OF_ENTRY)) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.isNotNull(root.get(AggregateReport.POINT_OF_ENTRY))));
 			}
 
-			if (shouldIncludeDistrict(groupingLevel)) {
-				Join<AggregateReport, District> districtJoin = root.join(AggregateReport.DISTRICT, JoinType.LEFT);
-				List<Path<Object>> districtPath = Arrays.asList(districtJoin.get(District.NAME), districtJoin.get(District.ID));
-				expressions.addAll(districtPath);
-				selectionList.addAll(districtPath);
-			}
+			Join<AggregateReport, Region> regionJoin = root.join(AggregateReport.REGION, JoinType.LEFT);
+			List<Path<Object>> regionPath = Arrays.asList(regionJoin.get(Region.NAME), regionJoin.get(Region.ID));
+			expressions.addAll(regionPath);
+			selectionList.addAll(regionPath);
 
-			if (shouldIncludeHealthFacility(groupingLevel)) {
-				Join<AggregateReport, Facility> facilityJoin = root.join(AggregateReport.HEALTH_FACILITY, JoinType.LEFT);
-				List<Path<Object>> facilityPath = Arrays.asList(facilityJoin.get(Facility.NAME), facilityJoin.get(Facility.ID));
-				expressions.addAll(facilityPath);
-				selectionList.addAll(facilityPath);
-			}
+			Join<AggregateReport, District> districtJoin = root.join(AggregateReport.DISTRICT, JoinType.LEFT);
+			List<Path<Object>> districtPath = Arrays.asList(districtJoin.get(District.NAME), districtJoin.get(District.ID));
+			expressions.addAll(districtPath);
+			selectionList.addAll(districtPath);
 
-			if (shouldIncludePointOfEntry(groupingLevel)) {
-				Join<AggregateReport, PointOfEntry> pointOfEntryJoin = root.join(AggregateReport.POINT_OF_ENTRY, JoinType.LEFT);
-				List<Path<Object>> pointOfEntryPath = Arrays.asList(pointOfEntryJoin.get(PointOfEntry.ID), pointOfEntryJoin.get(PointOfEntry.NAME));
-				expressions.addAll(pointOfEntryPath);
-				selectionList.addAll(pointOfEntryPath);
-			}
+			Join<AggregateReport, Facility> facilityJoin = root.join(AggregateReport.HEALTH_FACILITY, JoinType.LEFT);
+			List<Path<Object>> facilityPath = Arrays.asList(facilityJoin.get(Facility.NAME), facilityJoin.get(Facility.ID));
+			expressions.addAll(facilityPath);
+			selectionList.addAll(facilityPath);
+
+			Join<AggregateReport, PointOfEntry> pointOfEntryJoin = root.join(AggregateReport.POINT_OF_ENTRY, JoinType.LEFT);
+			List<Path<Object>> pointOfEntryPath = Arrays.asList(pointOfEntryJoin.get(PointOfEntry.NAME), pointOfEntryJoin.get(PointOfEntry.ID));
+			expressions.addAll(pointOfEntryPath);
+			selectionList.addAll(pointOfEntryPath);
 		}
+
+		selectionList.addAll(
+			Arrays.asList(
+				joins.getReportingUser().get(User.UUID),
+				joins.getReportingUser().get(User.FIRST_NAME),
+				joins.getReportingUser().get(User.LAST_NAME),
+				root.get(AggregateReport.CHANGE_DATE)));
+		expressions.addAll(
+			Arrays.asList(
+				joins.getReportingUser().get(User.UUID),
+				joins.getReportingUser().get(User.FIRST_NAME),
+				joins.getReportingUser().get(User.LAST_NAME),
+				root.get(AggregateReport.CHANGE_DATE)));
 
 		cq.multiselect(selectionList);
 
+		if (filter != null) {
+			cq.where(filter);
+		}
+
 		cq.groupBy(expressions);
 
-		List<AggregatedCaseCountDto> resultList = em.createQuery(cq).getResultList();
-		Map<Disease, AggregatedCaseCountDto> reportSet = new HashMap<>();
+		List<AggregateCaseCountDto> queryResult = em.createQuery(cq).getResultList();
+		Map<Disease, AggregateCaseCountDto> reportSet = new HashMap<>();
 
-		for (AggregatedCaseCountDto result : resultList) {
+		List<AggregateCaseCountDto> resultList = summarizeAggregateData(groupingLevel, queryResult);
+
+		for (AggregateCaseCountDto result : resultList) {
 			reportSet.put(result.getDisease(), result);
 		}
 
@@ -237,33 +272,39 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 			selectedPoindOfEntry = criteria.getPointOfEntry() != null ? pointOfEntryService.getByUuid(criteria.getPointOfEntry().getUuid()) : null;
 		}
 
-		if (criteria != null && criteria.getShowZeroRowsForGrouping()) {
+		if (criteria != null && criteria.getShowZeroRows()) {
+			List<EpiWeek> epiWeekList = DateHelper.createEpiWeekListFromInterval(criteria.getEpiWeekFrom(), criteria.getEpiWeekTo());
 			if (criteria.getDisease() == null) {
-				List<EpiWeek> epiWeekList = DateHelper.createEpiWeekListFromInterval(criteria.getEpiWeekFrom(), criteria.getEpiWeekTo());
-				for (Disease disease : diseaseConfigurationFacade.getAllDiseases(true, false, false)) {
+				for (Disease disease : diseaseConfigurationFacade.getAllDiseases(true, null, false)) {
 					if (!reportSet.containsKey(disease)) {
 						for (EpiWeek epiWeek : epiWeekList) {
-							addToList(resultList, selectedRegion, selectedDistrict, selectedFacility, selectedPoindOfEntry, disease, epiWeek);
+							addZeroRowToList(resultList, selectedRegion, selectedDistrict, selectedFacility, selectedPoindOfEntry, disease, epiWeek);
 						}
 					} else {
 						for (EpiWeek epiWeek : epiWeekList) {
-							Optional<AggregatedCaseCountDto> resultForEpiWeekAndDisease = resultList.stream()
+							Optional<AggregateCaseCountDto> resultForEpiWeekAndDisease = resultList.stream()
 								.filter(
 									report -> report.getDisease().equals(disease)
 										&& report.getYear() == epiWeek.getYear()
 										&& report.getEpiWeek().equals(epiWeek.getWeek()))
 								.findAny();
 							if (!resultForEpiWeekAndDisease.isPresent()) {
-								addToList(resultList, selectedRegion, selectedDistrict, selectedFacility, selectedPoindOfEntry, disease, epiWeek);
+								addZeroRowToList(
+									resultList,
+									selectedRegion,
+									selectedDistrict,
+									selectedFacility,
+									selectedPoindOfEntry,
+									disease,
+									epiWeek);
 							}
 						}
 					}
 				}
 			} else {
-				List<EpiWeek> epiWeekList = DateHelper.createEpiWeekListFromInterval(criteria.getEpiWeekFrom(), criteria.getEpiWeekTo());
 				if (!reportSet.containsKey(criteria.getDisease())) {
 					for (EpiWeek epiWeek : epiWeekList) {
-						addToList(
+						addZeroRowToList(
 							resultList,
 							selectedRegion,
 							selectedDistrict,
@@ -274,14 +315,14 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 					}
 				} else {
 					for (EpiWeek epiWeek : epiWeekList) {
-						Optional<AggregatedCaseCountDto> resultForEpiWeekAndDisease = resultList.stream()
+						Optional<AggregateCaseCountDto> resultForEpiWeekAndDisease = resultList.stream()
 							.filter(
 								report -> report.getDisease().equals(criteria.getDisease())
 									&& report.getYear() == epiWeek.getYear()
 									&& report.getEpiWeek().equals(epiWeek.getWeek()))
 							.findAny();
 						if (!resultForEpiWeekAndDisease.isPresent()) {
-							addToList(
+							addZeroRowToList(
 								resultList,
 								selectedRegion,
 								selectedDistrict,
@@ -296,19 +337,101 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		}
 
 		resultList.sort(
-			Comparator.comparing(AggregatedCaseCountDto::getDisease, Comparator.nullsFirst(Comparator.comparing(Disease::toString)))
-				.thenComparing(AggregatedCaseCountDto::getYear, Comparator.nullsFirst(Comparator.naturalOrder()))
-				.thenComparing(AggregatedCaseCountDto::getEpiWeek, Comparator.nullsFirst(Comparator.naturalOrder()))
-				.thenComparing(AggregatedCaseCountDto::getRegionName, Comparator.nullsFirst(Comparator.naturalOrder()))
-				.thenComparing(AggregatedCaseCountDto::getDistrictName, Comparator.nullsFirst(Comparator.naturalOrder()))
-				.thenComparing(AggregatedCaseCountDto::getHealthFacilityName, Comparator.nullsFirst(Comparator.naturalOrder()))
-				.thenComparing(AggregatedCaseCountDto::getPointOfEntryName, Comparator.nullsFirst(Comparator.naturalOrder()))
+			Comparator.comparing(AggregateCaseCountDto::getDisease, Comparator.nullsFirst(Comparator.comparing(Disease::toString)))
+				.thenComparing(AggregateCaseCountDto::getYear, Comparator.nullsFirst(Comparator.naturalOrder()))
+				.thenComparing(AggregateCaseCountDto::getEpiWeek, Comparator.nullsFirst(Comparator.naturalOrder()))
+				.thenComparing(AggregateCaseCountDto::getRegionName, Comparator.nullsFirst(Comparator.naturalOrder()))
+				.thenComparing(AggregateCaseCountDto::getDistrictName, Comparator.nullsFirst(Comparator.naturalOrder()))
+				.thenComparing(AggregateCaseCountDto::getHealthFacilityName, Comparator.nullsFirst(Comparator.naturalOrder()))
+				.thenComparing(AggregateCaseCountDto::getPointOfEntryName, Comparator.nullsFirst(Comparator.naturalOrder()))
 				.thenComparing(
 					r -> r.getAgeGroup() != null
 						? r.getAgeGroup().split("_")[0].replaceAll("[^a-zA-Z]", StringUtils.EMPTY).toUpperCase()
 						: StringUtils.EMPTY)
 				.thenComparing(
 					r -> r.getAgeGroup() != null ? Integer.parseInt(r.getAgeGroup().split("_")[0].replaceAll("[^0-9]", StringUtils.EMPTY)) : 0));
+		return resultList;
+	}
+
+	private List<AggregateCaseCountDto> summarizeAggregateData(
+		final AggregateReportGroupingLevel finalGroupingLevel,
+		List<AggregateCaseCountDto> queryResult) {
+		final List<AggregateCaseCountDto> resultList = new ArrayList<>();
+		final Map<AggregateCaseCountDto, List<AggregateCaseCountDto>> reportsToBeSummed = new HashMap<>();
+
+		// extract relevant aggregate data and prepare what needs to be sumed
+		for (AggregateCaseCountDto dto : queryResult) {
+
+			// Would be faster to sort the query results by jurisdiction and only check the last resultList entry for similarity instead of always going through the whole list.
+			final Optional<AggregateCaseCountDto> optionalDto = resultList.stream().filter(a -> dto.similar(a, finalGroupingLevel)).findAny();
+			if (optionalDto.isPresent()) {
+				final AggregateCaseCountDto similar = optionalDto.get();
+				if (dto.hasEqualJurisdiction(similar)) { // for exact same jurisdiction we use the most recent data
+					if (dto.getChangeDate().getTime() > similar.getChangeDate().getTime()) {
+						resultList.remove(similar);
+						resultList.add(dto);
+					}
+				} else {
+					if (dto.hasHigherJurisdictionLevel(similar)) { // higher jurisdiction level data exists we do not take into consideration lower level data
+						resultList.remove(similar);
+						resultList.add(dto);
+					} else if (dto.hasSameJurisdictionLevel(similar)) { // same jurisdiction level we sum data (for example data for 2 facilities in one district)
+						if (reportsToBeSummed.containsKey(similar)) {
+							final List<AggregateCaseCountDto> sumList = reportsToBeSummed.get(similar);
+							final Optional<AggregateCaseCountDto> equalReportOptional =
+								sumList.stream().filter(a -> a.hasEqualJurisdiction(dto)).findAny();
+							if (equalReportOptional.isPresent()) {
+								final AggregateCaseCountDto duplicateReport = equalReportOptional.get();
+								if (dto.getChangeDate().getTime() > duplicateReport.getChangeDate().getTime()) {
+									sumList.remove(duplicateReport);
+									sumList.add(dto);
+								}
+							} else {
+								sumList.add(dto);
+							}
+						} else {
+							List<AggregateCaseCountDto> arrayList = new ArrayList();
+							arrayList.add(dto);
+							reportsToBeSummed.put(similar, arrayList);
+						}
+					}
+				}
+			} else {
+				resultList.add(dto);
+			}
+		}
+
+		// sumarize data
+		reportsToBeSummed.forEach((aggregatedCaseCountDto, aggregatedCaseCountDtos) -> {
+			resultList.remove(aggregatedCaseCountDto);
+			aggregatedCaseCountDto
+				.setNewCases(aggregatedCaseCountDtos.stream().mapToLong(a -> a.getNewCases()).sum() + aggregatedCaseCountDto.getNewCases());
+			aggregatedCaseCountDto
+				.setDeaths(aggregatedCaseCountDtos.stream().mapToLong(a -> a.getDeaths()).sum() + aggregatedCaseCountDto.getDeaths());
+			aggregatedCaseCountDto.setLabConfirmations(
+				aggregatedCaseCountDtos.stream().mapToLong(a -> a.getLabConfirmations()).sum() + aggregatedCaseCountDto.getLabConfirmations());
+			if (aggregatedCaseCountDto.getHealthFacilityId() != null || aggregatedCaseCountDto.getPointOfEntryId() != null) {
+				aggregatedCaseCountDto.setHealthFacilityId(null);
+				aggregatedCaseCountDto.setHealthFacilityName(null);
+				aggregatedCaseCountDto.setPointOfEntryId(null);
+				aggregatedCaseCountDto.setPointOfEntryName(null);
+			} else if (aggregatedCaseCountDto.getDistrictId() != null
+				&& aggregatedCaseCountDto.getPointOfEntryId() == null
+				&& aggregatedCaseCountDto.getHealthFacilityId() == null) {
+				aggregatedCaseCountDto.setDistrictId(null);
+				aggregatedCaseCountDto.setDistrictName(null);
+			}
+			aggregatedCaseCountDto.setReportingUser(null);
+			resultList.add(aggregatedCaseCountDto);
+		});
+
+		// remove reporting user from rows that have been summerized/aggregated
+		resultList.forEach(aggregatedCaseCountDto -> {
+			if (aggregatedCaseCountDto.getReportingUser() != null
+				&& AggregateReportGroupingLevel.getByJurisdictionLevel(aggregatedCaseCountDto.getJurisdictionlevel()) != finalGroupingLevel) {
+				aggregatedCaseCountDto.setReportingUser(null);
+			}
+		});
 		return resultList;
 	}
 
@@ -388,8 +511,8 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 
 	}
 
-	private void addToList(
-		List<AggregatedCaseCountDto> resultList,
+	private void addZeroRowToList(
+		List<AggregateCaseCountDto> resultList,
 		Region selectedRegion,
 		District selectedDistrict,
 		Facility selectedFacility,
@@ -397,13 +520,17 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		Disease disease,
 		EpiWeek epiWeek) {
 
+		Long regionid = selectedRegion != null ? selectedRegion.getId() : null;
 		String regionName = selectedRegion != null ? selectedRegion.getName() : null;
+		Long districtId = selectedDistrict != null ? selectedDistrict.getId() : null;
 		String districtName = selectedDistrict != null ? selectedDistrict.getName() : null;
+		Long healthFacilityid = selectedFacility != null ? selectedFacility.getId() : null;
 		String healthFacilityName = selectedFacility != null ? selectedFacility.getName() : null;
+		Long pointOfEntryId = selectedPoindOfEntry != null ? selectedPoindOfEntry.getId() : null;
 		String pointOfEntryName = selectedPoindOfEntry != null ? selectedPoindOfEntry.getName() : null;
 
 		resultList.add(
-			new AggregatedCaseCountDto(
+			new AggregateCaseCountDto(
 				disease,
 				0L,
 				0L,
@@ -412,9 +539,17 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 				epiWeek.getWeek(),
 				"",
 				regionName,
+				regionid,
 				districtName,
+				districtId,
 				healthFacilityName,
-				pointOfEntryName));
+				healthFacilityid,
+				pointOfEntryName,
+				pointOfEntryId,
+				null,
+				null,
+				null,
+				new Date()));
 	}
 
 	private boolean shouldIncludeRegion(AggregateReportGroupingLevel groupingLevel) {
@@ -443,6 +578,54 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 
 		User user = userService.getCurrentUser();
 		return service.findBy(criteria, user).stream().map(c -> toDto(c)).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<AggregateReportDto> getSimilarAggregateReports(AggregateReportDto aggregateReportDto) {
+
+		AggregateReportCriteria criteria = new AggregateReportCriteria();
+		criteria.setRegion(aggregateReportDto.getRegion());
+		criteria.setDistrict(aggregateReportDto.getDistrict());
+		criteria.setHealthFacility(aggregateReportDto.getHealthFacility());
+		criteria.setPointOfEntry(aggregateReportDto.getPointOfEntry());
+		criteria.setEpiWeekFrom(new EpiWeek(aggregateReportDto.getYear(), aggregateReportDto.getEpiWeek()));
+		criteria.setEpiWeekTo(new EpiWeek(aggregateReportDto.getYear(), aggregateReportDto.getEpiWeek()));
+		criteria.setReportingUser(aggregateReportDto.getReportingUser());
+		criteria.setConsiderNullJurisdictionCheck(true);
+
+		List<AggregateReportDto> reports = getAggregateReports(criteria);
+
+		List<Disease> diseaseList = diseaseConfigurationFacade.getAllDiseases(true, false, false);
+
+		Set<AggregateReportDto> userList = new HashSet<>();
+		diseaseList.forEach(disease -> {
+			List<String> diseaseAgeGroups = diseaseConfigurationFacade.getAgeGroups(disease);
+
+			if (diseaseAgeGroups != null) {
+				diseaseAgeGroups.forEach(ageGroup -> {
+					reports.stream()
+						.filter(aggregateReport -> disease.equals(aggregateReport.getDisease()) && ageGroup.equals(aggregateReport.getAgeGroup()))
+						.max(Comparator.comparing(AggregateReportDto::getChangeDate))
+						.ifPresent(userList::add);
+
+				});
+			} else {
+				reports.stream()
+					.filter(aggregateReport -> disease.equals(aggregateReport.getDisease()))
+					.max(Comparator.comparing(AggregateReportDto::getChangeDate))
+					.ifPresent(userList::add);
+			}
+		});
+
+		return new ArrayList<>(userList);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._AGGREGATE_REPORT_EDIT)
+	public void deleteAggregateReports(List<String> aggregatedReportUuids) {
+		for (String aggregatedReportUuid : aggregatedReportUuids) {
+			deleteReport(aggregatedReportUuid);
+		}
 	}
 
 	public AggregateReport fromDto(@NotNull AggregateReportDto source, boolean checkChangeDate) {

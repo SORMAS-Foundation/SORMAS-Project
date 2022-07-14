@@ -170,6 +170,7 @@ public interface Captions {
 	String AggregateReport_labConfirmations = "AggregateReport.labConfirmations";
 	String AggregateReport_newCases = "AggregateReport.newCases";
 	String AggregateReport_pointOfEntry = "AggregateReport.pointOfEntry";
+	String AggregateReport_reportingUser = "AggregateReport.reportingUser";
 	String aggregateReportDeathsShort = "aggregateReportDeathsShort";
 	String aggregateReportDiscardSelection = "aggregateReportDiscardSelection";
 	String aggregateReportEditAggregateReport = "aggregateReportEditAggregateReport";
@@ -180,7 +181,7 @@ public interface Captions {
 	String aggregateReportNewCasesShort = "aggregateReportNewCasesShort";
 	String aggregateReportReportFound = "aggregateReportReportFound";
 	String aggregateReportShowOnlyDuplicateReports = "aggregateReportShowOnlyDuplicateReports";
-	String aggregateReportShowZeroRowsForGrouping = "aggregateReportShowZeroRowsForGrouping";
+	String aggregateReportShowZeroRows = "aggregateReportShowZeroRows";
 	String aggregateReportThisWeek = "aggregateReportThisWeek";
 	String all = "all";
 	String area = "area";
@@ -282,6 +283,7 @@ public interface Captions {
 	String CaseData_caseOfficer = "CaseData.caseOfficer";
 	String CaseData_caseOrigin = "CaseData.caseOrigin";
 	String CaseData_caseReferenceDefinition = "CaseData.caseReferenceDefinition";
+	String CaseData_changeDate = "CaseData.changeDate";
 	String CaseData_classificationComment = "CaseData.classificationComment";
 	String CaseData_classificationDate = "CaseData.classificationDate";
 	String CaseData_classificationUser = "CaseData.classificationUser";
@@ -296,6 +298,7 @@ public interface Captions {
 	String CaseData_contactOfficer = "CaseData.contactOfficer";
 	String CaseData_contactTracingFirstContactDate = "CaseData.contactTracingFirstContactDate";
 	String CaseData_contactTracingFirstContactType = "CaseData.contactTracingFirstContactType";
+	String CaseData_creationDate = "CaseData.creationDate";
 	String CaseData_deletionReason = "CaseData.deletionReason";
 	String CaseData_dengueFeverType = "CaseData.dengueFeverType";
 	String CaseData_differentPlaceOfStayJurisdiction = "CaseData.differentPlaceOfStayJurisdiction";
@@ -555,6 +558,7 @@ public interface Captions {
 	String caseSelect = "caseSelect";
 	String caseTransferCase = "caseTransferCase";
 	String caseTransferCases = "caseTransferCases";
+	String changeDate = "changeDate";
 	String changeUserEmail = "changeUserEmail";
 	String city = "city";
 	String ClinicalVisit = "ClinicalVisit";
@@ -602,6 +606,7 @@ public interface Captions {
 	String Contact_cazeDisease = "Contact.cazeDisease";
 	String Contact_cazeDiseaseVariant = "Contact.cazeDiseaseVariant";
 	String Contact_cazeDistrict = "Contact.cazeDistrict";
+	String Contact_changeDate = "Contact.changeDate";
 	String Contact_community = "Contact.community";
 	String Contact_communityUuid = "Contact.communityUuid";
 	String Contact_completeness = "Contact.completeness";
@@ -615,6 +620,7 @@ public interface Captions {
 	String Contact_contactProximityDetails = "Contact.contactProximityDetails";
 	String Contact_contactProximityLongForm = "Contact.contactProximityLongForm";
 	String Contact_contactStatus = "Contact.contactStatus";
+	String Contact_creationDate = "Contact.creationDate";
 	String Contact_deletionReason = "Contact.deletionReason";
 	String Contact_description = "Contact.description";
 	String Contact_disease = "Contact.disease";
@@ -1020,11 +1026,13 @@ public interface Captions {
 	String epiWeekTo = "epiWeekTo";
 	String Event = "Event";
 	String Event_caseCount = "Event.caseCount";
+	String Event_changeDate = "Event.changeDate";
 	String Event_community = "Event.community";
 	String Event_connectionNumber = "Event.connectionNumber";
 	String Event_contactCount = "Event.contactCount";
 	String Event_contactCountMethod = "Event.contactCountMethod";
 	String Event_contactCountSourceInEvent = "Event.contactCountSourceInEvent";
+	String Event_creationDate = "Event.creationDate";
 	String Event_deathCount = "Event.deathCount";
 	String Event_deletionReason = "Event.deletionReason";
 	String Event_diseaseDetails = "Event.diseaseDetails";
@@ -1152,7 +1160,9 @@ public interface Captions {
 	String EventParticipant = "EventParticipant";
 	String EventParticipant_approximateAge = "EventParticipant.approximateAge";
 	String EventParticipant_caseUuid = "EventParticipant.caseUuid";
+	String EventParticipant_changeDate = "EventParticipant.changeDate";
 	String EventParticipant_contactCount = "EventParticipant.contactCount";
+	String EventParticipant_creationDate = "EventParticipant.creationDate";
 	String EventParticipant_deletionReason = "EventParticipant.deletionReason";
 	String EventParticipant_district = "EventParticipant.district";
 	String EventParticipant_event = "EventParticipant.event";
@@ -1400,8 +1410,10 @@ public interface Captions {
 	String Immunization = "Immunization";
 	String Immunization_additionalDetails = "Immunization.additionalDetails";
 	String Immunization_ageAndBirthDate = "Immunization.ageAndBirthDate";
+	String Immunization_changeDate = "Immunization.changeDate";
 	String Immunization_community = "Immunization.community";
 	String Immunization_country = "Immunization.country";
+	String Immunization_creationDate = "Immunization.creationDate";
 	String Immunization_deletionReason = "Immunization.deletionReason";
 	String Immunization_disease = "Immunization.disease";
 	String Immunization_diseaseDetails = "Immunization.diseaseDetails";
@@ -2310,6 +2322,8 @@ public interface Captions {
 	String total = "total";
 	String travelEntriesNoTravelEntriesForPerson = "travelEntriesNoTravelEntriesForPerson";
 	String TravelEntry = "TravelEntry";
+	String TravelEntry_changeDate = "TravelEntry.changeDate";
+	String TravelEntry_creationDate = "TravelEntry.creationDate";
 	String TravelEntry_dateOfArrival = "TravelEntry.dateOfArrival";
 	String TravelEntry_deletionReason = "TravelEntry.deletionReason";
 	String TravelEntry_differentPointOfEntryJurisdiction = "TravelEntry.differentPointOfEntryJurisdiction";

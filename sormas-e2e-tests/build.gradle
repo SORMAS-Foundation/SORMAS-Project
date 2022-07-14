@@ -73,6 +73,9 @@ dependencies {
 	implementation 'org.apache.poi:poi-ooxml:4.0.0'
 	compile 'com.detectlanguage:detectlanguage:1.1.0'
 
+	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3'
+
+
 }
 
 task format(type: GoogleJavaFormat) {

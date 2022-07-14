@@ -7,11 +7,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -19,7 +19,7 @@ import javax.persistence.criteria.Predicate;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 
-import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -73,27 +73,47 @@ public class CriteriaBuilderHelper {
 		return cb.and(cb.greaterThan(path, date), cb.isNotNull(path));
 	}
 
+	/**
+	 * @param cb
+	 *            The builder of the query to filter.
+	 * @param entityPath
+	 *            The path in which {@code entityProperty} will to be applied.
+	 * @param filter
+	 *            The filter to amend.
+	 * @param filterValue
+	 *            The value to filter by.
+	 * @param entityProperty
+	 *            The property on which to filter.
+	 * @return The original filter if {@code filterValue == null} or the amended filter combined with AND.
+	 */
 	public static Predicate andEquals(
 		CriteriaBuilder cb,
-		From<?, ? extends AbstractDomainObject> entityFrom,
+		Path<?> entityPath,
 		Predicate filter,
 		Object filterValue,
 		String entityProperty) {
-		if (filterValue != null) {
-			filter = and(cb, filter, cb.equal(entityFrom.get(entityProperty), filterValue));
-		}
-		return filter;
+
+		return filterValue == null ? filter : and(cb, filter, cb.equal(entityPath.get(entityProperty), filterValue));
 	}
 
-	public static Predicate andEqualsReferenceDto(
+	/**
+	 * @param cb
+	 *            The builder of the query to filter.
+	 * @param joinSupplier
+	 *            Provides a join that is called if {@code hasUuid != null}. Not executing the {@link Supplier} prevents a superfluous join.
+	 * @param filter
+	 *            The filter to amend.
+	 * @param hasUuid
+	 *            The entity or reference object on which to filter.
+	 * @return The original filter if {@code hasUuid == null} or the amended filter combined with AND.
+	 */
+	public static Predicate andEquals(
 		CriteriaBuilder cb,
-		Join<? extends AbstractDomainObject, ? extends AbstractDomainObject> from,
+		Supplier<Join<?, ?>> joinSupplier,
 		Predicate filter,
-		ReferenceDto referenceDto) {
-		if (referenceDto != null) {
-			filter = andEquals(cb, from, filter, referenceDto.getUuid(), AbstractDomainObject.UUID);
-		}
-		return filter;
+		HasUuid hasUuid) {
+
+		return hasUuid == null ? filter : andEquals(cb, joinSupplier.get(), filter, hasUuid.getUuid(), AbstractDomainObject.UUID);
 	}
 
 	public static Predicate andInValues(Collection<?> values, Predicate filter, CriteriaBuilder cb, Path<Object> path) {

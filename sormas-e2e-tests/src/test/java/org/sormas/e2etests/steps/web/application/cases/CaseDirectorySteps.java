@@ -70,6 +70,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_YEAR_FILTER;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CLOSE_FORM_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONFIRM_POPUP;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CREATE_NEW_PERSON_CHECKBOX_DE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_FROM_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TYPE_FILTER_COMBOBOX;
@@ -90,6 +91,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.INVE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LEAVE_BULK_EDIT_MODE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LINE_LISTING_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MERGE_DUPLICATES_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MERGE_DUPLICATES_WARNING_DE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MORE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NAME_UUID_EPID_NUMBER_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_CASE_BUTTON;
@@ -110,19 +112,26 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FIRS
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LAST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE_DEFINITION_TEXT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.getCaseIDPathByIndex;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.FIRST_RESULT_IN_GRID_IMPORT_POPUP;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.IMPORT_CASE_CONTACTS_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.IMPORT_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.NEW_ENTRY_POPUP;
+import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.getCheckboxByUUID;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPORT_SUCCESS_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.SELECT_ANOTHER_PERSON_DE;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
@@ -250,6 +259,44 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(GRID_HEADERS, 39);
         });
     When(
+        "I click on the Import button from Case directory",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(IMPORT_CASE_CONTACTS_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(IMPORT_CASE_CONTACTS_BUTTON);
+        });
+    When(
+        "I select the {string} CSV file in the file picker",
+        (String fileName) -> {
+          TimeUnit.SECONDS.sleep(3);
+          webDriverHelpers.sendFile(FILE_PICKER, userDirPath + "/uploads/" + fileName);
+        });
+    When(
+        "I check that an import success notification appears in the Import Case popup",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(IMPORT_SUCCESS_DE);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
+        });
+    When(
+        "I close Import Cases form",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON);
+        });
+    When(
+        "I click on the {string} button from the Import Case popup",
+        (String buttonName) -> {
+          webDriverHelpers.clickWebElementByText(IMPORT_POPUP_BUTTON, buttonName);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+    When(
+        "I click to create new person from the Case Import popup",
+        () -> {
+          if (webDriverHelpers.isElementVisibleWithTimeout(COMMIT_BUTTON, 20)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX_DE);
+            webDriverHelpers.clickOnWebElementBySelector(COMMIT_BUTTON);
+          }
+        });
+    When(
         "I click on the More button on Case directory page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(MORE_BUTTON);
@@ -260,6 +307,16 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(MERGE_DUPLICATES_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(ACTION_OKAY);
           webDriverHelpers.clickOnWebElementBySelector(ACTION_OKAY);
+        });
+    When(
+        "I click on Merge Duplicates on Case directory for DE",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(MERGE_DUPLICATES_BUTTON);
+        });
+    When(
+        "I check if message about long loading times appear for DE",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(MERGE_DUPLICATES_WARNING_DE);
         });
     When(
         "I click Enter Bulk Edit Mode on Case directory page",
@@ -539,10 +596,12 @@ public class CaseDirectorySteps implements En {
         () -> {
           softly.assertEquals(
               CaseReinfectionSteps.caze.getFirstName(),
-              webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT), "Prefilled first name is not equal");
+              webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT),
+              "Prefilled first name is not equal");
           softly.assertEquals(
               CaseReinfectionSteps.caze.getLastName(),
-              webDriverHelpers.getValueFromWebElement(LAST_NAME_INPUT), "Prefilled last name is not equal");
+              webDriverHelpers.getValueFromWebElement(LAST_NAME_INPUT),
+              "Prefilled last name is not equal");
           softly.assertAll();
         });
     And(
@@ -556,6 +615,11 @@ public class CaseDirectorySteps implements En {
         () ->
             webDriverHelpers.fillAndSubmitInWebElement(
                 PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT, "TestName TestSurname"));
+    And(
+        "I filter by {string} as a Person's full name on Case Directory Page",
+        (String fullName) ->
+            webDriverHelpers.fillAndSubmitInWebElement(
+                PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT, fullName));
     Then(
         "I apply Disease filter {string} on Case directory page",
         (String diseaseFilterOption) ->

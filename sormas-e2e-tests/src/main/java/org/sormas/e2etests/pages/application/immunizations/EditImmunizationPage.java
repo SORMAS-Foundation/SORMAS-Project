@@ -63,4 +63,6 @@ public class EditImmunizationPage {
       By.cssSelector("#deletionReason input");
   public static By EXTERNAL_ID_INPUT = By.cssSelector("#externalId");
   public static By ADDITIONAL_DETAILS = By.cssSelector("#additionalDetails");
+  public static final By START_DATE_INPUT = By.cssSelector("#startDate input");
+  public static final By END_DATE_INPUT = By.cssSelector("#endDate input");
 }

@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.ui.configuration.infrastructure;
 
+import java.util.Collections;
+import java.util.Set;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
@@ -125,8 +128,8 @@ public class CommunitiesView extends AbstractConfigurationView {
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource =
-				GridExportStreamResource.createStreamResource(grid, ExportEntityName.COMMUNITIES, CommunitiesGrid.EDIT_BTN_ID);
+			StreamResource streamResource = GridExportStreamResource
+				.createStreamResourceWithSelectedItems(grid, this::getSelectedRows, ExportEntityName.COMMUNITIES, CommunitiesGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
@@ -171,6 +174,11 @@ public class CommunitiesView extends AbstractConfigurationView {
 		}
 
 		addComponent(gridLayout);
+	}
+
+	private Set<CommunityDto> getSelectedRows() {
+		CommunitiesGrid communitiesGrid = this.grid;
+		return this.viewConfiguration.isInEagerMode() ? communitiesGrid.asMultiSelect().getSelectedItems() : Collections.emptySet();
 	}
 
 	private HorizontalLayout createFilterBar() {

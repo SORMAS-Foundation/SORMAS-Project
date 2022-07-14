@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.samples;
 
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_DATE_AND_TIME_OF_RESULT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAMPLES_CARD_DATE_OF_COLLECTED_SAMPLE;
@@ -102,9 +103,12 @@ import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.TOTAL_BILIRUBIN_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.TYPE_OF_TEST_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.TYPE_OF_TEST_INPUT;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.UPDATE_CASE_DISEASE_VARIANT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.UREA_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.WBC_INPUT;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.EDIT_PATHOGEN_TEST;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.PCR_TEST_SPECIFICATION_COMBOBOX_DIV;
+import static org.sormas.e2etests.pages.application.samples.EditSamplePage.TESTED_DISEASE_VARIANT;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.CREATE_CASE_POSITIVE_TEST_RESULT_LABEL;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.EDIT_ADDITIONAL_TEST_RESULTS_BUTTON;
@@ -727,6 +731,14 @@ public class CreateNewSampleSteps implements En {
                   "Art des Tests");
           webDriverHelpers.checkIsPopupContainsList(ERROR_POPUP, popupExpected);
         });
+
+    When(
+        "I confirm update case result",
+        () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_POPUP_BUTTON));
+
+    When(
+        "I check if Update case disease variant popup is available",
+        () -> webDriverHelpers.isElementVisibleWithTimeout(UPDATE_CASE_DISEASE_VARIANT, 10));
   }
 
   private void selectPurposeOfSample(String samplePurpose, By element) {

@@ -1010,7 +1010,7 @@ public class PersonDto extends PseudonymizableDto {
 	}
 
 	@Override
-	public String getCaption() {
+	public String buildCaption() {
 		return buildCaption(firstName, lastName);
 	}
 

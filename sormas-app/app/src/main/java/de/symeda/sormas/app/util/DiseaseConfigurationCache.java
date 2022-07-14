@@ -15,9 +15,12 @@
 
 package de.symeda.sormas.app.util;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -31,7 +34,11 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.app.backend.user.User;
+import de.symeda.sormas.app.dashboard.caze.CaseSummaryFragment;
 
+/**
+ * Replicates logic of de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb backend class
+ */
 public final class DiseaseConfigurationCache {
 
 	private static DiseaseConfigurationCache instance;
@@ -109,100 +116,50 @@ public final class DiseaseConfigurationCache {
 		}
 	}
 
-	public List<Disease> getAllDiseases(Boolean active, Boolean primary, Boolean caseBased) {
+	public List<Disease> getAllDiseases(Boolean active, Boolean primary, boolean caseBased) {
+
+		// not an ideal solution, but will be changed with #9629 anyway
+		if (!caseBased && primary != null) {
+			primary = null;
+			Log.w(getClass().getSimpleName(), "primary should not be used for non-case-based diseases");
+		}
+
 		User currentUser = ConfigProvider.getUser();
-		Set<Disease> diseases = new HashSet<>();
 
-		if (Boolean.TRUE.equals(active)) {
-			if (currentUser.getLimitedDisease() != null && activeDiseases.contains(currentUser.getLimitedDisease())) {
-				diseases.add(currentUser.getLimitedDisease());
-			} else {
-				diseases.addAll(activeDiseases);
-			}
-		} else if (Boolean.FALSE.equals(active)) {
-			if (currentUser.getLimitedDisease() != null && inactiveDiseases.contains(currentUser.getLimitedDisease())) {
-				diseases.add(currentUser.getLimitedDisease());
-			} else {
-				diseases.addAll(inactiveDiseases);
-			}
-		}
+		Set<Disease> diseases = EnumSet.noneOf(Disease.class);
 
-		if (Boolean.TRUE.equals(primary)) {
-			if (currentUser.getLimitedDisease() != null && primaryDiseases.contains(currentUser.getLimitedDisease())) {
-				diseases.add(currentUser.getLimitedDisease());
-			} else {
-				diseases.addAll(primaryDiseases);
-			}
-		} else if (Boolean.FALSE.equals(primary)) {
-			if (currentUser.getLimitedDisease() != null && nonPrimaryDiseases.contains(currentUser.getLimitedDisease())) {
-				diseases.add(currentUser.getLimitedDisease());
-			} else {
-				diseases.addAll(nonPrimaryDiseases);
-			}
-		}
-
-		if (Boolean.TRUE.equals(caseBased)) {
-			if (currentUser.getLimitedDisease() != null && caseBasedDiseases.contains(currentUser.getLimitedDisease())) {
-				diseases.add(currentUser.getLimitedDisease());
+		if (caseBased) {
+			if (currentUser.getLimitedDisease() != null) {
+				Disease limitedDisease = currentUser.getLimitedDisease();
+				diseases.add(limitedDisease);
 			} else {
 				diseases.addAll(caseBasedDiseases);
 			}
-		} else if (Boolean.FALSE.equals(caseBased)) {
-			if (currentUser.getLimitedDisease() != null && aggregateDiseases.contains(currentUser.getLimitedDisease())) {
-				diseases.add(currentUser.getLimitedDisease());
-			} else {
-				diseases.addAll(aggregateDiseases);
+
+			if (isTrue(primary)) {
+				diseases.retainAll(primaryDiseases);
+			} else if (isFalse(primary)) {
+				diseases.retainAll(nonPrimaryDiseases);
 			}
+		} else {
+			diseases.addAll(aggregateDiseases);
 		}
 
-		Iterator<Disease> iterator = diseases.iterator();
-		while (iterator.hasNext()) {
-			Disease disease = iterator.next();
-			if (Boolean.TRUE.equals(active)) {
-				if (inactiveDiseases.contains(disease)) {
-					iterator.remove();
-					continue;
-				}
-			} else if (Boolean.FALSE.equals(active)) {
-				if (activeDiseases.contains(disease)) {
-					iterator.remove();
-					continue;
-				}
-			}
-
-			if (Boolean.TRUE.equals(primary)) {
-				if (nonPrimaryDiseases.contains(disease)) {
-					iterator.remove();
-					continue;
-				}
-			} else if (Boolean.FALSE.equals(primary)) {
-				if (primaryDiseases.contains(disease)) {
-					iterator.remove();
-					continue;
-				}
-			}
-
-			if (Boolean.TRUE.equals(caseBased)) {
-				if (aggregateDiseases.contains(disease)) {
-					iterator.remove();
-				}
-			} else if (Boolean.FALSE.equals(caseBased)) {
-				if (caseBasedDiseases.contains(disease)) {
-					iterator.remove();
-				}
-			}
+		if (isTrue(active)) {
+			diseases.retainAll(activeDiseases);
+		} else if (isFalse(active)) {
+			diseases.retainAll(inactiveDiseases);
 		}
 
-		List<Disease> diseaseList = new ArrayList<>(diseases);
-		Collections.sort(diseaseList, new Comparator<Disease>() {
+		return diseases.stream().sorted(Comparator.comparing(Disease::toString)).collect(Collectors.toList());
+	}
 
-			@Override
-			public int compare(Disease o1, Disease o2) {
-				return o1.toString().compareTo(o2.toString());
-			}
-		});
+	private static boolean isFalse(Boolean value) {
+		return Boolean.FALSE.equals(value);
+	}
 
-		return diseaseList;
+	private static boolean isTrue(Boolean value) {
+		return Boolean.TRUE.equals(value);
 	}
 
 	public Disease getDefaultDisease() {
@@ -221,16 +178,7 @@ public final class DiseaseConfigurationCache {
 	}
 
 	public List<Disease> getAllActiveDiseases() {
-		User currentUser = ConfigProvider.getUser();
-		if (currentUser.getLimitedDisease() != null) {
-			ArrayList<Disease> list = new ArrayList<>();
-			if (isActiveDisease(currentUser.getLimitedDisease())) {
-				list.add(currentUser.getLimitedDisease());
-			}
-			return list;
-		} else {
-			return activeDiseases;
-		}
+		return activeDiseases;
 	}
 
 	public boolean isPrimaryDisease(Disease disease) {

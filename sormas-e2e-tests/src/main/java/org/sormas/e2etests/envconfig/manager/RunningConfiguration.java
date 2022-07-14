@@ -25,6 +25,7 @@ import org.sormas.e2etests.envconfig.configprovider.ConfigFileReader;
 import org.sormas.e2etests.envconfig.dto.EnvUser;
 import org.sormas.e2etests.envconfig.dto.Environment;
 import org.sormas.e2etests.envconfig.dto.Environments;
+import org.sormas.e2etests.envconfig.dto.demis.DemisData;
 import org.testng.Assert;
 
 @Slf4j
@@ -54,6 +55,20 @@ public class RunningConfiguration {
           .getUrl();
     } catch (NullPointerException e) {
       throw new Exception(String.format("Unable to get Environment for market: %s", identifier));
+    }
+  }
+
+  @SneakyThrows
+  public DemisData getDemisData(String identifier) {
+    try {
+      return environments.getEnvironments().stream()
+          .filter(env -> env.getIdentifier().equalsIgnoreCase(identifier))
+          .findFirst()
+          .get()
+          .getDemisData();
+    } catch (NullPointerException e) {
+      throw new Exception(
+          String.format("Unable to get DemisData of Environment for market: %s", identifier));
     }
   }
 

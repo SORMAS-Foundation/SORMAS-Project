@@ -563,12 +563,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		selections.addAll(taskService.getJurisdictionSelections(taskQueryContext));
 		cq.multiselect(selections);
 
-		Predicate filter = null;
-		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
-			filter = taskService.createUserFilter(taskQueryContext);
-		} else {
-			filter = CriteriaBuilderHelper.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
-		}
+		Predicate filter = taskService.createUserFilter(taskQueryContext, taskCriteria);
 
 		if (taskCriteria != null) {
 			Predicate criteriaFilter = taskService.buildCriteriaFilter(taskCriteria, taskQueryContext);

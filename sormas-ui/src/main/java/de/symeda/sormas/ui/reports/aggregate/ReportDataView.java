@@ -30,6 +30,9 @@ import de.symeda.sormas.ui.utils.ExportEntityName;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 
+import static de.symeda.sormas.ui.reports.aggregate.ReportDataGrid.DELETE_AGGREGATE_REPORT;
+import static de.symeda.sormas.ui.reports.aggregate.ReportDataGrid.EDIT_AGGREGATE_REPORT;
+
 public class ReportDataView extends AbstractAggregateReportsView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/reportdata";
@@ -75,7 +78,7 @@ public class ReportDataView extends AbstractAggregateReportsView {
 			btnCreate = ButtonHelper.createIconButton(
 				Captions.aggregateReportNewAggregateReport,
 				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getAggregateReportController().openEditOrCreateWindow(() -> grid.reload(), false),
+				e -> ControllerProvider.getAggregateReportController().openEditOrCreateWindow(() -> grid.reload(), false, null),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(btnCreate);
@@ -83,7 +86,7 @@ public class ReportDataView extends AbstractAggregateReportsView {
 			btnEdit = ButtonHelper.createIconButton(
 				Captions.aggregateReportEditAggregateReport,
 				VaadinIcons.EDIT,
-				e -> ControllerProvider.getAggregateReportController().openEditOrCreateWindow(() -> grid.reload(), true),
+				e -> ControllerProvider.getAggregateReportController().openEditOrCreateWindow(() -> grid.reload(), true, null),
 				ValoTheme.BUTTON_PRIMARY);
 			btnEdit.setVisible(false);
 
@@ -95,7 +98,7 @@ public class ReportDataView extends AbstractAggregateReportsView {
 
 			addHeaderComponent(btnExport);
 
-			StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.AGGREGATE_REPORTS);
+			StreamResource streamResource = GridExportStreamResource.createStreamResource(grid, ExportEntityName.AGGREGATE_REPORTS, EDIT_AGGREGATE_REPORT, DELETE_AGGREGATE_REPORT);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(btnExport);
 		}

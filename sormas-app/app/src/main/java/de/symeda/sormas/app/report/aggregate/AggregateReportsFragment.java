@@ -174,6 +174,11 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 		}
 	}
 
+	public void refreshAggregateReports() {
+		fillReportsDropdown();
+		showReportData();
+	}
+
 	private void fillReportsDropdown() {
 
 		if (contentBinding.aggregateReportsWeek.getValue() == null) {
@@ -212,18 +217,17 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 			.collect(Collectors.toList());
 		DatabaseHelper.getAggregateReportDao().sortAggregateReports(userReports);
 
-		List<Disease> diseaseList = DiseaseConfigurationCache.getInstance().getAllDiseases(true, false, false);
-		Map<String, Disease> diseaseMap = diseaseList.stream().collect(Collectors.toMap(Disease::toString, disease -> disease));
-		Map<String, Disease> diseasesWithoutReport = new HashMap<>(diseaseMap);
+		List<Disease> diseaseList = DiseaseConfigurationCache.getInstance().getAllDiseases(true, null, false);
+		List<Disease> diseasesWithoutReport = new ArrayList<>(diseaseList);
 		List<DiseaseAgeGroup> diseaseAgeGroupsWithoutReport = new ArrayList<>();
-		diseaseMap.values().forEach(disease -> {
+		diseaseList.forEach(disease -> {
 			List<String> ageGroups = DatabaseHelper.getDiseaseConfigurationDao().getDiseaseConfiguration(disease).getAgeGroups();
 			if (ageGroups != null) {
 				ageGroups.forEach(ageGroup -> {
-					diseaseAgeGroupsWithoutReport.add(new DiseaseAgeGroup(disease.toString(), ageGroup));
+					diseaseAgeGroupsWithoutReport.add(new DiseaseAgeGroup(disease, ageGroup));
 				});
 			} else {
-				diseaseAgeGroupsWithoutReport.add(new DiseaseAgeGroup(disease.toString(), null));
+				diseaseAgeGroupsWithoutReport.add(new DiseaseAgeGroup(disease, null));
 			}
 		});
 
@@ -237,26 +241,26 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 				aggregateReports.add(report);
 				reportsByDisease.put(disease, aggregateReports);
 			}
-			diseasesWithoutReport.remove(disease.toString());
-			diseaseAgeGroupsWithoutReport.remove(new DiseaseAgeGroup(disease.toString(), report.getAgeGroup()));
+			diseasesWithoutReport.remove(disease);
+			diseaseAgeGroupsWithoutReport.remove(new DiseaseAgeGroup(disease, report.getAgeGroup()));
 		}
 
 		for (Map.Entry<Disease, List<AggregateReport>> entry : reportsByDisease.entrySet()) {
-			Disease key = entry.getKey();
+			Disease disease = entry.getKey();
 			List<AggregateReport> aggregateReports = entry.getValue();
 			List<String> diseaseAgeGroups =
 				aggregateReports.stream().map(aggregateReport -> aggregateReport.getAgeGroup()).collect(Collectors.toList());
 
 			List<DiseaseAgeGroup> noDataAgeGroups = diseaseAgeGroupsWithoutReport.stream()
 				.filter(
-					diseaseAgeGroup -> diseaseAgeGroup.getDisease().equals(entry.getKey().toString())
+					diseaseAgeGroup -> diseaseAgeGroup.getDisease().equals(disease)
 						&& !diseaseAgeGroups.contains(diseaseAgeGroup.getAgeGroup()))
 				.collect(Collectors.toList());
 
 			if (!noDataAgeGroups.isEmpty()) {
 				noDataAgeGroups.forEach(diseaseAgeGroup -> {
 					AggregateReport aggregateReport =
-						DatabaseHelper.getAggregateReportDao().build(diseaseMap.get(diseaseAgeGroup.getDisease()), epiWeek, selectedInfrastructure);
+						DatabaseHelper.getAggregateReportDao().build(diseaseAgeGroup.getDisease(), epiWeek, selectedInfrastructure);
 					aggregateReport.setAgeGroup(diseaseAgeGroup.getAgeGroup());
 					userReports.add(aggregateReport);
 					aggregateReports.add(aggregateReport);
@@ -283,7 +287,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 				LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				RowReportAggregateDiseaseLayoutBinding diseaseBinding =
 					DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_disease_layout, contentBinding.reportContent, true);
-				diseaseBinding.setDisease(key.toString());
+				diseaseBinding.setDisease(disease.toString());
 				for (AggregateReport report : aggregateReports) {
 					RowReportAggregateAgegroupLayoutBinding binding =
 						DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_agegroup_layout, contentBinding.reportContent, true);
@@ -304,9 +308,8 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 			}
 		}
 
-		for (String disease : diseasesWithoutReport.keySet()) {
-			Disease diseaseEnum = diseasesWithoutReport.get(disease);
-			List<String> ageGroups = DatabaseHelper.getDiseaseConfigurationDao().getDiseaseConfiguration(diseaseEnum).getAgeGroups();
+		for (Disease disease : diseasesWithoutReport) {
+			List<String> ageGroups = DatabaseHelper.getDiseaseConfigurationDao().getDiseaseConfiguration(disease).getAgeGroups();
 			if (ageGroups == null || ageGroups.isEmpty()) {
 				LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				RowReportAggregateLayoutBinding binding =
@@ -315,14 +318,14 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 				binding.aggregateReportLabConfirmations.setEnabled(enabled);
 				binding.aggregateReportNewCases.setEnabled(enabled);
 				contentBinding.submitReport.setEnabled(enabled);
-				AggregateReport data = DatabaseHelper.getAggregateReportDao().build(diseaseEnum, epiWeek, selectedInfrastructure);
+				AggregateReport data = DatabaseHelper.getAggregateReportDao().build(disease, epiWeek, selectedInfrastructure);
 				binding.setData(data);
 				userReports.add(data);
 			} else {
 				LayoutInflater diseaseInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				RowReportAggregateDiseaseLayoutBinding viewBinding =
 					DataBindingUtil.inflate(diseaseInflater, R.layout.row_report_aggregate_disease_layout, contentBinding.reportContent, true);
-				viewBinding.setDisease(disease);
+				viewBinding.setDisease(disease.toString());
 				for (String ageGroup : ageGroups) {
 					LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 					RowReportAggregateAgegroupLayoutBinding binding =
@@ -331,7 +334,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 					binding.aggregateReportLabConfirmations.setEnabled(enabled);
 					binding.aggregateReportNewCases.setEnabled(enabled);
 					contentBinding.submitReport.setEnabled(enabled);
-					AggregateReport data = DatabaseHelper.getAggregateReportDao().build(diseaseEnum, epiWeek, selectedInfrastructure);
+					AggregateReport data = DatabaseHelper.getAggregateReportDao().build(disease, epiWeek, selectedInfrastructure);
 					data.setAgeGroup(ageGroup);
 					binding.setData(data);
 					userReports.add(data);

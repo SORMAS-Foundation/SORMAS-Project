@@ -32,9 +32,9 @@ import org.sormas.e2etests.entities.services.api.CaseApiService;
 import org.sormas.e2etests.entities.services.api.PersonApiService;
 import org.sormas.e2etests.entities.services.api.SampleApiService;
 import org.sormas.e2etests.enums.*;
-import org.sormas.e2etests.helpers.api.CaseHelper;
-import org.sormas.e2etests.helpers.api.PersonsHelper;
-import org.sormas.e2etests.helpers.api.SampleHelper;
+import org.sormas.e2etests.helpers.api.sormasrest.CaseHelper;
+import org.sormas.e2etests.helpers.api.sormasrest.PersonsHelper;
+import org.sormas.e2etests.helpers.api.sormasrest.SampleHelper;
 import org.sormas.e2etests.state.ApiState;
 
 public class BusinessFlows implements En {

@@ -5,11 +5,12 @@ import org.apache.commons.lang3.StringUtils;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.TextField;
 
-import de.symeda.sormas.api.utils.AgeGroupUtils;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.report.AggregateReportDto;
+import de.symeda.sormas.api.utils.AgeGroupUtils;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -23,7 +24,7 @@ public class AggregateReportEditForm extends AbstractEditForm<AggregateReportDto
 	static final String DISEASE_LOC = "diseaseLoc";
 	static final String AGE_GROUP_LOC = "ageGroupLoc";
 	private static final long serialVersionUID = 2224137772717110789L;
-	private String disease;
+	private Disease disease;
 	private String ageGroup;
 	private boolean firstGroup;
 
@@ -33,7 +34,7 @@ public class AggregateReportEditForm extends AbstractEditForm<AggregateReportDto
 	private TextField labField;
 	private TextField deathField;
 
-	public AggregateReportEditForm(String disease, String ageGroup, boolean firstGroup) {
+	public AggregateReportEditForm(Disease disease, String ageGroup, boolean firstGroup) {
 		super(AggregateReportDto.class, AggregateReportDto.I18N_PREFIX);
 
 		this.disease = disease;
@@ -103,7 +104,7 @@ public class AggregateReportEditForm extends AbstractEditForm<AggregateReportDto
 	}
 
 	private void addDiseaseLabel() {
-		Label diseaseLabel = new Label(disease);
+		Label diseaseLabel = new Label(disease.toString());
 		diseaseLabel.addStyleName(CssStyles.LABEL_BOLD);
 		getContent().addComponent(diseaseLabel, DISEASE_LOC);
 		CssStyles.style(CssStyles.CAPTION_HIDDEN, diseaseLabel);
@@ -116,7 +117,7 @@ public class AggregateReportEditForm extends AbstractEditForm<AggregateReportDto
 			&& (deathField.getValue().isEmpty() || DataHelper.isParseableInt(deathField.getValue()));
 	}
 
-	public String getDisease() {
+	public Disease getDisease() {
 		return disease;
 	}
 
