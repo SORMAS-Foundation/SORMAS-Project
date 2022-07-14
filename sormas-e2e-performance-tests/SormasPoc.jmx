@@ -40,7 +40,7 @@
           </elementProp>
           <elementProp name="user_password" elementType="Argument">
             <stringProp name="Argument.name">user_password</stringProp>
-            <stringProp name="Argument.value">umpQyGMSq4zy</stringProp>
+            <stringProp name="Argument.value">QTj]qF90U~-CMLa/</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
             <stringProp name="Argument.desc">Password of the user used to place requests</stringProp>
           </elementProp>
@@ -1613,7 +1613,7 @@
             <stringProp name="Assertion.custom_message"></stringProp>
             <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">16</intProp>
+            <intProp name="Assertion.test_type">8</intProp>
           </ResponseAssertion>
           <hashTree/>
           <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Response Assertion" enabled="true">

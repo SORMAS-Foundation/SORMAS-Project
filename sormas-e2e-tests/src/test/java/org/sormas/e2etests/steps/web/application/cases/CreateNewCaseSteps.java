@@ -94,6 +94,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_C
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_TITLE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
+import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.CONTACT_PERSONS_PHONE_NUMBER;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_DETAILED_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_DETAILED_FIRST_TABLE_ROW;
@@ -146,6 +147,7 @@ public class CreateNewCaseSteps implements En {
   public static final String userDirPath = System.getProperty("user.dir");
   public static List<String> casesUUID = new ArrayList<>();
   private static String currentUrl;
+  private static String phoneNumber;
 
   @Inject
   public CreateNewCaseSteps(
@@ -981,6 +983,29 @@ public class CreateNewCaseSteps implements En {
     When("I copy url of current case", () -> currentUrl = webDriverHelpers.returnURL());
 
     When("I back to deleted case by url", () -> webDriverHelpers.accessWebSite(currentUrl));
+
+      When(
+              "^I create a new case and save phone number$",
+              () -> {
+                  caze = caseService.buildGeneratedCase();
+                  fillAllCaseFields(caze);
+                  phoneNumber = caze.getPrimaryPhoneNumber();
+                  webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+                  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+                  webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+                  webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+              });
+
+      When(
+              "I check if phone number is displayed in Create new visit popup",
+              () -> {
+                  webDriverHelpers.waitUntilIdentifiedElementIsPresent(CONTACT_PERSONS_PHONE_NUMBER);
+                  softly.assertEquals(
+                          phoneNumber,
+                          webDriverHelpers.getTextFromPresentWebElement(CONTACT_PERSONS_PHONE_NUMBER),
+                          "Phone numbers are not equal");
+                  softly.assertAll();
+              });
   }
 
   private void fillPointOfEntryDetails(String pointOfEntryDetails) {
