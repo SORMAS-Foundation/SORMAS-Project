@@ -367,7 +367,7 @@ public class ContactDirectorySteps implements En {
           }
         });
     When(
-        "I check that an import success notification appears in the Import Contact popup",
+        "I check that an import success notification appears in the Import Contact popup for DE",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(IMPORT_SUCCESS_DE);
           webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);

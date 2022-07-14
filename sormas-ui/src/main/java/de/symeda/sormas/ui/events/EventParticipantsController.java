@@ -216,7 +216,8 @@ public class EventParticipantsController {
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> editComponent = createEventParticipantEditCommitWrapper(editForm, null);
 
 		editComponent.getButtonsPanel()
-			.addComponentAsFirst(new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, eventParticipant.isDeleted()));
+			.addComponentAsFirst(
+				new DeletionLabel(automaticDeletionInfoDto, manuallyDeletionInfoDto, eventParticipant.isDeleted(), EventParticipantDto.I18N_PREFIX));
 
 		if (eventParticipant.isDeleted()) {
 			editComponent.getWrappedComponent().getField(EventParticipantDto.DELETION_REASON).setVisible(true);

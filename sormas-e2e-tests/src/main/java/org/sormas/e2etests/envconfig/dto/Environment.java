@@ -23,6 +23,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Value;
+import org.sormas.e2etests.envconfig.dto.demis.DemisData;
 
 @Value
 @AllArgsConstructor
@@ -33,5 +34,6 @@ public class Environment {
   String name;
   String identifier;
   String url;
+  DemisData demisData;
   List<EnvUser> users;
 }

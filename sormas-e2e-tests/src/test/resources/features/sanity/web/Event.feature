@@ -1058,3 +1058,74 @@ Feature: Create events
     When I click on the Archive event button
     When I confirm Archive event popup
     And I check event is it archived
+
+  @issue=SORDEV-11452 @env_main
+  Scenario: Add reason for deletion to confirmation dialogue
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    And I collect the UUID displayed on Edit event page
+    Then I add a participant to the event
+    And I copy url of current event participant
+    Then I click on Delete button from event participant
+    And I check if reason for deletion as "Deletion request by affected person according to GDPR" is available
+    And I check if reason for deletion as "Deletion request by another authority" is available
+    And I check if reason for deletion as "Entity created without legal reason" is available
+    And I check if reason for deletion as "Responsibility transferred to another authority" is available
+    And I check if reason for deletion as "Deletion of duplicate entries" is available
+    And I check if reason for deletion as "Other reason" is available
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from event participant
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Please choose a reason for deletion" appears next to Reason for deletion
+    When I set Reason for deletion as "Other reason"
+    Then I check if "Reason for deletion details" field is available in Confirm deletion popup in Immunization
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Please add a reason for deletion" appears next to Reason for deletion
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from immunization case
+    And I set Reason for deletion as "Deletion request by affected person according to GDPR"
+    And I click on Yes option in Confirm deletion popup
+    When I back to deleted event participant by url
+    Then I check if reason of deletion is set to "Deletion request by affected person according to GDPR"
+    And I check if General comment on event participant edit page is disabled
+    And I check if Passport number input on event participant edit page is disabled
+
+  @issue=SORDEV-11452 @env_de
+  Scenario: Add reason for deletion to confirmation dialogue for DE version
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data for DE version
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I click on Add Participant button
+    Then I add Participant to an Event with same person data
+    And I click on save button in Add Participant form
+    And I copy url of current event participant
+    Then I click on Delete button from event participant
+    And I check if reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO" is available
+    And I check if reason for deletion as "Löschen auf Anforderung einer anderen Behörde" is available
+    And I check if reason for deletion as "Entität ohne Rechtsgrund angelegt" is available
+    And I check if reason for deletion as "Abgabe des Vorgangs wegen Nicht-Zuständigkeit" is available
+    And I check if reason for deletion as "Löschen von Duplikaten" is available
+    And I check if reason for deletion as "Anderer Grund" is available
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from contact
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Bitte wählen Sie einen Grund fürs Löschen" appears next to Reason for deletion
+    When I set Reason for deletion as "Anderer Grund"
+    Then I check if "DETAILS ZUM GRUND DES LÖSCHENS" field is available in Confirm deletion popup in Immunization
+    And I click on Yes option in Confirm deletion popup
+    Then I check if exclamation mark with message "Bitte geben Sie einen Grund fürs Löschen an" appears next to Reason for deletion
+    Then I click on No option in Confirm deletion popup
+    Then I click on Delete button from immunization case
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    When I back to deleted event participant by url
+    Then I check if reason of deletion is set to "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I check if General comment on event participant edit page is disabled
+    And I check if Involvement description input on event participant edit page is disabled

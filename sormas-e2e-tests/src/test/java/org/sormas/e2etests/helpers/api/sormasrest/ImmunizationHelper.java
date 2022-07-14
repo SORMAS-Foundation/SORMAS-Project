@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.helpers.api;
+package org.sormas.e2etests.helpers.api.sormasrest;
 
 import static org.sormas.e2etests.constants.api.Endpoints.*;
 
@@ -26,64 +26,62 @@ import java.io.ByteArrayOutputStream;
 import java.util.List;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.sormas.e2etests.entities.pojo.api.Person;
+import org.sormas.e2etests.entities.pojo.api.Immunization;
 import org.sormas.e2etests.entities.pojo.api.Request;
 import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.state.ApiState;
 
-@Slf4j
-public class PersonsHelper {
+public class ImmunizationHelper {
 
   private final RestAssuredClient restAssuredClient;
   private final ApiState apiState;
   private final ObjectMapper objectMapper;
 
   @Inject
-  public PersonsHelper(
+  public ImmunizationHelper(
       RestAssuredClient restAssuredClient, ObjectMapper objectMapper, ApiState apiState) {
     this.restAssuredClient = restAssuredClient;
     this.objectMapper = objectMapper;
     this.apiState = apiState;
   }
 
-  public void getAllPersonUuid() {
+  public void getAllImmunizationsUUIDs() {
     restAssuredClient.sendRequest(
-        Request.builder().method(Method.GET).path(PERSONS_PATH + UUIDS_PATH).build());
-    int totalPersons =
+        Request.builder().method(Method.GET).path(IMMUNIZATIONS_PATH + UUIDS_PATH).build());
+    int totalImmunizations =
         apiState.getResponse().getBody().asString().replaceAll("\"", "").split(",").length;
-    log.info("Total persons: " + totalPersons);
+    System.out.println("Total immunizations: " + totalImmunizations);
   }
 
-  public Response getPersonBasedOnUUID(String personUUID) {
+  public Response getImmunizationBasedOnUUID(String immunizationUUID) {
     restAssuredClient.sendRequest(
-        Request.builder().method(Method.GET).path(PERSONS_PATH + personUUID).build());
+        Request.builder().method(Method.GET).path(IMMUNIZATIONS_PATH + immunizationUUID).build());
     return apiState.getResponse();
   }
 
   @SneakyThrows
-  public void createNewPerson(Person person) {
+  public void createNewImmunization(Immunization immunization) {
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
-    List<Person> personBody = List.of(person);
-    objectMapper.writeValue(out, personBody);
+    List<Immunization> immunizationBody = List.of(immunization);
+    objectMapper.writeValue(out, immunizationBody);
     restAssuredClient.sendRequest(
         Request.builder()
             .method(Method.POST)
             .body(out.toString())
-            .path(PERSONS_PATH + POST_PATH)
+            .path(IMMUNIZATIONS_PATH + POST_PATH)
             .build());
   }
 
   @SneakyThrows
-  public void createMultiplePersons(List<Person> personList) {
+  public void createMultipleImmunizations(List<Immunization> immunizationsList) {
     final ByteArrayOutputStream out = new ByteArrayOutputStream();
-    List<Person> personBody = personList;
-    objectMapper.writeValue(out, personBody);
+    List<Immunization> immunizationsBody = immunizationsList;
+    objectMapper.writeValue(out, immunizationsBody);
     restAssuredClient.sendRequest(
         Request.builder()
             .method(Method.POST)
             .body(out.toString())
-            .path(PERSONS_PATH + POST_PATH)
+            .path(IMMUNIZATIONS_PATH + POST_PATH)
             .build());
   }
 }

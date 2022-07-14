@@ -408,6 +408,7 @@ public class SurveillanceDashboardSteps implements En {
     Then(
         "^I validate fatalities of diseases is shown on Surveillance Dashboard Page$",
         () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NavBarPage.DASHBOARD_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
           softly.assertEquals(
               webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.FATALITIES),
@@ -711,6 +712,9 @@ public class SurveillanceDashboardSteps implements En {
     Then(
         "^I validate chart download options on Surveillance Dashboard Page$",
         () -> {
+          TimeUnit.SECONDS.sleep(2); // wait for chart loaded
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LEGEND_CHART_DOWNLOAD_BUTTON);
           webDriverHelpers.scrollToElement(SurveillanceDashboardPage.LEGEND_CHART_DOWNLOAD_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(
               SurveillanceDashboardPage.LEGEND_CHART_DOWNLOAD_BUTTON);

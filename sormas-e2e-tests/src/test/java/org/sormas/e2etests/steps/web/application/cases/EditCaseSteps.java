@@ -201,6 +201,8 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUI
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.getVaccinationByIndex;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.getReasonForDeletionDetailsFieldLabel;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.getVaccinationByIndex;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EVENT_PARTICIPANTS_DATA_TAB;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
@@ -1664,7 +1666,26 @@ public class EditCaseSteps implements En {
               caseFollowUpStatus, "In der Nachverfolgung", "The follow-up status is incorrect!");
           softly.assertAll();
         });
-
+    When(
+        "I click to edit {int} vaccination on Edit Case page",
+        (Integer index) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              getVaccinationByIndex(String.valueOf(index + 1)));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getVaccinationByIndex(String.valueOf(index + 1)));
+        });
+    When(
+        "I close vaccination form in Edit Case directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CLOSE_IMPORT_TRAVEL_ENTRY_POPUP));
+    When(
+        "I check that number of added Vaccinations is {int} on Edit Case Page",
+        (Integer expected) ->
+            assertHelpers.assertWithPoll20Second(
+                () ->
+                    Assert.assertEquals(
+                        webDriverHelpers.getNumberOfElements(BUTTONS_IN_VACCINATIONS_LOCATION),
+                        (int) expected,
+                        "Number of vaccinations is different than expected")));
     When(
         "^I click on the Cancel Follow-up button from Edit case page$",
         () -> webDriverHelpers.clickOnWebElementBySelector(CANCEL_FOLLOW_UP_BUTTON));
@@ -1958,6 +1979,111 @@ public class EditCaseSteps implements En {
 
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               EditImmunizationPage.DATE_OF_REPORT_INPUT);
+        });
+
+    When(
+        "I click on Delete button from case",
+        () -> {
+          webDriverHelpers.scrollToElement(DELETE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+        });
+
+    When(
+        "I check if EPID number input is disabled in Edit Case",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementEnabled(EPID_NUMBER_INPUT), "EPID number input is enabled");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if General comment test area is disabled in Edit Case",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementEnabled(GENERAL_COMMENT_TEXT_AREA),
+              "General comment test area is enabled");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if {string} field is available in Confirm deletion popup in Edit Case",
+        (String label) ->
+            webDriverHelpers.isElementVisibleWithTimeout(
+                getReasonForDeletionDetailsFieldLabel(label), 1));
+
+    And(
+        "^I validate immunization period is present on immunization card$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAVE_BUTTON);
+          String displayedPeriod =
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_IMMUNIZATION_PERIOD_LABEL);
+          LocalDate startDate = EditImmunizationSteps.collectedImmunization.getStartDate();
+          LocalDate endDate = EditImmunizationSteps.collectedImmunization.getEndDate();
+          DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          softly.assertEquals(
+              "Immunization period: "
+                  + dateFormatter.format(startDate)
+                  + " - "
+                  + dateFormatter.format(endDate),
+              displayedPeriod,
+              "Immunization period is not equal");
+          softly.assertAll();
+        });
+
+    And(
+        "^I validate immunization status is present on immunization card$",
+        () -> {
+          String actualImmunizationStatus =
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_IMMUNIZATION_STATUS_LABEL);
+          String expectedImmunizationStatus =
+              EditImmunizationSteps.collectedImmunization.getImmunizationStatus();
+          softly.assertEquals(
+              "Immunization status: " + expectedImmunizationStatus,
+              actualImmunizationStatus,
+              "Immunization status is not equal");
+          softly.assertAll();
+        });
+
+    And(
+        "^I validate management status is present on immunization card$",
+        () -> {
+          String actualManagementStatus =
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_MANAGEMENT_STATUS_LABEL);
+          String expectedManagementStatus =
+              EditImmunizationSteps.collectedImmunization.getManagementStatus();
+          softly.assertEquals(
+              "Management status: " + expectedManagementStatus,
+              actualManagementStatus,
+              "Management status is not equal");
+          softly.assertAll();
+        });
+
+    And(
+        "^I validate means of immunization is present on immunization card$",
+        () -> {
+          String actualMeansOfImmunization =
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_MEANS_OF_IMMUNIZATION_LABEL);
+          String expectedMeansOfImmunization =
+              EditImmunizationSteps.collectedImmunization.getMeansOfImmunization();
+          softly.assertEquals(
+              "Means of immunization: " + expectedMeansOfImmunization,
+              actualMeansOfImmunization,
+              "Means of immunization is not equal");
+          softly.assertAll();
+        });
+
+    And(
+        "^I validate immunization UUID is present on immunization card$",
+        () -> {
+          String actualImmunizationUUID =
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_IMMUNIZATION_UUID);
+          String expectedImmunizationUUID = EditImmunizationSteps.collectedImmunization.getUuid();
+          softly.assertEquals(
+              expectedImmunizationUUID.substring(0, 6),
+              actualImmunizationUUID,
+              "Means of immunization is not equal");
+          softly.assertAll();
         });
   }
 
