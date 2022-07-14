@@ -44,4 +44,10 @@ public class CommunitiesTabPage {
   public static final By CONFIRM_ARCHIVING_YES_BUTTON =
       By.cssSelector(".popupContent #actionConfirm");
   public static final By COMMUNITY_FILTER_COMBOBOX = By.cssSelector("#relevanceStatus > div");
+  public static final By COMMUNITIES_TABLE_DATA = By.tagName("td");
+  public static final By COMMUNITIES_TABLE_ROW = By.cssSelector("div.v-grid-tablewrapper tbody tr");
+  public static final By COMMUNITIES_COLUMN_HEADERS =
+          By.cssSelector("thead" + " .v-grid-column-default-header-content");
+  public static final By COUNTRY_COMMUNITY_FILTER_COMBOBOX =
+          By.cssSelector("[id='country'] [class='v-filterselect-button']");
 }

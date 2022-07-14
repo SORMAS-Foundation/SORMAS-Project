@@ -37,4 +37,10 @@ public class DistrictsTabPage {
       By.cssSelector(".popupContent #actionArchiveInfrastructure");
   public static final By CONFIRM_ARCHIVING_DISTRICT_TEXT =
       By.xpath("//*[contains(text(),'Archivieren best\u00E4tigen')]");
+  public static final By DISTRICTS_TABLE_DATA = By.tagName("td");
+  public static final By DISTRICTS_TABLE_ROW = By.cssSelector("div.v-grid-tablewrapper tbody tr");
+  public static final By DISTRICTS_COLUMN_HEADERS =
+          By.cssSelector("thead" + " .v-grid-column-default-header-content");
+  public static final By COUNTRY_DISTRICT_FILTER_COMBOBOX =
+          By.cssSelector("[id='country'] [class='v-filterselect-button']");
 }
