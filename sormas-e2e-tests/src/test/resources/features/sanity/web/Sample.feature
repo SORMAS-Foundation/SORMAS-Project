@@ -262,7 +262,8 @@ Feature: Sample Functionalities
     And I save the created sample
     And I confirm update case result
     Then I check if Update case disease variant popup is available
-  @env_de @issue=SORDEV-7427
+
+  @issue=SORDEV-7427 @env_de
   Scenario: Test Make date fields in sample creation mask and information non-compulsory
     When API: I create a new person
     Then API: I check that POST call body is "OK"
