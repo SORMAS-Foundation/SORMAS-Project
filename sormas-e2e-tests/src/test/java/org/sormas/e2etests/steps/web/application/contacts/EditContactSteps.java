@@ -58,7 +58,6 @@ import static org.sormas.e2etests.pages.application.immunizations.EditImmunizati
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.GENERAL_SEARCH_INPUT;
 
 import cucumber.api.java8.En;
-import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -721,9 +720,9 @@ public class EditContactSteps implements En {
         (String name) -> {
           String uuid = apiState.getCreatedContact().getUuid();
           String toDelete =
-                  userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name;
-            Path path = Paths.get(toDelete);
-            Files.delete(path);
+              userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name;
+          Path path = Paths.get(toDelete);
+          Files.delete(path);
         });
     When(
         "I select {string} template in Document Template form",
