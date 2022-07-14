@@ -287,6 +287,9 @@ public class EditCasePage {
   public static final By EDIT_IMMUNIZATION_BUTTON =
       By.xpath(
           "//div[@location='immunizations']//div[@class='v-slot v-slot-link v-slot-compact v-align-right']");
+  public static final By BUTTONS_IN_VACCINATIONS_LOCATION =
+      By.xpath(
+          "//div[contains(@location,\"vaccinations\")]//div[contains(@id,\"edit-vaccination\")]");
   public static final By GENERAL_COMMENT_TEXT_AREA = By.id("additionalDetails");
 
   public static By getCaseIDPathByIndex(int index) {
