@@ -392,8 +392,6 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		final XSSFColor red = XssfHelper.createColor(255, 0, 0);
 		final XSSFColor black = XssfHelper.createColor(0, 0, 0);
 
-		ArrayList<XSSFCellStyle> cellStyles = new ArrayList();
-
 		// Initialize cell styles
 		// Authorized style
 		XSSFCellStyle authorizedStyle = workbook.createCellStyle();
@@ -407,7 +405,6 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		authorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.LEFT, black);
 		authorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.TOP, black);
 		authorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.RIGHT, black);
-		cellStyles.add(authorizedStyle);
 
 		// Unauthorized style
 		XSSFCellStyle unauthorizedStyle = workbook.createCellStyle();
@@ -421,14 +418,12 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		unauthorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.LEFT, black);
 		unauthorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.TOP, black);
 		unauthorizedStyle.setBorderColor(XSSFCellBorder.BorderSide.RIGHT, black);
-		cellStyles.add(unauthorizedStyle);
 
 		// Bold style
 		XSSFFont boldFont = workbook.createFont();
 		boldFont.setBold(true);
 		XSSFCellStyle boldStyle = workbook.createCellStyle();
 		boldStyle.setFont(boldFont);
-		cellStyles.add(boldStyle);
 
 		int rowCounter = 0;
 
@@ -502,9 +497,11 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 				Cell roleRightCell = row.createCell(columnIndex);
 
 				if (hasUserRight(Collections.singletonList(userRole), userRight)) {
-					setCellValueAndStyleForBooleans(roleRightCell, true, cellStyles);
+					roleRightCell.setCellStyle(authorizedStyle);
+					roleRightCell.setCellValue(I18nProperties.getString(Strings.yes));
 				} else {
-					setCellValueAndStyleForBooleans(roleRightCell, false, cellStyles);
+					roleRightCell.setCellStyle(unauthorizedStyle);
+					roleRightCell.setCellValue(I18nProperties.getString(Strings.no));
 				}
 				columnIndex++;
 			}
@@ -513,16 +510,16 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 			uuidCell.setCellValue(userRole.getUuid());
 
 			Cell portHealthUserCell = row.createCell(columnIndex++);
-			setCellValueAndStyleForBooleans(portHealthUserCell, userRole.isPortHealthUser(), cellStyles);
+			portHealthUserCell.setCellValue(getTranslationForBoolean(userRole.isPortHealthUser()));
 
 			Cell hasAssociatedDistrictUserCell = row.createCell(columnIndex++);
-			setCellValueAndStyleForBooleans(hasAssociatedDistrictUserCell, userRole.hasAssociatedDistrictUser(), cellStyles);
+			hasAssociatedDistrictUserCell.setCellValue(getTranslationForBoolean(userRole.hasAssociatedDistrictUser()));
 
 			Cell hasOptionalHealthFacilityCell = row.createCell(columnIndex++);
-			setCellValueAndStyleForBooleans(hasOptionalHealthFacilityCell, userRole.hasOptionalHealthFacility(), cellStyles);
+			hasOptionalHealthFacilityCell.setCellValue(getTranslationForBoolean(userRole.hasOptionalHealthFacility()));
 
 			Cell enabledCell = row.createCell(columnIndex++);
-			setCellValueAndStyleForBooleans(enabledCell, userRole.isEnabled(), cellStyles);
+			enabledCell.setCellValue(getTranslationForBoolean(userRole.isEnabled()));
 		}
 
 		XssfHelper.addAboutSheet(workbook);
@@ -531,14 +528,8 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		workbook.close();
 	}
 
-	private void setCellValueAndStyleForBooleans(Cell cell, boolean value, ArrayList<XSSFCellStyle> cellStyles) {
-		if (value) {
-			cell.setCellStyle(cellStyles.get(0));
-			cell.setCellValue(I18nProperties.getString(Strings.yes));
-		} else {
-			cell.setCellStyle(cellStyles.get(1));
-			cell.setCellValue(I18nProperties.getString(Strings.no));
-		}
+	private String getTranslationForBoolean(boolean value) {
+		return value ? I18nProperties.getString(Strings.yes) : I18nProperties.getString(Strings.no);
 	}
 
 	private Path generateUserRolesDocumentTempPath() {
