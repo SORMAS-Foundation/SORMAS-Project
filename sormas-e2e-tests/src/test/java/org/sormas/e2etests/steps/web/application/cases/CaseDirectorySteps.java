@@ -174,6 +174,7 @@ public class CaseDirectorySteps implements En {
 
   public static String caseID1;
   public static String caseID2;
+  public static String leadingCaseUUID;
 
   @Inject
   public CaseDirectorySteps(
@@ -350,6 +351,14 @@ public class CaseDirectorySteps implements En {
           }
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+    And(
+        "I filter by Person's full name of last created duplicated line listing case on Case Directory Page",
+        () ->
+            webDriverHelpers.fillAndSubmitInWebElement(
+                PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
+                CaseLineListingSteps.duplicateCaseLineListingDe.getFirstName()
+                    + " "
+                    + CaseLineListingSteps.duplicateCaseLineListingDe.getLastName()));
     When(
         "^I select last created UI result in grid in Case Directory for Bulk Action$",
         () -> {
@@ -748,6 +757,16 @@ public class CaseDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
               getMergeDuplicatesButtonById(EditCaseSteps.aCase.getUuid()));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
+        });
+    When(
+        "I collect the leading case UUID displayed on Case Directory Page",
+        () -> leadingCaseUUID = getCaseIDByIndex(1));
+    And(
+        "I click on Merge button of leading case created through line listing in Merge Duplicate Cases page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              getMergeDuplicatesButtonById(leadingCaseUUID));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
         });
     And(

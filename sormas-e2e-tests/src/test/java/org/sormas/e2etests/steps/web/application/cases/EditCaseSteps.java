@@ -1688,7 +1688,6 @@ public class EditCaseSteps implements En {
     When(
         "^I click on the Cancel Follow-up button from Edit case page$",
         () -> webDriverHelpers.clickOnWebElementBySelector(CANCEL_FOLLOW_UP_BUTTON));
-
     Then(
         "^I check that Date of Follow-up Status Change and Responsible User are correctly displayed on Edit case page$",
         () -> {
