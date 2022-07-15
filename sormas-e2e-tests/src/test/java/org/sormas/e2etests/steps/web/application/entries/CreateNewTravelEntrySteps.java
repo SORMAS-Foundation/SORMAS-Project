@@ -62,6 +62,7 @@ import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CREATE_CASE_FROM_TRAVEL_ENTRY;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CREATE_DOCUMENT_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CREATE_DOCUMENT_POPUP_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DELETE_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DELETE_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISCARD_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISEASE_NAME_INPUT;
@@ -108,6 +109,7 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.cases.CreateNewCasePage;
 import org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage;
 import org.sormas.e2etests.pages.application.entries.EditTravelEntryPage;
+import org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
@@ -130,6 +132,7 @@ public class CreateNewTravelEntrySteps implements En {
   String entryPoint = "Test entry point";
   protected static TravelEntry travelEntryWithSamePersonData;
   List<TravelEntry> TravelEntryUuidList = new ArrayList<>();
+  private static String currentUrl;
 
   @Inject
   public CreateNewTravelEntrySteps(
@@ -378,6 +381,8 @@ public class CreateNewTravelEntrySteps implements En {
         "^I click on Save button from the new travel entry form$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          TimeUnit.SECONDS.sleep(1); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
@@ -849,6 +854,26 @@ public class CreateNewTravelEntrySteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(INPUT_DATA_ERROR_POPUP);
           webDriverHelpers.clickOnWebElementBySelector(INPUT_DATA_ERROR_POPUP);
+        });
+
+    When("I copy url of current travel entry", () -> currentUrl = webDriverHelpers.returnURL());
+
+    When("I back to deleted travel entry by url", () -> webDriverHelpers.accessWebSite(currentUrl));
+
+    When(
+        "I click on Delete button from travel entry",
+        () -> {
+          webDriverHelpers.scrollToElement(DELETE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+        });
+
+    When(
+        "I check if External ID input on travel entry edit page is disabled",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementEnabled(EditImmunizationPage.EXTERNAL_ID_INPUT),
+              "External ID input is enabled");
+          softly.assertAll();
         });
   }
 
