@@ -24,7 +24,7 @@ Scenario Outline: Sort column <col> alphabetically in Tasks directory
     |13 |
     |14 |
 
-@env_main @issue=SORDEV-5342 @Sample
+@env_main @issue=SORDEV-5342 @Task
 Scenario Outline: Sort column <col> by last name in Tasks directory
   Given I log in with National User
   And I click on the Tasks button from navbar
