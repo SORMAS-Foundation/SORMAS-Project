@@ -34,11 +34,11 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
-import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -244,7 +244,6 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		sormasToSormasRestClient
 			.post(options.getOrganization().getId(), requestEndpoint, new ShareRequestData(requestUuid, previewsToSend, originInfo), null);
 
-		// remove shares to the origin
 		shareRequestInfoService.ensurePersisted(shareRequestInfo);
 	}
 
@@ -338,6 +337,10 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			if (s.getContact() != null) {
 				sormasToSormasEntitiesHelper.updateContactResponsibleDistrict(s.getContact(), responseData.getDistrictExternalId());
 			}
+
+			if (s.getSample() != null) {
+				sormasToSormasEntitiesHelper.updateSampleOnShare(s.getSample(), s);
+			}
 		});
 		entities.forEach(e -> {
 			SormasToSormasOriginInfo entityOriginInfo = e.getSormasToSormasOriginInfo();
@@ -371,30 +374,27 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	public void syncShares(ShareTreeCriteria criteria) {
 		User currentUser = userService.getCurrentUser();
 
-		walkShareTree(
-			criteria,
-			(entity, originInfo, parentCriteria) -> {
+		walkShareTree(criteria, (entity, originInfo, parentCriteria) -> {
+			// prevent stopping the iteration through the shares because of a failed sync operation
+			// sync with as much servers as possible
+			try {
+				syncEntityToOrigin(entity, originInfo, parentCriteria);
+			} catch (Exception e) {
+				LOGGER.error("Failed to sync to [{}]", originInfo.getOrganizationId(), e);
+			}
+		}, ((entity, shareInfo, reShareCriteria, noForward) -> {
+			if (!noForward) {
 				// prevent stopping the iteration through the shares because of a failed sync operation
 				// sync with as much servers as possible
 				try {
-					syncEntityToOrigin(entity, originInfo, parentCriteria);
-				} catch (Exception e) {
-					LOGGER.error("Failed to sync to [{}]", originInfo.getOrganizationId(), e);
-				}
-			},
-			((entity, shareInfo, reShareCriteria, noForward) -> {
-				if (!noForward) {
-					// prevent stopping the iteration through the shares because of a failed sync operation
-					// sync with as much servers as possible
-					try {
-						ShareRequestInfo latestRequestInfo = ShareInfoHelper.getLatestAcceptedRequest(shareInfo.getRequests().stream()).orElse(null);
+					ShareRequestInfo latestRequestInfo = ShareInfoHelper.getLatestAcceptedRequest(shareInfo.getRequests().stream()).orElse(null);
 
-						syncEntityToShares(entity, latestRequestInfo, reShareCriteria, currentUser);
-					} catch (Exception e) {
-						LOGGER.error("Failed to sync to [{}]", shareInfo.getOrganizationId(), e);
-					}
+					syncEntityToShares(entity, latestRequestInfo, reShareCriteria, currentUser);
+				} catch (Exception e) {
+					LOGGER.error("Failed to sync to [{}]", shareInfo.getOrganizationId(), e);
 				}
-			}));
+			}
+		}));
 	}
 
 	@Override
@@ -527,7 +527,11 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	protected abstract Class<S[]> getShareDataClass();
 
-	protected void validateEntitiesBeforeShare(List<ADO> entities, boolean handOverOwnership, String targetOrganizationId, boolean pendingRequestAllowed)
+	protected void validateEntitiesBeforeShare(
+		List<ADO> entities,
+		boolean handOverOwnership,
+		String targetOrganizationId,
+		boolean pendingRequestAllowed)
 		throws SormasToSormasException {
 
 		List<ValidationErrors> validationErrors = new ArrayList<>();
@@ -567,7 +571,11 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 	}
 
-	protected abstract void validateEntitiesBeforeShareInner(ADO ado, boolean handOverOwnership, String targetOrganizationId, List<ValidationErrors> validationErrors);
+	protected abstract void validateEntitiesBeforeShareInner(
+		ADO ado,
+		boolean handOverOwnership,
+		String targetOrganizationId,
+		List<ValidationErrors> validationErrors);
 
 	protected abstract SormasToSormasShareInfo getByTypeAndOrganization(ADO ado, String targetOrganizationId);
 

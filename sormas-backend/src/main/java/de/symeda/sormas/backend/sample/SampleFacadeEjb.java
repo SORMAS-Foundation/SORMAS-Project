@@ -483,7 +483,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		if (sample.getLab() != null && !facilityService.exists(sample.getLab().getUuid())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noLaboratoryWithUuid));
 		}
-		if (!userService.exists(sample.getReportingUser().getUuid())) {
+		if (sample.getReportingUser() != null && !userService.exists(sample.getReportingUser().getUuid())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noReportingUserWithUuid));
 		}
 	}

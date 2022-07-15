@@ -51,7 +51,7 @@ public class EventShareDataBuilder
 	}
 
 	@Override
-	protected SormasToSormasEventDto doBuildShareData(Event data, ShareRequestInfo requestInfo) {
+	protected SormasToSormasEventDto doBuildShareData(Event data, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
 		Pseudonymizer pseudonymizer =
 			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
 

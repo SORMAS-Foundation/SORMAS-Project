@@ -164,10 +164,13 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@Override
 	public ExternalMessageDto save(@Valid ExternalMessageDto dto) {
+		return save(dto, true);
+	}
 
+	public ExternalMessageDto save(@Valid ExternalMessageDto dto, boolean checkChangeDate) {
 		ExternalMessage externalMessage = externalMessageService.getByUuid(dto.getUuid());
 
-		externalMessage = fromDto(dto, externalMessage, true);
+		externalMessage = fromDto(dto, externalMessage, checkChangeDate);
 		externalMessageService.ensurePersisted(externalMessage);
 
 		return toDto(externalMessage);

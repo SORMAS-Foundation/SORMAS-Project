@@ -30,7 +30,6 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.api.location.LocationDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -50,6 +49,7 @@ import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -342,7 +342,11 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 		shareData.setEventParticipants(Collections.singletonList(new SormasToSormasEventParticipantDto(eventParticipant)));
 		shareData.setSamples(
 			Collections.singletonList(
-				new SormasToSormasSampleDto(sample, Collections.singletonList(pathogenTest), Collections.singletonList(additionalTest))));
+				new SormasToSormasSampleDto(
+					sample,
+					Collections.singletonList(pathogenTest),
+					Collections.singletonList(additionalTest),
+					Collections.emptyList())));
 		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
 
 		getSormasToSormasEventFacade().saveSharedEntities(encryptedData);
@@ -461,7 +465,9 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 		shareData.setEvents(Collections.singletonList(new SormasToSormasEventDto(event)));
 		shareData.setEventParticipants(
 			Arrays.asList(new SormasToSormasEventParticipantDto(eventParticipant), new SormasToSormasEventParticipantDto(newEventParticipant)));
-		shareData.setSamples(Collections.singletonList(new SormasToSormasSampleDto(newSample, Collections.emptyList(), Collections.emptyList())));
+		shareData.setSamples(
+			Collections
+				.singletonList(new SormasToSormasSampleDto(newSample, Collections.emptyList(), Collections.emptyList(), Collections.emptyList())));
 
 		SormasToSormasEncryptedDataDto encryptedData = encryptShareData(shareData);
 
