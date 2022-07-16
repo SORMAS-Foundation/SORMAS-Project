@@ -402,3 +402,29 @@ Feature: Create travel entries
       When I back to deleted travel entry by url
       Then I check if reason of deletion is set to "Löschen auf Anforderung der betroffenen Person nach DSGVO"
       And I check if External ID input on travel entry edit page is disabled
+
+    @issue=SORDEV-9792 @env_de @testIt
+    Scenario: Test CoreAdo: Introduce "end of processing date" for travel entries
+      Given I log in as a Admin User
+      And I click on the Entries button from navbar
+      And I click on the New Travel Entry button from Travel Entries directory
+      When I fill the required fields in a new travel entry form
+      And I click on Save button from the new travel entry form
+      And I collect travel UUID from travel entry
+      Then I click on the Archive travel entry button
+      Then I check the end of processing date in the archive popup and select Archive travel entry for DE version
+      And I click on Travel Entry list button
+      Then I apply "Abgeschlossene Einreisen" to combobox on Travel Entry Directory Page
+      And I search for first created travel entry by UUID for person in Travel Entries Directory
+      And I check that number of displayed Travel Entry results is 1
+      Then I click on first filtered record in Travel Entry
+      Then I click on the De-archive travel entry button
+      And I click on confirm button in de-archive travel entry popup
+      And I check if exclamation mark with message "Bitte geben Sie einen Grund für die Wiedereröffnung an" appears while trying to de-archive without reason
+      And I click on discard button in de-archive travel entry popup
+      Then I click on the De-archive travel entry button
+      And I fill De-archive travel entry popup with test automation reason
+      And I click on Travel Entry list button
+      Then I apply "Aktive Einreisen" to combobox on Travel Entry Directory Page
+      And I search for first created travel entry by UUID for person in Travel Entries Directory
+      And I check that number of displayed Travel Entry results is 1

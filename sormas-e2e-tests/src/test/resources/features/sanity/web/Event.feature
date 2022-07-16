@@ -1129,3 +1129,62 @@ Feature: Create events
     Then I check if reason of deletion is set to "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I check if General comment on event participant edit page is disabled
     And I check if Involvement description input on event participant edit page is disabled
+
+  @issue=SORDEV-9792 @env_de
+  Scenario: Test CoreAdo: Introduce "end of processing date" for events
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data for DE version
+    And I navigate to EVENT from edit event page
+    Then I collect the UUID displayed on Edit event page
+    Then I click on the Archive event button
+    Then I check the end of processing date in the archive popup and select Archive event checkbox for DE version
+    Then I click on the De-Archive event button
+    And I fill De-Archive event popup with test automation reason
+    Then I change date of event report for today for DE version
+    And I click on Save Button in Edit Event directory
+    Then I click on the Archive event button
+    Then I check the end of processing date in the archive popup and select Archive event checkbox for DE version
+    And I click on the Events button from navbar
+    And I apply "Abgeschlossene Ereignisse" to combobox on Event Directory Page
+    And I search for specific event by uuid in event directory
+    And I check that number of displayed Event results is 1
+    Then I click on the first Event ID from Event Directory
+    Then I click on the De-Archive event button
+    Then I click on confirm button in de-archive event popup
+    And I check if exclamation mark with message "Bitte geben Sie einen Grund für die Wiedereröffnung an" appears while trying to de-archive without reason
+    And I click on discard button in de-archive event popup
+    Then I click on the De-Archive event button
+    And I fill De-Archive event popup with test automation reason
+    And I click on the Events button from navbar
+    And I apply "Aktive Ereignisse" to combobox on Event Directory Page
+    And I search for specific event by uuid in event directory
+    And I check that number of displayed Event results is 1
+
+  @issue=SORDEV-9792 @env_de @testIt
+  Scenario: Test CoreAdo: Introduce "end of processing date" for event participants
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data for DE version
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I click on Add Participant button
+    Then I add Participant to an Event with same person data
+    And I click on save button in Add Participant form
+    Then I collect the UUID displayed on Edit event participant page
+    Then I click on the Archive event participant button
+    Then I check the end of processing date in the archive popup and select Archive event participant for DE version
+    And I click on the Event participant tab
+    Then I choose Abgeschlossene Ereignisteilnehmer from combobox in the Event participant tab
+    And I check that number of displayed Event participants results is 1
+    Then I click on the first row from archived event participant
+    Then I click on the De-Archive event participant button
+    Then I click on confirm button in de-archive event popup
+    And I check if exclamation mark with message "Bitte geben Sie einen Grund für die Wiedereröffnung an" appears while trying to de-archive without reason
+    And I click on discard button in de-archive event popup
+    Then I click on the De-Archive event participant button
+    And I fill De-Archive event popup with test automation reason
+    And I click on the Event participant tab
+    Then I choose Aktive Ereignisteilnehmer from combobox in the Event participant tab
+    And I check that number of displayed Event participants results is 1

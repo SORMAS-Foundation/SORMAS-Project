@@ -28,6 +28,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.FIRST_CONTACT_ID;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_MANAGEMENT_STATUS_CHECK;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_PARTICIPANTS_TAB;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_ARCHIVED_EVENT_PARTICIPANT;
@@ -1082,6 +1083,19 @@ public class EventDirectorySteps implements En {
                         "Number of displayed cases is not correct")));
 
     Then(
+        "I check that number of displayed Event participants results is {int}",
+        (Integer number) -> {
+          Integer hyperlinkNr =
+              number + 2; // we got 3 tr a in one [role=rowgroup] for event participant
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Assert.assertEquals(
+                      webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
+                      hyperlinkNr.intValue(),
+                      "Number of displayed cases is not correct"));
+        });
+
+    Then(
         "I check the number of displayed Event results from All button is {int}",
         (Integer number) ->
             assertHelpers.assertWithPoll20Second(
@@ -1295,6 +1309,17 @@ public class EventDirectorySteps implements En {
               SEARCH_EVENT_BY_FREE_TEXT, EditEventSteps.collectedEvent.getUuid());
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
           webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(EVENTS_COLUMN_HEADERS);
+        });
+
+    When(
+        "I click on the first Event ID from Event Directory",
+        () -> {
+          if (webDriverHelpers.isElementVisibleWithTimeout(
+              By.xpath("//*[contains(text(),'Confirm navigation')]"), 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(By.id("actionCancel"));
+            webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          }
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_CONTACT_ID);
         });
   }
 
