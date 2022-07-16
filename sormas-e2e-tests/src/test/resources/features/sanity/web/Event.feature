@@ -1162,7 +1162,7 @@ Feature: Create events
     And I search for specific event by uuid in event directory
     And I check that number of displayed Event results is 1
 
-  @issue=SORDEV-9792 @env_de @testIt
+  @issue=SORDEV-9792 @env_de
   Scenario: Test CoreAdo: Introduce "end of processing date" for event participants
     Given I log in as a Admin User
     And I click on the Events button from navbar

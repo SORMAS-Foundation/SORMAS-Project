@@ -403,7 +403,7 @@ Feature: Create travel entries
       Then I check if reason of deletion is set to "Löschen auf Anforderung der betroffenen Person nach DSGVO"
       And I check if External ID input on travel entry edit page is disabled
 
-    @issue=SORDEV-9792 @env_de @testIt
+    @issue=SORDEV-9792 @env_de
     Scenario: Test CoreAdo: Introduce "end of processing date" for travel entries
       Given I log in as a Admin User
       And I click on the Entries button from navbar
