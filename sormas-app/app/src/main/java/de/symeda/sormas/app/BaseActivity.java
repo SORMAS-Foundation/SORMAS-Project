@@ -409,7 +409,7 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 			MenuItem contactMenu = menuNav.findItem(R.id.menu_item_contacts);
 			MenuItem eventMenu = menuNav.findItem(R.id.menu_item_events);
 			MenuItem sampleMenu = menuNav.findItem(R.id.menu_item_samples);
-			//MenuItem immunizationMenu = menuNav.findItem(R.id.menu_item_samples);
+			MenuItem immunizationMenu = menuNav.findItem(R.id.menu_item_samples);
 			MenuItem reportMenu = menuNav.findItem(R.id.menu_item_reports);
 			MenuItem campaignMenu = menuNav.findItem(R.id.menu_item_campaigns);
 
@@ -438,11 +438,11 @@ public abstract class BaseActivity extends BaseLocalizedActivity implements Noti
 						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.SAMPLES_LAB));
 
 
-		/*	if (immunizationMenu != null)
+			if (immunizationMenu != null)
 				immunizationMenu.setVisible(
 					ConfigProvider.hasUserRight(UserRight.IMMUNIZATION_VIEW)
 						&& !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.IMMUNIZATION_MANAGEMENT));
-*/
+
 			if (eventMenu != null)
 				eventMenu.setVisible(
 					ConfigProvider.hasUserRight(UserRight.EVENT_VIEW)

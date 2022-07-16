@@ -4,6 +4,7 @@ buildscript {
     repositories {
         google()
         jcenter()
+
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.1.2'
@@ -12,6 +13,7 @@ buildscript {
         classpath 'com.google.firebase:perf-plugin:1.4.1'
         classpath 'org.jacoco:org.jacoco.core:0.8.5'
         classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.8'
+
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -26,6 +28,7 @@ allprojects {
         flatDir {
             dirs 'libs'
         }
+
     }
 
     // this makes sure that the compiler let's us know about underlying errors

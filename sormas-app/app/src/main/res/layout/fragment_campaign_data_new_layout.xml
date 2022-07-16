@@ -97,14 +97,38 @@
                     app:value="@={data.community}" />
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/dynamicLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+
+
+                <TabHost android:id="@+id/distributionTabhost" android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+                    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent"
+                        android:layout_height="fill_parent">
+
+                        <TabWidget
+                            android:id="@android:id/tabs"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:background="#160203" />
+
+                        <FrameLayout android:id="@android:id/tabcontent" android:layout_width="fill_parent"
+                            android:layout_height="fill_parent">
+                            <LinearLayout
+                                android:id="@+id/dynamicLayout"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+                            </LinearLayout>
+                            <TextView android:id="@+id/textview2" android:layout_width="fill_parent" android:layout_height="fill_parent"
+                                android:text="this is another tab" />
+                            <TextView android:id="@+id/textview3" android:layout_width="fill_parent" android:layout_height="fill_parent"
+                                android:text="this is a third tab" />
+                        </FrameLayout>
+                    </LinearLayout>
+                </TabHost>
+
 
             </LinearLayout>
 
-        </LinearLayout>
+
     </ScrollView>
 </layout>
