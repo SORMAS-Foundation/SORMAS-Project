@@ -84,6 +84,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                 ControlPropertyField dynamicField = createControlTextReadField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
                 dynamicField.setShowCaption(true);
                 if (value != null) {
+                    System.out.println("))))))))))))))))))))))))))))))))))))))))))0000 "+value);
                     if (type == CampaignFormElementType.YES_NO) {
                         ControlTextReadField.setValue((ControlTextReadField) dynamicField, Boolean.valueOf(value), null, null);
                     } else {

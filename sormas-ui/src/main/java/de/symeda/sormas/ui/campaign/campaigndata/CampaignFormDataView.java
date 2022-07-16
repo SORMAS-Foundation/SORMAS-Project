@@ -79,9 +79,11 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 			Page.getCurrent().getJavaScript().execute(
 					"$(document).ready(function() {"
 				//	+ "alert();"
-				//	+ "document.querySelector(\".v-slot.v-align-right.v-align-bottom\").innerHTML='<h2><i>Please select admin data to load your form</i></h2>';"
-				//	+ "$('.v-slot.v-align-right.v-align-bottom').toggleClass('v-align-center').removeClass('v-align-right');"
-				
+					+ "document.querySelector(\".v-slot.v-align-right.v-align-bottom\").innerHTML='<h2><i>Please select admin data to load your form</i></h2>';"
+					+ "$('.v-slot.v-align-right.v-align-bottom').toggleClass('v-align-center').removeClass('v-align-right');"
+					+ "$('.v-verticallayout.v-layout.v-vertical.v-widget.v-has-width.v-has-height.v-margin-top.v-margin-right.v-margin-bottom.v-margin-left').remove();"
+					
+				//+"$('#formidx').find('td:contains('Void')').parent('tr').hide();"
 					+"});"
 					);
 			//"$('#formidx').find('td:contains('Void')').parent('tr').hide()");

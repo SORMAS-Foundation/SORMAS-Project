@@ -52,6 +52,7 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 	private boolean singleLine;
 	private int maxLines;
 	private int maxLength;
+	private int minLength;
 	private boolean textArea;
 	private int inputType;
 
@@ -226,7 +227,11 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 				textArea = a.getBoolean(R.styleable.ControlTextEditField_textArea, false);
 				maxLength = a.getInt(
 					R.styleable.ControlTextEditField_maxLength,
-					textArea ? FieldConstraints.CHARACTER_LIMIT_BIG : FieldConstraints.CHARACTER_LIMIT_DEFAULT);
+					textArea ? FieldConstraints.CHARACTER_LIMIT_BIG : FieldConstraints.CHARACTER_LIMIT_UUID_MIN);
+
+				minLength = a.getInt(
+						R.styleable.ControlTextEditField_minLength,
+						textArea ? FieldConstraints.CHARACTER_LIMIT_BIG : FieldConstraints.CHARACTER_LIMIT_DEFAULT);
 				inputType = a.getInt(R.styleable.ControlTextEditField_inputType, InputType.TYPE_CLASS_TEXT);
 			} finally {
 				a.recycle();
@@ -281,9 +286,15 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 		if (getMaxLength() >= 0) {
 			input.setFilters(
 				new InputFilter[] {
-					new InputFilter.LengthFilter(getMaxLength()) });
+					new InputFilter.LengthFilter(240) });
 		}
-
+/*
+		if (getMinLength() >= 0) {
+			input.setFilters(
+					new InputFilter[] {
+							new InputFilter.LengthFilter(getMinLength()) });
+		}
+*/
 		input.addTextChangedListener(new TextWatcher() {
 
 			@Override
@@ -497,5 +508,13 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 
 	public void setMaxLength(int maxLength) {
 		this.maxLength = maxLength;
+	}
+
+	public int getMinLength() {
+		return minLength;
+	}
+
+	public void setMinLength(int minLength) {
+		this.minLength = minLength;
 	}
 }

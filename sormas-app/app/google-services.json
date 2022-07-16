@@ -1,62 +1,33 @@
 {
   "project_info": {
-    "project_number": "436948249915",
-    "project_id": "cinoteck-apmis",
-    "storage_bucket": "cinoteck-apmis.appspot.com"
+    "project_number": "537643474131",
+    "project_id": "apmis-cinoteck",
+    "storage_bucket": "apmis-cinoteck.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:436948249915:android:d24f358c51f54917449b1e",
+        "mobilesdk_app_id": "1:537643474131:android:d93b03e19c6c822152c826",
         "android_client_info": {
           "package_name": "de.symeda.sormas.app.apmis"
         }
       },
       "oauth_client": [
         {
-          "client_id": "436948249915-ajia4mp7ph2gf825tfkd7d4f1l6c3jrr.apps.googleusercontent.com",
+          "client_id": "537643474131-t4pqtp5r8o6cbn0fsufhrk5fdudnj8uf.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDMBBs53mbMZCnCfxVmyPCGf6lAnL9mZdU"
+          "current_key": "AIzaSyC93wvgLwBmG7zpyPENmhVurN05uXnnaGM"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "436948249915-ajia4mp7ph2gf825tfkd7d4f1l6c3jrr.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:436948249915:android:5db83e45e75bc38c449b1e",
-        "android_client_info": {
-          "package_name": "de.symeda.sormas.app.apmis.debug"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "436948249915-ajia4mp7ph2gf825tfkd7d4f1l6c3jrr.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDMBBs53mbMZCnCfxVmyPCGf6lAnL9mZdU"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "436948249915-ajia4mp7ph2gf825tfkd7d4f1l6c3jrr.apps.googleusercontent.com",
+              "client_id": "537643474131-t4pqtp5r8o6cbn0fsufhrk5fdudnj8uf.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
