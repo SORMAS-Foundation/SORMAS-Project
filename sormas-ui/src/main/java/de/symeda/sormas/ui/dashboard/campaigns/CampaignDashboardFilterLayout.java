@@ -28,15 +28,18 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.ui.CampaignGisView;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.campaign.components.CampaignFormPhaseSelector;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
 public class CampaignDashboardFilterLayout extends HorizontalLayout {
-
+	
 	private CampaignDashboardView dashboardView;
 	private CampaignDashboardDataProvider dashboardDataProvider;
+	
+	private CampaignGisView mapview;
 
 	private Label infoLabel;
 
@@ -92,6 +95,52 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		setExpandRatio(campaignPhaseSelector, 1);
 		setComponentAlignment(campaignPhaseSelector, Alignment.MIDDLE_RIGHT);
 		*/
+	}
+	
+	public CampaignDashboardFilterLayout(CampaignGisView dashboardView, CampaignDashboardDataProvider dashboardDataProvider) {
+
+		this.mapview = dashboardView;
+		this.dashboardDataProvider = dashboardDataProvider;
+		this.campaignFilter = ComboBoxHelper.createComboBoxV7();
+		this.campaignPhaseFilter = ComboBoxHelper.createComboBoxV7();
+		this.regionFilter = ComboBoxHelper.createComboBoxV7();
+		this.districtFilter = ComboBoxHelper.createComboBoxV7();
+		this.areaFilter = ComboBoxHelper.createComboBoxV7();
+		this.campaignJurisdictionGroupByFilter = ComboBoxHelper.createComboBoxV7();
+		
+		//setStyleName(CssStyles.FORCE_CAPTION);
+
+		setSpacing(true);
+		setWidthFull();
+		setMargin(new MarginInfo(true, true, false, true));
+
+		infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
+		infoLabel.setSizeUndefined();
+
+		final UserDto user = UserProvider.getCurrent().getUser();
+		final CampaignJurisdictionLevel campaignJurisdictionLevel =
+			CampaignJurisdictionLevel.getByJurisdictionLevel(UserRole.getJurisdictionLevel(user.getUserRoles()));
+		dashboardDataProvider.setCampaignJurisdictionLevelGroupBy(getJurisdictionBelow(campaignJurisdictionLevel));
+
+		
+		
+		campaignFilter.setRequired(true);
+		campaignFilter.setNullSelectionAllowed(false);
+		campaignFilter.setCaption(I18nProperties.getCaption(Captions.Campaign));
+		campaignFilter.setWidth(200, Unit.PIXELS);
+		campaignFilter.setInputPrompt(I18nProperties.getString(Strings.promptCampaign));
+		campaignFilter.addItems(FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference().toArray());
+		campaignFilter.addValueChangeListener(e -> {
+			
+		});
+		addComponent(campaignFilter);
+		//campaignPhaseFilter.addItem(FacadeProvider.getCampaignFacade())
+		
+		//createCampaignPhaseFilter();
+
+		
+		createJurisdictionFilters(campaignJurisdictionLevel);
+
 	}
 
 	private void createCampaignFilter() {

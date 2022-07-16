@@ -22,6 +22,11 @@ import java.lang.reflect.Method;
 import java.util.EventObject;
 import java.util.List;
 
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.ui.AbstractJavaScriptComponent;
@@ -41,16 +46,11 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Martin Wahnschaffe
  */
-@JavaScript({
-	"vaadin://map/leaflet.js",
-	"vaadin://map/leaflet.fullscreen.js",
-	"vaadin://map/leaflet-easy-print.js",
-	"vaadin://map/leaflet.markercluster.js",
-	"vaadin://map/leaflet-connector.js" })
-@StyleSheet({
-	"vaadin://map/leaflet.css",
-	"vaadin://map/leaflet.fullscreen.css", 
-	"vaadin://map/MarkerCluster.css" })
+@JavaScript({ "vaadin://map/leaflet.js", "vaadin://map/leaflet.fullscreen.js", "vaadin://map/leaflet-easy-print.js",
+		"vaadin://map/leaflet.markercluster.js", "vaadin://map/leaflet-connector.js", "vaadin://map/realworld.388.js",
+		"vaadin://map/grayscale.js", "vaadin://map/mapJs.js" })
+@StyleSheet({ "vaadin://map/leaflet.css", "vaadin://map/leaflet.fullscreen.css", "vaadin://map/MarkerCluster.css",
+		"vaadin://map/screen.css", "vaadin://map/mapCss.css" })
 public class LeafletMap extends AbstractJavaScriptComponent {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -133,8 +133,45 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 		JsonArray markersJson = Json.createArray();
 		for (LeafletMarker marker : markers) {
 			markersJson.set(markersJson.length(), marker.toJson());
+
 		}
 		callFunction("addMarkerGroup", groupId, markersJson);
+	}
+
+	public String getUserLocation() throws ScriptException, NoSuchMethodException {
+		 ScriptEngineManager manager = new ScriptEngineManager();
+		    ScriptEngine engine = manager.getEngineByName("JavaScript");
+
+		    // JavaScript code in a String
+		    String script1 = "function getLocation() {\r\n"
+		    		+ "    var latitude;\r\n"
+		    		+ "    var longitude;\r\n"
+		    		+ "    var oo;\r\n"
+		    		+ "    navigator.geolocation.getCurrentPosition(position => {\r\n"
+		    		+ "        latitude = position.coords.latitude;\r\n"
+		    		+ "        longitude = position.coords.longitude;\r\n"
+		    		+ "        alert(position)\r\n"
+		    		+ "    }, error => {\r\n"
+		    		+ "        alert(error)\r\n"
+		    		+ "    }, {\r\n"
+		    		+ "        timeout: 1000,\r\n"
+		    		+ "        maximumAge: 10000,\r\n"
+		    		+ "        enableHighAccuracy: true\r\n"
+		    		+ "    })\r\n"
+		    		+ "\r\n"
+		    		+ "    oo = longitude + \" \"+latitude;\r\n"
+		    		+ "    return oo;\r\n"
+		    		+ "}";
+		    
+	// evaluate script
+	engine.eval(script1);
+
+	Invocable inv = (Invocable) engine;
+	
+	String returnValue = (String)inv.invokeFunction("getLocation");
+	
+	System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! "+ returnValue);
+	return returnValue;
 	}
 
 	public void addPolygonGroup(String groupId, List<LeafletPolygon> polygons) {
@@ -154,11 +191,10 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 	}
 
 	/**
-	 * Append the give attribution to the Leaflet attribution list.
-	 * See https://leafletjs.com/reference-1.7.1.html#control-attribution
+	 * Append the give attribution to the Leaflet attribution list. See
+	 * https://leafletjs.com/reference-1.7.1.html#control-attribution
 	 * 
-	 * @param attribution
-	 *            The attribution to be given.
+	 * @param attribution The attribution to be given.
 	 */
 	public void addShapefileAttribution(String attribution) {
 		callFunction("addShapefileAttribution", attribution);
@@ -166,7 +202,8 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 
 	public interface MarkerClickListener extends Serializable {
 
-		Method MARKER_CLICK_METHOD = ReflectTools.findMethod(MarkerClickListener.class, "markerClick", MarkerClickEvent.class);
+		Method MARKER_CLICK_METHOD = ReflectTools.findMethod(MarkerClickListener.class, "markerClick",
+				MarkerClickEvent.class);
 
 		void markerClick(MarkerClickEvent event);
 	}

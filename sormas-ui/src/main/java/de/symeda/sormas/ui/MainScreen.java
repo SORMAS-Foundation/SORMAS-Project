@@ -139,135 +139,128 @@ public class MainScreen extends HorizontalLayout {
 		menu = new Menu(navigator);
 		ControllerProvider.getDashboardController().registerViews(navigator);
 		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
-			menu.addView(
-				SurveillanceDashboardView.class,
-				AbstractDashboardView.ROOT_VIEW_NAME,
-				I18nProperties.getCaption(Captions.mainMenuDashboard),
-				VaadinIcons.DASHBOARD);
+			menu.addView(SurveillanceDashboardView.class, AbstractDashboardView.ROOT_VIEW_NAME,
+					I18nProperties.getCaption(Captions.mainMenuDashboard), VaadinIcons.DASHBOARD);
 		} else if (permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_ACCESS)) {
-			menu.addView(
-				ContactsDashboardView.class,
-				AbstractDashboardView.ROOT_VIEW_NAME,
-				I18nProperties.getCaption(Captions.mainMenuDashboard),
-				VaadinIcons.DASHBOARD);
+			menu.addView(ContactsDashboardView.class, AbstractDashboardView.ROOT_VIEW_NAME,
+					I18nProperties.getCaption(Captions.mainMenuDashboard), VaadinIcons.DASHBOARD);
 		} else if (permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_ACCESS)) {
-			menu.addView(
-				CampaignDashboardView.class,
-				AbstractDashboardView.ROOT_VIEW_NAME,
-				I18nProperties.getCaption(Captions.mainMenuDashboard),
-				VaadinIcons.GRID_SMALL_O);
-		}
+			menu.addView(CampaignDashboardView.class, AbstractDashboardView.ROOT_VIEW_NAME,
+					I18nProperties.getCaption(Captions.mainMenuDashboard), VaadinIcons.GRID_SMALL_O);
 
+		}
+		
+		
 		if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
-			menu.addView(TasksView.class, TasksView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuTasks), VaadinIcons.TASKS);
+			menu.addView(TasksView.class, TasksView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuTasks),
+					VaadinIcons.TASKS);
 		}
 		if (permitted(FeatureType.PERSON_MANAGEMENT, UserRight.PERSON_VIEW)) {
 			ControllerProvider.getPersonController().registerViews(navigator);
-			menu.addView(PersonsView.class, PersonsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuPersons), VaadinIcons.USER_CARD);
+			menu.addView(PersonsView.class, PersonsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuPersons),
+					VaadinIcons.USER_CARD);
 		}
 		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.CASE_VIEW)) {
 			ControllerProvider.getCaseController().registerViews(navigator);
-			menu.addView(CasesView.class, CasesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuCases), VaadinIcons.EDIT);
+			menu.addView(CasesView.class, CasesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuCases),
+					VaadinIcons.EDIT);
 		}
 		if (permitted(FeatureType.AGGREGATE_REPORTING, UserRight.AGGREGATE_REPORT_VIEW)) {
-			menu.addView(
-				AggregateReportsView.class,
-				AggregateReportsView.VIEW_NAME,
-				I18nProperties.getCaption(Captions.mainMenuAggregateReports),
-				VaadinIcons.GRID_SMALL);
+			menu.addView(AggregateReportsView.class, AggregateReportsView.VIEW_NAME,
+					I18nProperties.getCaption(Captions.mainMenuAggregateReports), VaadinIcons.GRID_SMALL);
 		}
 		if (permitted(FeatureType.CONTACT_TRACING, UserRight.CONTACT_VIEW)) {
 			ControllerProvider.getContactController().registerViews(navigator);
-			menu.addView(ContactsView.class, ContactsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuContacts), VaadinIcons.HAND);
+			menu.addView(ContactsView.class, ContactsView.VIEW_NAME,
+					I18nProperties.getCaption(Captions.mainMenuContacts), VaadinIcons.HAND);
 		}
 		if (permitted(FeatureType.EVENT_SURVEILLANCE, UserRight.EVENT_VIEW)) {
 			ControllerProvider.getEventController().registerViews(navigator);
 			navigator.addView(EventParticipantDataView.VIEW_NAME, EventParticipantDataView.class);
 			navigator.addView(EventGroupDataView.VIEW_NAME, EventGroupDataView.class);
-			menu.addView(EventsView.class, EventsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuEvents), VaadinIcons.PHONE);
+			menu.addView(EventsView.class, EventsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuEvents),
+					VaadinIcons.PHONE);
 		}
 
 		if (permitted(FeatureType.SAMPLES_LAB, UserRight.SAMPLE_VIEW)) {
 			ControllerProvider.getSampleController().registerViews(navigator);
-			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSamples), VaadinIcons.DATABASE);
+			menu.addView(SamplesView.class, SamplesView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuSamples),
+					VaadinIcons.DATABASE);
 		}
 
 		if (permitted(FeatureType.IMMUNIZATION_MANAGEMENT, UserRight.IMMUNIZATION_VIEW)) {
 			ControllerProvider.getImmunizationController().registerViews(navigator);
-			menu.addView(
-				ImmunizationsView.class,
-				ImmunizationsView.VIEW_NAME,
-				I18nProperties.getCaption(Captions.mainMenuImmunizations),
-				VaadinIcons.HEALTH_CARD);
+			menu.addView(ImmunizationsView.class, ImmunizationsView.VIEW_NAME,
+					I18nProperties.getCaption(Captions.mainMenuImmunizations), VaadinIcons.HEALTH_CARD);
 		}
 
 		if (permitted(FeatureType.TRAVEL_ENTRIES, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS)
-			&& FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+				&& FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			ControllerProvider.getTravelEntryController().registerViews(navigator);
-			menu.addView(
-				TravelEntriesView.class,
-				TravelEntriesView.VIEW_NAME,
-				I18nProperties.getCaption(Captions.mainMenuEntries),
-				VaadinIcons.AIRPLANE);
+			menu.addView(TravelEntriesView.class, TravelEntriesView.VIEW_NAME,
+					I18nProperties.getCaption(Captions.mainMenuEntries), VaadinIcons.AIRPLANE);
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)
-			&& FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser()) {
+				&& FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser()) {
 			ControllerProvider.getSormasToSormasController().registerViews(navigator);
-			menu.addView(
-				ShareRequestsView.class,
-				ShareRequestsView.VIEW_NAME,
-				I18nProperties.getCaption(Captions.mainMenuShareRequests),
-				VaadinIcons.SHARE);
+			menu.addView(ShareRequestsView.class, ShareRequestsView.VIEW_NAME,
+					I18nProperties.getCaption(Captions.mainMenuShareRequests), VaadinIcons.SHARE);
 		}
 
 		if (permitted(FeatureType.CAMPAIGNS, UserRight.CAMPAIGN_VIEW)) {
 			AbstractCampaignView.registerViews(navigator);
-			menu.addView(
-				CampaignStatisticsView.class,
-				AbstractCampaignView.ROOT_VIEW_NAME,
-				I18nProperties.getCaption(Captions.mainMenuCampaigns),
-				VaadinIcons.CLIPBOARD_CHECK);
+			menu.addView(CampaignStatisticsView.class, AbstractCampaignView.ROOT_VIEW_NAME,
+					I18nProperties.getCaption(Captions.mainMenuCampaigns), VaadinIcons.CLIPBOARD_CHECK);
 		}
 		if (permitted(FeatureType.WEEKLY_REPORTING, UserRight.WEEKLYREPORT_VIEW)) {
-			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuReports), VaadinIcons.FILE_TEXT);
+			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuReports),
+					VaadinIcons.FILE_TEXT);
 		}
 		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.STATISTICS_ACCESS)) {
 			ControllerProvider.getStatisticsController().registerViews(navigator);
-			menu.addView(
-				StatisticsView.class,
-				AbstractStatisticsView.ROOT_VIEW_NAME,
-				I18nProperties.getCaption(Captions.mainMenuStatistics),
-				VaadinIcons.BAR_CHART);
+			menu.addView(StatisticsView.class, AbstractStatisticsView.ROOT_VIEW_NAME,
+					I18nProperties.getCaption(Captions.mainMenuStatistics), VaadinIcons.BAR_CHART);
 		}
 		if (permitted(UserRight.CONFIGURATION_ACCESS)) {
 			AbstractConfigurationView.registerViews(navigator);
 			menu.addView(
-				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS) ? OutbreaksView.class : RegionsView.class,
-				AbstractConfigurationView.ROOT_VIEW_NAME,
-				I18nProperties.getCaption(Captions.mainMenuConfiguration),
-				VaadinIcons.COG_O);
+					FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)
+							? OutbreaksView.class
+							: RegionsView.class,
+					AbstractConfigurationView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuConfiguration),
+					VaadinIcons.COG_O);
 		}
 		if (permitted(UserRight.USER_VIEW)) {
-			menu.addView(UsersView.class, UsersView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers), VaadinIcons.USERS);
+			menu.addView(UsersView.class, UsersView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers),
+					VaadinIcons.USERS);
 		}
+
+		menu.createViewButtonx(Captions.actionSettings, I18nProperties.getCaption(Captions.language),
+				VaadinIcons.GLOBE_WIRE);
+
+		// menu.addView(LanguageView.class, LanguageView.VIEW_NAME, "DashboardTest",
+		// VaadinIcons.GLOBE_WIRE);
+
+		menu.addView(AboutView.class, AboutView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAbout),
+				VaadinIcons.INFO_CIRCLE_O);
 		
-		
-		menu.createViewButtonx(Captions.actionSettings, I18nProperties.getCaption(Captions.language), VaadinIcons.GLOBE_WIRE);
-		
-		//menu.addView(LanguageView.class, LanguageView.VIEW_NAME, "DashboardTest", VaadinIcons.GLOBE_WIRE);
-		
-		menu.addView(AboutView.class, AboutView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAbout), VaadinIcons.INFO_CIRCLE_O);
-		
-		menu.addView(LogoutView.class, LogoutView.VIEW_NAME, I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName() + ")", VaadinIcons.POWER_OFF);
-			
+		menu.addView(CampaignGisView.class, CampaignGisView.VIEW_NAME, I18nProperties.getCaption("GIS"),
+				VaadinIcons.MAP_MARKER);
+
+		menu.addView(LogoutView.class, LogoutView.VIEW_NAME,
+				I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName() + ")",
+				VaadinIcons.POWER_OFF);
+
 		navigator.addViewChangeListener(viewChangeListener);
 
 		// Add GDPR window
 		// possible to desactivate it with check
 		UserDto user = UserProvider.getCurrent().getUser();
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.GDPR_CONSENT_POPUP) && !user.isHasConsentedToGdpr()) {
-			Window subWindowGdpR = new Window(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.HAS_CONSENTED_TO_GDPR));
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.GDPR_CONSENT_POPUP)
+				&& !user.isHasConsentedToGdpr()) {
+			Window subWindowGdpR = new Window(
+					I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.HAS_CONSENTED_TO_GDPR));
 			VerticalLayout subContentGdpr = new VerticalLayout();
 			subWindowGdpR.setContent(subContentGdpr);
 			subWindowGdpR.center();
@@ -319,7 +312,6 @@ public class MainScreen extends HorizontalLayout {
 		setSizeFull();
 	}
 
-	
 	private void showSettingsPopup() {
 
 		Window window = VaadinUiUtil.createPopupWindow();
@@ -332,35 +324,16 @@ public class MainScreen extends HorizontalLayout {
 		window.setContent(component);
 		UI.getCurrent().addWindow(window);
 	}
-	
+
 	private static Set<String> initKnownViews() {
-		final Set<String> views = new HashSet<>(
-			Arrays.asList(
-				TasksView.VIEW_NAME,
-				CasesView.VIEW_NAME,
-				ContactsView.VIEW_NAME,
-				EventsView.VIEW_NAME,
-				EventGroupDataView.VIEW_NAME,
-				SamplesView.VIEW_NAME,
-				CampaignsView.VIEW_NAME,
-				CampaignDataView.VIEW_NAME,
-				CampaignStatisticsView.VIEW_NAME,
-				ReportsView.VIEW_NAME,
-				StatisticsView.VIEW_NAME,
-				PersonsView.VIEW_NAME,
-				UsersView.VIEW_NAME,
-				OutbreaksView.VIEW_NAME,
-				RegionsView.VIEW_NAME,
-				DistrictsView.VIEW_NAME,
-				CommunitiesView.VIEW_NAME,
-				FacilitiesView.VIEW_NAME,
-				PointsOfEntryView.VIEW_NAME,
-				ContinentsView.VIEW_NAME,
-				SubcontinentsView.VIEW_NAME,
-				CountriesView.VIEW_NAME,
-				LabMessagesView.VIEW_NAME,
-				TravelEntriesView.VIEW_NAME,
-				ImmunizationsView.VIEW_NAME));
+		final Set<String> views = new HashSet<>(Arrays.asList(TasksView.VIEW_NAME, CasesView.VIEW_NAME,
+				ContactsView.VIEW_NAME, EventsView.VIEW_NAME, EventGroupDataView.VIEW_NAME, SamplesView.VIEW_NAME,
+				CampaignsView.VIEW_NAME, CampaignDataView.VIEW_NAME, CampaignStatisticsView.VIEW_NAME,
+				ReportsView.VIEW_NAME, StatisticsView.VIEW_NAME, PersonsView.VIEW_NAME, UsersView.VIEW_NAME,
+				OutbreaksView.VIEW_NAME, RegionsView.VIEW_NAME, DistrictsView.VIEW_NAME, CommunitiesView.VIEW_NAME,
+				FacilitiesView.VIEW_NAME, PointsOfEntryView.VIEW_NAME, ContinentsView.VIEW_NAME,
+				SubcontinentsView.VIEW_NAME, CountriesView.VIEW_NAME, LabMessagesView.VIEW_NAME,
+				TravelEntriesView.VIEW_NAME, ImmunizationsView.VIEW_NAME));
 
 		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
 			views.add(SurveillanceDashboardView.VIEW_NAME);
@@ -382,7 +355,8 @@ public class MainScreen extends HorizontalLayout {
 		@Override
 		public boolean beforeViewChange(ViewChangeEvent event) {
 
-			// Would be better to do this check BEFORE the view is created, but the Navigator can't be extended that way
+			// Would be better to do this check BEFORE the view is created, but the
+			// Navigator can't be extended that way
 
 			if (!event.getParameters().contains("?")) {
 				StringBuilder urlParams = new StringBuilder();

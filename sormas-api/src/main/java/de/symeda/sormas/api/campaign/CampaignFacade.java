@@ -10,7 +10,7 @@ import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
-public interface CampaignFacade {
+public interface CampaignFacade { //CampaignFacadeEjb
 
 	List<CampaignIndexDto> getIndexList(CampaignCriteria campaignCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 

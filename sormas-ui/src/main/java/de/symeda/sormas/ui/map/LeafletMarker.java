@@ -27,6 +27,7 @@ public class LeafletMarker {
 	private double longitude;
 	private MarkerIcon icon;
 	private int markerCount = 1;
+	private String description = "Heloooooooooooo";
 
 	/**
 	 * lat & lon is less precise to save bandwidth
@@ -34,9 +35,10 @@ public class LeafletMarker {
 	public JsonArray toJson() {
 		JsonArray marker = Json.createArray();
 		marker.set(0, (int) (latitude * 10000.0) / 10000.0);
-		marker.set(1, (int) (longitude * 10000.0) / 10000.0);
+		marker.set(1, (int) (longitude * 10000.0) / 10000.0); 
 		marker.set(2, icon.ordinal());
 		marker.set(3, markerCount);
+		marker.set(4, description);
 		return marker;
 	}
 
@@ -81,4 +83,14 @@ public class LeafletMarker {
 	public void setMarkerCount(int markerCount) {
 		this.markerCount = markerCount;
 	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
+	
 }

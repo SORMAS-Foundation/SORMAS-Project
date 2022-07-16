@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-window.de_symeda_sormas_ui_map_LeafletMap = function () {
+window.de_symeda_sormas_ui_map_LeafletMap = function() {
 
 	// make sure to manually reload this after making changes, because it is being cached  
 	// see https://leafletjs.com/reference-1.3.4.html
@@ -24,7 +24,7 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 	// clustering always falls back to the lowest icon index
 	var mapIcons = [
 		"case confirmed",
-		"case suspect", 
+		"case suspect",
 		"case probable",
 		"case unclassified",
 		"facility confirmed",
@@ -35,16 +35,16 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 		"contact overdue",
 		"contact ok",
 		"event outbreak",
-		"event rumor",	
-		];
-	
+		"event rumor",
+	];
+
 	var connector = this;
 
-	var map = L.map(this.getElement(), { 
-		center: [51.505, -0.09], 
+	var map = L.map(this.getElement(), {
+		center: [51.505, -0.09],
 		zoom: 13,
 		trackResize: true,
-		});
+	});
 
 
 	// full-screen control
@@ -53,31 +53,31 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 	}));
 
 	// doesn't correctly work - for some reason the height is set to 100px (probably based on 100%)
-//	// print control
-//	var printControl = L.easyPrint({
-//		position: 'bottomright',
-//		sizeModes: ['Current'],
-//		filename: 'SORMAS Map Export',
-//		exportOnly: true,
-//	}).addTo(map);
-	
+	//	// print control
+	//	var printControl = L.easyPrint({
+	//		position: 'bottomright',
+	//		sizeModes: ['Current'],
+	//		filename: 'SORMAS Map Export',
+	//		exportOnly: true,
+	//	}).addTo(map);
+
 	// update the map whenever the vaadin element is resized
-	this.addResizeListener(this.getElement(), function(o,b) {
+	this.addResizeListener(this.getElement(), function(o, b) {
 		map.invalidateSize(true);
 	});
-	
-//	var openStreetMapsLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-//	    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-//	});
-	
+
+	//	var openStreetMapsLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	//	    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+	//	});
+
 	var openStreetMapsLayer = L.tileLayer("https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png", {
 		attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors. Tiles courtesy of Humanitarian OpenStreetMap Team'
 	});
 
-	this.onStateChange = function () {
+	this.onStateChange = function() {
 
 		map.setView([this.getState().centerLatitude, this.getState().centerLongitude], this.getState().zoom);
-		
+
 		if (this.getState().tileLayerVisible) {
 			openStreetMapsLayer.addTo(map);
 			openStreetMapsLayer.setOpacity(this.getState().tileLayerOpacity);
@@ -85,78 +85,82 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 			openStreetMapsLayer.remove();
 		}
 	};
-	
+
 	this.addMarkerGroup = function(groupId, markers) {
 
 		// check prerequisites for clustering icon logic
 		if (mapIcons[4].indexOf("facility") != 0
-				|| mapIcons[7].indexOf("facility") != 0)
+			|| mapIcons[7].indexOf("facility") != 0)
 			throw "mapIcons indices 4 to 7 are supposed to be facilities";
-		
+
 		var markerGroup = L.markerClusterGroup({
 
 			maxClusterRadius: 15,
-			
+
 			/** define how marker clusters are rendered **/
 			iconCreateFunction: function(cluster) {
 				children = cluster.getAllChildMarkers();
 				count = 0;
 				var minIconIndex = mapIcons.length;
-				for (i=0; i<children.length; i++) {
+				for (i = 0; i < children.length; i++) {
 					count += children[i].count;
 					var iconIndex = children[i].iconIndex;
-					
+
 					// facilities are clustered as cases (see check above)
 					if (iconIndex >= 4 && iconIndex <= 7)
 						iconIndex -= 4;
-					
+
 					// use "most important" icon == smallest index
 					if (iconIndex < minIconIndex)
 						minIconIndex = iconIndex;
 				}
 
-				var size = 20 + 5 * Math.min(Math.ceil((count-1)/10), 4);
+				var size = 20 + 5 * Math.min(Math.ceil((count - 1) / 10), 4);
 
-				var icon = new L.DivIcon({ 
-					html: count > 1 ? '<div><span>' + count + '</span></div>' : '<div></div>', 
-							className: 'marker cluster ' + mapIcons[minIconIndex], 
-							iconSize: new L.Point(size,size) });
+				var icon = new L.DivIcon({
+					html: count > 1 ? '<div><span>' + count + '</span></div>' : '<div></div>',
+					className: 'marker cluster ' + mapIcons[minIconIndex],
+					iconSize: new L.Point(size, size)
+				});
 				icon.cluster = cluster;
 				return icon;
-			}			
+			}
 		})
-//		var markerGroup = L.featureGroup()
+			//		var markerGroup = L.featureGroup()
 			.addTo(map)
 			.on("click", featureGroupClick);
 		markerGroup.id = groupId;
-		
-		for (iter=0; iter<markers.length; iter++) {
-		
+
+		for (iter = 0; iter < markers.length; iter++) {
+
 			var marker = markers[iter];
 			var count = marker[3];
-			var size = 20 + 5 * Math.min(Math.ceil((count-1)/10), 4);
+			var size = 20 + 5 * Math.min(Math.ceil((count - 1) / 10), 4);
 			var leafletMarker = L.marker([marker[0], marker[1]], {
-				icon: new L.DivIcon({ 
-					html: count > 1 ? '<div><span>' + marker[3] + '</span></div>' : '&nbsp;', 
-					className: 'marker ' + mapIcons[marker[2]], 
-					iconSize: new L.Point(size,size) }),
+				icon: new L.DivIcon({
+					html: count > 1 ? '<div><span>' + marker[3] + '</span></div>' : '&nbsp;',
+					className: 'marker ' + mapIcons[marker[2]],
+					iconSize: new L.Point(size, size)
+				}),
 			});
 			leafletMarker.id = iter;
 			leafletMarker.iconIndex = marker[2];
 			leafletMarker.count = count;
+			var description = "<div>" + marker[4] + "</div>";
+			leafletMarker.bindPopup(description);
 			leafletMarker.addTo(markerGroup);
 		}
 	}
-	
+
 	this.addPolygonGroup = function(groupId, polygons) {
-		
+
 		var polygonGroup = L.featureGroup()
 			.addTo(map)
 			.on("click", featureGroupClick);
 		polygonGroup.id = groupId;
-		
-		for (i=0; i<polygons.length; i++) {
-		
+
+		for (i = 0; i < polygons.length; i++) {
+
 			var polygon = L.polygon(polygons[i].latLons, polygons[i].options)
 				.addTo(polygonGroup);
 			if (polygons[i].caption != null) {
@@ -165,22 +169,55 @@ window.de_symeda_sormas_ui_map_LeafletMap = function () {
 			polygon.id = i;
 		}
 	}
-	
+
 	this.removeGroup = function(groupId) {
-		
-		map.eachLayer(function(layer){
-		    if (layer.id == groupId) {
-		    	map.removeLayer(layer);
-		    }
+
+		map.eachLayer(function(layer) {
+			if (layer.id == groupId) {
+				map.removeLayer(layer);
+			}
 		});
 	}
 
-	this.addShapefileAttribution = function(attribution){
+	this.addShapefileAttribution = function(attribution) {
 		map.attributionControl.addAttribution(attribution);
 	}
- 	
+
 	function featureGroupClick(event) {
 		// call to server
 		connector.onClick(event.target.id, event.layer.id);
 	}
+
+	function geoFindMe() {
+
+    var latitude = "";
+    var longitude = "";
+    var oo ="";
+
+    if ('geolocation' in navigator) {
+        function success(position) {
+             latitude = position.coords.latitude;
+             longitude = position.coords.longitude;
+
+
+            //mapLink.textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
+        }
+
+        function error() {
+            alert("Cannot detect your location");
+        }
+
+        if (!navigator.geolocation) {
+            alert('Geolocation is not supported by your browser');
+        } else {
+            alert('Locating…');
+            navigator.geolocation.getCurrentPosition(success, error);
+        }
+    }
+    else {
+        alert('Geolocation is not supported');
+    }
+
+    return [longitude, latitude];
+}
 }
