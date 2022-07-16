@@ -65,6 +65,11 @@ public interface CampaignFormDataFacade {
 		CampaignDiagramSeries diagramSeriesTotal,
 		CampaignDiagramSeries diagramSeries,
 		CampaignDiagramCriteria campaignDiagramCriteria);
+	
+	List<CampaignDiagramDataDto> getDiagramDataByAgeGroupCard(
+			CampaignDiagramSeries diagramSeriesTotal,
+			CampaignDiagramSeries diagramSeries,
+			CampaignDiagramCriteria campaignDiagramCriteria);
 
 	List<String> getAllActiveUuids();
 

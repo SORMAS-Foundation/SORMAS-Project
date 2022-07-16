@@ -29,12 +29,17 @@ import android.widget.TextView;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
+import de.symeda.sormas.api.campaign.form.CampaignFormElementOptions;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -47,6 +52,7 @@ import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlCheckBoxField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.controls.ControlTextEditField;
 import de.symeda.sormas.app.databinding.FragmentCampaignDataEditLayoutBinding;
 import de.symeda.sormas.app.util.DataUtils;
@@ -54,12 +60,19 @@ import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 import de.symeda.sormas.app.util.TextViewBindingAdapters;
 
 import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.createControlCheckBoxField;
+import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.createControlSpinnerFieldEditField;
 import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.createControlTextEditField;
 import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.getOrCreateCampaignFormDataEntry;
 import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.getUserLanguageCaption;
 import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.getUserTranslations;
 import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.handleDependingOn;
 import static de.symeda.sormas.app.campaign.CampaignFormDataFragmentUtils.handleExpression;
+
+import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
+
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampaignDataEditLayoutBinding, CampaignFormData, CampaignFormData> {
 
@@ -70,14 +83,24 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
     private List<Item> initialRegions;
     private List<Item> initialDistricts;
     private List<Item> initialCommunities;
+    private List<String> optionsValues;
 
     public static BaseEditFragment newInstance(CampaignFormData activityRootData) {
         return newInstance(CampaignFormDataEditFragment.class, null, activityRootData);
     }
 
-    @Override
+  @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = super.onCreateView(inflater, container, savedInstanceState);
+/*
+      ViewPager viewPager = null;
+
+
+        TabLayout tabLayout = view.findViewById(R.id.tab_layout);
+        new TabLayoutMediator(tabLayout, viewPager,
+                (tab, position) -> tab.setText("OBJECT " + (position + 1))
+        ).attach();
+*/
 
         final LinearLayout dynamicLayout = view.findViewById(R.id.dynamicLayout);
 
@@ -91,16 +114,34 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
 
         for (CampaignFormElement campaignFormElement : campaignFormMeta.getCampaignFormElements()) {
             CampaignFormElementType type = CampaignFormElementType.fromString(campaignFormElement.getType());
+            if (campaignFormElement.getOptions() != null) {
+
+                CampaignFormElementOptions campaignFormElementOptions = new CampaignFormElementOptions();
+                optionsValues = (List) Arrays.stream(campaignFormElement.getOptions()).collect(Collectors.toList());
+                ListIterator<String> lstItems = optionsValues.listIterator();
+                int i = 1;
+                campaignFormElementOptions.setOptionsListValues(optionsValues);
+            } else {
+                optionsValues = new ArrayList<>();
+            }
 
             if (type != CampaignFormElementType.SECTION && type != CampaignFormElementType.LABEL) {
                 String value = formValuesMap.get(campaignFormElement.getId());
 
                 ControlPropertyField dynamicField;
-                if (type == CampaignFormElementType.YES_NO) {
+                if (type == CampaignFormElementType.YES_NO || type == CampaignFormElementType.CHECKBOX || type == CampaignFormElementType.RADIO || type == CampaignFormElementType.CHECKBOXBASIC || type == CampaignFormElementType.RADIOBASIC) {
                     dynamicField = createControlCheckBoxField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
                     ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, Boolean.valueOf(value));
-                } else {
-                    dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
+                } else  if (type == CampaignFormElementType.NUMBER || type == CampaignFormElementType.DECIMAL || type == CampaignFormElementType.RANGE){
+                    dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true);
+                    ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
+                }else if (type == CampaignFormElementType.DROPDOWN){
+                    dynamicField = createControlSpinnerFieldEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), optionsValues);
+                    ControlSpinnerField.setValue((ControlSpinnerField) dynamicField, value);
+                }else if (type == CampaignFormElementType.DATE){
+                    dynamicField = createControlSpinnerFieldEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), optionsValues);
+                }else{
+                    dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta),false);
                     ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
                 }
 
@@ -125,6 +166,7 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                     expressionMap.put(campaignFormElement, dynamicField);
                 }
             } else if (type == CampaignFormElementType.SECTION) {
+
                 dynamicLayout.addView(new ImageView(requireContext(), null, R.style.FullHorizontalDividerStyle));
             } else if (type == CampaignFormElementType.LABEL) {
                 TextView textView = new TextView(requireContext());

@@ -330,7 +330,7 @@ System.out.println("dssssssssssssssefaasdgasdgasdgasdfasdfasdfasfeasfdasdfs " +s
 	private boolean isValueValidForType(String type, String value) {
 		if (type.equals(CampaignFormElementType.NUMBER.toString())) {
 			try {
-				Integer.parseInt(value);
+				Integer.parseInt(value.replaceAll("!", ""));
 			} catch (NumberFormatException e) {
 				return false;
 			}
@@ -369,7 +369,7 @@ System.out.println("dssssssssssssssefaasdgasdgasdgasdfasdfasdfasfeasfdasdfs " +s
 		}
 
 		if (type.equals(CampaignFormElementType.YES_NO.toString())) {
-			return StringUtils.equalsAnyIgnoreCase(value, CampaignFormElementType.YES_NO.getAllowedValues());
+			return StringUtils.equalsAnyIgnoreCase(value.replaceAll("!", ""), CampaignFormElementType.YES_NO.getAllowedValues());
 		}
 
 		return true;

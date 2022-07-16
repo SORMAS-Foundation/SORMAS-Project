@@ -102,7 +102,7 @@ public class TaskIndexDto extends PseudonymizableIndexDto implements Serializabl
 	public TaskIndexDto(String uuid, TaskContext taskContext, String caseUuid, String caseFirstName, String caseLastName,
 			String eventUuid, String eventTitle, Disease eventDisease, String eventDiseaseDetails, EventStatus eventStatus, EventInvestigationStatus eventInvestigationStatus, Date eventDate,
 			String contactUuid, String contactFirstName, String contactLastName, String contactCaseFirstName, String contactCaseLastName,
-			String travelEntryUuid, String travelEntryExternalId, String travelEntryFirstName, String travelEntryLastName,
+			String travelEntryUuid, Long travelEntryExternalId, String travelEntryFirstName, String travelEntryLastName,
 			TaskType taskType, TaskPriority priority, Date dueDate, Date suggestedStart, TaskStatus taskStatus,
 			String creatorUserUuid, String creatorUserFirstName, String creatorUserLastName, String creatorComment,
 			String assigneeUserUuid, String assigneeUserFirstName, String assigneeUserLastName, String assigneeReply, String region, String district, String community,

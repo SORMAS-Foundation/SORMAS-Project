@@ -85,7 +85,7 @@ public class CampaignStatisticsService {
 
 		queryBuilder.append(buildGroupByExpression(criteria)).append(buildJsonGroupByExpression()).append(buildOrderByExpression(criteria));
 		
-		System.out.println(">>>>>>>>>>>>>>>>>>> xxxxxxxxxxxxxxxxxxxxx"+queryBuilder.toString()); 
+	//	System.out.println(">>>>>>>>>>>>>>>>>>> xxxxxxxxxxxxxxxxxxxxx"+queryBuilder.toString()); 
 
 		return queryBuilder.toString();
 	}

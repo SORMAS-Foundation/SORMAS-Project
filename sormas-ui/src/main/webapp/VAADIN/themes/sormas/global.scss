@@ -3,6 +3,7 @@
    /* text-transform: uppercase;*/
     /*display: block; #792 unclear why this was needed */
     padding-bottom: 0.1em;
+    white-space: normal!important;
 
     &.v-caption-caption-hidden {
       display: none;
@@ -21,7 +22,7 @@
         width: 100px;
         text-overflow: ellipsis;
         overflow: hidden;
-        white-space: nowrap;
+        white-space: normal!important;
         display: block;
       }
     }
@@ -307,8 +308,8 @@
   }
 
   .root-component {
-    min-width: 640px;
-    max-width: 1280px;
+    //min-width: 640px;
+    //max-width: 1280px;
   }
   .main-component {
     min-width: 640px;
@@ -357,4 +358,8 @@
 	text-transform: initial !important;
 	text-align: left !important;
 }
+}
+
+.v-captiontext{
+	white-space: normal!important;
 }

@@ -97,7 +97,7 @@ public class SettingsFragment extends BaseLandingFragment {
 		binding.syncCaseLbds.setOnClickListener(v -> LbdsIntentSender.sendNewCasesLbds(getContext()));
 		binding.settingsLbdsDebugUrl.setValue(ConfigProvider.getServerLbdsDebugUrl());
 
-		binding.sormasVersion.setText("SORMAS " + InfoProvider.get().getVersion());
+		binding.sormasVersion.setText("APMIS Server Version: " + InfoProvider.InfoProvider_apmis());
 		binding.sormasVersion.setOnClickListener(v -> {
 			versionClickedCount++;
 			if (isShowDevOptions()) {

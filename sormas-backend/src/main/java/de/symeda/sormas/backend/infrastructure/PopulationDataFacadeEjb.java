@@ -24,6 +24,8 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
 
+import com.vladmihalcea.hibernate.type.util.SQLExtractor;
+
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -287,6 +289,36 @@ public class PopulationDataFacadeEjb implements PopulationDataFacade {
 
 		cq.where(areaFilter, ageFilter);
 		cq.select(root.get(PopulationData.POPULATION));
+	//	System.out.println("DEBUGGER 5678ijhyuio _______TOtalpopulation____________________________ "+SQLExtractor.from(em.createQuery(cq)));
+
+		TypedQuery query = em.createQuery(cq);
+		try {
+			Integer totalPopulation = 0;
+			for (Object i : query.getResultList()) {
+				if (Objects.nonNull(i)) {
+					totalPopulation = totalPopulation + (Integer) i;
+				}
+			}
+			return totalPopulation;
+		} catch (NoResultException e) {
+			return null;
+		}
+	}
+	
+	public Integer getAreaPopulationParent(String areaUuid, AgeGroup ageGroup) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Integer> cq = cb.createQuery(Integer.class);
+		Root<PopulationData> root = cq.from(PopulationData.class);
+		Join<PopulationData, Region> regionJoin = root.join(PopulationData.REGION);
+		Join<Region, Area> areaJoin = regionJoin.join(Region.AREA);
+
+		//Predicate areaFilter = cb.equal(areaJoin.get(Area.UUID), areaUuid);
+		Predicate ageFilter = cb.and(cb.equal(root.get(PopulationData.AGE_GROUP), ageGroup));
+
+		cq.where(/*areaFilter, */ageFilter);
+		cq.select(root.get(PopulationData.POPULATION));
+	//	System.out.println("DEBUGGER 5678ijhyuio _______TOtalpopulation____________________________ "+SQLExtractor.from(em.createQuery(cq)));
+
 		TypedQuery query = em.createQuery(cq);
 		try {
 			Integer totalPopulation = 0;

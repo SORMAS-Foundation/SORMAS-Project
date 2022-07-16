@@ -186,11 +186,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		buttonsPanel.addComponent(commitButton);
 		buttonsPanel.setComponentAlignment(commitButton, Alignment.BOTTOM_RIGHT);
 		buttonsPanel.setExpandRatio(commitButton, 0);
-		
-		/*Button commitandContButton = getCommitandContButton();
-		buttonsPanel.addComponent(commitandContButton);
-		buttonsPanel.setComponentAlignment(commitandContButton, Alignment.BOTTOM_RIGHT);
-		buttonsPanel.setExpandRatio(commitandContButton, 0);*/
+	
 
 		addComponent(buttonsPanel);
 		setComponentAlignment(buttonsPanel, Alignment.BOTTOM_RIGHT);
@@ -400,6 +396,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 				}
 			});
 			discardButton.setDescription(I18nProperties.getDescription(Descriptions.discardDescription));
+			discardButton.setTabIndex(-1);
 		}
 
 		return discardButton;
@@ -423,6 +420,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						});
 				}
 			}, ValoTheme.BUTTON_DANGER, CssStyles.BUTTON_BORDER_NEUTRAL);
+			deleteButton.setTabIndex(-1);
 		}
 
 		return deleteButton;
@@ -439,6 +437,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 					onClone();
 				}
 			}, ValoTheme.BUTTON_PRIMARY, CssStyles.BUTTON_BORDER_NEUTRAL);
+			cloneButton.setTabIndex(-1);
 		}
 
 		return cloneButton;
@@ -456,6 +455,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 					commitAndHandleandCont();
 				}
 			}, ValoTheme.BUTTON_PRIMARY);
+			commitandContButton.setTabIndex(-1);
 		}
 
 		return commitandContButton;
@@ -485,6 +485,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						onSaveAndContinue();
 					}
 				}, ValoTheme.BUTTON_PRIMARY, CssStyles.BUTTON_BORDER_NEUTRAL);
+				saveAndContinueButton.setTabIndex(-1);
 			}
 
 			return saveAndContinueButton;
@@ -775,12 +776,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		if (!commitListeners.contains(listener))
 			commitListeners.add(listener);
 	}
-	/*
-	public void addCommitandContListener(CommitandContListener listener) {
-		if (!commitandContListeners.contains(listener))
-			commitandContListeners.add(listener);
-	}
-*/
+	
 	public void setPrimaryCommitListener(CommitListener listener) {
 		if (primaryCommitListener != null)
 			throw new UnsupportedOperationException("primary listener already set");
@@ -788,15 +784,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			commitListeners.add(0, listener);
 		primaryCommitListener = null;
 	}
-	/*
-	public void setPrimaryCommitandContListener(CommitandContListener listener) {
-		if (primaryCommitandContListener != null)
-			throw new UnsupportedOperationException("primary and Cont listener already set");
-		if (!commitandContListeners.contains(listener))
-			commitandContListeners.add(0, listener);
-		primaryCommitandContListener = null;
-	}
-*/
+
 	public void removeCommitandContListener(CommitandContListener listener) {
 		commitandContListeners.remove(listener);
 		if (primaryCommitandContListener != null && primaryCommitandContListener.equals(listener))
@@ -886,12 +874,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			commitandContListeners.add(listener);
 	}
 	
-	public void addSaveAndContinueListener(SaveAndContinueListener listener, String entityName) {
-		if (saveAndContinueListeners.isEmpty())
-			buttonsPanel.addComponent(getSaveAndContinueButton(entityName), 0);
-		if (!saveAndContinueListeners.contains(listener))
-			saveAndContinueListeners.add(listener);
-	}
+	
 	public boolean hasDeleteListener() {
 		return !deleteListeners.isEmpty();
 	}

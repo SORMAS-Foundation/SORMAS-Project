@@ -114,7 +114,7 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 					query.getLimit(),
 					query.getSortOrders()
 						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+						.map(sortOrder -> new SortProperty(sortOrder.getSorted()))
 						.collect(Collectors.toList()))
 				.stream(),
 			query -> (int) FacadeProvider.getCampaignFormDataFacade().count(query.getFilter().orElse(null)));

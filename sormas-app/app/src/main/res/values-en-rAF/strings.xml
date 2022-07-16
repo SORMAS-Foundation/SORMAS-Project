@@ -191,7 +191,7 @@
     <string name="caption_new_task">New Task</string>
     <string name="caption_not_a_contact">Not a Contact</string>
     <string name="caption_not_an_event">Not an Event</string>
-    <string name="caption_outbreak">Outbreaks</string>
+    <string name="caption_outbreak"></string>
     <string name="caption_password">Password</string>
     <string name="caption_patient_information">Patient Information</string>
     <string name="caption_pending">Pending</string>
@@ -344,7 +344,7 @@
     <string name="heading_most_recent_hospitalization">Most Recent Hospitalization</string>
     <string name="heading_most_recent_test">Most Recent Pathogen Test</string>
     <string name="heading_new_sormas_version">New APMIS version</string>
-    <string name="heading_outbreak_response">Outbreak Response</string>
+    <string name="heading_outbreak_response">Afghanistan Polio</string>
     <string name="heading_person_involved">Person Involved</string>
     <string name="heading_person_involved_new">New Person Involved</string>
     <string name="heading_person_contact_detail">Person contact details</string>
@@ -359,7 +359,7 @@
     <string name="heading_previous_hospitalizations">Previous Hospitalizations</string>
     <string name="heading_refer_case_from_poe">Refer Case from Point of Entry</string>
     <string name="heading_reset_PIN">Reset PIN</string>
-    <string name="heading_response_management">Response Management &amp; Analysis System</string>
+    <string name="heading_response_management">Management Information System</string>
     <string name="heading_sample_edit">Edit Sample</string>
     <string name="heading_sample_new">New Sample</string>
     <string name="heading_sample_read">Read Sample</string>
@@ -378,7 +378,7 @@
     <string name="heading_social_events">Social Events</string>
     <string name="heading_source_case">Source Case</string>
     <string name="heading_source_of_information">Source of Information</string>
-    <string name="heading_surveillance_outbreak">Surveillance Outbreak</string>
+    <string name="heading_surveillance_outbreak"></string>
     <string name="heading_symptoms">Signs &amp; Symptoms</string>
     <string name="heading_sync_conflicts">Synchronization Conflicts</string>
     <string name="heading_synchronization">Synchronization</string>
@@ -441,7 +441,7 @@
     <string name="hint_select_month">Select Month</string>
     <string name="hint_select_epi_week">Select Epi Week</string>
     <string name="hint_select_year">Select Year</string>
-    <string name="hint_settings_server_url">e.g. https://sormas.helmholtz-hzi.de/sormas-rest/</string>
+    <string name="hint_settings_server_url">e.g. https://test.afghanistan-apmis.com/sormas-rest/</string>
     <string name="hint_weekly_report_confirmation_required">You need to confirm the report for last week.</string>
     <string name="hint_weekly_report_no_data">No data available for this epi week.</string>
     <string name="hint_case_numbers_not_submitted">Case numbers not submitted yet</string>

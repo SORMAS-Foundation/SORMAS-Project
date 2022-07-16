@@ -44,10 +44,12 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.app.component.controls.ControlCheckBoxField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
+import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.controls.ControlTextEditField;
 import de.symeda.sormas.app.component.controls.ControlTextReadField;
 
 public class CampaignFormDataFragmentUtils {
+	public static final int DEFAULT_MIN_LENGTH = 1;
 
 	private CampaignFormDataFragmentUtils() {
 	}
@@ -156,7 +158,8 @@ public class CampaignFormDataFragmentUtils {
 	public static ControlTextEditField createControlTextEditField(
 		CampaignFormElement campaignFormElement,
 		Context context,
-		Map<String, String> userTranslations) {
+		Map<String, String> userTranslations,
+		Boolean isIntegerField) {
 		return new ControlTextEditField(context) {
 
 			@Override
@@ -189,15 +192,60 @@ public class CampaignFormDataFragmentUtils {
 				return CHARACTER_LIMIT_DEFAULT;
 			}
 
+		//	@Override
+		//	public int getMinLength() {
+		//		return DEFAULT_MIN_LENGTH;
+		//	}
+//
 			@Override
 			protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
 				super.inflateView(context, attrs, defStyle);
 				initLabel();
 				initLabelAndValidationListeners();
-				initInput();
+				initInput(isIntegerField);
 			}
 		};
 	}
+
+
+
+	public static ControlSpinnerField createControlSpinnerFieldEditField(
+			CampaignFormElement campaignFormElement,
+			Context context,
+			Map<String, String> userTranslations,
+			List<String> isIntegerField) {
+		return new ControlSpinnerField(context) {
+
+			@Override
+			protected String getPrefixDescription() {
+				return getUserLanguageCaption(userTranslations, campaignFormElement);
+			}
+
+			@Override
+			protected String getPrefixCaption() {
+				return getUserLanguageCaption(userTranslations, campaignFormElement);
+			}
+
+			@Override
+			public int getTextAlignment() {
+				return View.TEXT_ALIGNMENT_VIEW_START;
+			}
+
+			@Override
+			public int getGravity() {
+				return Gravity.CENTER_VERTICAL;
+			}
+
+			@Override
+			protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
+				super.inflateView(context, attrs, defStyle);
+				initLabel();
+				initLabelAndValidationListeners();
+				initInput(isIntegerField);
+			}
+		};
+	}
+
 
 	public static ControlCheckBoxField createControlCheckBoxField(
 		CampaignFormElement campaignFormElement,

@@ -101,7 +101,7 @@ public class TravelEntryDto extends PseudonymizableDto {
 	@EmbeddedPersonalData
 	private CaseReferenceDto resultingCase;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
-	private String externalId;
+	private Long externalId;
 	private boolean recovered;
 	private boolean vaccinated;
 	private boolean testedNegative;
@@ -283,11 +283,11 @@ public class TravelEntryDto extends PseudonymizableDto {
 		this.resultingCase = resultingCase;
 	}
 
-	public String getExternalId() {
+	public Long getExternalId() {
 		return externalId;
 	}
 
-	public void setExternalId(String externalId) {
+	public void setExternalId(Long externalId) {
 		this.externalId = externalId;
 	}
 

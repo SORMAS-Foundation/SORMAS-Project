@@ -5,14 +5,14 @@ import de.symeda.sormas.api.person.PersonDto;
 
 public class TravelEntryReferenceDto extends ReferenceDto {
 
-	private String externalId;
+	private Long externalId;
 
-	public TravelEntryReferenceDto(String uuid, String externalId, String firstName, String lastName) {
+	public TravelEntryReferenceDto(String uuid, Long externalId, String firstName, String lastName) {
 		super(uuid, PersonDto.buildCaption(firstName, lastName));
 		this.externalId = externalId;
 	}
 
-	public String getExternalId() {
+	public Long getExternalId() {
 		return externalId;
 	}
 }

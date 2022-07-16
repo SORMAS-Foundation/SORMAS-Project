@@ -24,8 +24,8 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
-public interface RegionFacadeRetro {
-
+public interface RegionFacadeRetro { 
+	
 	@GET("regions/all/{since}")
 	Call<List<RegionDto>> pullAllSince(@Path("since") long since);
 

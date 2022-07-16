@@ -67,7 +67,10 @@ public class CampaignFormData extends PseudonymizableAdo {
     @DatabaseField(dataType = DataType.DATE_LONG, canBeNull = true)
     private Date formDate;
 
-    @Transient
+  //  @Transient
+ //   private Area area;
+
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private Area area;
 
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
@@ -113,9 +116,11 @@ public class CampaignFormData extends PseudonymizableAdo {
     }
 
     public void setFormValues(List<CampaignFormDataEntry> formValues) {
+
         this.formValues = formValues;
         Gson gson = new Gson();
         formValuesJson = gson.toJson(formValues);
+
     }
 
     public Campaign getCampaign() {
@@ -148,6 +153,7 @@ public class CampaignFormData extends PseudonymizableAdo {
     }
 
     public void setArea(Area area) {
+        System.out.println("+++++++__44`````4__++++++"+area);
         this.area = area;
     }
 
@@ -156,8 +162,13 @@ public class CampaignFormData extends PseudonymizableAdo {
     }
 
     public void setRegion(Region region) {
+
         this.region = region;
+        System.out.println("+++++++__441114__++++++"+region);
         if (region != null) {
+            System.out.println("+++++++____++++++"+region.getArea());
+            System.out.println("+++++++____++++++"+region.getName());
+
             setArea(region.getArea());
         }
     }

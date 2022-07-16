@@ -17,6 +17,8 @@ package de.symeda.sormas.ui.campaign.campaigndata;
 
 import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
 
+import com.vaadin.server.Page;
+import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Notification;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -31,13 +33,14 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 
+@com.vaadin.annotations.JavaScript("jquerymini.js")
 public class CampaignFormDataView extends AbstractCampaignDataView {
 
 	private static final long serialVersionUID = -1890947102041773346L;
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/dataform";
 
-	private CommitDiscardWrapperComponent<CampaignFormDataEditForm> editComponent;
+	private CommitDiscardWrapperComponent<CampaignFormDataEditForm> editComponent; 
 
 	public CampaignFormDataView() {
 		super(VIEW_NAME);
@@ -52,26 +55,18 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 
 		if (params.contains(",")) {
 			String[] paraObj = params.split(",");
-			System.out.println(paraObj[0]
-					+ ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-					+ paraObj[1]);
-			// CampaignFormDataDto campaignFormData =
-			// FacadeProvider.getCampaignFormDataFacade().getCampaignFormDataByUuid(getReference().getUuid());
 			CampaignReferenceDto camref = FacadeProvider.getCampaignFacade().getReferenceByUuid((String) paraObj[0]);
 			CampaignFormMetaReferenceDto amformmeta = FacadeProvider.getCampaignFormMetaFacade()
 					.getCampaignFormMetaReferenceByUuid((String) paraObj[1]);
 			editComponent = ControllerProvider.getCampaignController().getCampaignFormDataComponent(null, camref,
 					amformmeta,
-					// campaignFormData.getCampaign(),
-					// campaignFormData.getCampaignFormMeta(),
 					false, false, () -> {
 						SormasUI.refreshView();
-						Notification.show(""
-						// String.format(I18nProperties.getString(Strings.messageCampaignFormSaved),
-						// campaignFormData.getCampaignFormMeta().toString()),
-						// TRAY_NOTIFICATION
-						);
-					}, null, null, true);
+						Notification.show("");
+					}, () -> {}, () -> {
+						SormasUI.refreshView();
+						Notification.show("");
+					}, true);
 			editComponent.setMargin(false);
 			editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
 			editComponent.setHeightUndefined();
@@ -80,7 +75,20 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 
 			container.addComponent(editComponent);
 
-			getViewTitleLabel().setValue(amformmeta.getCaption());// campaignFormData.getCampaignFormMeta().toString());
+			getViewTitleLabel().setValue(amformmeta.getCaption());// campaignFormData.getCampaignFormMeta().toString());querySelector
+			Page.getCurrent().getJavaScript().execute(
+					"$(document).ready(function() {"
+				//	+ "alert();"
+					+ "document.querySelector(\".v-slot.v-align-right.v-align-bottom\").innerHTML='<h2><i>Please select admin data to load your form</i></h2>';"
+					+ "$('.v-slot.v-align-right.v-align-bottom').toggleClass('v-align-center').removeClass('v-align-right');"
+					+ "$('.v-verticallayout.v-layout.v-vertical.v-widget.v-has-width.v-has-height.v-margin-top.v-margin-right.v-margin-bottom.v-margin-left').remove();"
+					
+				//+"$('#formidx').find('td:contains('Void')').parent('tr').hide();"
+					+"});"
+					);
+			//"$('#formidx').find('td:contains('Void')').parent('tr').hide()");
+			
+			
 
 		} else {
 

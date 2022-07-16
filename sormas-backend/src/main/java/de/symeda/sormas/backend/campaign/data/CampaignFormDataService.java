@@ -78,7 +78,7 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 		Join<CampaignFormData, Community> communityJoin = root.join(CampaignFormData.COMMUNITY, JoinType.LEFT);
 		Predicate filter = null;
 		
-		System.out.println(criteria.getCampaign()+"  ===========_++++++++++++++_================ "+criteria.getFormType());
+	//	System.out.println(criteria.getCampaign()+"  ===========_++++++++++++++_================ "+criteria.getFormType());
 		
 		if (criteria.getCampaign() != null && criteria.getFormType() == null) {
 
@@ -92,7 +92,7 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 		}
 		
 		if (criteria.getCampaignFormMeta() != null) { 
-			System.out.println("=======%%%%%%%%%%%%%%%======= "+criteria.getCampaignFormMeta().getUuid());
+		//	System.out.println("=======%%%%%%%%%%%%%%%======= "+criteria.getCampaignFormMeta().getUuid());
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(campaignFormJoin.get(CampaignFormMeta.UUID), criteria.getCampaignFormMeta().getUuid()));
 		}
 		if (criteria.getArea() != null) {
@@ -115,7 +115,7 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 				cb.lessThanOrEqualTo(root.get(CampaignFormData.FORM_DATE), DateHelper.getEndOfDay(criteria.getFormDate())));
 		}
 		
-		System.out.println(filter);
+	//	System.out.println(filter);
 
 		return filter;
 	}

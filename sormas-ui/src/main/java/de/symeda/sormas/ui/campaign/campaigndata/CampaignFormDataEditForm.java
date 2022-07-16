@@ -59,8 +59,9 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 	}
 
 	private static final String HTML_LAYOUT =
-		fluidRowLocs(CampaignFormDataDto.CAMPAIGN, CampaignFormDataDto.FORM_DATE, CampaignFormDataEditForm.AREA)
-		+ fluidRowLocs(CampaignFormDataDto.REGION, CampaignFormDataDto.DISTRICT, CampaignFormDataDto.COMMUNITY)//, CampaignFormDataDto.FORM_TYPE)
+		fluidRowLocs(CampaignFormDataDto.FORM_DATE)
+		+ fluidRowLocs( CampaignFormDataEditForm.AREA, CampaignFormDataDto.REGION )//, CampaignFormDataDto.FORM_TYPE)
+		+ fluidRowLocs(CampaignFormDataDto.DISTRICT, CampaignFormDataDto.COMMUNITY)//, CampaignFormDataDto.FORM_TYPE)
 		+ loc(CAMPAIGN_FORM_LOC);
 
 	private static final long serialVersionUID = -8974009722689546941L;
@@ -251,7 +252,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 			campaignFormLayout,
 			campaignForm.getCampaignFormTranslations());
 
-		campaignFormBuilder.buildForm();
+	campaignFormBuilder.buildForm(); 
 
 		final ExpressionProcessor expressionProcessor = new ExpressionProcessor(campaignFormBuilder);
 		expressionProcessor.disableExpressionFieldsForEditing();

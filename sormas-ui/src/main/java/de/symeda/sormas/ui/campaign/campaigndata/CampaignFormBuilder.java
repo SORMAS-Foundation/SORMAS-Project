@@ -90,6 +90,7 @@ import de.symeda.sormas.ui.campaign.jsonHelpers.RadioBasicGroup;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.NumberNumericValueValidator;
+import de.symeda.sormas.ui.utils.NumberValidator;
 import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
 
 
@@ -210,7 +211,7 @@ public class CampaignFormBuilder {
 					 int temp = accrd_count;
 					 temp = temp-1;
 					 layout.setStyleName("daywise_background_"+temp); //.addStyleName(dependingOnId);
-					 accrd.addTab(layout, "Day " + temp);
+					 accrd.addTab(layout, formElement.getCaption());
 					 
 					 
 					 vertical = new VerticalLayout ();
@@ -248,7 +249,7 @@ public class CampaignFormBuilder {
 
 				Label field = new Label(get18nCaption(formElement.getId(), formElement.getCaption()));
 				field.setId(formElement.getId());
-				prepareComponent(field, formElement.getId(), formElement.getCaption(), type, styles);
+				prepareComponent(field, formElement.getId(), formElement.getCaption(), type, styles, true);
 
 				vertical.addComponent(field);//, (currentCol + 1), currentLayout.getRows() - 1,
 						//(currentCol + 1) + (occupiedColumns - 1), currentLayout.getRows() - 1);
@@ -271,7 +272,7 @@ public class CampaignFormBuilder {
 				//}
 
 				Field<?> field = createField(formElement.getId(), formElement.getCaption(), type, styles,
-						optionsValues);
+						optionsValues, formElement.isWarnonerror());
 
 				setFieldValue(field, type, value, optionsValues);
 				field.setId(formElement.getId());
@@ -312,7 +313,7 @@ public class CampaignFormBuilder {
 
 	@SuppressWarnings("unchecked")
 	private <T extends Field<?>> T createField(String fieldId, String caption, CampaignFormElementType type,
-			List<CampaignFormElementStyle> styles, List optionz) {
+			List<CampaignFormElementStyle> styles, List optionz, boolean isOnError) {
 		SormasFieldGroupFieldFactory fieldFactory = new SormasFieldGroupFieldFactory(new FieldVisibilityCheckers(),
 				UiFieldAccessCheckers.getNoop());
 
@@ -362,12 +363,14 @@ public class CampaignFormBuilder {
 			field = null;
 		}
 
-		prepareComponent((AbstractComponent) field, fieldId, caption, type, styles);
+		prepareComponent((AbstractComponent) field, fieldId, caption, type, styles, isOnError);
 		return field;
 	}
 
 	private <T extends AbstractComponent> void prepareComponent(T field, String fieldId, String caption,
-			CampaignFormElementType type, List<CampaignFormElementStyle> styles) {
+			CampaignFormElementType type, List<CampaignFormElementStyle> styles, boolean isOnError) {
+		
+		System.out.println(fieldId+" ddddddddddddddddddddddddddddddddd "+isOnError);
 		CampaignFormElementOptions constrainsVal = new CampaignFormElementOptions();
 
 		Styles cssStyles = Page.getCurrent().getStyles();
@@ -407,12 +410,34 @@ public class CampaignFormBuilder {
 						true));
 			}
 
+			
+
 			if (type == CampaignFormElementType.RANGE) {
+				String validationMessageTag = "";
+				Map<String, Object> validationMessageArgs = new HashMap<>();
+				if (constrainsVal.getMin() != null || constrainsVal.getMax() != null) {
+					if (constrainsVal.getMin() == null) {
+						validationMessageTag = Validations.numberTooBig;
+						validationMessageArgs.put("value", constrainsVal.getMax());
+					} else if (constrainsVal.getMax() == null) {
+						validationMessageTag = Validations.numberTooSmall;
+						validationMessageArgs.put("value", constrainsVal.getMin());
+					} else {
+						validationMessageTag = Validations.numberNotInRange;
+						validationMessageArgs.put("min", constrainsVal.getMin());
+						validationMessageArgs.put("max", constrainsVal.getMax());
+					}
+
+					//field.addValidator(
+						//new NumberValidator(I18nProperties.getValidationError(validationMessageTag, validationMessageArgs), minValue, maxValue));
+				}
+				
 				((TextField) field).addValidator(new NumberNumericValueValidator(
-						I18nProperties.getValidationError(Validations.numberNotInRange) + " i.e "
-								+ constrainsVal.getMin() + " and " + constrainsVal.getMax(),
-						constrainsVal.getMin(), constrainsVal.getMax()));
+						caption.toUpperCase()+": "+I18nProperties.getValidationError(validationMessageTag, validationMessageArgs),
+						constrainsVal.getMin(), constrainsVal.getMax(), true, isOnError));
+
 			}
+		
 			// TODO: ADD VALIDATOR TYPE TEXTBOX, LIMITING ALLOWED TEXT/CHAR
 
 		}
@@ -432,8 +457,8 @@ public class CampaignFormBuilder {
 				|| type == CampaignFormElementType.RADIOBASIC && !styles.contains(CampaignFormElementStyle.INLINE)
 				|| type == CampaignFormElementType.TEXTBOX && !styles.contains(CampaignFormElementStyle.INLINE)
 				|| (type == CampaignFormElementType.TEXT || type == CampaignFormElementType.DATE
-						|| type == CampaignFormElementType.NUMBER || type == CampaignFormElementType.DECIMAL
-						|| type == CampaignFormElementType.RANGE)){// && styles.contains(CampaignFormElementStyle.ROW)) {
+				|| type == CampaignFormElementType.NUMBER || type == CampaignFormElementType.DECIMAL
+				|| type == CampaignFormElementType.RANGE)){// && styles.contains(CampaignFormElementStyle.ROW)) {
 			return 12;
 		}
 
@@ -621,11 +646,35 @@ public class CampaignFormBuilder {
 		if (dependingOnField == null) {
 			return;
 		}
-
+//fieldValueMatchesDependingOnValuesNOTValuer
+		if(dependingOnValuesList.stream()
+				.anyMatch(v -> v.toString().contains("!"))) {
+			
+			//hide on default
+			component.setVisible(dependingOnValuesList.stream()
+					.anyMatch(v -> fieldValueMatchesDependingOnValuesNOTValuer(dependingOnField, dependingOnValuesList)));
+			
+			//check value and determine if to hide or show
+			dependingOnField.addValueChangeListener(e -> {
+				boolean visible = fieldValueMatchesDependingOnValuesNOTValuer(dependingOnField, dependingOnValuesList);
+				
+				component.setVisible(visible);
+				if (component instanceof Field) {
+					if (!visible) {
+						((Field<?>) component).setValue(null);
+					}
+				}
+			});
+		} else {
+		
+		//hide on default
 		component.setVisible(dependingOnValuesList.stream()
 				.anyMatch(v -> fieldValueMatchesDependingOnValues(dependingOnField, dependingOnValuesList)));
+		
+		//check value and determine if to hide or show
 		dependingOnField.addValueChangeListener(e -> {
 			boolean visible = fieldValueMatchesDependingOnValues(dependingOnField, dependingOnValuesList);
+			
 			component.setVisible(visible);
 			if (component instanceof Field) {
 				if (!visible) {
@@ -633,6 +682,7 @@ public class CampaignFormBuilder {
 				}
 			}
 		});
+		}
 	}
 
 	private boolean fieldValueMatchesDependingOnValues(Field<?> dependingOnField, List<Object> dependingOnValuesList) {
@@ -651,8 +701,33 @@ public class CampaignFormBuilder {
 			return dependingOnValuesList.stream().anyMatch(
 					v -> v.toString().equalsIgnoreCase(booleanValue) || v.toString().equalsIgnoreCase(stringValue));
 		} else {
+			
 			return dependingOnValuesList.stream()
 					.anyMatch(v -> v.toString().equalsIgnoreCase(dependingOnField.getValue().toString()));
+		}
+	}
+	
+
+	
+	private boolean fieldValueMatchesDependingOnValuesNOTValuer(Field<?> dependingOnField, List<Object> dependingOnValuesList) {
+		if (dependingOnField.getValue() == null) {
+			return false;
+		}
+
+		if (dependingOnField instanceof NullableOptionGroup) {
+			String booleanValue = Boolean.TRUE.equals(((NullableOptionGroup) dependingOnField).getNullableValue())
+					? "false"
+					: "true";
+			String stringValue = Boolean.TRUE.equals(((NullableOptionGroup) dependingOnField).getNullableValue())
+					? "no"
+					: "yes";
+
+			return dependingOnValuesList.stream().anyMatch(
+					v -> v.toString().replaceAll("!", "").equalsIgnoreCase(booleanValue) || v.toString().replaceAll("!", "").equalsIgnoreCase(stringValue));
+		} else {
+			
+			return dependingOnValuesList.stream()
+					.anyMatch(v -> !v.toString().replaceAll("!", "").equalsIgnoreCase(dependingOnField.getValue().toString()));
 		}
 	}
 

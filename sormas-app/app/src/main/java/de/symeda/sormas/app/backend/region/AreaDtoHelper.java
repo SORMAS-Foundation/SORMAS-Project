@@ -22,6 +22,8 @@ import java.util.List;
 
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.infrastructure.area.AreaDto;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
@@ -63,5 +65,15 @@ public class AreaDtoHelper extends AdoDtoHelper<Area, AreaDto> {
     @Override
     protected void fillInnerFromAdo(AreaDto dto, Area area) {
         throw new UnsupportedOperationException("Entity is infrastructure");
+    }
+
+
+    public static AreaReferenceDto toReferenceDto(Area ado) {
+        if (ado == null) {
+            return null;
+        }
+        AreaReferenceDto dto = new AreaReferenceDto(ado.getUuid());
+
+        return dto;
     }
 }

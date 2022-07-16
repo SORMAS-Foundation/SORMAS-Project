@@ -66,7 +66,7 @@ public class CampaignFormMetaService extends AdoServiceWithUserFilter<CampaignFo
 		//TODO: post campaign implementations
 		cq = cq.where(filter);
 		cq.multiselect(campaignFormMetaJoin.get(CampaignFormMeta.UUID), campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME));
-		System.out.println("SSSSSSSSSSSSSSSSSQLSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"+SQLExtractor.from(em.createQuery(cq)));
+	//	System.out.println("SSSSSSSSSSSSSSSSSQLSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"+SQLExtractor.from(em.createQuery(cq)));
 		return em.createQuery(cq).getResultList();
 	}
 	
@@ -82,7 +82,7 @@ public class CampaignFormMetaService extends AdoServiceWithUserFilter<CampaignFo
 		//TODO: post campaign implementations
 		cq = cq.where(filter);
 		cq.multiselect(campaignFormMetaJoin.get(CampaignFormMeta.UUID), campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME));
-		System.out.println("SSSSSSSSS44SSSSSSSSSS"+SQLExtractor.from(em.createQuery(cq)));
+	//	System.out.println("SSSSSSSSS44SSSSSSSSSS"+SQLExtractor.from(em.createQuery(cq)));
 		return em.createQuery(cq).getResultList();
 	}
 }
