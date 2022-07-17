@@ -32,6 +32,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
@@ -48,6 +49,7 @@ import javax.validation.constraints.NotNull;
 
 import com.vladmihalcea.hibernate.type.util.SQLExtractor;
 
+import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignJurisdictionLevel;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
@@ -56,16 +58,21 @@ import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
+import de.symeda.sormas.api.campaign.data.MapCampaignDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramCriteria;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDataDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramSeries;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
+import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.PopulationDataCriteria;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -77,6 +84,8 @@ import de.symeda.sormas.backend.campaign.CampaignService;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
+import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb;
@@ -89,14 +98,19 @@ import de.symeda.sormas.backend.infrastructure.community.CommunityService;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "CampaignFormDataFacade")
 public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
@@ -1103,7 +1117,46 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		TypedQuery<CampaignFormData> tq = em.createQuery(select);
 		List<CampaignFormData> list = tq.getResultList();
 		
-		return list.stream().map(c -> convertToDto(c)).collect(Collectors.toList()); // final
+		return list.stream().map(c -> convertToDto(c)).collect(Collectors.toList()); //multiselect(
+	}
+
+	@Override
+	public List<MapCampaignDataDto> getCampaignDataforMaps() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<MapCampaignDataDto> cq = cb.createQuery(MapCampaignDataDto.class);
+		Root<CampaignFormData> caze = cq.from(CampaignFormData.class);
+
+		
+		
+
+		List<MapCampaignDataDto> result;
+		
+			cq.multiselect(
+				caze.get(CampaignFormData.UUID),
+				caze.get(CampaignFormData.LAT),
+				caze.get(CampaignFormData.LON));
+				
+
+			result = em.createQuery(cq).getResultList();
+		
+		return result;
+	}
+	
+	@Override
+	public String getByClusterDropDown(CommunityReferenceDto community, CampaignFormMetaDto campaignForm,
+			CampaignDto campaign) {
+
+		String query = "select cb.uuid from campaignformdata cb left join community cm on cb.community_id = cm.id \r\n"
+				+ "left join campaignformmeta ff on cb.campaignformmeta_id = ff.id left join campaigns gn on cb.campaign_id = gn.id\r\n"
+				+ "where cm.uuid = '" + community.getUuid() + "' and ff.uuid = '" + campaignForm.getUuid()
+				+ "' and gn.uuid = '" + campaign.getUuid() + "' limit 1";
+		Query poquery = em.createNativeQuery(query);
+		try {
+			return (String) poquery.getSingleResult();
+		} catch (NoResultException e) {
+			return "nul";
+		}
+		
 	}
 
 }

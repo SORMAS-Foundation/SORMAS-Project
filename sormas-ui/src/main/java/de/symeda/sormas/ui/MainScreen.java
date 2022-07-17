@@ -245,8 +245,8 @@ public class MainScreen extends HorizontalLayout {
 		menu.addView(AboutView.class, AboutView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAbout),
 				VaadinIcons.INFO_CIRCLE_O);
 		
-		menu.addView(CampaignGisView.class, CampaignGisView.VIEW_NAME, I18nProperties.getCaption("GIS"),
-				VaadinIcons.MAP_MARKER);
+		//menu.addView(CampaignGisView.class, CampaignGisView.VIEW_NAME, I18nProperties.getCaption("GIS"),
+			//	VaadinIcons.MAP_MARKER);
 
 		menu.addView(LogoutView.class, LogoutView.VIEW_NAME,
 				I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName() + ")",

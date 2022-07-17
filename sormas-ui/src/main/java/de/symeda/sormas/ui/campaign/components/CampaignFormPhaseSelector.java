@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.text.WordUtils;
-
 import com.vaadin.data.HasValue;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComboBox;

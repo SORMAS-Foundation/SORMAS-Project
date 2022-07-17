@@ -61,11 +61,13 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 			editComponent = ControllerProvider.getCampaignController().getCampaignFormDataComponent(null, camref,
 					amformmeta,
 					false, false, () -> {
-						SormasUI.refreshView();
-						Notification.show("");
+						SormasUI.refreshCampaignView();
+						Notification.show(String.format(I18nProperties.getString(Strings.messageCampaignFormSaved),
+								amformmeta.getCaption()), TRAY_NOTIFICATION);
 					}, () -> {}, () -> {
-						SormasUI.refreshView();
-						Notification.show("");
+						SormasUI.refreshCampaignView();
+						Notification.show(String.format(I18nProperties.getString(Strings.messageCampaignFormSaved),
+								amformmeta.getCaption()), TRAY_NOTIFICATION);
 					}, true);
 			editComponent.setMargin(false);
 			editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
@@ -79,9 +81,9 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 			Page.getCurrent().getJavaScript().execute(
 					"$(document).ready(function() {"
 				//	+ "alert();"
-					+ "document.querySelector(\".v-slot.v-align-right.v-align-bottom\").innerHTML='<h2><i>Please select admin data to load your form</i></h2>';"
-					+ "$('.v-slot.v-align-right.v-align-bottom').toggleClass('v-align-center').removeClass('v-align-right');"
-					+ "$('.v-verticallayout.v-layout.v-vertical.v-widget.v-has-width.v-has-height.v-margin-top.v-margin-right.v-margin-bottom.v-margin-left').remove();"
+					//+ "document.querySelector(\".v-slot.v-align-right.v-align-bottom\").hide();"
+					//+ "$('.v-slot.v-align-right.v-align-bottom').toggleClass('v-align-center').removeClass('v-align-right');"
+					+ "$('.v-verticallayout.v-layout.v-vertical.v-widget.v-has-width.v-has-height.v-margin-top.v-margin-right.v-margin-bottom.v-margin-left').hide();"
 					
 				//+"$('#formidx').find('td:contains('Void')').parent('tr').hide();"
 					+"});"
@@ -99,7 +101,7 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 						SormasUI.refreshView();
 						Notification.show(String.format(I18nProperties.getString(Strings.messageCampaignFormSaved),
 								campaignFormData.getCampaignFormMeta().toString()), TRAY_NOTIFICATION);
-					}, null, null, true);
+					}, null, null, false);
 			editComponent.setMargin(false);
 			editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
 			editComponent.setHeightUndefined();

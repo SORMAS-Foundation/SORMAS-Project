@@ -51,8 +51,8 @@ public class CampaignFormDataDto extends EntityDto {
 	public static final String COMMUNITY = "community";
 	public static final String CREATING_USER = "creatingUser";
 	public static final String FORM_TYPE = "formType";
-	public static final String LATITUDE = "latitude";
-	public static final String LONGITUDE = "longitude";
+	//public static final String LATITUDE = "latitude";
+	//public static final String LONGITUDE = "longitude";
 	
 	@Valid
 	private List<CampaignFormDataEntry> formValues;
@@ -66,8 +66,8 @@ public class CampaignFormDataDto extends EntityDto {
 	private CommunityReferenceDto community;
 	private UserReferenceDto creatingUser;
 	private String formType;
-	private Double latitude;
-	private Double longitude;
+	//private Double latitude;
+	//private Double longitude;
 
 	public static CampaignFormDataDto build(
 		CampaignReferenceDto campaign,
@@ -182,21 +182,21 @@ public class CampaignFormDataDto extends EntityDto {
 		this.creatingUser = creatingUser;
 	}
 
-	public Double getLatitude() {
-		return latitude;
-	}
+	//public Double getLatitude() {
+		//return latitude;
+	//}
 
-	public void setLatitude(Double latitude) {
-		this.latitude = latitude;
-	}
+	//public void setLatitude(Double latitude) {
+		//this.latitude = latitude;
+	//}
 
-	public Double getLongitude() {
-		return longitude;
-	}
+	//public Double getLongitude() {
+		//return longitude;
+	//}
 
-	public void setLongitude(Double longitude) {
-		this.longitude = longitude;
-	}
+	//public void setLongitude(Double longitude) {
+		//this.longitude = longitude;
+	//}
 
 	
 	

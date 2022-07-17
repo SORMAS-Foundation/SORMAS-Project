@@ -61,20 +61,24 @@ public class CampaignFormData extends AbstractDomainObject {
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String ARCHIVED = "archived";
+	public static final String LAT ="lat";
+	public static final String LON = "lon";
 	//public static final String FORMTYPE = "formType";
 
 	private static final long serialVersionUID = -8021065433714419288L;
 
 	private List<CampaignFormDataEntry> formValues;
 	private Campaign campaign;
-	private CampaignFormMeta campaignFormMeta;
+	public CampaignFormMeta campaignFormMeta;
 	private Date formDate;
 	private Area area;
 	private Region region;
 	private District district;
-	private Community community;
+	public Community community;
 	private User creatingUser;
 	private boolean archived;
+	public Double lat;
+	public Double lon;
 	//private CampaignFormMeta formType;
 
 	@AuditedIgnore
@@ -185,5 +189,23 @@ public class CampaignFormData extends AbstractDomainObject {
 	public CampaignFormDataReferenceDto toReference() {
 		return new CampaignFormDataReferenceDto(getUuid());
 	}
+
+	public Double getLat() {
+		return lat;
+	}
+
+	public void setLat(Double lati) {
+		lat = lati;
+	}
+
+	public Double getLon() {
+		return lon;
+	}
+
+	public void setLon(Double longti) {
+		lon = longti;
+	}
+	
+	
 	
 }

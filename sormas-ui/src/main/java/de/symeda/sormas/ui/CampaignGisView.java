@@ -24,7 +24,6 @@ import de.symeda.sormas.ui.map.CampaignLeafletMap;
 import de.symeda.sormas.ui.map.LeafletMap;
 import de.symeda.sormas.ui.map.LeafletMarker;
 import de.symeda.sormas.ui.map.LeafletPolygon;
-import de.symeda.sormas.ui.map.MapLocationService;
 import de.symeda.sormas.ui.map.MarkerIcon;
 
 public class CampaignGisView extends VerticalLayout implements View {
@@ -44,6 +43,7 @@ public class CampaignGisView extends VerticalLayout implements View {
 		dataProvider = new CampaignDashboardDataProvider();
 		filterLayout = new CampaignDashboardFilterLayout(this, dataProvider);
 
+		filterLayout.setHeight(20, Unit.PERCENTAGE);
 		filterLayout.addStyleName("view-headerxxxx");
 		filterLayout.setHeightUndefined();
 		filterLayout.setMargin(new MarginInfo(false, true));

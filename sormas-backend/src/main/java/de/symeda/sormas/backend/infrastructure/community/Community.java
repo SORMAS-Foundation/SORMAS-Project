@@ -77,7 +77,7 @@ public class Community extends InfrastructureAdo {
 	}
 
 	public void setExternalId(Long externalId) {
-		this.externalId = externalId;
+		this.externalId = this.getId();
 	}
 
 	@Override

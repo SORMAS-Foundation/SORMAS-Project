@@ -313,8 +313,8 @@ public class ImportFacadeEjb implements ImportFacade {
 		campaignFormMetaDto.getCampaignFormElements()
 			.stream()
 			.filter(
-				e -> !(CampaignFormElementType.SECTION.name().equalsIgnoreCase(e.getType())
-					|| CampaignFormElementType.LABEL.name().equalsIgnoreCase(e.getType())))
+				e -> !(CampaignFormElementType.SECTION.name().equalsIgnoreCase(e.getType()) || !(CampaignFormElementType.DAYWISE.name().equalsIgnoreCase(e.getType())
+					|| CampaignFormElementType.LABEL.name().equalsIgnoreCase(e.getType()))))
 			.forEach(formElement -> importColumns.add(new ImportColumn(formElement.getId(), formElement.getCaption(), formElement.getType())));
 		writeTemplate(Paths.get(getCampaignFormImportTemplateFilePath()), importColumns, false);
 
