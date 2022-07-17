@@ -87,11 +87,25 @@ public class ConfigurationRegionsSteps implements En {
               "Voreingestellte Bundeslander is not correctly displayed!");
           softly.assertAll();
         });
+
+    When(
+        "I check that Voreingestellte Bundeslander is correctly displayed in German",
+        () -> {
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          softly.assertTrue(
+              tableRowsData
+                  .toString()
+                  .contains(
+                      "EPID-NUMMER=DEF-REG, LAND=Deutschland, EXTERNE ID=, BEV\u00d6LKERUNG=, WACHSTUMSRATE=, NAME=Voreingestellte Bundesl\u00e4nder"),
+              "Voreingestellte Bundeslander is not correctly displayed!");
+          softly.assertAll();
+        });
   }
 
   private List<Map<String, String>> getTableRowsData() {
     Map<String, Integer> headers = extractColumnHeadersHashMap();
     headers.remove("EDIT");
+    headers.remove("BEARBEITEN");
     List<WebElement> tableRows = getTableRows();
     List<HashMap<Integer, String>> tableDataList = new ArrayList<>();
     tableRows.forEach(
