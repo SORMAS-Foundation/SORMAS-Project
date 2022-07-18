@@ -8553,3 +8553,19 @@ INSERT INTO schema_version (version_number, comment) VALUES (422, 'adding organi
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
 
+
+--add organisation and position to user table
+
+ALTER TABLE campaignformdata
+ADD COLUMN lat float,
+ADD COLUMN lon float;
+
+
+INSERT INTO schema_version (version_number, comment) VALUES (423, 'adding longandLat');
+-- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
+
+
+
+
+
+

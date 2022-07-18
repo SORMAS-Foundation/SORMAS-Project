@@ -30,17 +30,21 @@ import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
@@ -619,6 +623,7 @@ public class CampaignFormDataNewFragment extends BaseEditFragment<FragmentCampai
         }
         return view;
     }
+
 
 
     @Override
