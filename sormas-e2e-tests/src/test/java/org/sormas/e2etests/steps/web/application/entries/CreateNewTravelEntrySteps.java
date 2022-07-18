@@ -90,7 +90,6 @@ import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PERS
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ARCHIVE_EVENT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_DEARCHIVE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DEARCHIVE_REASON_TEXT_AREA;
-import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DELETE_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.entries.TravelEntryDirectorySteps.userDirPath;
 
@@ -897,14 +896,6 @@ public class CreateNewTravelEntrySteps implements En {
     When("I copy url of current travel entry", () -> currentUrl = webDriverHelpers.returnURL());
 
     When("I back to deleted travel entry by url", () -> webDriverHelpers.accessWebSite(currentUrl));
-
-    When(
-        "I click on Delete button from travel entry",
-        () -> {
-          webDriverHelpers.scrollToElement(DELETE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
-        });
-
     When(
         "I check if External ID input on travel entry edit page is disabled",
         () -> {
