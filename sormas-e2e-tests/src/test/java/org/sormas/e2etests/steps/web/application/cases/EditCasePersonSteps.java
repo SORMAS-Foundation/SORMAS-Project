@@ -319,6 +319,10 @@ public class EditCasePersonSteps implements En {
               break;
           }
         });
+
+    When(
+        "I set Present condition of person to {string}",
+        (String option) -> webDriverHelpers.selectFromCombobox(PRESENT_CONDITION_COMBOBOX, option));
   }
 
   private void selectCountry(String country) {

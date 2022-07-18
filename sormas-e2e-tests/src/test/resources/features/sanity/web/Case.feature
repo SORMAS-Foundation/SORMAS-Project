@@ -1463,8 +1463,8 @@ Feature: Case end to end tests
     Then I click on Merge Duplicates on Case directory for DE
     And I check if message about long loading times appear for DE
 
-    @issue=SORDEV-10361 @env_main @testIt
-    Scenario: Test Hide "buried" within Person present condition for Covid-19 [2] (INT)
+    @issue=SORDEV-10361 @env_main
+    Scenario: Test Hide "buried" within Person present condition for Covid-19 for Cases
       Given I log in as a Admin User
       And I click on the Cases button from navbar
       And I click on the NEW CASE button
@@ -1476,13 +1476,14 @@ Feature: Case end to end tests
       And I check if Present condition of person combobox has value "Unknown"
       Then I check if Present condition of person combobox has no value "Buried"
       Then I navigate to case tab
-      And I change disease to "Anthrax" in the case tab
+      And I change disease to "Ebola Virus Disease" in the case tab
       Then I click on Save button in Case form
       And I navigate to case person tab
       Then I check if Present condition of person combobox has value "Alive"
       And I check if Present condition of person combobox has value "Dead"
       And I check if Present condition of person combobox has value "Unknown"
       Then I check if Present condition of person combobox has value "Buried"
+      Then I set Present condition of person to "Buried"
       And I check if "Date of burial" field is present in case person
       And I check if "Burial conductor" field is present in case person
       And I check if "Burial place description" field is present in case person
