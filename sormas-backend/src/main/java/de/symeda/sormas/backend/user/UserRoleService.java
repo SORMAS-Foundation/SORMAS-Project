@@ -37,8 +37,10 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.user.NotificationProtocol;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRoleCriteria;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
 @Stateless
 @LocalBean
@@ -118,5 +120,29 @@ public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
 			}
 		}
 		return false;
+	}
+
+	public Predicate buildCriteriaFilter(
+		UserRoleCriteria userRoleCriteria,
+		CriteriaBuilder cb,
+		Root<UserRole> from,
+		Join<UserRole, UserRight> userRightsJoin) {
+
+		Predicate filter = null;
+
+		if (userRoleCriteria.getEnabled() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(UserRole.ENABLED), userRoleCriteria.getEnabled()));
+		}
+
+		if (userRoleCriteria.getUserRight() != null) {
+			Predicate userRightsFilter = userRightsJoin.in(userRoleCriteria.getUserRight());
+			filter = CriteriaBuilderHelper.and(cb, filter, userRightsFilter);
+		}
+
+		if (userRoleCriteria.getJurisdictionLevel() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(UserRole.JURISDICTION_LEVEL), userRoleCriteria.getJurisdictionLevel()));
+		}
+
+		return filter;
 	}
 }
