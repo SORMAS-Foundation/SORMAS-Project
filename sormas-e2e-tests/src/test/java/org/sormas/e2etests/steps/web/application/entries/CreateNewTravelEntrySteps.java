@@ -188,7 +188,7 @@ public class CreateNewTravelEntrySteps implements En {
           fillPointOfEntryDetails(travelEntry.getPointOfEntryDetails());
         });
     When(
-        "^I fill person data in a new travel entry form with builded person shared for all entities$",
+        "^I fill person data in a new travel entry form with built person shared for all entities$",
         () -> {
           fillFirstName(PersonDirectorySteps.personSharedForAllEntities.getFirstName());
           fillLastName(PersonDirectorySteps.personSharedForAllEntities.getLastName());

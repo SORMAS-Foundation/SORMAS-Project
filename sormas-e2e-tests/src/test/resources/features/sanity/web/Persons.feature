@@ -175,13 +175,13 @@ Feature: Edit Persons
     And I click on the Entries button from navbar
     And I click on the New Travel Entry button from Travel Entries directory
     When I fill the required fields in a new travel entry form without personal data
-    And I fill person data in a new travel entry form with builded person shared for all entities
+    And I fill person data in a new travel entry form with built person shared for all entities
     And I click on Save button from the new travel entry form
     Then I check the created data is correctly displayed on Edit travel entry page for DE version
     And I collect travel UUID from travel entry
     Then I open the last created event via api
     Then I navigate to EVENT PARTICIPANT from edit event page
-    And I add only person data for event participant creation for DE with builded person shared for all entities
+    And I add only person data for event participant creation for DE with built person shared for all entities
     And I collect the event participant person UUID displayed on Edit Event Participant page
     Then I click on the Cases button from navbar
     And I click on the NEW CASE button

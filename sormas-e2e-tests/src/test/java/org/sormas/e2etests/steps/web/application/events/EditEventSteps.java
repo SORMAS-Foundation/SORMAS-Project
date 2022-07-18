@@ -628,7 +628,7 @@ public class EditEventSteps implements En {
           }
         });
     When(
-        "I add only person data for event participant creation for DE with builded person shared for all entities",
+        "I add only person data for event participant creation for DE with built person shared for all entities",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
           webDriverHelpers.fillInWebElement(
