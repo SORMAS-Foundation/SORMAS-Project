@@ -29,12 +29,14 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_CARD_INFO_ICON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_CARD_INFO_POPUP_TEXT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.FIRST_CONTACT_ID;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_MANAGEMENT_STATUS_CHECK;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_PARTICIPANTS_TAB;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_ARCHIVED_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT_FROM_LIST;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_RESULT_IN_EVENT_PARTICIPANT_TABLE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_EDIT_EVENT;
@@ -1331,6 +1333,16 @@ public class EventDirectorySteps implements En {
               "Diese Impfung ist f\u00FCr diesen Ereignisteilnehmer nicht relevant, weil das Datum der Impfung nach dem Ereignisdatum oder dem Ereignis-Meldedatum liegt.",
               "Message is incorrect");
           softly.assertAll();
+        });
+
+    When(
+        "I change disease to {string} in the event tab",
+        (String disease) -> webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease));
+
+    When(
+        "I click on the first row from event participant list",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_PARTICIPANT_FROM_LIST);
         });
   }
 

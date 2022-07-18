@@ -185,4 +185,5 @@ public class EditEventPage {
         String.format(
             "(//input[@type=\"checkbox\"])[%x]/../../following-sibling::td/a", index + 2));
   }
+  public static final By FIRST_EVENT_PARTICIPANT_FROM_LIST = By.cssSelector("tr td a");
 }
