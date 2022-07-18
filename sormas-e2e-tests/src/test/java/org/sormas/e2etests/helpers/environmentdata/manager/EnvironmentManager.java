@@ -27,6 +27,8 @@ import java.util.List;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.sormas.e2etests.entities.pojo.api.Request;
 import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.helpers.environmentdata.dto.*;
@@ -48,6 +50,7 @@ public class EnvironmentManager {
     response =
         restAssuredClient.sendRequestAndGetResponse(
             Request.builder().method(Method.GET).path(COUNTRIES_PATH + ALL_FROM_0).build());
+    checkResponse(response);
     objectMapper = getNewObjMapper();
     List<Country> countries =
         List.of(objectMapper.readValue(response.getBody().asInputStream(), Country[].class));
@@ -63,6 +66,7 @@ public class EnvironmentManager {
     response =
         restAssuredClient.sendRequestAndGetResponse(
             Request.builder().method(Method.GET).path(REGIONS_PATH + ALL_FROM_0).build());
+    checkResponse(response);
     objectMapper = getNewObjMapper();
     List<Region> regions =
         List.of(objectMapper.readValue(response.getBody().asInputStream(), Region[].class));
@@ -78,6 +82,7 @@ public class EnvironmentManager {
     response =
         restAssuredClient.sendRequestAndGetResponse(
             Request.builder().method(Method.GET).path(REGIONS_PATH + ALL_FROM_0).build());
+    checkResponse(response);
     objectMapper = getNewObjMapper();
     List<Region> regions =
         List.of(objectMapper.readValue(response.getBody().asInputStream(), Region[].class));
@@ -93,6 +98,7 @@ public class EnvironmentManager {
     response =
         restAssuredClient.sendRequestAndGetResponse(
             Request.builder().method(Method.GET).path(DISTRICTS_PATH + ALL_FROM_0).build());
+    checkResponse(response);
     objectMapper = getNewObjMapper();
     List<District> districts =
         List.of(objectMapper.readValue(response.getBody().asInputStream(), District[].class));
@@ -108,6 +114,7 @@ public class EnvironmentManager {
     response =
         restAssuredClient.sendRequestAndGetResponse(
             Request.builder().method(Method.GET).path(DISTRICTS_PATH + ALL_FROM_0).build());
+    checkResponse(response);
     objectMapper = getNewObjMapper();
     List<District> districts =
         List.of(objectMapper.readValue(response.getBody().asInputStream(), District[].class));
@@ -123,6 +130,7 @@ public class EnvironmentManager {
     response =
         restAssuredClient.sendRequestAndGetResponse(
             Request.builder().method(Method.GET).path(CONTINENTS_PATH + ALL_FROM_0).build());
+    checkResponse(response);
     objectMapper = getNewObjMapper();
     List<Continent> continents =
         List.of(objectMapper.readValue(response.getBody().asInputStream(), Continent[].class));
@@ -138,6 +146,7 @@ public class EnvironmentManager {
     response =
         restAssuredClient.sendRequestAndGetResponse(
             Request.builder().method(Method.GET).path(SUBCONTINENTS_PATH + ALL_FROM_0).build());
+    checkResponse(response);
     objectMapper = getNewObjMapper();
     List<Subcontinent> subcontinents =
         List.of(objectMapper.readValue(response.getBody().asInputStream(), Subcontinent[].class));
@@ -153,6 +162,7 @@ public class EnvironmentManager {
     response =
         restAssuredClient.sendRequestAndGetResponse(
             Request.builder().method(Method.GET).path(COMMUNITIES_PATH + ALL_FROM_0).build());
+    checkResponse(response);
     objectMapper = getNewObjMapper();
     List<Community> communities =
         List.of(objectMapper.readValue(response.getBody().asInputStream(), Community[].class));
@@ -169,6 +179,7 @@ public class EnvironmentManager {
     response =
         restAssuredClient.sendRequestAndGetResponse(
             Request.builder().method(Method.GET).path(path).build());
+    checkResponse(response);
     objectMapper = getNewObjMapper();
     List<HealthFacility> healthFacilities =
         List.of(objectMapper.readValue(response.getBody().asInputStream(), HealthFacility[].class));
@@ -185,6 +196,7 @@ public class EnvironmentManager {
     response =
         restAssuredClient.sendRequestAndGetResponse(
             Request.builder().method(Method.GET).path(path).build());
+    checkResponse(response);
     objectMapper = getNewObjMapper();
     List<HealthFacility> healthFacilities =
         List.of(objectMapper.readValue(response.getBody().asInputStream(), HealthFacility[].class));
@@ -200,6 +212,7 @@ public class EnvironmentManager {
     response =
         restAssuredClient.sendRequestAndGetResponse(
             Request.builder().method(Method.GET).path(USERS_PATH + ALL_FROM_0).build());
+    checkResponse(response);
     objectMapper = getNewObjMapper();
     List<User> users =
         List.of(objectMapper.readValue(response.getBody().asInputStream(), User[].class));
@@ -214,5 +227,22 @@ public class EnvironmentManager {
     ObjectMapper objMapper = new ObjectMapper();
     objMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     return objMapper;
+  }
+
+  @SneakyThrows
+  private void checkResponse(Response response) {
+    Document doc;
+    String responseStatus = String.valueOf(response.getStatusCode());
+    if (responseStatus.startsWith("4")) {
+      log.warn("Response returned status code [ {} ]", responseStatus);
+      doc = Jsoup.parse(response.getBody().asString());
+      throw new Exception(
+          String.format("Unable to perform API request due to: [ %s ]", doc.body().text()));
+    } else if (responseStatus.startsWith("5")) {
+      log.warn("Response returned status code [ {} ]", responseStatus);
+      doc = Jsoup.parse(response.getBody().asString());
+      throw new Exception(
+          String.format("Unable to perform API request due to: [ %s ]", doc.body().text()));
+    }
   }
 }

@@ -16,16 +16,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.steps.web.application.countries;
+package org.sormas.e2etests.steps.web.application.subcontinents;
 
-import static org.sormas.e2etests.pages.application.configuration.ConfigurationTabsPage.CONFIGURATION_COUNTRIES_TAB;
-import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.COUNTRIES_COLUMN_HEADERS;
-import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.COUNTRIES_TABLE_DATA;
-import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.COUNTRIES_TABLE_ROW;
-import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.COUNTRY_GRID_RESULTS_ROWS;
-import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.NUMBER_OF_COUNTRIES;
-import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.SEARCH_COUNTRY;
-import static org.sormas.e2etests.pages.application.configuration.CountriesTabPage.SUBCONTINENT_TABLE_VALUE;
+import static org.sormas.e2etests.pages.application.configuration.ConfigurationTabsPage.CONFIGURATION_SUBCONTINENTS_TAB;
+import static org.sormas.e2etests.pages.application.configuration.SubcontinentsTabPage.SUBCONTINENTS_COLUMN_HEADERS;
+import static org.sormas.e2etests.pages.application.configuration.SubcontinentsTabPage.SUBCONTINENTS_TABLE_DATA;
+import static org.sormas.e2etests.pages.application.configuration.SubcontinentsTabPage.SUBCONTINENTS_TABLE_ROW;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -39,65 +35,50 @@ import javax.inject.Inject;
 import lombok.SneakyThrows;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.configuration.SubcontinentsTabPage;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.asserts.SoftAssert;
 
-public class ConfigurationCountriesSteps implements En {
+public class ConfigurationSubcontinentsSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   public static Faker faker;
   private final BaseSteps baseSteps;
 
   @SneakyThrows
   @Inject
-  public ConfigurationCountriesSteps(
+  public ConfigurationSubcontinentsSteps(
       WebDriverHelpers webDriverHelpers, SoftAssert softly, BaseSteps baseSteps, Faker faker) {
     this.webDriverHelpers = webDriverHelpers;
     this.faker = faker;
     this.baseSteps = baseSteps;
 
     When(
-        "I navigate to countries tab in Configuration",
-        () -> webDriverHelpers.clickOnWebElementBySelector(CONFIGURATION_COUNTRIES_TAB));
+        "I navigate to subcontinents tab in Configuration",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CONFIGURATION_SUBCONTINENTS_TAB));
 
-    When(
-        "I fill search filter with {string} country name on Country Configuration Page",
-        (String country) -> webDriverHelpers.fillInWebElement(SEARCH_COUNTRY, country));
-
-    When(
-        "I check the {string} name for the country on Country Configuration Page",
-        (String expectedSubcontinentName) -> {
-          webDriverHelpers.waitUntilAListOfElementsHasText(
-              COUNTRY_GRID_RESULTS_ROWS, expectedSubcontinentName);
-          String subcontinentName =
-              webDriverHelpers.getTextFromWebElement(SUBCONTINENT_TABLE_VALUE);
-          softly.assertEquals(
-              subcontinentName,
-              expectedSubcontinentName,
-              "The subcontinent name is different then expected");
-          softly.assertAll();
-        });
     Then(
-        "I check that number of countries is at least (\\d+)",
+        "I check that number of subcontinents is at least (\\d+)",
         (Integer number) -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           softly.assertTrue(
               Integer.valueOf(
-                      Integer.parseInt(webDriverHelpers.getTextFromWebElement(NUMBER_OF_COUNTRIES)))
+                      Integer.parseInt(
+                          webDriverHelpers.getTextFromWebElement(
+                              SubcontinentsTabPage.NUMBER_OF_SUBCONTINENTS)))
                   >= number,
-              "Number of countries is not correct!");
+              "Number of subcontinents is not correct!");
           softly.assertAll();
         });
 
     When(
-        "I check that Albania is correctly displayed",
+        "I check that Central Africa is correctly displayed",
         () -> {
           List<Map<String, String>> tableRowsData = getTableRowsData();
           softly.assertTrue(
               tableRowsData
                   .toString()
-                  .contains(
-                      "ISO CODE=ALB, SUBCONTINENT=Southeast Europe, EXTERNAL ID=21000125, UNO CODE=8, NAME=Albania"),
-              "Albania is not correctly displayed!");
+                  .contains("CONTINENT NAME=Africa, EXTERNAL ID=31001115, NAME=Central Africa"),
+              "Central Africa is not correctly displayed!");
           softly.assertAll();
         });
   }
@@ -111,7 +92,7 @@ public class ConfigurationCountriesSteps implements En {
         table -> {
           HashMap<Integer, String> indexWithData = new HashMap<>();
           AtomicInteger atomicInt = new AtomicInteger();
-          List<WebElement> tableData = table.findElements(COUNTRIES_TABLE_DATA);
+          List<WebElement> tableData = table.findElements(SUBCONTINENTS_TABLE_DATA);
           tableData.forEach(
               dataText -> {
                 webDriverHelpers.scrollToElementUntilIsVisible(dataText);
@@ -130,19 +111,19 @@ public class ConfigurationCountriesSteps implements En {
   }
 
   private List<WebElement> getTableRows() {
-    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(COUNTRIES_COLUMN_HEADERS);
-    return baseSteps.getDriver().findElements(COUNTRIES_TABLE_ROW);
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SUBCONTINENTS_COLUMN_HEADERS);
+    return baseSteps.getDriver().findElements(SUBCONTINENTS_TABLE_ROW);
   }
 
   private Map<String, Integer> extractColumnHeadersHashMap() {
     AtomicInteger atomicInt = new AtomicInteger();
     HashMap<String, Integer> headerHashmap = new HashMap<>();
-    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(COUNTRIES_COLUMN_HEADERS);
-    webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(COUNTRIES_COLUMN_HEADERS);
-    webDriverHelpers.scrollToElementUntilIsVisible(COUNTRIES_COLUMN_HEADERS);
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SUBCONTINENTS_COLUMN_HEADERS);
+    webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(SUBCONTINENTS_COLUMN_HEADERS);
+    webDriverHelpers.scrollToElementUntilIsVisible(SUBCONTINENTS_COLUMN_HEADERS);
     baseSteps
         .getDriver()
-        .findElements(COUNTRIES_COLUMN_HEADERS)
+        .findElements(SUBCONTINENTS_COLUMN_HEADERS)
         .forEach(
             webElement -> {
               webDriverHelpers.scrollToElementUntilIsVisible(webElement);
