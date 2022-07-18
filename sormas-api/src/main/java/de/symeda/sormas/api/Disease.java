@@ -81,6 +81,11 @@ public enum Disease
 	ENTEROVIRUS(true, false, true, false, 0, true, false, false),
 	M_PNEUMONIAE(true, false, true, false, 0, true, false, false),
 	C_PNEUMONIAE(true, false, true, false, 0, true, false, false),
+	ARI(true, false, false, false, 0, true, false, false),
+	CHIKUNGUNYA(true, false, false, false, 0, true, false, false),
+	POST_IMMUNIZATION_ADVERSE_EVENTS_MILD(true, false, false, false, 0, true, false, false),
+	POST_IMMUNIZATION_ADVERSE_EVENTS_SEVERE(true, false, false, false, 0, true, false, false),
+	FHA(true, false, false, false, 0, true, false, false),
 	OTHER(true, true, true, true, 21, false, false, false),
 	UNDEFINED(true, true, true, true, 0, false, false, false);
 
