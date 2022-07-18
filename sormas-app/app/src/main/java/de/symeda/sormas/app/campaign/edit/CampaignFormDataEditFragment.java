@@ -19,7 +19,6 @@
 package de.symeda.sormas.app.campaign.edit;
 
 import android.content.res.Resources;
-import android.icu.text.SimpleDateFormat;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,12 +28,15 @@ import android.widget.LinearLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +49,7 @@ import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementOptions;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.campaign.data.CampaignFormData;
@@ -100,6 +103,8 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
     private String caption_6 = "";
     private String caption_7 = "";
     private String caption_8 = "";
+
+    private SimpleDateFormat dateFormat;
 
     public static BaseEditFragment newInstance(CampaignFormData activityRootData) {
         return newInstance(CampaignFormDataEditFragment.class, null, activityRootData);
@@ -199,14 +204,7 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                           ControlSpinnerField.setValue((ControlSpinnerField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DATE) {
                           dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager());
-                          try {
-                              Date date1=new SimpleDateFormat("dd/MM/yyyy").parse(value);
-                              ControlDateField.setValue((ControlDateField) dynamicField, date1);
-                               } catch (ParseException e) {
-                              e.printStackTrace();
-                          }
-
-
+                          ControlDateField.setValue((ControlDateField) dynamicField, getDateValue(value));
                       } else {
                           dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false);
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
@@ -257,11 +255,7 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                           ControlSpinnerField.setValue((ControlSpinnerField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DATE) {
                           dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager());
-                          try {
-                              ControlDateField.setValue((ControlDateField) dynamicField, new SimpleDateFormat("dd/MM/yyyy").parse(value));
-                          } catch (ParseException e) {
-                              e.printStackTrace();
-                          }
+                          ControlDateField.setValue((ControlDateField) dynamicField, getDateValue(value));
                       } else {
                           dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false);
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
@@ -312,11 +306,7 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                           ControlSpinnerField.setValue((ControlSpinnerField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DATE) {
                           dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager());
-                          try {
-                              ControlDateField.setValue((ControlDateField) dynamicField, new SimpleDateFormat("dd/MM/yyyy").parse(value));
-                          } catch (ParseException e) {
-                              e.printStackTrace();
-                          }
+                          ControlDateField.setValue((ControlDateField) dynamicField, getDateValue(value));
                       } else {
                           dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false);
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
@@ -367,11 +357,7 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                           ControlSpinnerField.setValue((ControlSpinnerField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DATE) {
                           dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager());
-                          try {
-                              ControlDateField.setValue((ControlDateField) dynamicField, new SimpleDateFormat("dd/MM/yyyy").parse(value));
-                          } catch (ParseException e) {
-                              e.printStackTrace();
-                          }
+                          ControlDateField.setValue((ControlDateField) dynamicField, getDateValue(value));
                       } else {
                           dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false);
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
@@ -422,11 +408,7 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                           ControlSpinnerField.setValue((ControlSpinnerField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DATE) {
                           dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager());
-                          try {
-                              ControlDateField.setValue((ControlDateField) dynamicField, new SimpleDateFormat("dd/MM/yyyy").parse(value));
-                          } catch (ParseException e) {
-                              e.printStackTrace();
-                          }
+                          ControlDateField.setValue((ControlDateField) dynamicField, getDateValue(value));
                       } else {
                           dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false);
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
@@ -477,12 +459,8 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                           ControlSpinnerField.setValue((ControlSpinnerField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DATE) {
                           dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager());
-
-                          try {
-                              ControlDateField.setValue((ControlDateField) dynamicField, new SimpleDateFormat("dd/MM/yyyy").parse(value));
-                          } catch (ParseException e) {
-                              e.printStackTrace();
-                          }  } else {
+                          ControlDateField.setValue((ControlDateField) dynamicField, getDateValue(value));
+                      } else {
                           dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false);
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
                       }
@@ -532,11 +510,7 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                           ControlSpinnerField.setValue((ControlSpinnerField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DATE) {
                           dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager());
-                          try {
-                              ControlDateField.setValue((ControlDateField) dynamicField, new SimpleDateFormat("dd/MM/yyyy").parse(value));
-                          } catch (ParseException e) {
-                              e.printStackTrace();
-                          }
+                          ControlDateField.setValue((ControlDateField) dynamicField, getDateValue(value));
                      } else {
                           dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false);
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
@@ -587,11 +561,7 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                           ControlSpinnerField.setValue((ControlSpinnerField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DATE) {
                           dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager());
-                          try {
-                              ControlDateField.setValue((ControlDateField) dynamicField, new SimpleDateFormat("dd/MM/yyyy").parse(value));
-                          } catch (ParseException e) {
-                              e.printStackTrace();
-                          }
+                          ControlDateField.setValue((ControlDateField) dynamicField, getDateValue(value));
                       } else {
                           dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false);
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
@@ -643,11 +613,7 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                       ControlSpinnerField.setValue((ControlSpinnerField) dynamicField, value);
                   } else if (type == CampaignFormElementType.DATE) {
                       dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager());
-                      try {
-                          ControlDateField.setValue((ControlDateField) dynamicField, new SimpleDateFormat("dd/MM/yyyy").parse(value));
-                      } catch (ParseException e) {
-                          e.printStackTrace();
-                      }
+                      ControlDateField.setValue((ControlDateField) dynamicField, getDateValue(value));
                   } else {
                       dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false);
                       ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
@@ -752,6 +718,28 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
       }
         return view;
     }
+
+
+
+    private Date getDateValue(String input) {
+        if (StringUtils.isEmpty(input)) {
+            return null;
+        }
+
+        Date date = DateHelper.parseDate(input, dateFormat);
+        Calendar dateCalendar = Calendar.getInstance();
+        Calendar cachedCalendar = Calendar.getInstance();
+        dateCalendar.setTime(date);
+
+        cachedCalendar.set(Calendar.YEAR, dateCalendar.get(Calendar.YEAR));
+        cachedCalendar.set(Calendar.MONTH, dateCalendar.get(Calendar.MONTH));
+        cachedCalendar.set(Calendar.DAY_OF_MONTH, dateCalendar.get(Calendar.DAY_OF_MONTH));
+        date = cachedCalendar.getTime();
+
+        return date;
+    }
+
+
 
     @Override
     public int getEditLayout() {

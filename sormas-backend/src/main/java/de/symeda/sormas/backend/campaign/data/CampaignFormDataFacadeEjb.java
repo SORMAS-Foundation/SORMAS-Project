@@ -1145,7 +1145,10 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	@Override
 	public String getByClusterDropDown(CommunityReferenceDto community, CampaignFormMetaDto campaignForm,
 			CampaignDto campaign) {
-
+System.out.println(community.getUuid());
+System.out.println(campaignForm.getUuid());	
+System.out.println(campaign.getUuid());
+		
 		String query = "select cb.uuid from campaignformdata cb left join community cm on cb.community_id = cm.id \r\n"
 				+ "left join campaignformmeta ff on cb.campaignformmeta_id = ff.id left join campaigns gn on cb.campaign_id = gn.id\r\n"
 				+ "where cm.uuid = '" + community.getUuid() + "' and ff.uuid = '" + campaignForm.getUuid()

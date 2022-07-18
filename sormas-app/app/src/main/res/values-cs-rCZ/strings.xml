@@ -21,7 +21,7 @@
     Here there are only strings, which are only useful for the app.
  -->
 <resources>
-    <string name="app_name">SORMAS</string>
+    <string name="app_name">APMIS</string>
     <string name="and">a</string>
     <string name="no">Ne</string>
     <string name="notAnswered">Nezodpovězeno</string>

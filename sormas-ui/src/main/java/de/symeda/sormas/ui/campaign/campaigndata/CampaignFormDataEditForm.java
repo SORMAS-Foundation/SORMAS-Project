@@ -61,6 +61,8 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 	public static final String CAMPAIGN_FORM_LOC = "campaignFormLoc";
 	private AreaReferenceDto area;
 	public static final String AREA = "area";
+	
+	private DateField dates;
 
 	public AreaReferenceDto getArea() {
 		return area;
@@ -110,8 +112,11 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		 * clusterfieldx.addItem("Intra-Campign");
 		 * clusterfieldx.addItem("Post-Campaign");
 		 */
+		
+		dates = addField(CampaignFormDataDto.FORM_DATE, DateField.class);
+		
 
-		addField(CampaignFormDataDto.FORM_DATE, DateField.class);
+		//addField(CampaignFormDataDto.FORM_DATE, DateField.class);
 
 		setRequired(true, CampaignFormDataDto.CAMPAIGN, CampaignFormDataDto.FORM_DATE, CampaignFormDataDto.REGION,
 				CampaignFormDataDto.AREA, CampaignFormDataDto.DISTRICT, CampaignFormDataDto.COMMUNITY);
@@ -215,11 +220,13 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 
 			// }
 
-			// if (cbCommunity.getValue() == null) {
+			
 			cbCommunity.addValueChangeListener(e -> {
+				
+				 if (cbCommunity.getValue() != null && cbDistrict.getValue() != null) {
 
-				System.out.println("||||||||||||||||||||||||||||" + super.getValue().getCampaignFormMeta().getUuid()
-						+ "||||||||||||");
+				System.out.println(dates.getValue()+"||||||||||||||||||||||||||||" + super.getValue().getCampaignFormMeta().getUuid()
+						+ "||||||||||||" +super.getValue().getCampaign().getUuid());
 				CampaignFormMetaDto campaignForm = FacadeProvider.getCampaignFormMetaFacade()
 						.getCampaignFormMetaByUuid(super.getValue().getCampaignFormMeta().getUuid());
 
@@ -228,7 +235,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 
 				CommunityReferenceDto community = (CommunityReferenceDto) cbCommunity.getValue();
 
-				System.out.println("??????????????????>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + campaignForm.getFormName()
+				System.out.println(community.getCaption()+"??????????????????>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + campaignForm.getFormName()
 						+ campaign.getName());
 				String formuuid = FacadeProvider.getCampaignFormDataFacade().getByClusterDropDown(community,
 						campaignForm, campaign);
@@ -247,9 +254,11 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 							+ "$('.v-verticallayout.v-layout.v-vertical.v-widget.v-has-width.v-has-height.v-margin-top.v-margin-right.v-margin-bottom.v-margin-left').show();"
 					// +"$('#formidx').find('td:contains('Void')').parent('tr').hide();"
 							+ "});");
-				}
+				}}
 			});
+			
 		}
+			 
 		;
 
 	}
