@@ -81,11 +81,24 @@ public class ConfigurationSubcontinentsSteps implements En {
               "Central Africa is not correctly displayed!");
           softly.assertAll();
         });
+
+    When(
+        "I check that Central Africa is correctly displayed in German",
+        () -> {
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          softly.assertTrue(
+              tableRowsData
+                  .toString()
+                  .contains("KONTINENTNAME=Afrika, EXTERNE ID=31001115, NAME=Zentralafrika"),
+              "Central Africa is not correctly displayed!");
+          softly.assertAll();
+        });
   }
 
   private List<Map<String, String>> getTableRowsData() {
     Map<String, Integer> headers = extractColumnHeadersHashMap();
     headers.remove("EDIT");
+    headers.remove("BEARBEITEN");
     List<WebElement> tableRows = getTableRows();
     List<HashMap<Integer, String>> tableDataList = new ArrayList<>();
     tableRows.forEach(

@@ -24,3 +24,11 @@ Feature: Country end to end tests
     When I navigate to countries tab in Configuration
     Then I check that number of countries is at least 203
     And I check that Albania is correctly displayed
+
+  @issue=SORQA-344 @env_de @precon
+  Scenario: Check German infrastructure data for countries
+    Given I log in as a Admin User
+    And I click on the Configuration button from navbar
+    When I navigate to countries tab in Configuration
+    Then I check that number of countries is at least 203
+    And I check that Albania is correctly displayed in German
