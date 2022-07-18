@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.dashboard;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -9,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -111,5 +113,16 @@ public class DashboardServiceTest extends AbstractBeanTest {
 		assertThat(result.get(CaseClassification.NO_CASE), equalTo(8));
 		assertThat(result.get(CaseClassification.CONFIRMED), equalTo(7));
 		assertThat(result.get(CaseClassification.NOT_CLASSIFIED), is(nullValue()));
+
+		// Also aggregate if CONFIRMED is missing
+		data.remove(1);
+		result = DashboardService.getCasesCountByClassification(data, aggregateConfirmed);
+		assertThat(result.entrySet(), hasSize(2));
+		assertThat(result.get(CaseClassification.NO_CASE), equalTo(8));
+		assertThat(result.get(CaseClassification.CONFIRMED), equalTo(6));
+
+		// Check that no data means no result
+		result = DashboardService.getCasesCountByClassification(Collections.emptyList(), aggregateConfirmed);
+		assertThat(result.entrySet(), is(empty()));
 	}
 }

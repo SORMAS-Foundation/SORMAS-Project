@@ -184,14 +184,26 @@ public class DashboardService {
 
 	static Map<CaseClassification, Integer> getCasesCountByClassification(List<Object[]> classificationCountList, boolean aggregateConfirmed) {
 
-		return classificationCountList.stream().collect(Collectors.toMap(tuple -> {
+		Map<CaseClassification, Integer> result = classificationCountList.stream()
+			.collect(Collectors.toMap(tuple -> (CaseClassification) tuple[0], tuple -> ((Number) tuple[1]).intValue()));
 
-			if (aggregateConfirmed && CaseClassification.getConfirmedClassifications().contains((CaseClassification) tuple[0])) {
-				return CaseClassification.CONFIRMED;
-			} else {
-				return (CaseClassification) tuple[0];
+		if (aggregateConfirmed) {
+			CaseClassification confirmedKey = CaseClassification.CONFIRMED;
+			int confirmedSum = result.entrySet()
+				.stream()
+				.filter(e -> CaseClassification.getConfirmedClassifications().contains(e.getKey()))
+				.mapToInt(e -> e.getValue())
+				.sum();
+			for (CaseClassification caseClassification : CaseClassification.getConfirmedClassifications()) {
+				if (caseClassification == confirmedKey && confirmedSum > 0) {
+					result.put(confirmedKey, confirmedSum);
+				} else {
+					result.remove(caseClassification);
+				}
 			}
-		}, tuple -> ((Number) tuple[1]).intValue()));
+		}
+
+		return result;
 	}
 
 	public Map<Disease, Long> getCaseCountByDisease(DashboardCriteria dashboardCriteria) {
