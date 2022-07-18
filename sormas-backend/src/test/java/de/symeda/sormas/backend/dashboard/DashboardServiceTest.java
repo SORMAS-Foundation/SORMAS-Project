@@ -1,12 +1,20 @@
 package de.symeda.sormas.backend.dashboard;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
 
+import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.event.EventDto;
@@ -62,5 +70,46 @@ public class DashboardServiceTest extends AbstractBeanTest {
 		assertEquals(1, result.size());
 		assertEquals(Long.valueOf(1), result.get(EventStatus.EVENT));
 
+	}
+
+	@Test
+	public void testGetCasesCountByClassificationList() {
+
+		List<Object[]> data = new ArrayList<>();
+		data.add(
+			new Object[] {
+				CaseClassification.NO_CASE,
+				8 });
+		data.add(
+			new Object[] {
+				CaseClassification.CONFIRMED,
+				1 });
+		data.add(
+			new Object[] {
+				CaseClassification.CONFIRMED_NO_SYMPTOMS,
+				2 });
+		data.add(
+			new Object[] {
+				CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS,
+				4 });
+
+		boolean aggregateConfirmed;
+		Map<CaseClassification, Integer> result;
+
+		aggregateConfirmed = false;
+		result = DashboardService.getCasesCountByClassification(data, aggregateConfirmed);
+		assertThat(result.entrySet(), hasSize(4));
+		assertThat(result.get(CaseClassification.NO_CASE), equalTo(8));
+		assertThat(result.get(CaseClassification.CONFIRMED), equalTo(1));
+		assertThat(result.get(CaseClassification.CONFIRMED_NO_SYMPTOMS), equalTo(2));
+		assertThat(result.get(CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS), equalTo(4));
+		assertThat(result.get(CaseClassification.NOT_CLASSIFIED), is(nullValue()));
+
+		aggregateConfirmed = true;
+		result = DashboardService.getCasesCountByClassification(data, aggregateConfirmed);
+		assertThat(result.entrySet(), hasSize(2));
+		assertThat(result.get(CaseClassification.NO_CASE), equalTo(8));
+		assertThat(result.get(CaseClassification.CONFIRMED), equalTo(7));
+		assertThat(result.get(CaseClassification.NOT_CLASSIFIED), is(nullValue()));
 	}
 }
