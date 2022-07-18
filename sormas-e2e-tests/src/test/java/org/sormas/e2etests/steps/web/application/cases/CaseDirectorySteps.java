@@ -107,6 +107,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getC
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getCheckboxByIndex;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getMergeDuplicatesButtonById;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getResultByIndex;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getVaccinationStatusCasesByText;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FIRST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LAST_NAME_INPUT;
@@ -126,6 +127,7 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.NEW_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.getCheckboxByUUID;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
@@ -1220,6 +1222,34 @@ public class CaseDirectorySteps implements En {
               caseID1,
               getCaseIDByIndex(2),
               "Edited case do not move previous first case to second place on list.");
+        });
+
+    Then(
+        "I set vaccination status filter to ([^\"]*) and apply",
+        (String vaccinationStatus) -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_VACCINATION_STATUS_FILTER_COMBOBOX, vaccinationStatus);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          TimeUnit.SECONDS.sleep(5);
+        });
+
+    And(
+        "I check that there is ([^\"]*) status cases but not ([^\"]*) or ([^\"]*)",
+        (String vaccinationStatusExpected,
+            String vaccinationStatusNotExpected1,
+            String vaccinationStatusNotExpected2) -> {
+          Assert.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(
+                  getVaccinationStatusCasesByText(vaccinationStatusExpected), 2),
+              "There is no case with expected status");
+          Assert.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(
+                  getVaccinationStatusCasesByText(vaccinationStatusNotExpected1), 2),
+              "There is case with not expected status");
+          Assert.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(
+                  getVaccinationStatusCasesByText(vaccinationStatusNotExpected2), 2),
+              "There is case with not expected status");
         });
   }
 

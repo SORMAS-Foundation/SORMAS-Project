@@ -426,3 +426,17 @@ Feature: Case filter functionality
       | "Deceased"       | 0       | 1       | 0       | 0       |
       | "Recovered"      | 0       | 0       | 1       | 0       |
       | "Unknown"        | 0       | 0       | 0       | 1       |
+
+  @issue=SORQA-5969 @env_de
+  Scenario Outline: Test vaccination status filter <expected> and columns to case
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    Then I set vaccination status filter to <expected> and apply
+    And I check that there is <expected> status cases but not <not_expected_1> or <not_expected_2>
+
+    Examples:
+      | expected     |  | not_expected_1 | not_expected_2 |
+      | Geimpft   |  | Ungeimpft   | Unbekannt        |
+      | Ungeimpft |  | Geimpft     | Unbekannt        |
+      | Unbekannt      |  | Geimpft     | Ungeimpft   |
