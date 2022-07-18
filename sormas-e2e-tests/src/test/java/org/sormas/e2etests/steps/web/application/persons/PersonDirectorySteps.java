@@ -38,6 +38,7 @@ import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.entities.pojo.web.Person;
+import org.sormas.e2etests.entities.services.PersonService;
 import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.PresentCondition;
@@ -59,6 +60,7 @@ public class PersonDirectorySteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   protected Person createdPerson;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+  public static Person personSharedForAllEntities;
 
   @Inject
   public PersonDirectorySteps(
@@ -68,8 +70,10 @@ public class PersonDirectorySteps implements En {
       Faker faker,
       AssertHelpers assertHelpers,
       RunningConfiguration runningConfiguration,
-      SoftAssert softly) {
+      SoftAssert softly,
+      PersonService personService) {
     this.webDriverHelpers = webDriverHelpers;
+    personSharedForAllEntities = personService.buildGeneratedPerson();
 
     // TODO refactor all BDD methods naming to be more explicit regarding where data comes from
 
@@ -119,6 +123,27 @@ public class PersonDirectorySteps implements En {
           TimeUnit.SECONDS.sleep(2); // wait for reaction
         });
     Then(
+        "I filter by shared person data across all entities",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MULTIPLE_OPTIONS_SEARCH_INPUT);
+          String PersonFullName =
+              personSharedForAllEntities.getFirstName()
+                  + " "
+                  + personSharedForAllEntities.getLastName();
+          TimeUnit.SECONDS.sleep(5); // waiting for event table grid reloaded
+          webDriverHelpers.fillAndSubmitInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, PersonFullName);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
+        });
+    Then(
+        "I filter the last created person linked with Event Participant",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MULTIPLE_OPTIONS_SEARCH_INPUT);
+          TimeUnit.SECONDS.sleep(5); // waiting for event table grid reloaded
+          webDriverHelpers.fillAndSubmitInWebElement(
+              MULTIPLE_OPTIONS_SEARCH_INPUT, EditEventSteps.person.getUuid());
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
+        });
+    Then(
         "I filter the last created person linked with Contact",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(MULTIPLE_OPTIONS_SEARCH_INPUT);
@@ -126,6 +151,18 @@ public class PersonDirectorySteps implements En {
               EditContactSteps.collectedContact.getFirstName()
                   + " "
                   + EditContactSteps.collectedContact.getLastName();
+          TimeUnit.SECONDS.sleep(5); // waiting for event table grid reloaded
+          webDriverHelpers.fillAndSubmitInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, PersonFullName);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
+        });
+    Then(
+        "I filter the last created person linked with Travel Entry",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MULTIPLE_OPTIONS_SEARCH_INPUT);
+          String PersonFullName =
+              CreateNewTravelEntrySteps.aTravelEntry.getFirstName()
+                  + " "
+                  + CreateNewTravelEntrySteps.aTravelEntry.getLastName();
           TimeUnit.SECONDS.sleep(5); // waiting for event table grid reloaded
           webDriverHelpers.fillAndSubmitInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, PersonFullName);
           TimeUnit.SECONDS.sleep(2); // wait for reaction

@@ -278,7 +278,6 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
-
     When(
         "I collect the leading contact UUID displayed on Contact Directory Page",
         () -> leadingContactUUID = getContactIDByIndex(1));
