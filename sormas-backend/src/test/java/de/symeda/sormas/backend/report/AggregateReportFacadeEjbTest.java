@@ -265,4 +265,23 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(4, indexListRegionGroupingWhenRegionaData.get(0).getDeaths());
 		Assert.assertEquals(informant1.toReference(), indexListRegionGroupingWhenRegionaData.get(0).getReportingUser());
 	}
+
+	@Test
+	public void testAggregatereportSummarizeConsidersUpperLevelData(){
+		useNationalUserLogin();
+
+		createAggregateReport(2, 2, 2, rdcf.region, rdcf.district, facility2.toReference(), null);
+		createAggregateReport(4, 4, 4, rdcf.region, rdcf.district, null, rdcf.pointOfEntry);
+		createAggregateReport(3, 3, 3, rdcf.region, rdcf.district, rdcf.facility, null);
+		createAggregateReport(1, 1, 1, rdcf.region, rdcf.district, null, null);
+
+		AggregateReportCriteria criteria = new AggregateReportCriteria();
+		criteria.setShowZeroRows(false);
+		criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
+
+		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.DISTRICT);
+		List<AggregateCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
+		Assert.assertEquals(1, indexList.size());
+		Assert.assertEquals(1, indexList.get(0).getNewCases());
+	}
 }
