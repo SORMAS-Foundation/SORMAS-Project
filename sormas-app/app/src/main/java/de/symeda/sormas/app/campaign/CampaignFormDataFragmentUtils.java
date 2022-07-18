@@ -35,6 +35,10 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentFactory;
+import androidx.fragment.app.FragmentManager;
+
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
@@ -43,6 +47,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.app.component.controls.ControlCheckBoxField;
+import de.symeda.sormas.app.component.controls.ControlDateField;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
 import de.symeda.sormas.app.component.controls.ControlSpinnerField;
 import de.symeda.sormas.app.component.controls.ControlTextEditField;
@@ -245,6 +250,51 @@ public class CampaignFormDataFragmentUtils {
 			}
 		};
 	}
+
+
+
+	public static ControlDateField createControlDateEditField(
+			CampaignFormElement campaignFormElement,
+			Context context,
+			Map<String, String> userTranslations,
+			Boolean isIntegerField,
+			FragmentManager fm) {
+		return new ControlDateField(context) {
+
+			@Override
+			protected String getPrefixDescription() {
+				return getUserLanguageCaption(userTranslations, campaignFormElement);
+			}
+
+			@Override
+			protected String getPrefixCaption() {
+				return getUserLanguageCaption(userTranslations, campaignFormElement);
+			}
+
+			@Override
+			public int getTextAlignment() {
+				return View.TEXT_ALIGNMENT_VIEW_START;
+			}
+
+			@Override
+			public int getGravity() {
+				return Gravity.CENTER_VERTICAL;
+			}
+
+
+
+			@Override
+			protected void inflateView(Context context, AttributeSet attrs, int defStyle) {
+				super.inflateView(context, attrs, defStyle);
+				initLabel();
+				initLabelAndValidationListeners();
+
+				initializeDateField(fm);
+				initInput(true);
+			}
+		};
+	}
+
 
 
 	public static ControlCheckBoxField createControlCheckBoxField(

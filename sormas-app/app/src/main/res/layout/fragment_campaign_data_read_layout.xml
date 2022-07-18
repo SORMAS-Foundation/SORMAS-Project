@@ -90,9 +90,53 @@
                     app:value="@{data.community}" />
 
             </LinearLayout>
-
             <LinearLayout
                 android:id="@+id/dynamicLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TabHost    android:id="@+id/tabhostxxxRd"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    xmlns:android="http://schemas.android.com/apk/res/android">
+
+                    <LinearLayout   android:id="@+id/mainLayout"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:orientation="vertical"
+                        android:padding="5dp">
+
+                        <TabWidget  android:id="@android:id/tabs"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content">
+                        </TabWidget>
+
+                        <FrameLayout android:id="@android:id/tabcontent"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+
+                            android:padding="5dp">
+
+                            <include layout="@layout/tab1"/>
+                            <include layout="@layout/tab2"/>
+                            <include layout="@layout/tab3"/>
+                            <include layout="@layout/tab4"/>
+                            <include layout="@layout/tab5"/>
+                            <include layout="@layout/tab6"/>
+                            <include layout="@layout/tab7"/>
+                            <include layout="@layout/tab8"/>
+
+
+
+                        </FrameLayout>
+
+                    </LinearLayout>
+
+                </TabHost>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/dynamicLayoutxXRd"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">

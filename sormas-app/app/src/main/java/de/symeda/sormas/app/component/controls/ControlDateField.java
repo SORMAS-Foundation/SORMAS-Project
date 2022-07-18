@@ -41,6 +41,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -278,9 +279,16 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 	protected void onFinishInflate() {
 		super.onFinishInflate();
 
+		initInput(false);
+	}
+
+	protected void initInput(boolean isIntegerFlag) {
 		input = (EditText) this.findViewById(R.id.date_input);
 		input.setInputType(InputType.TYPE_NULL);
 		input.setTextAlignment(getTextAlignment());
+		//if(isIntegerFlag){
+			setHint("");
+	//	}
 		if (getTextAlignment() == View.TEXT_ALIGNMENT_GRAVITY) {
 			input.setGravity(getGravity());
 		}
@@ -314,7 +322,7 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 			}
 		});
 
-//        setUpOnFocusChangeListener();
+//       setUpOnFocusChangeListener();
 		setUpOnClickListener();
 	}
 
