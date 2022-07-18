@@ -55,7 +55,7 @@ Feature: Follow-up new visit functionality
     Then I check if created data is correctly displayed in Symptoms tab for Set cleared to UNKNOWN
 
   @issue=SORDEV-5084 @env_main
-  Scenario: Check a new case data
+  Scenario: Test Link phone-numbers in the follow-up to tel
     Given I log in with National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button

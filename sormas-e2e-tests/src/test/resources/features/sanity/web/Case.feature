@@ -1463,6 +1463,37 @@ Feature: Case end to end tests
     Then I click on Merge Duplicates on Case directory for DE
     And I check if message about long loading times appear for DE
 
+    @issue=SORDEV-9792 @env_de
+      Scenario: Test CoreAdo: Introduce "end of processing date" for cases
+      Given I log in as a Admin User
+      And I click on the Cases button from navbar
+      And I click on the NEW CASE button
+      And I create a new case with specific data for DE version with date 2 days ago
+      Then I collect uuid of the case
+      Then I click on the Archive case button
+      Then I check the end of processing date in the archive popup and select Archive cases checkbox
+      And I click on De-Archive case button
+      And I fill De-Archive case popup with test automation reason
+      Then I change date of case report for today for DE version
+      And I click on save case button
+      Then I click on the Archive case button
+      And I check the end of processing date in the archive popup and select Archive cases checkbox
+      Then I click on the Cases button from navbar
+      And I apply "Abgeschlossene Fälle" to combobox on Case Directory Page
+      Then I filter with last created case using case UUID
+      And I check that number of displayed cases results is 1
+      Then I click on the first Case ID from Case Directory
+      And I click on De-Archive case button
+      And I click on confirm button in de-archive case popup
+      And I check if exclamation mark with message "Bitte geben Sie einen Grund für die Wiedereröffnung an" appears while trying to de-archive without reason
+      And I click on discard button in de-archive case popup
+      Then I click on De-Archive case button
+      And I fill De-Archive case popup with test automation reason
+      Then I click on the Cases button from navbar
+      And I apply "Aktive Fälle" to combobox on Case Directory Page
+      Then I filter with last created case using case UUID
+      And I check that number of displayed cases results is 1
+
   @issue=SORDEV-10227 @env_de
   Scenario: Test Permanent deletion for Person for Case
     Given I log in as a National User

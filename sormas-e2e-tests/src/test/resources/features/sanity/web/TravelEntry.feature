@@ -372,6 +372,36 @@ Feature: Create travel entries
     And I click on first filtered record in Travel Entry
     And I check that Point of Entry and Point of Entry details are generated automatically by system and appear on Edit Travel Entry page
 
+    @issue=SORDEV-11453 @env_de
+      Scenario: [Travel Entry] Add reason for deletion to confirmation dialogue
+      Given I log in as a Admin User
+      And I click on the Entries button from navbar
+      And I click on the New Travel Entry button from Travel Entries directory
+      When I fill the required fields in a new travel entry form
+      And I click on Save button from the new travel entry form
+      When I copy url of current travel entry
+      Then I click on Delete button from travel entry
+      And I check if reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO" is available
+      And I check if reason for deletion as "Löschen auf Anforderung einer anderen Behörde" is available
+      And I check if reason for deletion as "Entität ohne Rechtsgrund angelegt" is available
+      And I check if reason for deletion as "Abgabe des Vorgangs wegen Nicht-Zuständigkeit" is available
+      And I check if reason for deletion as "Löschen von Duplikaten" is available
+      And I check if reason for deletion as "Anderer Grund" is available
+      Then I click on No option in Confirm deletion popup
+      Then I click on Delete button from travel entry
+      And I click on Yes option in Confirm deletion popup
+      Then I check if exclamation mark with message "Bitte wählen Sie einen Grund fürs Löschen" appears next to Reason for deletion
+      When I set Reason for deletion as "Anderer Grund"
+      Then I check if "DETAILS ZUM GRUND DES LÖSCHENS" field is available in Confirm deletion popup in Edit Case
+      And I click on Yes option in Confirm deletion popup
+      Then I check if exclamation mark with message "Bitte geben Sie einen Grund fürs Löschen an" appears next to Reason for deletion
+      Then I click on No option in Confirm deletion popup
+      Then I click on Delete button from travel entry
+      And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+      And I click on Yes option in Confirm deletion popup
+      When I back to deleted travel entry by url
+      Then I check if reason of deletion is set to "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+      And I check if External ID input on travel entry edit page is disabled
   @issue=SORDEV-10227 @env_de
   Scenario: Test Permanent deletion for Person for Travel Entry
     Given I log in as a National User
@@ -398,3 +428,29 @@ Feature: Create travel entries
     And I click on Travel Entry aggregation button in Person Directory for DE specific
     And I check that number of displayed Person results is 0
 
+
+    @issue=SORDEV-9792 @env_de
+    Scenario: Test CoreAdo: Introduce "end of processing date" for travel entries
+      Given I log in as a Admin User
+      And I click on the Entries button from navbar
+      And I click on the New Travel Entry button from Travel Entries directory
+      When I fill the required fields in a new travel entry form
+      And I click on Save button from the new travel entry form
+      And I collect travel UUID from travel entry
+      Then I click on the Archive travel entry button
+      Then I check the end of processing date in the archive popup and select Archive travel entry for DE version
+      And I click on Travel Entry list button
+      Then I apply "Abgeschlossene Einreisen" to combobox on Travel Entry Directory Page
+      And I search for first created travel entry by UUID for person in Travel Entries Directory
+      And I check that number of displayed Travel Entry results is 1
+      Then I click on first filtered record in Travel Entry
+      Then I click on the De-archive travel entry button
+      And I click on confirm button in de-archive travel entry popup
+      And I check if exclamation mark with message "Bitte geben Sie einen Grund für die Wiedereröffnung an" appears while trying to de-archive without reason
+      And I click on discard button in de-archive travel entry popup
+      Then I click on the De-archive travel entry button
+      And I fill De-archive travel entry popup with test automation reason
+      And I click on Travel Entry list button
+      Then I apply "Aktive Einreisen" to combobox on Travel Entry Directory Page
+      And I search for first created travel entry by UUID for person in Travel Entries Directory
+      And I check that number of displayed Travel Entry results is 1

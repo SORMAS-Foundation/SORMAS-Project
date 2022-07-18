@@ -967,6 +967,39 @@ Feature: Contacts end to end tests
     And I check if External token input on case edit page is disabled
     And I check if Case or event information text area on case edit page is disabled
 
+  @issue=SORDEV-9792 @env_de
+  Scenario: Test CoreAdo: Introduce "end of processing date" for contacts
+    Given I log in as a Admin User
+    When I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form for DE version without multicontact
+    And I click on SAVE new contact button
+    Then I copy uuid of current contact
+    Then I click on the Archive contact button
+    Then I check the end of processing date in the archive popup and select Archive contacts checkbox for DE version
+    And I click on De-Archive contact button
+    And I fill De-Archive contact popup with test automation reason
+    Then I change the last contact date and report date time for today for DE version
+    And I click on save Contact button
+    Then I click on the Archive contact button
+    Then I check the end of processing date in the archive popup and select Archive contacts checkbox for DE version
+    And I click on the Contacts button from navbar
+    And I apply "Abgeschlossene Kontakte" to combobox on Contact Directory Page
+    Then I filter with last created contact using contact UUID
+    And I click APPLY BUTTON in Contact Directory Page
+    And I check that number of displayed contact results is 1
+    Then I click on the first Contact ID from Contacts Directory
+    And I click on De-Archive contact button
+    Then I click on confirm button in de-archive contact popup
+    And I check if exclamation mark with message "Bitte geben Sie einen Grund für die Wiedereröffnung an" appears while trying to de-archive without reason
+    And I click on discard button in de-archive contact popup
+    And I click on De-Archive contact button
+    And I fill De-Archive contact popup with test automation reason
+    And I click on the Contacts button from navbar
+    And I apply "Aktive Kontakte" to combobox on Contact Directory Page
+    Then I filter with last created contact using contact UUID
+    And I check that number of displayed contact results is 1
+
   @issue=SORDEV-10227 @env_de
   Scenario: Test Permanent deletion for Person for Contact
     Given I log in as a National User

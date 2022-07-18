@@ -43,6 +43,8 @@ public class UserProvider {
 		UserRight.OUTBREAK_VIEW,
 		UserRight.POPULATION_MANAGE);
 
+	private static final List userUserRoles = Arrays.asList(UserRight.USER_VIEW, UserRight.USER_ROLE_VIEW);
+
 	private UserDto user;
 	private UserReferenceDto userReference;
 	private Set<UserRoleDto> userRoles;
@@ -87,6 +89,11 @@ public class UserProvider {
 		return configurationUserRoles.stream().anyMatch(currentUserRights::contains);
 	}
 
+	public boolean hasUserAccess() {
+		Set<UserRight> currentUserRights = getUserRights();
+		return userUserRoles.stream().anyMatch(currentUserRights::contains);
+	}
+
 	public boolean hasUserRight(UserRight userRight) {
 		return getUserRights().contains(userRight);
 	}
@@ -100,7 +107,7 @@ public class UserProvider {
 	}
 
 	public boolean isAdmin() {
-		return (user.getUserRoles().stream().filter(i->i.getCaption().contains(I18nProperties.getEnumCaption(DefaultUserRole.ADMIN))).count() == 1);
+		return (user.getUserRoles().stream().filter(i -> i.getCaption().contains(I18nProperties.getEnumCaption(DefaultUserRole.ADMIN))).count() == 1);
 	}
 
 	public boolean hasRegionJurisdictionLevel() {

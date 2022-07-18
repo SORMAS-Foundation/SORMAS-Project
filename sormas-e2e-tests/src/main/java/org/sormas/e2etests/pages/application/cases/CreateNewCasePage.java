@@ -129,4 +129,5 @@ public class CreateNewCasePage {
       By.cssSelector(".popupContent #pointOfEntry div[role='button'");
   public static final By POINT_OF_ENTRY_DETAILS =
       By.cssSelector(".popupContent #pointOfEntryDetails");
+  public static final By DATE_OF_REPORT_NO_POPUP_INPUT = By.cssSelector("#reportDate input");
 }

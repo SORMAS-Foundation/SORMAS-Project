@@ -41,7 +41,10 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.REPORT_DA
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.ARCHIVE_COMMUNITY_BUTTON;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITIES_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITIES_NEW_ENTRY_BUTTON;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITIES_TABLE_DATA;
+import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITIES_TABLE_ROW;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.COMMUNITY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.CONFIRM_ARCHIVING_COMMUNITY_TEXT;
 import static org.sormas.e2etests.pages.application.configuration.CommunitiesTabPage.CONFIRM_ARCHIVING_YES_BUTTON;
@@ -63,9 +66,15 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.pojo.web.Communities;
@@ -74,11 +83,13 @@ import org.sormas.e2etests.entities.services.CommunitiesService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.cases.CreateNewCasePage;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
+import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.asserts.SoftAssert;
 
 public class CommunitiesSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
+  private final BaseSteps baseSteps;
   protected Communities communities;
   protected static Case caze;
   protected static Case collectedCase;
@@ -89,8 +100,10 @@ public class CommunitiesSteps implements En {
       WebDriverHelpers webDriverHelpers,
       CommunitiesService communitiesService,
       CaseService caseService,
-      SoftAssert softly) {
+      SoftAssert softly,
+      BaseSteps baseSteps) {
     this.webDriverHelpers = webDriverHelpers;
+    this.baseSteps = baseSteps;
 
     When(
         "I click on Communities button in Configuration tab",
@@ -235,6 +248,19 @@ public class CommunitiesSteps implements En {
         () ->
             webDriverHelpers.selectFromCombobox(
                 COMMUNITY_COMBOBOX, communities.getCommunityName()));
+
+    When(
+        "I check that Voreingestellte Gemeinde is correctly displayed",
+        () -> {
+          webDriverHelpers.fillAndSubmitInWebElement(
+              SEARCH_COMMUNITY_INPUT, "Voreingestellte Gemeinde");
+          TimeUnit.SECONDS.sleep(2); // wait for filter
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          softly.assertTrue(
+              tableRowsData.toString().contains("NAME=Voreingestellte Gemeinde"),
+              "Voreingestellte Gemeinde is not correctly displayed!");
+          softly.assertAll();
+        });
   }
 
   private void fillSpecificCaseFields(Case caze, Communities communities) {
@@ -362,5 +388,55 @@ public class CommunitiesSteps implements En {
 
   private void fillExternalId(String externalId) {
     webDriverHelpers.fillInWebElement(EXTERNAL_ID_INPUT, externalId);
+  }
+
+  private List<Map<String, String>> getTableRowsData() {
+    Map<String, Integer> headers = extractColumnHeadersHashMap();
+    headers.remove("EDIT");
+    headers.remove("BEARBEITEN");
+    List<WebElement> tableRows = getTableRows();
+    List<HashMap<Integer, String>> tableDataList = new ArrayList<>();
+    tableRows.forEach(
+        table -> {
+          HashMap<Integer, String> indexWithData = new HashMap<>();
+          AtomicInteger atomicInt = new AtomicInteger();
+          List<WebElement> tableData = table.findElements(COMMUNITIES_TABLE_DATA);
+          tableData.forEach(
+              dataText -> {
+                webDriverHelpers.scrollToElementUntilIsVisible(dataText);
+                indexWithData.put(atomicInt.getAndIncrement(), dataText.getText());
+              });
+          tableDataList.add(indexWithData);
+        });
+    List<Map<String, String>> tableObjects = new ArrayList<>();
+    tableDataList.forEach(
+        row -> {
+          ConcurrentHashMap<String, String> objects = new ConcurrentHashMap<>();
+          headers.forEach((headerText, index) -> objects.put(headerText, row.get(index)));
+          tableObjects.add(objects);
+        });
+    return tableObjects;
+  }
+
+  private List<WebElement> getTableRows() {
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(COMMUNITIES_COLUMN_HEADERS);
+    return baseSteps.getDriver().findElements(COMMUNITIES_TABLE_ROW);
+  }
+
+  private Map<String, Integer> extractColumnHeadersHashMap() {
+    AtomicInteger atomicInt = new AtomicInteger();
+    HashMap<String, Integer> headerHashmap = new HashMap<>();
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(COMMUNITIES_COLUMN_HEADERS);
+    webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(COMMUNITIES_COLUMN_HEADERS);
+    webDriverHelpers.scrollToElementUntilIsVisible(COMMUNITIES_COLUMN_HEADERS);
+    baseSteps
+        .getDriver()
+        .findElements(COMMUNITIES_COLUMN_HEADERS)
+        .forEach(
+            webElement -> {
+              webDriverHelpers.scrollToElementUntilIsVisible(webElement);
+              headerHashmap.put(webElement.getText(), atomicInt.getAndIncrement());
+            });
+    return headerHashmap;
   }
 }

@@ -15,12 +15,9 @@
 
 package de.symeda.sormas.api.user;
 
-import java.io.IOException;
-
 import javax.ejb.Remote;
 
 @Remote
 public interface UserRightsFacade {
 
-	String generateUserRightsDocument() throws IOException;
 }
