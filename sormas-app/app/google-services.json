@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:537643474131:android:d93b03e19c6c822152c826",
         "android_client_info": {
-          "package_name": "de.symeda.sormas.app.apmis"
+          "package_name": "de.symeda.sormas.app.apmis.debug"
         }
       },
       "oauth_client": [
