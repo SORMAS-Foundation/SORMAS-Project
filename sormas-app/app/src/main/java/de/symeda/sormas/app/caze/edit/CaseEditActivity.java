@@ -145,7 +145,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 			|| DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.VIEW_TAB_CASES_EPIDEMIOLOGICAL_DATA)) {
 			menuItems.set(CaseSection.EPIDEMIOLOGICAL_DATA.ordinal(), null);
 		}
-		if (caze != null && (caze.getCaseOrigin() != CaseOrigin.POINT_OF_ENTRY || !ConfigProvider.hasUserRight(UserRight.PORT_HEALTH_INFO_VIEW))) {
+		if (caze != null && (caze.getCaseOrigin() != CaseOrigin.POINT_OF_ENTRY || !ConfigProvider.hasUserRight(UserRight.PORT_HEALTH_INFO_EDIT))) {
 			menuItems.set(CaseSection.PORT_HEALTH_INFO.ordinal(), null);
 		}
 		if (caze != null
