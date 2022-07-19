@@ -21,6 +21,7 @@ package org.sormas.e2etests.steps.web.application.contacts;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_CONNECTION_NUMBER;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISPLAY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_MEANS_OF_TRANSPORT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_MEANS_OF_TRANSPORT_DETAILS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_SEAT_NUMBER;
@@ -73,6 +74,7 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.TYPE_OF_PLACE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.WEARING_MASK_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.WEARING_PPE_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.LineListingPopup.LINE_LISTING_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ACTION_MERGE_CONTACT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ACTIVE_CONTACT_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ALL_BUTTON_CONTACT;
@@ -366,7 +368,7 @@ public class ContactDirectorySteps implements En {
           }
         });
     When(
-        "I check that an import success notification appears in the Import Contact popup",
+        "I check that an import success notification appears in the Import Contact popup for DE",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(IMPORT_SUCCESS_DE);
           webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
@@ -896,8 +898,10 @@ public class ContactDirectorySteps implements En {
     When(
         "^I click on Line Listing button$",
         () -> {
+          TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LINE_LISTING);
           webDriverHelpers.doubleClickOnWebElementBySelector(LINE_LISTING);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(LINE_LISTING_SAVE_BUTTON);
         });
 
     And(
@@ -1113,6 +1117,11 @@ public class ContactDirectorySteps implements En {
               CONTACT_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+
+    And(
+        "I apply {string} to combobox on Contact Directory Page",
+        (String caseParameter) ->
+            webDriverHelpers.selectFromCombobox(CASE_DISPLAY_FILTER_COMBOBOX, caseParameter));
   }
 
   private void searchAfterContactByMultipleOptions(String idPhoneNameEmail) {

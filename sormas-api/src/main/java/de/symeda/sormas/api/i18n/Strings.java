@@ -182,6 +182,7 @@ public interface Strings {
 	String DefaultPassword_ownUserIntroduction = "DefaultPassword.ownUserIntroduction";
 	String DefaultPassword_ownUserNewPasswordSetHints = "DefaultPassword.ownUserNewPasswordSetHints";
 	String DefaultPassword_unchanged = "DefaultPassword.unchanged";
+	String disabled = "disabled";
 	String DiseaseNetworkDiagram_Classification_HEALTHY = "DiseaseNetworkDiagram.Classification.HEALTHY";
 	String DiseaseNetworkDiagram_heading = "DiseaseNetworkDiagram.heading";
 	String DiseaseNetworkDiagram_highRisk = "DiseaseNetworkDiagram.highRisk";
@@ -191,6 +192,7 @@ public interface Strings {
 	String DiseaseNetworkDiagram_subheading = "DiseaseNetworkDiagram.subheading";
 	String done = "done";
 	String edit = "edit";
+	String enabled = "enabled";
 	String entityAction = "entityAction";
 	String entityActions = "entityActions";
 	String entityActivityAsCase = "entityActivityAsCase";

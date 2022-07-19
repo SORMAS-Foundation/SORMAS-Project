@@ -149,8 +149,9 @@ public enum UserRight {
 	USER_CREATE(UserRightGroup.USER, UserRight._USER_VIEW),
 	USER_EDIT(UserRightGroup.USER, UserRight._USER_VIEW),
 
-	USER_ROLE_EDIT(UserRightGroup.USER, UserRight._USER_VIEW),
-	USER_ROLE_DELETE(UserRightGroup.USER, UserRight._USER_VIEW),
+	USER_ROLE_VIEW(UserRightGroup.USER),
+	USER_ROLE_EDIT(UserRightGroup.USER, UserRight._USER_ROLE_VIEW),
+	USER_ROLE_DELETE(UserRightGroup.USER, UserRight._USER_ROLE_VIEW),
 
 	STATISTICS_ACCESS(UserRightGroup.STATISTICS),
 	STATISTICS_EXPORT(UserRightGroup.STATISTICS, UserRight._STATISTICS_ACCESS),
@@ -347,6 +348,7 @@ public enum UserRight {
 	public static final String _USER_CREATE = "USER_CREATE";
 	public static final String _USER_EDIT = "USER_EDIT";
 	public static final String _USER_VIEW = "USER_VIEW";
+	public static final String _USER_ROLE_VIEW = "USER_ROLE_VIEW";
 	public static final String _SEND_MANUAL_EXTERNAL_MESSAGES = "SEND_MANUAL_EXTERNAL_MESSAGES";
 	public static final String _STATISTICS_ACCESS = "STATISTICS_ACCESS";
 	public static final String _STATISTICS_EXPORT = "STATISTICS_EXPORT";

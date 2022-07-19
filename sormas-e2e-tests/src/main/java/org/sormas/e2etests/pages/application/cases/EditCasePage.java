@@ -287,6 +287,9 @@ public class EditCasePage {
   public static final By EDIT_IMMUNIZATION_BUTTON =
       By.xpath(
           "//div[@location='immunizations']//div[@class='v-slot v-slot-link v-slot-compact v-align-right']");
+  public static final By BUTTONS_IN_VACCINATIONS_LOCATION =
+      By.xpath(
+          "//div[contains(@location,\"vaccinations\")]//div[contains(@id,\"edit-vaccination\")]");
   public static final By GENERAL_COMMENT_TEXT_AREA = By.id("additionalDetails");
 
   public static By getCaseIDPathByIndex(int index) {
@@ -296,4 +299,16 @@ public class EditCasePage {
   public static By getByImmunizationUuid(String immunizationUuid) {
     return By.id("edit-immunization-" + immunizationUuid);
   }
+
+  public static final By IMMUNIZATION_CARD_IMMUNIZATION_PERIOD_LABEL =
+      By.xpath("//div[contains(text(),'Immunization period:')]");
+  public static final By IMMUNIZATION_CARD_IMMUNIZATION_STATUS_LABEL =
+      By.xpath("//div[contains(text(),'Immunization status:')]");
+  public static final By IMMUNIZATION_CARD_MANAGEMENT_STATUS_LABEL =
+      By.xpath("//div[contains(text(),'Management status:')]");
+  public static final By IMMUNIZATION_CARD_MEANS_OF_IMMUNIZATION_LABEL =
+      By.xpath("//div[contains(text(),'Means of immunization:')]");
+  public static final By IMMUNIZATION_CARD_IMMUNIZATION_UUID =
+      By.xpath(
+          "//div[@location='immunizations']//div[@class='v-slot v-slot-bold v-slot-uppercase v-align-middle']");
 }

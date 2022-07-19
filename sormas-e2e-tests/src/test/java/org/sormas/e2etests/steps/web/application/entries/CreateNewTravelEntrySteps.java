@@ -18,7 +18,9 @@
 
 package org.sormas.e2etests.steps.web.application.entries;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISPLAY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CLOSE_FORM_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONFIRM_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DIFFERENT_POINT_OF_ENTRY_JURISDICTION;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.POINT_OF_ENTRY_DISTRICT_BUTTON;
@@ -31,6 +33,8 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTIN
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REGION_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REPORT_DATE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.ACTION_CANCEL_POPUP;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.END_OF_PROCESSING_DATE_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.ARRIVAL_DATE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.DATE_OF_ARRIVAL_LABEL_DE;
@@ -58,10 +62,12 @@ import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntry
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SEX_COMBOBOX;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.TRAVEL_ENTRY_TAB_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CASE_PERSON_NAME;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CREATE_CASE_FROM_TRAVEL_ENTRY;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CREATE_DOCUMENT_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CREATE_DOCUMENT_POPUP_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DELETE_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DELETE_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISCARD_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISEASE_NAME_INPUT;
@@ -81,6 +87,9 @@ import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TRAVEL_ENTRY_TAB;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PERSON_FILTER_INPUT;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ARCHIVE_EVENT_PARTICIPANT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_DEARCHIVE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DEARCHIVE_REASON_TEXT_AREA;
 import static org.sormas.e2etests.steps.web.application.entries.TravelEntryDirectorySteps.userDirPath;
 
 import com.github.javafaker.Faker;
@@ -106,8 +115,10 @@ import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.cases.CreateNewCasePage;
+import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage;
 import org.sormas.e2etests.pages.application.entries.EditTravelEntryPage;
+import org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
@@ -130,6 +141,7 @@ public class CreateNewTravelEntrySteps implements En {
   String entryPoint = "Test entry point";
   protected static TravelEntry travelEntryWithSamePersonData;
   List<TravelEntry> TravelEntryUuidList = new ArrayList<>();
+  private static String currentUrl;
 
   @Inject
   public CreateNewTravelEntrySteps(
@@ -378,6 +390,8 @@ public class CreateNewTravelEntrySteps implements En {
         "^I click on Save button from the new travel entry form$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          TimeUnit.SECONDS.sleep(1); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
@@ -849,6 +863,82 @@ public class CreateNewTravelEntrySteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(INPUT_DATA_ERROR_POPUP);
           webDriverHelpers.clickOnWebElementBySelector(INPUT_DATA_ERROR_POPUP);
+        });
+
+    When("I copy url of current travel entry", () -> currentUrl = webDriverHelpers.returnURL());
+
+    When("I back to deleted travel entry by url", () -> webDriverHelpers.accessWebSite(currentUrl));
+
+    When(
+        "I click on Delete button from travel entry",
+        () -> {
+          webDriverHelpers.scrollToElement(DELETE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
+        });
+
+    When(
+        "I check if External ID input on travel entry edit page is disabled",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementEnabled(EditImmunizationPage.EXTERNAL_ID_INPUT),
+              "External ID input is enabled");
+          softly.assertAll();
+        });
+
+    When(
+        "I click on the Archive travel entry button",
+        () -> {
+          webDriverHelpers.scrollToElement(ARCHIVE_EVENT_PARTICIPANT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_EVENT_PARTICIPANT_BUTTON);
+        });
+
+    When(
+        "I check the end of processing date in the archive popup and select Archive travel entry for DE version",
+        () -> {
+          String endOfProcessingDate;
+          endOfProcessingDate =
+              webDriverHelpers.getValueFromWebElement(END_OF_PROCESSING_DATE_POPUP_INPUT);
+          softly.assertEquals(
+              endOfProcessingDate,
+              LocalDate.now().format(DateTimeFormatter.ofPattern("d.MM.yyyy")),
+              "End of processing date is invalid");
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(EditContactPage.DELETE_POPUP_YES_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // wait for response after confirm
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I click on Travel Entry list button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(TRAVEL_ENTRY_TAB_BUTTON));
+
+    And(
+        "I apply {string} to combobox on Travel Entry Directory Page",
+        (String travelParam) ->
+            webDriverHelpers.selectFromCombobox(CASE_DISPLAY_FILTER_COMBOBOX, travelParam));
+
+    When(
+        "I click on the De-archive travel entry button",
+        () -> {
+          webDriverHelpers.scrollToElement(ARCHIVE_EVENT_PARTICIPANT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_EVENT_PARTICIPANT_BUTTON);
+        });
+
+    When(
+        "I click on confirm button in de-archive travel entry popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POPUP));
+
+    When(
+        "I click on discard button in de-archive travel entry popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL_POPUP));
+
+    When(
+        "I fill De-archive travel entry popup with ([^\"]*)",
+        (String text) -> {
+          webDriverHelpers.fillInWebElement(DEARCHIVE_REASON_TEXT_AREA, text);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_DEARCHIVE_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for system reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
   }
 

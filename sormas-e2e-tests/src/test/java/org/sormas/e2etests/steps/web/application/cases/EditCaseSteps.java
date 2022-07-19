@@ -42,8 +42,10 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_CLASSIFICATION_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_CLOSE_WINDOW_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_INFO_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONFIRM_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONTACTS_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EPIDEMIOLOGICAL_DATA_TAB;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_NO_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CONFIRM;
@@ -193,13 +195,20 @@ import static org.sormas.e2etests.pages.application.cases.SymptomsTabPage.SAVE_B
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_FIRST_RESULT_OPTION;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_WINDOW_CONTACT_DE;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.ACTION_CANCEL_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.END_OF_PROCESSING_DATE_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.FOLLOW_UP_UNTIL_DATE;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_POPUP;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_DEARCHIVE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DEARCHIVE_REASON_TEXT_AREA;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DISCARD_BUTTON;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.REASON_FOR_DELETION_EXCLAMATION_MARK;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.REASON_FOR_DELETION_MESSAGE;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.getReasonForDeletionDetailsFieldLabel;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.getVaccinationByIndex;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EVENT_PARTICIPANTS_DATA_TAB;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAMPLE_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.DELETE_SAMPLE_REASON_POPUP;
@@ -1663,11 +1672,29 @@ public class EditCaseSteps implements En {
               caseFollowUpStatus, "In der Nachverfolgung", "The follow-up status is incorrect!");
           softly.assertAll();
         });
-
+    When(
+        "I click to edit {int} vaccination on Edit Case page",
+        (Integer index) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              getVaccinationByIndex(String.valueOf(index + 1)));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getVaccinationByIndex(String.valueOf(index + 1)));
+        });
+    When(
+        "I close vaccination form in Edit Case directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CLOSE_IMPORT_TRAVEL_ENTRY_POPUP));
+    When(
+        "I check that number of added Vaccinations is {int} on Edit Case Page",
+        (Integer expected) ->
+            assertHelpers.assertWithPoll20Second(
+                () ->
+                    Assert.assertEquals(
+                        webDriverHelpers.getNumberOfElements(BUTTONS_IN_VACCINATIONS_LOCATION),
+                        (int) expected,
+                        "Number of vaccinations is different than expected")));
     When(
         "^I click on the Cancel Follow-up button from Edit case page$",
         () -> webDriverHelpers.clickOnWebElementBySelector(CANCEL_FOLLOW_UP_BUTTON));
-
     Then(
         "^I check that Date of Follow-up Status Change and Responsible User are correctly displayed on Edit case page$",
         () -> {
@@ -1977,6 +2004,141 @@ public class EditCaseSteps implements En {
         (String label) ->
             webDriverHelpers.isElementVisibleWithTimeout(
                 getReasonForDeletionDetailsFieldLabel(label), 1));
+
+    And(
+        "^I validate immunization period is present on immunization card$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAVE_BUTTON);
+          String displayedPeriod =
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_IMMUNIZATION_PERIOD_LABEL);
+          LocalDate startDate = EditImmunizationSteps.collectedImmunization.getStartDate();
+          LocalDate endDate = EditImmunizationSteps.collectedImmunization.getEndDate();
+          DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          softly.assertEquals(
+              "Immunization period: "
+                  + dateFormatter.format(startDate)
+                  + " - "
+                  + dateFormatter.format(endDate),
+              displayedPeriod,
+              "Immunization period is not equal");
+          softly.assertAll();
+        });
+
+    And(
+        "^I validate immunization status is present on immunization card$",
+        () -> {
+          String actualImmunizationStatus =
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_IMMUNIZATION_STATUS_LABEL);
+          String expectedImmunizationStatus =
+              EditImmunizationSteps.collectedImmunization.getImmunizationStatus();
+          softly.assertEquals(
+              "Immunization status: " + expectedImmunizationStatus,
+              actualImmunizationStatus,
+              "Immunization status is not equal");
+          softly.assertAll();
+        });
+
+    And(
+        "^I validate management status is present on immunization card$",
+        () -> {
+          String actualManagementStatus =
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_MANAGEMENT_STATUS_LABEL);
+          String expectedManagementStatus =
+              EditImmunizationSteps.collectedImmunization.getManagementStatus();
+          softly.assertEquals(
+              "Management status: " + expectedManagementStatus,
+              actualManagementStatus,
+              "Management status is not equal");
+          softly.assertAll();
+        });
+
+    And(
+        "^I validate means of immunization is present on immunization card$",
+        () -> {
+          String actualMeansOfImmunization =
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_MEANS_OF_IMMUNIZATION_LABEL);
+          String expectedMeansOfImmunization =
+              EditImmunizationSteps.collectedImmunization.getMeansOfImmunization();
+          softly.assertEquals(
+              "Means of immunization: " + expectedMeansOfImmunization,
+              actualMeansOfImmunization,
+              "Means of immunization is not equal");
+          softly.assertAll();
+        });
+
+    And(
+        "^I validate immunization UUID is present on immunization card$",
+        () -> {
+          String actualImmunizationUUID =
+              webDriverHelpers.getTextFromWebElement(IMMUNIZATION_CARD_IMMUNIZATION_UUID);
+          String expectedImmunizationUUID = EditImmunizationSteps.collectedImmunization.getUuid();
+          softly.assertEquals(
+              expectedImmunizationUUID.substring(0, 6),
+              actualImmunizationUUID,
+              "Means of immunization is not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "I check the end of processing date in the archive popup and select Archive cases checkbox",
+        () -> {
+          String endOfProcessingDate;
+          endOfProcessingDate =
+              webDriverHelpers.getValueFromWebElement(END_OF_PROCESSING_DATE_POPUP_INPUT);
+          softly.assertEquals(
+              endOfProcessingDate,
+              LocalDate.now().format(DateTimeFormatter.ofPattern("d.MM.yyyy")),
+              "End of processing date is invalid");
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_RELATED_CONTACTS_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(EditContactPage.DELETE_POPUP_YES_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // wait for response after confirm
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I click on De-Archive case button",
+        () -> {
+          webDriverHelpers.scrollToElement(ARCHIVE_CASE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_CASE_BUTTON);
+        });
+
+    When(
+        "I click on confirm button in de-archive case popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POPUP));
+
+    When(
+        "I click on discard button in de-archive case popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL_POPUP));
+
+    When(
+        "I fill De-Archive case popup with ([^\"]*)",
+        (String text) -> {
+          webDriverHelpers.fillInWebElement(DEARCHIVE_REASON_TEXT_AREA, text);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_DEARCHIVE_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for system reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I change date of case report for today for DE version",
+        () -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+          webDriverHelpers.fillInWebElement(
+              DATE_OF_REPORT_NO_POPUP_INPUT, formatter.format(LocalDate.now()));
+        });
+
+    When(
+        "I check if exclamation mark with message {string} appears while trying to de-archive without reason",
+        (String message) -> {
+          TimeUnit.SECONDS.sleep(1); // wait for reaction
+          String hoverMessage;
+          webDriverHelpers.hoverToElement(REASON_FOR_DELETION_EXCLAMATION_MARK);
+          hoverMessage = webDriverHelpers.getTextFromWebElement(REASON_FOR_DELETION_MESSAGE);
+          softly.assertEquals(message, hoverMessage, "Messages are not equal");
+          softly.assertAll();
+        });
   }
 
   private Case collectCasePersonUuid() {

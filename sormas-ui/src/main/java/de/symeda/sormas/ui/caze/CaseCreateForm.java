@@ -407,6 +407,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 					updatePointOfEntryFields(cbPointOfEntry, tfPointOfEntryDetails);
 				}
 			});
+
+			setRequired(true, FACILITY_OR_HOME_LOC);
 		}
 
 		// jurisdiction field valuechangelisteners
@@ -436,7 +438,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
 
-		setRequired(true, CaseDataDto.REPORT_DATE, CaseDataDto.DISEASE, FACILITY_OR_HOME_LOC, FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE);
+		setRequired(true, CaseDataDto.REPORT_DATE, CaseDataDto.DISEASE, FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE);
 		FieldHelper.addSoftRequiredStyle(plagueType, communityCombo, facilityDetails);
 
 		FieldHelper

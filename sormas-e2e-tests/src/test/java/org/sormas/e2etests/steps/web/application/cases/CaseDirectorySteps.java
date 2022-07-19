@@ -91,6 +91,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.INVE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LEAVE_BULK_EDIT_MODE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LINE_LISTING_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MERGE_DUPLICATES_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MERGE_DUPLICATES_WARNING_DE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MORE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NAME_UUID_EPID_NUMBER_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_CASE_BUTTON;
@@ -173,6 +174,7 @@ public class CaseDirectorySteps implements En {
 
   public static String caseID1;
   public static String caseID2;
+  public static String leadingCaseUUID;
 
   @Inject
   public CaseDirectorySteps(
@@ -308,6 +310,16 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(ACTION_OKAY);
         });
     When(
+        "I click on Merge Duplicates on Case directory for DE",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(MERGE_DUPLICATES_BUTTON);
+        });
+    When(
+        "I check if message about long loading times appear for DE",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(MERGE_DUPLICATES_WARNING_DE);
+        });
+    When(
         "I click Enter Bulk Edit Mode on Case directory page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE);
@@ -339,6 +351,14 @@ public class CaseDirectorySteps implements En {
           }
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+    And(
+        "I filter by Person's full name of last created duplicated line listing case on Case Directory Page",
+        () ->
+            webDriverHelpers.fillAndSubmitInWebElement(
+                PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
+                CaseLineListingSteps.duplicateCaseLineListingDe.getFirstName()
+                    + " "
+                    + CaseLineListingSteps.duplicateCaseLineListingDe.getLastName()));
     When(
         "^I select last created UI result in grid in Case Directory for Bulk Action$",
         () -> {
@@ -737,6 +757,16 @@ public class CaseDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
               getMergeDuplicatesButtonById(EditCaseSteps.aCase.getUuid()));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
+        });
+    When(
+        "I collect the leading case UUID displayed on Case Directory Page",
+        () -> leadingCaseUUID = getCaseIDByIndex(1));
+    And(
+        "I click on Merge button of leading case created through line listing in Merge Duplicate Cases page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              getMergeDuplicatesButtonById(leadingCaseUUID));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
         });
     And(

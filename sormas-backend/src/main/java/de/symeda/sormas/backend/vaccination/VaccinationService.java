@@ -15,6 +15,9 @@
 
 package de.symeda.sormas.backend.vaccination;
 
+import static de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect.AT_END_OF_DAY;
+import static de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect.TIMESTAMP_SUBTRACT_DAYS;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,14 +29,18 @@ import java.util.stream.Stream;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.Query;
+import javax.persistence.criteria.CommonAbstractCriteria;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -49,10 +56,13 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.symptoms.Symptoms;
 
 @Stateless
 @LocalBean
 public class VaccinationService extends BaseAdoService<Vaccination> {
+
+	public static final int REPORT_DATE_RELEVANT_DAYS = 14;
 
 	public VaccinationService() {
 		super(Vaccination.class);
@@ -121,9 +131,11 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 
 	/**
 	 * HEADS UP! When this method gets changed, most probably the database logic in
-	 * {@link de.symeda.sormas.backend.caze.CaseService#updateVaccinationStatuses(Long, Disease, Date)}
+	 * {@link de.symeda.sormas.backend.vaccination.VaccinationService#getRelevantVaccinationPredicate(From, CriteriaQuery, CriteriaBuilder, Path)}
+	 * {@link de.symeda.sormas.backend.vaccination.VaccinationService#getRelevantVaccinationPredicate(From, CommonAbstractCriteria, CriteriaBuilder, Vaccination)}
+	 *
 	 * will also need an update.
-	 * 
+	 *
 	 * @param caze
 	 *            to decide whether the vaccination is relevant for
 	 * @param vaccination
@@ -136,9 +148,58 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 
 	/**
 	 * HEADS UP! When this method gets changed, most probably the database logic in
+	 * {@link de.symeda.sormas.backend.vaccination.VaccinationService#isVaccinationRelevant(Case, Vaccination)}
+	 * {@link de.symeda.sormas.backend.vaccination.VaccinationService#getRelevantVaccinationPredicate(From, CommonAbstractCriteria, CriteriaBuilder, Vaccination)}
+	 *
+	 * will also need an update
+	 *
+	 * @param casePath
+	 * @param cq
+	 * @param cb
+	 * @param vaccinationPath
+	 * @return a predicate that compares the vaccination date to the case symptom onset or reporting date to decide whether it is relevant
+	 *         or not
+	 */
+	public Predicate getRelevantVaccinationPredicate(
+		From<?, Case> casePath,
+		CriteriaQuery<?> cq,
+		CriteriaBuilder cb,
+		Path<Vaccination> vaccinationPath) {
+		return getRelevantVaccinationPredicate(cb, vaccinationPath, getCaseSymptomsExpression(casePath, cq, cb), casePath.get(Case.REPORT_DATE));
+	}
+
+	/**
+	 * HEADS UP! When this method gets changed, most probably the database logic in
+	 * {@link de.symeda.sormas.backend.vaccination.VaccinationService#isVaccinationRelevant(Case, Vaccination)}
+	 * {@link de.symeda.sormas.backend.vaccination.VaccinationService#getRelevantVaccinationPredicate(From, CriteriaQuery, CriteriaBuilder, Path)}
+	 *
+	 * will also need an update
+	 *
+	 * @param casePath
+	 * @param cq
+	 * @param cb
+	 * @param vaccination
+	 * @return a predicate that compares the vaccination date to the case symptom onset or reporting date to decide whether it is relevant
+	 *         or not
+	 */
+	public Predicate getRelevantVaccinationPredicate(From<?, Case> casePath, CommonAbstractCriteria cq, CriteriaBuilder cb, Vaccination vaccination) {
+		return getRelevantVaccinationPredicate(cb, vaccination, getCaseSymptomsExpression(casePath, cq, cb), casePath.get(Case.REPORT_DATE));
+	}
+
+	private Expression<Date> getCaseSymptomsExpression(From<?, Case> casePath, CommonAbstractCriteria cq, CriteriaBuilder cb) {
+		Subquery<Symptoms> symptomsSq = cq.subquery(Symptoms.class);
+		Root<Symptoms> symptomsSqRoot = symptomsSq.from(Symptoms.class);
+		symptomsSq.select(symptomsSqRoot.get(Symptoms.ONSET_DATE));
+		symptomsSq.where(cb.equal(symptomsSqRoot, casePath.get(Case.SYMPTOMS)));
+
+		return symptomsSq.getSelection().as(Date.class);
+	}
+
+	/**
+	 * HEADS UP! When this method gets changed, most probably the database logic in
 	 * {@link de.symeda.sormas.backend.contact.ContactService#updateVaccinationStatuses(Long, Disease, Date)}
 	 * will also need an update.
-	 * 
+	 *
 	 * @param contact
 	 *            to decide whether the vaccination is relevant for
 	 * @param vaccination
@@ -173,7 +234,6 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 
 	/*
 	 * HEADS UP! If you make changes here, you most probably also need to update the database queries in
-	 * CaseService.updateVaccinationStatuses(...),
 	 * ContactService.updateVaccinationStatuses(...) and
 	 * EventParticipantService.updateVaccinationStatuses(...).
 	 */
@@ -182,6 +242,49 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 		return primaryDate != null
 			? DateHelper.getEndOfDay(relevantVaccineDate).before(primaryDate)
 			: DateHelper.getEndOfDay(relevantVaccineDate).before(fallbackDate);
+	}
+
+	public Predicate getRelevantVaccinationPredicate(
+		CriteriaBuilder cb,
+		Path<Vaccination> vaccinationPath,
+		Expression<Date> primaryDatePath,
+		Expression<Date> fallbackDatePath) {
+
+		Path<Date> vaccinationDate = vaccinationPath.get(Vaccination.VACCINATION_DATE);
+		Expression<Date> vaccinationDateExpr = cb.<Date> selectCase()
+			.when(
+				cb.isNull(vaccinationDate),
+				cb.function(TIMESTAMP_SUBTRACT_DAYS, Date.class, vaccinationPath.get(Vaccination.REPORT_DATE), cb.literal(REPORT_DATE_RELEVANT_DAYS)))
+			.otherwise(vaccinationDate);
+
+		return getRelevantVaccinationPredicate(cb, vaccinationDateExpr, primaryDatePath, fallbackDatePath);
+	}
+
+	public Predicate getRelevantVaccinationPredicate(
+		CriteriaBuilder cb,
+		Vaccination vaccination,
+		Expression<Date> primaryDatePath,
+		Expression<Date> fallbackDatePath) {
+
+		return getRelevantVaccinationPredicate(cb, cb.literal(getRelevantVaccineDate(vaccination)), primaryDatePath, fallbackDatePath);
+	}
+
+	/**
+	 * HEADS UP! When this method gets changed, most probably the database logic in
+	 * {@link de.symeda.sormas.backend.vaccination.VaccinationService#isVaccinationRelevant(Vaccination, Date, Date)}
+	 * will also need an update.
+	 */
+	private Predicate getRelevantVaccinationPredicate(
+		CriteriaBuilder cb,
+		Expression<Date> vaccinationDate,
+		Expression<Date> primaryDatePath,
+		Expression<Date> fallbackDatePath) {
+
+		Expression<Date> vaccinationDateEndOfDay = cb.function(AT_END_OF_DAY, Date.class, vaccinationDate);
+
+		return cb.or(
+			cb.greaterThan(primaryDatePath, vaccinationDateEndOfDay),
+			cb.and(cb.isNull(primaryDatePath), cb.greaterThan(fallbackDatePath, vaccinationDateEndOfDay)));
 	}
 
 	/**
@@ -194,7 +297,9 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 	 * @return relevant date
 	 */
 	public Date getRelevantVaccineDate(Vaccination vaccination) {
-		return vaccination.getVaccinationDate() != null ? vaccination.getVaccinationDate() : DateHelper.subtractDays(vaccination.getReportDate(), 14);
+		return vaccination.getVaccinationDate() != null
+			? vaccination.getVaccinationDate()
+			: DateHelper.subtractDays(vaccination.getReportDate(), REPORT_DATE_RELEVANT_DAYS);
 	}
 
 	/**

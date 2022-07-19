@@ -33,7 +33,7 @@ public class DemisSteps implements En {
         "API : Login to DEMIS server",
         () -> {
           String loginToken = demisApiService.loginRequest();
-            Assert.assertFalse(loginToken.isEmpty(), "DEMIS token wasn't received");
+          Assert.assertFalse(loginToken.isEmpty(), "DEMIS token wasn't received");
         });
   }
 }

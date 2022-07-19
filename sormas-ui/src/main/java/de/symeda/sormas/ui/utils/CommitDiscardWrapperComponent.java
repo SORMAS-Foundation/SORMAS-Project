@@ -411,41 +411,42 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	public Button getDeleteButton(String entityName, Supplier<String> confirmationMessageSupplier) {
 		if (deleteButton == null) {
-			deleteButton = ButtonHelper.createButton("delete", I18nProperties.getCaption(Captions.actionDelete), new ClickListener() {
-
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void buttonClick(ClickEvent event) {
+			deleteButton = buildDeleteButton(
+				() -> {
 					String confirmationMessage = confirmationMessageSupplier == null ? null : confirmationMessageSupplier.get();
+
 					VaadinUiUtil.showDeleteConfirmationWindow(
-						StringUtils.isBlank(confirmationMessage)
-							? String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName)
-							: confirmationMessage,
-						() -> onDelete());
-				}
-			}, ValoTheme.BUTTON_DANGER, CssStyles.BUTTON_BORDER_NEUTRAL);
+							StringUtils.isBlank(confirmationMessage)
+									? String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName)
+									: confirmationMessage,
+							this::onDelete);
+				});
 		}
 
 		return deleteButton;
 	}
 
 	public Button getDeleteWithReasonButton(String entityName) {
+
 		if (deleteButton == null) {
-			deleteButton = ButtonHelper.createButton("delete", I18nProperties.getCaption(Captions.actionDelete), (ClickListener) event -> {
-				if (isDirty()) {
-					DirtyCheckPopup.show(this, () -> {
-						DeletableUtils.showDeleteWithReasonPopup(
-							String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
-							this::onDeleteWithReason);
-					});
-				} else {
-					DeletableUtils.showDeleteWithReasonPopup(
-						String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
-						this::onDeleteWithReason);
-				}
-			}, ValoTheme.BUTTON_DANGER, CssStyles.BUTTON_BORDER_NEUTRAL);
+			deleteButton = buildDeleteButton(
+				() -> DeletableUtils.showDeleteWithReasonPopup(
+					String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
+					this::onDeleteWithReason));
 		}
+
+		return deleteButton;
+	}
+
+	private Button buildDeleteButton(Runnable deletePopupCallback) {
+
+		Button deleteButton = ButtonHelper.createButton("delete", I18nProperties.getCaption(Captions.actionDelete), e -> {
+			if (isDirty()) {
+				DirtyCheckPopup.show(this, () -> deletePopupCallback.run());
+			} else {
+				deletePopupCallback.run();
+			}
+		}, ValoTheme.BUTTON_DANGER, CssStyles.BUTTON_BORDER_NEUTRAL);
 
 		return deleteButton;
 	}

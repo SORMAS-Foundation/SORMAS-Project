@@ -18,22 +18,26 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_APPLY_FILTERS_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONFIRM_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_DOCUMENT_EMPTY_TEXT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_UPLOADED_TEST_FILE;
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DELETE_LAST_UPDATED_CASE_DOCUMENT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DOWNLOAD_LAST_UPDATED_CASE_DOCUMENT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NEW_DOCUMENT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.START_DATA_IMPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.BUTTONS_IN_VACCINATIONS_LOCATION;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES_POPUP_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_IMMUNIZATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UPLOAD_DOCUMENT_CHECKBOX;
@@ -50,12 +54,14 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.MULTIPLE_OPTIONS_SEARCH_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_TAB;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.SAVE_BUTTON_FOR_POPUP_WINDOWS;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_DEARCHIVE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DEARCHIVE_REASON_TEXT_AREA;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DELETE_BUTTON;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.GENERAL_SEARCH_INPUT;
 
 import cucumber.api.java8.En;
-import java.io.File;
 import java.io.FileInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -94,6 +100,7 @@ public class EditContactSteps implements En {
   public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
   public static final DateTimeFormatter formatterDE = DateTimeFormatter.ofPattern("d.M.yyyy");
   private static String currentUrl;
+  private static String contactUUID;
 
   @Inject
   public EditContactSteps(
@@ -264,6 +271,18 @@ public class EditContactSteps implements En {
               "Vaccination Info Source value is different than expected");
           softly.assertAll();
         });
+    When(
+        "I check that number of added Vaccinations is {int} on Edit Contact Page",
+        (Integer expected) ->
+            assertHelpers.assertWithPoll20Second(
+                () ->
+                    Assert.assertEquals(
+                        webDriverHelpers.getNumberOfElements(BUTTONS_IN_VACCINATIONS_LOCATION),
+                        (int) expected,
+                        "Number of vaccinations is different than expected")));
+    When(
+        "I close vaccination form in Edit Contact directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CLOSE_IMPORT_TRAVEL_ENTRY_POPUP));
     When(
         "I check the created data is correctly displayed on Edit Contact page",
         () -> {
@@ -705,10 +724,10 @@ public class EditContactSteps implements En {
         "I delete downloaded file created from {string} Document Template for Contact",
         (String name) -> {
           String uuid = apiState.getCreatedContact().getUuid();
-          File toDelete =
-              new File(
-                  userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name);
-          toDelete.deleteOnExit();
+          String toDelete =
+              userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name;
+          Path path = Paths.get(toDelete);
+          Files.delete(path);
         });
     When(
         "I select {string} template in Document Template form",
@@ -766,7 +785,7 @@ public class EditContactSteps implements En {
     When(
         "^I click Yes, for all in conversion to case form$",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_POPUP_SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
     When(
@@ -1058,6 +1077,79 @@ public class EditContactSteps implements En {
               "Case or event information text area is enabled");
           softly.assertAll();
         });
+
+    And(
+        "^I click on the NEW IMMUNIZATION button in Edit contact$",
+        () -> {
+          webDriverHelpers.scrollToElement(NEW_IMMUNIZATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_IMMUNIZATION_BUTTON);
+        });
+
+    When(
+        "I copy uuid of current contact",
+        () -> {
+          webDriverHelpers.scrollToElement(EditContactPage.UUID_INPUT);
+          contactUUID = webDriverHelpers.getValueFromWebElement(EditContactPage.UUID_INPUT);
+        });
+
+    When(
+        "I check the end of processing date in the archive popup and select Archive contacts checkbox for DE version",
+        () -> {
+          String endOfProcessingDate;
+          endOfProcessingDate =
+              webDriverHelpers.getValueFromWebElement(END_OF_PROCESSING_DATE_POPUP_INPUT);
+          softly.assertEquals(
+              endOfProcessingDate,
+              LocalDate.now().format(DateTimeFormatter.ofPattern("d.MM.yyyy")),
+              "End of processing date is invalid");
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(EditContactPage.DELETE_POPUP_YES_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // wait for response after confirm
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I click on De-Archive contact button",
+        () -> {
+          webDriverHelpers.scrollToElement(ARCHIVE_CONTACT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_CONTACT_BUTTON);
+        });
+
+    When(
+        "I change the last contact date and report date time for today for DE version",
+        () -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+          webDriverHelpers.fillInWebElement(LAST_CONTACT_DATE, formatter.format(LocalDate.now()));
+          webDriverHelpers.fillInWebElement(REPORT_DATE, formatter.format(LocalDate.now()));
+        });
+
+    When(
+        "I filter with last created contact using contact UUID",
+        () -> {
+          webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, contactUUID);
+          TimeUnit.SECONDS.sleep(2); // wait for the system
+          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I fill De-Archive contact popup with ([^\"]*)",
+        (String text) -> {
+          webDriverHelpers.fillInWebElement(DEARCHIVE_REASON_TEXT_AREA, text);
+          TimeUnit.SECONDS.sleep(1); // slow reaction from system side
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_DEARCHIVE_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for system reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I click on confirm button in de-archive contact popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POPUP));
+
+    When(
+        "I click on discard button in de-archive contact popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL_POPUP));
   }
 
   private void selectContactClassification(String classification) {

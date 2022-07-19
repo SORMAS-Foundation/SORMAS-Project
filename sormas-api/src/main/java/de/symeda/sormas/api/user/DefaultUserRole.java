@@ -363,6 +363,7 @@ public enum DefaultUserRole {
 					USER_CREATE,
 					USER_EDIT,
 					USER_VIEW,
+					USER_ROLE_VIEW,
 					USER_ROLE_EDIT,
 					USER_ROLE_DELETE,
 					SEND_MANUAL_EXTERNAL_MESSAGES,

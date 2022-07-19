@@ -153,6 +153,9 @@ public class EditPersonPage {
       By.xpath("(//div[@location='travelEntries']//div[contains(@class, 'v-label')])[3]");
   public static final By DESCRIPTION_IN_TRAVEL_ENTRY_TAB =
       By.xpath("(//div[@location='travelEntries']//div[contains(@class, 'v-label')])[5]");
+  public static final By GENERAL_COMMENT_FIELD =
+      By.xpath(
+          "(//textarea[@class='v-textarea v-widget resizable v-textarea-resizable caption-hidden v-textarea-caption-hidden v-has-width' and @id='additionalDetails'])");
 
   public static By getByPersonUuid(String personUuid) {
     return By.cssSelector("a[title='" + personUuid + "']");
