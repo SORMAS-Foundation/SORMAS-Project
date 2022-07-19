@@ -8,7 +8,7 @@ Feature: About end to end tests
     Then I click on the User Settings button from navbar
     And I select "Deutsch" language from Combobox in User settings
     And I click on Data Dictionary hyperlink and download XLSX file from About directory
-    And I read data from downloaded XLSX Data Dictionary file
+    And I validate data from downloaded XLSX Data Dictionary file then delete it
     And I detect and check language that was defined in User Settings for XLSX file content
     And I delete exported xlsx file from user downloads directory
     Then I click on the User Settings button from navbar
@@ -38,6 +38,4 @@ Feature: About end to end tests
     Given  I log in as a Admin User
     And I click on the About button from navbar
     And I click on Data Protection Dictionary hyperlink and download XLSX file from About directory
-    And I read data from downloaded XLSX Data Protection Dictionary file
-    And I detect and check language that was defined in User Settings for XLSX file content
-    And I delete exported xlsx file from user downloads directory
+    And I validate data from downloaded XLSX Data Protection Dictionary file then delete it

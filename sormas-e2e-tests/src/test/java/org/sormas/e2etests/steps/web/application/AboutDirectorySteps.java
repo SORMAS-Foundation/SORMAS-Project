@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -38,12 +37,14 @@ public class AboutDirectorySteps implements En {
   public static final String DOWNLOADS_FOLDER = System.getProperty("user.dir") + "//downloads//";
   public static final List<String> xlsxFileContentList = new ArrayList<>();
   public static String language;
-  public static final String DATA_PROTECTION_DICTIONARY_NAME = String.format(
-      "sormas_data_protection_dictionary_%s_.xlsx", LocalDate.now());
-    public static final String DATA_DICTIONARY_NAME = String.format("sormas_data_dictionary_%s_.xlsx", LocalDate.now());
+  public static final String DATA_PROTECTION_DICTIONARY_NAME =
+      String.format("sormas_data_protection_dictionary_%s_.xlsx", LocalDate.now());
+  public static final String DATA_DICTIONARY_NAME =
+      String.format("sormas_data_dictionary_%s_.xlsx", LocalDate.now());
 
   @Inject
-  public AboutDirectorySteps(WebDriverHelpers webDriverHelpers, SoftAssert softly, AssertHelpers assertHelpers) {
+  public AboutDirectorySteps(
+      WebDriverHelpers webDriverHelpers, SoftAssert softly, AssertHelpers assertHelpers) {
 
     When(
         "I check that current Sormas version is shown on About directory page",
@@ -105,25 +106,30 @@ public class AboutDirectorySteps implements En {
         "I click on Data Protection Dictionary hyperlink and download XLSX file from About directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(DATA_PROTECTION_DICTIONARY_BUTTON);
-            Path path = Paths.get(DOWNLOADS_FOLDER + DATA_PROTECTION_DICTIONARY_NAME);
-            assertHelpers.assertWithPoll(
-                    () ->
-                            Assert.assertTrue(
-                                    Files.exists(path),
-                                    "Data protection dictionary wasn't downloaded: "
-                                            + path.toAbsolutePath()),
-                    30);
+          Path path = Paths.get(DOWNLOADS_FOLDER + DATA_PROTECTION_DICTIONARY_NAME);
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      "Data protection dictionary wasn't downloaded: " + path.toAbsolutePath()),
+              30);
         });
 
     When(
-        "^I read data from downloaded XLSX ([^\"]*) file$",
+        "^I validate data from downloaded XLSX ([^\"]*) file then delete it$",
         (String dictionaryName) -> {
-            switch (dictionaryName) {
-                case "Data Protection Dictionary" : readXlsxDictionaryFile(DATA_PROTECTION_DICTIONARY_NAME); break;
-                case "Data Dictionary" : readXlsxDictionaryFile(DATA_DICTIONARY_NAME); break;
-                default: throw new Exception("No XLSX path provided!");
-            }
-          TimeUnit.SECONDS.sleep(5); // waiting for xlsx file is read
+          switch (dictionaryName) {
+            case "Data Protection Dictionary":
+              readXlsxDictionaryFile(DATA_PROTECTION_DICTIONARY_NAME);
+              deleteFile(DATA_PROTECTION_DICTIONARY_NAME);
+              break;
+            case "Data Dictionary":
+              readXlsxDictionaryFile(DATA_DICTIONARY_NAME);
+              deleteFile(DATA_DICTIONARY_NAME);
+              break;
+            default:
+              throw new Exception("No XLSX path provided!");
+          }
         });
 
     When(
@@ -149,11 +155,13 @@ public class AboutDirectorySteps implements En {
         () -> {
           File toDelete =
               new File(
-                  DOWNLOADS_FOLDER + "sormas_datenbeschreibungsverzeichnis_"
+                  DOWNLOADS_FOLDER
+                      + "sormas_datenbeschreibungsverzeichnis_"
                       + LocalDate.now()
                       + "_.xlsx");
           toDelete.deleteOnExit();
         });
+
     When(
         "^I click on Sormas version in About directory and i get redirected to github$",
         () -> {
@@ -238,10 +246,7 @@ public class AboutDirectorySteps implements En {
         () -> {
           File html = new File(DOWNLOADS_FOLDER + "classification_rules.html");
           File xlsx =
-              new File(
-                  DOWNLOADS_FOLDER + "sormas_data_dictionary_"
-                      + LocalDate.now()
-                      + "_.xlsx");
+              new File(DOWNLOADS_FOLDER + "sormas_data_dictionary_" + LocalDate.now() + "_.xlsx");
           html.deleteOnExit();
           xlsx.deleteOnExit();
         });
@@ -250,9 +255,10 @@ public class AboutDirectorySteps implements En {
   @SneakyThrows
   private static void readXlsxDictionaryFile(String fileName) {
     try {
-      FileInputStream excelFile =
-          new FileInputStream(DOWNLOADS_FOLDER + fileName);
-      Assert.assertTrue(FileUtils.sizeOf(new File(DOWNLOADS_FOLDER + fileName)) > 10, "Downloaded dictionary is empty");
+      FileInputStream excelFile = new FileInputStream(DOWNLOADS_FOLDER + fileName);
+      Assert.assertTrue(
+          FileUtils.sizeOf(new File(DOWNLOADS_FOLDER + fileName)) > 10,
+          "Downloaded dictionary is empty");
       Workbook workbook = new XSSFWorkbook(excelFile);
       Sheet datatypeSheet = workbook.getSheetAt(0);
       Iterator<Row> iterator = datatypeSheet.iterator();
@@ -275,6 +281,17 @@ public class AboutDirectorySteps implements En {
       log.info("All data is read properly from chosen xlsx file");
     } catch (IOException e) {
       throw new Exception(String.format("Unable to read Excel File due to: %s", e.getMessage()));
+    }
+  }
+
+  @SneakyThrows
+  private void deleteFile(String fileName) {
+    File file = new File(DOWNLOADS_FOLDER + fileName);
+    try {
+      file.deleteOnExit();
+    } catch (Exception any) {
+      throw new Exception(
+          String.format("Unable to delete file: [ %s ] due to: [ %s]", fileName, any.getMessage()));
     }
   }
 }
