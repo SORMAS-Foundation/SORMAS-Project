@@ -33,6 +33,7 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONFIRM_BUTTON_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_CASE_CONFIRMATION_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_CASE_CONFIRMATION_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_BIRTH_DAY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_BIRTH_MONTH_COMBOBOX;
@@ -130,10 +131,12 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.services.CaseService;
+import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
+import org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps;
 import org.testng.asserts.SoftAssert;
 
 public class CreateNewCaseSteps implements En {
@@ -165,6 +168,7 @@ public class CreateNewCaseSteps implements En {
     char c = (char) (r.nextInt(26) + 'a');
     String firstName = faker.name().firstName() + c;
     String lastName = faker.name().lastName() + c;
+    String personSex = GenderValues.getRandomGenderDE();
     LocalDate dateOfBirth =
         LocalDate.of(
             faker.number().numberBetween(1900, 2002),
@@ -700,7 +704,22 @@ public class CreateNewCaseSteps implements En {
     When(
         "^I pick a new case in pick or create a case popup$",
         () -> {
-          // webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_CASE_CONFIRMATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_CASE_CONFIRMATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+        });
+
+    When(
+        "^I pick a new case in pick or create a case popup for DE$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_CASE_CONFIRMATION_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+        });
+
+    When(
+        "^I pick an existing case in pick or create a case popup$",
+        () -> {
           webDriverHelpers.clickOnWebElementBySelector(PICK_AN_EXISTING_CASE_CONFIRMATION_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
@@ -1042,6 +1061,53 @@ public class CreateNewCaseSteps implements En {
               CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, casesUUID.get(0));
           webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+    When(
+        "I check if phone number is displayed in Create new visit popup",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CONTACT_PERSONS_PHONE_NUMBER);
+          softly.assertEquals(
+              phoneNumber,
+              webDriverHelpers.getTextFromPresentWebElement(CONTACT_PERSONS_PHONE_NUMBER),
+              "Phone numbers are not equal");
+          softly.assertAll();
+        });
+
+    And(
+        "^I fill only mandatory fields for a new case form for DE$",
+        () -> {
+          LocalDate reportDate = LocalDate.now().minusDays(2);
+          caze =
+              caseService.buildGeneratedCaseDEForOnePerson(
+                  firstName, lastName, dateOfBirth, reportDate, personSex);
+          selectCaseOrigin(caze.getCaseOrigin());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
+        });
+
+    And(
+        "^I click SAVE button on Create New Case form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+        });
+
+    And(
+        "^I create a new case with specific mandatory fields with saved person details from contact for DE$",
+        () -> {
+          selectResponsibleRegion(CreateNewContactSteps.contact.getResponsibleRegion());
+          selectResponsibleDistrict(CreateNewContactSteps.contact.getResponsibleDistrict());
+          selectPlaceOfStay("ZUHAUSE");
+          fillFirstName(CreateNewContactSteps.contact.getFirstName());
+          fillLastName(CreateNewContactSteps.contact.getLastName());
+          fillDateOfBirth(caze.getDateOfBirth(), Locale.GERMAN);
+          selectSex(CreateNewContactSteps.contact.getSex());
+          fillDateOfReport(LocalDate.now().minusDays(189), Locale.GERMAN);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
   }
 

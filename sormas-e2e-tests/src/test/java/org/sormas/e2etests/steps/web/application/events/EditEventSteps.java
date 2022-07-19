@@ -1702,6 +1702,13 @@ public class EditEventSteps implements En {
           TimeUnit.SECONDS.sleep(3); // wait for response after confirm
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+
+    And(
+        "^I set event Date on Edit Event Page to (\\d+) days before the vaccination date for DE$",
+        (Integer daysBeforeVaccinationDate) -> {
+          LocalDate eventStartDate = LocalDate.now().minusDays(21 + daysBeforeVaccinationDate);
+          fillStartDataDE(eventStartDate);
+        });
   }
 
   private String collectEventParticipantUuid() {
@@ -1810,6 +1817,10 @@ public class EditEventSteps implements En {
 
   private void fillStartData(LocalDate date) {
     webDriverHelpers.fillInWebElement(START_DATA_INPUT, DATE_FORMATTER.format(date));
+  }
+
+  private void fillStartDataDE(LocalDate date) {
+    webDriverHelpers.fillInWebElement(START_DATA_INPUT, DATE_FORMATTER_DE.format(date));
   }
 
   private void selectEventInvestigationStatusOptions(String eventInvestigationStatusOption) {

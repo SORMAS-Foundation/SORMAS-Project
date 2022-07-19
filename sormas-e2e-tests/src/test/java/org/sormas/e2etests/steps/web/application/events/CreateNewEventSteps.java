@@ -305,6 +305,15 @@ public class CreateNewEventSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CREATED_MESSAGE);
         });
+
+    And(
+        "^I set event Date filed on Create New Event form to current date for DE$",
+        () -> {
+          webDriverHelpers.scrollToElement(START_DATA_EVENT);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(START_DATA_EVENT);
+          webDriverHelpers.fillInWebElement(
+              START_DATA_EVENT, DATE_FORMATTER.format(LocalDate.now()));
+        });
   }
 
   private Event collectEventUuid() {

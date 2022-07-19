@@ -951,7 +951,7 @@ public class EditCaseSteps implements En {
           String vaccinationStatus =
               webDriverHelpers.getValueFromWebElement(VACCINATION_STATUS_INPUT);
           softly.assertEquals(
-              expected, vaccinationStatus, "Vaccination status is different than expected");
+              vaccinationStatus, expected, "Vaccination status is different than expected");
           softly.assertAll();
         });
     When(
@@ -2152,7 +2152,8 @@ public class EditCaseSteps implements En {
         "^I check that displayed vaccination card has correct vaccination date and name$",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(REPORT_DATE_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              EditCasePage.SAVE_BUTTON);
           softly.assertEquals(
               CreateNewVaccinationSteps.vaccination.getVaccinationDate(),
               collectVaccinationData().getVaccinationDate(),
@@ -2173,21 +2174,22 @@ public class EditCaseSteps implements En {
     Then(
         "^I check that vaccination entry is greyed out in the vaccination card$",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(REPORT_DATE_INPUT);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
           webDriverHelpers.isElementGreyedOut(VACCINATION_CARD_VACCINATION_NAME);
           webDriverHelpers.isElementGreyedOut(VACCINATION_CARD_VACCINATION_DATE);
         });
 
     And(
-        "^I check the displayed message is correct after hovering over the Vaccination Card Info icon for DE$",
+        "^I check the displayed message is correct after hovering over the Vaccination Card Info icon on Edit Case Page for DE$",
         () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(VACCINATION_CARD_INFO_ICON);
           webDriverHelpers.hoverToElement(VACCINATION_CARD_INFO_ICON);
           String displayedText =
               webDriverHelpers.getTextFromWebElement(VACCINATION_CARD_INFO_POPUP_TEXT);
           softly.assertEquals(
-              "Diese Impfung ist f\u00FCr diesen Fall nicht relevant, weil das Datum der Impfung nach dem Datum des Symptombeginns oder dem Fall-Meldedatum liegt.",
               displayedText,
+              "Diese Impfung ist f\u00FCr diesen Fall nicht relevant, weil das Datum der Impfung nach dem Datum des Symptombeginns oder dem Fall-Meldedatum liegt.",
               "Message is incorrect");
           softly.assertAll();
         });
@@ -2216,6 +2218,23 @@ public class EditCaseSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(LINK_EVENT_BUTTON_DE);
           webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON_DE);
+        });
+
+    And(
+        "^I click SAVE in Add Event Participant form on Edit Case Page for DE$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ADD_A_PARTICIPANT_HEADER_DE);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
+        });
+
+    And(
+        "^I click SAVE button on Create New Event form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
   }
 
