@@ -85,7 +85,8 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 			null,
 			activityRootData,
 			FieldVisibilityCheckers.withDisease(getDiseaseOfAssociatedEntity(activityRootData)).andWithCountry(ConfigProvider.getServerCountryCode()),
-			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()));
+			UiFieldAccessCheckers.forSensitiveData(activityRootData.isPseudonymized()),
+			UserRight.SAMPLE_EDIT);
 	}
 
 	private void setUpControlListeners(FragmentSampleEditLayoutBinding contentBinding) {
@@ -219,6 +220,7 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 
 	@Override
 	public void onAfterLayoutBinding(final FragmentSampleEditLayoutBinding contentBinding) {
+		super.onAfterLayoutBinding(contentBinding);
 		setFieldVisibilitiesAndAccesses(SampleDto.class, contentBinding.mainContent);
 		setUpFieldVisibilities(contentBinding);
 
@@ -334,6 +336,11 @@ public class SampleEditFragment extends BaseEditFragment<FragmentSampleEditLayou
 	@Override
 	public int getEditLayout() {
 		return R.layout.fragment_sample_edit_layout;
+	}
+
+	@Override
+	public boolean isShowSaveAction() {
+		return ConfigProvider.hasUserRight(UserRight.SAMPLE_EDIT);
 	}
 
 	@Override
