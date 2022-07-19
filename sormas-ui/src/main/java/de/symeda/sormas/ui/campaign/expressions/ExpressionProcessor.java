@@ -23,6 +23,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.validator.RegexpValidator;
 import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
@@ -49,14 +50,16 @@ public class ExpressionProcessor {
 			.stream()
 			.filter(formElement -> formElement.getExpression() != null)
 			.filter(formElement -> fields.get(formElement.getId()) != null)
+			.filter(formElement -> !formElement.getType().equals("range"))
 			.forEach(formElement -> fields.get(formElement.getId()).setEnabled(false));
+		
 	}
 
 	public void addExpressionListener() {
 		final Map<String, Field<?>> fields = campaignFormBuilder.getFields();
 		final List<CampaignFormElement> formElements = campaignFormBuilder.getFormElements();
 		formElements.stream()
-			.filter(formElement -> formElement.getExpression() == null)
+			.filter(formElement -> formElement.getExpression() != null)
 			.filter(formElement -> fields.get(formElement.getId()) != null)
 			.forEach(formElement -> {
 				fields.get(formElement.getId()).addValueChangeListener((Property.ValueChangeListener) valueChangeEvent -> checkExpression());
@@ -96,6 +99,35 @@ public class ExpressionProcessor {
 				final Object value = expression.getValue(context, valueType); 
 				//final Object valx = Precision.round((double) value, 3);
 				final List <String> opt = null;
+				
+				System.out.println(value + "  +++++   "+ expression.getExpressionString() +"  +++++  "+expression.getValue(context));
+				
+				if(e.getType().toString().equals("range")) {
+					
+					if(value.toString().equals("0")) {
+
+						campaignFormBuilder
+						.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
+								CampaignFormElementType.fromString(e.getType()),
+								null,
+								opt);
+					} else {
+
+						campaignFormBuilder
+						.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
+								CampaignFormElementType.fromString(e.getType()),
+								value,
+								opt);
+					}
+					
+					
+				
+						
+					}
+				
+					
+					
+				
 				if(valueType.isAssignableFrom(Double.class)) {
 				//	System.out.println(Double.isFinite((double) value) +" = "+ value);
 				campaignFormBuilder

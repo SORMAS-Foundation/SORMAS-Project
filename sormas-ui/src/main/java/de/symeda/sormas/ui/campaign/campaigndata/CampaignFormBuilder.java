@@ -60,6 +60,7 @@ import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.util.ObjectProperty;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.util.converter.Converter.ConversionException;
+import com.vaadin.v7.data.validator.RegexpValidator;
 import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
@@ -173,17 +174,22 @@ public class CampaignFormBuilder {
 			}
 
 			if (formElement.getConstraints() != null) {
+				System.out.println("iiiiiiiiiiiiiiiiiiiiiiiiii");
 				CampaignFormElementOptions campaignFormElementOptions = new CampaignFormElementOptions();
 				constraints = (List) Arrays.stream(formElement.getConstraints()).collect(Collectors.toList());
 				ListIterator<String> lstItemsx = constraints.listIterator();
 				int i = 1;
-
+				System.out.println("iiiiiiiiiiiiiiiiiiiiiiiiii");
 				while (lstItemsx.hasNext()) {
 					String lss = lstItemsx.next().toString();
 					if (lss.toLowerCase().contains("max")) {
 						campaignFormElementOptions.setMax(Integer.parseInt(lss.substring(lss.lastIndexOf("=") + 1)));
 					} else if (lss.toLowerCase().contains("min")) {
 						campaignFormElementOptions.setMin(Integer.parseInt(lss.substring(lss.lastIndexOf("=") + 1)));
+					}
+					else if (lss.toLowerCase().contains("expression")) {
+						System.out.println("iiiiiiiiiii6666666666666666666666iiiiiiiiiiiiiii");
+						campaignFormElementOptions.setExpression(true);
 					}
 				}
 
@@ -367,10 +373,11 @@ public class CampaignFormBuilder {
 		return field;
 	}
 
+	@SuppressWarnings("deprecation")
 	private <T extends AbstractComponent> void prepareComponent(T field, String fieldId, String caption,
 			CampaignFormElementType type, List<CampaignFormElementStyle> styles, boolean isOnError) {
 		
-		System.out.println(fieldId+" ddddddddddddddddddddddddddddddddd "+isOnError);
+		//System.out.println(fieldId+" ddddddddddddddddddddddddddddddddd "+isOnError); 
 		CampaignFormElementOptions constrainsVal = new CampaignFormElementOptions();
 
 		Styles cssStyles = Page.getCurrent().getStyles();
@@ -415,27 +422,75 @@ public class CampaignFormBuilder {
 			if (type == CampaignFormElementType.RANGE) {
 				String validationMessageTag = "";
 				Map<String, Object> validationMessageArgs = new HashMap<>();
-				if (constrainsVal.getMin() != null || constrainsVal.getMax() != null) {
-					if (constrainsVal.getMin() == null) {
-						validationMessageTag = Validations.numberTooBig;
-						validationMessageArgs.put("value", constrainsVal.getMax());
-					} else if (constrainsVal.getMax() == null) {
-						validationMessageTag = Validations.numberTooSmall;
-						validationMessageArgs.put("value", constrainsVal.getMin());
-					} else {
-						validationMessageTag = Validations.numberNotInRange;
-						validationMessageArgs.put("min", constrainsVal.getMin());
-						validationMessageArgs.put("max", constrainsVal.getMax());
-					}
-
-					//field.addValidator(
-						//new NumberValidator(I18nProperties.getValidationError(validationMessageTag, validationMessageArgs), minValue, maxValue));
-				}
+			
 				
-				((TextField) field).addValidator(new NumberNumericValueValidator(
-						caption.toUpperCase()+": "+I18nProperties.getValidationError(validationMessageTag, validationMessageArgs),
-						constrainsVal.getMin(), constrainsVal.getMax(), true, isOnError));
+				if (constrainsVal.isExpression()) {
+/*
+					System.out.println(type + "____________________1");
 
+					final String validationMessageTagx = Validations.numberNotInRange;
+
+					((TextField) field).addValueChangeListener(e -> {
+						
+						System.out.println(ww+ww + "_________________"+e.getProperty().getValue()+"______2");
+						if (e.getProperty().getValue() != null) {
+							System.out.println(type + "_______________"+ ww+1 +"___________3");
+							if (e.getProperty().getValue().toString().equals("0")) {
+								System.out.println(type + "____________"+ f+1 +"______________4");
+								validationMessageArgs.put("min", 1);
+								validationMessageArgs.put("max", 90);
+
+								((TextField) field)
+										.addValidator(
+												new NumberNumericValueValidator(
+														caption.toUpperCase() + ": "
+																+ I18nProperties.getValidationError(
+																		validationMessageTagx, validationMessageArgs),
+														1, 90, true, isOnError));
+
+							}
+						}
+
+					});
+					*/
+					constrainsVal.setExpression(false);
+					
+					
+					((TextField) field).addValidator(
+							new RegexpValidator("^[1-9]\\d*$", "Number entered not in allowed range")); 
+					
+					
+				} else {
+					
+							
+						if (constrainsVal.getMin() != null || constrainsVal.getMax() != null) {
+							
+							System.out.println("_______________dddd________");
+							
+							
+							if (constrainsVal.getMin() == null) {
+								validationMessageTag = Validations.numberTooBig;
+								validationMessageArgs.put("value", constrainsVal.getMax());
+							} else if (constrainsVal.getMax() == null) {
+								validationMessageTag = Validations.numberTooSmall;
+								validationMessageArgs.put("value", constrainsVal.getMin());
+							} else {
+								validationMessageTag = Validations.numberNotInRange;
+								validationMessageArgs.put("min", constrainsVal.getMin());
+								validationMessageArgs.put("max", constrainsVal.getMax());
+							}
+		
+							//field.addValidator(
+								//new NumberValidator(I18nProperties.getValidationError(validationMessageTag, validationMessageArgs), minValue, maxValue));
+						
+				
+					((TextField) field).addValidator(new NumberNumericValueValidator(
+							caption.toUpperCase()+": "+I18nProperties.getValidationError(validationMessageTag, validationMessageArgs),
+							constrainsVal.getMin(), constrainsVal.getMax(), true, isOnError));
+					
+					
+					}
+				}
 			}
 		
 			// TODO: ADD VALIDATOR TYPE TEXTBOX, LIMITING ALLOWED TEXT/CHAR
@@ -768,6 +823,7 @@ public class CampaignFormBuilder {
 	}
 
 	public void resetFormValues() {
+
 		fields.keySet().forEach(key -> {
 			Field<?> field = fields.get(key);
 			((Field<Object>) field).setValue(formValuesMap.get(key));
