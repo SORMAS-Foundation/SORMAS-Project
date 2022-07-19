@@ -7,7 +7,7 @@ Feature: About end to end tests
     And I click on the About button from navbar
     Then I click on the User Settings button from navbar
     And I select "Deutsch" language from Combobox in User settings
-    And I click on Data Dictionary hyperlink and download XLSX file in About directory
+    And I click on Data Dictionary hyperlink and download XLSX file from About directory
     And I read data from downloaded XLSX Data Dictionary file
     And I detect and check language that was defined in User Settings for XLSX file content
     And I delete exported xlsx file from user downloads directory
@@ -30,5 +30,14 @@ Feature: About end to end tests
     Then I click on SORMAS Github in About directory and i get redirected to github page of sormas
     Then I click on Full Changelog in About directory and i get redirected to github project release page of sormas
     Then I click on Case Classification Rules hyperlink and download HTML file in About directory
-    Then I click on Data Dictionary hyperlink and download XLSX file in About directory
+    Then I click on Data Dictionary hyperlink and download XLSX file from About directory
     Then I delete the downloaded Case Classification Rules html and Data Dictionary xlsx file from download directory
+
+  @env_main @#9768 @test
+  Scenario: Check Data Protection Dictionary existence and download
+    Given  I log in as a Admin User
+    And I click on the About button from navbar
+    And I click on Data Protection Dictionary hyperlink and download XLSX file from About directory
+    And I read data from downloaded XLSX Data Protection Dictionary file
+    And I detect and check language that was defined in User Settings for XLSX file content
+    And I delete exported xlsx file from user downloads directory
