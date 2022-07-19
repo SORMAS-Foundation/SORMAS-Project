@@ -105,6 +105,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOU
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_CASE_LABEL_DE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_PERSON_LABEL_DE;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISCARD_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.SEARCH_PERSON_BY_FREE_TEXT;
 import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.aCase;
 import static org.sormas.e2etests.steps.web.application.persons.PersonDirectorySteps.personSharedForAllEntities;
@@ -517,6 +518,8 @@ public class CreateNewCaseSteps implements En {
 
           TimeUnit.SECONDS.sleep(2);
         });
+
+    When("I choose {string} as a disease", (String disease) -> fillDisease(disease));
 
     When(
         "^I create a new case with Facility as a Place of stay$",
@@ -1132,6 +1135,12 @@ public class CreateNewCaseSteps implements En {
           fillDateOfReport(LocalDate.now().minusDays(189), Locale.GERMAN);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
+
+    When(
+        "I click on Discard button in Create New Case form",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_TASK_BUTTON);
         });
   }
 

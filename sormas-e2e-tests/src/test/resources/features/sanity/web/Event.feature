@@ -1269,3 +1269,15 @@ Feature: Create events
     And I check if "Date of burial" field is present in case person
     And I check if "Burial conductor" field is present in case person
     And I check if "Burial place description" field is present in case person
+    Then I click on the Event participant tab
+    And I click yes on the DISCARD UNSAVED CHANGES popup if it appears
+    And I navigate to EVENT PARTICIPANT from edit event page
+    And I back to the Event tab
+    And I change disease to "COVID-19" in the event tab
+    Then I click on Save Button in Edit Event directory
+    And I navigate to EVENT PARTICIPANT from edit event page
+    And I click on Create in Case ID row in event participant list
+    Then I check if Present condition of person combobox has value "Alive"
+    And I check if Present condition of person combobox has value "Dead"
+    And I check if Present condition of person combobox has value "Unknown"
+    Then I check if Present condition of person combobox has no value "Buried"

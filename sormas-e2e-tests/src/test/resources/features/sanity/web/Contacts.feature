@@ -967,7 +967,7 @@ Feature: Contacts end to end tests
     And I check if External token input on case edit page is disabled
     And I check if Case or event information text area on case edit page is disabled
 
-  @issue=SORDEV-10361 @env_main
+  @issue=SORDEV-10361 @env_main @testIt
   Scenario: Test Hide "buried" within Person present condition for Covid-19 for Contacts
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -987,6 +987,7 @@ Feature: Contacts end to end tests
     And I check the created data for complex contact is correctly displayed on Edit Contact page
     Then I open Contact Person tab
     And I check the created data is correctly displayed on Edit Contact Person page
+    Then I copy uuid of current person
     Then I check if Present condition of person combobox has value "Alive"
     And I check if Present condition of person combobox has value "Dead"
     And I check if Present condition of person combobox has value "Unknown"
@@ -998,6 +999,26 @@ Feature: Contacts end to end tests
     Then I open the Case Contacts tab
     And I click on the first Contact ID from Contacts Directory in Contacts in Case
     Then I open Contact Person tab
+    Then I check if Present condition of person combobox has value "Alive"
+    And I check if Present condition of person combobox has value "Dead"
+    And I check if Present condition of person combobox has value "Unknown"
+    Then I check if Present condition of person combobox has value "Buried"
+    Then I set Present condition of person to "Buried"
+    And I check if "Date of burial" field is present in case person
+    And I check if "Burial conductor" field is present in case person
+    And I check if "Burial place description" field is present in case person
+    Then I click on Save button in Case form
+    Then I open the Case Contacts tab
+    And I navigate to case tab
+    And I change disease to "COVID-19" in the case tab
+    Then I click on Save button in Case form
+    Then I click on the Persons button from navbar
+    And I search by copied uuid of the person in Person Directory
+    Then I check if Present condition of person combobox has value "Alive"
+    And I check if Present condition of person combobox has value "Dead"
+    And I check if Present condition of person combobox has value "Unknown"
+    Then I check if Present condition of person combobox has value "Buried"
+    Then I click on first person in person directory
     Then I check if Present condition of person combobox has value "Alive"
     And I check if Present condition of person combobox has value "Dead"
     And I check if Present condition of person combobox has value "Unknown"

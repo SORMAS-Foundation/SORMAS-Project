@@ -1487,6 +1487,24 @@ Feature: Case end to end tests
       And I check if "Date of burial" field is present in case person
       And I check if "Burial conductor" field is present in case person
       And I check if "Burial place description" field is present in case person
+      Then I click on the Cases button from navbar
+      And I click yes on the DISCARD UNSAVED CHANGES popup if it appears
+      And I click on the NEW CASE button
+      Then I choose "COVID-19" as a disease
+      Then I check if Present condition of person combobox has value "Alive"
+      And I check if Present condition of person combobox has value "Dead"
+      And I check if Present condition of person combobox has value "Unknown"
+      Then I check if Present condition of person combobox has no value "Buried"
+      And I click on Discard button in Create New Case form
+      Then I click on the Cases button from navbar
+      And I click yes on the DISCARD UNSAVED CHANGES popup if it appears
+      And  I apply Disease filter "COVID-19" on Case directory page
+      And I click SHOW MORE FILTERS button on Case directory page
+      Then I check if Present condition of person combobox has value "Alive"
+      And I check if Present condition of person combobox has value "Dead"
+      And I check if Present condition of person combobox has value "Unknown"
+      Then I check if Present condition of person combobox has no value "Buried"
+      And I preparing CSV with "COVID-19" as a disease and "Buried" as a present condition
 
     @issue=SORDEV-9792 @env_de
       Scenario: Test CoreAdo: Introduce "end of processing date" for cases
