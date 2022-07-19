@@ -17,9 +17,6 @@ package de.symeda.sormas.backend.sormastosormas;
 
 import static de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants.RESOURCE_PATH;
 
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -283,9 +280,14 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	}
 
 	@Override
-	public boolean isSharingCasesContactsAndSamplesEnabledForUser() {
+	public boolean isSharingCasesEnabledForUser() {
+		return isFeatureEnabledForUser() && featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_CASES);
+	}
+
+	@Override
+	public boolean isSharingContactsEnabledForUser() {
 		return isFeatureEnabledForUser()
-			&& featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_CASES_WITH_CONTACTS_AND_SAMPLES);
+			&& featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_CONTACTS);
 	}
 
 	@Override

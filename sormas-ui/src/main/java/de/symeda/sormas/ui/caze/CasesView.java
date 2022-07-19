@@ -702,7 +702,7 @@ public class CasesView extends AbstractView {
 					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.sormasToSormasShare), VaadinIcons.SHARE, mi -> {
 						grid.bulkActionHandler(
 							items -> ControllerProvider.getSormasToSormasController().shareSelectedCases(items, () -> navigateTo(criteria)));
-					}, FacadeProvider.getSormasToSormasFacade().isSharingCasesContactsAndSamplesEnabledForUser()));
+					}, FacadeProvider.getSormasToSormasFacade().isSharingCasesEnabledForUser()));
 					menuBarItems.add(
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
@@ -833,7 +833,7 @@ public class CasesView extends AbstractView {
 
 	private boolean isBulkEditAllowed() {
 		return UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)
-			|| FacadeProvider.getSormasToSormasFacade().isSharingCasesContactsAndSamplesEnabledForUser();
+			|| FacadeProvider.getSormasToSormasFacade().isSharingCasesEnabledForUser();
 	}
 
 	private HorizontalLayout dateRangeFollowUpVisitsFilterLayout() {

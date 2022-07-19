@@ -22,7 +22,10 @@ public enum FeatureTypeProperty {
 	ALLOW_FREE_FOLLOW_UP_OVERWRITE(Boolean.class),
 	ALLOW_FREE_EDITING(Boolean.class),
 	THRESHOLD_IN_DAYS(Integer.class),
-	EXCLUDE_NO_CASE_CLASSIFIED_CASES(Boolean.class);
+	EXCLUDE_NO_CASE_CLASSIFIED_CASES(Boolean.class),
+	SHARE_ASSOCIATED_CONTACTS(Boolean.class),
+	SHARE_SAMPLES(Boolean.class),
+	SHARE_IMMUNIZATIONS(Boolean.class);
 
 	private final Class<?> returnType;
 
