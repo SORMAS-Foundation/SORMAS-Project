@@ -1062,16 +1062,6 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
-    When(
-        "I check if phone number is displayed in Create new visit popup",
-        () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CONTACT_PERSONS_PHONE_NUMBER);
-          softly.assertEquals(
-              phoneNumber,
-              webDriverHelpers.getTextFromPresentWebElement(CONTACT_PERSONS_PHONE_NUMBER),
-              "Phone numbers are not equal");
-          softly.assertAll();
-        });
 
     And(
         "^I fill only mandatory fields for a new case form for DE$",
