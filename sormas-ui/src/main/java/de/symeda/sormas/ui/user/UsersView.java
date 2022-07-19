@@ -114,8 +114,7 @@ public class UsersView extends AbstractUserView {
 			createButton = ButtonHelper.createIconButton(
 				Captions.userNewUser,
 				VaadinIcons.PLUS_CIRCLE,
-//				e -> ControllerProvider.getUserController().create(),
-				e -> ControllerProvider.getUserRoleController().create(),
+				e -> ControllerProvider.getUserController().create(),
 				ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);

@@ -256,7 +256,6 @@ public class MainScreen extends HorizontalLayout {
 
 		if (UserProvider.getCurrent().hasUserAccess()) {
 			AbstractUserView.registerViews(navigator);
-			ControllerProvider.getUserRoleController().registerViews(navigator, x);
 
 			menu.addView(UsersView.class, AbstractUserView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers), VaadinIcons.USERS);
 		}

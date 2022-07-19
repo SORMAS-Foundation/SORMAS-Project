@@ -65,6 +65,7 @@ public class UserRoleEditForm extends AbstractEditForm<UserRoleDto> {
 		+ fluidRowLocs(TEMPLATE_INFO_LOC)
 		+ fluidRowLocs(UserRoleDto.USER_RIGHTS);
 
+	private CheckboxSet<UserRight> userRightCbSet;
 	protected UserRoleEditForm() {
 		super(UserRoleDto.class, UserRoleDto.I18N_PREFIX);
 	}
@@ -106,7 +107,7 @@ public class UserRoleEditForm extends AbstractEditForm<UserRoleDto> {
 			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getDescription(Descriptions.userRoleTemplate), ContentMode.HTML);
 		getContent().addComponent(templateInfoLabel, TEMPLATE_INFO_LOC);
 
-		CheckboxSet<UserRight> userRightCbSet = addField(UserRoleDto.USER_RIGHTS, CheckboxSet.class);
+		userRightCbSet = addField(UserRoleDto.USER_RIGHTS, CheckboxSet.class);
 		userRightCbSet.setCaption(null);
 		userRightCbSet.setItems(getSortedUserRights(), r -> r.getUserRightGroup().toString());
 		userRightCbSet.addCheckboxValueChangeListener(e -> {
@@ -139,10 +140,8 @@ public class UserRoleEditForm extends AbstractEditForm<UserRoleDto> {
 	}
 
 	private void applyTemplateData(UserRoleDto templateRole) {
-		UserRoleDto userRole = getValue();
-
 		if (templateRole != null) {
-			// todo modify checkboxes
+			userRightCbSet.setValue(templateRole.getUserRights());
 		}
 	}
 }

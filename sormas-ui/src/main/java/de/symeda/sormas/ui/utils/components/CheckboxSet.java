@@ -51,7 +51,7 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 
 	private VerticalLayout layout;
 
-	private List<CheckboxRow> rows;
+	private List<CheckboxRow> rows = new ArrayList<>(0);
 
 	private List<T> items;
 	private Function<T, String> groupingFunction;
@@ -128,12 +128,12 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 
 		Button yesAllBurron = ButtonHelper.createButton(
 			I18nProperties.getCaption(Captions.actionYesAll),
-			(e) -> rows.forEach(r -> r.setValuForAll(true)),
+			(e) -> rows.forEach(r -> r.setValueForAll(true)),
 			ValoTheme.BUTTON_LINK,
 			CssStyles.BUTTON_COMPACT);
 		Button noAllButton = ButtonHelper.createButton(
 			I18nProperties.getCaption(Captions.actionNoAll),
-			(e) -> rows.forEach(r -> r.setValuForAll(false)),
+			(e) -> rows.forEach(r -> r.setValueForAll(false)),
 			ValoTheme.BUTTON_LINK,
 			CssStyles.BUTTON_COMPACT);
 
@@ -177,7 +177,12 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 
 	@Override
 	protected void setInternalValue(Set<T> newValue) {
-		super.setInternalValue(new HashSet<>(newValue));
+		if (newValue != null) {
+			super.setInternalValue(new HashSet<>(newValue));
+			rows.forEach(r -> r.checkBoxes.forEach(c -> c.setValue(newValue.contains(c.getData()))));
+		} else {
+			super.setInternalValue(newValue);
+		}
 	}
 
 	public Registration addCheckboxValueChangeListener(CheckboxValueChangeListener listener) {
@@ -232,7 +237,7 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 			}
 		}
 
-		public void setValuForAll(boolean checked) {
+		public void setValueForAll(boolean checked) {
 			checkBoxes.forEach(cb -> cb.setValue(checked));
 		}
 	}

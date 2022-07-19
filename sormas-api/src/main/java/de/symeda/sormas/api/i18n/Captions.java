@@ -2442,6 +2442,7 @@ public interface Captions {
 	String userRoleNotifications = "userRoleNotifications";
 	String userRoleNotificationTypeEmail = "userRoleNotificationTypeEmail";
 	String userRoleNotificationTypeSms = "userRoleNotificationTypeSms";
+	String userRoleUserrolesView = "userRoleUserrolesView";
 	String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";
 	String Vaccination = "Vaccination";
 	String Vaccination_otherVaccineManufacturer = "Vaccination.otherVaccineManufacturer";

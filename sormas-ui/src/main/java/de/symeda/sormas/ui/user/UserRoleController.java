@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -47,11 +46,6 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class UserRoleController {
-
-	public void registerViews(Navigator navigator) {
-		navigator.addView(UserRoleView.VIEW_NAME, UserRoleView.class);
-		navigator.addView(UserRoleNotificationsView.VIEW_NAME, UserRoleNotificationsView.class);
-	}
 
 	public void create() {
 		CommitDiscardWrapperComponent<UserRoleCreateForm> userCreateComponent = getUserRoleCreateComponent();

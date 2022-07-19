@@ -17,28 +17,25 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
-import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.utils.FieldConstraints;
 import java.beans.Transient;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.ValidationException;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 
 public class UserRoleDto extends EntityDto {
 
@@ -50,7 +47,6 @@ public class UserRoleDto extends EntityDto {
 	public static final String CAPTION = "caption";
 	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
 	public static final String DESCRIPTION = "description";
-	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
 	public static final String ENABLED = "enabled";
 	public static final String HAS_OPTIONAL_HEALTH_FACILITY = "hasOptionalHealthFacility";
 	public static final String HAS_ASSOCIATED_DISTRICT_USER = "hasAssociatedDistrictUser";

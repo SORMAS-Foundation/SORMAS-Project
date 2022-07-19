@@ -22,6 +22,7 @@ import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
+import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public abstract class AbstractUserRoleView extends AbstractDetailView<UserRoleReferenceDto> {
 
@@ -48,7 +49,12 @@ public abstract class AbstractUserRoleView extends AbstractDetailView<UserRoleRe
 		}
 
 		menu.removeAllViews();
+		menu.addView(UserRolesView.VIEW_NAME, I18nProperties.getCaption(Captions.userRoleUserrolesView), params, true);
 		menu.addView(UserRoleView.VIEW_NAME, I18nProperties.getCaption(UserRoleDto.I18N_PREFIX), params);
 		menu.addView(UserRoleNotificationsView.VIEW_NAME, I18nProperties.getCaption(Captions.userRoleNotifications), params);
+
+		TitleLayout mainHeader = new TitleLayout();
+		mainHeader.addMainRow(getReference().getCaption());
+		setMainHeaderComponent(mainHeader);
 	}
 }

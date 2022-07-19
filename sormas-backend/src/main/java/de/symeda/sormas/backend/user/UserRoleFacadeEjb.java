@@ -423,7 +423,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		XSSFWorkbook workbook = new XSSFWorkbook();
 
 		// Create User Role sheet
-		String safeName = WorkbookUtil.createSafeSheetName(I18nProperties.getCaption(Captions.userRole));
+		String safeName = WorkbookUtil.createSafeSheetName(I18nProperties.getCaption(Captions.UserRole));
 		XSSFSheet sheet = workbook.createSheet(safeName);
 
 		// Define colors
@@ -470,7 +470,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		Row headerRow = sheet.createRow(rowCounter++);
 
 		Cell userRightHeadlineCell = headerRow.createCell(0);
-		userRightHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.userRole));
+		userRightHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole));
 		userRightHeadlineCell.setCellStyle(boldStyle);
 
 		Cell captionHeadlineCell = headerRow.createCell(1);
@@ -552,10 +552,10 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 			portHealthUserCell.setCellValue(getTranslationForBoolean(userRole.isPortHealthUser()));
 
 			Cell hasAssociatedDistrictUserCell = row.createCell(columnIndex++);
-			hasAssociatedDistrictUserCell.setCellValue(getTranslationForBoolean(userRole.hasAssociatedDistrictUser()));
+			hasAssociatedDistrictUserCell.setCellValue(getTranslationForBoolean(userRole.getHasAssociatedDistrictUser()));
 
 			Cell hasOptionalHealthFacilityCell = row.createCell(columnIndex++);
-			hasOptionalHealthFacilityCell.setCellValue(getTranslationForBoolean(userRole.hasOptionalHealthFacility()));
+			hasOptionalHealthFacilityCell.setCellValue(getTranslationForBoolean(userRole.getHasOptionalHealthFacility()));
 
 			Cell enabledCell = row.createCell(columnIndex++);
 			enabledCell.setCellValue(getTranslationForBoolean(userRole.isEnabled()));
