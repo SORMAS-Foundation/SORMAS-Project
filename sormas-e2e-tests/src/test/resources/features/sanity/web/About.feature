@@ -34,10 +34,18 @@ Feature: About Directory end to end tests
     Then I click on Case Classification Rules hyperlink and download HTML file in About directory
     Then I delete Case Classification Html downloaded file from About Directory
 
-  @env_main @#9768 @test
+  @env_main @#9768
   Scenario: Check Data Protection Dictionary existence and download
     Given  I log in as a Admin User
     And I click on the About button from navbar
     And I click on Data Protection Dictionary hyperlink and download XLSX file from About directory
     And I validate data from downloaded XLSX Data Protection Dictionary file
     And I delete Data Protection Dictionary downloaded file from About Directory
+
+  @env_main @#9768
+  Scenario: Check Data Dictionary existence and download
+    Given  I log in as a National User
+    And I click on the About button from navbar
+    And I click on Data Dictionary hyperlink and download XLSX file from About directory
+    And I validate data from downloaded XLSX Data Dictionary file
+    And I delete Data Dictionary downloaded file from About Directory
