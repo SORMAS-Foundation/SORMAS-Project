@@ -1,5 +1,5 @@
 @UI @Sanity @About
-Feature: About end to end tests
+Feature: About Directory end to end tests
 
   @issue=SORDEV-6474 @env_main @ignore
   Scenario: Check language options in Data Dictionary depending on the user language setting
@@ -8,9 +8,9 @@ Feature: About end to end tests
     Then I click on the User Settings button from navbar
     And I select "Deutsch" language from Combobox in User settings
     And I click on Data Dictionary hyperlink and download XLSX file from About directory
-    And I validate data from downloaded XLSX Data Dictionary file then delete it
+    And I validate data from downloaded XLSX Deutsch Data Dictionary file
     And I detect and check language that was defined in User Settings for XLSX file content
-    And I delete exported xlsx file from user downloads directory
+    Then I delete Deutsch Data Dictionary downloaded file from About Directory
     Then I click on the User Settings button from navbar
     And I set on default language as English in User settings
 
@@ -38,4 +38,5 @@ Feature: About end to end tests
     Given  I log in as a Admin User
     And I click on the About button from navbar
     And I click on Data Protection Dictionary hyperlink and download XLSX file from About directory
-    And I validate data from downloaded XLSX Data Protection Dictionary file then delete it
+    And I validate data from downloaded XLSX Data Protection Dictionary file
+    And I delete Data Protection Dictionary downloaded file from About Directory
