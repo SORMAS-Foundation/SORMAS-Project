@@ -2433,6 +2433,8 @@ public interface Captions {
 	String UserRole_hasAssociatedDistrictUser = "UserRole.hasAssociatedDistrictUser";
 	String UserRole_hasOptionalHealthFacility = "UserRole.hasOptionalHealthFacility";
 	String UserRole_jurisdictionLevel = "UserRole.jurisdictionLevel";
+	String userrole_main = "userrole.main";
+	String userrole_notifications = "userrole.notifications";
 	String UserRole_portHealthUser = "UserRole.portHealthUser";
 	String UserRole_smsNotificationTypes = "UserRole.smsNotificationTypes";
 	String UserRole_templateUserRole = "UserRole.templateUserRole";
