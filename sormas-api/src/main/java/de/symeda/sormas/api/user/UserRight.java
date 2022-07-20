@@ -49,7 +49,7 @@ public enum UserRight {
 	CASE_TRANSFER(UserRightGroup.CASE, UserRight._CASE_EDIT),
 	CASE_REFER_FROM_POE(UserRightGroup.CASE, UserRight._CASE_EDIT),
 	CASE_MERGE(UserRightGroup.CASE, UserRight._CASE_EDIT),
-	CASE_SHARE(UserRightGroup.CASE, UserRight._CASE_EDIT),
+	CASE_SHARE(UserRightGroup.CASE, UserRight._CASE_VIEW),
 	CASE_RESPONSIBLE(UserRightGroup.CASE, UserRight._CASE_EDIT),
 
 	IMMUNIZATION_VIEW(UserRightGroup.IMMUNIZATION),

@@ -17,25 +17,21 @@ package de.symeda.sormas.ui.user;
 
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
 
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class UserRoleCreateForm extends AbstractEditForm<UserRoleDto> {
 
@@ -69,15 +65,7 @@ public class UserRoleCreateForm extends AbstractEditForm<UserRoleDto> {
 
 		ComboBox templateRoleCombo = addCustomField(TEMPLATE_USER_ROLE, UserRoleDto.class, ComboBox.class);
 		setSoftRequired(true, TEMPLATE_USER_ROLE);
-		List<UserRoleDto> existingUserRoles = FacadeProvider.getUserRoleFacade().getAll();
-		Set<UserRoleDto> defaultUserRoles = FacadeProvider.getUserRoleFacade().getDefaultUserRolesAsDto();
-		defaultUserRoles.forEach(r -> r.setCaption(r.getCaption() + " (" + I18nProperties.getCaption(Captions.captionDefault) + ")"));
-
-		ArrayList<UserRoleDto> templateItems = new ArrayList<>(existingUserRoles);
-		templateItems.addAll(defaultUserRoles);
-
-		FieldHelper.updateItems(templateRoleCombo, templateItems);
-		templateItems.forEach(t -> templateRoleCombo.setItemCaption(t, t.getCaption()));
+		UserRoleFormHelper.setTemplateRoleItems(templateRoleCombo);
 		templateRoleCombo.addValueChangeListener(e -> applyTemplateData((UserRoleDto) e.getProperty().getValue()));
 
 		addField(UserRoleDto.CAPTION).setRequired(true);
@@ -103,6 +91,11 @@ public class UserRoleCreateForm extends AbstractEditForm<UserRoleDto> {
 			userRole.setUserRights(templateRole.getUserRights());
 			userRole.setEmailNotificationTypes(templateRole.getEmailNotificationTypes());
 			userRole.setSmsNotificationTypes(templateRole.getSmsNotificationTypes());
+
+			this.<Field<JurisdictionLevel>> getField(UserRoleDto.JURISDICTION_LEVEL).setValue(templateRole.getJurisdictionLevel());
+			this.<Field<Boolean>> getField(UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY).setValue(templateRole.getHasOptionalHealthFacility());
+			this.<Field<Boolean>> getField(UserRoleDto.HAS_ASSOCIATED_DISTRICT_USER).setValue(templateRole.getHasAssociatedDistrictUser());
+			this.<Field<Boolean>> getField(UserRoleDto.PORT_HEALTH_USER).setValue(templateRole.isPortHealthUser());
 		}
 	}
 }

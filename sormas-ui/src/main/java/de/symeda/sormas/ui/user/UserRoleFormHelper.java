@@ -15,11 +15,19 @@
 
 package de.symeda.sormas.ui.user;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.vaadin.v7.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.ComboBox;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.ui.utils.AbstractForm;
@@ -44,5 +52,22 @@ public class UserRoleFormHelper {
 			CheckBox portHealthUserCb = (CheckBox) fieldGroup.getField(UserRoleDto.PORT_HEALTH_USER);
 			portHealthUserCb.setValue(e.getProperty().getValue() == JurisdictionLevel.POINT_OF_ENTRY);
 		});
+	}
+
+	public static void setTemplateRoleItems(ComboBox templateRoleCombo) {
+		List<UserRoleDto> existingUserRoles =
+			FacadeProvider.getUserRoleFacade().getAll().stream().sorted(Comparator.comparing(UserRoleDto::getCaption)).collect(Collectors.toList());
+		List<UserRoleDto> defaultUserRoles = FacadeProvider.getUserRoleFacade()
+			.getDefaultUserRolesAsDto()
+			.stream()
+			.sorted(Comparator.comparing(UserRoleDto::getCaption))
+			.collect(Collectors.toList());
+		defaultUserRoles.forEach(r -> r.setCaption(r.getCaption() + " (" + I18nProperties.getCaption(Captions.captionDefault) + ")"));
+
+		ArrayList<UserRoleDto> templateItems = new ArrayList<>(existingUserRoles);
+		templateItems.addAll(defaultUserRoles);
+
+		FieldHelper.updateItems(templateRoleCombo, templateItems);
+		templateItems.forEach(t -> templateRoleCombo.setItemCaption(t, t.getCaption()));
 	}
 }
