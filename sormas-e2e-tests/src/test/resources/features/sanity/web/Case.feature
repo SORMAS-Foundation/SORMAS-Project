@@ -1493,3 +1493,35 @@ Feature: Case end to end tests
       And I apply "Aktive Fälle" to combobox on Case Directory Page
       Then I filter with last created case using case UUID
       And I check that number of displayed cases results is 1
+
+  @issue=SORDEV-6185 @env_de
+  Scenario: Test Add information to followup warning message for Cases
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    Then I navigate to the last created case via the url
+    And I check that text appearing in hover over Expected Follow-up is based on Report date
+    And I navigate to symptoms tab
+    When I check Yes Option for Soar Throat on Symptoms tab page
+    And I select sore throat option
+    And I set date of symptoms to 2 day ago from Symptoms tab
+    And I click on save button from Edit Case page
+    Then I navigate to the last created case via the url
+    And I check that text appearing in hover based over Symptoms onset date over Expected Follow-up consists of date days is equal to symptoms onset date
+    And I check that date appearing in Expected Follow-up based on Symptoms Onset date consists of date 14 ahead of symptoms onset date
+    And I navigate to symptoms tab
+    And I clear date of symptoms from Symptoms tab
+    And I click on save button from Edit Case page
+    Then I clear Clinical Signs and Symptoms list
+    And I click on save button from Edit Case page
+    Then I navigate to the last created case via the url
+    When I click on New Sample in German
+    And I create a new Sample with only required fields for DE version
+    And I set date of sample collection to 5 day ago in Sample form
+    And I save the created sample
+    And I check that text appearing in hover over Expected Follow-up is based on Report date
+
