@@ -110,6 +110,10 @@ public class AboutDirectorySteps implements En {
                     webDriverHelpers.clickOnWebElementBySelector(DATA_DICTIONARY_BUTTON);
                     path = Paths.get(DOWNLOADS_FOLDER + DATA_DICTIONARY_FILE_PATH);
                     break;
+                case "Deutsch Data Dictionary":
+                    webDriverHelpers.clickOnWebElementBySelector(DATA_DICTIONARY_BUTTON);
+                    path = Paths.get(DOWNLOADS_FOLDER + DEUTSCH_DATA_DICTIONARY_FILE_PATH);
+                    break;
                 default:
                     throw new Exception("No XLSX path provided!");
             }
