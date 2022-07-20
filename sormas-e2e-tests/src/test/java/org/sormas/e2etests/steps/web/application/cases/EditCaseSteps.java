@@ -1369,6 +1369,14 @@ public class EditCaseSteps implements En {
               runningConfiguration.getEnvironmentUrlForMarket(locale) + caseLinkPath + uuid);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(REPORT_DATE_INPUT);
         });
+    When(
+        "I check that External Token field is visible on Edit Case page",
+        () -> {
+          boolean elementVisible =
+              webDriverHelpers.isElementVisibleWithTimeout(EXTERNAL_TOKEN_INPUT, 10);
+          softly.assertTrue(elementVisible, "External Token field is not visible!");
+          softly.assertAll();
+        });
 
     When(
         "I open last edited case by API via URL navigation",
