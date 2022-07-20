@@ -1140,10 +1140,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 							filteredImmunizations.sort(Comparator.comparing(i -> ImmunizationEntityHelper.getDateForComparison(i, false)));
 							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
 							Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
+							Symptoms caseSymptoms = symptoms.get(exportDto.getSymptomsId());
+							Date onsetDate = caseSymptoms != null ? caseSymptoms.getOnsetDate() : null;
 
 							List<Vaccination> relevantSortedVaccinations = vaccinationService.getRelevantSortedVaccinations(
 								filteredImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList()),
-								exportDto.getSymptoms().getOnsetDate(),
+								onsetDate,
 								exportDto.getReportDate());
 							Vaccination firstVaccination = null;
 							Vaccination lastVaccination = null;

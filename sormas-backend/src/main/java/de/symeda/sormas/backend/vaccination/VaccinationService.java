@@ -233,7 +233,7 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 	 * ContactService.updateVaccinationStatuses(...) and
 	 * EventParticipantService.updateVaccinationStatuses(...).
 	 */
-	public boolean isVaccinationRelevant(Vaccination vaccination, Date... relevanceFilterDates) {
+	private boolean isVaccinationRelevant(Vaccination vaccination, Date... relevanceFilterDates) {
 
 		Date relevantVaccineDate = getRelevantVaccineDate(vaccination);
 		for (Date comparisonDate : relevanceFilterDates) {
@@ -279,7 +279,7 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 
 	/**
 	 * HEADS UP! When this method gets changed, most probably the database logic in
-	 * {@link de.symeda.sormas.backend.vaccination.VaccinationService#isVaccinationRelevant(Vaccination, Date, Date)}
+	 * {@link de.symeda.sormas.backend.vaccination.VaccinationService#isVaccinationRelevant(Vaccination, Date...)}
 	 * will also need an update.
 	 */
 	private Predicate getRelevantVaccinationPredicate(
