@@ -41,8 +41,9 @@ public class AboutDirectorySteps implements En {
       String.format("sormas_data_protection_dictionary_%s_.xlsx", LocalDate.now());
   public static final String DATA_DICTIONARY_FILE_PATH =
       String.format("sormas_data_dictionary_%s_.xlsx", LocalDate.now());
-    public static final String DEUTSCH_DATA_DICTIONARY_FILE_PATH =
-            String.format("sormas_datenbeschreibungsverzeichnis_%s_.xlsx", LocalDate.now());
+  public static final String DEUTSCH_DATA_DICTIONARY_FILE_PATH =
+      String.format("sormas_datenbeschreibungsverzeichnis_%s_.xlsx", LocalDate.now());
+    public static final String CASE_CLASSIFICATION_HTML_FILE_PATH = "classification_rules.html";
 
   @Inject
   public AboutDirectorySteps(
@@ -100,29 +101,35 @@ public class AboutDirectorySteps implements En {
     When(
         "^I click on ([^\"]*) hyperlink and download XLSX file from About directory$",
         (String dictionaryName) -> {
-            Path path;
-            switch (dictionaryName) {
-                case "Data Protection Dictionary":
-                    webDriverHelpers.clickOnWebElementBySelector(DATA_PROTECTION_DICTIONARY_BUTTON);
-                    path = Paths.get(DOWNLOADS_FOLDER + DATA_PROTECTION_DICTIONARY_FILE_PATH);
-                    break;
-                case "Data Dictionary":
-                    webDriverHelpers.clickOnWebElementBySelector(DATA_DICTIONARY_BUTTON);
-                    path = Paths.get(DOWNLOADS_FOLDER + DATA_DICTIONARY_FILE_PATH);
-                    break;
-                case "Deutsch Data Dictionary":
-                    webDriverHelpers.clickOnWebElementBySelector(DATA_DICTIONARY_BUTTON);
-                    path = Paths.get(DOWNLOADS_FOLDER + DEUTSCH_DATA_DICTIONARY_FILE_PATH);
-                    break;
-                default:
-                    throw new Exception("No XLSX path provided!");
-            }
-            assertHelpers.assertWithPoll(
-                    () ->
-                            Assert.assertTrue(
-                                    Files.exists(path),
-                                    dictionaryName + " wasn't downloaded: " + path.toAbsolutePath()),
-                    30);
+          Path path;
+          switch (dictionaryName) {
+            case "Data Protection Dictionary":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  DATA_PROTECTION_DICTIONARY_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(DATA_PROTECTION_DICTIONARY_BUTTON);
+              path = Paths.get(DOWNLOADS_FOLDER + DATA_PROTECTION_DICTIONARY_FILE_PATH);
+              break;
+            case "Data Dictionary":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  DATA_DICTIONARY_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(DATA_DICTIONARY_BUTTON);
+              path = Paths.get(DOWNLOADS_FOLDER + DATA_DICTIONARY_FILE_PATH);
+              break;
+            case "Deutsch Data Dictionary":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  DATA_DICTIONARY_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(DATA_DICTIONARY_BUTTON);
+              path = Paths.get(DOWNLOADS_FOLDER + DEUTSCH_DATA_DICTIONARY_FILE_PATH);
+              break;
+            default:
+              throw new Exception("No XLSX path provided!");
+          }
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      dictionaryName + " wasn't downloaded: " + path.toAbsolutePath()),
+              30);
         });
 
     When(
@@ -135,31 +142,34 @@ public class AboutDirectorySteps implements En {
             case "Data Dictionary":
               readXlsxDictionaryFile(DATA_DICTIONARY_FILE_PATH);
               break;
-              case "Deutsch Data Dictionary":
-                  deleteFile(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
-                  break;
+            case "Deutsch Data Dictionary":
+              deleteFile(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
+              break;
             default:
               throw new Exception("No XLSX path provided!");
           }
         });
 
-      Then(
-              "^I delete ([^\"]*) downloaded file from About Directory$",
-              (String dictionaryName) -> {
-                  switch (dictionaryName) {
-                      case "Data Protection Dictionary":
-                          deleteFile(DATA_PROTECTION_DICTIONARY_FILE_PATH);
-                          break;
-                      case "Data Dictionary":
-                          deleteFile(DATA_DICTIONARY_FILE_PATH);
-                          break;
-                      case "Deutsch Data Dictionary":
-                          deleteFile(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
-                          break;
-                      default:
-                          throw new Exception("No XLSX path provided!");
-                  }
-              });
+    Then(
+        "^I delete ([^\"]*) downloaded file from About Directory$",
+        (String dictionaryName) -> {
+          switch (dictionaryName) {
+            case "Data Protection Dictionary":
+              deleteFile(DATA_PROTECTION_DICTIONARY_FILE_PATH);
+              break;
+            case "Data Dictionary":
+              deleteFile(DATA_DICTIONARY_FILE_PATH);
+              break;
+            case "Deutsch Data Dictionary":
+              deleteFile(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
+              break;
+              case "Case Classification Html":
+                  deleteFile(CASE_CLASSIFICATION_HTML_FILE_PATH);
+                  break;
+            default:
+              throw new Exception("No XLSX path provided!");
+          }
+        });
 
     When(
         "I detect and check language that was defined in User Settings for XLSX file content",
@@ -178,18 +188,6 @@ public class AboutDirectorySteps implements En {
             softly.assertAll();
           }
         });
-
-//    When(
-//        "I delete exported xlsx file from user downloads directory",
-//        () -> {
-//          File toDelete =
-//              new File(
-//                  DOWNLOADS_FOLDER
-//                      + "sormas_datenbeschreibungsverzeichnis_"
-//                      + LocalDate.now()
-//                      + "_.xlsx");
-//          toDelete.deleteOnExit();
-//        });
 
     When(
         "^I click on Sormas version in About directory and i get redirected to github$",
@@ -266,18 +264,10 @@ public class AboutDirectorySteps implements En {
     When(
         "^I click on Case Classification Rules hyperlink and download HTML file in About directory$",
         () -> {
+            webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                    CASE_CLASSIFICATION_RULES_HYPERLINK, 15);
           webDriverHelpers.clickOnWebElementBySelector(CASE_CLASSIFICATION_RULES_HYPERLINK);
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              CASE_CLASSIFICATION_RULES_HYPERLINK, 50);
-        });
-    When(
-        "^I delete the downloaded Case Classification Rules html and Data Dictionary xlsx file from download directory$",
-        () -> {
-          File html = new File(DOWNLOADS_FOLDER + "classification_rules.html");
-          File xlsx =
-              new File(DOWNLOADS_FOLDER + "sormas_data_dictionary_" + LocalDate.now() + "_.xlsx");
-          html.deleteOnExit();
-          xlsx.deleteOnExit();
+
         });
   }
 

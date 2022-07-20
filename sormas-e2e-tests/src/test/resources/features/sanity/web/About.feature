@@ -29,9 +29,10 @@ Feature: About Directory end to end tests
     Then I click on Official SORMAS Website in About directory and i get redirected to the offical Sormas website
     Then I click on SORMAS Github in About directory and i get redirected to github page of sormas
     Then I click on Full Changelog in About directory and i get redirected to github project release page of sormas
+    And I click on Data Dictionary hyperlink and download XLSX file from About directory
+    Then I delete Data Dictionary downloaded file from About Directory
     Then I click on Case Classification Rules hyperlink and download HTML file in About directory
-    Then I click on Data Dictionary hyperlink and download XLSX file from About directory
-    Then I delete the downloaded Case Classification Rules html and Data Dictionary xlsx file from download directory
+    Then I delete Case Classification Html downloaded file from About Directory
 
   @env_main @#9768 @test
   Scenario: Check Data Protection Dictionary existence and download
