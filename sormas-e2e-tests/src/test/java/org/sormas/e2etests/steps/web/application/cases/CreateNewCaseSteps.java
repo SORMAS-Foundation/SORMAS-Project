@@ -1093,6 +1093,17 @@ public class CreateNewCaseSteps implements En {
         });
 
     And(
+        "^I fill only mandatory fields for a new case form$",
+        () -> {
+          caze = caseService.buildGeneratedCase();
+          selectCaseOrigin(caze.getCaseOrigin());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+        });
+
+    And(
         "^I fill only mandatory fields for a new case form for DE$",
         () -> {
           LocalDate reportDate = LocalDate.now().minusDays(2);

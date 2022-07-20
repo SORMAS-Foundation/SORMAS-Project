@@ -255,6 +255,7 @@ import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.pages.application.events.EditEventPage;
 import org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage;
 import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.web.application.contacts.EditContactSteps;
 import org.sormas.e2etests.steps.web.application.immunizations.EditImmunizationSteps;
 import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
 import org.testng.Assert;
@@ -951,7 +952,7 @@ public class EditCaseSteps implements En {
           String vaccinationStatus =
               webDriverHelpers.getValueFromWebElement(VACCINATION_STATUS_INPUT);
           softly.assertEquals(
-              vaccinationStatus, expected, "Vaccination status is different than expected");
+              expected, vaccinationStatus, "Vaccination status is different than expected");
           softly.assertAll();
         });
     When(
@@ -2235,6 +2236,22 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+        });
+
+    And(
+        "^I check that follow-up status comment is correctly displayed on Edit case page$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
+          TimeUnit.SECONDS.sleep(20);
+          String followUpStatusComment =
+              webDriverHelpers.getValueFromWebElement(FOLLOW_UP_COMMENT_FIELD);
+          softly.assertEquals(
+              followUpStatusComment,
+              EditContactSteps.editedContact.getFollowUpStatusComment()
+                  + "\n[System] Follow-up automatically canceled because contact was converted to a case",
+              "Follow-up status comment is incorrect!");
+          softly.assertAll();
         });
   }
 

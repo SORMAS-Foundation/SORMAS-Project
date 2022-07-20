@@ -743,6 +743,12 @@ public class EditContactSteps implements En {
                 CONTACT_CLASSIFICATION_RADIO_BUTTON, "BEST\u00C4TIGTER KONTAKT"));
 
     When(
+        "^I click on CONFIRMED CONTACT radio button Contact Data tab$",
+        () ->
+            webDriverHelpers.clickWebElementByText(
+                CONTACT_CLASSIFICATION_RADIO_BUTTON, "CONFIRMED CONTACT"));
+
+    When(
         "^I click SAVE button on Edit Contact Page$",
         () -> {
           webDriverHelpers.scrollToElement(SAVE_EDIT_BUTTON);
@@ -1153,6 +1159,13 @@ public class EditContactSteps implements En {
     When(
         "I click on discard button in de-archive contact popup",
         () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL_POPUP));
+
+    And(
+        "^I fill follow-up status comment from Edit contact page$",
+        () -> {
+          editedContact = contactService.buildEditContact();
+          fillFollowUpStatusComment(editedContact.getFollowUpStatusComment());
+        });
 
     And(
         "^I set the last contact date to (\\d+) days before the vaccination date$",

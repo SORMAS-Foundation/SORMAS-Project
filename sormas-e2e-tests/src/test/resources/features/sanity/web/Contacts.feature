@@ -1000,6 +1000,26 @@ Feature: Contacts end to end tests
     Then I filter with last created contact using contact UUID
     And I check that number of displayed contact results is 1
 
+    @issue=SORDEV-5086 @env_main
+    Scenario: Test copying the Follow-up status comment when converting a contact into case
+      Given I log in as a Admin User
+      And I click on the Contacts button from navbar
+      And I click on new contact button from Case Contacts tab
+      And I fill a new contact form
+      And I click on SAVE new contact button
+      And I check the created data is correctly displayed on Edit Contact page
+      Then I copy uuid of current contact
+      And I click on CONFIRMED CONTACT radio button Contact Data tab
+      And I fill follow-up status comment from Edit contact page
+      And I click SAVE button on Edit Contact Page
+      And I click Create Case from Contact button
+      And I fill only mandatory fields for a new case form
+      And I save the new case
+      And I click on the Contacts button from navbar
+      And I filter with last created contact using contact UUID
+      And I click on the first Contact ID from Contacts Directory
+      And I check that follow-up status comment is correctly displayed on Edit case page
+
   @issue=SORDEV-10227 @env_de
   Scenario: Test Permanent deletion for Person for Contact
     Given I log in as a National User
