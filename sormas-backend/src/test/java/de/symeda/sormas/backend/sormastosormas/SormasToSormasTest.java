@@ -156,7 +156,11 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 		AdditionalTestDto additionalTest = AdditionalTestDto.build(sample.toReference());
 		additionalTest.setTestDateTime(new Date());
 
-		return new SormasToSormasSampleDto(sample, Collections.singletonList(pathogenTest), Collections.singletonList(additionalTest));
+		return new SormasToSormasSampleDto(
+			sample,
+			Collections.singletonList(pathogenTest),
+			Collections.singletonList(additionalTest),
+			Collections.emptyList());
 	}
 
 	protected SormasToSormasShareInfo createShareInfo(String serverId, boolean ownershipHandedOver, Consumer<SormasToSormasShareInfo> setTarget) {

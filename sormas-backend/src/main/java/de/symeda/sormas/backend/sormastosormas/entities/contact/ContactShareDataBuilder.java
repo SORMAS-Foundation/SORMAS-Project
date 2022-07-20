@@ -56,7 +56,7 @@ public class ContactShareDataBuilder
 	}
 
 	@Override
-	protected SormasToSormasContactDto doBuildShareData(Contact contact, ShareRequestInfo requestInfo) {
+	protected SormasToSormasContactDto doBuildShareData(Contact contact, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
 		Pseudonymizer pseudonymizer =
 			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
 
