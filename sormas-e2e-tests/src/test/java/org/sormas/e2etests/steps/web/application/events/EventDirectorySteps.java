@@ -118,11 +118,9 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ge
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByShortEventUuid;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByIndex;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByUUID;
-import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DESCRIPTION_OF_CREATE_CASE_FROM_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANT_DISPLAY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
-import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.CONFIRM_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.events.CreateNewEventSteps.DateOfEvent;
 
@@ -1225,14 +1223,6 @@ public class EventDirectorySteps implements En {
           TimeUnit.SECONDS.sleep(8); // wait for basic download if in parallel
           webDriverHelpers.clickOnWebElementBySelector(DETAILED_EVENT_EXPORT_BUTTON);
           TimeUnit.SECONDS.sleep(4); // wait for download
-        });
-
-    When(
-        "^I confirm the Create case from event participant with positive test result$",
-        () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
-              DESCRIPTION_OF_CREATE_CASE_FROM_EVENT_PARTICIPANT);
-          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });
 
     When(
