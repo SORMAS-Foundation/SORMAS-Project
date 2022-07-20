@@ -1520,8 +1520,10 @@ Feature: Case end to end tests
     And I click on save button from Edit Case page
     Then I navigate to the last created case via the url
     When I click on New Sample in German
-    And I create a new Sample with only required fields for DE version
+    Then I create a new Sample with positive test result for DE version
+    And I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup
     And I set date of sample collection to 5 day ago in Sample form
+    And I set Final Laboratory Result to "Positiv" on Create new Sample page
     And I save the created sample
-    And I check that text appearing in hover over Expected Follow-up is based on Report date
+    And I check that text appearing in hover over Expected Follow-up is based on Symptoms collection date
 

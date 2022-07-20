@@ -256,6 +256,7 @@ import org.sormas.e2etests.pages.application.events.EditEventPage;
 import org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.immunizations.EditImmunizationSteps;
+import org.sormas.e2etests.steps.web.application.samples.CreateNewSampleSteps;
 import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
@@ -1388,6 +1389,23 @@ public class EditCaseSteps implements En {
                       .atZone(ZoneId.systemDefault())
                       .toLocalDate()
                       .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                  + ")",
+              "Message is incorrect");
+          softly.assertAll();
+        });
+    When(
+        "I check that text appearing in hover over Expected Follow-up is based on Symptoms collection date",
+        () -> {
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXPECTED_FOLLOWUP_LABEL);
+          webDriverHelpers.hoverToElement(EXPECTED_FOLLOWUP_LABEL);
+          String displayedText =
+              webDriverHelpers.getTextFromWebElement(EXPECTED_FOLLOWUP_POPUP_TEXT);
+          softly.assertEquals(
+              displayedText,
+              "Das erwartete Nachverfolgungs bis Datum f\u00FCr diesen Fall basiert auf seinem fr\u00FChesten Probenentnahme-Datum ("
+                  + CreateNewSampleSteps.sampleCollectionDateForFollowUpDate.format(
+                      DateTimeFormatter.ofPattern("dd.MM.yyyy"))
                   + ")",
               "Message is incorrect");
           softly.assertAll();

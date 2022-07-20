@@ -152,7 +152,7 @@ public class CreateNewSampleSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   private final Faker faker;
   private final BaseSteps baseSteps;
-  public LocalDate sampleCollectionDateForFollowUpDate;
+  public static LocalDate sampleCollectionDateForFollowUpDate;
 
   @Inject
   public CreateNewSampleSteps(
@@ -237,6 +237,12 @@ public class CreateNewSampleSteps implements En {
               webDriverHelpers.checkIfElementExistsInCombobox(
                   SAMPLE_TYPE_COMBOBOX, sampleMaterial));
           softly.assertAll();
+        });
+
+    When(
+        "I set Final Laboratory Result to {string} on Create new Sample page",
+        (String value) -> {
+          webDriverHelpers.selectFromCombobox(FINAL_LABORATORY_RESULT_COMBOBOX, value);
         });
 
     When(
