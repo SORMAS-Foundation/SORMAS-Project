@@ -445,13 +445,12 @@ public class ContactsView extends AbstractView {
 
 				if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CONTACT)) {
 					int daysAfterContactGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
-							.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CONTACT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+						.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CONTACT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
 					if (daysAfterContactGetsArchived > 0) {
 						relevanceStatusInfoLabel = new Label(
-								VaadinIcons.INFO_CIRCLE.getHtml() + " "
-										+ String
-										.format(I18nProperties.getString(Strings.infoArchivedContacts), daysAfterContactGetsArchived),
-								ContentMode.HTML);
+							VaadinIcons.INFO_CIRCLE.getHtml() + " "
+								+ String.format(I18nProperties.getString(Strings.infoArchivedContacts), daysAfterContactGetsArchived),
+							ContentMode.HTML);
 						relevanceStatusInfoLabel.setVisible(false);
 						relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
 						actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
@@ -517,7 +516,9 @@ public class ContactsView extends AbstractView {
 							VaadinIcons.SHARE,
 							mi -> grid.bulkActionHandler(
 								items -> ControllerProvider.getSormasToSormasController().shareSelectedContacts(items, () -> navigateTo(criteria))),
-							FacadeProvider.getSormasToSormasFacade().isSharingContactsEnabledForUser())));
+							FacadeProvider.getFeatureConfigurationFacade()
+								.isPropertyValueTrue(FeatureType.CASE_AND_CONTACT_BULK_ACTIONS, FeatureTypeProperty.S2S_SHARING)
+								&& FacadeProvider.getSormasToSormasFacade().isSharingContactsEnabledForUser())));
 
 				if (isDocGenerationAllowed() && grid instanceof AbstractContactGrid) {
 					bulkActions.add(
@@ -655,7 +656,8 @@ public class ContactsView extends AbstractView {
 	}
 
 	private boolean isBulkEditAllowed() {
-		return viewConfiguration.getViewType().isContactOverview()
+		return FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_AND_CONTACT_BULK_ACTIONS)
+			&& viewConfiguration.getViewType().isContactOverview()
 			&& (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)
 				|| FacadeProvider.getSormasToSormasFacade().isSharingContactsEnabledForUser());
 	}

@@ -26,7 +26,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -171,6 +170,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private final ViewMode viewMode;
 	private final Disease disease;
 	private NullableOptionGroup contactProximity;
+	private ComboBox district;
+	private ComboBox contactOfficerField;
 	private Field<?> quarantine;
 	private DateField quarantineFrom;
 	private DateField dfQuarantineTo;
@@ -466,12 +467,12 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			onQuarantineValueChange();
 		});
 
-		ComboBox contactOfficerField = addField(ContactDto.CONTACT_OFFICER, ComboBox.class);
+		contactOfficerField = addField(ContactDto.CONTACT_OFFICER, ComboBox.class);
 		contactOfficerField.setNullSelectionAllowed(true);
 
 		ComboBox region = addInfrastructureField(ContactDto.REGION);
 		region.setDescription(I18nProperties.getPrefixDescription(ContactDto.I18N_PREFIX, ContactDto.REGION));
-		ComboBox district = addInfrastructureField(ContactDto.DISTRICT);
+		district = addInfrastructureField(ContactDto.DISTRICT);
 		district.setDescription(I18nProperties.getPrefixDescription(ContactDto.I18N_PREFIX, ContactDto.DISTRICT));
 		ComboBox community = addInfrastructureField(ContactDto.COMMUNITY);
 		community.setDescription(I18nProperties.getPrefixDescription(ContactDto.I18N_PREFIX, ContactDto.COMMUNITY));
@@ -486,20 +487,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				community,
 				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
 
-			List<DistrictReferenceDto> officerDistricts = new ArrayList<>();
-			officerDistricts.add(districtDto);
-
-			if (districtDto == null && getValue().getCaze() != null) {
-				CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(getValue().getCaze().getUuid());
-
-				FieldHelper.updateOfficersField(contactOfficerField, caseDto, UserRight.CONTACT_RESPONSIBLE);
-			} else {
-				FieldHelper.updateItems(
-					contactOfficerField,
-					districtDto != null
-						? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, getSelectedDisease(), UserRight.CONTACT_RESPONSIBLE)
-						: null);
-			}
+			updateContactOfficers();
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
@@ -708,6 +696,21 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		FieldHelper.addSoftRequiredStyle(firstContactDate, lastContactDate, contactProximity, relationToCase);
 	}
 
+	private void updateContactOfficers() {
+		DistrictReferenceDto districtDto = (DistrictReferenceDto) district.getValue();
+		if (districtDto == null && getValue().getCaze() != null) {
+			CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(getValue().getCaze().getUuid());
+
+			FieldHelper.updateOfficersField(contactOfficerField, caseDto, UserRight.CONTACT_RESPONSIBLE);
+		} else {
+			FieldHelper.updateItems(
+				contactOfficerField,
+				districtDto != null
+					? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, getSelectedDisease(), UserRight.CONTACT_RESPONSIBLE)
+					: null);
+		}
+	}
+
 	private void updateOverwriteFollowUpUntil() {
 		if (!Boolean.TRUE.equals(cbOverwriteFollowUpUntil.getValue())) {
 			boolean readOnly = dfFollowUpUntil.isReadOnly();
@@ -890,7 +893,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			Date newQuarantineEnd = dfQuarantineTo.getValue();
 			ContactDto originalContact = getInternalValue();
 			Date oldQuarantineEnd = originalContact.getQuarantineTo();
-			Date oldPreviousQuarantineTo = originalContact.getPreviousQuarantineTo();
 
 			ExtendedReduced changeType = null;
 			if (oldQuarantineEnd != null && newQuarantineEnd != null) {
@@ -1048,6 +1050,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 				I18nProperties.getString(Strings.infoExpectedFollowUpUntilDateContact),
 				expectedFollowUpPeriodDto.getFollowUpStartDateType(),
 				DateHelper.formatLocalDate(expectedFollowUpPeriodDto.getFollowUpStartDate(), I18nProperties.getUserLanguage())));
+		updateContactOfficers();
 		updateOverwriteFollowUpUntil();
 		updateFollowUpStatusComponents();
 
