@@ -999,3 +999,25 @@ Feature: Contacts end to end tests
     And I apply "Aktive Kontakte" to combobox on Contact Directory Page
     Then I filter with last created contact using contact UUID
     And I check that number of displayed contact results is 1
+
+  @issue=SORDEV-10227 @env_de
+  Scenario: Test Permanent deletion for Person for Contact
+    Given I log in as a National User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    When I fill a new contact form for DE version
+    And I click on SAVE new contact button
+    And I check the created data is correctly displayed on Edit Contact page for DE version
+    And I click on the Persons button from navbar
+    Then I filter the last created person linked with Contact
+    And I click on Contact aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I click on All aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I navigate to the last created UI contact via the url
+    Then I click on Delete button from contact
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    And I click on the Persons button from navbar
+    Then I filter the last created person linked with Contact
+    And I check that number of displayed Person results is 0

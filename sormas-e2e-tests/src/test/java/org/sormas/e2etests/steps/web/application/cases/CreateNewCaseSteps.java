@@ -107,6 +107,7 @@ import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntry
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_PERSON_LABEL_DE;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.SEARCH_PERSON_BY_FREE_TEXT;
 import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.aCase;
+import static org.sormas.e2etests.steps.web.application.persons.PersonDirectorySteps.personSharedForAllEntities;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -612,6 +613,25 @@ public class CreateNewCaseSteps implements En {
           fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
           fillPlaceDescription(caze.getPlaceDescription());
         });
+    When(
+        "^I fill new case form with chosen data without personal data on Case directory page for DE$",
+        () -> {
+          caze = caseService.buildGeneratedCaseDE();
+          selectCaseOrigin(caze.getCaseOrigin());
+          // field that is no longer available
+          // fillExternalId(caze.getExternalId());
+          fillDisease(caze.getDisease());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.GERMAN);
+          fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+          fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
+          fillPlaceDescription(caze.getPlaceDescription());
+        });
 
     When(
         "^I click on the clear button in new add new event participant form$",
@@ -644,6 +664,15 @@ public class CreateNewCaseSteps implements En {
         () -> {
           webDriverHelpers.fillInWebElement(FIRST_NAME_LIKE_INPUT, aCase.getFirstName());
           webDriverHelpers.fillInWebElement(LAST_NAME_LIKE_INPUT, aCase.getLastName());
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON);
+        });
+    When(
+        "^I search for the person data shared across all entities by First Name and Last Name in popup on Select Person window$",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              FIRST_NAME_LIKE_INPUT, personSharedForAllEntities.getFirstName());
+          webDriverHelpers.fillInWebElement(
+              LAST_NAME_LIKE_INPUT, personSharedForAllEntities.getLastName());
           webDriverHelpers.clickOnWebElementBySelector(PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON);
         });
 

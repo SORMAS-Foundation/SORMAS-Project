@@ -1188,3 +1188,30 @@ Feature: Create events
     And I click on the Event participant tab
     Then I choose Aktive Ereignisteilnehmer from combobox in the Event participant tab
     And I check that number of displayed Event participants results is 1
+
+  @issue=SORDEV-10227 @env_de
+  Scenario: Test Permanent deletion for Person for Event Participant
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I open the last created event via api
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I add only required data for event participant creation for DE
+    And I collect the event participant person UUID displayed on Edit Event Participant page
+    And I click on the Persons button from navbar
+    Then I filter the last created person linked with Event Participant
+    And I click on Events aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I click on All aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    Then I open the last created event via api
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I click on the first result in table from event participant
+    Then I click on Delete button from event participant
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    And I click on the Persons button from navbar
+    Then I filter the last created person linked with Event Participant
+    And I click on Events aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 0
