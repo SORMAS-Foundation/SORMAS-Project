@@ -46,7 +46,6 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONF
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONTACTS_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EPIDEMIOLOGICAL_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_NO_POPUP_INPUT;
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PLACE_OF_STAY_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CONFIRM;
@@ -2317,21 +2316,6 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
-  }
-
-  private Vaccination collectVaccinationData() {
-    return Vaccination.builder()
-        .vaccinationDate(getVaccinationDate())
-        .vaccineName(webDriverHelpers.getTextFromWebElement(VACCINATION_CARD_VACCINATION_NAME))
-        .build();
-  }
-
-  private LocalDate getVaccinationDate() {
-    String dateOfReport = webDriverHelpers.getTextFromWebElement(VACCINATION_CARD_VACCINATION_DATE);
-    if (!dateOfReport.isEmpty()) {
-      return LocalDate.parse(dateOfReport, DATE_FORMATTER_DE);
-    }
-    return null;
 
     And(
         "^I check the created data for different place of stay region and district are correctly displayed on Edit case page$",
@@ -2421,6 +2405,21 @@ public class EditCaseSteps implements En {
                   "lastName",
                   "dateOfBirth"));
         });
+  }
+
+  private Vaccination collectVaccinationData() {
+    return Vaccination.builder()
+        .vaccinationDate(getVaccinationDate())
+        .vaccineName(webDriverHelpers.getTextFromWebElement(VACCINATION_CARD_VACCINATION_NAME))
+        .build();
+  }
+
+  private LocalDate getVaccinationDate() {
+    String dateOfReport = webDriverHelpers.getTextFromWebElement(VACCINATION_CARD_VACCINATION_DATE);
+    if (!dateOfReport.isEmpty()) {
+      return LocalDate.parse(dateOfReport, DATE_FORMATTER_DE);
+    }
+    return null;
   }
 
   private Case collectCasePersonDataWithFacilityAndDifferentPlaceOfStay() {
