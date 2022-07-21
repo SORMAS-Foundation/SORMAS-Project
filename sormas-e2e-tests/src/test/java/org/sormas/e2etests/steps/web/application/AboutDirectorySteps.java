@@ -43,7 +43,7 @@ public class AboutDirectorySteps implements En {
       String.format("sormas_data_dictionary_%s_.xlsx", LocalDate.now());
   public static final String DEUTSCH_DATA_DICTIONARY_FILE_PATH =
       String.format("sormas_datenbeschreibungsverzeichnis_%s_.xlsx", LocalDate.now());
-    public static final String CASE_CLASSIFICATION_HTML_FILE_PATH = "classification_rules.html";
+  public static final String CASE_CLASSIFICATION_HTML_FILE_PATH = "classification_rules.html";
 
   @Inject
   public AboutDirectorySteps(
@@ -163,9 +163,9 @@ public class AboutDirectorySteps implements En {
             case "Deutsch Data Dictionary":
               deleteFile(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
               break;
-              case "Case Classification Html":
-                  deleteFile(CASE_CLASSIFICATION_HTML_FILE_PATH);
-                  break;
+            case "Case Classification Html":
+              deleteFile(CASE_CLASSIFICATION_HTML_FILE_PATH);
+              break;
             default:
               throw new Exception("No XLSX path provided!");
           }
@@ -264,10 +264,9 @@ public class AboutDirectorySteps implements En {
     When(
         "^I click on Case Classification Rules hyperlink and download HTML file in About directory$",
         () -> {
-            webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-                    CASE_CLASSIFICATION_RULES_HYPERLINK, 15);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              CASE_CLASSIFICATION_RULES_HYPERLINK, 15);
           webDriverHelpers.clickOnWebElementBySelector(CASE_CLASSIFICATION_RULES_HYPERLINK);
-
         });
   }
 
