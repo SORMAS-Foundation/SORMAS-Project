@@ -1000,6 +1000,23 @@ Feature: Contacts end to end tests
     Then I filter with last created contact using contact UUID
     And I check that number of displayed contact results is 1
 
+  @issue=SORDEV-6185 @env_de
+  Scenario: Test Add information to followup warning message for Contacts
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    Then I navigate to the last created contact via the url
+    And I check that text appearing in hover over Expected Follow-up is based on Report date on Edit Contact Page
+    Then I change the date of last contact to 5 days ago for DE version
+    And I click SAVE button on Edit Contact Page
+    And I check that text appearing in hover over Expected Follow-up is based on Last Contact date on Edit Contact Page
+
+
+
   @issue=SORDEV-10227 @env_de
   Scenario: Test Permanent deletion for Person for Contact
     Given I log in as a National User

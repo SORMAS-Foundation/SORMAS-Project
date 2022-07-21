@@ -36,6 +36,8 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DO
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES_POPUP_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXPECTED_FOLLOWUP_LABEL;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXPECTED_FOLLOWUP_POPUP_TEXT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_IMMUNIZATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
@@ -69,6 +71,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -103,6 +106,7 @@ public class EditContactSteps implements En {
   public static final DateTimeFormatter formatterDE = DateTimeFormatter.ofPattern("d.M.yyyy");
   private static String currentUrl;
   private static String contactUUID;
+  public static LocalDate lastContactDateForFollowUp;
 
   @Inject
   public EditContactSteps(
@@ -1051,6 +1055,44 @@ public class EditContactSteps implements En {
               "Relationships with case are not equal");
           softly.assertAll();
         });
+    When(
+        "I check that text appearing in hover over Expected Follow-up is based on Report date on Edit Contact Page",
+        () -> {
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXPECTED_FOLLOWUP_LABEL);
+          webDriverHelpers.hoverToElement(EXPECTED_FOLLOWUP_LABEL);
+          String displayedText =
+              webDriverHelpers.getTextFromWebElement(EXPECTED_FOLLOWUP_POPUP_TEXT);
+          softly.assertEquals(
+              displayedText,
+              "Das erwartete Nachverfolgungs bis Datum f\u00FCr diesen Kontakt basiert auf seinem Meldedatum ("
+                  + apiState
+                      .getCreatedContact()
+                      .getReportDateTime()
+                      .toInstant()
+                      .atZone(ZoneId.systemDefault())
+                      .toLocalDate()
+                      .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                  + ")",
+              "Message is incorrect");
+          softly.assertAll();
+        });
+    When(
+        "I check that text appearing in hover over Expected Follow-up is based on Last Contact date on Edit Contact Page",
+        () -> {
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXPECTED_FOLLOWUP_LABEL);
+          webDriverHelpers.hoverToElement(EXPECTED_FOLLOWUP_LABEL);
+          String displayedText =
+              webDriverHelpers.getTextFromWebElement(EXPECTED_FOLLOWUP_POPUP_TEXT);
+          softly.assertEquals(
+              displayedText,
+              "Das erwartete Nachverfolgungs bis Datum f\u00FCr diesen Kontakt basiert auf seinem Datum des letzten Kontakts ("
+                  + lastContactDateForFollowUp.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                  + ")",
+              "Message is incorrect");
+          softly.assertAll();
+        });
 
     When("I copy url of current contact", () -> currentUrl = webDriverHelpers.returnURL());
 
@@ -1125,7 +1167,15 @@ public class EditContactSteps implements En {
           webDriverHelpers.fillInWebElement(LAST_CONTACT_DATE, formatter.format(LocalDate.now()));
           webDriverHelpers.fillInWebElement(REPORT_DATE, formatter.format(LocalDate.now()));
         });
-
+    When(
+        "I change the date of last contact to {int} days ago for DE version",
+        (Integer days) -> {
+          webDriverHelpers.scrollToElement(LAST_CONTACT_DATE);
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+          lastContactDateForFollowUp = LocalDate.now().minusDays(days);
+          webDriverHelpers.fillInWebElement(
+              LAST_CONTACT_DATE, formatter.format(lastContactDateForFollowUp));
+        });
     When(
         "I filter with last created contact using contact UUID",
         () -> {

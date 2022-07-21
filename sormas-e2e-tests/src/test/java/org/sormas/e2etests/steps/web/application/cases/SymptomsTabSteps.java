@@ -64,6 +64,9 @@ public class SymptomsTabSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   public static Symptoms symptoms;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+  public static final DateTimeFormatter DATE_FORMATTER_DE =
+      DateTimeFormatter.ofPattern("dd.MM.yyyy");
+  public static LocalDate dateOfSymptomsForFollowUpDate;
 
   @Inject
   public SymptomsTabSteps(
@@ -223,6 +226,17 @@ public class SymptomsTabSteps implements En {
         "I click on Clear all button From Symptoms tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CLEAR_ALL_BUTTON);
+        });
+    And(
+        "I set date of symptoms to {int} day ago from Symptoms tab",
+        (Integer days) -> {
+          dateOfSymptomsForFollowUpDate = LocalDate.now().minusDays(days);
+          fillDateOfSymptomDE(LocalDate.now().minusDays(days), Locale.GERMAN);
+        });
+    And(
+        "I clear date of symptoms from Symptoms tab",
+        () -> {
+          webDriverHelpers.clearWebElement(DATE_OF_SYMPTOM_INPUT);
         });
 
     And(
