@@ -1494,6 +1494,30 @@ Feature: Case end to end tests
       Then I filter with last created case using case UUID
       And I check that number of displayed cases results is 1
 
+  @env_main @issue=SORDEV-5104
+  Scenario: Check if external token is visible on Edit Case Page
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    Then I navigate to the last created case via the url
+    And I check that External Token field is visible on Edit Case page
+
+  @env_de @issue=SORDEV-5104
+  Scenario: Check if external token is visible on Edit Case Page for DE
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    Then I navigate to the last created case via the url
+    And I check that External Token field is visible on Edit Case page
+
   @issue=SORDEV-10227 @env_de
   Scenario: Test Permanent deletion for Person for Case
     Given I log in as a National User
