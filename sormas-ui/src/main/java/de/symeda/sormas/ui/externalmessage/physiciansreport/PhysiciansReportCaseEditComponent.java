@@ -64,6 +64,13 @@ public class PhysiciansReportCaseEditComponent extends CommitDiscardWrapperCompo
 		tabsMenu = new SubMenu();
 		tabConfigs = createTabConfigs();
 
+		// save on active tab on commit
+		setPreCommitListener((callback) -> {
+			if (activeTabComponent.commitAndHandle()) {
+				callback.run();
+			}
+		});
+
 		backButton = ButtonHelper.createButton(Captions.actionBack, (e) -> {
 			if (activeTabIndex > 0) {
 				String previousTab = tabConfigs.get(activeTabIndex - 1).captionTag;
