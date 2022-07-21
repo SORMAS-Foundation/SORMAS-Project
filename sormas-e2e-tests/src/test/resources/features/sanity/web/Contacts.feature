@@ -1018,6 +1018,8 @@ Feature: Contacts end to end tests
       And I click on the Contacts button from navbar
       And I filter with last created contact using contact UUID
       And I click on the first Contact ID from Contacts Directory
+      And I check that follow-up status comment is correctly displayed on Edit contact page
+      And I click on Open case of this contact person on Edit contact page
       And I check that follow-up status comment is correctly displayed on Edit case page
 
   @issue=SORDEV-10227 @env_de

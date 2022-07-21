@@ -2243,13 +2243,11 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
-          TimeUnit.SECONDS.sleep(20);
           String followUpStatusComment =
               webDriverHelpers.getValueFromWebElement(FOLLOW_UP_COMMENT_FIELD);
           softly.assertEquals(
               followUpStatusComment,
-              EditContactSteps.editedContact.getFollowUpStatusComment()
-                  + "\n[System] Follow-up automatically canceled because contact was converted to a case",
+              EditContactSteps.editedContact.getFollowUpStatusComment(),
               "Follow-up status comment is incorrect!");
           softly.assertAll();
         });

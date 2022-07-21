@@ -36,9 +36,11 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DO
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES_POPUP_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.FOLLOW_UP_COMMENT_FIELD;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_IMMUNIZATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UPLOAD_DOCUMENT_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
@@ -85,6 +87,7 @@ import org.sormas.e2etests.entities.services.ContactService;
 import org.sormas.e2etests.enums.TaskTypeValues;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.cases.SymptomsTabPage;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
@@ -1185,6 +1188,30 @@ public class EditContactSteps implements En {
               displayedText,
               "Diese Impfung ist f\u00FCr diesen Kontakt nicht relevant, weil das Datum der Impfung nach dem Datum des letzten Kontaktes oder dem Kontakt-Meldedatum liegt.",
               "Message is incorrect");
+          softly.assertAll();
+        });
+
+    And(
+        "^I click on Open case of this contact person on Edit contact page$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(OPEN_CASE_OF_THIS_CONTACT_PERSON_LINK);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
+        });
+
+    And(
+        "^I check that follow-up status comment is correctly displayed on Edit contact page$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SymptomsTabPage.SAVE_BUTTON);
+          String followUpStatusComment =
+              webDriverHelpers.getValueFromWebElement(FOLLOW_UP_COMMENT_FIELD);
+          softly.assertEquals(
+              followUpStatusComment,
+              EditContactSteps.editedContact.getFollowUpStatusComment()
+                  + "\n[System] Follow-up automatically canceled because contact was converted to a case",
+              "Follow-up status comment is incorrect!");
           softly.assertAll();
         });
   }
