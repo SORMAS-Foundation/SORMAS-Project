@@ -54,6 +54,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CoreAdo;
@@ -233,6 +234,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 	public PathogenTestDto savePathogenTest(@Valid PathogenTestDto dto, boolean checkChangeDate, boolean syncShares) {
 		PathogenTest existingSampleTest = pathogenTestService.getByUuid(dto.getUuid());
+		FacadeHelper.checkCreateAndEditRights(existingSampleTest, userService, UserRight.PATHOGEN_TEST_CREATE, UserRight.PATHOGEN_TEST_EDIT);
+
 		PathogenTestDto existingSampleTestDto = toDto(existingSampleTest);
 
 		restorePseudonymizedDto(dto, existingSampleTest, existingSampleTestDto);

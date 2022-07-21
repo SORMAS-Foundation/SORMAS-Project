@@ -72,7 +72,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	private PointOfEntryDto rdcf2NewPointOfEntry;
 	private UserDto user1;
 	private UserDto user2;
-	private UserDto observerUser;
+	private UserDto nationalClinician;
 
 	@Override
 	public void init() {
@@ -100,8 +100,8 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		rdcf2NewFacility = creator.createFacility("New facility", rdcf2.region, rdcf2.district, rdcf2NewCommunity.toReference());
 		rdcf2NewPointOfEntry = creator.createPointOfEntry("New point of entry", rdcf2.region, rdcf2.district);
 
-		observerUser =
-			creator.createUser(null, null, null, null, "National", "Observer", creator.getUserRoleReference(DefaultUserRole.NATIONAL_OBSERVER));
+		nationalClinician =
+			creator.createUser(null, null, null, null, "National", "Clinician", creator.getUserRoleReference(DefaultUserRole.NATIONAL_CLINICIAN));
 
 		loginWith(user2);
 	}
@@ -253,8 +253,8 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		loginWith(user1);
 		CaseDataDto caze = createCase(rdcf1, user1);
-		loginWith(observerUser);
-		updateCase(caze, observerUser);
+		loginWith(nationalClinician);
+		updateCase(caze, nationalClinician);
 		assertPseudonymizedDataNotUpdated(caze, rdcf1, user1);
 	}
 

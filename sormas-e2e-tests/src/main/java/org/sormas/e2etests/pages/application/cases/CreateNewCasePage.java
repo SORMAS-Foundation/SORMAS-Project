@@ -80,6 +80,8 @@ public class CreateNewCasePage {
   public static final By PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON = By.id("actionSearch");
   public static final By CREATE_A_NEW_CASE_CONFIRMATION_BUTTON =
       By.xpath("//*[text()='Create a new case']");
+  public static final By CREATE_A_NEW_CASE_CONFIRMATION_BUTTON_DE =
+      By.xpath("//*[text()='Neuen Fall erstellen']");
   public static final By PICK_AN_EXISTING_CASE_CONFIRMATION_BUTTON =
       By.xpath("//*[text()='Pick an existing case']");
   public static final By CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON =

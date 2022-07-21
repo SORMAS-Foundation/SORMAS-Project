@@ -53,6 +53,10 @@ public class PersonDirectoryPage {
   public static final By PERSON_RESULTS_UUID_LOCATOR_FROM_GRID =
       By.xpath("//table/tbody/tr[1]/td[1]");
   public static final By TRAVEL_ENTRY_AGGREGATION_BUTTON_DE = By.id("Einreise");
+  public static final By CASE_AGGREGATION_BUTTON_DE = By.id("Fall");
+  public static final By EVENT_AGGREGATION_BUTTON_DE = By.id("Ereignisteilnehmer");
+  public static final By CONTACT_AGGREGATION_BUTTON_DE = By.id("Kontakt");
+  public static final By ALL_AGGREGATION_BUTTON_DE = By.id("Alle");
 
   public static final By getPersonResultsUuidLocator(String uuid) {
     return By.cssSelector(String.format("[title = '%s']", uuid));

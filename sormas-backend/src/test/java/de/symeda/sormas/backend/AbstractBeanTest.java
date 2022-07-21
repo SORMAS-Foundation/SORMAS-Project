@@ -220,6 +220,7 @@ import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserRightsFacadeEjb.UserRightsFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb.UserRoleFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleService;
@@ -247,14 +248,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		initH2Functions();
 		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
 		System.setProperty("java.naming.factory.initial", MockProducer.class.getCanonicalName());
-		UserDto user = creator.createUser(
-			null,
-			null,
-			null,
-			"ad",
-			"min",
-			creator.getUserRoleReference(DefaultUserRole.ADMIN),
-			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createTestUser();
 
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
 
@@ -776,6 +770,23 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return survOff;
 	}
 
+	protected UserDto useCaseOfficerLogin(TestDataCreator.RDCF rdcf) {
+		if (rdcf == null) {
+			rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		}
+
+		UserDto caseOff = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Case",
+			"Off",
+			creator.getUserRoleReference(DefaultUserRole.CASE_OFFICER));
+		when(MockProducer.getPrincipal().getName()).thenReturn("CaseOff");
+
+		return caseOff;
+	}
+
 	public CampaignFormDataFacade getCampaignFormDataFacade() {
 		return getBean(CampaignFormDataFacadeEjbLocal.class);
 	}
@@ -791,6 +802,20 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 	protected UserDto useNationalUserLogin() {
 		UserDto natUser = creator.createUser("", "", "", "Nat", "Usr", creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		when(MockProducer.getPrincipal().getName()).thenReturn("NatUsr");
+
+		return natUser;
+	}
+
+	protected UserDto useNationalAdminLogin() {
+		UserDto natUser = creator.createUser(
+			"",
+			"",
+			"",
+			"National",
+			"Admin",
+			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER),
+			creator.getUserRoleReference(DefaultUserRole.ADMIN));
+		when(MockProducer.getPrincipal().getName()).thenReturn("NationalAdmin");
 
 		return natUser;
 	}

@@ -30,6 +30,7 @@ import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.CONFUS
 import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.COUGH_WITH_HEAMOPTYSIS_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.COUGH_WITH_SPUTUM_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.FATIGUE_WEAKNESS_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.FEVER_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.FLUID_IN_LUNG_CAVITY_AUSCULTATION_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.FLUID_IN_LUNG_CAVITY_XRAY_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.INABILITY_TO_WALK_OPTIONS;
@@ -48,6 +49,7 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Symptoms;
@@ -235,6 +237,20 @@ public class SymptomsTabSteps implements En {
         "I clear date of symptoms from Symptoms tab",
         () -> {
           webDriverHelpers.clearWebElement(DATE_OF_SYMPTOM_INPUT);
+        });
+
+    And(
+        "^I set Fever Symptoms to \"([^\"]*)\" on the Symptoms tab$",
+        (String option) -> {
+          selectFever(option);
+        });
+
+    And(
+        "^I set Date of symptom onset to (\\d+) days before the vaccination date on the Symptoms tab for DE$",
+        (Integer numberOfDays) -> {
+          webDriverHelpers.scrollToElement(DATE_OF_SYMPTOM_INPUT);
+          LocalDate dateOfSymptom = LocalDate.now().minusDays(7 + numberOfDays);
+          fillDateOfSymptomDE(dateOfSymptom, Locale.GERMAN);
         });
   }
 
@@ -594,6 +610,13 @@ public class SymptomsTabSteps implements En {
 
   private void fillDateOfSymptom(LocalDate dateOfSymptom) {
     webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_INPUT, DATE_FORMATTER.format(dateOfSymptom));
+  }
+
+  private void fillDateOfSymptomDE(LocalDate date, Locale locale) {
+    DateTimeFormatter formatter;
+    if (locale.equals(Locale.GERMAN)) formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_INPUT, formatter.format(date));
   }
 
   private void fillDateOfSymptomDE(LocalDate dateOfSymptom) {

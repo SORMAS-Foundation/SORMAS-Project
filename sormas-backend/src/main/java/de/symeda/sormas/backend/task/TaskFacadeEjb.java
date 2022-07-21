@@ -72,6 +72,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -299,8 +300,11 @@ public class TaskFacadeEjb implements TaskFacade {
 		UserRight._TASK_CREATE,
 		UserRight._TASK_EDIT })
 	public TaskDto saveTask(@Valid TaskDto dto) {
+		Task existingTask = taskService.getByUuid(dto.getUuid());
+		FacadeHelper.checkCreateAndEditRights(existingTask, userService, UserRight.TASK_CREATE, UserRight.TASK_EDIT);
+
 		// Let's retrieve the old assignee before updating the task
-		User oldAssignee = taskService.getTaskAssigneeByUuid(dto.getUuid());
+		User oldAssignee = existingTask != null ? existingTask.getAssigneeUser() : null;
 
 		Task ado = fromDto(dto, true);
 

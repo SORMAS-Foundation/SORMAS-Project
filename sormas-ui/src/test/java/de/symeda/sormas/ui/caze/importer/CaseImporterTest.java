@@ -75,8 +75,6 @@ public class CaseImporterTest extends AbstractBeanTest {
 	@Test
 	public void testImportAllCases() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
-		TestDataCreator creator = new TestDataCreator();
-
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
@@ -338,8 +336,6 @@ public class CaseImporterTest extends AbstractBeanTest {
 	public void testImportAddressTypes()
 		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
-		TestDataCreator creator = new TestDataCreator();
-
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Saarland", "RV Saarbrücken", "Kleinblittersdorf", "Winterberg");
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
@@ -371,8 +367,6 @@ public class CaseImporterTest extends AbstractBeanTest {
 
 	@Test
 	public void testImportWithSamples() throws IOException, InterruptedException, CsvValidationException, InvalidColumnException, URISyntaxException {
-		TestDataCreator creator = new TestDataCreator();
-
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		creator.createFacility("Lab", FacilityType.LABORATORY, rdcf.region.toReference(), rdcf.district.toReference(), rdcf.community.toReference());
 		UserDto user = creator.createUser(
@@ -410,7 +404,6 @@ public class CaseImporterTest extends AbstractBeanTest {
 	@Test
 	public void testImportWithPathogenTests()
 		throws IOException, InterruptedException, CsvValidationException, InvalidColumnException, URISyntaxException {
-		TestDataCreator creator = new TestDataCreator();
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		creator.createFacility("Lab", FacilityType.LABORATORY, rdcf.region.toReference(), rdcf.district.toReference(), rdcf.community.toReference());
@@ -461,7 +454,6 @@ public class CaseImporterTest extends AbstractBeanTest {
 	@Ignore("Remove ignore once we have replaced H2, and feature properties can be changed by code")
 	public void testImportWithVaccinations()
 		throws IOException, InterruptedException, CsvValidationException, InvalidColumnException, URISyntaxException {
-		TestDataCreator creator = new TestDataCreator();
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		creator.createFacility("Lab", FacilityType.LABORATORY, rdcf.region.toReference(), rdcf.district.toReference(), rdcf.community.toReference());

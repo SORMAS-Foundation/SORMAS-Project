@@ -15,11 +15,11 @@
 
 package de.symeda.sormas.app.caze.read;
 
-import java.util.List;
-
 import android.content.Context;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -212,11 +212,22 @@ public class CaseReadActivity extends BaseReadActivity<Case> {
 		final MenuItem editMenu = getEditMenu();
 
 		if (editMenu != null) {
-			if (CaseEditAuthorization.isCaseEditAllowed(selectedCase)
-				|| (getActiveFragment() != null && getActiveFragment() instanceof CaseReadContactListFragment)) {
-				editMenu.setVisible(true);
+			if (getActiveFragment() instanceof CaseReadPortHealthInfoFragment) {
+				if (ConfigProvider.hasUserRight(UserRight.CASE_EDIT)
+					&& ConfigProvider.hasUserRight(UserRight.PORT_HEALTH_INFO_EDIT)
+					&& (CaseEditAuthorization.isCaseEditAllowed(selectedCase))) {
+					editMenu.setVisible(true);
+				} else {
+					editMenu.setVisible(false);
+				}
 			} else {
-				editMenu.setVisible(false);
+				if (ConfigProvider.hasUserRight(UserRight.CASE_EDIT)
+						&& (CaseEditAuthorization.isCaseEditAllowed(selectedCase)
+						|| (getActiveFragment() != null && getActiveFragment() instanceof CaseReadContactListFragment))) {
+					editMenu.setVisible(true);
+				} else {
+					editMenu.setVisible(false);
+				}
 			}
 		}
 	}

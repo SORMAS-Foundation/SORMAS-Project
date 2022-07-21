@@ -59,7 +59,7 @@ public class CaseShareDataBuilder
 	private ShareDataBuilderHelper dataBuilderHelper;
 
 	@Override
-	protected SormasToSormasCaseDto doBuildShareData(Case caze, ShareRequestInfo requestInfo) {
+	protected SormasToSormasCaseDto doBuildShareData(Case caze, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
 		Pseudonymizer pseudonymizer =
 			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
 

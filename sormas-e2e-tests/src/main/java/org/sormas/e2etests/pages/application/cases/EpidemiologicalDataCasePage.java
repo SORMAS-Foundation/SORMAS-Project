@@ -135,4 +135,7 @@ public class EpidemiologicalDataCasePage {
   public static By getExposureTableData(Integer tdNr) {
     return By.xpath(String.format("//table[@class='v-table-table']//td[%s]", tdNr));
   }
+
+  public static final By EDIT_SOURCE_CONTACTS_BUTTON =
+      By.cssSelector("[location='sourceContacts'] #edit-task-0");
 }

@@ -317,4 +317,21 @@ public class EditCasePage {
   public static final By EXPECTED_FOLLOWUP_POPUP_TEXT = By.xpath("//div[@class='v-tooltip-text']");
   public static final By EXPECTED_FOLLOWUP_VALUE =
       By.xpath("  //div[contains(@location, \"expectedFollowUpUntilDateLoc\")]//input");
+
+  public static final By VACCINATION_CARD_VACCINATION_NAME =
+      By.xpath("//div[contains(text(),'Impfstoffname:')]");
+  public static final By VACCINATION_CARD_VACCINATION_DATE =
+      By.xpath(
+          "//div[@location='vaccinations']//div[@class='v-slot v-slot-bold v-slot-uppercase v-align-right v-align-middle']/div");
+  public static final By EDIT_VACCINATION_BUTTON =
+      By.xpath(
+          "//div[@location='vaccinations']//div[@class='v-button v-widget link v-button-link compact v-button-compact']");
+  public static final By VACCINATION_CARD_INFO_ICON =
+      By.xpath(
+          "//div[@location = 'vaccinations']//span[contains(@class, 'v-icon v-icon-info_circle')]");
+  public static final By VACCINATION_CARD_INFO_POPUP_TEXT =
+      By.xpath("//div[@class='v-tooltip-text']");
+  public static final By LINK_EVENT_BUTTON_DE = By.id("Ereignis verkn\u00FCpfen");
+  public static final By ADD_A_PARTICIPANT_HEADER_DE =
+      By.xpath("//*[contains(text(),'Neuen Ereignisteilnehmer hinzuf\u00FCgen')]");
 }
