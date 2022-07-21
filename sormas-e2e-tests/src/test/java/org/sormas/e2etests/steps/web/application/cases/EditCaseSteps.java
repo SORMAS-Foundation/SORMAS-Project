@@ -46,7 +46,6 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONF
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONTACTS_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EPIDEMIOLOGICAL_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_NO_POPUP_INPUT;
-import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PLACE_OF_STAY_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CONFIRM;
@@ -2521,21 +2520,6 @@ public class EditCaseSteps implements En {
                   "lastName",
                   "dateOfBirth"));
         });
-  }
-
-  private Vaccination collectVaccinationData() {
-    return Vaccination.builder()
-        .vaccinationDate(getVaccinationDate())
-        .vaccineName(webDriverHelpers.getTextFromWebElement(VACCINATION_CARD_VACCINATION_NAME))
-        .build();
-  }
-
-  private LocalDate getVaccinationDate() {
-    String dateOfReport = webDriverHelpers.getTextFromWebElement(VACCINATION_CARD_VACCINATION_DATE);
-    if (!dateOfReport.isEmpty()) {
-      return LocalDate.parse(dateOfReport, DATE_FORMATTER_DE);
-    }
-    return null;
 
     And(
         "^I check the created data for different place of stay region and district are correctly displayed on Edit case page$",
@@ -2627,62 +2611,19 @@ public class EditCaseSteps implements En {
         });
   }
 
-  private Case collectCasePersonDataWithFacilityAndDifferentPlaceOfStay() {
-    Case userInfo = getUserInformation();
-
-    return Case.builder()
-        .dateOfReport(getDateOfReport())
-        .firstName(userInfo.getFirstName())
-        .lastName(userInfo.getLastName())
-        .dateOfBirth(userInfo.getDateOfBirth())
-        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
-        .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
-        .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
-        .responsibleDistrict(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
-        .responsibleCommunity(webDriverHelpers.getValueFromWebElement(COMMUNITY_INPUT))
-        .placeOfStay(webDriverHelpers.getTextFromWebElement(PLACE_OF_STAY_SELECTED_VALUE))
-        .placeOfStayRegion(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_REGION_INPUT))
-        .placeOfStayDistrict(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_DISTRICT_INPUT))
-        .facility(webDriverHelpers.getValueFromWebElement(FACILITY_HEALTH_INPUT))
+  private Vaccination collectVaccinationData() {
+    return Vaccination.builder()
+        .vaccinationDate(getVaccinationDate())
+        .vaccineName(webDriverHelpers.getTextFromWebElement(VACCINATION_CARD_VACCINATION_NAME))
         .build();
   }
 
-  private Case collectCasePersonDataWithPointOfEntryAndDifferentPlaceOfStay() {
-    Case userInfo = getUserInformation();
-
-    return Case.builder()
-        .dateOfReport(getDateOfReport())
-        .firstName(userInfo.getFirstName())
-        .lastName(userInfo.getLastName())
-        .dateOfBirth(userInfo.getDateOfBirth())
-        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
-        .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
-        .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
-        .responsibleDistrict(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
-        .placeOfStayRegion(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_REGION_INPUT))
-        .placeOfStayDistrict(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_DISTRICT_INPUT))
-        .pointOfEntry(webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_TEXT))
-        .build();
-  }
-
-  private Case collectCasePersonDataWithDifferentPlaceOfStay() {
-    Case userInfo = getUserInformation();
-
-    return Case.builder()
-        .dateOfReport(getDateOfReport())
-        .firstName(userInfo.getFirstName())
-        .lastName(userInfo.getLastName())
-        .dateOfBirth(userInfo.getDateOfBirth())
-        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
-        .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
-        .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
-        .responsibleDistrict(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
-        .responsibleCommunity(webDriverHelpers.getValueFromWebElement(COMMUNITY_INPUT))
-        .placeOfStay(webDriverHelpers.getTextFromWebElement(PLACE_OF_STAY_SELECTED_VALUE))
-        .placeDescription(webDriverHelpers.getValueFromWebElement(PLACE_DESCRIPTION_INPUT))
-        .placeOfStayRegion(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_REGION_INPUT))
-        .placeOfStayDistrict(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_DISTRICT_INPUT))
-        .build();
+  private LocalDate getVaccinationDate() {
+    String dateOfReport = webDriverHelpers.getTextFromWebElement(VACCINATION_CARD_VACCINATION_DATE);
+    if (!dateOfReport.isEmpty()) {
+      return LocalDate.parse(dateOfReport, DATE_FORMATTER_DE);
+    }
+    return null;
   }
 
   private Case collectCasePersonDataWithFacilityAndDifferentPlaceOfStay() {
