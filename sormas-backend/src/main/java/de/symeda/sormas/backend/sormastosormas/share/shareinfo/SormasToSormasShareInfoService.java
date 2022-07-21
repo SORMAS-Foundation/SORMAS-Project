@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.sormastosormas.share.shareinfo;
 
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -33,7 +32,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.backend.caze.Case;
@@ -257,13 +256,13 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 	private void handleOwnershipChangeInExternalSurvTool(boolean isOwnershipHandedOver, List<Case> cases, List<Event> events)
 		throws ExternalSurveillanceToolException {
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && isOwnershipHandedOver) {
-			if (cases.size() > 0) {
-				externalSurveillanceToolGatewayFacade.deleteCases(cases.stream().map(caseFacade::toDto).collect(Collectors.toList()));
-			}
-
-			if (events.size() > 0) {
-				externalSurveillanceToolGatewayFacade.deleteEvents(events.stream().map(eventFacade::toDto).collect(Collectors.toList()));
-			}
+//			if (cases.size() > 0) {
+//				externalSurveillanceToolGatewayFacade.deleteCases(cases.stream().map(caseFacade::toDto).collect(Collectors.toList()));
+//			}
+//
+//			if (events.size() > 0) {
+//				externalSurveillanceToolGatewayFacade.deleteEvents(events.stream().map(eventFacade::toDto).collect(Collectors.toList()));
+//			}
 		}
 	}
 }
