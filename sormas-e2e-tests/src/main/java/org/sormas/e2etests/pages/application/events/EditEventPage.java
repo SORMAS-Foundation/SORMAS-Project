@@ -172,6 +172,8 @@ public class EditEventPage {
   public static final By EVENT_ERROR_POPUP_SECOND_MESSAGE =
       By.xpath(
           "//div[@class='popupContent']//li[text()='Start date has to be before or on the same day as Date of report']");
+  public static final By VACCINATION_STATUS_COMBOBOX =
+      By.xpath("//div[@id='vaccinationStatus']/div");
 
   public static By getGroupEventName(String groupEventName) {
     return By.xpath("//*[contains(text(),\"" + groupEventName + "\")]");

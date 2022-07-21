@@ -2072,6 +2072,13 @@ public class EditCaseSteps implements En {
               "Means of immunization is not equal");
           softly.assertAll();
         });
+
+    And(
+        "I set case vaccination status to ([^\"]*)",
+        (String vaccinationStatus) -> {
+          webDriverHelpers.selectFromCombobox(VACCINATION_STATUS_COMBOBOX, vaccinationStatus);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
   }
 
   private Case collectCasePersonUuid() {

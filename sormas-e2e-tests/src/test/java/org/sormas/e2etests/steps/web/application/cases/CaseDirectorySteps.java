@@ -458,6 +458,22 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
 
+    Then(
+        "I check that created Case is visible with ([^\"]*) status",
+        (String vaccinationStatus) -> {
+          String caseUUID = apiState.getCreatedCase().getUuid();
+          Assert.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(getCaseResultsUuidLocator(caseUUID), 5),
+              "There is no case with expected status");
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              getVaccinationStatusCasesByText(vaccinationStatus));
+          Assert.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(
+                  getVaccinationStatusCasesByText(vaccinationStatus), 5),
+              "There is no case with expected status");
+        });
+
     When(
         "^I navigate to the last created case via the url$",
         () -> {
@@ -1225,30 +1241,25 @@ public class CaseDirectorySteps implements En {
         });
 
     Then(
-        "I set vaccination status filter to ([^\"]*) and apply",
+        "I set case vaccination status filter to ([^\"]*) and apply",
         (String vaccinationStatus) -> {
           webDriverHelpers.selectFromCombobox(
               CASE_VACCINATION_STATUS_FILTER_COMBOBOX, vaccinationStatus);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
-          TimeUnit.SECONDS.sleep(5);
         });
 
     And(
-        "I check that there is ([^\"]*) status cases but not ([^\"]*) or ([^\"]*)",
-        (String vaccinationStatusExpected,
-            String vaccinationStatusNotExpected1,
-            String vaccinationStatusNotExpected2) -> {
+        "I check that there is ([^\"]*) status cases but not ([^\"]*)",
+        (String vaccinationStatusExpected, String vaccinationStatusNotExpected) -> {
+          webDriverHelpers.scrollToElement(
+              getVaccinationStatusCasesByText(vaccinationStatusExpected));
           Assert.assertTrue(
               webDriverHelpers.isElementVisibleWithTimeout(
-                  getVaccinationStatusCasesByText(vaccinationStatusExpected), 2),
+                  getVaccinationStatusCasesByText(vaccinationStatusExpected), 1),
               "There is no case with expected status");
           Assert.assertFalse(
               webDriverHelpers.isElementVisibleWithTimeout(
-                  getVaccinationStatusCasesByText(vaccinationStatusNotExpected1), 2),
-              "There is case with not expected status");
-          Assert.assertFalse(
-              webDriverHelpers.isElementVisibleWithTimeout(
-                  getVaccinationStatusCasesByText(vaccinationStatusNotExpected2), 2),
+                  getVaccinationStatusCasesByText(vaccinationStatusNotExpected), 2),
               "There is case with not expected status");
         });
   }

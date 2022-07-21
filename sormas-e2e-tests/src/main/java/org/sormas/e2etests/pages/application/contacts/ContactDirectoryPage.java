@@ -97,11 +97,23 @@ public class ContactDirectoryPage {
   public static final By CONTACT_DISPLAY_FILTER_COMBOBOX =
       By.cssSelector("[id='relevanceStatus'] [class='v-filterselect-button']");
   public static final By RELATIONSHIP_WITH_CASE_COMBOBOX = By.cssSelector("#relationToCase div");
+  public static final By CONTACT_VACCINATION_STATUS_FILTER_COMBOBOX =
+      By.cssSelector("[id='vaccinationStatus'] [class='v-filterselect-button']");
+  public static final By VACCINATED_STATUS_FIELD_IN_DIRECTORY_LIST =
+      By.xpath("//td[contains(text(), 'Geimpft')]");
 
   public static By getCheckboxByUUID(String uuid) {
     return By.xpath(
         String.format(
             "//td//a[text()=\"%s\"]/../preceding-sibling::td//input[@type=\"checkbox\"]",
             uuid.substring(0, 6).toUpperCase()));
+  }
+
+  public static By getVaccinationStatusContactsByText(String status) {
+    return By.xpath(String.format("//td[contains(text(), '%s')]", status));
+  }
+
+  public static By getContactsByUUID(String uuid) {
+    return By.xpath(String.format("//a[@title='%s']", uuid));
   }
 }

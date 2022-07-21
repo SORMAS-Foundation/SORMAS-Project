@@ -27,6 +27,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_FROM_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_MANAGEMENT_STATUS_CHECK;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_PARTICIPANTS_TAB;
@@ -71,6 +72,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EV
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_INVESTIGATION_STATUS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_MANAGEMENT_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_MANAGEMENT_STATUS_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_PARTICIPANT_VACCINATION_STATUS_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_REGION_COMBOBOX_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_STATUS_FILTER_BUTTONS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_STATUS_FILTER_COMBOBOX;
@@ -117,6 +119,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ge
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByShortEventUuid;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByIndex;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByUUID;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getVaccinationStatusEventParticipantByText;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DESCRIPTION_OF_CREATE_CASE_FROM_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANT_DISPLAY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
@@ -1295,6 +1298,27 @@ public class EventDirectorySteps implements En {
               SEARCH_EVENT_BY_FREE_TEXT, EditEventSteps.collectedEvent.getUuid());
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
           webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(EVENTS_COLUMN_HEADERS);
+        });
+
+    And(
+        "I click SHOW MORE FILTERS button on Event directory page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SHOW_MORE_LESS_FILTERS));
+
+    Then(
+        "I set event vaccination status filter to ([^\"]*) and apply",
+        (String vaccinationStatus) -> {
+          webDriverHelpers.selectFromCombobox(
+              EVENT_PARTICIPANT_VACCINATION_STATUS_FILTER_COMBOBOX, vaccinationStatus);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+        });
+
+    Then(
+        "I check that created Event is visible with ([^\"]*) status",
+        (String vaccinationStatus) -> {
+          Assert.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(
+                  getVaccinationStatusEventParticipantByText(vaccinationStatus), 5),
+              "There is no event participant with expected status");
         });
   }
 

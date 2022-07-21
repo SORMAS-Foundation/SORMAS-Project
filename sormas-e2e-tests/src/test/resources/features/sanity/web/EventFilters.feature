@@ -169,3 +169,21 @@ Feature: Event Directory filters check
     And I apply "Archived events" to combobox on Event Directory Page
     And I check the number of displayed Event results from All button is 0
 
+  @issue=SORQA-5969 @env_de
+  Scenario Outline: Test vaccination status filter <status> and columns to event
+    Given I log in as a National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data for DE version
+    And I navigate to EVENT from edit event page
+    When I add a participant to the event in DE
+    Then I set participant vaccination status to <status>
+    Then I set event vaccination status filter to <status> and apply
+    Then I check that created Event is visible with <status> status
+
+
+    Examples:
+      | status    |
+      | Geimpft   |
+      | Ungeimpft |
+      | Unbekannt |
