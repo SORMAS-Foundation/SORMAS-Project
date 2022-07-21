@@ -231,7 +231,7 @@ public class SymptomsTabSteps implements En {
         "I set date of symptoms to {int} day ago from Symptoms tab",
         (Integer days) -> {
           dateOfSymptomsForFollowUpDate = LocalDate.now().minusDays(days);
-          fillDateOfSymptomDE(LocalDate.now().minusDays(days));
+          fillDateOfSymptomDE(LocalDate.now().minusDays(days), Locale.GERMAN);
         });
     And(
         "I clear date of symptoms from Symptoms tab",
@@ -617,11 +617,6 @@ public class SymptomsTabSteps implements En {
     if (locale.equals(Locale.GERMAN)) formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_INPUT, formatter.format(date));
-  }
-
-  private void fillDateOfSymptomDE(LocalDate dateOfSymptom) {
-    webDriverHelpers.fillInWebElement(
-        DATE_OF_SYMPTOM_INPUT, DATE_FORMATTER_DE.format(dateOfSymptom));
   }
 
   private void selectAbnormalLungXrayFindings(String abnormalLungXrayFindings) {
