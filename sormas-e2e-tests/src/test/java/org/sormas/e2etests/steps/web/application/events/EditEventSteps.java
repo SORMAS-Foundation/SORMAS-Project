@@ -39,6 +39,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.REP
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPORT_SUCCESS_DE;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PICK_OR_CREATE_PERSON_HEADER_DE;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.EVENT_IDENTIFICATION_SOURCE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.START_DATA_TIME;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CASE_CONTROL_STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
@@ -220,6 +221,7 @@ import org.sormas.e2etests.pages.application.events.EditEventPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactSteps;
+import org.sormas.e2etests.steps.web.application.persons.PersonDirectorySteps;
 import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
@@ -610,6 +612,9 @@ public class EditEventSteps implements En {
           }
         });
     When(
+        "I collect the event participant person UUID displayed on Edit Event Participant page",
+        () -> person = collectPersonUuid());
+    When(
         "I add only required data for event participant creation for DE",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
@@ -622,7 +627,24 @@ public class EditEventSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
           }
         });
-
+    When(
+        "I add only person data for event participant creation for DE with built person shared for all entities",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
+          webDriverHelpers.fillInWebElement(
+              PARTICIPANT_FIRST_NAME_INPUT,
+              PersonDirectorySteps.personSharedForAllEntities.getFirstName());
+          webDriverHelpers.fillInWebElement(
+              PARTICIPANT_LAST_NAME_INPUT,
+              PersonDirectorySteps.personSharedForAllEntities.getLastName());
+          webDriverHelpers.selectFromCombobox(
+              SEX_COMBOBOX,
+              GenderValues.getValueForDE(PersonDirectorySteps.personSharedForAllEntities.getSex()));
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_HEADER_DE, 15)) {
+            webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
+          }
+        });
     When(
         "I add same person data as one used for Contact creation for event participant",
         () -> {
@@ -1702,6 +1724,13 @@ public class EditEventSteps implements En {
           TimeUnit.SECONDS.sleep(3); // wait for response after confirm
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+
+    And(
+        "^I set event Date on Edit Event Page to (\\d+) days before the vaccination date for DE$",
+        (Integer daysBeforeVaccinationDate) -> {
+          LocalDate eventStartDate = LocalDate.now().minusDays(21 + daysBeforeVaccinationDate);
+          fillStartDataDE(eventStartDate);
+        });
   }
 
   private String collectEventParticipantUuid() {
@@ -1810,6 +1839,10 @@ public class EditEventSteps implements En {
 
   private void fillStartData(LocalDate date) {
     webDriverHelpers.fillInWebElement(START_DATA_INPUT, DATE_FORMATTER.format(date));
+  }
+
+  private void fillStartDataDE(LocalDate date) {
+    webDriverHelpers.fillInWebElement(START_DATA_INPUT, DATE_FORMATTER_DE.format(date));
   }
 
   private void selectEventInvestigationStatusOptions(String eventInvestigationStatusOption) {

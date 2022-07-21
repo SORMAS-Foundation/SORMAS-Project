@@ -90,6 +90,7 @@ import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PERS
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ARCHIVE_EVENT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_DEARCHIVE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DEARCHIVE_REASON_TEXT_AREA;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.entries.TravelEntryDirectorySteps.userDirPath;
 
 import com.github.javafaker.Faker;
@@ -112,6 +113,7 @@ import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.pojo.web.TravelEntry;
 import org.sormas.e2etests.entities.services.TravelEntryService;
 import org.sormas.e2etests.enums.GenderValues;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.cases.CreateNewCasePage;
@@ -120,6 +122,7 @@ import org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage;
 import org.sormas.e2etests.pages.application.entries.EditTravelEntryPage;
 import org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage;
 import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.web.application.persons.PersonDirectorySteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
@@ -150,7 +153,8 @@ public class CreateNewTravelEntrySteps implements En {
       ApiState apiState,
       Faker faker,
       SoftAssert softly,
-      AssertHelpers assertHelpers) {
+      AssertHelpers assertHelpers,
+      RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
     Random r = new Random();
     char c = (char) (r.nextInt(26) + 'a');
@@ -182,6 +186,14 @@ public class CreateNewTravelEntrySteps implements En {
 
           fillPointOfEntry(travelEntry.getPointOfEntry());
           fillPointOfEntryDetails(travelEntry.getPointOfEntryDetails());
+        });
+    When(
+        "^I fill person data in a new travel entry form with built person shared for all entities$",
+        () -> {
+          fillFirstName(PersonDirectorySteps.personSharedForAllEntities.getFirstName());
+          fillLastName(PersonDirectorySteps.personSharedForAllEntities.getLastName());
+          selectSex(
+              GenderValues.getValueForDE(PersonDirectorySteps.personSharedForAllEntities.getSex()));
         });
     When(
         "^I fill the required fields in a new travel entry form without disease and person data$",
@@ -432,6 +444,22 @@ public class CreateNewTravelEntrySteps implements En {
                   "responsibleCommunity",
                   "pointOfEntry",
                   "pointOfEntryDetails"));
+        });
+    When(
+        "^I navigate to the last created UI travel entry via the url$",
+        () -> {
+          String LAST_CREATED_TRAVEL_ENTRY_URL =
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
+                  + "/sormas-webdriver/#!travelEntries/data/"
+                  + TravelEntryUuid.getUuid();
+          webDriverHelpers.accessWebSite(LAST_CREATED_TRAVEL_ENTRY_URL);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
+        });
+    When(
+        "I click on Delete button from travel entry",
+        () -> {
+          webDriverHelpers.scrollToElement(DELETE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
         });
     When(
         "I click NEW TASK in Edit Travel Entry page",
@@ -868,14 +896,6 @@ public class CreateNewTravelEntrySteps implements En {
     When("I copy url of current travel entry", () -> currentUrl = webDriverHelpers.returnURL());
 
     When("I back to deleted travel entry by url", () -> webDriverHelpers.accessWebSite(currentUrl));
-
-    When(
-        "I click on Delete button from travel entry",
-        () -> {
-          webDriverHelpers.scrollToElement(DELETE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
-        });
-
     When(
         "I check if External ID input on travel entry edit page is disabled",
         () -> {

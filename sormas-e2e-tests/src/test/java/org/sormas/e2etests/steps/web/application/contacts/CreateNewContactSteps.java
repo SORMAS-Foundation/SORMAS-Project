@@ -171,6 +171,29 @@ public class CreateNewContactSteps implements En {
           fillRelationshipWithCase(contact.getRelationshipWithCase());
           fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
         });
+    When(
+        "^I fill a new contact form for DE version without person data$",
+        () -> {
+          contact = contactService.buildGeneratedContactDE();
+          selectSex(contact.getSex());
+          fillPrimaryPhoneNumber(contact.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(contact.getPrimaryEmailAddress());
+          selectReturningTraveler(contact.getReturningTraveler());
+          fillDateOfReport(contact.getReportDate(), Locale.GERMAN);
+          fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
+          fillCaseIdInExternalSystem(contact.getCaseIdInExternalSystem());
+          fillDateOfLastContact(contact.getDateOfLastContact(), Locale.GERMAN);
+          fillCaseOrEventInformation(contact.getCaseOrEventInformation());
+          selectResponsibleRegion(contact.getResponsibleRegion());
+          selectResponsibleDistrict(contact.getResponsibleDistrict());
+          selectResponsibleCommunity(contact.getResponsibleCommunity());
+          selectTypeOfContact(contact.getTypeOfContact());
+          fillAdditionalInformationOnTheTypeOfContact(
+              contact.getAdditionalInformationOnContactType());
+          selectContactCategory(contact.getContactCategory().toUpperCase());
+          fillRelationshipWithCase(contact.getRelationshipWithCase());
+          fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
+        });
 
     When(
         "^I fill a new contact form with same person data for DE version$",
@@ -446,6 +469,15 @@ public class CreateNewContactSteps implements En {
           softly.assertEquals(disease, getDisease, "Diseases are not equal");
           softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_DISCARD_BUTTON);
+        });
+
+    And(
+        "^I change a Report Date to the current date for DE$",
+        () -> {
+          DateTimeFormatter formatter;
+          formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+          webDriverHelpers.clearAndFillInWebElement(
+              DATE_OF_REPORT_INPUT, formatter.format(LocalDate.now()));
         });
   }
 

@@ -402,6 +402,32 @@ Feature: Create travel entries
       When I back to deleted travel entry by url
       Then I check if reason of deletion is set to "Löschen auf Anforderung der betroffenen Person nach DSGVO"
       And I check if External ID input on travel entry edit page is disabled
+  @issue=SORDEV-10227 @env_de
+  Scenario: Test Permanent deletion for Person for Travel Entry
+    Given I log in as a National User
+    And I click on the Entries button from navbar
+    And I click on the New Travel Entry button from Travel Entries directory
+    When I fill the required fields in a new travel entry form
+    And I click on Save button from the new travel entry form
+    Then I check the created data is correctly displayed on Edit travel entry page for DE version
+    And I collect travel UUID from travel entry
+    And I navigate to person tab in Edit travel entry page
+    And I check the created data is correctly displayed on Edit travel entry person page for DE version
+    And I click on the Persons button from navbar
+    Then I filter the last created person linked with Travel Entry
+    And I click on Travel Entry aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I click on All aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I navigate to the last created UI travel entry via the url
+    Then I click on Delete button from travel entry
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    And I click on the Persons button from navbar
+    Then I filter the last created person linked with Travel Entry
+    And I click on Travel Entry aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 0
+
 
     @issue=SORDEV-9792 @env_de
     Scenario: Test CoreAdo: Introduce "end of processing date" for travel entries
