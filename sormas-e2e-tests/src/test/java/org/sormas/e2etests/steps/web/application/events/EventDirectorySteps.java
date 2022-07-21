@@ -27,6 +27,8 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_FROM_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_CARD_INFO_ICON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_CARD_INFO_POPUP_TEXT;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.FIRST_CONTACT_ID;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_MANAGEMENT_STATUS_CHECK;
@@ -1310,6 +1312,25 @@ public class EventDirectorySteps implements En {
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
           }
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CONTACT_ID);
+        });
+
+    And(
+        "^I click on SAVE button in Link Event form$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_IN_LINK_FORM));
+
+    And(
+        "^I check the displayed message is correct after hovering over the Vaccination Card Info icon on Event Participant Directory for DE$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(VACCINATION_CARD_INFO_ICON);
+          webDriverHelpers.hoverToElement(VACCINATION_CARD_INFO_ICON);
+          String displayedText =
+              webDriverHelpers.getTextFromWebElement(VACCINATION_CARD_INFO_POPUP_TEXT);
+          softly.assertEquals(
+              displayedText,
+              "Diese Impfung ist f\u00FCr diesen Ereignisteilnehmer nicht relevant, weil das Datum der Impfung nach dem Ereignisdatum oder dem Ereignis-Meldedatum liegt.",
+              "Message is incorrect");
+          softly.assertAll();
         });
   }
 

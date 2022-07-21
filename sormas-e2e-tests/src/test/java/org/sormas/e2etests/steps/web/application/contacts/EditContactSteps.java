@@ -43,6 +43,8 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPU
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UPLOAD_DOCUMENT_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_CARD_INFO_ICON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_CARD_INFO_POPUP_TEXT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CASE_OR_EVENT_INFORMATION_CONTACT_TEXT_AREA;
@@ -746,6 +748,7 @@ public class EditContactSteps implements En {
           webDriverHelpers.scrollToElement(SAVE_EDIT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_EDIT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_SAVED_POPUP);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
     When(
         "^I click Link Event button on Edit Contact Page$",
@@ -1150,6 +1153,27 @@ public class EditContactSteps implements En {
     When(
         "I click on discard button in de-archive contact popup",
         () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL_POPUP));
+
+    And(
+        "^I set the last contact date to (\\d+) days before the vaccination date$",
+        (Integer numberOfDays) -> {
+          fillDateOfLastContactDE(LocalDate.now().minusDays(35 + numberOfDays));
+        });
+
+    And(
+        "^I check the displayed message is correct after hovering over the Vaccination Card Info icon on Edit Contact Page for DE$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(VACCINATION_CARD_INFO_ICON);
+          webDriverHelpers.hoverToElement(VACCINATION_CARD_INFO_ICON);
+          String displayedText =
+              webDriverHelpers.getTextFromWebElement(VACCINATION_CARD_INFO_POPUP_TEXT);
+          softly.assertEquals(
+              displayedText,
+              "Diese Impfung ist f\u00FCr diesen Kontakt nicht relevant, weil das Datum der Impfung nach dem Datum des letzten Kontaktes oder dem Kontakt-Meldedatum liegt.",
+              "Message is incorrect");
+          softly.assertAll();
+        });
   }
 
   private void selectContactClassification(String classification) {
@@ -1166,6 +1190,10 @@ public class EditContactSteps implements En {
 
   private void fillDateOfLastContact(LocalDate date) {
     webDriverHelpers.clearAndFillInWebElement(LAST_CONTACT_DATE, formatter.format(date));
+  }
+
+  private void fillDateOfLastContactDE(LocalDate date) {
+    webDriverHelpers.clearAndFillInWebElement(LAST_CONTACT_DATE, formatterDE.format(date));
   }
 
   private void selectDiseaseOfSourceCase(String disease) {

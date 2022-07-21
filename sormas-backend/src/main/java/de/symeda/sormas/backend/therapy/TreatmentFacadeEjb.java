@@ -27,6 +27,7 @@ import de.symeda.sormas.api.therapy.TreatmentExportDto;
 import de.symeda.sormas.api.therapy.TreatmentFacade;
 import de.symeda.sormas.api.therapy.TreatmentIndexDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -146,6 +147,8 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		UserRight._TREATMENT_EDIT })
 	public TreatmentDto saveTreatment(@Valid TreatmentDto source) {
 		Treatment existingTreatment = service.getByUuid(source.getUuid());
+		FacadeHelper.checkCreateAndEditRights(existingTreatment, userService, UserRight.TREATMENT_CREATE, UserRight.TREATMENT_EDIT);
+
 		TreatmentDto existingDto = toDto(existingTreatment);
 
 		restorePseudonymizedDto(source, existingTreatment, existingDto);

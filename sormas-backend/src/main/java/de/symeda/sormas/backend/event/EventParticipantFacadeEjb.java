@@ -94,6 +94,7 @@ import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -336,6 +337,7 @@ public class EventParticipantFacadeEjb
 		UserRight._EVENTPARTICIPANT_EDIT })
 	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto, boolean checkChangeDate, boolean internal) {
 		EventParticipant existingParticipant = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
+		FacadeHelper.checkCreateAndEditRights(existingParticipant, userService, UserRight.EVENTPARTICIPANT_CREATE, UserRight.EVENTPARTICIPANT_EDIT);
 
 		if (internal && existingParticipant != null && !service.isEditAllowed(existingParticipant).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventParticipantNotEditable));

@@ -1517,3 +1517,25 @@ Feature: Case end to end tests
     Given I log in as a National User
     Then I navigate to the last created case via the url
     And I check that External Token field is visible on Edit Case page
+
+  @issue=SORDEV-10227 @env_de
+  Scenario: Test Permanent deletion for Person for Case
+    Given I log in as a National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    And I check the created data is correctly displayed on Edit case page for DE version
+    And I click on the Persons button from navbar
+    Then I filter the last created person linked with Case
+    And I check that number of displayed Person results is 1
+    And I click on All aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I click on the Cases button from navbar
+    And I filter by CaseID of last created UI Case on Case directory page
+    And I open last created case
+    Then I click on Delete button from case
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    And I click on the Persons button from navbar
+    Then I filter the last created person linked with Case
+    And I check that number of displayed Person results is 0
