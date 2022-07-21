@@ -2351,6 +2351,22 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
+
+    When(
+        "^I click Link Event button on Edit Case Page$",
+        () -> {
+          webDriverHelpers.scrollToElement(LINK_EVENT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON);
+        });
+
+    When(
+        "I check if disease is set for {string} in Case Edit Directory",
+        (String disease) -> {
+          webDriverHelpers.scrollToElement(DISEASE_INPUT);
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(DISEASE_INPUT), disease, "Incorrect disease");
+          softly.assertAll();
+        });
   }
 
   private Vaccination collectVaccinationData() {
@@ -2366,13 +2382,6 @@ public class EditCaseSteps implements En {
       return LocalDate.parse(dateOfReport, DATE_FORMATTER_DE);
     }
     return null;
-
-    When(
-        "^I click Link Event button on Edit Case Page$",
-        () -> {
-          webDriverHelpers.scrollToElement(LINK_EVENT_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON);
-        });
   }
 
   private Case collectCasePersonUuid() {

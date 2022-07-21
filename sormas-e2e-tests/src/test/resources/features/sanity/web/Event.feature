@@ -1239,8 +1239,7 @@ Feature: Create events
     And I check if downloaded zip file for Quarantine Order is correct for DE version
     And I delete downloaded file created from Quarantine order
 
-
-  @issue=SORDEV-10361 @env_main @testIt
+  @issue=SORDEV-10361 @env_main
   Scenario: Test Hide "buried" within Person present condition for Covid-19 for Events
     Given I log in as a Admin User
     And I click on the Events button from navbar

@@ -1504,7 +1504,23 @@ Feature: Case end to end tests
       And I check if Present condition of person combobox has value "Dead"
       And I check if Present condition of person combobox has value "Unknown"
       Then I check if Present condition of person combobox has no value "Buried"
-      And I preparing CSV with "COVID-19" as a disease and "Buried" as a present condition
+
+  @issue=SORDEV-10361 @env_main @testIt
+  Scenario: Test Hide "buried" within Person present condition for Covid-19 for Import detailed case
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I prepare CSV with "COVID-19" as a disease and "Buried" as a present condition
+    And I click on the import button for Cases in Case tab
+    Then I click on the detailed button from import Case tab
+    Then I select created CSV file
+    And I click on the "START DATA IMPORT" button from the Import Detailed Case popup
+    Then I check if csv file for detailed case is imported successfully
+    Then I search for created case by first and last name of the person
+    Then I click on the first Case ID from Case Directory
+    Then I check if disease is set for "COVID-19" in Case Edit Directory
+    And I navigate to case person tab
+    Then I check if Present condition of person combobox has value "Buried"
+    And I delete created csv file for detailed case import
 
     @issue=SORDEV-9792 @env_de
       Scenario: Test CoreAdo: Introduce "end of processing date" for cases

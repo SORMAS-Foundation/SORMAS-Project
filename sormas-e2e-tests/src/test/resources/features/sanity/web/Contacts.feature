@@ -967,7 +967,7 @@ Feature: Contacts end to end tests
     And I check if External token input on case edit page is disabled
     And I check if Case or event information text area on case edit page is disabled
 
-  @issue=SORDEV-10361 @env_main @testIt
+  @issue=SORDEV-10361 @env_main
   Scenario: Test Hide "buried" within Person present condition for Covid-19 for Contacts
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
