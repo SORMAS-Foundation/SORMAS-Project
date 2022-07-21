@@ -337,7 +337,7 @@ public class CaseService {
         .responsibleDistrict("SK Berlin Mitte")
         .placeOfStayRegion(RegionsValues.VoreingestellteBundeslander.getName())
         .placeOfStayDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
-        .pointOfEntry("Voreingestellter Einreiseort1")
+        .pointOfEntry("Voreingestellter Flughafen")
         .dateOfBirth(
             LocalDate.of(
                 faker.number().numberBetween(1900, 2002),

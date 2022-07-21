@@ -1644,11 +1644,10 @@ Feature: Case end to end tests
     And I click on the NEW CASE button
     And I select "POINT OF ENTRY" as a Case Origin in Case Popup
     And I set Responsible region to "Voreingestellte Bundesländer" and District to "Voreingestellter Landkreis"
-    And I check that "Voreingestellter Einreiseort1" option is available in Point of entry dropdown
-    And I set Responsible region to "Region1" and District to "District11"
+    And I check that "Voreingestellter Flughafen" option is available in Point of entry dropdown
     And I click on Place of stay of this case differs from its responsible jurisdiction in New case form
-    And I set Place of stay region to "Voreingestellte Bundesländer" and Place of stay district to "Voreingestellter Landkreis"
-    And I check that "Voreingestellter Einreiseort1" option is available in Point of entry dropdown
+    And I set Place of stay region to "Berlin" and Place of stay district to "SK Berlin Mitte"
+    And I check that "Berlin Airport" option is available in Point of entry dropdown
     And I create a new case with different place of stay and Point of entry as a Case origin
     And I check the point of entry and place of stay created data are correctly displayed on Edit case page
 
