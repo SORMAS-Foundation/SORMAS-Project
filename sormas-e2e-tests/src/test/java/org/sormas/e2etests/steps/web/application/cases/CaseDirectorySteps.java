@@ -1247,21 +1247,6 @@ public class CaseDirectorySteps implements En {
               CASE_VACCINATION_STATUS_FILTER_COMBOBOX, vaccinationStatus);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
         });
-
-    And(
-        "I check that there is ([^\"]*) status cases but not ([^\"]*)",
-        (String vaccinationStatusExpected, String vaccinationStatusNotExpected) -> {
-          webDriverHelpers.scrollToElement(
-              getVaccinationStatusCasesByText(vaccinationStatusExpected));
-          Assert.assertTrue(
-              webDriverHelpers.isElementVisibleWithTimeout(
-                  getVaccinationStatusCasesByText(vaccinationStatusExpected), 1),
-              "There is no case with expected status");
-          Assert.assertFalse(
-              webDriverHelpers.isElementVisibleWithTimeout(
-                  getVaccinationStatusCasesByText(vaccinationStatusNotExpected), 2),
-              "There is case with not expected status");
-        });
   }
 
   private Number getRandomNumberForBirthDateDifferentThanCreated(Number created, int min, int max) {

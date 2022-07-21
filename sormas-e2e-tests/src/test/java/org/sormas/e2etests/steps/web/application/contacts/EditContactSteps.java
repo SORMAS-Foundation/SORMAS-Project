@@ -1073,6 +1073,7 @@ public class EditContactSteps implements En {
               "Case or event information text area is enabled");
           softly.assertAll();
         });
+
     And(
         "I set contact vaccination status to ([^\"]*)",
         (String vaccinationStatus) -> {

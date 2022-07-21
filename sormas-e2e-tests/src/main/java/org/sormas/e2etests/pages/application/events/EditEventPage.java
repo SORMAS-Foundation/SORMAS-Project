@@ -174,10 +174,9 @@ public class EditEventPage {
           "//div[@class='popupContent']//li[text()='Start date has to be before or on the same day as Date of report']");
   public static final By VACCINATION_STATUS_COMBOBOX =
       By.xpath("//div[@id='vaccinationStatus']/div");
+  public static final By NEW_IMMUNIZATION_BUTTON = By.cssSelector("[id='New immunization']");
 
   public static By getGroupEventName(String groupEventName) {
     return By.xpath("//*[contains(text(),\"" + groupEventName + "\")]");
   }
-
-  public static final By NEW_IMMUNIZATION_BUTTON = By.cssSelector("[id='New immunization']");
 }
