@@ -125,7 +125,6 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_CHECKBOX_LABEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_OPTIONS;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_SELECTED_VALUE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.POPUPS_INPUTS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PREGNANCY_OPTIONS;
@@ -836,7 +835,8 @@ public class EditCaseSteps implements En {
         "I check if region combobox is available and I select Responsible Region",
         () -> {
           aCase = caseService.buildEditGeneratedCase();
-          webDriverHelpers.selectFromCombobox(PLACE_OF_STAY_REGION_COMBOBOX, aCase.getRegion());
+          webDriverHelpers.selectFromCombobox(
+              EditCasePage.PLACE_OF_STAY_REGION_COMBOBOX, aCase.getRegion());
           editedCase = editedCase.toBuilder().region(aCase.getRegion()).build();
         });
 
@@ -1883,7 +1883,7 @@ public class EditCaseSteps implements En {
               "Place of stay is not correct");
 
           softly.assertEquals(
-              webDriverHelpers.getValueFromCombobox(PLACE_OF_STAY_REGION_COMBOBOX),
+              webDriverHelpers.getValueFromCombobox(EditCasePage.PLACE_OF_STAY_REGION_COMBOBOX),
               "Saarland",
               "Place of stay region is not correct");
 
@@ -2678,7 +2678,7 @@ public class EditCaseSteps implements En {
         .quarantine(webDriverHelpers.getValueFromCombobox(QUARANTINE_COMBOBOX))
         .vaccinationStatus(
             webDriverHelpers.getValueFromCombobox(VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX))
-        .region(webDriverHelpers.getValueFromCombobox(PLACE_OF_STAY_REGION_COMBOBOX))
+        .region(webDriverHelpers.getValueFromCombobox(EditCasePage.PLACE_OF_STAY_REGION_COMBOBOX))
         .district(webDriverHelpers.getValueFromCombobox(PLACE_OF_STAY_DISTRICT_COMBOBOX))
         .build();
   }
