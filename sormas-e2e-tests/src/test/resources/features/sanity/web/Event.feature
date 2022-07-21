@@ -898,7 +898,7 @@ Feature: Create events
     Then I collect the sample UUID displayed on create new sample page
     Then I create a new Sample with positive test result with COVID-19 as disease
     Then I confirm popup window
-    Then I pick a new case in pick or create a case popup
+    Then I pick an existing case in pick or create a case popup
     Then I click on edit Sample
     Then I click on new test result for pathogen tests
     Then I create a new pathogen test result with Cholera as disease

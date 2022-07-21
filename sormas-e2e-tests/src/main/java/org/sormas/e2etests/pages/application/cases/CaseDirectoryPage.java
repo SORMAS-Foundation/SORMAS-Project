@@ -152,6 +152,8 @@ public class CaseDirectoryPage {
   public static final By ALL_RESULTS_CHECKBOX =
       By.xpath("//th[@role='columnheader']//input[@type='checkbox']/../..");
   public static final By NEW_EVENT_CHECKBOX = By.xpath("//*[contains(text(),'New event')]/..");
+  public static final By NEW_EVENT_CHECKBOX_DE =
+      By.xpath("//*[contains(text(),'Neues Ereignis')]/..");
   public static final By FIRST_RESULT_IN_GRID =
       By.xpath("//div[contains(@class, 'popupContent')]//tr[@role='row']");
   public static final By SEARCH_BUTTON = By.id("search");

@@ -447,6 +447,15 @@ public class CreateNewContactSteps implements En {
           softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_DISCARD_BUTTON);
         });
+
+    And(
+        "^I change a Report Date to the current date for DE$",
+        () -> {
+          DateTimeFormatter formatter;
+          formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+          webDriverHelpers.clearAndFillInWebElement(
+              DATE_OF_REPORT_INPUT, formatter.format(LocalDate.now()));
+        });
   }
 
   private void fillFirstName(String firstName) {
