@@ -999,3 +999,37 @@ Feature: Contacts end to end tests
     And I apply "Aktive Kontakte" to combobox on Contact Directory Page
     Then I filter with last created contact using contact UUID
     And I check that number of displayed contact results is 1
+
+  @issue=SORDEV-5565 @env_de
+  Scenario: Document Templates create quarantine order for Contact bulk DE
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    When I fill a new contact form for DE version
+    And I click on SAVE new contact button
+    Then I check the created data is correctly displayed on Edit Contact page for DE version
+    And I click on the Contacts button from navbar
+    And I click on the More button on Contact directory page
+    And I click Enter Bulk Edit Mode on Contact directory page
+    And I select last created UI result in grid in Contact Directory for Bulk Action
+    And I select last created API result in grid in Contact Directory for Bulk Action
+    And I click on Bulk Actions combobox on Contact Directory Page
+    And I click on Create Quarantine Order from Bulk Actions combobox on Contact Directory Page
+    And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Contact directory for DE
+    And I select "ExampleDocumentTemplateContacts.docx" Quarantine Order in Create Quarantine Order form in Edit Contact directory
+    And I click on Create button in Create Quarantine Order form DE
+    And I click on close button in Create Quarantine Order form
+    And I check if downloaded zip file for Quarantine Order is correct for DE version
+    And I click on the More button on Contact directory page
+    Then I click Leave Bulk Edit Mode on Contact directory page
+    Then I navigate to the last created UI contact via the url
+    And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab for UI created contact in Edit Contact directory for DE
+    And I navigate to the last created contact via the url
+    And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab in Edit Contact directory for DE
+    And I delete downloaded file created from Quarantine order
