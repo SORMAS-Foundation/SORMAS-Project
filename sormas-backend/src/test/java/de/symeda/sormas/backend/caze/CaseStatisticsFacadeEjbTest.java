@@ -29,9 +29,9 @@ import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
-import de.symeda.sormas.backend.util.DateHelper8;
 
 public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 
@@ -63,7 +63,7 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		caze = getCaseFacade().save(caze);
 
 		StatisticsCaseCriteria criteria = new StatisticsCaseCriteria();
-		int year = DateHelper8.toLocalDate(caze.getSymptoms().getOnsetDate()).getYear();
+		int year = UtilDate.toLocalDate(caze.getSymptoms().getOnsetDate()).getYear();
 		criteria.years(Arrays.asList(new Year(year), new Year(year + 1)), StatisticsCaseAttribute.ONSET_TIME);
 		criteria.regions(Arrays.asList(new RegionReferenceDto(rdcf.region.getUuid(), null, null)));
 		criteria.addAgeIntervals(Arrays.asList(new IntegerRange(10, 40)));
@@ -114,7 +114,7 @@ public class CaseStatisticsFacadeEjbTest extends AbstractBeanTest {
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 
 		StatisticsCaseCriteria criteria = new StatisticsCaseCriteria();
-		int year = DateHelper8.toLocalDate(caze.getSymptoms().getOnsetDate()).getYear();
+		int year = UtilDate.toLocalDate(caze.getSymptoms().getOnsetDate()).getYear();
 		criteria.years(Arrays.asList(new Year(year), new Year(year + 1)), StatisticsCaseAttribute.ONSET_TIME);
 		criteria.regions(Arrays.asList(new RegionReferenceDto(rdcf.region.getUuid(), null, null)));
 		criteria.addAgeIntervals(Arrays.asList(new IntegerRange(10, 40)));

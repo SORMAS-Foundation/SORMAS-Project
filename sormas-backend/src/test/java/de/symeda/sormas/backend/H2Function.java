@@ -3,7 +3,7 @@ package de.symeda.sormas.backend;
 import java.util.Date;
 
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.util.DateHelper8;
+import de.symeda.sormas.api.utils.UtilDate;
 
 /**
  * When extending this class make sure to also extend {@link AbstractBeanTest#initH2Functions()} and {@link ExtendedH2Dialect}.
@@ -17,7 +17,7 @@ public class H2Function {
 	public static long date_part(String part, Date date) {
 		switch (part) {
 		case "year":
-			return DateHelper8.toLocalDate(date).getYear();
+			return UtilDate.toLocalDate(date).getYear();
 		case "epoch":
 			return date.getTime() / 1000;
 		default:

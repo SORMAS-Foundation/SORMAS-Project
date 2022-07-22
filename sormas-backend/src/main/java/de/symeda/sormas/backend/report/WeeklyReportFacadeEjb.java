@@ -57,6 +57,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
@@ -72,7 +73,6 @@ import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.RightsAllowed;
 
@@ -393,8 +393,8 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 				Task task = taskService.buildTask(null);
 				task.setTaskContext(TaskContext.GENERAL);
 				task.setTaskType(TaskType.WEEKLY_REPORT_GENERATION);
-				task.setSuggestedStart(DateHelper8.toDate(fromDateTime));
-				task.setDueDate(DateHelper8.toDate(toDateTime.minusMinutes(1)));
+				task.setSuggestedStart(UtilDate.from(fromDateTime));
+				task.setDueDate(UtilDate.from(toDateTime.minusMinutes(1)));
 				task.setAssigneeUser(user);
 				taskService.ensurePersisted(task);
 			}

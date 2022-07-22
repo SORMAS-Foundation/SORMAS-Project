@@ -37,12 +37,12 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.util.DateHelper8;
 
 public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 
@@ -280,7 +280,7 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 
 		loginWith(nationalUser);
 
-		Date today = DateHelper8.toDate(LocalDate.now().atTime(12, 0));
+		Date today = UtilDate.from(LocalDate.now().atTime(12, 0));
 		PersonDto person1 = creator.createPerson("John", "Doe");
 		PersonDto person2 = creator.createPerson("Jane", "Doe");
 
@@ -317,7 +317,7 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 
 		// Create a vaccination with vaccination date = today
 		VaccinationDto vaccination1 = VaccinationDto.build(nationalUser.toReference());
-		vaccination1.setVaccinationDate(DateHelper8.toDate(LocalDate.now().atTime(6, 0)));
+		vaccination1.setVaccinationDate(UtilDate.from(LocalDate.now().atTime(6, 0)));
 		getVaccinationFacade().createWithImmunization(vaccination1, rdcf1.region, rdcf1.district, person1.toReference(), Disease.EVD);
 
 		assertNull(getCaseFacade().getByUuid(case11.getUuid()).getVaccinationStatus());

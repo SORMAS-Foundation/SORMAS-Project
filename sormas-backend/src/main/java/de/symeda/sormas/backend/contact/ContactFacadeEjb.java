@@ -131,6 +131,7 @@ import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.visit.VisitDto;
@@ -195,7 +196,6 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserReference;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
@@ -454,7 +454,7 @@ public class ContactFacadeEjb
 
 	private void createInvestigationTask(Contact entity) {
 		LocalDate now = LocalDate.now();
-		LocalDate reportDate = DateHelper8.toLocalDate(entity.getReportDateTime());
+		LocalDate reportDate = UtilDate.toLocalDate(entity.getReportDateTime());
 		if (DAYS.between(reportDate, now) <= 30) {
 			try {
 				User assignee = taskService.getTaskAssignee(entity);
@@ -1337,14 +1337,13 @@ public class ContactFacadeEjb
 		// use only date, not time
 		target.setMultiDayContact(source.isMultiDayContact());
 		if (source.isMultiDayContact()) {
-			target.setFirstContactDate(
-				source.getFirstContactDate() != null ? DateHelper8.toDate(DateHelper8.toLocalDate(source.getFirstContactDate())) : null);
+			target
+				.setFirstContactDate(source.getFirstContactDate() != null ? UtilDate.from(UtilDate.toLocalDate(source.getFirstContactDate())) : null);
 		} else {
 			target.setFirstContactDate(null);
 		}
 
-		target.setLastContactDate(
-			source.getLastContactDate() != null ? DateHelper8.toDate(DateHelper8.toLocalDate(source.getLastContactDate())) : null);
+		target.setLastContactDate(source.getLastContactDate() != null ? UtilDate.from(UtilDate.toLocalDate(source.getLastContactDate())) : null);
 
 		target.setContactIdentificationSource(source.getContactIdentificationSource());
 		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
@@ -1742,7 +1741,7 @@ public class ContactFacadeEjb
 		// get all contacts that are followed up
 		LocalDateTime fromDateTime = LocalDate.now().atStartOfDay();
 		LocalDateTime toDateTime = fromDateTime.plusDays(1);
-		List<Contact> contacts = service.getFollowUpBetween(DateHelper8.toDate(fromDateTime), DateHelper8.toDate(toDateTime));
+		List<Contact> contacts = service.getFollowUpBetween(UtilDate.from(fromDateTime), UtilDate.from(toDateTime));
 
 		for (Contact contact : contacts) {
 			// Only generate tasks for contacts that are under follow-up
@@ -1772,7 +1771,7 @@ public class ContactFacadeEjb
 
 			TaskCriteria dayTaskCriteria = new TaskCriteria().contact(contact.toReference())
 				.taskType(TaskType.CONTACT_FOLLOW_UP)
-				.dueDateBetween(DateHelper8.toDate(fromDateTime), DateHelper8.toDate(toDateTime));
+				.dueDateBetween(UtilDate.from(fromDateTime), UtilDate.from(toDateTime));
 			List<Task> dayTasks = taskService.findBy(dayTaskCriteria, true);
 
 			if (!dayTasks.isEmpty()) {
@@ -1787,12 +1786,13 @@ public class ContactFacadeEjb
 	}
 
 	private Task createContactTask(TaskType taskType, LocalDateTime fromDateTime, LocalDateTime toDateTime, Contact contact, User assignee) {
+
 		Task task = taskService.buildTask(null);
 		task.setTaskContext(TaskContext.CONTACT);
 		task.setContact(contact);
 		task.setTaskType(taskType);
-		task.setSuggestedStart(DateHelper8.toDate(fromDateTime));
-		task.setDueDate(DateHelper8.toDate(toDateTime.minusMinutes(1)));
+		task.setSuggestedStart(UtilDate.from(fromDateTime));
+		task.setDueDate(UtilDate.from(toDateTime.minusMinutes(1)));
 		task.setAssigneeUser(assignee);
 
 		if (contact.isHighPriority()) {
