@@ -82,6 +82,7 @@ public class EventParticipantExportDto implements Serializable {
 	private long personAddressId;
 
 	private String eventUuid;
+	private Date eventReportDateTime;
 
 	private final EventStatus eventStatus;
 	private final EventInvestigationStatus eventInvestigationStatus;
@@ -177,7 +178,7 @@ public class EventParticipantExportDto implements Serializable {
 	private long contactCount;
 
 	//@formatter:off
-    public EventParticipantExportDto(long id, long personId, String personUuid, String eventParticipantUuid, String nationalHealthId, long personAddressId, boolean isInJurisdiction, String eventUuid,
+    public EventParticipantExportDto(long id, long personId, String personUuid, String eventParticipantUuid, String nationalHealthId, long personAddressId, boolean isInJurisdiction, String eventUuid, Date eventReportDateTime,
 
 									 EventStatus eventStatus, EventInvestigationStatus eventInvestigationStatus, Disease eventDisease, TypeOfPlace typeOfPlace, Date eventStartDate, Date eventEndDate, String eventTitle, String eventDesc,
 									 String eventRegion, String eventDistrict, String eventCommunity, String eventCity, String eventStreet, String eventHouseNumber,
@@ -197,6 +198,7 @@ public class EventParticipantExportDto implements Serializable {
 		this.nationalHealthId = nationalHealthId;
 		this.personAddressId = personAddressId;
 		this.eventUuid = eventUuid;
+		this.eventReportDateTime = eventReportDateTime;
 
 		this.eventStatus = eventStatus;
 		this.eventInvestigationStatus = eventInvestigationStatus;
@@ -977,5 +979,9 @@ public class EventParticipantExportDto implements Serializable {
 
 	public void setVaccineAtcCode(String vaccineAtcCode) {
 		this.vaccineAtcCode = vaccineAtcCode;
+	}
+
+	public Date getEventReportDateTime() {
+		return eventReportDateTime;
 	}
 }
