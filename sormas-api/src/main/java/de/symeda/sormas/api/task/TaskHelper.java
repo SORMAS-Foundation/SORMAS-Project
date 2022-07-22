@@ -17,9 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.api.task;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
-import org.joda.time.DateTime;
+import de.symeda.sormas.api.utils.UtilDate;
 
 public final class TaskHelper {
 
@@ -28,10 +29,10 @@ public final class TaskHelper {
 	}
 
 	public static Date getDefaultSuggestedStart() {
-		return new DateTime().toDate();
+		return UtilDate.now();
 	}
 
 	public static Date getDefaultDueDate() {
-		return new DateTime().plusDays(1).toDate();
+		return UtilDate.from(LocalDateTime.now().plusDays(1));
 	}
 }
