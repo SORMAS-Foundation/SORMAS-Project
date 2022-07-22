@@ -1028,6 +1028,23 @@ Feature: Contacts end to end tests
     And I check if "Burial conductor" field is present in case person
     And I check if "Burial place description" field is present in case person
 
+  @issue=SORDEV-10361 @env_main
+  Scenario: Test Hide "buried" within Person present condition for Covid-19 for Import Contacts
+    Given I log in as a Admin User
+    And I click on the Contacts button from navbar
+    And I prepare detailed contact CSV with "COVID-19" as a disease and "Buried" as a present condition
+    Then I click on the More button on Contact directory page
+    And I click on the Import button from Contact directory
+    Then I select created CSV file with detailed contact
+    And I click on the "START DATA IMPORT" button from the Import Detailed Contact popup
+    And I check if csv file for detailed contact is imported successfully
+    Then I search for created detailed contact by first and last name of the person
+    Then I click on the first Contact ID from Contacts Directory
+    Then I check if disease is set for "COVID-19" in Contact Edit Directory
+    And I open Contact Person tab
+    Then I check if Present condition of person combobox has value "Buried"
+    And I delete created csv file for detailed contact import
+
   @issue=SORDEV-9792 @env_de
   Scenario: Test CoreAdo: Introduce "end of processing date" for contacts
     Given I log in as a Admin User
@@ -1075,8 +1092,6 @@ Feature: Contacts end to end tests
     Then I change the date of last contact to 5 days ago for DE version
     And I click SAVE button on Edit Contact Page
     And I check that text appearing in hover over Expected Follow-up is based on Last Contact date on Edit Contact Page
-
-
 
   @issue=SORDEV-10227 @env_de
   Scenario: Test Permanent deletion for Person for Contact

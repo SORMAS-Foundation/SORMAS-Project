@@ -1276,9 +1276,9 @@ public class CaseDirectorySteps implements En {
         });
 
     When(
-        "I prepare CSV with {string} as a disease and {string} as a present condition",
+        "I prepare detailed case CSV with {string} as a disease and {string} as a present condition",
         (String disease, String pCondition) -> {
-          int timestamp = ThreadLocalRandom.current().nextInt(0, 152 + 1);
+          long timestamp = System.currentTimeMillis();
           detailedCaseCSVFile = "./downloads/sormas_cases_sordev_10361.csv";
           Map<String, Object> reader;
           reader = parseCSVintoPOJODetailedCaseCSV(detailedCaseCSVFile);
@@ -1287,7 +1287,7 @@ public class CaseDirectorySteps implements En {
         });
 
     When(
-        "I select created CSV file",
+        "I select created CSV file with detailed case",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(FILE_PICKER);
           webDriverHelpers.sendFile(FILE_PICKER, userDirPath + "/uploads/" + caseCSVName);
@@ -1313,7 +1313,7 @@ public class CaseDirectorySteps implements En {
         });
 
     When(
-        "I search for created case by first and last name of the person",
+        "I search for created detailed case by first and last name of the person",
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(
               PERSON_LIKE_SEARCH_INPUT, firstName + " " + lastName);
@@ -1345,7 +1345,6 @@ public class CaseDirectorySteps implements En {
 
     List<String[]> r = null;
     String[] values = new String[] {};
-    DetailedCaseCSV builder = null;
     ObjectMapper mapper = new ObjectMapper();
     DetailedCaseCSV detailedCaseCSV = new DetailedCaseCSV();
     DetailedCaseCSVSymptoms detailedCaseCSVSymptoms = new DetailedCaseCSVSymptoms();
@@ -1421,7 +1420,6 @@ public class CaseDirectorySteps implements En {
               CSVWriter.NO_ESCAPE_CHARACTER,
               CSVWriter.DEFAULT_LINE_END);
       List<String[]> data = new ArrayList<String[]>();
-      StringBuilder str2 = new StringBuilder();
       firstName = faker.name().firstName();
       lastName = faker.name().lastName();
       caseUUIDFromCSV = UUID.randomUUID().toString().substring(0, 26).toUpperCase();
