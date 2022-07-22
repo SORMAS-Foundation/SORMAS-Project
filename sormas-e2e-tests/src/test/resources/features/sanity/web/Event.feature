@@ -1237,6 +1237,4 @@ Feature: Create events
     And I click on Create button in Create Quarantine Order form DE
     And I click on close button in Create Quarantine Order form
     And I check if downloaded zip file for Quarantine Order is correct for DE version
-    And I check if generated document based on "ExampleDocumentTemplateEventParticipant.docx" appeared in Documents tab for 1 result in Event Participant directory for DE
-    Then I navigate to EVENT PARTICIPANT from edit event page
-    And I check if generated document based on "ExampleDocumentTemplateEventParticipant.docx" appeared in Documents tab for 2 result in Event Participant directory for DE
+    And I delete downloaded file created from Quarantine order
