@@ -252,9 +252,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 				aggregateReports.stream().map(aggregateReport -> aggregateReport.getAgeGroup()).collect(Collectors.toList());
 
 			List<DiseaseAgeGroup> noDataAgeGroups = diseaseAgeGroupsWithoutReport.stream()
-				.filter(
-					diseaseAgeGroup -> diseaseAgeGroup.getDisease().equals(disease)
-						&& !diseaseAgeGroups.contains(diseaseAgeGroup.getAgeGroup()))
+				.filter(diseaseAgeGroup -> diseaseAgeGroup.getDisease().equals(disease) && !diseaseAgeGroups.contains(diseaseAgeGroup.getAgeGroup()))
 				.collect(Collectors.toList());
 
 			if (!noDataAgeGroups.isEmpty()) {
@@ -279,6 +277,9 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 				contentBinding.submitReport.setEnabled(enabled);
 				AggregateReport report = aggregateReports.get(0);
 				binding.setData(report);
+				if (isDuplicateByDiseaseEpiWeekAndInfrastructure(disease, epiWeek, selectedInfrastructure, selectedUser)) {
+					binding.diseaseName.setTextColor(getResources().getColor(R.color.red));
+				}
 				if (latestLocalChangeDate == null
 					|| (report.getLocalChangeDate() != null && latestLocalChangeDate.before(report.getLocalChangeDate()))) {
 					latestLocalChangeDate = report.getLocalChangeDate();
@@ -288,6 +289,11 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 				RowReportAggregateDiseaseLayoutBinding diseaseBinding =
 					DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_disease_layout, contentBinding.reportContent, true);
 				diseaseBinding.setDisease(disease.toString());
+
+				if (isDuplicateByDiseaseEpiWeekAndInfrastructure(disease, epiWeek, selectedInfrastructure, selectedUser)) {
+					diseaseBinding.diseaseName.setTextColor(getResources().getColor(R.color.red));
+				}
+
 				for (AggregateReport report : aggregateReports) {
 					RowReportAggregateAgegroupLayoutBinding binding =
 						DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_agegroup_layout, contentBinding.reportContent, true);
@@ -320,12 +326,20 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 				contentBinding.submitReport.setEnabled(enabled);
 				AggregateReport data = DatabaseHelper.getAggregateReportDao().build(disease, epiWeek, selectedInfrastructure);
 				binding.setData(data);
+				if (isDuplicateByDiseaseEpiWeekAndInfrastructure(disease, epiWeek, selectedInfrastructure, selectedUser)) {
+					binding.diseaseName.setTextColor(getResources().getColor(R.color.red));
+				}
 				userReports.add(data);
 			} else {
 				LayoutInflater diseaseInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				RowReportAggregateDiseaseLayoutBinding viewBinding =
 					DataBindingUtil.inflate(diseaseInflater, R.layout.row_report_aggregate_disease_layout, contentBinding.reportContent, true);
 				viewBinding.setDisease(disease.toString());
+
+				if (isDuplicateByDiseaseEpiWeekAndInfrastructure(disease, epiWeek, selectedInfrastructure, selectedUser)) {
+					viewBinding.diseaseName.setTextColor(getResources().getColor(R.color.red));
+				}
+
 				for (String ageGroup : ageGroups) {
 					LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 					RowReportAggregateAgegroupLayoutBinding binding =
@@ -349,6 +363,24 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 			getSubHeadingHandler().updateSubHeadingTitle(
 				String.format(r.getString(R.string.caption_latest_submission), DateFormatHelper.formatLocalDateTime(latestLocalChangeDate)));
 		}
+	}
+
+	private boolean isDuplicateByDiseaseEpiWeekAndInfrastructure(
+		Disease disease,
+		EpiWeek epiWeek,
+		InfrastructureAdo selectedInfrastructure,
+		User selectedUser) {
+
+		List<AggregateReport> duplicates = reports.stream()
+			.filter(
+				aggregateReport -> aggregateReport.getDisease().equals(disease)
+					&& aggregateReport.getYear().equals(epiWeek.getYear())
+					&& aggregateReport.getEpiWeek().equals(epiWeek.getWeek())
+					&& isSameInfrastructure(aggregateReport, selectedInfrastructure))
+			.collect(Collectors.toList());
+
+		return duplicates.size() > 1 || (duplicates.size() == 1 && !duplicates.get(0).getReportingUser().equals(selectedUser));
+
 	}
 
 	private void showSubmitCaseNumbersConfirmationDialog() {
