@@ -1215,3 +1215,26 @@ Feature: Create events
     Then I filter the last created person linked with Event Participant
     And I click on Events aggregation button in Person Directory for DE specific
     And I check that number of displayed Person results is 0
+
+  @issue=SORDEV-5565 @env_de
+  Scenario: Document Templates create quarantine order for Event Participant bulk DE
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I open the last created event via api
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I add only required data for event participant creation for DE
+    Then I open the last created event via api
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I add only required data for event participant creation for DE
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I select first 2 results in grid in Event Participant Directory
+    And I click on Bulk Actions combobox in Event Parcitipant Tab
+    And I click on Create Quarantine Order from Bulk Actions combobox on Event Participant Directory Page
+    And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Event Participant directory for DE
+    And I select "ExampleDocumentTemplateEventParticipant.docx" Quarantine Order in Create Quarantine Order form in Event Participant directory
+    And I click on Create button in Create Quarantine Order form DE
+    And I click on close button in Create Quarantine Order form
+    And I check if downloaded zip file for Quarantine Order is correct for DE version
+    And I delete downloaded file created from Quarantine order

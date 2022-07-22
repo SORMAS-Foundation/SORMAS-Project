@@ -448,6 +448,17 @@ public class EditCaseSteps implements En {
               120);
         });
     When(
+        "I check if generated document based on {string} appeared in Documents tab for API created case in Edit Case directory for DE",
+        (String name) -> {
+          String uuid = apiState.getCreatedCase().getUuid();
+          String path = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertEquals(
+                      path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME_DE)),
+              120);
+        });
+    When(
         "I check if generated document based on {string} appeared in Documents tab for UI created case in Edit Case directory",
         (String name) -> {
           String uuid = EditCaseSteps.aCase.getUuid();
@@ -456,6 +467,17 @@ public class EditCaseSteps implements En {
               () ->
                   Assert.assertEquals(
                       path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME)),
+              120);
+        });
+    When(
+        "I check if generated document based on {string} appeared in Documents tab for UI created case in Edit Case directory for DE",
+        (String name) -> {
+          String uuid = EditCaseSteps.aCase.getUuid();
+          String path = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertEquals(
+                      path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME_DE)),
               120);
         });
     When(
@@ -472,7 +494,11 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CREATE_QUARANTINE_ORDER_BUTTON);
         });
-
+    And(
+        "I click on Create button in Create Quarantine Order form DE",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_TEMPLATES_POPUP_DE);
+        });
     When(
         "I check if generated document for Case based on {string} was downloaded properly",
         (String name) -> {
