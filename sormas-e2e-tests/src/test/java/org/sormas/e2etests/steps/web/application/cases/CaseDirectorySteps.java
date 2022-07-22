@@ -228,6 +228,19 @@ public class CaseDirectorySteps implements En {
               120);
         });
     When(
+        "I check if downloaded zip file for Quarantine Order is correct for DE version",
+        () -> {
+          Path path =
+              Paths.get(userDirPath + "/downloads/sormas_dokumente_" + LocalDate.now() + "_.zip");
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      "Quarantine order document was not downloaded. Path used for check: "
+                          + path.toAbsolutePath()),
+              10);
+        });
+    When(
         "I delete downloaded file created from Quarantine order",
         () -> {
           File toDelete =
