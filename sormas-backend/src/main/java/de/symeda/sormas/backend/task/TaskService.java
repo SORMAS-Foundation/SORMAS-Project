@@ -522,7 +522,31 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			}
 		}
 
+		Predicate taskContextFilter = buildTaskContextFilter(taskQueryContext);
+		filter = CriteriaBuilderHelper.and(cb, filter, taskContextFilter);
+
 		return filter;
+	}
+
+	private Predicate buildTaskContextFilter(TaskQueryContext taskQueryContext) {
+		From<?, Task> from = taskQueryContext.getRoot();
+		CriteriaBuilder cb = taskQueryContext.getCriteriaBuilder();
+
+		List<TaskContext> allowTaskContext = new ArrayList<>();
+		allowTaskContext.add(TaskContext.GENERAL);
+		if (hasRight(UserRight.CASE_VIEW)) {
+			allowTaskContext.add(TaskContext.CASE);
+		}
+		if (hasRight(UserRight.CONTACT_VIEW)) {
+			allowTaskContext.add(TaskContext.CONTACT);
+		}
+		if (hasRight(UserRight.EVENT_VIEW)) {
+			allowTaskContext.add(TaskContext.EVENT);
+		}
+		if (hasRight(UserRight.TRAVEL_ENTRY_VIEW)) {
+			allowTaskContext.add(TaskContext.TRAVEL_ENTRY);
+		}
+		return cb.in(from.get(Task.TASK_CONTEXT)).value(allowTaskContext);
 	}
 
 	private Predicate buildActiveTasksFilter(TaskQueryContext taskQueryContext) {
@@ -535,42 +559,31 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		Join<Task, Event> event = joins.getEvent();
 		Join<Task, TravelEntry> travelEntry = joins.getTravelEntry();
 
-		Predicate taskContextPredicate = cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.GENERAL);
+		return cb.and(
+			cb.isFalse(from.get(Task.ARCHIVED)),
+			cb.or(
+				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.GENERAL),
+				cb.and(
+					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE),
+					cb.and(
+						cb.or(cb.isNull(caze.get(Case.ARCHIVED)), cb.isFalse(caze.get(Case.ARCHIVED))),
+						cb.or(cb.isNull(caze.get(Case.DELETED)), cb.isFalse(caze.get(Case.DELETED))))),
+				cb.and(
+					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
+					cb.and(
+						cb.or(cb.isNull(contactCaze.get(Case.ARCHIVED)), cb.isFalse(contactCaze.get(Case.ARCHIVED))),
+						cb.or(cb.isNull(contactCaze.get(Case.DELETED)), cb.isFalse(contactCaze.get(Case.DELETED))))),
+				cb.and(
+					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
+					cb.and(
+						cb.or(cb.isNull(event.get(Event.ARCHIVED)), cb.isFalse(event.get(Event.ARCHIVED))),
+						cb.or(cb.isNull(event.get(Event.DELETED)), cb.isFalse(event.get(Event.DELETED))))),
 
-		if (hasRight(UserRight.CASE_VIEW)) {
-			Predicate casePredicate = cb.and(
-				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE),
 				cb.and(
-					cb.or(cb.isNull(caze.get(Case.ARCHIVED)), cb.isFalse(caze.get(Case.ARCHIVED))),
-					cb.or(cb.isNull(caze.get(Case.DELETED)), cb.isFalse(caze.get(Case.DELETED)))));
-			taskContextPredicate = CriteriaBuilderHelper.or(cb, taskContextPredicate, casePredicate);
-		}
-		if (hasRight(UserRight.CONTACT_VIEW)) {
-			Predicate contactPredicate = cb.and(
-				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
-				cb.and(
-					cb.or(cb.isNull(contactCaze.get(Case.ARCHIVED)), cb.isFalse(contactCaze.get(Case.ARCHIVED))),
-					cb.or(cb.isNull(contactCaze.get(Case.DELETED)), cb.isFalse(contactCaze.get(Case.DELETED)))));
-			taskContextPredicate = CriteriaBuilderHelper.or(cb, taskContextPredicate, contactPredicate);
-		}
-		if (hasRight(UserRight.EVENT_VIEW)) {
-			Predicate eventPredicate = cb.and(
-				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
-				cb.and(
-					cb.or(cb.isNull(event.get(Event.ARCHIVED)), cb.isFalse(event.get(Event.ARCHIVED))),
-					cb.or(cb.isNull(event.get(Event.DELETED)), cb.isFalse(event.get(Event.DELETED)))));
-			taskContextPredicate = CriteriaBuilderHelper.or(cb, taskContextPredicate, eventPredicate);
-		}
-		if (hasRight(UserRight.TRAVEL_ENTRY_VIEW)) {
-			Predicate travelEntryPredicate = cb.and(
-				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.TRAVEL_ENTRY),
-				cb.and(
-					cb.or(cb.isNull(travelEntry.get(TravelEntry.ARCHIVED)), cb.isFalse(travelEntry.get(TravelEntry.ARCHIVED))),
-					cb.or(cb.isNull(travelEntry.get(TravelEntry.DELETED)), cb.isFalse(travelEntry.get(TravelEntry.DELETED)))));
-			taskContextPredicate = CriteriaBuilderHelper.or(cb, taskContextPredicate, travelEntryPredicate);
-		}
-
-		return cb.and(cb.isFalse(from.get(Task.ARCHIVED)), taskContextPredicate);
+					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.TRAVEL_ENTRY),
+					cb.and(
+						cb.or(cb.isNull(travelEntry.get(TravelEntry.ARCHIVED)), cb.isFalse(travelEntry.get(TravelEntry.ARCHIVED))),
+						cb.or(cb.isNull(travelEntry.get(TravelEntry.DELETED)), cb.isFalse(travelEntry.get(TravelEntry.DELETED)))))));
 	}
 
 	public Task buildTask(User creatorUser) {
