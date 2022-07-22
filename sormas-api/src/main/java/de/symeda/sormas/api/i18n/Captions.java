@@ -1987,8 +1987,7 @@ public interface Captions {
 	String SormasToSormasOptions_comment = "SormasToSormasOptions.comment";
 	String SormasToSormasOptions_handOverOwnership = "SormasToSormasOptions.handOverOwnership";
 	String SormasToSormasOptions_organization = "SormasToSormasOptions.organization";
-	String SormasToSormasOptions_pseudonymizePersonalData = "SormasToSormasOptions.pseudonymizePersonalData";
-	String SormasToSormasOptions_pseudonymizeSensitiveData = "SormasToSormasOptions.pseudonymizeSensitiveData";
+	String SormasToSormasOptions_pseudonymizeData = "SormasToSormasOptions.pseudonymizeData";
 	String SormasToSormasOptions_withAssociatedContacts = "SormasToSormasOptions.withAssociatedContacts";
 	String SormasToSormasOptions_withEventParticipants = "SormasToSormasOptions.withEventParticipants";
 	String SormasToSormasOptions_withImmunizations = "SormasToSormasOptions.withImmunizations";

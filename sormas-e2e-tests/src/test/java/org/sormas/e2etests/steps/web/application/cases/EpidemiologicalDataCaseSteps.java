@@ -24,6 +24,7 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DONE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EDIT_SAVED_ACTIVITY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EDIT_SAVED_EXPOSURE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EDIT_SOURCE_CONTACTS_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EDIT_TRAVEL_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.END_OF_EXPOSURE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EPIDEMIOLOGICAL_DATA_ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON;
@@ -59,6 +60,8 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.WEARING_MASK_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.WEARING_PPE_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.getExposureTableData;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.RESPONSIBLE_DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.RESPONSIBLE_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_FIRST_RESULT_OPTION;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_WINDOW_CONTACT;
@@ -88,6 +91,8 @@ import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Activity;
 import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
 import org.sormas.e2etests.entities.services.EpidemiologicalDataService;
 import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.YesNoUnknownOptions;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.ActivityAsCaseType;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
@@ -682,6 +687,29 @@ public class EpidemiologicalDataCaseSteps implements En {
               webDriverHelpers.isElementVisibleWithTimeout(ANIMAL_CONTACT_LABEL, 1),
               "Exposure details has a incorrect option");
           softly.assertAll();
+        });
+
+    And(
+        "^I check that Contacts with source case known card is available$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CONTACTS_WITH_SOURCE_CASE_BOX);
+        });
+
+    And(
+        "^I fill only mandatory fields in New contact from Contacts with source case card for DE$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.selectFromCombobox(
+              RESPONSIBLE_REGION_COMBOBOX, RegionsValues.VoreingestellteBundeslander.getName());
+          webDriverHelpers.selectFromCombobox(
+              RESPONSIBLE_DISTRICT_COMBOBOX, DistrictsValues.VoreingestellterLandkreis.getName());
+        });
+
+    And(
+        "^I click on Edit Contact button from Contacts with source case card for DE$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EDIT_SOURCE_CONTACTS_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_SOURCE_CONTACTS_BUTTON);
         });
   }
 

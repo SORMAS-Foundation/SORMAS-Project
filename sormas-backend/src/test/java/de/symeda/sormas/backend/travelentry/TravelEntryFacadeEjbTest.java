@@ -213,16 +213,6 @@ public class TravelEntryFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetTravelEntryUsersWithoutUsesLimitedToOthersDiseses() {
-		loginWith(nationalUser);
-		PersonDto personDto = creator.createPerson();
-		TravelEntryDto travelEntry = creator.createTravelEntry(
-			personDto.toReference(),
-			nationalUser.toReference(),
-			Disease.CORONAVIRUS,
-			rdcf1.region,
-			rdcf1.district,
-			rdcf1.pointOfEntry);
-
 		UserDto limitedCovidNationalUser = creator.createUser(
 			rdcf1,
 			"Limited Disease Covid",
@@ -235,6 +225,15 @@ public class TravelEntryFacadeEjbTest extends AbstractBeanTest {
 			"National User",
 			Disease.DENGUE,
 			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		loginWith(nationalUser);
+		PersonDto personDto = creator.createPerson();
+		TravelEntryDto travelEntry = creator.createTravelEntry(
+			personDto.toReference(),
+			nationalUser.toReference(),
+			Disease.CORONAVIRUS,
+			rdcf1.region,
+			rdcf1.district,
+			rdcf1.pointOfEntry);
 
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUsersHavingTravelEntryInJurisdiction(travelEntry.toReference());
 		Assert.assertNotNull(userReferenceDtos);

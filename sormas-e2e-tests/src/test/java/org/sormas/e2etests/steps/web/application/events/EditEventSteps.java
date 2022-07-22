@@ -22,13 +22,16 @@ import static org.sormas.e2etests.pages.application.actions.CreateNewActionPage.
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONFIRM_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CREATE_NEW_PERSON_CHECKBOX_DE;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BUTTONS_IN_VACCINATIONS_LOCATION;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_POPUP_YES_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_SAMPLE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SELECT_MATCHING_PERSON_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.COMMIT_BUTTON;
@@ -39,6 +42,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.REP
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPORT_SUCCESS_DE;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PICK_OR_CREATE_PERSON_HEADER_DE;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.EVENT_IDENTIFICATION_SOURCE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.START_DATA_TIME;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CASE_CONTROL_STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
@@ -52,6 +56,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.COUNTRY
 import static org.sormas.e2etests.pages.application.events.EditEventPage.COUNTRY_INFO_ICON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.COUNTRY_INFO_POPUP_TEXT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CREATE_CONTACTS_BULK_EDIT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.CREATE_QUARANTINE_ORDER_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DELETE_BUTTON_DISABLED;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DESCRIPTIVE_ANALYSIS_OF_ASCETAINED_DATA_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DISEASE_COMBOBOX;
@@ -122,12 +127,14 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.UNLINK_
 import static org.sormas.e2etests.pages.application.events.EditEventPage.VERIFICATION_OF_AT_LEAST_TWO_INFECTED_OR_DISEASED_PERSONS_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.VERIFICATION_ON_MATERIALS_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.WATER_SAMPLE_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.getEventParticipantUUIDbyIndex;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.getGroupEventName;
 import static org.sormas.e2etests.pages.application.events.EventActionsPage.CREATE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_GROUP_ID_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.TOTAL_EVENTS_COUNTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByIndex;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ADD_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ARCHIVE_EVENT_PARTICIPANT_BUTTON;
@@ -220,6 +227,7 @@ import org.sormas.e2etests.pages.application.events.EditEventPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactSteps;
+import org.sormas.e2etests.steps.web.application.persons.PersonDirectorySteps;
 import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
@@ -429,7 +437,36 @@ public class EditEventSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               PATHOGEN_FINE_TYPING_COMPLIANT_WITH_THE_ONE_OF_CASES_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
         });
-
+    When(
+        "^I select first (\\d+) results in grid in Event Participant Directory$",
+        (Integer number) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          for (int i = 3; i <= number + 2; i++) {
+            webDriverHelpers.scrollToElement(getCheckboxByIndex(String.valueOf(i)));
+            webDriverHelpers.clickOnWebElementBySelector(getCheckboxByIndex(String.valueOf(i)));
+          }
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+    When(
+        "I select {string} Quarantine Order in Create Quarantine Order form in Event Participant directory",
+        (String name) -> {
+          webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, name);
+        });
+    When(
+        "I check if generated document based on {string} appeared in Documents tab for {int} result in Event Participant directory for DE",
+        (String name, Integer index) -> {
+          String uuid =
+              webDriverHelpers.getTextFromWebElement(getEventParticipantUUIDbyIndex(index));
+          webDriverHelpers.scrollToElement(getEventParticipantUUIDbyIndex(index));
+          webDriverHelpers.clickOnWebElementBySelector(getEventParticipantUUIDbyIndex(index));
+          String path = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertEquals(
+                      path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME_DE)),
+              120);
+        });
     // TODO refactor this
     When(
         "I collect the UUID displayed on Edit event page",
@@ -610,6 +647,9 @@ public class EditEventSteps implements En {
           }
         });
     When(
+        "I collect the event participant person UUID displayed on Edit Event Participant page",
+        () -> person = collectPersonUuid());
+    When(
         "I add only required data for event participant creation for DE",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
@@ -622,7 +662,33 @@ public class EditEventSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
           }
         });
-
+    And(
+        "I click on Create Quarantine Order from Bulk Actions combobox on Event Participant Directory Page",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(
+                CREATE_QUARANTINE_ORDER_EVENT_PARTICIPANT));
+    And(
+        "I click on checkbox to upload generated document to entities in Create Quarantine Order form in Event Participant directory for DE",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE));
+    When(
+        "I add only person data for event participant creation for DE with built person shared for all entities",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
+          webDriverHelpers.fillInWebElement(
+              PARTICIPANT_FIRST_NAME_INPUT,
+              PersonDirectorySteps.personSharedForAllEntities.getFirstName());
+          webDriverHelpers.fillInWebElement(
+              PARTICIPANT_LAST_NAME_INPUT,
+              PersonDirectorySteps.personSharedForAllEntities.getLastName());
+          webDriverHelpers.selectFromCombobox(
+              SEX_COMBOBOX,
+              GenderValues.getValueForDE(PersonDirectorySteps.personSharedForAllEntities.getSex()));
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_HEADER_DE, 15)) {
+            webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
+          }
+        });
     When(
         "I add same person data as one used for Contact creation for event participant",
         () -> {
@@ -1702,6 +1768,13 @@ public class EditEventSteps implements En {
           TimeUnit.SECONDS.sleep(3); // wait for response after confirm
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+
+    And(
+        "^I set event Date on Edit Event Page to (\\d+) days before the vaccination date for DE$",
+        (Integer daysBeforeVaccinationDate) -> {
+          LocalDate eventStartDate = LocalDate.now().minusDays(21 + daysBeforeVaccinationDate);
+          fillStartDataDE(eventStartDate);
+        });
   }
 
   private String collectEventParticipantUuid() {
@@ -1810,6 +1883,10 @@ public class EditEventSteps implements En {
 
   private void fillStartData(LocalDate date) {
     webDriverHelpers.fillInWebElement(START_DATA_INPUT, DATE_FORMATTER.format(date));
+  }
+
+  private void fillStartDataDE(LocalDate date) {
+    webDriverHelpers.fillInWebElement(START_DATA_INPUT, DATE_FORMATTER_DE.format(date));
   }
 
   private void selectEventInvestigationStatusOptions(String eventInvestigationStatusOption) {

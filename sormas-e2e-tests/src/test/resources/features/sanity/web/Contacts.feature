@@ -999,3 +999,76 @@ Feature: Contacts end to end tests
     And I apply "Aktive Kontakte" to combobox on Contact Directory Page
     Then I filter with last created contact using contact UUID
     And I check that number of displayed contact results is 1
+
+  @issue=SORDEV-6185 @env_de
+  Scenario: Test Add information to followup warning message for Contacts
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    Then I navigate to the last created contact via the url
+    And I check that text appearing in hover over Expected Follow-up is based on Report date on Edit Contact Page
+    Then I change the date of last contact to 5 days ago for DE version
+    And I click SAVE button on Edit Contact Page
+    And I check that text appearing in hover over Expected Follow-up is based on Last Contact date on Edit Contact Page
+
+
+
+  @issue=SORDEV-10227 @env_de
+  Scenario: Test Permanent deletion for Person for Contact
+    Given I log in as a National User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    When I fill a new contact form for DE version
+    And I click on SAVE new contact button
+    And I check the created data is correctly displayed on Edit Contact page for DE version
+    And I click on the Persons button from navbar
+    Then I filter the last created person linked with Contact
+    And I click on Contact aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I click on All aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I navigate to the last created UI contact via the url
+    Then I click on Delete button from contact
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    And I click on the Persons button from navbar
+    Then I filter the last created person linked with Contact
+    And I check that number of displayed Person results is 0
+
+  @issue=SORDEV-5565 @env_de
+  Scenario: Document Templates create quarantine order for Contact bulk DE
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    When I fill a new contact form for DE version
+    And I click on SAVE new contact button
+    Then I check the created data is correctly displayed on Edit Contact page for DE version
+    And I click on the Contacts button from navbar
+    And I click on the More button on Contact directory page
+    And I click Enter Bulk Edit Mode on Contact directory page
+    And I select last created UI result in grid in Contact Directory for Bulk Action
+    And I select last created API result in grid in Contact Directory for Bulk Action
+    And I click on Bulk Actions combobox on Contact Directory Page
+    And I click on Create Quarantine Order from Bulk Actions combobox on Contact Directory Page
+    And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Contact directory for DE
+    And I select "ExampleDocumentTemplateContacts.docx" Quarantine Order in Create Quarantine Order form in Edit Contact directory
+    And I click on Create button in Create Quarantine Order form DE
+    And I click on close button in Create Quarantine Order form
+    And I check if downloaded zip file for Quarantine Order is correct for DE version
+    And I click on the More button on Contact directory page
+    Then I click Leave Bulk Edit Mode on Contact directory page
+    Then I navigate to the last created UI contact via the url
+    And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab for UI created contact in Edit Contact directory for DE
+    And I navigate to the last created contact via the url
+    And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab in Edit Contact directory for DE
+    And I delete downloaded file created from Quarantine order

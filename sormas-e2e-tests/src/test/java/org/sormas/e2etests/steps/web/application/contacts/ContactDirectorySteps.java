@@ -32,6 +32,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LEAV
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MORE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getMergeDuplicatesButtonById;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.COMMIT_BUTTON;
@@ -280,7 +281,10 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
-
+    And(
+        "I click on checkbox to upload generated document to entities in Create Quarantine Order form in Case directory for DE",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE));
     When(
         "I collect the leading contact UUID displayed on Contact Directory Page",
         () -> leadingContactUUID = getContactIDByIndex(1));

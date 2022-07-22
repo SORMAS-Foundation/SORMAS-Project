@@ -1493,3 +1493,121 @@ Feature: Case end to end tests
       And I apply "Aktive Fälle" to combobox on Case Directory Page
       Then I filter with last created case using case UUID
       And I check that number of displayed cases results is 1
+
+  @env_main @issue=SORDEV-5104
+  Scenario: Check if external token is visible on Edit Case Page
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    Then I navigate to the last created case via the url
+    And I check that External Token field is visible on Edit Case page
+
+  @env_de @issue=SORDEV-5104
+  Scenario: Check if external token is visible on Edit Case Page for DE
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    Then I navigate to the last created case via the url
+    And I check that External Token field is visible on Edit Case page
+
+  @issue=SORDEV-10227 @env_de
+  Scenario: Test Permanent deletion for Person for Case
+    Given I log in as a National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    And I check the created data is correctly displayed on Edit case page for DE version
+    And I click on the Persons button from navbar
+    Then I filter the last created person linked with Case
+    And I check that number of displayed Person results is 1
+    And I click on All aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I click on the Cases button from navbar
+    And I filter by CaseID of last created UI Case on Case directory page
+    And I open last created case
+    Then I click on Delete button from case
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    And I click on the Persons button from navbar
+    Then I filter the last created person linked with Case
+    And I check that number of displayed Person results is 0
+
+  @issue=SORDEV-6185 @env_de
+  Scenario: Test Add information to followup warning message for Cases
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    Then I navigate to the last created case via the url
+    And I check that text appearing in hover over Expected Follow-up is based on Report date
+    And I navigate to symptoms tab
+    When I check Yes Option for Soar Throat on Symptoms tab page
+    And I select sore throat option
+    And I set date of symptoms to 2 day ago from Symptoms tab
+    And I click on save button from Edit Case page
+    Then I navigate to the last created case via the url
+    And I check that text appearing in hover based over Symptoms onset date over Expected Follow-up consists of date days is equal to symptoms onset date
+    And I check that date appearing in Expected Follow-up based on Symptoms Onset date consists of date 14 ahead of symptoms onset date
+    And I navigate to symptoms tab
+    And I clear date of symptoms from Symptoms tab
+    And I click on save button from Edit Case page
+    Then I clear Clinical Signs and Symptoms list
+    And I click on save button from Edit Case page
+    Then I navigate to the last created case via the url
+    When I click on New Sample in German
+    Then I create a new Sample with positive test result for DE version
+    And I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup
+    And I set date of sample collection to 5 day ago in Sample form
+    And I set Final Laboratory Result to "Positiv" on Create new Sample page
+    And I save the created sample
+    And I check that text appearing in hover over Expected Follow-up is based on Symptoms collection date
+
+  @issue=SORDEV-5565 @env_de
+  Scenario: Document Templates create quarantine order for Case bulk DE
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    Then I check the created data is correctly displayed on Edit case page for DE version
+    And I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I apply Date type filter to "Fallmeldedatum" on Case directory page
+    And I fill Cases from input to 1 days before mocked Case created on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I click on the More button on Case directory page
+    And I click Enter Bulk Edit Mode on Case directory page
+    And I select last created UI result in grid in Case Directory for Bulk Action
+    And I select last created API result in grid in Case Directory for Bulk Action
+    And I click on Bulk Actions combobox on Case Directory Page
+    And I click on Create Quarantine Order from Bulk Actions combobox on Case Directory Page
+    And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Case directory for DE
+    And I select "ExampleDocumentTemplateCases.docx" Quarantine Order in Create Quarantine Order form in Case directory
+    And I click on Create button in Create Quarantine Order form DE
+    And I click on close button in Create Quarantine Order form
+    And I check if downloaded zip file for Quarantine Order is correct for DE version
+    Then I click Leave Bulk Edit Mode on Case directory page
+    And I open the last created Case via API
+    And I check if generated document based on "ExampleDocumentTemplateCases.docx" appeared in Documents tab for API created case in Edit Case directory for DE
+    Then I click on the Cases button from navbar
+    And I filter by CaseID of last created UI Case on Case directory page
+    Then I open last created case
+    And I check if generated document based on "ExampleDocumentTemplateCases.docx" appeared in Documents tab for UI created case in Edit Case directory for DE
+    And I delete downloaded file created from Quarantine order

@@ -20,6 +20,7 @@ package org.sormas.e2etests.enums;
 
 import java.util.Random;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Getter
 public enum GenderValues {
@@ -44,5 +45,14 @@ public enum GenderValues {
   public static String getRandomGenderDE() {
     Random random = new Random();
     return String.valueOf(GenderValues.values()[random.nextInt(values().length)].genderDE);
+  }
+
+  @SneakyThrows
+  public static String getValueForDE(String option) {
+    GenderValues[] genderValues = GenderValues.values();
+    for (GenderValues value : genderValues) {
+      if (value.name().equalsIgnoreCase(option)) return value.getGenderDE();
+    }
+    throw new Exception("Unable to find " + option + " value in GenderValues Enum");
   }
 }
