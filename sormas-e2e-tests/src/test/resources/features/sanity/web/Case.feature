@@ -1572,7 +1572,6 @@ Feature: Case end to end tests
     And I save the created sample
     And I check that text appearing in hover over Expected Follow-up is based on Symptoms collection date
 
-
   @issue=SORDEV-6839 @env_main
   Scenario: Check the split of jurisdiction and place of stay
     Given I log in as a National User
