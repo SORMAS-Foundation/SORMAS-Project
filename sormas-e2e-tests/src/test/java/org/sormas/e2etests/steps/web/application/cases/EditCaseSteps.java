@@ -2677,7 +2677,7 @@ public class EditCaseSteps implements En {
         .quarantine(webDriverHelpers.getValueFromCombobox(QUARANTINE_COMBOBOX))
         .vaccinationStatus(
             webDriverHelpers.getValueFromCombobox(VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX))
-        .region(webDriverHelpers.getValueFromCombobox(EditCasePage.PLACE_OF_STAY_REGION_COMBOBOX))
+        .region(webDriverHelpers.getValueFromCombobox(PLACE_OF_STAY_REGION_COMBOBOX))
         .district(webDriverHelpers.getValueFromCombobox(PLACE_OF_STAY_DISTRICT_COMBOBOX))
         .build();
   }
