@@ -203,7 +203,7 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 
 		return q.getResultList().stream().findFirst().orElse(null);
 	}
-	
+
 	public List<SormasToSormasShareInfo> getByAssociatedEntity(String associatedObjectField, String associatedObjectUuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SormasToSormasShareInfo> cq = cb.createQuery(SormasToSormasShareInfo.class);
@@ -256,13 +256,13 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 	private void handleOwnershipChangeInExternalSurvTool(boolean isOwnershipHandedOver, List<Case> cases, List<Event> events)
 		throws ExternalSurveillanceToolException {
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && isOwnershipHandedOver) {
-//			if (cases.size() > 0) {
-//				externalSurveillanceToolGatewayFacade.deleteCases(cases.stream().map(caseFacade::toDto).collect(Collectors.toList()));
-//			}
-//
-//			if (events.size() > 0) {
-//				externalSurveillanceToolGatewayFacade.deleteEvents(events.stream().map(eventFacade::toDto).collect(Collectors.toList()));
-//			}
+			if (cases.size() > 0) {
+				externalSurveillanceToolGatewayFacade.deleteCases(cases.stream().map(caseFacade::toDto).collect(Collectors.toList()));
+			}
+
+			if (events.size() > 0) {
+				externalSurveillanceToolGatewayFacade.deleteEvents(events.stream().map(eventFacade::toDto).collect(Collectors.toList()));
+			}
 		}
 	}
 }
