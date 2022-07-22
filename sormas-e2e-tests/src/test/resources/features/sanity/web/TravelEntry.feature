@@ -336,7 +336,7 @@ Feature: Create travel entries
     When I click on the Persons button from navbar
     And I fill UUID of the collected person from last created Travel Entry
     Then I apply on the APPLY FILTERS button
-    And I click on Travel Entry aggrgation button in Person Directory for DE specific
+    And I click on Travel Entry aggregation button in Person Directory for DE specific
     And I click on first person in person directory
     Then I check if data of created Travel Entry is in Travel Entry tab on Edit Person Page for De specific
 
