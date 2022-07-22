@@ -539,7 +539,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetIndexListForUserWithoutEventViewRight() {
+	public void testGetTaskListForUserWithoutEventViewRight() {
 		RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		PersonDto personDto = creator.createPerson();
