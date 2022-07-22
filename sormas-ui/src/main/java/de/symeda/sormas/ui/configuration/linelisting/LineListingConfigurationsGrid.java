@@ -20,7 +20,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.ui.utils.DateHelper8;
+import de.symeda.sormas.api.utils.UtilDate;
 
 @SuppressWarnings("serial")
 public class LineListingConfigurationsGrid extends Grid<FeatureConfigurationIndexDto> {
@@ -62,7 +62,7 @@ public class LineListingConfigurationsGrid extends Grid<FeatureConfigurationInde
 	}
 
 	public void setEndDateForAll(LocalDate endDate) {
-		configurations.stream().forEach(config -> config.setEndDate(DateHelper8.toDate(endDate)));
+		configurations.stream().forEach(config -> config.setEndDate(UtilDate.from(endDate)));
 		changedConfigurations.addAll(configurations);
 		reload();
 	}
@@ -94,8 +94,8 @@ public class LineListingConfigurationsGrid extends Grid<FeatureConfigurationInde
 			cbActive.addValueChangeListener(e -> {
 				config.setEnabled(e.getValue());
 				if (Boolean.TRUE.equals(e.getValue())) {
-					config.setEndDate(DateHelper.addDays(new Date(), 21));
-					dateFieldMap.get(config).setValue(DateHelper8.toLocalDate(DateHelper.addDays(new Date(), 21)));
+					config.setEndDate(UtilDate.from(LocalDate.now().plusDays(21)));
+					dateFieldMap.get(config).setValue(LocalDate.now().plusDays(21));
 				} else {
 					config.setEndDate(null);
 					dateFieldMap.get(config).setValue(null);
@@ -106,7 +106,7 @@ public class LineListingConfigurationsGrid extends Grid<FeatureConfigurationInde
 		}).setCaption(I18nProperties.getPrefixCaption(FeatureConfigurationIndexDto.I18N_PREFIX, FeatureConfigurationIndexDto.ENABLED));
 		addComponentColumn(config -> {
 			DateField dfEndDate = new DateField();
-			dfEndDate.setValue(DateHelper8.toLocalDate(config.getEndDate()));
+			dfEndDate.setValue(UtilDate.toLocalDate(config.getEndDate()));
 			dfEndDate.addValueChangeListener(e -> {
 				if (e.getValue() != null && e.getValue().isBefore(LocalDate.now())) {
 					Notification errorNotification = new Notification(
@@ -116,7 +116,7 @@ public class LineListingConfigurationsGrid extends Grid<FeatureConfigurationInde
 					errorNotification.setStyleName("tray notification-error");
 					errorNotification.show(Page.getCurrent());
 				} else {
-					config.setEndDate(DateHelper8.toDate(e.getValue()));
+					config.setEndDate(UtilDate.from(e.getValue()));
 					changedConfigurations.add(config);
 				}
 			});

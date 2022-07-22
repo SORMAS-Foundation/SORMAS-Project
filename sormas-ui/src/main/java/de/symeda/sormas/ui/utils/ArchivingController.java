@@ -21,6 +21,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.UtilDate;
 
 public class ArchivingController<F extends CoreFacade> {
 
@@ -34,7 +35,7 @@ public class ArchivingController<F extends CoreFacade> {
 		verticalLayout.addComponent(contentLabel);
 
 		DateField endOfProcessingDate = new DateField();
-		endOfProcessingDate.setValue(DateHelper8.toLocalDate(entityFacade.calculateEndOfProcessingDate(coreEntityDto.getUuid())));
+		endOfProcessingDate.setValue(UtilDate.toLocalDate(entityFacade.calculateEndOfProcessingDate(coreEntityDto.getUuid())));
 		endOfProcessingDate.setCaption(I18nProperties.getCaption(Captions.endOfProcessingDate));
 		endOfProcessingDate.setDateFormat(DateFormatHelper.getDateFormatPattern());
 		endOfProcessingDate.setEnabled(false);
@@ -52,7 +53,7 @@ public class ArchivingController<F extends CoreFacade> {
 			640,
 			e -> {
 				if (Boolean.TRUE.equals(e)) {
-					doArchive(entityFacade, coreEntityDto.getUuid(), DateHelper8.toDate(endOfProcessingDate.getValue()));
+					doArchive(entityFacade, coreEntityDto.getUuid(), UtilDate.from(endOfProcessingDate.getValue()));
 					Notification.show(
 						String.format(
 							I18nProperties.getString(archiveMessages.getMessageEntityArchived()),

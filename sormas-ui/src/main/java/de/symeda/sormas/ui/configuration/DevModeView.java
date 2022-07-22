@@ -97,6 +97,7 @@ import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -104,7 +105,6 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
-import de.symeda.sormas.ui.utils.DateHelper8;
 
 public class DevModeView extends AbstractConfigurationView {
 
@@ -1248,14 +1248,14 @@ public class DevModeView extends AbstractConfigurationView {
 					List<LocalDateTime> followUpDates = new ArrayList<>();
 					for (int day : followUpDays) {
 						followUpDates.add(
-							DateHelper8.toLocalDate(contactStartDate).atStartOfDay().plusDays(day - 1).plusMinutes(random().nextInt(60 * 24 + 1)));
+							UtilDate.toLocalDate(contactStartDate).atStartOfDay().plusDays(day - 1).plusMinutes(random().nextInt(60 * 24 + 1)));
 					}
 
 					for (LocalDateTime date : followUpDates) {
 						VisitDto visit = VisitDto.build(contact.getPerson(), contact.getDisease(), VisitOrigin.USER);
 						fillEntity(visit, date);
 						visit.setVisitUser(userReference);
-						visit.setVisitDateTime(DateHelper8.toDate(date));
+						visit.setVisitDateTime(UtilDate.from(date));
 						visit.setDisease(contact.getDisease());
 						if (visit.getVisitStatus() == null) {
 							visit.setVisitStatus(VisitStatus.COOPERATIVE);
