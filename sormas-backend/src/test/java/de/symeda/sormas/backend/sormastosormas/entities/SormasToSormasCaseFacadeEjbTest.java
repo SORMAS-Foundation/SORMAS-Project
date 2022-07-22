@@ -484,7 +484,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 	}
 
 	@Test
-	public void testShareCaseWithPseudonymizePersonalData() throws SormasToSormasException {
+	public void testShareCaseWithPseudonymizeData() throws SormasToSormasException {
 		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		useSurveillanceOfficerLogin(rdcf);
 
@@ -498,49 +498,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
-		options.setPseudonymizePersonalData(true);
-
-		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
-
-		Mockito
-			.when(
-				MockProducer.getSormasToSormasClient()
-					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-			.thenAnswer(invocation -> {
-				assertThat(invocation.getArgument(0, String.class), is(SECOND_SERVER_ID));
-				assertThat(invocation.getArgument(1, String.class), is("/sormasToSormas/cases"));
-
-				SormasToSormasDto postBody = invocation.getArgument(2, SormasToSormasDto.class);
-				assertThat(postBody.getCases().size(), is(1));
-				SormasToSormasCaseDto sharedCase = postBody.getCases().get(0);
-
-				assertThat(sharedCase.getPerson().getFirstName(), is("Confidential"));
-				assertThat(sharedCase.getPerson().getLastName(), is("Confidential"));
-				assertThat(sharedCase.getEntity().getAdditionalDetails(), is("Test additional details"));
-
-				return encryptShareData(new ShareRequestAcceptData(null, null));
-			});
-
-		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
-	}
-
-	@Test
-	public void testShareCaseWithPseudonymizeSensitiveData() throws SormasToSormasException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
-		useSurveillanceOfficerLogin(rdcf);
-
-		PersonDto person = creator.createPerson();
-		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
-			dto.setPerson(person.toReference());
-			dto.setSurveillanceOfficer(officer);
-			dto.setClassificationUser(officer);
-
-			dto.setAdditionalDetails("Test additional details");
-		});
-
-		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
-		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
-		options.setPseudonymizeSensitiveData(true);
+		options.setPseudonymizeData(true);
 
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS, Boolean.FALSE.toString());
 
