@@ -65,7 +65,7 @@ public class PhysiciansReportCaseEditComponent extends CommitDiscardWrapperCompo
 		tabConfigs = createTabConfigs();
 
 		// save on active tab on commit
-		setPreCommitListener((callback) -> {
+		setPreCommitListener(callback -> {
 			if (activeTabComponent.commitAndHandle()) {
 				callback.run();
 			}
