@@ -99,8 +99,6 @@ public class ContactDirectoryPage {
   public static final By RELATIONSHIP_WITH_CASE_COMBOBOX = By.cssSelector("#relationToCase div");
   public static final By CONTACT_VACCINATION_STATUS_FILTER_COMBOBOX =
       By.cssSelector("[id='vaccinationStatus'] [class='v-filterselect-button']");
-  public static final By VACCINATED_STATUS_FIELD_IN_DIRECTORY_LIST =
-      By.xpath("//td[contains(text(), 'Geimpft')]");
 
   public static By getCheckboxByUUID(String uuid) {
     return By.xpath(
