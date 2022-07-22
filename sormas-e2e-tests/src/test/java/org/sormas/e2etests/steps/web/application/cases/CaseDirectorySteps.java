@@ -1279,7 +1279,7 @@ public class CaseDirectorySteps implements En {
         "I prepare detailed case CSV with {string} as a disease and {string} as a present condition",
         (String disease, String pCondition) -> {
           long timestamp = System.currentTimeMillis();
-          detailedCaseCSVFile = "./downloads/sormas_cases_sordev_10361.csv";
+          detailedCaseCSVFile = "./uploads/sormas_cases_sordev_10361.csv";
           Map<String, Object> reader;
           reader = parseCSVintoPOJODetailedCaseCSV(detailedCaseCSVFile);
           caseCSVName = "detailedCaseCSVTestFile" + timestamp + ".csv";

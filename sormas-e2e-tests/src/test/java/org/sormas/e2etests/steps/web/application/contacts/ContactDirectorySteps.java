@@ -1172,7 +1172,7 @@ public class ContactDirectorySteps implements En {
         "I prepare detailed contact CSV with {string} as a disease and {string} as a present condition",
         (String disease, String pCondition) -> {
           long timestamp = System.currentTimeMillis();
-          detailedContactCSVFile = "./downloads/sormas_contacts_sordev_10361.csv";
+          detailedContactCSVFile = "./uploads/sormas_contacts_sordev_10361.csv";
           Map<String, Object> reader;
           reader = parseCSVintoPOJODetailedContactCSV(detailedContactCSVFile);
           contactCSVName = "detailedContactCSVTestFile" + timestamp + ".csv";
