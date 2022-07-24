@@ -229,19 +229,19 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						locationEditForm.getField(LocationDto.LATITUDE),
 						locationEditForm.getField(LocationDto.LONGITUDE),
 						locationEditForm.getField(LocationDto.LAT_LON_ACCURACY))) {
-						dirty = true;
+						dirty = false;//this
 					} else if (locationEditForm.getFieldGroup()
 						.getFields()
 						.stream()
 						.filter(lf -> !(lf instanceof AccessibleTextField))
 						.anyMatch(Buffered::isModified)) {
-						dirty = true;
+						dirty = false;//this
 					} else if (personEditForm.getFieldGroup()
 						.getFields()
 						.stream()
 						.filter(lf -> !(lf instanceof AccessibleTextField))
 						.anyMatch(Buffered::isModified)) {
-						dirty = true;
+						dirty = false;//this
 					}
 				} else if (source instanceof EventDataForm) {
 					final EventDataForm eventDataForm = (EventDataForm) source;
@@ -250,19 +250,19 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						locationEditForm.getField(LocationDto.LATITUDE),
 						locationEditForm.getField(LocationDto.LONGITUDE),
 						locationEditForm.getField(LocationDto.LAT_LON_ACCURACY))) {
-						dirty = true;
+						dirty = false;//this
 					} else if (locationEditForm.getFieldGroup()
 						.getFields()
 						.stream()
 						.filter(lf -> !(lf instanceof AccessibleTextField))
 						.anyMatch(Buffered::isModified)) {
-						dirty = true;
+						dirty = false;//this
 					} else if (eventDataForm.getFieldGroup()
 						.getFields()
 						.stream()
 						.filter(lf -> !(lf instanceof AccessibleTextField))
 						.anyMatch(Buffered::isModified)) {
-						dirty = true;
+						dirty = false;//this
 					}
 				} else if (source instanceof LocationEditForm) {
 					final LocationEditForm locationEditForm = (LocationEditForm) source;
@@ -270,21 +270,21 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 						locationEditForm.getField(LocationDto.LATITUDE),
 						locationEditForm.getField(LocationDto.LONGITUDE),
 						locationEditForm.getField(LocationDto.LAT_LON_ACCURACY))) {
-						dirty = true;
+						dirty = false;//this
 					} else if (locationEditForm.getFieldGroup()
 						.getFields()
 						.stream()
 						.filter(lf -> !(lf instanceof AccessibleTextField))
 						.anyMatch(Buffered::isModified)) {
-						dirty = true;
+						dirty = false;//this
 					}
 				} else if (source instanceof AccessibleTextField) {
 					final AccessibleTextField accessibleTextField = (AccessibleTextField) source;
 					if (accessibleTextField.isModified()) {
-						dirty = true;
+						dirty = false;//this
 					}
 				} else {
-					dirty = true;
+					dirty = false;//this
 				}
 			})));
 		}
@@ -731,7 +731,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			for (FieldGroup fieldGroup : fieldGroups) {
 				fieldGroup.discard();
 			}
-		} else if (wrappedComponent instanceof Buffered) {
+		} else if (wrappedComponent instanceof Buffered) { 
 			((Buffered) wrappedComponent).discard();
 		} else {
 			// NOOP
@@ -1011,6 +1011,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	}
 
 	public void setDirty(boolean dirty) {
-		this.dirty = dirty;
+		this.dirty = false;
 	}
 }

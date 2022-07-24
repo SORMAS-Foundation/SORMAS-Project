@@ -18,6 +18,7 @@ public enum CampaignFormElementType {
 	DATE,
 	DECIMAL,
 	RANGE,
+	COMMENT,
 	ARRAY;
 	
 
