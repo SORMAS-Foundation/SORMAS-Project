@@ -11659,4 +11659,20 @@ INSERT INTO userroles_userrights (userrole_id, userright) SELECT userrole_id, 'U
 
 INSERT INTO schema_version (version_number, comment) VALUES (473, 'Add user roles view to UI #4462');
 
+-- 2022-07-25 S2S_added sample after sharing a case/contact does not get shared #9771
+ALTER TABLE sharerequestinfo ADD COLUMN datatype varchar(255);
+ALTER TABLE sharerequestinfo_history ADD COLUMN datatype varchar(255);
+
+UPDATE sharerequestinfo sr SET datatype = (
+    SELECT CASE
+       WHEN (EXISTS(SELECT caze_id FROM sormastosormasshareinfo s JOIN sharerequestinfo_shareinfo ss ON ss.sharerequestinfo_id = r.id WHERE s.id = ss.shareinfo_id AND caze_id IS NOT NULL)) THEN 'CASE'
+       WHEN (EXISTS(SELECT contact_id FROM sormastosormasshareinfo s JOIN sharerequestinfo_shareinfo ss ON ss.sharerequestinfo_id = r.id WHERE s.id = ss.shareinfo_id  AND contact_id IS NOT NULL)) THEN 'CONTACT'
+       WHEN (EXISTS(SELECT event_id FROM sormastosormasshareinfo s JOIN sharerequestinfo_shareinfo ss ON ss.sharerequestinfo_id = r.id WHERE s.id = ss.shareinfo_id  AND event_id IS NOT NULL)) THEN 'EVENT'
+    END
+    FROM sharerequestinfo r where r.id = sr.id
+);
+
+ALTER TABLE sharerequestinfo ALTER COLUMN datatype SET NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (474, 'S2S_added sample after sharing a case/contact does not get shared #9771');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
