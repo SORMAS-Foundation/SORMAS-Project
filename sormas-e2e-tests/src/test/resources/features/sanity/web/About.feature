@@ -50,3 +50,13 @@ Feature: About Directory end to end tests
     And I click on Data Dictionary hyperlink and download XLSX file from About directory
     And I validate data from downloaded XLSX Data Dictionary file
     And I delete Data Dictionary downloaded file from About Directory
+
+  @issue=SORDEV-10361 @env_main
+  Scenario: Test Hide "buried" within Person present condition for Covid-19 for About
+    Given I log in as a Admin User
+    And I click on the About button from navbar
+    And I click on Data Dictionary hyperlink and download XLSX file from About directory
+    Then I check if Data Dictionary in "Person.burialDate" record has no "COVID-19" as a disease
+    Then I check if Data Dictionary in "Person.burialPlaceDescription" record has no "COVID-19" as a disease
+    Then I check if Data Dictionary in "Person.burialConductor" record has no "COVID-19" as a disease
+    And I delete Data Dictionary downloaded file from About Directory

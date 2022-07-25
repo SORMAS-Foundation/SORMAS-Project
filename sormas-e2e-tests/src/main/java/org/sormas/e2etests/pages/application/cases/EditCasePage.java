@@ -54,6 +54,8 @@ public class EditCasePage {
   public static final By CASE_CLASSIFICATION_SPAN =
       By.cssSelector("#caseClassification span input:checked+label");
   public static final By CASE_CLASSIFICATION_INPUT = By.cssSelector("#caseClassification input");
+  public static final By CASE_CONFIRMATION_BASIS_COMBOBOX =
+      By.cssSelector("#caseConfirmationBasis div");
   public static final By CLINICAL_CONFIRMATION_COMBOBOX =
       By.cssSelector("#clinicalConfirmation div");
   public static final By EPIDEMIOLOGICAL_CONFIRMATION_COMBOBOX =
@@ -337,6 +339,8 @@ public class EditCasePage {
   public static final By LINK_EVENT_BUTTON_DE = By.id("Ereignis verkn\u00FCpfen");
   public static final By ADD_A_PARTICIPANT_HEADER_DE =
       By.xpath("//*[contains(text(),'Neuen Ereignisteilnehmer hinzuf\u00FCgen')]");
+  public static final By CHANGE_DISEASE_POPUP_TITLE =
+      By.xpath("//div[text()='Change case disease']");
   public static final By PLACE_OF_STAY_REGION_INPUT = By.cssSelector("#region input");
   public static final By PLACE_OF_STAY_DISTRICT_INPUT = By.cssSelector("#district input");
 }
