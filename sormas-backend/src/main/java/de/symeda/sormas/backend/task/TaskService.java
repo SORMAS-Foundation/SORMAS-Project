@@ -522,8 +522,10 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			}
 		}
 
-		Predicate taskContextFilter = buildTaskContextFilter(taskQueryContext);
-		filter = CriteriaBuilderHelper.and(cb, filter, taskContextFilter);
+		if (getCurrentUser() != null) {
+			Predicate taskContextFilter = buildTaskContextFilter(taskQueryContext);
+			filter = CriteriaBuilderHelper.and(cb, filter, taskContextFilter);
+		}
 
 		return filter;
 	}
