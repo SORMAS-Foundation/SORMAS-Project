@@ -1315,7 +1315,6 @@ Feature: Case end to end tests
     Then I click on edit Sample
     Then I validate the existence of two pathogen tests
 
-
   @env_main @#8565
   Scenario: Check an archived case if its read only
     Given API: I create a new person
