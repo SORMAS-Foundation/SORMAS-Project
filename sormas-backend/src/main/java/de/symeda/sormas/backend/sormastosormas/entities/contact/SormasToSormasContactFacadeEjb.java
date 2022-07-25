@@ -209,26 +209,24 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 						ValidationErrors.create(
 							new ValidationErrorGroup(Captions.Contact),
 							new ValidationErrorMessage(Validations.sormasToSormasAcceptContactHasNoCase))));
-			} else {
-				if (!caseFacade.exists(c.getCaze().getUuid())) {
-					List<SormasToSormasShareRequest> caseRequests = shareRequestService.getShareRequestsForCase(c.getCaze());
-					if (caseRequests.isEmpty()
-						|| caseRequests.stream()
-							.allMatch(r -> r.getStatus() == ShareRequestStatus.REJECTED || r.getStatus() == ShareRequestStatus.REVOKED)) {
-						validationErrors.add(
-							new ValidationErrors(
-								buildContactValidationGroupName(c),
-								ValidationErrors.create(
-									new ValidationErrorGroup(Captions.Contact),
-									new ValidationErrorMessage(Validations.sormasToSormasAcceptContactWithoutCaseShared))));
-					} else if (caseRequests.stream().noneMatch(r -> r.getStatus() == ShareRequestStatus.ACCEPTED)) {
-						validationErrors.add(
-							new ValidationErrors(
-								buildContactValidationGroupName(c),
-								ValidationErrors.create(
-									new ValidationErrorGroup(Captions.Contact),
-									new ValidationErrorMessage(Validations.sormasToSormasAcceptCaseBeforeContact))));
-					}
+			} else if (!caseFacade.exists(c.getCaze().getUuid())) {
+				List<SormasToSormasShareRequest> caseRequests = shareRequestService.getShareRequestsForCase(c.getCaze());
+				if (caseRequests.isEmpty()
+					|| caseRequests.stream()
+						.allMatch(r -> r.getStatus() == ShareRequestStatus.REJECTED || r.getStatus() == ShareRequestStatus.REVOKED)) {
+					validationErrors.add(
+						new ValidationErrors(
+							buildContactValidationGroupName(c),
+							ValidationErrors.create(
+								new ValidationErrorGroup(Captions.Contact),
+								new ValidationErrorMessage(Validations.sormasToSormasAcceptContactWithoutCaseShared))));
+				} else if (caseRequests.stream().noneMatch(r -> r.getStatus() == ShareRequestStatus.ACCEPTED)) {
+					validationErrors.add(
+						new ValidationErrors(
+							buildContactValidationGroupName(c),
+							ValidationErrors.create(
+								new ValidationErrorGroup(Captions.Contact),
+								new ValidationErrorMessage(Validations.sormasToSormasAcceptCaseBeforeContact))));
 				}
 			}
 		});
