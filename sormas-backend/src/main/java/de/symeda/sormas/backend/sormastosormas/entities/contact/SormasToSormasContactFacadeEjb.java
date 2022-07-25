@@ -49,6 +49,7 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareReque
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -83,6 +84,8 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 	private ImmunizationService immunizationService;
 	@EJB
 	private SormasToSormasShareRequestService shareRequestService;
+	@EJB
+	private CaseFacadeEjbLocal caseFacade;
 
 	public SormasToSormasContactFacadeEjb() {
 		super(
@@ -206,7 +209,7 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 						ValidationErrors.create(
 							new ValidationErrorGroup(Captions.Contact),
 							new ValidationErrorMessage(Validations.sormasToSormasAcceptContactHasNoCase))));
-			} else {
+			} else if (!caseFacade.exists(c.getCaze().getUuid())) {
 				List<SormasToSormasShareRequest> caseRequests = shareRequestService.getShareRequestsForCase(c.getCaze());
 				if (caseRequests.isEmpty()
 					|| caseRequests.stream()

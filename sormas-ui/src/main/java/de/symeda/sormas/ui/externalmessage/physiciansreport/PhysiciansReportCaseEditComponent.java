@@ -64,6 +64,13 @@ public class PhysiciansReportCaseEditComponent extends CommitDiscardWrapperCompo
 		tabsMenu = new SubMenu();
 		tabConfigs = createTabConfigs();
 
+		// save on active tab on commit
+		setPreCommitListener(callback -> {
+			if (activeTabComponent.commitAndHandle()) {
+				callback.run();
+			}
+		});
+
 		backButton = ButtonHelper.createButton(Captions.actionBack, (e) -> {
 			if (activeTabIndex > 0) {
 				String previousTab = tabConfigs.get(activeTabIndex - 1).captionTag;
@@ -88,8 +95,7 @@ public class PhysiciansReportCaseEditComponent extends CommitDiscardWrapperCompo
 		getButtonsPanel().addComponent(nextButton);
 
 		saveAndOpenCaseButton = ButtonHelper.createButton(Captions.actionSaveAndOpenCase, (b) -> {
-			if (activeTabComponent.commitAndHandle()) {
-				commit();
+			if (commitAndHandle()) {
 				ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
 			}
 		}, ValoTheme.BUTTON_PRIMARY);

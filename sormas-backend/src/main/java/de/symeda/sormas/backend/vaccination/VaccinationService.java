@@ -16,6 +16,8 @@
 package de.symeda.sormas.backend.vaccination;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,12 +47,15 @@ import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.person.Person;
 
 @Stateless
 @LocalBean
 public class VaccinationService extends BaseAdoService<Vaccination> {
+
+	public static final int REPORT_DATE_RELEVANT_DAYS = 14;
 
 	public VaccinationService() {
 		super(Vaccination.class);
@@ -118,28 +123,65 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 	}
 
 	public boolean isVaccinationRelevant(Case caze, Vaccination vaccination) {
-		return vaccination.getVaccinationDate() != null
-			&& (caze.getSymptoms().getOnsetDate() != null
-				? DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(caze.getSymptoms().getOnsetDate())
-				: DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(caze.getReportDate()));
+		return isVaccinationRelevant(vaccination, caze.getSymptoms().getOnsetDate(), caze.getReportDate());
 	}
 
 	public boolean isVaccinationRelevant(Contact contact, Vaccination vaccination) {
-		return vaccination.getVaccinationDate() != null
-			&& (contact.getLastContactDate() != null
-				? DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(contact.getLastContactDate())
-				: DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(contact.getReportDateTime()));
+		return isVaccinationRelevant(vaccination, contact.getLastContactDate(), contact.getReportDateTime());
+
 	}
 
+	/**
+	 * HEADS UP! When this method gets changed, most probably the database logic in
+	 * {@link de.symeda.sormas.backend.event.EventParticipantService#updateVaccinationStatuses(Long, Disease, Date)}
+	 * will also need an update.
+	 *
+	 * @param event
+	 *            to decide whether the vaccination is relevant for
+	 * @param vaccination
+	 *            to be decided about
+	 * @return true when the vaccination is relevant, false otherwise
+	 */
 	public boolean isVaccinationRelevant(Event event, Vaccination vaccination) {
-		if (vaccination.getVaccinationDate() == null) {
-			return false;
+		return isVaccinationRelevant(vaccination, event.getStartDate(), event.getEndDate(), event.getReportDateTime());
+	}
+
+	/*
+	 * HEADS UP! If you make changes here, you most probably also need to update the database queries in
+	 * ContactService.updateVaccinationStatuses(...) and
+	 * EventParticipantService.updateVaccinationStatuses(...).
+	 */
+	private boolean isVaccinationRelevant(Vaccination vaccination, Date... relevanceFilterDates) {
+
+		Date relevantVaccineDate = getRelevantVaccineDate(vaccination);
+		for (Date comparisonDate : relevanceFilterDates) {
+			if (comparisonDate != null) {
+				return DateHelper.getEndOfDay(relevantVaccineDate).before(comparisonDate);
+			}
 		}
-		if (event.getStartDate() != null) {
-			return DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(event.getStartDate());
-		}
-		return event.getEndDate() != null
-			? DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(event.getEndDate())
-			: DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(event.getReportDateTime());
+		return false;
+	}
+
+	public List<Vaccination> getRelevantSortedVaccinations(List<Vaccination> vaccinations, Date... relevanceFilterDates) {
+
+		return vaccinations.stream()
+			.filter(v -> isVaccinationRelevant(v, relevanceFilterDates))
+			.sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
+			.collect(Collectors.toList());
+	}
+
+	/**
+	 * * Obtains the date used for calculating the relevance of a vaccination for a case/contact/event participant.
+	 * * There is a 14-day buffer when the report date needs to be used.
+	 * * There is an identical method for VaccinationDtos below!
+	 *
+	 * @param vaccination
+	 *            to obtain the relevant date from
+	 * @return relevant date
+	 */
+	public Date getRelevantVaccineDate(Vaccination vaccination) {
+		return vaccination.getVaccinationDate() != null
+			? vaccination.getVaccinationDate()
+			: DateHelper.subtractDays(vaccination.getReportDate(), REPORT_DATE_RELEVANT_DAYS);
 	}
 }
