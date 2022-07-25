@@ -2598,6 +2598,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
+	public EditPermissionType isEditAllowedCaseContact(String uuid) {
+		Case ado = service.getByUuid(uuid);
+		return service.getEditPermissionTypeCaseContact(ado);
+	}
+
+	@Override
 	public List<String> getArchivedUuidsSince(Date since) {
 
 		if (userService.getCurrentUser() == null) {
