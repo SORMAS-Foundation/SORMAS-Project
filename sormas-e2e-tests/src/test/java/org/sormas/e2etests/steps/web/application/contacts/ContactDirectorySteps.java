@@ -1121,22 +1121,11 @@ public class ContactDirectorySteps implements En {
         });
 
     Then(
-        "I set vaccination contact status filter to ([^\"]*) and apply",
-        (String vaccinationStatus) -> {
-          webDriverHelpers.selectFromCombobox(
-              CONTACT_VACCINATION_STATUS_FILTER_COMBOBOX, vaccinationStatus);
-          TimeUnit.SECONDS.sleep(2);
-
-          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
-        });
-
-    Then(
         "I set contact vaccination status filter to ([^\"]*) and apply",
         (String vaccinationStatus) -> {
           webDriverHelpers.selectFromCombobox(
               CONTACT_VACCINATION_STATUS_FILTER_COMBOBOX, vaccinationStatus);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
-          TimeUnit.SECONDS.sleep(15);
         });
 
     Then(
@@ -1146,7 +1135,6 @@ public class ContactDirectorySteps implements En {
           Assert.assertTrue(
               webDriverHelpers.isElementVisibleWithTimeout(getContactsByUUID(contactUuid), 5),
               "There is no contact with expected uuid");
-          TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               getVaccinationStatusContactsByText(vaccinationStatus));
           Assert.assertTrue(

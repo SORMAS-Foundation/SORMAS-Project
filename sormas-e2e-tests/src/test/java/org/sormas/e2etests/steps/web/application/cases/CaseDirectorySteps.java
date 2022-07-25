@@ -465,7 +465,6 @@ public class CaseDirectorySteps implements En {
           Assert.assertTrue(
               webDriverHelpers.isElementVisibleWithTimeout(getCaseResultsUuidLocator(caseUUID), 5),
               "There is no case with expected status");
-          TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               getVaccinationStatusCasesByText(vaccinationStatus));
           Assert.assertTrue(
