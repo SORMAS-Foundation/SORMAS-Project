@@ -251,4 +251,12 @@ public class SampleService {
         .sampleType("Nasen-Abstrich")
         .build();
   }
+
+  public Sample buildOnlyRequiredSampleFieldsDE() {
+    return Sample.builder()
+        .dateOfCollection(LocalDate.now().minusDays(5))
+        .laboratory("Labor")
+        .sampleType("Nasen-Abstrich")
+        .build();
+  }
 }

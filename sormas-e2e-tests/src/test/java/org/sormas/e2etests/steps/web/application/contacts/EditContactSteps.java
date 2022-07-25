@@ -22,6 +22,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONFIRM_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_DOCUMENT_EMPTY_TEXT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_UPLOADED_TEST_FILE;
@@ -36,13 +37,18 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DO
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES_POPUP_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXPECTED_FOLLOWUP_LABEL;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXPECTED_FOLLOWUP_POPUP_TEXT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_IMMUNIZATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UPLOAD_DOCUMENT_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_CARD_INFO_ICON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_CARD_INFO_POPUP_TEXT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CASE_OR_EVENT_INFORMATION_CONTACT_TEXT_AREA;
@@ -67,6 +73,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -101,6 +108,7 @@ public class EditContactSteps implements En {
   public static final DateTimeFormatter formatterDE = DateTimeFormatter.ofPattern("d.M.yyyy");
   private static String currentUrl;
   private static String contactUUID;
+  public static LocalDate lastContactDateForFollowUp;
 
   @Inject
   public EditContactSteps(
@@ -149,6 +157,10 @@ public class EditContactSteps implements En {
     And(
         "I click on checkbox to upload generated document to entities in Create Quarantine Order form in Contact directory",
         () -> webDriverHelpers.clickOnWebElementBySelector(UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX));
+    And(
+        "I click on checkbox to upload generated document to entities in Create Quarantine Order form in Contact directory for DE",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE));
     When(
         "I check if generated document based on {string} appeared in Documents tab for UI created contact in Edit Contact directory",
         (String name) -> {
@@ -159,6 +171,17 @@ public class EditContactSteps implements En {
                   Assert.assertEquals(
                       path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME)),
               120);
+        });
+    When(
+        "I check if generated document based on {string} appeared in Documents tab for UI created contact in Edit Contact directory for DE",
+        (String name) -> {
+          String uuid = collectedContact.getUuid();
+          String path = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertEquals(
+                      path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME_DE)),
+              10);
         });
     When(
         "I check if generated document for Contact based on {string} was downloaded properly",
@@ -721,6 +744,17 @@ public class EditContactSteps implements En {
               120);
         });
     When(
+        "I check if generated document based on {string} appeared in Documents tab in Edit Contact directory for DE",
+        (String name) -> {
+          String uuid = apiState.getCreatedContact().getUuid();
+          String path = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertEquals(
+                      path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME_DE)),
+              10);
+        });
+    When(
         "I delete downloaded file created from {string} Document Template for Contact",
         (String name) -> {
           String uuid = apiState.getCreatedContact().getUuid();
@@ -746,6 +780,7 @@ public class EditContactSteps implements En {
           webDriverHelpers.scrollToElement(SAVE_EDIT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_EDIT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_SAVED_POPUP);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
     When(
         "^I click Link Event button on Edit Contact Page$",
@@ -1048,6 +1083,44 @@ public class EditContactSteps implements En {
               "Relationships with case are not equal");
           softly.assertAll();
         });
+    When(
+        "I check that text appearing in hover over Expected Follow-up is based on Report date on Edit Contact Page",
+        () -> {
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXPECTED_FOLLOWUP_LABEL);
+          webDriverHelpers.hoverToElement(EXPECTED_FOLLOWUP_LABEL);
+          String displayedText =
+              webDriverHelpers.getTextFromWebElement(EXPECTED_FOLLOWUP_POPUP_TEXT);
+          softly.assertEquals(
+              displayedText,
+              "Das erwartete Nachverfolgungs bis Datum f\u00FCr diesen Kontakt basiert auf seinem Meldedatum ("
+                  + apiState
+                      .getCreatedContact()
+                      .getReportDateTime()
+                      .toInstant()
+                      .atZone(ZoneId.systemDefault())
+                      .toLocalDate()
+                      .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                  + ")",
+              "Message is incorrect");
+          softly.assertAll();
+        });
+    When(
+        "I check that text appearing in hover over Expected Follow-up is based on Last Contact date on Edit Contact Page",
+        () -> {
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXPECTED_FOLLOWUP_LABEL);
+          webDriverHelpers.hoverToElement(EXPECTED_FOLLOWUP_LABEL);
+          String displayedText =
+              webDriverHelpers.getTextFromWebElement(EXPECTED_FOLLOWUP_POPUP_TEXT);
+          softly.assertEquals(
+              displayedText,
+              "Das erwartete Nachverfolgungs bis Datum f\u00FCr diesen Kontakt basiert auf seinem Datum des letzten Kontakts ("
+                  + lastContactDateForFollowUp.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                  + ")",
+              "Message is incorrect");
+          softly.assertAll();
+        });
 
     When("I copy url of current contact", () -> currentUrl = webDriverHelpers.returnURL());
 
@@ -1122,7 +1195,15 @@ public class EditContactSteps implements En {
           webDriverHelpers.fillInWebElement(LAST_CONTACT_DATE, formatter.format(LocalDate.now()));
           webDriverHelpers.fillInWebElement(REPORT_DATE, formatter.format(LocalDate.now()));
         });
-
+    When(
+        "I change the date of last contact to {int} days ago for DE version",
+        (Integer days) -> {
+          webDriverHelpers.scrollToElement(LAST_CONTACT_DATE);
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+          lastContactDateForFollowUp = LocalDate.now().minusDays(days);
+          webDriverHelpers.fillInWebElement(
+              LAST_CONTACT_DATE, formatter.format(lastContactDateForFollowUp));
+        });
     When(
         "I filter with last created contact using contact UUID",
         () -> {
@@ -1150,6 +1231,27 @@ public class EditContactSteps implements En {
     When(
         "I click on discard button in de-archive contact popup",
         () -> webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL_POPUP));
+
+    And(
+        "^I set the last contact date to (\\d+) days before the vaccination date$",
+        (Integer numberOfDays) -> {
+          fillDateOfLastContactDE(LocalDate.now().minusDays(35 + numberOfDays));
+        });
+
+    And(
+        "^I check the displayed message is correct after hovering over the Vaccination Card Info icon on Edit Contact Page for DE$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(VACCINATION_CARD_INFO_ICON);
+          webDriverHelpers.hoverToElement(VACCINATION_CARD_INFO_ICON);
+          String displayedText =
+              webDriverHelpers.getTextFromWebElement(VACCINATION_CARD_INFO_POPUP_TEXT);
+          softly.assertEquals(
+              displayedText,
+              "Diese Impfung ist f\u00FCr diesen Kontakt nicht relevant, weil das Datum der Impfung nach dem Datum des letzten Kontaktes oder dem Kontakt-Meldedatum liegt.",
+              "Message is incorrect");
+          softly.assertAll();
+        });
   }
 
   private void selectContactClassification(String classification) {
@@ -1166,6 +1268,10 @@ public class EditContactSteps implements En {
 
   private void fillDateOfLastContact(LocalDate date) {
     webDriverHelpers.clearAndFillInWebElement(LAST_CONTACT_DATE, formatter.format(date));
+  }
+
+  private void fillDateOfLastContactDE(LocalDate date) {
+    webDriverHelpers.clearAndFillInWebElement(LAST_CONTACT_DATE, formatterDE.format(date));
   }
 
   private void selectDiseaseOfSourceCase(String disease) {

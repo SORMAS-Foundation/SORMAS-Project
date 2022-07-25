@@ -39,6 +39,7 @@ import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.user.User;
@@ -131,6 +132,8 @@ public class ActionFacadeEjb implements ActionFacade {
 		UserRight._ACTION_EDIT })
 	public ActionDto saveAction(@Valid ActionDto dto) {
 
+		Action existingAction = actionService.getByUuid(dto.getUuid());
+		FacadeHelper.checkCreateAndEditRights(existingAction, userService, UserRight.ACTION_CREATE, UserRight.ACTION_EDIT);
 		Action ado = fromDto(dto, true);
 		actionService.ensurePersisted(ado);
 		return toDto(ado);

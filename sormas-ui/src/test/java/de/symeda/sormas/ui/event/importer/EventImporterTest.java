@@ -45,8 +45,6 @@ public class EventImporterTest extends AbstractBeanTest {
 	@Test
 	public void testImportAllEvents() throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
-		TestDataCreator creator = new TestDataCreator();
-
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Bourgogne-Franche-Comté", "Côte d'Or", "Dijon", "CHU Dijon Bourgogne");
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),

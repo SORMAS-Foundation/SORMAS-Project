@@ -50,7 +50,9 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.externalmessage.ExternalMessageService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntitiesHelper;
@@ -104,6 +106,8 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	private SormasToSormasEncryptionFacadeEjbLocal sormasToSormasEncryptionEjb;
 	@EJB
 	private SormasToSormasEntitiesHelper sormasToSormasEntitiesHelper;
+	@EJB
+	private ExternalMessageService externalMessageService;
 
 	@Override
 	public String getOrganizationId() {
@@ -232,7 +236,7 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			updateContactOnShareAccepted(s.getContact(), s, acceptData.getDistrictExternalId());
 			updateOriginInfoOnShareAccepted(s.getEvent(), s);
 			updateOriginInfoOnShareAccepted(s.getEventParticipant(), s);
-			updateOriginInfoOnShareAccepted(s.getSample(), s);
+			updateSampleOnShareAccepted(s);
 			updateOriginInfoOnShareAccepted(s.getImmunization(), s);
 		});
 		shareRequestInfoService.ensurePersisted(requestInfo);
@@ -257,6 +261,15 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		if (contact != null) {
 			updateOriginInfoOnShareAccepted(contact, shareInfo);
 			sormasToSormasEntitiesHelper.updateContactResponsibleDistrict(contact, districtExternalId);
+		}
+	}
+
+	private void updateSampleOnShareAccepted(SormasToSormasShareInfo s) {
+		Sample sample = s.getSample();
+
+		if (sample != null) {
+			updateOriginInfoOnShareAccepted(sample, s);
+			sormasToSormasEntitiesHelper.updateSampleOnShare(s.getSample(), s);
 		}
 	}
 

@@ -250,14 +250,12 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			new ShareRequestData(requestUuid, previewsToSend, originInfo, !isAssociatedContactShareEnabled),
 			null);
 
-		// remove shares to the origin
 		shareRequestInfoService.ensurePersisted(shareRequestInfo);
 	}
 
 	protected void ensureConsistentOptions(SormasToSormasOptionsDto options) {
 		if (options.isHandOverOwnership()) {
-			options.setPseudonymizePersonalData(false);
-			options.setPseudonymizeSensitiveData(false);
+			options.setPseudonymizeData(false);
 
 			if (SormasToSormasCaseDto[].class.isAssignableFrom(getShareDataClass())) {
 				options.setWithSamples(true);
@@ -343,6 +341,10 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			}
 			if (s.getContact() != null) {
 				sormasToSormasEntitiesHelper.updateContactResponsibleDistrict(s.getContact(), responseData.getDistrictExternalId());
+			}
+
+			if (s.getSample() != null) {
+				sormasToSormasEntitiesHelper.updateSampleOnShare(s.getSample(), s);
 			}
 		});
 		entities.forEach(e -> {
@@ -848,8 +850,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		requestInfo.setWithSamples(options.isWithSamples());
 		requestInfo.setWithEventParticipants(options.isWithEventParticipants());
 		requestInfo.setWithImmunizations(options.isWithImmunizations());
-		requestInfo.setPseudonymizedPersonalData(options.isPseudonymizePersonalData());
-		requestInfo.setPseudonymizedSensitiveData(options.isPseudonymizeSensitiveData());
+		requestInfo.setPseudonymizedPersonalData(options.isPseudonymizeData());
+		requestInfo.setPseudonymizedSensitiveData(options.isPseudonymizeData());
 		requestInfo.setComment(options.getComment());
 	}
 }
