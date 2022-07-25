@@ -27,6 +27,7 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
@@ -44,6 +45,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Sets;
 
@@ -193,9 +196,13 @@ public final class DateHelper {
 			return null;
 		}
 
+		Logger logger = LoggerFactory.getLogger(DateHelper.class);
 		for (String format : dateFormats) {
 			try {
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+				DateTimeFormatter formatter = new DateTimeFormatterBuilder().parseCaseInsensitive()
+					.appendPattern(format)
+					.toFormatter(I18nProperties.getUserLanguage().getLocale());
+				logger.trace("Format: {}, Locale: {}", format, formatter.getLocale());
 				TemporalAccessor parsedTemporal = formatter.parse(date);
 
 				final Date result;
@@ -216,8 +223,10 @@ public final class DateHelper {
 					LocalTime temporal = LocalTime.from(parsedTemporal);
 					result = UtilDate.from(temporal);
 				}
+				logger.trace("Parse successful. Result: {}", result);
 				return result;
 			} catch (DateTimeParseException e) {
+				logger.trace("Parse failed: {}", e.getMessage());
 				// Try next format
 			}
 		}

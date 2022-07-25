@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<!-- scan disabled as precaution for CVE-2021-42550 and similar -->
+<configuration scan="false" scanPeriod="30 seconds" debug="true">
+
+    <!-- allow JMX configuration (http://logback.qos.ch/manual/jmxConfig.html) -->
+    <!-- <jmxConfigurator /> -->
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+               <Pattern>%date %-5level \(%C.java:%L\) - %msg%n</Pattern>
+        </encoder>
+	</appender>	
+
+	<!-- Don't log ArchUnit internal debug logs -->
+ 	<logger name="com.tngtech.archunit" level="WARN" />
+
+    <root level="warn">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+</configuration>
