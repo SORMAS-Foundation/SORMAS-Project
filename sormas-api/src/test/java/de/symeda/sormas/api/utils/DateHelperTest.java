@@ -25,6 +25,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -219,5 +223,211 @@ public class DateHelperTest {
 		assertEquals("5", DateHelper.formatLocalDate(5, null, null, Language.DE));
 		assertEquals("5..1990", DateHelper.formatLocalDate(5, null, 1990, Language.DE));
 		assertEquals("5.7.1990", DateHelper.formatLocalDate(5, 7, 1990, Language.DE));
+	}
+
+	@Test
+	public void testGetFullDaysBetween() {
+
+		assertThat(DateHelper.getFullDaysBetween(UtilDate.of(2022, Month.JUNE, 25), UtilDate.of(2022, Month.JUNE, 25)), equalTo(0));
+		assertThat(DateHelper.getFullDaysBetween(UtilDate.of(2022, Month.JUNE, 25), UtilDate.of(2022, Month.JULY, 5)), equalTo(10));
+		assertThat(DateHelper.getFullDaysBetween(UtilDate.of(2022, Month.JULY, 1), UtilDate.of(2022, Month.JULY, 5)), equalTo(4));
+	}
+
+	@Test
+	public void testGetDaysBetween() {
+
+		assertThat(DateHelper.getDaysBetween(UtilDate.of(2022, Month.JUNE, 25), UtilDate.of(2022, Month.JUNE, 25)), equalTo(1));
+		assertThat(DateHelper.getDaysBetween(UtilDate.of(2022, Month.JUNE, 25), UtilDate.of(2022, Month.JULY, 5)), equalTo(11));
+		assertThat(DateHelper.getDaysBetween(UtilDate.of(2022, Month.JULY, 1), UtilDate.of(2022, Month.JULY, 5)), equalTo(5));
+	}
+
+	@Test
+	public void testGetWeeksBetween() {
+
+		assertThat(DateHelper.getWeeksBetween(UtilDate.of(2022, Month.MAY, 1), UtilDate.of(2022, Month.MAY, 1)), equalTo(1));
+		assertThat(DateHelper.getWeeksBetween(UtilDate.of(2022, Month.MAY, 1), UtilDate.of(2022, Month.MAY, 5)), equalTo(1));
+		assertThat(DateHelper.getWeeksBetween(UtilDate.of(2022, Month.MAY, 1), UtilDate.of(2022, Month.MAY, 14)), equalTo(2));
+		assertThat(DateHelper.getWeeksBetween(UtilDate.of(2022, Month.MAY, 1), UtilDate.of(2022, Month.MAY, 15)), equalTo(3));
+	}
+
+	@Test
+	public void testGetMonthsBetween() {
+
+		assertThat(DateHelper.getMonthsBetween(UtilDate.of(2022, Month.MAY, 1), UtilDate.of(2022, Month.MAY, 1)), equalTo(1));
+		assertThat(DateHelper.getMonthsBetween(UtilDate.of(2022, Month.MAY, 1), UtilDate.of(2022, Month.MAY, 31)), equalTo(1));
+		assertThat(DateHelper.getMonthsBetween(UtilDate.of(2022, Month.MAY, 1), UtilDate.of(2022, Month.JUNE, 1)), equalTo(2));
+		assertThat(DateHelper.getMonthsBetween(UtilDate.of(2022, Month.MAY, 1), UtilDate.of(2022, Month.JULY, 15)), equalTo(3));
+	}
+
+	@Test
+	public void testGetYearsBetween() {
+
+		assertThat(DateHelper.getYearsBetween(UtilDate.of(2022, Month.MAY, 1), UtilDate.of(2022, Month.MAY, 1)), equalTo(0));
+		assertThat(DateHelper.getYearsBetween(UtilDate.of(2022, Month.MAY, 1), UtilDate.of(2023, Month.APRIL, 30)), equalTo(0));
+		assertThat(DateHelper.getYearsBetween(UtilDate.of(2022, Month.MAY, 1), UtilDate.of(2023, Month.MAY, 1)), equalTo(1));
+		assertThat(DateHelper.getYearsBetween(UtilDate.of(2022, Month.MAY, 1), UtilDate.of(2024, Month.JULY, 15)), equalTo(2));
+	}
+
+	@Test
+	public void testAddDays() {
+
+		assertThat(DateHelper.addDays(UtilDate.now(), 0), equalTo(UtilDate.today()));
+		assertThat(DateHelper.addDays(UtilDate.today(), 0), equalTo(UtilDate.today()));
+		assertThat(DateHelper.addDays(UtilDate.now(), 1), equalTo(UtilDate.tomorrow()));
+		assertThat(DateHelper.addDays(UtilDate.today(), 1), equalTo(UtilDate.tomorrow()));
+	}
+
+	@Test
+	public void testSubtractDays() {
+
+		assertThat(DateHelper.subtractDays(UtilDate.now(), 0), equalTo(UtilDate.today()));
+		assertThat(DateHelper.subtractDays(UtilDate.today(), 0), equalTo(UtilDate.today()));
+		assertThat(DateHelper.subtractDays(UtilDate.now(), 1), equalTo(UtilDate.yesterday()));
+		assertThat(DateHelper.subtractDays(UtilDate.today(), 1), equalTo(UtilDate.yesterday()));
+	}
+
+	@Test
+	public void testAddWeeks() {
+
+		Date date = UtilDate.of(2022, Month.MAY, 4);
+		assertThat(DateHelper.addWeeks(date, 0), equalTo(date));
+		assertThat(DateHelper.addWeeks(date, 1), equalTo(UtilDate.of(2022, Month.MAY, 11)));
+		assertThat(DateHelper.addWeeks(date, 2), equalTo(UtilDate.of(2022, Month.MAY, 18)));
+	}
+
+	@Test
+	public void testSubtractWeeks() {
+
+		Date date = UtilDate.of(2022, Month.MAY, 4);
+		assertThat(DateHelper.subtractWeeks(date, 0), equalTo(date));
+		assertThat(DateHelper.subtractWeeks(date, 1), equalTo(UtilDate.of(2022, Month.APRIL, 27)));
+		assertThat(DateHelper.subtractWeeks(date, 2), equalTo(UtilDate.of(2022, Month.APRIL, 20)));
+	}
+
+	@Test
+	public void testAddMonths() {
+
+		Date date = UtilDate.of(2022, Month.MAY, 4);
+		assertThat(DateHelper.addMonths(date, 0), equalTo(date));
+		assertThat(DateHelper.addMonths(date, 1), equalTo(UtilDate.of(2022, Month.JUNE, 4)));
+		assertThat(DateHelper.addMonths(date, 2), equalTo(UtilDate.of(2022, Month.JULY, 4)));
+	}
+
+	@Test
+	public void testSubtractMonths() {
+
+		Date date = UtilDate.of(2022, Month.MAY, 4);
+		assertThat(DateHelper.subtractMonths(date, 0), equalTo(date));
+		assertThat(DateHelper.subtractMonths(date, 1), equalTo(UtilDate.of(2022, Month.APRIL, 4)));
+		assertThat(DateHelper.subtractMonths(date, 2), equalTo(UtilDate.of(2022, Month.MARCH, 4)));
+	}
+
+	@Test
+	public void testAddYears() {
+
+		Date date = UtilDate.of(2022, Month.MAY, 4);
+		assertThat(DateHelper.addYears(date, 0), equalTo(date));
+		assertThat(DateHelper.addYears(date, 1), equalTo(UtilDate.of(2023, Month.MAY, 4)));
+		assertThat(DateHelper.addYears(date, 2), equalTo(UtilDate.of(2024, Month.MAY, 4)));
+	}
+
+	@Test
+	public void testSubtractYears() {
+
+		Date date = UtilDate.of(2022, Month.MAY, 4);
+		assertThat(DateHelper.subtractYears(date, 0), equalTo(date));
+		assertThat(DateHelper.subtractYears(date, 1), equalTo(UtilDate.of(2021, Month.MAY, 4)));
+		assertThat(DateHelper.subtractYears(date, 2), equalTo(UtilDate.of(2020, Month.MAY, 4)));
+	}
+
+	@Test
+	public void testGetStartOfDay() {
+
+		assertThat(DateHelper.getStartOfDay(UtilDate.now()), equalTo(UtilDate.today()));
+	}
+
+	@Test
+	public void testGetEndOfDay() {
+
+		Date date = UtilDate.of(2022, Month.MAY, 4);
+		Date expected = UtilDate.from(LocalDateTime.of(2022, Month.MAY, 5, 0, 0).minus(1, ChronoUnit.MILLIS));
+		assertThat(DateHelper.getEndOfDay(date), equalTo(expected));
+	}
+
+	@Test
+	public void testGetStartOfWeek() {
+
+		LocalDate monday = LocalDate.now().minusDays(LocalDate.now().getDayOfWeek().getValue() - 1);
+		assertThat(DateHelper.getStartOfWeek(UtilDate.now()), equalTo(UtilDate.from(monday)));
+	}
+
+	@Test
+	public void testGetEndOfWeek() {
+
+		LocalDate sunday = LocalDate.now().plusDays(7 - LocalDate.now().getDayOfWeek().getValue());
+		assertThat(DateHelper.getEndOfWeek(UtilDate.now()), equalTo(DateHelper.getEndOfDay(UtilDate.from(sunday))));
+	}
+
+	@Test
+	public void testGetStartOfMonth() {
+
+		LocalDate firstOfMonth = LocalDate.now().withDayOfMonth(1);
+		assertThat(DateHelper.getStartOfMonth(UtilDate.now()), equalTo(UtilDate.from(firstOfMonth)));
+	}
+
+	@Test
+	public void testGetEndOfMonth() {
+
+		LocalDate endOfMonth = LocalDate.now().plusMonths(1).withDayOfMonth(1).minusDays(1);
+		assertThat(DateHelper.getEndOfMonth(UtilDate.now()), equalTo(DateHelper.getEndOfDay(UtilDate.from(endOfMonth))));
+	}
+
+	@Test
+	public void testGetStartOfYear() {
+
+		LocalDate firstOfYear = LocalDate.now().withDayOfMonth(1).withMonth(1);
+		assertThat(DateHelper.getStartOfYear(UtilDate.now()), equalTo(UtilDate.from(firstOfYear)));
+	}
+
+	@Test
+	public void testGetEndOfYear() {
+
+		LocalDate endOfYear = LocalDate.now().withMonth(12).withDayOfMonth(31);
+		assertThat(DateHelper.getEndOfYear(UtilDate.now()), equalTo(DateHelper.getEndOfDay(UtilDate.from(endOfYear))));
+	}
+
+	@Test
+	public void testFindDateBounds() {
+
+		// Invalid entries
+		assertNull(DateHelper.findDateBounds(null));
+		assertNull(DateHelper.findDateBounds(""));
+		assertNull(DateHelper.findDateBounds(" "));
+		assertNull(DateHelper.findDateBounds("yesterday"));
+
+		// Year precision
+		assertEqualDateRange(DateHelper.findDateBounds("90"), LocalDate.of(1990, Month.JANUARY, 1), LocalDate.of(1991, Month.JANUARY, 1));
+		assertEqualDateRange(DateHelper.findDateBounds("08"), LocalDate.of(2008, Month.JANUARY, 1), LocalDate.of(2009, Month.JANUARY, 1));
+		assertEqualDateRange(DateHelper.findDateBounds("1830"), LocalDate.of(1830, Month.JANUARY, 1), LocalDate.of(1831, Month.JANUARY, 1));
+
+		int currentYear = LocalDate.now().getYear();
+
+		// Month precision
+		assertEqualDateRange(DateHelper.findDateBounds("3/01"), LocalDate.of(2001, Month.MARCH, 1), LocalDate.of(2001, Month.APRIL, 1));
+		assertEqualDateRange(DateHelper.findDateBounds("3/"), LocalDate.of(currentYear, Month.MARCH, 1), LocalDate.of(currentYear, Month.APRIL, 1));
+
+		// Day precision
+		assertEqualDateRange(DateHelper.findDateBounds("3/4/2012"), LocalDate.of(2012, Month.APRIL, 3), LocalDate.of(2012, Month.APRIL, 4));
+		assertEqualDateRange(DateHelper.findDateBounds("3/4/"), LocalDate.of(currentYear, Month.APRIL, 3), LocalDate.of(currentYear, Month.APRIL, 4));
+
+		// Currently not working conversions
+		assertNull(DateHelper.findDateBounds("3.01"));
+		assertNull(DateHelper.findDateBounds("3.4.2012"));
+	}
+
+	private static void assertEqualDateRange(Date[] actualRange, LocalDate expectedBegin, LocalDate expectedEnd) {
+
+		assertThat(actualRange[0], equalTo(UtilDate.from(expectedBegin)));
+		assertThat(actualRange[1], equalTo(UtilDate.from(expectedEnd)));
 	}
 }

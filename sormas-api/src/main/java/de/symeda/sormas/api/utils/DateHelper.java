@@ -20,6 +20,17 @@ package de.symeda.sormas.api.utils;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Month;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -33,15 +44,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.Days;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-import org.joda.time.Months;
-import org.joda.time.Weeks;
-import org.joda.time.Years;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import com.google.common.collect.Sets;
 
@@ -186,15 +188,36 @@ public final class DateHelper {
 	}
 
 	private static Date parseDateWithException(String date, List<String> dateFormats) throws ParseException {
+
 		if (date == null) {
 			return null;
 		}
 
 		for (String format : dateFormats) {
 			try {
-				DateTimeFormatter formatter = DateTimeFormat.forPattern(format);
-				return DateTime.parse(date, formatter).toDate();
-			} catch (Exception e) {
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+				TemporalAccessor parsedTemporal = formatter.parse(date);
+
+				final Date result;
+				if (parsedTemporal.isSupported(ChronoField.MONTH_OF_YEAR)) {
+					if (parsedTemporal.isSupported(ChronoField.DAY_OF_MONTH)) {
+						if (parsedTemporal.isSupported(ChronoField.HOUR_OF_DAY)) {
+							LocalDateTime temporal = LocalDateTime.from(parsedTemporal);
+							result = UtilDate.from(temporal);
+						} else {
+							LocalDate temporal = LocalDate.from(parsedTemporal);
+							result = UtilDate.from(temporal);
+						}
+					} else {
+						YearMonth temporal = YearMonth.from(parsedTemporal);
+						result = UtilDate.from(temporal);
+					}
+				} else {
+					LocalTime temporal = LocalTime.from(parsedTemporal);
+					result = UtilDate.from(temporal);
+				}
+				return result;
+			} catch (DateTimeParseException e) {
 				// Try next format
 			}
 		}
@@ -415,7 +438,7 @@ public final class DateHelper {
 	 * Calculate full days between the two given dates.
 	 */
 	public static int getFullDaysBetween(Date start, Date end) {
-		return Days.daysBetween(new LocalDate(start.getTime()), new LocalDate(end.getTime())).getDays();
+		return (int) ChronoUnit.DAYS.between(UtilDate.toLocalDate(start), UtilDate.toLocalDate(end));
 	}
 
 	/**
@@ -423,7 +446,7 @@ public final class DateHelper {
 	 * end dates, so a one-week period from Monday to Sunday will return 7.
 	 */
 	public static int getDaysBetween(Date start, Date end) {
-		return Days.daysBetween(new LocalDate(start.getTime()), new LocalDate(end.getTime())).getDays() + 1;
+		return (int) ChronoUnit.DAYS.between(UtilDate.toLocalDate(start), UtilDate.toLocalDate(end)) + 1;
 	}
 
 	/**
@@ -446,7 +469,7 @@ public final class DateHelper {
 	 * end dates, so week 1 to week 4 of a year will return 4.
 	 */
 	public static int getWeeksBetween(Date start, Date end) {
-		return Weeks.weeksBetween(new LocalDate(start.getTime()), new LocalDate(end.getTime())).getWeeks() + 1;
+		return (int) ChronoUnit.WEEKS.between(UtilDate.toLocalDate(start), UtilDate.toLocalDate(end)) + 1;
 	}
 
 	/**
@@ -469,7 +492,7 @@ public final class DateHelper {
 	 * and end dates, so a one-year period from January to December will return 12.
 	 */
 	public static int getMonthsBetween(Date start, Date end) {
-		return Months.monthsBetween(new LocalDate(start.getTime()), new LocalDate(end.getTime())).getMonths() + 1;
+		return (int) ChronoUnit.MONTHS.between(UtilDate.toLocalDate(start), UtilDate.toLocalDate(end)) + 1;
 	}
 
 	/**
@@ -491,7 +514,7 @@ public final class DateHelper {
 	 * Calculate years between the two given dates.
 	 */
 	public static int getYearsBetween(Date start, Date end) {
-		return Years.yearsBetween(new LocalDate(start.getTime()), new LocalDate(end.getTime())).getYears();
+		return (int) ChronoUnit.YEARS.between(UtilDate.toLocalDate(start), UtilDate.toLocalDate(end));
 	}
 
 	/**
@@ -510,35 +533,35 @@ public final class DateHelper {
 	}
 
 	public static Date addDays(Date date, int amountOfDays) {
-		return new LocalDate(date).plusDays(amountOfDays).toDate();
+		return UtilDate.from(UtilDate.toLocalDate(date).plusDays(amountOfDays));
 	}
 
 	public static Date subtractDays(Date date, int amountOfDays) {
-		return new LocalDate(date).minusDays(amountOfDays).toDate();
+		return UtilDate.from(UtilDate.toLocalDate(date).minusDays(amountOfDays));
 	}
 
 	public static Date addWeeks(Date date, int amountOfWeeks) {
-		return new LocalDate(date).plusWeeks(amountOfWeeks).toDate();
+		return UtilDate.from(UtilDate.toLocalDate(date).plusWeeks(amountOfWeeks));
 	}
 
 	public static Date subtractWeeks(Date date, int amountOfWeeks) {
-		return new LocalDate(date).minusWeeks(amountOfWeeks).toDate();
+		return UtilDate.from(UtilDate.toLocalDate(date).minusWeeks(amountOfWeeks));
 	}
 
 	public static Date addMonths(Date date, int amountOfMonths) {
-		return new LocalDate(date).plusMonths(amountOfMonths).toDate();
+		return UtilDate.from(UtilDate.toLocalDate(date).plusMonths(amountOfMonths));
 	}
 
 	public static Date subtractMonths(Date date, int amountOfMonths) {
-		return new LocalDate(date).minusMonths(amountOfMonths).toDate();
+		return UtilDate.from(UtilDate.toLocalDate(date).minusMonths(amountOfMonths));
 	}
 
 	public static Date addYears(Date date, int amountOfYears) {
-		return new LocalDate(date).plusYears(amountOfYears).toDate();
+		return UtilDate.from(UtilDate.toLocalDate(date).plusYears(amountOfYears));
 	}
 
 	public static Date subtractYears(Date date, int amountOfYears) {
-		return new LocalDate(date).minusYears(amountOfYears).toDate();
+		return UtilDate.from(UtilDate.toLocalDate(date).minusYears(amountOfYears));
 	}
 
 	public static Date addSeconds(Date date, int amountOfSeconds) {
@@ -550,41 +573,46 @@ public final class DateHelper {
 	}
 
 	public static Date getStartOfDay(Date date) {
-		return new LocalDateTime(date).withTime(0, 0, 0, 0).toDate();
+
+		return UtilDate.from(UtilDate.toLocalDate(date).atStartOfDay());
 	}
 
 	public static Date getEndOfDay(Date date) {
-		return new LocalDateTime(date).withTime(23, 59, 59, 999).toDate();
+
+		return UtilDate.from(UtilDate.toLocalDate(date).plusDays(1).atStartOfDay().minus(1, ChronoUnit.MILLIS));
 	}
 
 	public static Date getStartOfWeek(Date date) {
-		return new LocalDateTime(getStartOfDay(date)).withDayOfWeek(1).toDate();
+
+		LocalDate localDate = UtilDate.toLocalDate(date);
+		return UtilDate.from(localDate.minusDays(localDate.getDayOfWeek().getValue() - 1));
 	}
 
 	public static Date getEndOfWeek(Date date) {
-		return new LocalDateTime(getEndOfDay(date)).withDayOfWeek(7).toDate();
+
+		LocalDate localDate = UtilDate.toLocalDate(date);
+		return getEndOfDay(UtilDate.from(localDate.plusDays(DayOfWeek.SUNDAY.getValue() - localDate.getDayOfWeek().getValue())));
 	}
 
 	public static Date getStartOfMonth(Date date) {
-		return new LocalDateTime(getStartOfDay(date)).withDayOfMonth(1).toDate();
+
+		return UtilDate.from(UtilDate.toLocalDate(date).withDayOfMonth(1));
 	}
 
 	public static Date getEndOfMonth(Date date) {
 
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(date);
-		return new LocalDateTime(getEndOfDay(date)).withDayOfMonth(calendar.getActualMaximum(Calendar.DAY_OF_MONTH)).toDate();
+		LocalDate localDate = UtilDate.toLocalDate(date);
+		return getEndOfDay(UtilDate.from(localDate.plusMonths(1).withDayOfMonth(1).minusDays(1)));
 	}
 
 	public static Date getStartOfYear(Date date) {
-		return new LocalDateTime(getStartOfDay(date)).withDayOfYear(1).toDate();
+
+		return UtilDate.of(UtilDate.toLocalDate(date).getYear(), Month.JANUARY, 1);
 	}
 
 	public static Date getEndOfYear(Date date) {
 
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(getEndOfDay(date));
-		return new LocalDateTime(calendar.getTime()).withDayOfYear(calendar.getActualMaximum(Calendar.DAY_OF_YEAR)).toDate();
+		return getEndOfDay(UtilDate.of(UtilDate.toLocalDate(date).getYear(), Month.DECEMBER, 31));
 	}
 
 	public static boolean isBetween(Date date, Date start, Date end) {
@@ -948,8 +976,7 @@ public final class DateHelper {
 	private static final Pattern DAY_PREFIX_DATE_PATTERN = Pattern.compile("(([012]?\\d)|30|31)\\/?");
 
 	/**
-	 * requries joda-time
-	 *
+	 * Examples of conversion.
 	 * <table>
 	 * <tr>
 	 * <td>90</td>
@@ -967,30 +994,30 @@ public final class DateHelper {
 	 * <td>[1/1/1830, 1/1/1831)</td>
 	 * </tr>
 	 * <tr>
-	 * <td>3.01</td>
+	 * <td>3/01</td>
 	 * <td>-&gt;</td>
 	 * <td>[1/3/2001, 1/4/2001)</td>
 	 * </tr>
 	 * <tr>
-	 * <td>3.</td>
+	 * <td>3/</td>
 	 * <td>-&gt;</td>
 	 * <td>[1/3/THIS_YEAR, 1/4/THIS_YEAR)</td>
 	 * </tr>
 	 * <tr>
-	 * <td>3.4.2012</td>
+	 * <td>3/4/2012</td>
 	 * <td>-&gt;</td>
 	 * <td>[3/4/2012, 4/4/2012)</td>
 	 * </tr>
 	 * <tr>
-	 * <td>3.4.</td>
+	 * <td>3/4/</td>
 	 * <td>-&gt;</td>
 	 * <td>[3/4/THIS_YEAR, 4/4/THIS_YEAR)</td>
 	 * </tr>
 	 * </table>
 	 *
-	 * @param name
 	 * @param value
-	 * @return
+	 *            A String to convert to a date range.
+	 * @return {@code Date[begin, end]} (begin inclusive, end exclusive), or {@code null} if conversion does not work.
 	 */
 	public static Date[] findDateBounds(String value) {
 
@@ -1036,7 +1063,7 @@ public final class DateHelper {
 			}
 		}
 
-		int thisYear = DateTime.now().year().get();
+		int thisYear = LocalDate.now().getYear();
 		if (year == -1) {
 			year = thisYear;
 		} else if (year < 100) {
@@ -1048,8 +1075,8 @@ public final class DateHelper {
 				year += thisCentury - 100;
 		}
 
-		LocalDate start = new LocalDate(year, 1, 1);
-		LocalDate end = new LocalDate(year, 1, 1);
+		LocalDate start = LocalDate.of(year, 1, 1);
+		LocalDate end = LocalDate.of(year, 1, 1);
 
 		if (month == -1)
 			end = end.plusMonths(11);
@@ -1065,8 +1092,8 @@ public final class DateHelper {
 		}
 
 		return new Date[] {
-			start.toDate(),
-			end.toDate() };
+			UtilDate.from(start),
+			UtilDate.from(end) };
 	}
 
 	/**
