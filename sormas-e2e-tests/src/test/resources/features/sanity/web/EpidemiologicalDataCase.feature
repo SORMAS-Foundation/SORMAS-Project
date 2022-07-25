@@ -298,3 +298,18 @@ Feature: Epidemiological data coverage
     Then I search last created facility
     Then I click on edit button for the last searched facility
     And I archive facility
+
+  @issue=SORDEV-5204 @env_main
+  Scenario: Test continent and subcontinent in location entry in exposures
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    When I am accessing via URL the Epidemiological data tab of the created case
+    And I create a new Exposure for Epidemiological data
+    And I check if the continent combobox is available in the location section in Exposure form
+    And I check if the subcontinent combobox is available in the location section in Exposure form

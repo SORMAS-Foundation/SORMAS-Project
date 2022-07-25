@@ -711,6 +711,18 @@ public class EpidemiologicalDataCaseSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(EDIT_SOURCE_CONTACTS_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(EDIT_SOURCE_CONTACTS_BUTTON);
         });
+
+    And(
+        "^I check if the continent combobox is available in the location section in Exposure form$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONTINENT_COMBOBOX);
+        });
+
+    And(
+        "^I check if the subcontinent combobox is available in the location section in Exposure form$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SUBCONTINENT_COMBOBOX);
+        });
   }
 
   private void fillExposure(Exposure exposureData) {
