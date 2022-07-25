@@ -234,6 +234,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Case;
@@ -742,6 +743,18 @@ public class EditCaseSteps implements En {
                   .build(); // TODO: Create POJO updater class
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+
+    When(
+        "I select Case Classification Confirmed",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              By.xpath("//*[contains(text(),'Confirmed case')]"));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I select {string} as Basis for Confirmation",
+        (String basis) -> webDriverHelpers.selectFromCombobox(CASE_CONFIRMATION_BASIS_COMBOBOX, basis));
 
     When(
         "In created case I select Outcome Of Case Status to ([^\"]*)",

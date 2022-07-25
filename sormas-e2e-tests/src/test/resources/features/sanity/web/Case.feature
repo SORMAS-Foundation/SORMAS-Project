@@ -1632,6 +1632,18 @@ Feature: Case end to end tests
     And I save the created sample
     And I check that text appearing in hover over Expected Follow-up is based on Symptoms collection date
 
+
+  @issue=SORDEV-5141 @env_main
+  Scenario: Check extended disease properties classification
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with disease "MEASLES"
+    And I select Case Classification Confirmed
+    Then I select "Clinical confirmation" as Basis for Confirmation
+    And I select "Epidemiological confirmation" as Basis for Confirmation
+    And I select "Laboratory diagnostic confirmation" as Basis for Confirmation
+
   @issue=SORDEV-5565 @env_de
   Scenario: Document Templates create quarantine order for Case bulk DE
     When API: I create a new person
