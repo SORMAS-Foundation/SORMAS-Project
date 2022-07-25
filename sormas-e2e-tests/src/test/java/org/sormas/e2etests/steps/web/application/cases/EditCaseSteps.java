@@ -198,6 +198,7 @@ import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPag
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.ACTION_CANCEL_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.END_OF_PROCESSING_DATE_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.FOLLOW_UP_UNTIL_DATE;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.LINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
@@ -2188,6 +2189,14 @@ public class EditCaseSteps implements En {
         });
 
     When(
+        "I change disease to {string} in the case tab",
+        (String disease) -> {
+          webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CHANGE_DISEASE_POPUP_TITLE);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM);
+        });
+
+    When(
         "I check the end of processing date in the archive popup and select Archive cases checkbox",
         () -> {
           String endOfProcessingDate;
@@ -2341,6 +2350,22 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+        });
+
+    When(
+        "^I click Link Event button on Edit Case Page$",
+        () -> {
+          webDriverHelpers.scrollToElement(LINK_EVENT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON);
+        });
+
+    When(
+        "I check if disease is set for {string} in Case Edit Directory",
+        (String disease) -> {
+          webDriverHelpers.scrollToElement(DISEASE_INPUT);
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(DISEASE_INPUT), disease, "Incorrect disease");
+          softly.assertAll();
         });
   }
 
