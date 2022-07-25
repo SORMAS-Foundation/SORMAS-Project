@@ -11659,4 +11659,13 @@ INSERT INTO userroles_userrights (userrole_id, userright) SELECT userrole_id, 'U
 
 INSERT INTO schema_version (version_number, comment) VALUES (473, 'Add user roles view to UI #4462');
 
+-- 2022-07-25 Make region and district required for aggregate reports
+DELETE FROM aggregatereport
+WHERE region_id IS NULL OR district_id IS NULL;
+
+DELETE FROM aggregatereport_history
+WHERE region_id IS NULL OR district_id IS NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (474, 'Make region and district required for aggregate reports #9847');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

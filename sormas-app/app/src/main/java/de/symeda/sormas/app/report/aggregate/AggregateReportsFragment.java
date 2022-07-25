@@ -252,9 +252,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 				aggregateReports.stream().map(aggregateReport -> aggregateReport.getAgeGroup()).collect(Collectors.toList());
 
 			List<DiseaseAgeGroup> noDataAgeGroups = diseaseAgeGroupsWithoutReport.stream()
-				.filter(
-					diseaseAgeGroup -> diseaseAgeGroup.getDisease().equals(disease)
-						&& !diseaseAgeGroups.contains(diseaseAgeGroup.getAgeGroup()))
+				.filter(diseaseAgeGroup -> diseaseAgeGroup.getDisease().equals(disease) && !diseaseAgeGroups.contains(diseaseAgeGroup.getAgeGroup()))
 				.collect(Collectors.toList());
 
 			if (!noDataAgeGroups.isEmpty()) {
@@ -374,7 +372,9 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 						if (report.getLocalChangeDate() == null
 							&& (report.getNewCases() == null || report.getNewCases() == 0)
 							&& (report.getLabConfirmations() == null || report.getLabConfirmations() == 0)
-							&& (report.getDeaths() == null || report.getDeaths() == 0)) {
+							&& (report.getDeaths() == null || report.getDeaths() == 0)
+							&& report.getRegion() == null
+							&& report.getDistrict() == null) {
 							continue;
 						}
 
