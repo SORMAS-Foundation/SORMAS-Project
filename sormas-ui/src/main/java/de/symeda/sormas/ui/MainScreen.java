@@ -149,8 +149,7 @@ public class MainScreen extends HorizontalLayout {
 					I18nProperties.getCaption(Captions.mainMenuDashboard), VaadinIcons.GRID_SMALL_O);
 
 		}
-		
-		
+
 		if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 			menu.addView(TasksView.class, TasksView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuTasks),
 					VaadinIcons.TASKS);
@@ -213,6 +212,10 @@ public class MainScreen extends HorizontalLayout {
 			menu.addView(CampaignStatisticsView.class, AbstractCampaignView.ROOT_VIEW_NAME,
 					I18nProperties.getCaption(Captions.mainMenuCampaigns), VaadinIcons.CLIPBOARD_CHECK);
 		}
+
+		menu.addView(CampaignGisView.class, CampaignGisView.VIEW_NAME, I18nProperties.getCaption("GIS"),
+				VaadinIcons.MAP_MARKER);
+
 		if (permitted(FeatureType.WEEKLY_REPORTING, UserRight.WEEKLYREPORT_VIEW)) {
 			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuReports),
 					VaadinIcons.FILE_TEXT);
@@ -244,9 +247,10 @@ public class MainScreen extends HorizontalLayout {
 
 		menu.addView(AboutView.class, AboutView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAbout),
 				VaadinIcons.INFO_CIRCLE_O);
-		
-		//menu.addView(CampaignGisView.class, CampaignGisView.VIEW_NAME, I18nProperties.getCaption("GIS"),
-			//	VaadinIcons.MAP_MARKER);
+
+		// menu.addView(CampaignGisView.class, CampaignGisView.VIEW_NAME,
+		// I18nProperties.getCaption("GIS"),
+		// VaadinIcons.MAP_MARKER);
 
 		menu.addView(LogoutView.class, LogoutView.VIEW_NAME,
 				I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName() + ")",

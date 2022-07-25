@@ -128,7 +128,8 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 			district.get(District.UUID),
 			district.get(District.NAME),
 			district.get(District.EXTERNAL_ID),
-			root.get(Community.EXTERNAL_ID));
+			root.get(Community.EXTERNAL_ID),
+			root.get(Community.CLUSTER_NUMBER));
 	}
 
 	@Override
@@ -157,6 +158,7 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 				case Community.NAME:
 				case Community.GROWTH_RATE:
 				case Community.EXTERNAL_ID:
+				case Community.CLUSTER_NUMBER:
 					expression = community.get(sortProperty.propertyName);
 					break;
 				case District.REGION:
@@ -374,6 +376,7 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getDistrict().getRegion()));
 		dto.setArchived(entity.isArchived());
 		dto.setExternalId(entity.getExternalId());
+		dto.setClusterNumber(entity.getClusterNumber());
 
 		return dto;
 	}
@@ -387,6 +390,7 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setArchived(source.isArchived());
 		target.setExternalId(source.getExternalId());
+		target.setClusterNumber(source.getClusterNumber());
 
 		return target;
 	}

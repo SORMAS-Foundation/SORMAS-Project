@@ -37,21 +37,18 @@ public class CampaignGisView extends VerticalLayout implements View {
 	protected CampaignDashboardFilterLayout filterLayout;
 	protected CampaignDashboardDataProvider dataProvider;
 	
-	List<LeafletMarker> campaignMarkers = new ArrayList<LeafletMarker>();
+	List<LeafletMarker> campaignMarkers = new ArrayList<LeafletMarker>(); //MainScreen height: 50%; */margin-top: 0px;
 
 	public CampaignGisView() {
 		dataProvider = new CampaignDashboardDataProvider();
-		filterLayout = new CampaignDashboardFilterLayout(this, dataProvider);
-
-		filterLayout.setHeight(20, Unit.PERCENTAGE);
-		filterLayout.addStyleName("view-headerxxxx");
-		filterLayout.setHeightUndefined();
-		filterLayout.setMargin(new MarginInfo(false, true));
-		filterLayout.setSpacing(true);
+		filterLayout = new CampaignDashboardFilterLayout(this, dataProvider); 
+		filterLayout.setId("gisfilterr");
 		
+		//filterLayout.setHeight(1, Unit.PERCENTAGE);
+		filterLayout.setSpacing(false);
+		filterLayout.setSizeFull();
 		addComponent(filterLayout);
-		setSizeFull();
-		setSpacing(false);
+				
 
 		GeoLatLon nn = new GeoLatLon(34.543896, 69.160652);
 		map = new LeafletMap();
@@ -59,7 +56,6 @@ public class CampaignGisView extends VerticalLayout implements View {
 		map.setId(MAP_ID);
 		map.setZoom(6);
 		map.setCenter(nn);
-		map.setWidthFull();
 		showCaseMarkers();
 		map.addMarkerGroup("Tryyy", campaignMarkers);
 		try {
@@ -91,9 +87,9 @@ public class CampaignGisView extends VerticalLayout implements View {
 			for (MapCampaignDataDto data : campaigndatum) {
 				if (data.getReportLat() != null && data.getReportLon() != null) {
 					LeafletMarker marker = new LeafletMarker();
-					marker.setIcon(MarkerIcon.CASE_SUSPECT);
+					marker.setIcon(MarkerIcon.EVENT_OUTBREAK);
 					marker.setLatLon(data.getReportLat(), data.getReportLon());
-					marker.setDescription(data.getReportLat().toString());
+					marker.setDescription(data.getUuid());
 					campaignMarkers.add(marker);
 				}
 			}

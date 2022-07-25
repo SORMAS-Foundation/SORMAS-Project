@@ -110,7 +110,8 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 		final List<String> tabs = new ArrayList<>(dataProvider.getTabIds());
 		tabs.forEach(tabId -> {
-			tabSwitcher.addItem(tabId);
+			tabId = WordUtils.capitalizeFully(tabId);
+			tabSwitcher.addItem(WordUtils.capitalizeFully(tabId));
 			tabSwitcher.setItemCaption(tabId, WordUtils.capitalizeFully(tabId)); 
 		});																		 
 		if (!(tabs.size() > 1)) {

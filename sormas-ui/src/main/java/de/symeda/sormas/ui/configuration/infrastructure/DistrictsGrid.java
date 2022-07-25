@@ -84,6 +84,9 @@ public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriter
 			if(column.getCaption().equalsIgnoreCase("Name")) {
 				column.setCaption("District");
 			}
+			if(column.getCaption().equalsIgnoreCase("External ID")) {
+				column.setCaption("DCode");
+			}
 		}
 	}
 

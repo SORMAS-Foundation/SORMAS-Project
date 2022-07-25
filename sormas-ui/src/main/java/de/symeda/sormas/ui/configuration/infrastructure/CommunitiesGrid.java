@@ -58,12 +58,14 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 			setCriteria(criteria);
 		}
 
-		setColumns(CommunityDto.REGION, CommunityDto.DISTRICT, CommunityDto.NAME, CommunityDto.EXTERNAL_ID);
+		setColumns(CommunityDto.REGION, CommunityDto.DISTRICT, CommunityDto.NAME, CommunityDto.CLUSTER_NUMBER, CommunityDto.EXTERNAL_ID);
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
 			//addEditColumn();
 			addItemClickListener(new ShowDetailsListener<>(CommunityDto.NAME, e -> ControllerProvider.getInfrastructureController().editCommunity(e.getUuid())));
+			
+			addItemClickListener(new ShowDetailsListener<>(CommunityDto.CLUSTER_NUMBER, e -> ControllerProvider.getInfrastructureController().editCommunity(e.getUuid())));
 			
 			addItemClickListener(new ShowDetailsListener<>(CommunityDto.REGION, e -> ControllerProvider.getInfrastructureController().editCommunity(e.getUuid())));
 			
@@ -77,6 +79,9 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 			column.setCaption(I18nProperties.getPrefixCaption(CommunityDto.I18N_PREFIX, column.getId(), column.getCaption()));
 			if(column.getCaption().equalsIgnoreCase("Name")) {
 				column.setCaption("Cluster");
+			}
+			if(column.getCaption().equalsIgnoreCase("External ID")) {
+				column.setCaption("CCode");
 			}
 		}
 	}
