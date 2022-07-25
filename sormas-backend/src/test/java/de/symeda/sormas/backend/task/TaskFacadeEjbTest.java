@@ -386,13 +386,9 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf1 = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
 		CommunityDto c2 = creator.createCommunity("Community 2", rdcf1.district);
 
-		// 1. Region level user without a task
+		// Create users
 		UserDto survSup = creator
 			.createUser(rdcf1.region.getUuid(), null, null, "Surv", "Sup", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
-		loginWith(survSup);
-		assertThat(getTaskFacade().getIndexList(null, 0, 100, null), is(empty()));
-
-		// 2a. District level user with task
 		UserDto survOff = creator.createUser(
 			rdcf1.region.getUuid(),
 			rdcf1.district.getUuid(),
@@ -400,6 +396,20 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			"Surv",
 			"Off",
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto commInf = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			c2.getUuid(),
+			null,
+			"Comm",
+			"Inf",
+			creator.getUserRoleReference(DefaultUserRole.COMMUNITY_INFORMANT));
+
+		// 1. Region level user without a task
+		loginWith(survSup);
+		assertThat(getTaskFacade().getIndexList(null, 0, 100, null), is(empty()));
+
+		// 2a. District level user with task
 		loginWith(survOff);
 		assertThat(getTaskFacade().getIndexList(null, 0, 100, null), is(empty()));
 
@@ -420,16 +430,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		assertThat(getTaskFacade().getIndexList(null, 0, 100, null), is(not(empty())));
 
 		// 3. Community level user does not see task of district level user
-		UserDto commInf = creator.createUser(
-			rdcf1.region.getUuid(),
-			rdcf1.district.getUuid(),
-			c2.getUuid(),
-			null,
-			"Comm",
-			"Inf",
-			creator.getUserRoleReference(DefaultUserRole.COMMUNITY_INFORMANT));
 		loginWith(commInf);
-
 		assertThat(getTaskFacade().getIndexList(null, 0, 100, null), is(empty()));
 
 		Calendar calendar = Calendar.getInstance();

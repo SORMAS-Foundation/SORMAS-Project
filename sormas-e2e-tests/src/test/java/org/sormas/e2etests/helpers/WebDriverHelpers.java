@@ -950,6 +950,19 @@ public class WebDriverHelpers {
                 String.format("Row element: %s wasn't selected within 20s", rowLocator)));
   }
 
+  public void isElementGreyedOut(By elementLocator) {
+    try {
+      assertHelpers.assertWithPoll20Second(
+          () ->
+              Assert.assertTrue(
+                  getAttributeFromWebElement(elementLocator, "class").contains("disabled")));
+    } catch (Throwable ignored) {
+      if (!getAttributeFromWebElement(elementLocator, "class").contains("disabled"))
+        throw new TimeoutException(
+            String.format("The element: %s is not greyed out", elementLocator));
+    }
+  }
+
   @SneakyThrows
   public void sendFile(By selector, String filePath) {
     try {

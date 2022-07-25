@@ -39,6 +39,7 @@ import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
@@ -233,6 +234,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		SymptomsHelper.updateIsSymptomatic(clinicalVisit.getSymptoms());
 
 		ClinicalVisit existingClinicalVisit = service.getByUuid(clinicalVisit.getUuid());
+		FacadeHelper.checkCreateAndEditRights(existingClinicalVisit, userService, UserRight.CLINICAL_VISIT_CREATE, UserRight.CLINICAL_VISIT_EDIT);
 
 		restorePseudonymizedDto(clinicalVisit, existingClinicalVisit);
 

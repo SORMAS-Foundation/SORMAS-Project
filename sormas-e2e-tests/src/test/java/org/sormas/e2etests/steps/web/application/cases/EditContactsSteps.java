@@ -306,6 +306,12 @@ public class EditContactsSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
           }
         });
+    When(
+        "^I collect contact UUID displayed on Edit Contact Page$",
+        () -> {
+          contactUUID = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
+          contactsUUIDList.add(contactUUID);
+        });
 
     Then(
         "I verify that created contact from Case Contacts tab is correctly displayed",

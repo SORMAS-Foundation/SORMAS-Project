@@ -97,6 +97,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NAME
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_CASE_DATE_FROM_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_EVENT_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_EVENT_CHECKBOX_DE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.RESULTS_GRID_HEADER;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SEARCH_BUTTON;
@@ -225,6 +226,19 @@ public class CaseDirectorySteps implements En {
                       "Quarantine order document was not downloaded. Path used for check: "
                           + path.toAbsolutePath()),
               120);
+        });
+    When(
+        "I check if downloaded zip file for Quarantine Order is correct for DE version",
+        () -> {
+          Path path =
+              Paths.get(userDirPath + "/downloads/sormas_dokumente_" + LocalDate.now() + "_.zip");
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      "Quarantine order document was not downloaded. Path used for check: "
+                          + path.toAbsolutePath()),
+              10);
         });
     When(
         "I delete downloaded file created from Quarantine order",
@@ -415,6 +429,9 @@ public class CaseDirectorySteps implements En {
     And(
         "I click on New Event option in Link to Event Form",
         () -> webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CHECKBOX));
+    And(
+        "I click on New Event option in Link to Event Form for DE",
+        () -> webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CHECKBOX_DE));
     And(
         "I fill Event Id filter in Link to Event form with last created via API Event uuid",
         () -> {

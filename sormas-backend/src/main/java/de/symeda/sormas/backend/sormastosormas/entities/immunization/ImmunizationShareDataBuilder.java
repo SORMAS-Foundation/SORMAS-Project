@@ -51,9 +51,9 @@ public class ImmunizationShareDataBuilder
 	}
 
 	@Override
-	protected SormasToSormasImmunizationDto doBuildShareData(Immunization immunization, ShareRequestInfo requestInfo) {
+	protected SormasToSormasImmunizationDto doBuildShareData(Immunization immunization, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
 		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+			dataBuilderHelper.createPseudonymizer(requestInfo);
 
 		ImmunizationDto immunizationDto = immunizationFacade.convertToDto(immunization, pseudonymizer);
 		immunizationDto.setReportingUser(null);

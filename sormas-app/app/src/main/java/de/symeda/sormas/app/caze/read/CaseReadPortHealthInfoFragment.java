@@ -17,10 +17,12 @@ package de.symeda.sormas.app.caze.read;
 
 import android.os.Bundle;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.porthealthinfo.PortHealthInfo;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.databinding.FragmentCaseReadPortHealthInfoLayoutBinding;
 
 public class CaseReadPortHealthInfoFragment extends BaseReadFragment<FragmentCaseReadPortHealthInfoLayoutBinding, PortHealthInfo, Case> {
@@ -64,5 +66,10 @@ public class CaseReadPortHealthInfoFragment extends BaseReadFragment<FragmentCas
 	@Override
 	public int getReadLayout() {
 		return R.layout.fragment_case_read_port_health_info_layout;
+	}
+
+	@Override
+	public boolean showEditAction() {
+		return ConfigProvider.hasUserRight(UserRight.CASE_EDIT) && ConfigProvider.hasUserRight(UserRight.PORT_HEALTH_INFO_EDIT);
 	}
 }

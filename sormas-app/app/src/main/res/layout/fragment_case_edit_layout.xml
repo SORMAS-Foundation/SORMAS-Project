@@ -251,6 +251,7 @@
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/caseData_disease"
                     app:value="@={data.disease}"
+                    app:userEditRight="@{UserRight.CASE_CHANGE_DISEASE}"
                     app:required="true"
                     style="@style/ControlSingleColumnStyle" />
 
@@ -259,6 +260,7 @@
                     style="@style/ControlSingleColumnStyle"
                     app:dependencyParentField="@{caseDataDisease}"
                     app:dependencyParentValue="@{Disease.OTHER}"
+                    app:userEditRight="@{UserRight.CASE_CHANGE_DISEASE}"
                     app:required="true"
                     app:value="@={data.diseaseDetails}" />
 
@@ -268,6 +270,7 @@
                     app:softRequired="true"
                     app:dependencyParentField="@{caseDataDisease}"
                     app:dependencyParentValue="@{Disease.PLAGUE}"
+                    app:userEditRight="@{UserRight.CASE_CHANGE_DISEASE}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
@@ -275,6 +278,7 @@
                     app:value="@={data.dengueFeverType}"
                     app:dependencyParentField="@{caseDataDisease}"
                     app:dependencyParentValue="@{Disease.DENGUE}"
+                    app:userEditRight="@{UserRight.CASE_CHANGE_DISEASE}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
@@ -282,11 +286,13 @@
                     app:value="@={data.rabiesType}"
                     app:dependencyParentField="@{caseDataDisease}"
                     app:dependencyParentValue="@{Disease.RABIES}"
+                    app:userEditRight="@{UserRight.CASE_CHANGE_DISEASE}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/caseData_diseaseVariant"
                     app:value="@={data.diseaseVariant}"
+                    app:userEditRight="@{UserRight.CASE_CHANGE_DISEASE}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlTextEditField
@@ -295,6 +301,7 @@
                     app:customizableEnumField="@{caseDataDiseaseVariant}"
                     app:customizableEnumProperty="@{DiseaseVariant.HAS_DETAILS}"
                     app:customizableEnumValue="@{Boolean.TRUE}"
+                    app:userEditRight="@{UserRight.CASE_CHANGE_DISEASE}"
                     style="@style/ControlSingleColumnStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSwitchField
