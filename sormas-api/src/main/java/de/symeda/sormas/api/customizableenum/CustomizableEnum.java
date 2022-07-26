@@ -35,6 +35,11 @@ public abstract class CustomizableEnum implements Serializable {
 	 * {@link CustomizableEnumValueDto#getTranslations()}, otherwise identical to {@link CustomizableEnumValueDto#getCaption()}.
 	 */
 	private String caption;
+	/**
+	 * Whether the value is a default value provided by the software. Default values don't need a caption
+	 * or translations because they can be translated via properties files.
+	 */
+	private boolean defaultValue;
 
 	/**
 	 * Sets the properties of the extending class if it has any. Otherwise, the implementation may simply contain an empty body.
@@ -69,6 +74,14 @@ public abstract class CustomizableEnum implements Serializable {
 
 	public void setCaption(String caption) {
 		this.caption = caption;
+	}
+
+	public boolean isDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(boolean defaultValue) {
+		this.defaultValue = defaultValue;
 	}
 
 	@Override

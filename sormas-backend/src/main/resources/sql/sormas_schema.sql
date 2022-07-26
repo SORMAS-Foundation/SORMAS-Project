@@ -11659,4 +11659,17 @@ INSERT INTO userroles_userrights (userrole_id, userright) SELECT userrole_id, 'U
 
 INSERT INTO schema_version (version_number, comment) VALUES (473, 'Add user roles view to UI #4462');
 
+-- 2022-07-26 Turn OccupationType into a customizable enum #5015
+DO $$
+    DECLARE rec RECORD;
+BEGIN
+FOR rec IN SELECT DISTINCT occupationtype FROM person WHERE occupationtype != 'HEALTHCARE_WORKER' AND occupationtype != 'LABORATORY_STAFF' AND occupationtype != 'OTHER'
+LOOP
+    INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'OCCUPATION_TYPE', rec.occupationtype, rec.occupationtype);
+END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (474, 'Turn OccupationType into a customizable enum #5015');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -29,9 +29,11 @@ import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.ejb.LocalBean;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
+import javax.ejb.Stateless;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -295,5 +297,10 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 		target.setProperties(source.getProperties());
 
 		return target;
+	}
+
+	@LocalBean
+	@Stateless
+	public static class CustomizableEnumFacadeEjbLocal extends CustomizableEnumFacadeEjb {
 	}
 }

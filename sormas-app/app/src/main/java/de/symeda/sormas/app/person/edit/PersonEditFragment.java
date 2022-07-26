@@ -32,10 +32,10 @@ import androidx.databinding.ObservableList;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ArmedForcesRelationType;
@@ -43,7 +43,6 @@ import de.symeda.sormas.api.person.BurialConductor;
 import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.EducationType;
-import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
@@ -69,7 +68,6 @@ import de.symeda.sormas.app.backend.person.Person;
 import de.symeda.sormas.app.backend.person.PersonContactDetail;
 import de.symeda.sormas.app.component.Item;
 import de.symeda.sormas.app.component.controls.ControlPropertyField;
-import de.symeda.sormas.app.component.controls.ValueChangeListener;
 import de.symeda.sormas.app.component.dialog.ConfirmationDialog;
 import de.symeda.sormas.app.component.dialog.LocationDialog;
 import de.symeda.sormas.app.core.IEntryItemOnClickListener;
@@ -158,7 +156,8 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		List<Item> initialPlaceOfBirthFacilities =
 			InfrastructureDaoHelper.loadFacilities(record.getPlaceOfBirthDistrict(), record.getPlaceOfBirthCommunity(), null);
 
-		List<Item> occupationFacilityTypeList = DataUtils.toItems(FacilityType.getTypes(FacilityTypeGroup.MEDICAL_FACILITY), true);
+		List<Item> occupationTypeList =
+			DataUtils.toItems(DatabaseHelper.getCustomizableEnumValueDao().getEnumValues(CustomizableEnumType.OCCUPATION_TYPE, null));
 		List<Item> placeOfBirthFacilityTypeList = DataUtils.toItems(FacilityType.getPlaceOfBirthTypes(), true);
 		List<Item> countryList = InfrastructureDaoHelper.loadCountries();
 
@@ -169,7 +168,6 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			contentBinding.personCauseOfDeath,
 			contentBinding.personCauseOfDeathDisease,
 			contentBinding.personCauseOfDeathDetails);
-		initializeOccupationDetailsFieldVisibility(contentBinding.personOccupationType, contentBinding.personOccupationDetails);
 
 		InfrastructureFieldsDependencyHandler.instance.initializeFacilityFields(
 			record,
@@ -220,7 +218,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		contentBinding.personCauseOfDeathDisease.initializeSpinner(diseaseList);
 		contentBinding.personDeathPlaceType.initializeSpinner(deathPlaceTypeList);
 		contentBinding.personBurialConductor.initializeSpinner(burialConductorList);
-		contentBinding.personOccupationType.initializeSpinner(DataUtils.getEnumItems(OccupationType.class, true, countryVisibilityChecker));
+		contentBinding.personOccupationType.initializeSpinner(occupationTypeList);
 		contentBinding.personArmedForcesRelationType.initializeSpinner(DataUtils.getEnumItems(ArmedForcesRelationType.class, true));
 		contentBinding.personEducationType.initializeSpinner(DataUtils.getEnumItems(EducationType.class, true));
 		// Determine which values should show as personPresentCondition (the person may have a value that by default is not shown for the current disease)
@@ -354,54 +352,6 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			causeOfDeathDetailsField.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.CAUSE_OF_DEATH_DISEASE_DETAILS));
 		} else {
 			causeOfDeathDetailsField.setVisibility(GONE);
-		}
-	}
-
-	/**
-	 * Only show the occupationDetails field when an appropriate occupation is selected. Additionally,
-	 * adjust the caption of the occupationDetails field based on the selected occupation.
-	 */
-	public static void initializeOccupationDetailsFieldVisibility(
-		final ControlPropertyField occupationTypeField,
-		final ControlPropertyField occupationDetailsField) {
-		setOccupationDetailsFieldVisibility(occupationTypeField, occupationDetailsField);
-		occupationTypeField.addValueChangedListener(new ValueChangeListener() {
-
-			@Override
-			public void onChange(ControlPropertyField field) {
-				setOccupationDetailsFieldVisibility(occupationTypeField, occupationDetailsField);
-			}
-		});
-	}
-
-	private static void setOccupationDetailsFieldVisibility(
-		final ControlPropertyField occupationTypeField,
-		final ControlPropertyField occupationDetailsField) {
-		OccupationType selectedOccupationType = (OccupationType) occupationTypeField.getValue();
-		if (selectedOccupationType != null) {
-			switch (selectedOccupationType) {
-			case BUSINESSMAN_WOMAN:
-				occupationDetailsField.setVisibility(VISIBLE);
-				occupationDetailsField.setCaption(I18nProperties.getCaption(PersonDto.I18N_PREFIX + ".business." + PersonDto.OCCUPATION_DETAILS));
-				break;
-			case TRANSPORTER:
-				occupationDetailsField.setVisibility(VISIBLE);
-				occupationDetailsField.setCaption(I18nProperties.getCaption(PersonDto.I18N_PREFIX + ".transporter." + PersonDto.OCCUPATION_DETAILS));
-				break;
-			case HEALTHCARE_WORKER:
-				occupationDetailsField.setVisibility(VISIBLE);
-				occupationDetailsField.setCaption(I18nProperties.getCaption(PersonDto.I18N_PREFIX + ".healthcare." + PersonDto.OCCUPATION_DETAILS));
-				break;
-			case OTHER:
-				occupationDetailsField.setVisibility(VISIBLE);
-				occupationDetailsField.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.OCCUPATION_DETAILS));
-				break;
-			default:
-				occupationDetailsField.setVisibility(GONE);
-				break;
-			}
-		} else {
-			occupationDetailsField.setVisibility(GONE);
 		}
 	}
 
