@@ -22,8 +22,11 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.ArrayUtils;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.GridSortOrderBuilder;
 import com.vaadin.data.provider.ListDataProvider;
+
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.v7.data.sort.Sort;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -73,7 +76,7 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 			RegionIndexDto.POPULATION,
 			RegionIndexDto.GROWTH_RATE);
 		setColumns(columns);
-
+		this.sort(RegionIndexDto.AREA, SortDirection.ASCENDING);
 		getColumn(RegionIndexDto.POPULATION).setSortable(false);
 
 		if (!FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
@@ -96,7 +99,7 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 			if(column.getCaption().equalsIgnoreCase("Name")) {
 				column.setCaption("Province");
 			}
-			if(column.getCaption().equalsIgnoreCase("External ID")) {
+			if(column.getCaption().equalsIgnoreCase("External ID")) { 
 				column.setCaption("PCode");
 			}
 
