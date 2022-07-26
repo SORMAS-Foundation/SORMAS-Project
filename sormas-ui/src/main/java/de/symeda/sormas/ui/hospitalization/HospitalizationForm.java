@@ -24,8 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
-import org.joda.time.DateTimeComparator;
-
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.UserError;
 import com.vaadin.shared.ui.ErrorLevel;
@@ -50,6 +48,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DateComparator;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -200,7 +199,7 @@ public class HospitalizationForm extends AbstractEditForm<HospitalizationDto> {
 		// Add a visual-only validator to check if symptomonsetdate<admissiondate, as saving should be possible either way
 		admissionDateField.addValueChangeListener(event -> {
 			if (caze.getSymptoms().getOnsetDate() != null
-				&& DateTimeComparator.getDateOnlyInstance().compare(admissionDateField.getValue(), caze.getSymptoms().getOnsetDate()) < 0) {
+				&& DateComparator.getDateInstance().compare(admissionDateField.getValue(), caze.getSymptoms().getOnsetDate()) < 0) {
 				admissionDateField.setComponentError(new ErrorMessage() {
 
 					@Override
