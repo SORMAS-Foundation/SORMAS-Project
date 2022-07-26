@@ -25,6 +25,7 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -42,6 +43,7 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.area.Area;
+import de.symeda.sormas.backend.infrastructure.community.Community;
 
 @Stateless
 @LocalBean
@@ -158,7 +160,9 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 	}
 
 	public Predicate buildCriteriaFilter(DistrictCriteria criteria, CriteriaBuilder cb, Root<District> from) {
-
+		Join<District, Region> region = from.join(District.REGION, JoinType.LEFT);
+		Join<Region, Area> area = region.join(Region.AREA, JoinType.LEFT);
+		
 		Predicate filter = null;
 
 		CountryReferenceDto country = criteria.getCountry();
@@ -173,6 +177,10 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 			} else {
 				filter = CriteriaBuilderHelper.and(cb, filter, countryFilter);
 			}
+		}
+		
+		if (criteria.getArea() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(area.get(Area.UUID), criteria.getArea().getUuid()));
 		}
 
 		if (criteria.getRegion() != null) {

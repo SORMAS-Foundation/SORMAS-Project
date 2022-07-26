@@ -21,6 +21,8 @@ import java.io.Serializable;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityCriteria;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
@@ -30,6 +32,7 @@ public class DistrictCriteria extends BaseCriteria implements Serializable, Clon
 	private static final long serialVersionUID = -1794892073657582900L;
 
 	private CountryReferenceDto country;
+	private AreaReferenceDto area;
 	private RegionReferenceDto region;
 	private String nameEpidLike;
 	private String risk;
@@ -43,6 +46,15 @@ public class DistrictCriteria extends BaseCriteria implements Serializable, Clon
 		this.country = country;
 
 		return this;
+	}
+	
+	public DistrictCriteria area(AreaReferenceDto area) {
+		this.area = area;
+		return this;
+	}
+
+	public AreaReferenceDto getArea() {
+		return area;
 	}
 
 	public DistrictCriteria region(RegionReferenceDto region) {

@@ -13,12 +13,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.ui.configuration.infrastructure; 
+package de.symeda.sormas.ui.configuration.infrastructure;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -37,7 +38,12 @@ import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
+import de.symeda.sormas.api.infrastructure.area.AreaDto;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.region.RegionCriteria;
+import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -48,6 +54,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.ExportEntityName;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.RowCount;
@@ -67,6 +74,7 @@ public class RegionsView extends AbstractConfigurationView {
 	private SearchField searchField;
 	private ComboBox relevanceStatusFilter;
 	private ComboBox countryFilter;
+	private ComboBox areaFilter;
 	private Button resetButton;
 
 	private HorizontalLayout filterLayout;
@@ -81,8 +89,8 @@ public class RegionsView extends AbstractConfigurationView {
 		super(VIEW_NAME);
 
 		viewConfiguration = ViewModelProviders.of(RegionsView.class).get(ViewConfiguration.class);
-		criteria = ViewModelProviders.of(RegionsView.class)
-			.get(RegionCriteria.class, new RegionCriteria().country(FacadeProvider.getCountryFacade().getServerCountry()));
+		criteria = ViewModelProviders.of(RegionsView.class).get(RegionCriteria.class,
+				new RegionCriteria().country(FacadeProvider.getCountryFacade().getServerCountry()));
 		if (criteria.getRelevanceStatus() == null) {
 			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 		}
@@ -97,7 +105,8 @@ public class RegionsView extends AbstractConfigurationView {
 		gridLayout.setSizeFull();
 		gridLayout.setStyleName("crud-main-layout");
 
-		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
+		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade()
+				.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
 
 		if (infrastructureDataEditable && UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
@@ -118,32 +127,32 @@ public class RegionsView extends AbstractConfigurationView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EXPORT)) {
-			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null, ValoTheme.BUTTON_PRIMARY);
+			Button exportButton = ButtonHelper.createIconButton(Captions.export, VaadinIcons.TABLE, null,
+					ValoTheme.BUTTON_PRIMARY);
 			exportButton.setDescription(I18nProperties.getDescription(Descriptions.descExportButton));
 			addHeaderComponent(exportButton);
 
-			StreamResource streamResource = GridExportStreamResource.createStreamResource("","",grid, ExportEntityName.REGIONS, RegionsGrid.EDIT_BTN_ID);
+			StreamResource streamResource = GridExportStreamResource.createStreamResource("", "", grid,
+					ExportEntityName.REGIONS, RegionsGrid.EDIT_BTN_ID);
 			FileDownloader fileDownloader = new FileDownloader(streamResource);
 			fileDownloader.extend(exportButton);
 		}
 
 		if (infrastructureDataEditable && UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_CREATE)) {
-			createButton = ButtonHelper.createIconButton(
-				Captions.actionNewEntry,
-				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getInfrastructureController().createRegion(),
-				ValoTheme.BUTTON_PRIMARY);
+			createButton = ButtonHelper.createIconButton(Captions.actionNewEntry, VaadinIcons.PLUS_CIRCLE,
+					e -> ControllerProvider.getInfrastructureController().createRegion(), ValoTheme.BUTTON_PRIMARY);
 
 			addHeaderComponent(createButton);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
+			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode,
+					VaadinIcons.CHECK_SQUARE_O, null);
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 			addHeaderComponent(btnEnterBulkEditMode);
 
-			Button btnLeaveBulkEditMode =
-				ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
+			Button btnLeaveBulkEditMode = ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode,
+					VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
 			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
 			addHeaderComponent(btnLeaveBulkEditMode);
 
@@ -186,7 +195,20 @@ public class RegionsView extends AbstractConfigurationView {
 		countryFilter = addCountryFilter(filterLayout, country -> {
 			criteria.country(country);
 			grid.reload();
-		}, null);
+		}, areaFilter);
+
+		// this is where you put the region filter
+		areaFilter = ComboBoxHelper.createComboBoxV7();
+		areaFilter.setId(RegionDto.AREA);
+		areaFilter.setWidth(140, Unit.PIXELS);
+		areaFilter.setCaption(I18nProperties.getPrefixCaption(RegionDto.I18N_PREFIX, RegionDto.AREA));
+		areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
+		areaFilter.addValueChangeListener(e -> {
+			AreaReferenceDto area = (AreaReferenceDto) e.getProperty().getValue();
+			criteria.area(area);
+			grid.reload();
+		});
+		filterLayout.addComponent(areaFilter);
 
 		resetButton = ButtonHelper.createButton(Captions.actionResetFilters, event -> {
 			ViewModelProviders.of(RegionsView.class).remove(RegionCriteria.class);
@@ -206,9 +228,12 @@ public class RegionsView extends AbstractConfigurationView {
 				relevanceStatusFilter.setWidth(220, Unit.PERCENTAGE);
 				relevanceStatusFilter.setNullSelectionAllowed(false);
 				relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.regionActiveRegions));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.regionArchivedRegions));
-				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.regionAllRegions));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE,
+						I18nProperties.getCaption(Captions.regionActiveRegions));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED,
+						I18nProperties.getCaption(Captions.regionArchivedRegions));
+				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL,
+						I18nProperties.getCaption(Captions.regionAllRegions));
 				relevanceStatusFilter.addValueChangeListener(e -> {
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);
@@ -217,24 +242,21 @@ public class RegionsView extends AbstractConfigurationView {
 
 				// Bulk operation dropdown
 				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-					bulkOperationsDropdown = MenuBarHelper.createDropDown(
-						Captions.bulkActions,
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, selectedItem -> {
-							ControllerProvider.getInfrastructureController()
-								.archiveOrDearchiveAllSelectedItems(
-									true,
-									grid.asMultiSelect().getSelectedItems(),
-									InfrastructureType.REGION,
-									() -> navigateTo(criteria));
-						}, EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, selectedItem -> {
-							ControllerProvider.getInfrastructureController()
-								.archiveOrDearchiveAllSelectedItems(
-									false,
-									grid.asMultiSelect().getSelectedItems(),
-									InfrastructureType.REGION,
-									() -> navigateTo(criteria));
-						}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+					bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions,
+							new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive),
+									VaadinIcons.ARCHIVE, selectedItem -> {
+										ControllerProvider.getInfrastructureController()
+												.archiveOrDearchiveAllSelectedItems(true,
+														grid.asMultiSelect().getSelectedItems(),
+														InfrastructureType.REGION, () -> navigateTo(criteria));
+									}, EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
+							new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive),
+									VaadinIcons.ARCHIVE, selectedItem -> {
+										ControllerProvider.getInfrastructureController()
+												.archiveOrDearchiveAllSelectedItems(false,
+														grid.asMultiSelect().getSelectedItems(),
+														InfrastructureType.REGION, () -> navigateTo(criteria));
+									}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
 					bulkOperationsDropdown.setVisible(isBulkOperationsDropdownVisible());
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
@@ -273,15 +295,16 @@ public class RegionsView extends AbstractConfigurationView {
 		}
 		searchField.setValue(criteria.getNameEpidLike());
 		countryFilter.setValue(criteria.getCountry());
-
+		areaFilter.setValue(criteria.getArea());
 		applyingCriteria = false;
 	}
 
 	private boolean isBulkOperationsDropdownVisible() {
-		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
+		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade()
+				.isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
 
 		return viewConfiguration.isInEagerMode()
-				&& (EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())
-				|| (infrastructureDataEditable && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+				&& (EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus()) || (infrastructureDataEditable
+						&& EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 	}
 }

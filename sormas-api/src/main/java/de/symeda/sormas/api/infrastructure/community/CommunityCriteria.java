@@ -20,6 +20,7 @@ package de.symeda.sormas.api.infrastructure.community;
 import java.io.Serializable;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -31,6 +32,7 @@ public class CommunityCriteria extends BaseCriteria implements Serializable, Clo
 	private static final long serialVersionUID = 7815180508529134182L;
 
 	private CountryReferenceDto country;
+	private AreaReferenceDto area;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private String nameLike;
@@ -46,6 +48,15 @@ public class CommunityCriteria extends BaseCriteria implements Serializable, Clo
 		return this;
 	}
 
+	public CommunityCriteria area(AreaReferenceDto area) {
+		this.area = area;
+		return this;
+	}
+
+	public AreaReferenceDto getArea() {
+		return area;
+	}
+	
 	public CommunityCriteria region(RegionReferenceDto region) {
 		this.region = region;
 		return this;

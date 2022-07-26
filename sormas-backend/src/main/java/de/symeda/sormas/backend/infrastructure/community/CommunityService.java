@@ -40,6 +40,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -109,6 +110,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 	public Predicate buildCriteriaFilter(CommunityCriteria criteria, CriteriaBuilder cb, Root<Community> from) {
 		Join<Community, District> district = from.join(Community.DISTRICT, JoinType.LEFT);
 		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
+		Join<Region, Area> area = region.join(Region.AREA, JoinType.LEFT);
 		Predicate filter = null;
 
 		CountryReferenceDto country = criteria.getCountry();
@@ -126,6 +128,9 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 			} else {
 				filter = CriteriaBuilderHelper.and(cb, filter, countryFilter);
 			}
+		}
+		if (criteria.getArea() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(area.get(Area.UUID), criteria.getArea().getUuid()));
 		}
 
 		if (criteria.getRegion() != null) {
