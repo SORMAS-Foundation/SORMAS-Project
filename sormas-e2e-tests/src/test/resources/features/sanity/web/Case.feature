@@ -1463,6 +1463,65 @@ Feature: Case end to end tests
     Then I click on Merge Duplicates on Case directory for DE
     And I check if message about long loading times appear for DE
 
+    @issue=SORDEV-10361 @env_main
+    Scenario: Test Hide "buried" within Person present condition for Covid-19 for Cases
+      Given I log in as a Admin User
+      And I click on the Cases button from navbar
+      And I click on the NEW CASE button
+      When I create a new case with specific data
+      Then I check the created data is correctly displayed on Edit case page
+      And I check the created data is correctly displayed on Edit case person page
+      Then I check if Present condition of person combobox has value "Alive"
+      And I check if Present condition of person combobox has value "Dead"
+      And I check if Present condition of person combobox has value "Unknown"
+      Then I check if Present condition of person combobox has no value "Buried"
+      Then I navigate to case tab
+      And I change disease to "Ebola Virus Disease" in the case tab
+      Then I click on Save button in Case form
+      And I navigate to case person tab
+      Then I check if Present condition of person combobox has value "Alive"
+      And I check if Present condition of person combobox has value "Dead"
+      And I check if Present condition of person combobox has value "Unknown"
+      Then I check if Present condition of person combobox has value "Buried"
+      Then I set Present condition of person to "Buried"
+      And I check if "Date of burial" field is present in case person
+      And I check if "Burial conductor" field is present in case person
+      And I check if "Burial place description" field is present in case person
+      Then I click on the Cases button from navbar
+      And I click yes on the DISCARD UNSAVED CHANGES popup if it appears
+      And I click on the NEW CASE button
+      Then I choose "COVID-19" as a disease
+      Then I check if Present condition of person combobox has value "Alive"
+      And I check if Present condition of person combobox has value "Dead"
+      And I check if Present condition of person combobox has value "Unknown"
+      Then I check if Present condition of person combobox has no value "Buried"
+      And I click on Discard button in Create New Case form
+      Then I click on the Cases button from navbar
+      And I click yes on the DISCARD UNSAVED CHANGES popup if it appears
+      And  I apply Disease filter "COVID-19" on Case directory page
+      And I click SHOW MORE FILTERS button on Case directory page
+      Then I check if Present condition of person combobox has value "Alive"
+      And I check if Present condition of person combobox has value "Dead"
+      And I check if Present condition of person combobox has value "Unknown"
+      Then I check if Present condition of person combobox has no value "Buried"
+
+  @issue=SORDEV-10361 @env_main
+  Scenario: Test Hide "buried" within Person present condition for Covid-19 for Import Detailed Case
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I prepare detailed case CSV with "COVID-19" as a disease and "Buried" as a present condition
+    And I click on the import button for Cases in Case tab
+    Then I click on the detailed button from import Case tab
+    Then I select created CSV file with detailed case
+    And I click on the "START DATA IMPORT" button from the Import Detailed Case popup
+    Then I check if csv file for detailed case is imported successfully
+    Then I search for created detailed case by first and last name of the person
+    Then I click on the first Case ID from Case Directory
+    Then I check if disease is set for "COVID-19" in Case Edit Directory
+    And I navigate to case person tab
+    Then I check if Present condition of person combobox has value "Buried"
+    And I delete created csv file for detailed case import
+
     @issue=SORDEV-9792 @env_de
       Scenario: Test CoreAdo: Introduce "end of processing date" for cases
       Given I log in as a Admin User
@@ -1573,3 +1632,53 @@ Feature: Case end to end tests
     And I save the created sample
     And I check that text appearing in hover over Expected Follow-up is based on Symptoms collection date
 
+
+  @issue=SORDEV-5141 @env_main
+  Scenario: Check extended disease properties classification
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with disease "MEASLES"
+    And I select Case Classification Confirmed
+    Then I select "Clinical confirmation" as Basis for Confirmation
+    And I select "Epidemiological confirmation" as Basis for Confirmation
+    And I select "Laboratory diagnostic confirmation" as Basis for Confirmation
+
+  @issue=SORDEV-5565 @env_de
+  Scenario: Document Templates create quarantine order for Case bulk DE
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    Then I check the created data is correctly displayed on Edit case page for DE version
+    And I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I apply Date type filter to "Fallmeldedatum" on Case directory page
+    And I fill Cases from input to 1 days before mocked Case created on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I click on the More button on Case directory page
+    And I click Enter Bulk Edit Mode on Case directory page
+    And I select last created UI result in grid in Case Directory for Bulk Action
+    And I select last created API result in grid in Case Directory for Bulk Action
+    And I click on Bulk Actions combobox on Case Directory Page
+    And I click on Create Quarantine Order from Bulk Actions combobox on Case Directory Page
+    And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Case directory for DE
+    And I select "ExampleDocumentTemplateCases.docx" Quarantine Order in Create Quarantine Order form in Case directory
+    And I click on Create button in Create Quarantine Order form DE
+    And I click on close button in Create Quarantine Order form
+    And I check if downloaded zip file for Quarantine Order is correct for DE version
+    Then I click Leave Bulk Edit Mode on Case directory page
+    And I open the last created Case via API
+    And I check if generated document based on "ExampleDocumentTemplateCases.docx" appeared in Documents tab for API created case in Edit Case directory for DE
+    Then I click on the Cases button from navbar
+    And I filter by CaseID of last created UI Case on Case directory page
+    Then I open last created case
+    And I check if generated document based on "ExampleDocumentTemplateCases.docx" appeared in Documents tab for UI created case in Edit Case directory for DE
+    And I delete downloaded file created from Quarantine order

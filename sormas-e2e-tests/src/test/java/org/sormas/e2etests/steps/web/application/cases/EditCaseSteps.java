@@ -198,6 +198,7 @@ import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPag
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.ACTION_CANCEL_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.END_OF_PROCESSING_DATE_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.FOLLOW_UP_UNTIL_DATE;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.LINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
@@ -233,6 +234,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Case;
@@ -447,6 +449,17 @@ public class EditCaseSteps implements En {
               120);
         });
     When(
+        "I check if generated document based on {string} appeared in Documents tab for API created case in Edit Case directory for DE",
+        (String name) -> {
+          String uuid = apiState.getCreatedCase().getUuid();
+          String path = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertEquals(
+                      path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME_DE)),
+              120);
+        });
+    When(
         "I check if generated document based on {string} appeared in Documents tab for UI created case in Edit Case directory",
         (String name) -> {
           String uuid = EditCaseSteps.aCase.getUuid();
@@ -455,6 +468,17 @@ public class EditCaseSteps implements En {
               () ->
                   Assert.assertEquals(
                       path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME)),
+              120);
+        });
+    When(
+        "I check if generated document based on {string} appeared in Documents tab for UI created case in Edit Case directory for DE",
+        (String name) -> {
+          String uuid = EditCaseSteps.aCase.getUuid();
+          String path = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertEquals(
+                      path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME_DE)),
               120);
         });
     When(
@@ -471,7 +495,11 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CREATE_QUARANTINE_ORDER_BUTTON);
         });
-
+    And(
+        "I click on Create button in Create Quarantine Order form DE",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_TEMPLATES_POPUP_DE);
+        });
     When(
         "I check if generated document for Case based on {string} was downloaded properly",
         (String name) -> {
@@ -715,6 +743,18 @@ public class EditCaseSteps implements En {
                   .build(); // TODO: Create POJO updater class
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+
+    When(
+        "I select Case Classification Confirmed",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              By.xpath("//*[contains(text(),'Confirmed case')]"));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I select {string} as Basis for Confirmation",
+        (String basis) -> webDriverHelpers.selectFromCombobox(CASE_CONFIRMATION_BASIS_COMBOBOX, basis));
 
     When(
         "In created case I select Outcome Of Case Status to ([^\"]*)",
@@ -2162,6 +2202,14 @@ public class EditCaseSteps implements En {
         });
 
     When(
+        "I change disease to {string} in the case tab",
+        (String disease) -> {
+          webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CHANGE_DISEASE_POPUP_TITLE);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM);
+        });
+
+    When(
         "I check the end of processing date in the archive popup and select Archive cases checkbox",
         () -> {
           String endOfProcessingDate;
@@ -2315,6 +2363,22 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+        });
+
+    When(
+        "^I click Link Event button on Edit Case Page$",
+        () -> {
+          webDriverHelpers.scrollToElement(LINK_EVENT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON);
+        });
+
+    When(
+        "I check if disease is set for {string} in Case Edit Directory",
+        (String disease) -> {
+          webDriverHelpers.scrollToElement(DISEASE_INPUT);
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(DISEASE_INPUT), disease, "Incorrect disease");
+          softly.assertAll();
         });
   }
 

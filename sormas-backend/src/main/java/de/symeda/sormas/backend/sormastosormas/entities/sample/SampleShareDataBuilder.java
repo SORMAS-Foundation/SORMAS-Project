@@ -69,7 +69,7 @@ public class SampleShareDataBuilder
 	@Override
 	protected SormasToSormasSampleDto doBuildShareData(Sample data, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
 		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+			dataBuilderHelper.createPseudonymizer(requestInfo);
 
 		SampleDto sampleDto = sampleFacade.convertToDto(data, pseudonymizer);
 		sampleDto.setReportingUser(null);

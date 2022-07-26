@@ -22,6 +22,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CONFIRM_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_DOCUMENT_EMPTY_TEXT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_UPLOADED_TEST_FILE;
@@ -39,6 +40,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_C
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXPECTED_FOLLOWUP_LABEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXPECTED_FOLLOWUP_POPUP_TEXT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_IMMUNIZATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
@@ -155,6 +157,10 @@ public class EditContactSteps implements En {
     And(
         "I click on checkbox to upload generated document to entities in Create Quarantine Order form in Contact directory",
         () -> webDriverHelpers.clickOnWebElementBySelector(UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX));
+    And(
+        "I click on checkbox to upload generated document to entities in Create Quarantine Order form in Contact directory for DE",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE));
     When(
         "I check if generated document based on {string} appeared in Documents tab for UI created contact in Edit Contact directory",
         (String name) -> {
@@ -165,6 +171,17 @@ public class EditContactSteps implements En {
                   Assert.assertEquals(
                       path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME)),
               120);
+        });
+    When(
+        "I check if generated document based on {string} appeared in Documents tab for UI created contact in Edit Contact directory for DE",
+        (String name) -> {
+          String uuid = collectedContact.getUuid();
+          String path = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertEquals(
+                      path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME_DE)),
+              10);
         });
     When(
         "I check if generated document for Contact based on {string} was downloaded properly",
@@ -725,6 +742,17 @@ public class EditContactSteps implements En {
                   Assert.assertEquals(
                       path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME)),
               120);
+        });
+    When(
+        "I check if generated document based on {string} appeared in Documents tab in Edit Contact directory for DE",
+        (String name) -> {
+          String uuid = apiState.getCreatedContact().getUuid();
+          String path = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertEquals(
+                      path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME_DE)),
+              10);
         });
     When(
         "I delete downloaded file created from {string} Document Template for Contact",

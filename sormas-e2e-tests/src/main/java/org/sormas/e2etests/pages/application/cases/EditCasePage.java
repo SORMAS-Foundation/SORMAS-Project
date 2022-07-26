@@ -54,6 +54,8 @@ public class EditCasePage {
   public static final By CASE_CLASSIFICATION_SPAN =
       By.cssSelector("#caseClassification span input:checked+label");
   public static final By CASE_CLASSIFICATION_INPUT = By.cssSelector("#caseClassification input");
+  public static final By CASE_CONFIRMATION_BASIS_COMBOBOX =
+      By.cssSelector("#caseConfirmationBasis div");
   public static final By CLINICAL_CONFIRMATION_COMBOBOX =
       By.cssSelector("#clinicalConfirmation div");
   public static final By EPIDEMIOLOGICAL_CONFIRMATION_COMBOBOX =
@@ -234,6 +236,9 @@ public class EditCasePage {
   public static final By GENERATED_DOCUMENT_NAME =
       By.xpath(
           "//div[text()='Documents']/../parent::div/../../following-sibling::div//div[@class='v-label v-widget caption-truncated v-label-caption-truncated v-label-undef-w']");
+  public static final By GENERATED_DOCUMENT_NAME_DE =
+      By.xpath(
+          "//div[text()='Dokumente']/../parent::div/../../following-sibling::div//div[@class='v-label v-widget caption-truncated v-label-caption-truncated v-label-undef-w']");
   public static final By ARCHIVE_CASE_BUTTON = By.id("archiveDearchive");
   public static final By CONFIRM_ACTION = By.id("actionConfirm");
   public static final By ARCHIVE_RELATED_CONTACTS_CHECKBOX =
@@ -334,4 +339,6 @@ public class EditCasePage {
   public static final By LINK_EVENT_BUTTON_DE = By.id("Ereignis verkn\u00FCpfen");
   public static final By ADD_A_PARTICIPANT_HEADER_DE =
       By.xpath("//*[contains(text(),'Neuen Ereignisteilnehmer hinzuf\u00FCgen')]");
+  public static final By CHANGE_DISEASE_POPUP_TITLE =
+      By.xpath("//div[text()='Change case disease']");
 }
