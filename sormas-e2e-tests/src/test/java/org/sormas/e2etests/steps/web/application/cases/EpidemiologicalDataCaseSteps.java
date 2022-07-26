@@ -716,21 +716,15 @@ public class EpidemiologicalDataCaseSteps implements En {
 
     And(
         "^I check if the continent combobox is available in the location section in Exposure form$",
-        () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONTINENT_COMBOBOX);
-        });
+        () -> webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONTINENT_COMBOBOX));
 
     And(
         "^I check if the subcontinent combobox is available in the location section in Exposure form$",
-        () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SUBCONTINENT_COMBOBOX);
-        });
+        () -> webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SUBCONTINENT_COMBOBOX));
 
     And(
         "^I select \"([^\"]*)\" as a country in Exposure form$",
-        (String country) -> {
-          webDriverHelpers.selectFromCombobox(COUNTRY_COMBOBOX, country);
-        });
+        (String country) -> webDriverHelpers.selectFromCombobox(COUNTRY_COMBOBOX, country));
 
     And(
         "^I check that continent is automatically selected as \"([^\"]*)\"$",
