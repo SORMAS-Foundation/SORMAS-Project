@@ -310,7 +310,8 @@ Feature: Epidemiological data coverage
     Given I log in with National User
     And I click on the Cases button from navbar
     When I am accessing via URL the Epidemiological data tab of the created case
-    And I create a new Exposure for Epidemiological data
+    And I click on Exposure details known with YES option
+    And I click on New Entry in Exposure Details Known
     And I check if the continent combobox is available in the location section in Exposure form
     And I check if the subcontinent combobox is available in the location section in Exposure form
     And I select "Ukraine" as a country in Exposure form
