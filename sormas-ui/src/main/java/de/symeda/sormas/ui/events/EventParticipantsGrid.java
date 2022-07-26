@@ -26,6 +26,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -122,10 +123,13 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 				ControllerProvider.getCaseController().createFromEventParticipant(eventParticipant);
 			}
 		}));
-		addItemClickListener(
-			new ShowDetailsListener<>(
-				EventParticipantIndexDto.PERSON_UUID,
-				e -> ControllerProvider.getPersonController().navigateToPerson(e.getPersonUuid())));
+		addItemClickListener(new ShowDetailsListener<>(EventParticipantIndexDto.PERSON_UUID, e -> {
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PERSON_MANAGEMENT)) {
+				ControllerProvider.getPersonController().navigateToPerson(e.getPersonUuid());
+			} else {
+				ControllerProvider.getEventParticipantController().navigateToData(e.getUuid());
+			}
+		}));
 		addItemClickListener(
 			new ShowDetailsListener<>(
 				EventParticipantIndexDto.UUID,
