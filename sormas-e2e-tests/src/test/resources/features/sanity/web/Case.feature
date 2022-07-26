@@ -1573,3 +1573,5 @@ Feature: Case end to end tests
     And I save the created sample
     And I check that text appearing in hover over Expected Follow-up is based on Symptoms collection date
 
+  @issue=SORQA-8483 @env_main
+  Scenario: Test Assigned to user list of task should consider related entities jurisdiction
