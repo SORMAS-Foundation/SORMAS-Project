@@ -32,6 +32,14 @@ Feature: About Directory end to end tests
     Then I click on Full Changelog in About directory and i get redirected to github project release page of sormas
     And I click on Data Dictionary hyperlink and download XLSX file from About directory
     Then I delete Data Dictionary downloaded file from About Directory
+
+  @env_de @#8399
+  Scenario: Check important redirects in About section for DE
+    Given I log in with National User
+    Then I click on the About button from navbar
+    Then I click on Sormas version in About directory and i get redirected to github
+    And I click on Deutsch Data Dictionary hyperlink and download XLSX file from About directory
+    Then I delete Deutsch Data Dictionary downloaded file from About Directory
     Then I click on Case Classification Rules hyperlink and download HTML file in About directory
     Then I delete Case Classification Html downloaded file from About Directory
 
