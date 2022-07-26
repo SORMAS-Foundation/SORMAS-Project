@@ -300,7 +300,7 @@ Feature: Epidemiological data coverage
     And I archive facility
 
   @issue=SORDEV-5204 @env_main
-  Scenario: Test continent and subcontinent in location entry in exposures
+  Scenario: Test continent and subcontinent in location entry in exposure and activity as case
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
@@ -316,3 +316,11 @@ Feature: Epidemiological data coverage
     And I select "Ukraine" as a country in Exposure form
     And I check that continent is automatically selected as "Europe"
     And I check that subcontinent is automatically selected as "Eastern Europe"
+    And I click on discard button from Epidemiological Data Exposure popup
+    And I click on Activity details known with YES option
+    And I click on New Entry in Activity as Case in Cases directory
+    And I check if the continent combobox is available in the location section in Exposure form
+    And I check if the subcontinent combobox is available in the location section in Exposure form
+    And I select "Chile" as a country in Exposure form
+    And I check that continent is automatically selected as "America"
+    And I check that subcontinent is automatically selected as "South America"
