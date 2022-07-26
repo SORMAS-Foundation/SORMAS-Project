@@ -73,7 +73,6 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -207,6 +206,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb;
@@ -4073,23 +4073,21 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					and(cb, personPredicate, or(cb, cb.isNull(person.get(Person.SEX)), cb.equal(person.get(Person.SEX), searchPerson.getSex())));
 			}
 
-			Predicate reportDatePredicate;
-
+			final Predicate reportDatePredicate;
 			if (reportDateThreshold == 0) {
 				// threshold is zero: we want to get exact matches
 				reportDatePredicate = cb.equal(
-					cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
-					cb.function("date", Date.class, cb.literal(searchCaze.getReportDate())));
+					cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, caseRoot.get(Case.REPORT_DATE)),
+					cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, cb.literal(searchCaze.getReportDate())));
 			} else {
 				// threshold is nonzero: apply time range of threshold to the reportDate
 				Date reportDate = casePerson.getCaze().getReportDate();
-				Date dateBefore = new DateTime(reportDate).minusDays(reportDateThreshold).toDate();
-				Date dateAfter = new DateTime(reportDate).plusDays(reportDateThreshold).toDate();
-
+				Date dateBefore = DateHelper.subtractDays(reportDate, reportDateThreshold);
+				Date dateAfter = DateHelper.addDays(reportDate, reportDateThreshold);
 				reportDatePredicate = cb.between(
-					cb.function("date", Date.class, caseRoot.get(Case.REPORT_DATE)),
-					cb.function("date", Date.class, cb.literal(dateBefore)),
-					cb.function("date", Date.class, cb.literal(dateAfter)));
+					cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, caseRoot.get(Case.REPORT_DATE)),
+					cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, cb.literal(dateBefore)),
+					cb.function(ExtendedPostgreSQL94Dialect.DATE, Date.class, cb.literal(dateAfter)));
 			}
 
 			Predicate districtPredicate = CriteriaBuilderHelper.or(

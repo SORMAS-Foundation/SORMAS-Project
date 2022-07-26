@@ -18,6 +18,7 @@ public class ExtendedPostgreSQL94Dialect extends PostgreSQL94Dialect {
 	public final static String ARRAY_AGG = "array_agg";
 	// forces the use of the concat function, by default hibernate uses `||` operator
 	public final static String CONCAT_FUNCTION = "concat_function";
+	public static final String DATE = "date";
 	public final static String UNACCENT = "unaccent";
 	public final static String ILIKE = "ilike";
 	public final static String WINDOW_FIRST_VALUE_DESC = "window_first_value_desc";
