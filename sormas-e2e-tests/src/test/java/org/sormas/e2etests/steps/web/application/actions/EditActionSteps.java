@@ -32,15 +32,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Action;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.steps.BaseSteps;
-import org.testng.asserts.SoftAssert;
+import org.testng.Assert;
 
 public class EditActionSteps implements En {
 
@@ -51,7 +51,7 @@ public class EditActionSteps implements En {
 
   @Inject
   public EditActionSteps(
-      WebDriverHelpers webDriverHelpers, BaseSteps baseSteps, SoftAssert softly) {
+      WebDriverHelpers webDriverHelpers, BaseSteps baseSteps, AssertHelpers assertHelpers) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
 
@@ -73,36 +73,36 @@ public class EditActionSteps implements En {
         "I upload ([^\"]*) file to the Event Action",
         (String fileType) -> {
           webDriverHelpers.sendFile(FILE_PICKER, userDirPath + "/uploads/" + fileType);
-          TimeUnit.SECONDS.sleep(2); // wait for upload file
         });
     When(
         "I check if ([^\"]*) file is available in Event Action documents",
         (String fileType) -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               By.xpath(String.format(CASE_UPLOADED_TEST_FILE, fileType)), 5);
-          TimeUnit.SECONDS.sleep(2);
         });
     When(
         "I check if ([^\"]*) file is downloaded correctly from Event Action tab",
         (String filename) -> {
           String file = userDirPath + "/downloads/" + filename;
           Path path = Paths.get(file);
-          softly.assertTrue(Files.exists(path));
-          softly.assertAll();
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      filename + " wasn't downloaded: " + path.toAbsolutePath()),
+              30);
           Files.delete(path); // clean
         });
     When(
         "I download last updated document file from Event Action tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(DOWNLOAD_LAST_UPDATED_DOCUMENT);
-          TimeUnit.SECONDS.sleep(3); // wait for download
         });
     When(
         "I delete last uploaded document file from Event Action tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(DELETE_LAST_UPDATED_DOCUMENT);
           webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_POPUP_BUTTON);
-          TimeUnit.SECONDS.sleep(5); // wait for system reaction
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
     When(
