@@ -20,10 +20,10 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -36,6 +36,7 @@ import de.symeda.sormas.api.therapy.PrescriptionIndexDto;
 import de.symeda.sormas.api.therapy.TreatmentRoute;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -96,7 +97,7 @@ public class PresicriptionFacadeEjbPseudonymizationTest extends AbstractBeanTest
 		creator.createContact(user2.toReference(), creator.createPerson().toReference(), case2);
 		PrescriptionDto prescription2 = createPrescription(case2);
 
-		List<PrescriptionDto> prescriptions = getPrescriptionFacade().getAllActivePrescriptionsAfter(DateTime.now().minusYears(1).toDate());
+		List<PrescriptionDto> prescriptions = getPrescriptionFacade().getAllActivePrescriptionsAfter(UtilDate.from(LocalDate.now().minusYears(1)));
 
 		assertNotPseudonymized(prescriptions.stream().filter(p -> p.getUuid().equals(prescription1.getUuid())).findFirst().get());
 		assertPseudonymized(prescriptions.stream().filter(p -> p.getUuid().equals(prescription2.getUuid())).findFirst().get());

@@ -62,7 +62,6 @@ import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
-import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -2481,8 +2480,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetDuplicatesWithReportDateThreshold() {
+
 		RDCF rdcf = creator.createRDCF();
-		Date now = new Date();
+		LocalDateTime now = LocalDateTime.now();
+
 		//case and person matching for asserts
 		PersonDto person = creator.createPerson("Fname", "Lname", (p) -> {
 			p.setBirthdateDD(12);
@@ -2505,7 +2506,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		creator.createCase(user, rdcf, (c) -> {
 			c.setPerson(person2.toReference());
 			c.setDisease(Disease.CORONAVIRUS);
-			c.setReportDate(new DateTime(now).minusDays(1).toDate());
+			c.setReportDate(UtilDate.from(now.minusDays(1)));
 		});
 
 		CasePersonDto casePerson = new CasePersonDto();

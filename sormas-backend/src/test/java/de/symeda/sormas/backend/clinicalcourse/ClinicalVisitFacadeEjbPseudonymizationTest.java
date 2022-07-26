@@ -20,10 +20,10 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -37,6 +37,7 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -114,7 +115,8 @@ public class ClinicalVisitFacadeEjbPseudonymizationTest extends AbstractBeanTest
 		CaseDataDto case2 = createCase(user2, rdcf2);
 		ClinicalVisitDto visit2 = createClinicalVisit(case2);
 
-		List<ClinicalVisitDto> visitsAfter = getClinicalVisitFacade().getAllActiveClinicalVisitsAfter(DateTime.now().withYear(2019).toDate());
+		List<ClinicalVisitDto> visitsAfter =
+			getClinicalVisitFacade().getAllActiveClinicalVisitsAfter(UtilDate.from(LocalDateTime.now().withYear(2019)));
 
 		assertPseudonymized(visitsAfter.stream().filter(v -> v.getUuid().equals(visit1.getUuid())).findFirst().get());
 		assertNotPseudonymized(visitsAfter.stream().filter(v -> v.getUuid().equals(visit2.getUuid())).findFirst().get());

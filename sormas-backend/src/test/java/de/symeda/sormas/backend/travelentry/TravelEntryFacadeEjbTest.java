@@ -22,10 +22,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -37,6 +35,7 @@ import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 
@@ -112,7 +111,7 @@ public class TravelEntryFacadeEjbTest extends AbstractBeanTest {
 			rdcf1.district,
 			rdcf1.pointOfEntry);
 		creator.createTravelEntry(person.toReference(), nationalUser.toReference(), Disease.DENGUE, rdcf2.region, rdcf2.district, rdcf2.pointOfEntry);
-		List<TravelEntryDto> allAfter = getTravelEntryFacade().getAllAfter(new DateTime(new Date()).minusDays(1).toDate());
+		List<TravelEntryDto> allAfter = getTravelEntryFacade().getAllAfter(UtilDate.yesterday());
 		assertEquals(2, allAfter.size());
 	}
 
@@ -133,7 +132,7 @@ public class TravelEntryFacadeEjbTest extends AbstractBeanTest {
 			.createTravelEntry(person.toReference(), nationalUser.toReference(), Disease.DENGUE, rdcf2.region, rdcf2.district, rdcf2.pointOfEntry);
 
 		loginWith(districtUser1);
-		List<TravelEntryDto> allAfter = getTravelEntryFacade().getAllAfter(new DateTime(new Date()).minusDays(1).toDate());
+		List<TravelEntryDto> allAfter = getTravelEntryFacade().getAllAfter(UtilDate.yesterday());
 		assertEquals(1, allAfter.size());
 		TravelEntryDto travelEntryDto = allAfter.get(0);
 		assertEquals(seenTravelEntry.getUuid(), travelEntryDto.getUuid());

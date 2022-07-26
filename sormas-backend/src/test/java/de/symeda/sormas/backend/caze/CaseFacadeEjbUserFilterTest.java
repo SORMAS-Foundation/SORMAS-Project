@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
-import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,6 +43,7 @@ import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.UtilDate;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -184,21 +184,22 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 
 		loginWith(districtUser1);
 
-		List<CaseDataDto> allActiveCasesAfter = getCaseFacade().getAllActiveCasesAfter(new DateTime(new Date()).minusDays(1).toDate());
+		Date yesterday = UtilDate.yesterday();
+		List<CaseDataDto> allActiveCasesAfter = getCaseFacade().getAllActiveCasesAfter(yesterday);
 		assertThat(allActiveCasesAfter, hasSize(4));
 		Assert.assertFalse(allActiveCasesAfter.contains(case11));
 		Assert.assertFalse(allActiveCasesAfter.contains(case12));
 
 		loginWith(districtUser11);
 
-		List<CaseDataDto> allActiveCasesAfter2 = getCaseFacade().getAllActiveCasesAfter(new DateTime(new Date()).minusDays(1).toDate());
+		List<CaseDataDto> allActiveCasesAfter2 = getCaseFacade().getAllActiveCasesAfter(yesterday);
 		assertThat(allActiveCasesAfter2, hasSize(4));
 		Assert.assertFalse(allActiveCasesAfter2.contains(case2));
 		Assert.assertFalse(allActiveCasesAfter2.contains(case11));
 
 		loginWith(districtUser12);
 
-		List<CaseDataDto> allActiveCasesAfter3 = getCaseFacade().getAllActiveCasesAfter(new DateTime(new Date()).minusDays(1).toDate());
+		List<CaseDataDto> allActiveCasesAfter3 = getCaseFacade().getAllActiveCasesAfter(yesterday);
 		assertThat(allActiveCasesAfter3, hasSize(3));
 		Assert.assertFalse(allActiveCasesAfter3.contains(case2));
 		Assert.assertFalse(allActiveCasesAfter3.contains(case11));
