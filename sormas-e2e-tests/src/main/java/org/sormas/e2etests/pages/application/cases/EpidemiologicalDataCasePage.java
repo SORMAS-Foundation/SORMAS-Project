@@ -72,8 +72,12 @@ public class EpidemiologicalDataCasePage {
       By.xpath("//div[@class='gwt-HTML']");
   public static final By CONTINENT_COMBOBOX =
       By.cssSelector(".v-window [location='location'] #continent div");
+  public static final By CONTINENT_INPUT =
+      By.cssSelector(".v-window [location='location'] #continent input");
   public static final By SUBCONTINENT_COMBOBOX =
       By.cssSelector(".v-window [location='location'] #subcontinent div");
+  public static final By SUBCONTINENT_INPUT =
+      By.cssSelector(".v-window [location='location'] #subcontinent input");
   public static final By COUNTRY_COMBOBOX = By.cssSelector(".v-window #country div");
   public static final By DISTRICT_COMBOBOX = By.cssSelector(".v-window #district div");
   public static final By COMMUNITY_COMBOBOX = By.cssSelector(".v-window #community div");

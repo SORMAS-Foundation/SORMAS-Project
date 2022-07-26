@@ -313,3 +313,6 @@ Feature: Epidemiological data coverage
     And I create a new Exposure for Epidemiological data
     And I check if the continent combobox is available in the location section in Exposure form
     And I check if the subcontinent combobox is available in the location section in Exposure form
+    And I select "Ukraine" as a country in Exposure form
+    And I check that continent is automatically selected as "Europe"
+    And I check that subcontinent is automatically selected as "Eastern Europe"
