@@ -15,10 +15,9 @@
 
 package de.symeda.sormas.ui.utils;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
-
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -31,6 +30,7 @@ import com.vaadin.v7.ui.CustomField;
 import com.vaadin.v7.ui.PopupDateField;
 
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.UtilDate;
 
 @SuppressWarnings("serial")
 public class DateTimeField extends CustomField<Date> {
@@ -127,7 +127,7 @@ public class DateTimeField extends CustomField<Date> {
 		if (dateField != null && timeField != null) {
 
 			if (newValue != null) {
-				dateField.setValue(new LocalDate(newValue).toDate());
+				dateField.setValue(DateHelper.getStartOfDay(newValue));
 				timeField.setValue(ensureTimeEntry(newValue));
 			} else {
 				dateField.setValue(null);
@@ -144,9 +144,9 @@ public class DateTimeField extends CustomField<Date> {
 			if (date != null) {
 				Integer totalMinutes = (Integer) timeField.getValue();
 				if (totalMinutes != null) {
-					DateTime dateTime = new DateTime(date);
-					dateTime = dateTime.withHourOfDay((totalMinutes / 60) % 24).withMinuteOfHour(totalMinutes % 60);
-					date = dateTime.toDate();
+					LocalDateTime dateTime = UtilDate.toLocalDateTime(date);
+					dateTime = dateTime.withHour((totalMinutes / 60) % 24).withMinute(totalMinutes % 60);
+					date = UtilDate.from(dateTime);
 				}
 				return date;
 			}
@@ -160,11 +160,12 @@ public class DateTimeField extends CustomField<Date> {
 	 * @return itemId of the entry
 	 */
 	private Object ensureTimeEntry(Date time) {
+
 		if (time == null) {
 			return null;
 		}
-		int totalMinutes = new DateTime(time).minuteOfDay().get();
-		return ensureTimeEntry((totalMinutes / 60) % 24, totalMinutes % 60);
+		LocalTime localTime = UtilDate.toLocalTime(time);
+		return ensureTimeEntry(localTime.getHour(), localTime.getMinute());
 	}
 
 	/**
