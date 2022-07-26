@@ -210,6 +210,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 		final Map<Disease, List<AggregateReport>> reportsByDisease = new HashMap<>();
 		final EpiWeek epiWeek = (EpiWeek) contentBinding.aggregateReportsWeek.getValue();
 		final User selectedUser = ((ReportUserInfo) contentBinding.aggregateReportsReport.getValue()).user;
+
 		final InfrastructureAdo selectedInfrastructure = ((ReportUserInfo) contentBinding.aggregateReportsReport.getValue()).getInfrastructure();
 		final boolean enabled = selectedUser == null || user.equals(selectedUser);
 		userReports = reports.stream()
@@ -372,9 +373,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 						if (report.getLocalChangeDate() == null
 							&& (report.getNewCases() == null || report.getNewCases() == 0)
 							&& (report.getLabConfirmations() == null || report.getLabConfirmations() == 0)
-							&& (report.getDeaths() == null || report.getDeaths() == 0)
-							&& report.getRegion() == null
-							&& report.getDistrict() == null) {
+							&& (report.getDeaths() == null || report.getDeaths() == 0)) {
 							continue;
 						}
 
