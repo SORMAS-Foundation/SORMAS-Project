@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -236,11 +237,11 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 	@Override
 	protected void onFinishInflate() {
 		super.onFinishInflate();
-		List<String> str = new ArrayList<>();
+		Map<String, String> str = new  HashMap<String, String>();
 		initInput(str);
 	}
 
-	protected void initInput(List<String> isIntegerFlag) {
+	protected void initInput(Map<String, String> isIntegerFlag) {
 		input = (Spinner) this.findViewById(R.id.spinner_input);
 		if (getImeOptions() == EditorInfo.IME_NULL) {
 			setImeOptions(EditorInfo.IME_ACTION_DONE);
@@ -303,7 +304,7 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 	}
 
 
-	public static List<Item> convertOtpions(List<String> options) {
+	public static List<Item> convertOtpions(Map<String, String> options) {
 		List<Item> items = itemsWithEmpty();
 		if (!options.isEmpty()) {
 			items.addAll(mapToDisplayOptionNames(options));
@@ -318,8 +319,12 @@ public class ControlSpinnerField extends ControlPropertyEditField<Object> {
 		return items;
 	}
 
-	private static List<Item<String>> mapToDisplayOptionNames(List<String> subcontinents) {
-		return subcontinents.stream().map(c -> new Item<>(c, c)).collect(Collectors.toList());
+	private static List<Item<String>> mapToDisplayOptionNames(Map<String, String> subcontinents) {
+
+		List<String> list = new ArrayList<String>(subcontinents.values());
+
+
+		return list.stream().map(c -> new Item<>(c, c)).collect(Collectors.toList());
 		//do translation here for Options
 				//.map(c -> new Item<>(I18nProperties.getSubcontinentName(c.toString()), c))
 

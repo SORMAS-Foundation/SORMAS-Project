@@ -241,6 +241,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 						campaignForm, campaign);
 
 				if (!formuuid.equals("nul")) {
+					//Page.getCurrent().get
 					ControllerProvider.getCampaignController().navigateToFormDataView(formuuid);
 				} else {
 					System.out.println(

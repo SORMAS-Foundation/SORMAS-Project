@@ -328,16 +328,14 @@ public class CampaignDataView extends AbstractCampaignView {
 			List<CampaignFormMetaReferenceDto> campagaignFormReferences =
 				FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferencesByRoundandCampaign(campaignReferenceDto.toLowerCase(),  campaignReferenceDtx.getUuid());
 			Collections.sort(campagaignFormReferences);
-		//	System.out.println(campaignReferenceDtx.getUuid() + " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>___________"+campaignReferenceDto+"____________>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  "+ campagaignFormReferences);
+		
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
 				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), el -> {
+					
 					ControllerProvider.getCampaignController().navigateToFormDataView(criteria.getCampaign().getUuid(), campaignForm.getUuid());
 					newFormButton.setPopupVisible(false);
 				});
-			//	ControllerProvider.getCampaignController().createCampaignDataForm(criteria.getCampaign(), campaignForm);
-				
-				// e -> ControllerProvider.getCampaignController().navigateToFormDataView(e.getUuid())));
-
+		
 				campaignFormButton.setWidth(100, Unit.PERCENTAGE);
 				//campaignFormButton.removeStyleName(VIEW_NAME);
 				campaignFormButton.removeStyleName("v-button");  

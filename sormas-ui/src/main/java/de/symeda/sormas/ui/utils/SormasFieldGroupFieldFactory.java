@@ -3,8 +3,11 @@ package de.symeda.sormas.ui.utils;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import com.vaadin.ui.CheckBoxGroup;
@@ -15,6 +18,7 @@ import com.vaadin.v7.data.Item;
 import com.vaadin.v7.data.fieldgroup.DefaultFieldGroupFieldFactory;
 import com.vaadin.v7.shared.ui.combobox.FilteringMode;
 import com.vaadin.v7.ui.AbstractSelect;
+import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.AbstractTextField;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
@@ -93,9 +97,10 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 				OptionGroup field = new OptionGroup();
 
 				CampaignFormElementOptions campaignFormElementOptions = new CampaignFormElementOptions();
-				List<String> data = campaignFormElementOptions.getOptionsListValues();
+				Map data = campaignFormElementOptions.getOptionsListValues();
 
 				field.addItems(data);
+				field.setItemCaptionMode(ItemCaptionMode.ITEM);
 				field.setNullSelectionAllowed(false);
 
 				if (swt) {
@@ -157,9 +162,15 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			ComboBox select = new ComboBox();
 
 			CampaignFormElementOptions campaignFormElementOptions = new CampaignFormElementOptions();
-			List<String> data = campaignFormElementOptions.getOptionsListValues();
-			// System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>> "+data);
-			select.addItems(data);
+			HashMap<String, String> data = (HashMap<String, String>) campaignFormElementOptions.getOptionsListValues();
+			 System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>> "+data);
+			//select.addItems(data);
+			 for(Entry<String, String> e : data.entrySet()){ 
+			select.addItem(e.getKey());
+			select.setItemCaption(e.getKey(), e.getValue()); 
+			 }
+			
+			//((AbstractSelect) field).setItemCaptionMode(ItemCaptionMode.ITEM);
 			CssStyles.style(select, ValoTheme.OPTIONGROUP_HORIZONTAL);
 			field = (T) select;
 

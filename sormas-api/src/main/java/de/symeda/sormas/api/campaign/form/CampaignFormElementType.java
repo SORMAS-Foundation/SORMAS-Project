@@ -14,7 +14,7 @@ public enum CampaignFormElementType {
 	CHECKBOXBASIC,
 	RADIOBASIC,
 	TEXTBOX,
-	
+	COMMENT,
 	DATE,
 	DECIMAL,
 	RANGE,

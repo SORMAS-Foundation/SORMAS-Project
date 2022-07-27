@@ -41,13 +41,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.MapperUtil;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementOptions;
 import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
+import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -93,7 +97,7 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
     private List<Item> initialRegions;
     private List<Item> initialDistricts;
     private List<Item> initialCommunities;
-    private List<String> optionsValues;
+    private Map<String, String> optionsValues = null;
 
     private String caption_1 = "";
     private String caption_2 = "";
@@ -103,6 +107,10 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
     private String caption_6 = "";
     private String caption_7 = "";
     private String caption_8 = "";
+
+    //private List<CampaignFormTranslations> translationsOpt;
+    private Map<String, String> userOptTranslations = null;
+
 
     private SimpleDateFormat dateFormat;
 
@@ -116,7 +124,10 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
 
         final CampaignFormMeta campaignFormMeta = DatabaseHelper.getCampaignFormMetaDao().queryForId(record.getCampaignFormMeta().getId());
         final List<CampaignFormDataEntry> formValues = record.getFormValues();
-        final Map<String, String> formValuesMap = new HashMap<>();
+      final List<CampaignFormTranslations> translationsOpt = record.getCampaignFormMeta().getCampaignFormTranslations();
+
+
+      final Map<String, String> formValuesMap = new HashMap<>();
         formValues.forEach(campaignFormDataEntry -> formValuesMap.put(campaignFormDataEntry.getId(), DataHelper.toStringNullable(campaignFormDataEntry.getValue())));
 
         final Map<String, ControlPropertyField> fieldMap = new HashMap<>();
@@ -175,14 +186,42 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
       for (CampaignFormElement campaignFormElement : campaignFormMeta.getCampaignFormElements()) {
             CampaignFormElementType type = CampaignFormElementType.fromString(campaignFormElement.getType());
             if (campaignFormElement.getOptions() != null) {
+                final Locale locale = I18nProperties.getUserLanguage().getLocale();
+
+                if (locale != null) {
+                    translationsOpt.stream().filter(t -> t.getLanguageCode().equals(locale.toString()))
+                            .findFirst().ifPresent(filteredTranslations -> filteredTranslations.getTranslations().stream()
+                            .filter(cd -> cd.getOptions() != null)
+                            .findFirst().ifPresent(optionsList -> userOptTranslations = optionsList.getOptions().stream()
+                                    .filter(c -> c.getCaption() != null).collect(Collectors.toMap(MapperUtil::getKey, MapperUtil::getCaption))));
+                }
+
 
                 CampaignFormElementOptions campaignFormElementOptions = new CampaignFormElementOptions();
-                optionsValues = (List) Arrays.stream(campaignFormElement.getOptions()).collect(Collectors.toList());
-                ListIterator<String> lstItems = optionsValues.listIterator();
-                int i = 1;
-                campaignFormElementOptions.setOptionsListValues(optionsValues);
+                optionsValues = campaignFormElement.getOptions().stream().collect(Collectors.toMap(MapperUtil::getKey, MapperUtil::getCaption));  // .collect(Collectors.toList());
+
+                System.out.println("_______________________ "+userOptTranslations);
+                if(userOptTranslations == null) {
+                    campaignFormElementOptions.setOptionsListValues(optionsValues);
+                    //get18nOptCaption(formElement.getId(), optionsValues));
+                }else {
+                    campaignFormElementOptions.setOptionsListValues(userOptTranslations);
+
+                }
+
+
+
+
+
+              //  CampaignFormElementOptions campaignFormElementOptions = new CampaignFormElementOptions();
+                //optionsValues = (List) Arrays.stream(campaignFormElement.getOptions()).collect(Collectors.toList());
+              //  optionsValues = campaignFormElement.getOptions().stream().collect(Collectors.toMap(MapperUtil::getKey, MapperUtil::getCaption));  // .collect(Collectors.toList());
+
+               // ListIterator<String> lstItems = optionsValues.listIterator();
+            //    int i = 1;
+          //      campaignFormElementOptions.setOptionsListValues(optionsValues);
             } else {
-                optionsValues = new ArrayList<>();
+                optionsValues =  new HashMap<String, String>();
             }
           if (daywise) {
               if (type == CampaignFormElementType.DAYWISE) {
@@ -657,56 +696,56 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
       if (daywise) {
 
           if (dayy > 0) {
-              spec = mTabHost.newTabSpec("tab1").setIndicator(caption_1,
+              spec = mTabHost.newTabSpec("tab1").setIndicator("D1",//caption_1,
                       res.getDrawable(R.drawable.ic_clear_black_24dp))
                       .setContent(R.id.tabSheet1);
               mTabHost.addTab(spec);
               mTabHost.getTabWidget().getChildAt(0).getLayoutParams().width = 140;
           }
           if (dayy > 1) {
-              spec = mTabHost.newTabSpec("tab2").setIndicator(caption_2,
+              spec = mTabHost.newTabSpec("tab2").setIndicator("D2",//caption_1,
                       res.getDrawable(R.drawable.ic_clear_black_24dp))
                       .setContent(R.id.tabSheet2);
               mTabHost.addTab(spec);
               mTabHost.getTabWidget().getChildAt(1).getLayoutParams().width = 140;
           }
           if (dayy > 2) {
-              spec = mTabHost.newTabSpec("tab3").setIndicator(caption_3,
+              spec = mTabHost.newTabSpec("tab3").setIndicator("D3",//caption_1,
                       res.getDrawable(R.drawable.ic_clear_black_24dp))
                       .setContent(R.id.tabSheet3);
               mTabHost.addTab(spec);
               mTabHost.getTabWidget().getChildAt(2).getLayoutParams().width = 140;
           }
           if (dayy > 3) {
-              spec = mTabHost.newTabSpec("tab4").setIndicator(caption_4,
+              spec = mTabHost.newTabSpec("tab4").setIndicator("D4",//caption_1,
                       res.getDrawable(R.drawable.ic_clear_black_24dp))
                       .setContent(R.id.tabSheet4);
               mTabHost.addTab(spec);
               mTabHost.getTabWidget().getChildAt(3).getLayoutParams().width = 140;
           }
           if (dayy > 4) {
-              spec = mTabHost.newTabSpec("tab5").setIndicator(caption_5,
+              spec = mTabHost.newTabSpec("tab5").setIndicator("D5",//caption_1,
                       res.getDrawable(R.drawable.ic_clear_black_24dp))
                       .setContent(R.id.tabSheet5);
               mTabHost.addTab(spec);
               mTabHost.getTabWidget().getChildAt(4).getLayoutParams().width = 140;
           }
           if (dayy > 5) {
-              spec = mTabHost.newTabSpec("tab6").setIndicator(caption_6,
+              spec = mTabHost.newTabSpec("tab6").setIndicator("D6",//caption_1,
                       res.getDrawable(R.drawable.ic_clear_black_24dp))
                       .setContent(R.id.tabSheet6);
               mTabHost.addTab(spec);
               mTabHost.getTabWidget().getChildAt(5).getLayoutParams().width = 140;
           }
           if (dayy > 6) {
-              spec = mTabHost.newTabSpec("tab7").setIndicator(caption_7,
+              spec = mTabHost.newTabSpec("tab7").setIndicator("D7",//caption_1,
                       res.getDrawable(R.drawable.ic_clear_black_24dp))
                       .setContent(R.id.tabSheet7);
               mTabHost.addTab(spec);
               mTabHost.getTabWidget().getChildAt(6).getLayoutParams().width = 140;
           }
           if (dayy > 7) {
-              spec = mTabHost.newTabSpec("tab8").setIndicator(caption_8,
+              spec = mTabHost.newTabSpec("tab8").setIndicator("D8",//caption_1,
                       res.getDrawable(R.drawable.ic_clear_black_24dp))
                       .setContent(R.id.tabSheet8);
               mTabHost.addTab(spec);
@@ -719,22 +758,45 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
         return view;
     }
 
+    public long getMilliFromDate(String dateFormat) {
+        Date date = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("MMM dd, yyyy h:mm:ss a");
 
+        try {
+            System.out.println("'@@@@@@@@@@@@@"+formatter.parse(dateFormat));
+            date = formatter.parse(dateFormat);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Today is " + date);
+        return date.getTime();
+    }
 
     private Date getDateValue(String input) {
         if (StringUtils.isEmpty(input)) {
             return null;
         }
 
+       // getMilliFromDate(input);
+
+        System.out.println("'@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@s"+getMilliFromDate(input));
+        dateFormat = new SimpleDateFormat("MMM dd, yyyy h:mm:ss a");
+
+System.out.println(input);
+        System.out.println(DateHelper.parseDate(input, dateFormat));
         Date date = DateHelper.parseDate(input, dateFormat);
         Calendar dateCalendar = Calendar.getInstance();
         Calendar cachedCalendar = Calendar.getInstance();
+
+        System.out.println(date);
         dateCalendar.setTime(date);
 
         cachedCalendar.set(Calendar.YEAR, dateCalendar.get(Calendar.YEAR));
         cachedCalendar.set(Calendar.MONTH, dateCalendar.get(Calendar.MONTH));
         cachedCalendar.set(Calendar.DAY_OF_MONTH, dateCalendar.get(Calendar.DAY_OF_MONTH));
         date = cachedCalendar.getTime();
+
+        System.out.println(date);
 
         return date;
     }

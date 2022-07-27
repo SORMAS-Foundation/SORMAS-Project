@@ -101,7 +101,7 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 						SormasUI.refreshView();
 						Notification.show(String.format(I18nProperties.getString(Strings.messageCampaignFormSaved),
 								campaignFormData.getCampaignFormMeta().toString()), TRAY_NOTIFICATION);
-					}, null, null, false);
+						}, null);
 			editComponent.setMargin(false);
 			editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
 			editComponent.setHeightUndefined();
