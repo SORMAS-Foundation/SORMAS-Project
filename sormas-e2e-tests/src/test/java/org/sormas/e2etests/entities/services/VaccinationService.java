@@ -46,6 +46,22 @@ public class VaccinationService {
         .build();
   }
 
+  public Vaccination buildGeneratedVaccinationWithSpecificVaccinationDateDE(
+      LocalDate vaccinationDate) {
+    return Vaccination.builder()
+        .vaccinationDate(vaccinationDate)
+        .vaccineName("COVID-19 Impfstoff Moderna (mRNA-Impfstoff)")
+        .vaccineManufacturer("Moderna")
+        .vaccineType(faker.medical().medicineName())
+        .vaccinationInfoSource("Impfpass")
+        .vaccineDose(String.valueOf(faker.number().numberBetween(0, 3)))
+        .inn(String.valueOf(faker.idNumber()))
+        .uniiCode(String.valueOf(faker.idNumber()))
+        .batchNumber(String.valueOf(faker.idNumber()))
+        .atcCode(String.valueOf(faker.idNumber()))
+        .build();
+  }
+
   public Vaccination buildGeneratedVaccination() {
     return Vaccination.builder()
         .vaccinationDate(LocalDate.now().minusDays(1))

@@ -21,6 +21,7 @@ package org.sormas.e2etests.steps.web.application.persons;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.CASE_OF_DEATH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.DATE_OF_DEATH_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ALL_BUTTON_CONTACT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.*;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
@@ -38,6 +39,7 @@ import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.entities.pojo.web.Person;
+import org.sormas.e2etests.entities.services.PersonService;
 import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.PresentCondition;
@@ -45,9 +47,11 @@ import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
+import org.sormas.e2etests.steps.web.application.contacts.EditContactSteps;
 import org.sormas.e2etests.steps.web.application.entries.CreateNewTravelEntrySteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
 import org.sormas.e2etests.steps.web.application.immunizations.CreateNewImmunizationSteps;
@@ -58,6 +62,8 @@ public class PersonDirectorySteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   protected Person createdPerson;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+  public static Person personSharedForAllEntities;
+  private static String copiedPersonUUID;
 
   @Inject
   public PersonDirectorySteps(
@@ -67,8 +73,10 @@ public class PersonDirectorySteps implements En {
       Faker faker,
       AssertHelpers assertHelpers,
       RunningConfiguration runningConfiguration,
-      SoftAssert softly) {
+      SoftAssert softly,
+      PersonService personService) {
     this.webDriverHelpers = webDriverHelpers;
+    personSharedForAllEntities = personService.buildGeneratedPerson();
 
     // TODO refactor all BDD methods naming to be more explicit regarding where data comes from
 
@@ -107,6 +115,61 @@ public class PersonDirectorySteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
 
+    Then(
+        "I filter the last created person linked with Case",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MULTIPLE_OPTIONS_SEARCH_INPUT);
+          aCase = EditCaseSteps.aCase;
+          String PersonFullName = aCase.getFirstName() + " " + aCase.getLastName();
+          TimeUnit.SECONDS.sleep(5); // waiting for event table grid reloaded
+          webDriverHelpers.fillAndSubmitInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, PersonFullName);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
+        });
+    Then(
+        "I filter by shared person data across all entities",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MULTIPLE_OPTIONS_SEARCH_INPUT);
+          String PersonFullName =
+              personSharedForAllEntities.getFirstName()
+                  + " "
+                  + personSharedForAllEntities.getLastName();
+          TimeUnit.SECONDS.sleep(5); // waiting for event table grid reloaded
+          webDriverHelpers.fillAndSubmitInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, PersonFullName);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
+        });
+    Then(
+        "I filter the last created person linked with Event Participant",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MULTIPLE_OPTIONS_SEARCH_INPUT);
+          TimeUnit.SECONDS.sleep(5); // waiting for event table grid reloaded
+          webDriverHelpers.fillAndSubmitInWebElement(
+              MULTIPLE_OPTIONS_SEARCH_INPUT, EditEventSteps.person.getUuid());
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
+        });
+    Then(
+        "I filter the last created person linked with Contact",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MULTIPLE_OPTIONS_SEARCH_INPUT);
+          String PersonFullName =
+              EditContactSteps.collectedContact.getFirstName()
+                  + " "
+                  + EditContactSteps.collectedContact.getLastName();
+          TimeUnit.SECONDS.sleep(5); // waiting for event table grid reloaded
+          webDriverHelpers.fillAndSubmitInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, PersonFullName);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
+        });
+    Then(
+        "I filter the last created person linked with Travel Entry",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MULTIPLE_OPTIONS_SEARCH_INPUT);
+          String PersonFullName =
+              CreateNewTravelEntrySteps.aTravelEntry.getFirstName()
+                  + " "
+                  + CreateNewTravelEntrySteps.aTravelEntry.getLastName();
+          TimeUnit.SECONDS.sleep(5); // waiting for event table grid reloaded
+          webDriverHelpers.fillAndSubmitInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, PersonFullName);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
+        });
     When(
         "^I open the last created Person via API",
         () -> {
@@ -153,12 +216,36 @@ public class PersonDirectorySteps implements En {
                         number.intValue(),
                         "Number of displayed cases is not correct")));
     Then(
-        "I click on Travel Entry aggrgation button in Person Directory for DE specific",
+        "I click on Travel Entry aggregation button in Person Directory for DE specific",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(TRAVEL_ENTRY_AGGREGATION_BUTTON_DE);
           TimeUnit.SECONDS.sleep(2);
         });
 
+    Then(
+        "I click on Case aggregation button in Person Directory for DE specific",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CASE_AGGREGATION_BUTTON_DE);
+          TimeUnit.SECONDS.sleep(2);
+        });
+    Then(
+        "I click on Contact aggregation button in Person Directory for DE specific",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_AGGREGATION_BUTTON_DE);
+          TimeUnit.SECONDS.sleep(2);
+        });
+    Then(
+        "I click on Events aggregation button in Person Directory for DE specific",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_AGGREGATION_BUTTON_DE);
+          TimeUnit.SECONDS.sleep(2);
+        });
+    Then(
+        "I click on All aggregation button in Person Directory for DE specific",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ALL_AGGREGATION_BUTTON_DE);
+          TimeUnit.SECONDS.sleep(2);
+        });
     Then(
         "I fill Year of birth filter in Persons with the year of the last created person via API",
         () -> {
@@ -483,6 +570,25 @@ public class PersonDirectorySteps implements En {
               break;
           }
           webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, searchText);
+        });
+
+    When(
+        "I copy uuid of current person",
+        () -> {
+          webDriverHelpers.scrollToElement(EditContactPage.UUID_INPUT);
+          copiedPersonUUID = webDriverHelpers.getValueFromWebElement(EditContactPage.UUID_INPUT);
+        });
+
+    When(
+        "I search by copied uuid of the person in Person Directory",
+        () -> {
+          webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, copiedPersonUUID);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          TimeUnit.SECONDS.sleep(1); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.clickOnWebElementBySelector(ALL_BUTTON_CONTACT);
+          TimeUnit.SECONDS.sleep(5); // needed for table refresh
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
         });
   }
 }

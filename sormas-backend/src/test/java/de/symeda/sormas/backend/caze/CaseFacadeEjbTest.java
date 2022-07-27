@@ -15,8 +15,12 @@
 
 package de.symeda.sormas.backend.caze;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.exactly;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -31,12 +35,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.containing;
-import static com.github.tomakehurst.wiremock.client.WireMock.post;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -59,10 +57,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
-import de.symeda.sormas.backend.MockProducer;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
@@ -75,6 +69,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
@@ -118,6 +114,7 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -178,6 +175,7 @@ import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -518,6 +516,13 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		RDCFEntities newRDCF = creator.createRDCFEntities("New Region", "New District", "New Community", "New Facility");
+		UserDto caseOfficer = creator.createUser(
+			newRDCF.region.getUuid(),
+			newRDCF.district.getUuid(),
+			newRDCF.facility.getUuid(),
+			"Case",
+			"Officer",
+			creator.getUserRoleReference(DefaultUserRole.CASE_OFFICER));
 		UserDto user = useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -529,13 +534,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcf);
-		UserDto caseOfficer = creator.createUser(
-			newRDCF.region.getUuid(),
-			newRDCF.district.getUuid(),
-			newRDCF.facility.getUuid(),
-			"Case",
-			"Officer",
-			creator.getUserRoleReference(DefaultUserRole.CASE_OFFICER));
 		TaskDto pendingTask = creator.createTask(
 			TaskContext.CASE,
 			TaskType.CASE_INVESTIGATION,
@@ -639,8 +637,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		String districtName = "District";
 		RDCF rdcf = creator.createRDCF("Region", districtName, "Community", "Facility");
-		useSurveillanceOfficerLogin(rdcf);
-
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),
@@ -648,6 +644,8 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			"Surv",
 			"Sup",
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		useSurveillanceOfficerLogin(rdcf);
+
 		String lastName = "Person";
 		PersonDto cazePerson = creator.createPerson("Case", lastName);
 		creator.createCase(
@@ -703,8 +701,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		String districtName = "District";
 		RDCF rdcf = creator.createRDCF("Region", districtName, "Community", "Facility");
-		useSurveillanceOfficerLogin(rdcf);
-
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),
@@ -712,6 +708,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			"Surv",
 			"Sup",
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person1 = creator.createPerson("FirstName1", "LastName1", p -> {
 			p.getAddress().setPostalCode("10115");
@@ -768,8 +765,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		String districtName = "District";
 		RDCF rdcf = creator.createRDCF("Region", districtName, "Community", "Facility");
-		useSurveillanceOfficerLogin(rdcf);
-
 		UserDto user = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),
@@ -777,6 +772,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			"Surv",
 			"Sup",
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person1 = creator.createPerson();
 		PersonDto person2 = creator.createPerson();
@@ -1712,7 +1708,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testMergeCase() throws IOException {
 
-		useNationalUserLogin();
 		// 1. Create
 
 		// Create leadCase
@@ -1937,11 +1932,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testCloneCaseActivityAsCaseIsCloned() {
 
-		useNationalUserLogin();
 		// 1. Create
 
 		// Create aCase
 		UserDto user = creator.createUser("", "", "", "", "");
+		useNationalUserLogin();
 		UserReferenceDto userReferenceDto = new UserReferenceDto(user.getUuid());
 		PersonDto person = creator.createPerson("Max", "Smith");
 		person.setBirthWeight(2);

@@ -272,6 +272,8 @@ public class SurveillanceDashboardPage {
   public static final By CASES_METRICS_SUSPECT_BOX = By.xpath("//div[contains(text(),'Suspect')]");
   public static final By CASES_METRICS_NOT_A_CASE_BOX =
       By.xpath("//div[contains(text(),'Not A Case')]");
+  public static final By CASES_METRICS_NOT_A_CASE_COUNTER_DE =
+      By.xpath("//div[contains(text(),'Kein Fall')]/parent::div/parent::div/div[1]/div");
   public static final By CASES_METRICS_NOT_YET_CLASSIFIED_BOX =
       By.xpath("//div[contains(text(),'Not Yet Classified')]");
   public static final By FATALITIES_COUNTER =

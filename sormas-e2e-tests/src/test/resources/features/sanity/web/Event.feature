@@ -898,7 +898,7 @@ Feature: Create events
     Then I collect the sample UUID displayed on create new sample page
     Then I create a new Sample with positive test result with COVID-19 as disease
     Then I confirm popup window
-    Then I pick a new case in pick or create a case popup
+    Then I pick an existing case in pick or create a case popup
     Then I click on edit Sample
     Then I click on new test result for pathogen tests
     Then I create a new pathogen test result with Cholera as disease
@@ -1111,7 +1111,7 @@ Feature: Create events
     And I check if reason for deletion as "Löschen auf Anforderung einer anderen Behörde" is available
     And I check if reason for deletion as "Entität ohne Rechtsgrund angelegt" is available
     And I check if reason for deletion as "Abgabe des Vorgangs wegen Nicht-Zuständigkeit" is available
-    And I check if reason for deletion as "Löschen von Duplikaten" is available
+    And I check if reason for deletion as "Löschen von Dublikaten" is available
     And I check if reason for deletion as "Anderer Grund" is available
     Then I click on No option in Confirm deletion popup
     Then I click on Delete button from contact
@@ -1188,3 +1188,95 @@ Feature: Create events
     And I click on the Event participant tab
     Then I choose Aktive Ereignisteilnehmer from combobox in the Event participant tab
     And I check that number of displayed Event participants results is 1
+
+  @issue=SORDEV-10227 @env_de
+  Scenario: Test Permanent deletion for Person for Event Participant
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I open the last created event via api
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I add only required data for event participant creation for DE
+    And I collect the event participant person UUID displayed on Edit Event Participant page
+    And I click on the Persons button from navbar
+    Then I filter the last created person linked with Event Participant
+    And I click on Events aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I click on All aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    Then I open the last created event via api
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I click on the first result in table from event participant
+    Then I click on Delete button from event participant
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    And I click on the Persons button from navbar
+    Then I filter the last created person linked with Event Participant
+    And I click on Events aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 0
+
+  @issue=SORDEV-5565 @env_de
+  Scenario: Document Templates create quarantine order for Event Participant bulk DE
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    Then I open the last created event via api
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I add only required data for event participant creation for DE
+    Then I open the last created event via api
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I add only required data for event participant creation for DE
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I select first 2 results in grid in Event Participant Directory
+    And I click on Bulk Actions combobox in Event Parcitipant Tab
+    And I click on Create Quarantine Order from Bulk Actions combobox on Event Participant Directory Page
+    And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Event Participant directory for DE
+    And I select "ExampleDocumentTemplateEventParticipant.docx" Quarantine Order in Create Quarantine Order form in Event Participant directory
+    And I click on Create button in Create Quarantine Order form DE
+    And I click on close button in Create Quarantine Order form
+    And I check if downloaded zip file for Quarantine Order is correct for DE version
+    And I delete downloaded file created from Quarantine order
+
+  @issue=SORDEV-10361 @env_main
+  Scenario: Test Hide "buried" within Person present condition for Covid-19 for Events
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    When I create a new event with specific data
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    Then I check the created data is correctly displayed in event edit page
+    Given I add a participant to the event
+    Then I check if Present condition of person combobox has value "Alive"
+    And I check if Present condition of person combobox has value "Dead"
+    And I check if Present condition of person combobox has value "Unknown"
+    Then I check if Present condition of person combobox has no value "Buried"
+    And I navigate to EVENT PARTICIPANT from edit event page
+    And I back to the Event tab
+    And I change disease to "Ebola Virus Disease" in the event tab
+    Then I click on Save Button in Edit Event directory
+    And I navigate to EVENT PARTICIPANT from edit event page
+    And I click on the first row from event participant list
+    Then I check if Present condition of person combobox has value "Alive"
+    And I check if Present condition of person combobox has value "Dead"
+    And I check if Present condition of person combobox has value "Unknown"
+    Then I check if Present condition of person combobox has value "Buried"
+    Then I set Present condition of person to "Buried"
+    And I check if "Date of burial" field is present in case person
+    And I check if "Burial conductor" field is present in case person
+    And I check if "Burial place description" field is present in case person
+    Then I click on the Event participant tab
+    And I click yes on the DISCARD UNSAVED CHANGES popup if it appears
+    And I navigate to EVENT PARTICIPANT from edit event page
+    And I back to the Event tab
+    And I change disease to "COVID-19" in the event tab
+    Then I click on Save Button in Edit Event directory
+    And I navigate to EVENT PARTICIPANT from edit event page
+    And I click on Create in Case ID row in event participant list
+    Then I check if Present condition of person combobox has value "Alive"
+    And I check if Present condition of person combobox has value "Dead"
+    And I check if Present condition of person combobox has value "Unknown"
+    Then I check if Present condition of person combobox has no value "Buried"

@@ -152,6 +152,7 @@ public class CreateNewSampleSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   private final Faker faker;
   private final BaseSteps baseSteps;
+  public static LocalDate sampleCollectionDateForFollowUpDate;
 
   @Inject
   public CreateNewSampleSteps(
@@ -214,6 +215,20 @@ public class CreateNewSampleSteps implements En {
           selectResultVerifiedByLabSupervisor(
               sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
         });
+    When(
+        "^I create a new Sample with only required fields for DE version$",
+        () -> {
+          sample = sampleService.buildOnlyRequiredSampleFieldsDE();
+          fillDateOfCollectionDE(sample.getDateOfCollection());
+          selectSampleType(sample.getSampleType());
+          selectLaboratory(sample.getLaboratory());
+        });
+    And(
+        "I set date of sample collection to {int} day ago in Sample form",
+        (Integer days) -> {
+          sampleCollectionDateForFollowUpDate = LocalDate.now().minusDays(days);
+          fillDateOfCollectionDE(LocalDate.now().minusDays(days));
+        });
 
     When(
         "I check if value {string} is unavailable in Type of Sample combobox on Create new Sample page",
@@ -222,6 +237,12 @@ public class CreateNewSampleSteps implements En {
               webDriverHelpers.checkIfElementExistsInCombobox(
                   SAMPLE_TYPE_COMBOBOX, sampleMaterial));
           softly.assertAll();
+        });
+
+    When(
+        "I set Final Laboratory Result to {string} on Create new Sample page",
+        (String value) -> {
+          webDriverHelpers.selectFromCombobox(FINAL_LABORATORY_RESULT_COMBOBOX, value);
         });
 
     When(

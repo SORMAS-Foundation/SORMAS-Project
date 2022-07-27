@@ -32,9 +32,11 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.OnRebindCallback;
 import androidx.databinding.ViewDataBinding;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.component.controls.ControlPropertyEditField;
 import de.symeda.sormas.app.core.IUpdateSubHeadingTitle;
 import de.symeda.sormas.app.core.NotImplementedException;
@@ -59,12 +61,23 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
 	private TActivityRootData activityRootData;
 	private boolean liveValidationDisabled;
 
+	private UserRight editUserRight;
+
 	protected static <TFragment extends BaseEditFragment> TFragment newInstance(
 		Class<TFragment> fragmentClass,
 		Bundle data,
 		AbstractDomainObject activityRootData) {
+		return newInstance(fragmentClass, data, activityRootData, null);
+	}
+
+	protected static <TFragment extends BaseEditFragment> TFragment newInstance(
+		Class<TFragment> fragmentClass,
+		Bundle data,
+		AbstractDomainObject activityRootData,
+		UserRight editUserRight) {
 		TFragment fragment = newInstance(fragmentClass, data);
 		fragment.setActivityRootData(activityRootData);
+		((BaseEditFragment) fragment).editUserRight = editUserRight;
 		return fragment;
 	}
 
@@ -74,9 +87,21 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
 		AbstractDomainObject activityRootData,
 		FieldVisibilityCheckers fieldVisibilityCheckers,
 		UiFieldAccessCheckers fieldAccessCheckers) {
-		TFragment fragment = newInstance(fragmentClass, data, activityRootData);
+		return newInstanceWithFieldCheckers(fragmentClass, data, activityRootData, fieldVisibilityCheckers, fieldAccessCheckers, null);
+	}
+
+	protected static <TFragment extends BaseEditFragment> TFragment newInstanceWithFieldCheckers(
+		Class<TFragment> fragmentClass,
+		Bundle data,
+		AbstractDomainObject activityRootData,
+		FieldVisibilityCheckers fieldVisibilityCheckers,
+		UiFieldAccessCheckers fieldAccessCheckers,
+		UserRight editUserRight) {
+		TFragment fragment = newInstance(fragmentClass, data, activityRootData, editUserRight);
 		fragment.setFieldVisibilityCheckers(fieldVisibilityCheckers);
 		fragment.setFieldAccessCheckers(fieldAccessCheckers);
+
+		((BaseEditFragment) fragment).editUserRight = editUserRight;
 
 		return fragment;
 	}
@@ -236,6 +261,10 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
 	protected abstract void onLayoutBinding(TBinding contentBinding);
 
 	protected void onAfterLayoutBinding(TBinding contentBinding) {
+		if (editUserRight != null && !ConfigProvider.hasUserRight(editUserRight)) {
+			ViewGroup root = (ViewGroup) getContentBinding().getRoot();
+			disableAllEditFields(root);
+		}
 	}
 
 	public void setLiveValidationDisabled(boolean liveValidationDisabled) {
@@ -268,11 +297,25 @@ public abstract class BaseEditFragment<TBinding extends ViewDataBinding, TData, 
 	}
 
 	public boolean isShowSaveAction() {
+		if (editUserRight != null) {
+			return ConfigProvider.hasUserRight(editUserRight);
+		}
 		return true;
 	}
 
 	public boolean isShowNewAction() {
 		return false;
+	}
+
+	protected void disableAllEditFields(ViewGroup parent) {
+		for (int i = 0; i < parent.getChildCount(); i++) {
+			View child = parent.getChildAt(i);
+			if (child instanceof ControlPropertyEditField) {
+				child.setEnabled(false);
+			} else if (child instanceof ViewGroup) {
+				disableAllEditFields((ViewGroup) child);
+			}
+		}
 	}
 
 //    @Override

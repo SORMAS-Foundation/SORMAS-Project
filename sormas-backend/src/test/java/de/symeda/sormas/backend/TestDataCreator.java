@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -118,6 +119,7 @@ import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentType;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -261,6 +263,29 @@ public class TestDataCreator {
 
 	public UserDto createUser(RDCF rdcf, String firstName, String lastName, Disease limitedDisease, UserRoleReferenceDto... roles) {
 		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), null, rdcf.facility.getUuid(), firstName, lastName, limitedDisease, roles);
+	}
+
+	public UserDto createUser(
+		String regionUuid,
+		String districtUuid,
+		String facilityUuid,
+		String firstName,
+		String lastName,
+		String caption,
+		JurisdictionLevel jurisdictionLevel,
+		UserRight... userRights) {
+		UserRoleReferenceDto userRole = createUserRole(caption, jurisdictionLevel, userRights);
+		return createUser(regionUuid, districtUuid, facilityUuid, firstName, lastName, userRole);
+	}
+
+	private UserRoleReferenceDto createUserRole(String caption, JurisdictionLevel jurisdictionLevel, UserRight... userRights) {
+		UserRoleDto userRole = new UserRoleDto();
+		userRole.setCaption(caption);
+		userRole.setEmailNotificationTypes(new ArrayList<>());
+		userRole.setJurisdictionLevel(jurisdictionLevel);
+		userRole.setSmsNotificationTypes(new ArrayList<>());
+		userRole.setUserRights(Arrays.stream(userRights).collect(Collectors.toSet()));
+		return beanTest.getUserRoleFacade().saveUserRole(userRole).toReference();
 	}
 
 	private UserDto createUser(

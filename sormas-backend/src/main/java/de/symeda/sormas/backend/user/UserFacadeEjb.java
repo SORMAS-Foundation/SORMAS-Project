@@ -76,6 +76,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
@@ -566,6 +567,11 @@ public class UserFacadeEjb implements UserFacade {
 			} catch (Exception e) {
 				throw new IllegalArgumentException("Invalid bean access", e);
 			}
+		}
+
+		// current user should be able to edit itself
+		if (!DataHelper.isSame(userService.getCurrentUser(), dto)) {
+			FacadeHelper.checkCreateAndEditRights(oldUser, userService, UserRight.USER_CREATE, UserRight.USER_EDIT);
 		}
 
 		Collection<UserRoleDto> newRoles = userRoleFacade.getByReferences(dto.getUserRoles());

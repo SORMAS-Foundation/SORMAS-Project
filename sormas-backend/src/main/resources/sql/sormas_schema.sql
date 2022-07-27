@@ -11683,4 +11683,15 @@ delete from userroles_userrights where userright in ('CONTACT_CLASSIFY', 'CONTAC
 
 INSERT INTO schema_version (version_number, comment) VALUES (475, 'Implement user right dependencies #5058');
 
+-- 2022-07-15 S2S_deactivate share parameter 'share associated contacts' (for cases) #9146
+UPDATE featureconfiguration set featuretype = 'SORMAS_TO_SORMAS_SHARE_CASES', properties = json_build_object('SHARE_ASSOCIATED_CONTACTS',false,'SHARE_SAMPLES',true,'SHARE_IMMUNIZATIONS',true) where featuretype = 'SORMAS_TO_SORMAS_SHARE_CASES_WITH_CONTACTS_AND_SAMPLES';
+UPDATE featureconfiguration set properties = json_build_object('SHARE_SAMPLES',true,'SHARE_IMMUNIZATIONS',true) where featuretype = 'SORMAS_TO_SORMAS_SHARE_EVENTS';
+INSERT INTO featureconfiguration (id, uuid, creationdate, changedate, enabled, featuretype, properties)
+    VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), (SELECT CASE WHEN EXISTS(SELECT id FROM featureconfiguration WHERE featuretype = 'SORMAS_TO_SORMAS_SHARE_CASES') THEN (SELECT enabled FROM featureconfiguration WHERE featuretype = 'SORMAS_TO_SORMAS_SHARE_CASES') ELSE true END), 'SORMAS_TO_SORMAS_SHARE_CONTACTS', json_build_object('SHARE_SAMPLES',true,'SHARE_IMMUNIZATIONS',true));
+
+ALTER TABLE sormastosormassharerequest ADD COLUMN shareassociatedcontactsdisabled boolean DEFAULT false;
+ALTER TABLE sormastosormassharerequest_history ADD COLUMN shareassociatedcontactsdisabled boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (476, 'S2S_deactivate share parameter ''share associated contacts'' (for cases) #9146');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

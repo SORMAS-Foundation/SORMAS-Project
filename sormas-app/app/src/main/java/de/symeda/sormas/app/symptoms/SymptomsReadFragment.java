@@ -33,6 +33,7 @@ import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -199,7 +200,7 @@ public class SymptomsReadFragment extends BaseReadFragment<FragmentSymptomsReadL
 		AbstractDomainObject ado = getActivityRootData();
 		if (ado instanceof Visit) {
 			Visit visit = (Visit) getActivityRootData();
-			return VisitOrigin.USER.equals(visit.getOrigin());
+			return VisitOrigin.USER.equals(visit.getOrigin()) && ConfigProvider.hasUserRight(UserRight.VISIT_EDIT);
 		}
 		return true;
 	}
