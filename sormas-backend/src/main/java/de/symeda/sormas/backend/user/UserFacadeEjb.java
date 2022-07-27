@@ -566,7 +566,10 @@ public class UserFacadeEjb implements UserFacade {
 			}
 		}
 
-		FacadeHelper.checkCreateAndEditRights(oldUser, userService, UserRight.USER_CREATE, UserRight.USER_EDIT);
+		// current user should be able to edit itself
+		if (!DataHelper.isSame(userService.getCurrentUser(), dto)) {
+			FacadeHelper.checkCreateAndEditRights(oldUser, userService, UserRight.USER_CREATE, UserRight.USER_EDIT);
+		}
 
 		User user = fromDto(dto, true);
 

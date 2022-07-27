@@ -15,16 +15,19 @@
 
 package de.symeda.sormas.ui.sormastosormas;
 
+import static de.symeda.sormas.ui.utils.CssStyles.INACCESSIBLE_LABEL;
 import static de.symeda.sormas.ui.utils.CssStyles.LABEL_WHITE_SPACE_NORMAL;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_4;
+import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_5;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_5;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -37,12 +40,15 @@ import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
@@ -60,6 +66,8 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 	private static final String TARGET_VALIDATION_ERROR_LOC = "targetValidationErrorLoc";
 	private static final String CUSTOM_OPTIONS_PLACE_HOLDER = "__custom__";
 
+	private static final String INACTIVE_OPTION_LOC_SUFFIX = "_inactive";
+
 	private static final String HTML_LAYOUT = fluidRowLocs(SormasToSormasOptionsDto.ORGANIZATION)
 		+ fluidRowLocs(TARGET_VALIDATION_ERROR_LOC)
 		+ fluidRowLocs(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP)
@@ -67,17 +75,56 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 		+ CUSTOM_OPTIONS_PLACE_HOLDER
 		+ fluidRowLocs(SormasToSormasOptionsDto.COMMENT);
 
-	private final List<String> customOptions;
+	private static final Map<String, OptionFeatureTypeProperty> optionFeaturePropertyMap = new HashMap<>();
+	private static final Map<String, Function<SormasToSormasShareInfoDto, Object>> optionValueGetterMap = new HashMap<>();
 
-	private List<SormasToSormasShareInfoDto> currentShares;
+	static {
+		optionFeaturePropertyMap.put(
+			SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS,
+			OptionFeatureTypeProperty.of(FeatureTypeProperty.SHARE_ASSOCIATED_CONTACTS, Strings.messageShareAssociatedContactsDisabled));
+		optionFeaturePropertyMap.put(SormasToSormasOptionsDto.WITH_SAMPLES, OptionFeatureTypeProperty.of(FeatureTypeProperty.SHARE_SAMPLES));
+		optionFeaturePropertyMap
+			.put(SormasToSormasOptionsDto.WITH_IMMUNIZATIONS, OptionFeatureTypeProperty.of(FeatureTypeProperty.SHARE_IMMUNIZATIONS));
+	}
+
+	static {
+		optionValueGetterMap.put(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS, SormasToSormasShareInfoDto::isWithAssociatedContacts);
+		optionValueGetterMap.put(SormasToSormasOptionsDto.WITH_SAMPLES, SormasToSormasShareInfoDto::isWithSamples);
+		optionValueGetterMap.put(SormasToSormasOptionsDto.WITH_IMMUNIZATIONS, SormasToSormasShareInfoDto::isWithImmunizations);
+		optionValueGetterMap.put(SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS, SormasToSormasShareInfoDto::isWithEvenParticipants);
+	}
+
+	private final List<String> availableCustomOptions;
+	private final List<String> allowedCustomOptions;
+
+	private final List<SormasToSormasShareInfoDto> currentShares;
 
 	private final boolean hasOptions;
 
-	private final BiConsumer<SormasToSormasOptionsForm, SormasToSormasShareInfoDto> updateCustomOptionsByPreviousShare;
 	private final Consumer<SormasToSormasOptionsForm> customFieldDependencies;
 	private Function<SormasServerDescriptor, String> targetValidator;
 
 	private ComboBox targetCombo;
+
+	private SormasToSormasOptionsForm(
+		List<SormasToSormasShareInfoDto> currentShares,
+		boolean hasOptions,
+		List<String> availableCustomOptions,
+		FeatureType featureType,
+		Consumer<SormasToSormasOptionsForm> customFieldDependencies) {
+		super(SormasToSormasOptionsDto.class, SormasToSormasOptionsDto.I18N_PREFIX, false);
+
+		this.availableCustomOptions = availableCustomOptions == null ? Collections.emptyList() : availableCustomOptions;
+		this.allowedCustomOptions = filterOptionsByFeatureProperty(featureType, this.availableCustomOptions);
+		this.currentShares = currentShares == null ? Collections.emptyList() : currentShares;
+		this.customFieldDependencies = customFieldDependencies;
+		this.hasOptions = hasOptions;
+
+		addFields();
+
+		setWidthUndefined();
+		hideValidationUntilNextCommit();
+	}
 
 	public static SormasToSormasOptionsForm forCase(CaseDataDto caze, List<SormasToSormasShareInfoDto> currentShares) {
 		SormasToSormasOptionsForm optionsForm = new SormasToSormasOptionsForm(
@@ -87,38 +134,39 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 				SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS,
 				SormasToSormasOptionsDto.WITH_SAMPLES,
 				SormasToSormasOptionsDto.WITH_IMMUNIZATIONS),
-			(f, s) -> {
-				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS)).setValue(s.isWithAssociatedContacts());
-				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_SAMPLES)).setValue(s.isWithSamples());
-				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_IMMUNIZATIONS)).setValue(s.isWithImmunizations());
-			},
+			FeatureType.SORMAS_TO_SORMAS_SHARE_CASES,
 			(form) -> {
-				FieldHelper.setEnabledWhen(
-					form.getFieldGroup(),
-					SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
-					Boolean.FALSE,
-					SormasToSormasOptionsDto.WITH_SAMPLES,
-					false);
-				FieldHelper.setEnabledWhen(
-					form.getFieldGroup(),
-					SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
-					Boolean.FALSE,
-					SormasToSormasOptionsDto.WITH_IMMUNIZATIONS,
-					false);
+				if (form.allowedCustomOptions.contains(SormasToSormasOptionsDto.WITH_SAMPLES)) {
+					FieldHelper.setEnabledWhen(
+						form.getFieldGroup(),
+						SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
+						Boolean.FALSE,
+						SormasToSormasOptionsDto.WITH_SAMPLES,
+						false);
 
-				FieldHelper.setValueWhen(
-					form.getFieldGroup(),
-					SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
-					Boolean.TRUE,
-					SormasToSormasOptionsDto.WITH_SAMPLES,
-					Boolean.TRUE);
+					FieldHelper.setValueWhen(
+						form.getFieldGroup(),
+						SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
+						Boolean.TRUE,
+						SormasToSormasOptionsDto.WITH_SAMPLES,
+						Boolean.TRUE);
+				}
 
-				FieldHelper.setValueWhen(
-					form.getFieldGroup(),
-					SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
-					Boolean.TRUE,
-					SormasToSormasOptionsDto.WITH_IMMUNIZATIONS,
-					Boolean.TRUE);
+				if (form.allowedCustomOptions.contains(SormasToSormasOptionsDto.WITH_IMMUNIZATIONS)) {
+					FieldHelper.setEnabledWhen(
+						form.getFieldGroup(),
+						SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
+						Boolean.FALSE,
+						SormasToSormasOptionsDto.WITH_IMMUNIZATIONS,
+						false);
+
+					FieldHelper.setValueWhen(
+						form.getFieldGroup(),
+						SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
+						Boolean.TRUE,
+						SormasToSormasOptionsDto.WITH_IMMUNIZATIONS,
+						Boolean.TRUE);
+				}
 			});
 
 		if (caze != null) {
@@ -149,10 +197,7 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 			currentShares,
 			true,
 			Arrays.asList(SormasToSormasOptionsDto.WITH_SAMPLES, SormasToSormasOptionsDto.WITH_IMMUNIZATIONS),
-			(f, s) -> {
-				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_SAMPLES)).setValue(s.isWithSamples());
-				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_IMMUNIZATIONS)).setValue(s.isWithImmunizations());
-			},
+			FeatureType.SORMAS_TO_SORMAS_SHARE_CONTACTS,
 			null);
 
 		if (contact != null) {
@@ -198,25 +243,25 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 				SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS,
 				SormasToSormasOptionsDto.WITH_SAMPLES,
 				SormasToSormasOptionsDto.WITH_IMMUNIZATIONS),
-			(f, s) -> {
-				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS)).setValue(s.isWithEvenParticipants());
-				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_SAMPLES)).setValue(s.isWithSamples());
-				((CheckBox) f.getField(SormasToSormasOptionsDto.WITH_IMMUNIZATIONS)).setValue(s.isWithImmunizations());
-			},
+			FeatureType.SORMAS_TO_SORMAS_SHARE_EVENTS,
 			(form) -> {
-				FieldHelper.setVisibleWhen(
-					form.getFieldGroup(),
-					SormasToSormasOptionsDto.WITH_SAMPLES,
-					SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS,
-					Boolean.TRUE,
-					true);
+				if (form.allowedCustomOptions.contains(SormasToSormasOptionsDto.WITH_SAMPLES)) {
+					FieldHelper.setVisibleWhen(
+						form.getFieldGroup(),
+						SormasToSormasOptionsDto.WITH_SAMPLES,
+						SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS,
+						Boolean.TRUE,
+						true);
+				}
 
-				FieldHelper.setVisibleWhen(
-					form.getFieldGroup(),
-					SormasToSormasOptionsDto.WITH_IMMUNIZATIONS,
-					SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS,
-					Boolean.TRUE,
-					true);
+				if (form.allowedCustomOptions.contains(SormasToSormasOptionsDto.WITH_IMMUNIZATIONS)) {
+					FieldHelper.setVisibleWhen(
+						form.getFieldGroup(),
+						SormasToSormasOptionsDto.WITH_IMMUNIZATIONS,
+						SormasToSormasOptionsDto.WITH_EVENT_PARTICIPANTS,
+						Boolean.TRUE,
+						true);
+				}
 			});
 
 		optionsForm.setTargetValidator(t -> {
@@ -240,33 +285,15 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 	}
 
-	public static SormasToSormasOptionsForm withoutOptions() {
-		return new SormasToSormasOptionsForm(null, false, null, null, null);
-	}
-
-	private SormasToSormasOptionsForm(
-		List<SormasToSormasShareInfoDto> currentShares,
-		boolean hasOptions,
-		List<String> customOptions,
-		BiConsumer<SormasToSormasOptionsForm, SormasToSormasShareInfoDto> updateCustomOptionsByPreviousShare,
-		Consumer<SormasToSormasOptionsForm> customFieldDependencies) {
-		super(SormasToSormasOptionsDto.class, SormasToSormasOptionsDto.I18N_PREFIX, false);
-
-		this.customOptions = customOptions == null ? Collections.emptyList() : customOptions;
-		this.currentShares = currentShares == null ? Collections.emptyList() : currentShares;
-		this.updateCustomOptionsByPreviousShare = updateCustomOptionsByPreviousShare;
-		this.customFieldDependencies = customFieldDependencies;
-		this.hasOptions = hasOptions;
-
-		addFields();
-
-		setWidthUndefined();
-		hideValidationUntilNextCommit();
+	public static SormasToSormasOptionsForm forExternalMessage() {
+		return new SormasToSormasOptionsForm(null, false, null, FeatureType.SORMAS_TO_SORMAS_SHARE_EXTERNAL_MESSAGES, null);
 	}
 
 	@Override
 	protected String createHtmlLayout() {
-		String customLocs = customOptions.stream().map(LayoutUtil::fluidRowLocs).collect(Collectors.joining());
+		String customLocs = availableCustomOptions.stream()
+			.map(o -> LayoutUtil.fluidRowLocs(allowedCustomOptions.contains(o) ? o : o + INACTIVE_OPTION_LOC_SUFFIX))
+			.collect(Collectors.joining());
 
 		return HTML_LAYOUT.replace(CUSTOM_OPTIONS_PLACE_HOLDER, customLocs);
 	}
@@ -313,8 +340,13 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 					}
 					pseudonymizeData.setValue(s.isPseudonymizedPersonalData() || s.isPseudonymizedSensitiveData());
 
-					if (updateCustomOptionsByPreviousShare != null) {
-						updateCustomOptionsByPreviousShare.accept(this, s);
+					if (CollectionUtils.isNotEmpty(allowedCustomOptions)) {
+						allowedCustomOptions.forEach(o -> {
+							if (optionValueGetterMap.containsKey(o)) {
+								Object optionValue = optionValueGetterMap.get(o).apply(s);
+								this.<Field<Object>> getField(o).setValue(optionValue);
+							}
+						});
 					}
 				});
 			});
@@ -336,7 +368,18 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 				}
 			});
 
-			addFields(customOptions);
+			availableCustomOptions.forEach(option -> {
+				if (allowedCustomOptions.contains(option)) {
+					addField(option);
+				} else {
+					String placeholderMessageTag = optionFeaturePropertyMap.get(option).messageTagFeatureNotEnabled;
+					if (placeholderMessageTag != null) {
+						Label placeholder = new Label(I18nProperties.getString(placeholderMessageTag));
+						placeholder.addStyleNames(VSPACE_5, INACCESSIBLE_LABEL);
+						getContent().addComponent(placeholder, option + INACTIVE_OPTION_LOC_SUFFIX);
+					}
+				}
+			});
 
 			TextArea comment = addField(SormasToSormasOptionsDto.COMMENT, TextArea.class);
 			comment.setRows(3);
@@ -345,12 +388,23 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 				customFieldDependencies.accept(this);
 			}
 
-			if (CollectionUtils.isEmpty(customOptions)) {
+			if (CollectionUtils.isEmpty(allowedCustomOptions)) {
 				pseudonymizeData.addStyleNames(CssStyles.VSPACE_3);
 			} else {
-				getField(customOptions.get(customOptions.size() - 1)).addStyleNames(CssStyles.VSPACE_3);
+				getField(allowedCustomOptions.get(allowedCustomOptions.size() - 1)).addStyleNames(CssStyles.VSPACE_3);
 			}
 		}
+	}
+
+	private List<String> filterOptionsByFeatureProperty(FeatureType featureType, List<String> options) {
+		return options.stream().filter(option -> {
+			if (optionFeaturePropertyMap.containsKey(option)) {
+				return FacadeProvider.getFeatureConfigurationFacade()
+					.isPropertyValueTrue(featureType, optionFeaturePropertyMap.get(option).featureTypeProperty);
+			}
+
+			return true;
+		}).collect(Collectors.toList());
 	}
 
 	public void disableOrganization() {
@@ -385,5 +439,25 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 	public boolean isTargetValid() {
 		return targetValidator == null || targetValidator.apply((SormasServerDescriptor) targetCombo.getValue()) == null;
+	}
+
+	private static class OptionFeatureTypeProperty {
+
+		private final FeatureTypeProperty featureTypeProperty;
+
+		private final String messageTagFeatureNotEnabled;
+
+		private OptionFeatureTypeProperty(FeatureTypeProperty featureTypeProperty, String messageTagFeatureNotEnabled) {
+			this.featureTypeProperty = featureTypeProperty;
+			this.messageTagFeatureNotEnabled = messageTagFeatureNotEnabled;
+		}
+
+		public static OptionFeatureTypeProperty of(FeatureTypeProperty featureTypeProperty) {
+			return new OptionFeatureTypeProperty(featureTypeProperty, null);
+		}
+
+		public static OptionFeatureTypeProperty of(FeatureTypeProperty featureTypeProperty, String messageTagFeatureNotEnabled) {
+			return new OptionFeatureTypeProperty(featureTypeProperty, messageTagFeatureNotEnabled);
+		}
 	}
 }
