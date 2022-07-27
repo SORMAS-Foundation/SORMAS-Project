@@ -2380,6 +2380,95 @@ public class EditCaseSteps implements En {
               webDriverHelpers.getValueFromWebElement(DISEASE_INPUT), disease, "Incorrect disease");
           softly.assertAll();
         });
+
+    And(
+        "^I check the created data for different place of stay region and district are correctly displayed on Edit case page$",
+        () -> {
+          aCase = collectCasePersonDataWithDifferentPlaceOfStay();
+          System.out.print(collectCasePersonDataWithDifferentPlaceOfStay().getPlaceOfStayRegion());
+          System.out.print(
+              collectCasePersonDataWithDifferentPlaceOfStay().getPlaceOfStayDistrict());
+          createdCase = CreateNewCaseSteps.caze;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              aCase,
+              createdCase,
+              List.of(
+                  "dateOfReport",
+                  "disease",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "placeOfStay",
+                  "placeOfStayRegion",
+                  "placeOfStayDistrict",
+                  "placeDescription",
+                  "firstName",
+                  "lastName",
+                  "dateOfBirth"));
+        });
+
+    And(
+        "^I check that the responsible jurisdiction region is different from the place of stay region$",
+        () -> {
+          softly.assertNotEquals(
+              collectCasePersonDataWithDifferentPlaceOfStay().getPlaceOfStayRegion(),
+              collectCasePersonDataWithDifferentPlaceOfStay().getResponsibleRegion(),
+              "The responsible jurisdiction region is not different from the place of stay region!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check that the responsible jurisdiction district is different from the place of stay district$",
+        () -> {
+          softly.assertNotEquals(
+              collectCasePersonDataWithDifferentPlaceOfStay().getPlaceOfStayDistrict(),
+              collectCasePersonDataWithDifferentPlaceOfStay().getResponsibleDistrict(),
+              "The responsible jurisdiction district is not different from the place of stay district!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check the facility and place of stay created data are correctly displayed on Edit case page$",
+        () -> {
+          aCase = collectCasePersonDataWithFacilityAndDifferentPlaceOfStay();
+          createdCase = CreateNewCaseSteps.caze;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              aCase,
+              createdCase,
+              List.of(
+                  "dateOfReport",
+                  "disease",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "placeOfStay",
+                  "placeOfStayRegion",
+                  "placeOfStayDistrict",
+                  "facility",
+                  "firstName",
+                  "lastName",
+                  "dateOfBirth"));
+        });
+
+    And(
+        "^I check the point of entry and place of stay created data are correctly displayed on Edit case page$",
+        () -> {
+          aCase = collectCasePersonDataWithPointOfEntryAndDifferentPlaceOfStay();
+          createdCase = CreateNewCaseSteps.caze;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              aCase,
+              createdCase,
+              List.of(
+                  "dateOfReport",
+                  "disease",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "placeOfStayRegion",
+                  "placeOfStayDistrict",
+                  "pointOfEntry",
+                  "firstName",
+                  "lastName",
+                  "dateOfBirth"));
+        });
   }
 
   private Vaccination collectVaccinationData() {
@@ -2395,6 +2484,64 @@ public class EditCaseSteps implements En {
       return LocalDate.parse(dateOfReport, DATE_FORMATTER_DE);
     }
     return null;
+  }
+
+  private Case collectCasePersonDataWithFacilityAndDifferentPlaceOfStay() {
+    Case userInfo = getUserInformation();
+
+    return Case.builder()
+        .dateOfReport(getDateOfReport())
+        .firstName(userInfo.getFirstName())
+        .lastName(userInfo.getLastName())
+        .dateOfBirth(userInfo.getDateOfBirth())
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
+        .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
+        .responsibleDistrict(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
+        .responsibleCommunity(webDriverHelpers.getValueFromWebElement(COMMUNITY_INPUT))
+        .placeOfStay(webDriverHelpers.getTextFromWebElement(PLACE_OF_STAY_SELECTED_VALUE))
+        .placeOfStayRegion(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_REGION_INPUT))
+        .placeOfStayDistrict(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_DISTRICT_INPUT))
+        .facility(webDriverHelpers.getValueFromWebElement(FACILITY_HEALTH_INPUT))
+        .build();
+  }
+
+  private Case collectCasePersonDataWithPointOfEntryAndDifferentPlaceOfStay() {
+    Case userInfo = getUserInformation();
+
+    return Case.builder()
+        .dateOfReport(getDateOfReport())
+        .firstName(userInfo.getFirstName())
+        .lastName(userInfo.getLastName())
+        .dateOfBirth(userInfo.getDateOfBirth())
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
+        .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
+        .responsibleDistrict(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
+        .placeOfStayRegion(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_REGION_INPUT))
+        .placeOfStayDistrict(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_DISTRICT_INPUT))
+        .pointOfEntry(webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_TEXT))
+        .build();
+  }
+
+  private Case collectCasePersonDataWithDifferentPlaceOfStay() {
+    Case userInfo = getUserInformation();
+
+    return Case.builder()
+        .dateOfReport(getDateOfReport())
+        .firstName(userInfo.getFirstName())
+        .lastName(userInfo.getLastName())
+        .dateOfBirth(userInfo.getDateOfBirth())
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
+        .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
+        .responsibleDistrict(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
+        .responsibleCommunity(webDriverHelpers.getValueFromWebElement(COMMUNITY_INPUT))
+        .placeOfStay(webDriverHelpers.getTextFromWebElement(PLACE_OF_STAY_SELECTED_VALUE))
+        .placeDescription(webDriverHelpers.getValueFromWebElement(PLACE_DESCRIPTION_INPUT))
+        .placeOfStayRegion(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_REGION_INPUT))
+        .placeOfStayDistrict(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_DISTRICT_INPUT))
+        .build();
   }
 
   private Case collectCasePersonUuid() {
