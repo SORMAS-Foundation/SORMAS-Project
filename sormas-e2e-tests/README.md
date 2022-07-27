@@ -136,7 +136,7 @@ generated report should be opened in the default browser.
 * After running the tests you will be able to find the allure report in the root
 of the project, in the allureReports folder.
 The report works for UI and API tests as well, displaying steps, logs, failure reason and exit screenshots.
-* You can add @issue=ticketNumber
+* You can add @tmsLink=ticketNumber
 to link GitHub bugs/tickets
 
 > Allure test report example:

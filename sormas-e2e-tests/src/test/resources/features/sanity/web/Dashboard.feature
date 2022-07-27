@@ -138,7 +138,7 @@ Feature: Dashboard counters
     Then I click on reset filters on Surveillance Dashboard Page
     Then I verify that filters were reset on Surveillance Dashboard Page
 
-    @issue=SORDEV-6604 @env_main
+    @tmsLink=SORDEV-6604 @env_main
     Scenario: Differentiate strings for confirmed cases and confirmed contacts on dashboard
       Given I log in as a Admin User
       And I click on the Users from navbar

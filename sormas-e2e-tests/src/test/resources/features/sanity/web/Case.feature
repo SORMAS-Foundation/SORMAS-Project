@@ -32,7 +32,7 @@ Feature: Case end to end tests
     And I open last edited case by link
     And I check the edited data is correctly displayed on Edit case page
 
-  @issue=SORDEV-7868 @env_main
+  @tmsLink=SORDEV-7868 @env_main
   Scenario: Fill the case tab
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -84,7 +84,7 @@ Feature: Case end to end tests
     And I click on save button from Edit Case page with current hospitalization
     Then I check if the specific data is correctly displayed
 
-  @issue=SORDEV-5517 @env_de
+  @tmsLink=SORDEV-5517 @env_de
   Scenario: Fill the case tab (DE specific)
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -159,7 +159,7 @@ Feature: Case end to end tests
     And I delete the case
     Then I check that number of displayed cases results is 0
 
-  @issue=SORDEV-5530 @env_main
+  @tmsLink=SORDEV-5530 @env_main
   Scenario: Edit all fields from Case Contacts tab
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -174,7 +174,7 @@ Feature: Case end to end tests
     And I open the Case Contacts tab of the created case via api
     And I verify that created contact from Case Contacts tab is correctly displayed
 
-  @issue=SORQA-100 @env_main
+  @tmsLink=SORQA-100 @env_main
   Scenario: Edit all fields from Symptoms tab
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -189,7 +189,7 @@ Feature: Case end to end tests
     When I am accessing the Symptoms tab using of created case via api
     And I check the created data is correctly displayed on Symptoms tab page
 
-  @issue=SORDEV-5496 @env_main
+  @tmsLink=SORDEV-5496 @env_main
   Scenario: Generate and download Case document
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -198,7 +198,7 @@ Feature: Case end to end tests
     When I create and download a case document from template
     Then I verify that the case document is downloaded and correctly named
 
-  @issue=SORDEV-5527 @env_main
+  @tmsLink=SORDEV-5527 @env_main
   Scenario: Fill the therapy tab
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -244,7 +244,7 @@ Feature: Case end to end tests
     Then I click on Save button from New Treatment popup
     Then I check if created data is correctly displayed in Treatment section
 
-  @issue=SORDEV-5518 @env_main
+  @tmsLink=SORDEV-5518 @env_main
   Scenario: Fill the case person tab
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -261,7 +261,7 @@ Feature: Case end to end tests
     And I click on save button to Save Person data in Case Person Tab
     Then I check if saved Person data is correct
 
-  @issue=SORDEV-5529 @env_main
+  @tmsLink=SORDEV-5529 @env_main
   Scenario: Fill the clinical course tab
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -288,7 +288,7 @@ Feature: Case end to end tests
     And I check if created data is correctly displayed in Symptoms tab for Set cleared to Unknown
     Then I click on Clinical Course tab from Edit Case page
 
-  @issue=SORDEV-8412 @env_main
+  @tmsLink=SORDEV-8412 @env_main
   Scenario: Change of Isolation/Quarantine should be documented
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -348,7 +348,7 @@ Feature: Case end to end tests
     Then I click on save Contact button
     And I check if Quarantine change comment field was saved correctly
 
-  @issue=SORDEV-9033 @env_main
+  @tmsLink=SORDEV-9033 @env_main
   Scenario: Create case with directly entered home address
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -360,7 +360,7 @@ Feature: Case end to end tests
     And I navigate to case person tab
     And I check if saved Person data is correct
 
-  @issue=SORDEV-7452 @env_main
+  @tmsLink=SORDEV-7452 @env_main
   Scenario: Bulk mode for linking/adding cases to new Event
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -387,7 +387,7 @@ Feature: Case end to end tests
     And I navigate to the last created Event page via URL
     And I check that number of displayed Event Participants is 1
 
-  @issue=SORDEV-7452 @env_main
+  @tmsLink=SORDEV-7452 @env_main
   Scenario: Bulk mode for linking/adding case to existing Event
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -417,7 +417,7 @@ Feature: Case end to end tests
     And I navigate to the last created through API Event page via URL
     And I check that number of displayed Event Participants is 1
 
-  @issue=SORDEV-6843 @env_main
+  @tmsLink=SORDEV-6843 @env_main
   Scenario: Refine the update mechanism between case outcome and case filters
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -491,7 +491,7 @@ Feature: Case end to end tests
     Then I filter by Dead user condition
     And I check if created person is on filtered list with No Outcome Yet status
 
-  @issue=SORDEV-6843 @env_main
+  @tmsLink=SORDEV-6843 @env_main
   Scenario: Refine the update mechanism between case outcome and person death date
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -530,7 +530,7 @@ Feature: Case end to end tests
     And I click on first person in person directory
     And I check if Date of dead for specified case is correct
 
-  @issue=SORDEV-6843 @env_main
+  @tmsLink=SORDEV-6843 @env_main
   Scenario: Refine the update mechanism between case outcome and person other cause date
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -570,7 +570,7 @@ Feature: Case end to end tests
     And I check if Cause of death is Other cause
     And I check if Date of dead for specified case is correct
 
-  @issue=SORDEV-6612 @env_main @ignore
+  @tmsLink=SORDEV-6612 @env_main @ignore
   Scenario: Manually triggered calculation of case classification
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -663,7 +663,7 @@ Feature: Case end to end tests
     And I click on save case button
     And I check that Case Classification has "Confirmed case" value
 
-  @issue=SORDEV-8048 @env_de
+  @tmsLink=SORDEV-8048 @env_de
   Scenario: Test Default value for disease if only one is used by the server for Cases
     Given I log in with National User
     Then I click on the Cases button from navbar
@@ -672,7 +672,7 @@ Feature: Case end to end tests
     And I click on Case Line Listing button
     And I check if default disease value in the Line listing is set for COVID-19
 
-  @issue=SORDEV-9353 @env_main
+  @tmsLink=SORDEV-9353 @env_main
   Scenario: Deselecting the "Enter home address of the case person now" test regression
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -685,7 +685,7 @@ Feature: Case end to end tests
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
 
-  @issue=SORDEV-7466 @env_de
+  @tmsLink=SORDEV-7466 @env_de
   Scenario: Check reference definition for cases
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -729,7 +729,7 @@ Feature: Case end to end tests
     And I click on the APPLY FILTERS button
     Then I check that the number of cases fulfilling the reference definition is larger than 0
 
-  @issue=SORDEV-5479 @env_main
+  @tmsLink=SORDEV-5479 @env_main
   Scenario: Test for exporting and importing case contact
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -756,7 +756,7 @@ Feature: Case end to end tests
     And I check that an import success notification appears in the Import Case Contact popup
     Then I delete exported file from Case Contact Directory
 
-  @issue=SORDEV-7456 @env_de
+  @tmsLink=SORDEV-7456 @env_de
   Scenario: Check different facility types depending on type of place in Epidemiological Tab
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -800,7 +800,7 @@ Feature: Case end to end tests
     And I set Facility Type to "Aufsuchende ambulante Hilfen" from New Entry popup
     And And I click on Discard button from New Entry popup
 
-  @issue=SORQA-123 @env_main
+  @tmsLink=SORQA-123 @env_main
   Scenario: Import Documentation for Cases Test
     Given I log in as a Admin User
     And I click on the Cases button from navbar
@@ -811,7 +811,7 @@ Feature: Case end to end tests
     And And I click on the Download Data Dictionary button in Import Cases
     Then I check if Data Dictionary for cases was downloaded correctly
 
-  @issue=SORDEV-5526 @env_main
+  @tmsLink=SORDEV-5526 @env_main
     Scenario: Create a contact with source case
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -838,7 +838,7 @@ Feature: Case end to end tests
     And I click on SAVE new contact button in the CHOOSE SOURCE popup of Create Contact window
     Then I check that Selected case is listed as Source Case in the CONTACTS WITH SOURCE CASE Box
 
-  @issue=SORDEV-9124 @env_main
+  @tmsLink=SORDEV-9124 @env_main
   Scenario: Document Templates create quarantine order
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -858,7 +858,7 @@ Feature: Case end to end tests
     And I check if generated document based on "ExampleDocumentTemplateCases.docx" appeared in Documents tab for API created case in Edit Case directory
     And I delete downloaded file created from "ExampleDocumentTemplateCases.docx" Document Template
 
-  @issue=SORDEV-9124 @env_main
+  @tmsLink=SORDEV-9124 @env_main
   Scenario: Document Templates create quarantine order for Case bulk
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -897,7 +897,7 @@ Feature: Case end to end tests
     And I check if generated document based on "ExampleDocumentTemplateCases.docx" appeared in Documents tab for UI created case in Edit Case directory
     And I delete downloaded file created from Quarantine order
 
-  @issue=SORDEV-9477 @env_main
+  @tmsLink=SORDEV-9477 @env_main
   Scenario: Add a person search option on creation forms
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -945,7 +945,7 @@ Feature: Case end to end tests
     And I open the last created Person via API
     And I check that SEE CONTACTS FOR THIS PERSON button appears on Edit Person page
 
-  @issue=SORDEV-9088 @env_main
+  @tmsLink=SORDEV-9088 @env_main
   Scenario: Check if all sexes have pregnancy attributes
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -964,7 +964,7 @@ Feature: Case end to end tests
     When I navigate to case tab
     And I check that trimester field is present
 
-  @issue=SORDEV-10265 @env_main
+  @tmsLink=SORDEV-10265 @env_main
   Scenario: Manual archiving for case contacts
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -987,7 +987,7 @@ Feature: Case end to end tests
     Then I open the first contact from contacts list
     And I check if Archive button changed name to De-Archive
 
-  @issue=SORDEV-10265 @env_main
+  @tmsLink=SORDEV-10265 @env_main
   Scenario: Manual archiving for bulk case contacts
     When API: I create 2 new cases
     Then API: I check that POST call body is "OK"
@@ -1019,7 +1019,7 @@ Feature: Case end to end tests
     Then I click on second created contact in Contact directory page by UUID
     And I check if Archive button changed name to De-Archive
 
-  @issue=SORDEV-9786 @env_main
+  @tmsLink=SORDEV-9786 @env_main
   Scenario: Test The "urine p.m." enum value should be hidden when Covid19 is selected as disease
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -1034,7 +1034,7 @@ Feature: Case end to end tests
     Then I click on New Sample
     And I check if value "Urine p.m" is unavailable in Type of Sample combobox on Create new Sample page
 
-  @issue=SORDEV-9155 @env_main
+  @tmsLink=SORDEV-9155 @env_main
   Scenario: Test Vaccinations get lost when merging cases with duplicate persons
     Given I log in as a Admin User
     And I click on the Cases button from navbar
@@ -1062,7 +1062,7 @@ Feature: Case end to end tests
     And I open last created case
     And I check if Vaccination Status is set to "Vaccinated" on Edit Case page
 
-  @issue=SORDEV-7460 @env_main
+  @tmsLink=SORDEV-7460 @env_main
   Scenario: Test Extend the exposure and event startDate and endDate to include a startTime and endTime
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -1082,7 +1082,7 @@ Feature: Case end to end tests
     And I collect the Date of Start and End Exposure from Exposure page
     Then I check that Date field displays start date and end date in table Exposure on Epidemiological data tab
 
-     @issue=SORDEV-5613 @env_main
+     @tmsLink=SORDEV-5613 @env_main
       Scenario: Option to attach document like pdf, word, jpeg to cases
       Given I log in with National User
       When I click on the Cases button from navbar
@@ -1110,7 +1110,7 @@ Feature: Case end to end tests
       Then I delete last uploaded document file from case tab
       And I check if last uploaded file was deleted from document files in case tab
 
-  @issue=SORDEV-9151 @env_de
+  @tmsLink=SORDEV-9151 @env_de
   Scenario: Check if specific Case fields are hidden (DE specific)
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -1125,7 +1125,7 @@ Feature: Case end to end tests
     And I check that Mother's Name is not visible
     And I check that Father's Name is not visible
 
-  @issue=SORDEV-9788 @env_de
+  @tmsLink=SORDEV-9788 @env_de
   Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Case directory
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -1135,7 +1135,7 @@ Feature: Case end to end tests
     And I check that Passport Number is not visible in Person search popup
     And I check that Nickname is not visible in Person search popup
 
-  @issue=SORDEV-9788 @env_de
+  @tmsLink=SORDEV-9788 @env_de
   Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Case Contact directory
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -1147,7 +1147,7 @@ Feature: Case end to end tests
     And I check that Passport Number is not visible in Person search popup
     And I check that Nickname is not visible in Person search popup
 
-  @issue=SORDEV-9946 @env_de
+  @tmsLink=SORDEV-9946 @env_de
   Scenario: Test Hide country specific fields in the 'Pick or create person' form of the duplicate detection pop-up, in German and French systems
     Given I log in as a Admin User
     And I click on the Cases button from navbar
@@ -1169,7 +1169,7 @@ Feature: Case end to end tests
     And I click on SAVE new contact case button
     Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
 
-  @issue=SORDEV-8413 @env_main
+  @tmsLink=SORDEV-8413 @env_main
   Scenario: Test Hide specific enum values based on the related disease
     Given I log in with National User
     When I click on the Cases button from navbar
@@ -1207,7 +1207,7 @@ Feature: Case end to end tests
     And I check if Type of test in new pathogen results has no Gram Stain time option
     And I check if Type of test in new pathogen results has no Latex Agglutination time option
 
-  @issue=SORDEV-9496 @env_de
+  @tmsLink=SORDEV-9496 @env_de
   Scenario: Test Handle person related fields and search button for travel entry forms
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -1241,7 +1241,7 @@ Feature: Case end to end tests
     Then I navigate to the last created via api Person page via URL
     And I check if added travel Entry appeared on Edit Person Page
 
-  @issue=SORDEV-5623 @env_de
+  @tmsLink=SORDEV-5623 @env_de
   Scenario: Show date and responsible user of last follow-up status change
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -1265,7 +1265,7 @@ Feature: Case end to end tests
     And I click on save button from Edit Case page
     Then I check if the Follow-up Until Date is correctly displayed on Edit case page
 
-  @issue=SORDEV-5563 @env_de
+  @tmsLink=SORDEV-5563 @env_de
   Scenario: Add contact person details to facilities case person
     Given I log in as a Admin User
     Then I click on the Configuration button from navbar
@@ -1332,7 +1332,7 @@ Feature: Case end to end tests
     Then I open last edited case by API via URL navigation
     Then I check if editable fields are read only for an archived case
 
-  @env_main @issue=SORDEV-7453
+  @env_main @tmsLink=SORDEV-7453
   Scenario: Check cases order after case edit
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -1351,7 +1351,7 @@ Feature: Case end to end tests
     And I click on the Cases button from navbar
     Then I compare previous first case ID on the list with actually second case ID on list
 
-  @issue=SORDEV-6614 @env_de
+  @tmsLink=SORDEV-6614 @env_de
   Scenario: Provide a search alternative aside from the duplicate recognizing
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -1381,7 +1381,7 @@ Feature: Case end to end tests
     And I click on Search in Pick or create Person popup
     And I click on first result in Pick or create Person popup
 
-  @issue=SORDEV-6609 @env_main
+  @tmsLink=SORDEV-6609 @env_main
   Scenario: Test for case internal token
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -1394,7 +1394,7 @@ Feature: Case end to end tests
     And I filter for SAMPLE TOKEN in Cases Directory
     Then I check that at least one SAMPLE TOKEN is displayed in table
 
-  @issue=SORDEV-11422 @env_main
+  @tmsLink=SORDEV-11422 @env_main
     Scenario: Add reason for deletion to confirmation dialogue
     Given I log in as a Admin User
     And I click on the Cases button from navbar
@@ -1425,7 +1425,7 @@ Feature: Case end to end tests
     And I check if EPID number input is disabled in Edit Case
     And I check if General comment test area is disabled in Edit Case
 
-  @issue=SORDEV-11422 @env_de
+  @tmsLink=SORDEV-11422 @env_de
   Scenario: Add reason for deletion to confirmation dialogue in DE version
     Given I log in as a Admin User
     And I click on the Cases button from navbar
@@ -1455,7 +1455,7 @@ Feature: Case end to end tests
     Then I check if reason of deletion is set to "Löschen auf Anforderung der betroffenen Person nach DSGVO"
     And I check if General comment test area is disabled in Edit Case
 
-  @issue=SORDEV-5567 @env_de
+  @tmsLink=SORDEV-5567 @env_de
   Scenario: Don't automatically load duplicates when switching to the case merge duplicates view
     Given I log in as a Admin User
     And I click on the Cases button from navbar
@@ -1463,7 +1463,7 @@ Feature: Case end to end tests
     Then I click on Merge Duplicates on Case directory for DE
     And I check if message about long loading times appear for DE
 
-    @issue=SORDEV-9792 @env_de
+    @tmsLink=SORDEV-9792 @env_de
       Scenario: Test CoreAdo: Introduce "end of processing date" for cases
       Given I log in as a Admin User
       And I click on the Cases button from navbar
@@ -1494,7 +1494,7 @@ Feature: Case end to end tests
       Then I filter with last created case using case UUID
       And I check that number of displayed cases results is 1
 
-  @issue=SORDEV-10227 @env_de
+  @tmsLink=SORDEV-10227 @env_de
   Scenario: Test Permanent deletion for Person for Case
     Given I log in as a National User
     And I click on the Cases button from navbar

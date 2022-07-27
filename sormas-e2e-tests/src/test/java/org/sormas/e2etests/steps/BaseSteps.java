@@ -68,7 +68,6 @@ public class BaseSteps implements StepLifecycleListener {
   @Before(order = 0)
   public void setRunningLocale(Scenario scenario) {
     setLocale(scenario);
-    linkTestCase();
   }
 
   @Before(value = "@UI")
@@ -156,9 +155,5 @@ public class BaseSteps implements StepLifecycleListener {
             imageType,
             pngValue,
             screenShot);
-  }
-
-  private void linkTestCase() {
-    Allure.link("Test case", "https://google.com");
   }
 }

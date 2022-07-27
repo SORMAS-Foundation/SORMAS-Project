@@ -2,7 +2,7 @@
 Feature: About Directory end to end tests
 
   #fails due to known defect, downloaded file is not in german, is in english.
-  @issue=SORDEV-6474 @env_main
+  @tmsLink=SORDEV-6474 @env_main @issue=8069
   Scenario: Check language options in Data Dictionary depending on the user language setting
     Given  I log in as a National Language User
     And I click on the About button from navbar
@@ -15,7 +15,7 @@ Feature: About Directory end to end tests
     Then I click on the User Settings button from navbar
     And I set on default language as English in User settings
 
-  @issue=SORQA-219 @env_main @precon @check @tmsLink=9915
+  @tmsLink=SORQA-219 @env_main @precon
   Scenario: Check current Sormas version is show
     Given I log in with National User
     And I click on the About button from navbar

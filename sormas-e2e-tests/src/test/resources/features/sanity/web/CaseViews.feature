@@ -15,7 +15,7 @@ Feature: Case view tests
     And I filter by CaseID on Case directory page
     And I am checking if all the fields are correctly displayed in the Case directory Detailed table
 
-  @issue=SORQA-68 @env_de
+  @tmsLink=SORQA-68 @env_de
   Scenario: German date format check
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -25,7 +25,7 @@ Feature: Case view tests
     Then I back to Case Directory using case list button
     And I check if Case date format displayed in Cases tab is correct for specified fields
 
-  @issue=SORDEV-8407 @env_main
+  @tmsLink=SORDEV-8407 @env_main
   Scenario: Person ID check for Case Directory
     Given I log in with National User
     And I click on the Cases button from navbar
