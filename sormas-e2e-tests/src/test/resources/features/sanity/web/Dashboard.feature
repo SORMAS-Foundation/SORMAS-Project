@@ -161,5 +161,10 @@ Feature: Dashboard counters
       And I compare English and German confirmed counter
       And I compare English and German confirmed contacts counter
 
-
+  @env_de @issue=SORDEV-6137
+  Scenario: Test if "not a case" is excluded from the total case count
+    Given I log in with National User
+    When I click on the Dashboard button from navbar and access Surveillance Dashboard
+    And I select "COVID-19" in TabSheet of Surveillance Dashboard
+    Then I check that the Total number of COVID-19 cases excludes those marked "not a case" in German
 

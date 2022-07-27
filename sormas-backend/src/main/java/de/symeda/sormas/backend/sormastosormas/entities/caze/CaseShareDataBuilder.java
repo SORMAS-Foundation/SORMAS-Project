@@ -60,11 +60,9 @@ public class CaseShareDataBuilder
 
 	@Override
 	protected SormasToSormasCaseDto doBuildShareData(Case caze, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
-		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
-		PersonDto personDto = dataBuilderHelper
-			.getPersonDto(caze.getPerson(), pseudonymizer, requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+		PersonDto personDto = dataBuilderHelper.getPersonDto(caze.getPerson(), pseudonymizer, requestInfo);
 		CaseDataDto cazeDto = getCazeDto(caze, pseudonymizer);
 
 		dataBuilderHelper.clearIgnoredProperties(cazeDto);
@@ -80,8 +78,7 @@ public class CaseShareDataBuilder
 
 	@Override
 	protected SormasToSormasCasePreview doBuildShareDataPreview(Case caze, ShareRequestInfo requestInfo) {
-		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
 		return getCasePreview(caze, pseudonymizer);
 	}

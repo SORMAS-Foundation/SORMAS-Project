@@ -198,6 +198,7 @@ import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPag
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.ACTION_CANCEL_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.END_OF_PROCESSING_DATE_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.FOLLOW_UP_UNTIL_DATE;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.LINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
@@ -222,6 +223,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
@@ -232,6 +234,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Case;
@@ -256,6 +259,7 @@ import org.sormas.e2etests.pages.application.events.EditEventPage;
 import org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.immunizations.EditImmunizationSteps;
+import org.sormas.e2etests.steps.web.application.samples.CreateNewSampleSteps;
 import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
@@ -445,6 +449,17 @@ public class EditCaseSteps implements En {
               120);
         });
     When(
+        "I check if generated document based on {string} appeared in Documents tab for API created case in Edit Case directory for DE",
+        (String name) -> {
+          String uuid = apiState.getCreatedCase().getUuid();
+          String path = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertEquals(
+                      path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME_DE)),
+              120);
+        });
+    When(
         "I check if generated document based on {string} appeared in Documents tab for UI created case in Edit Case directory",
         (String name) -> {
           String uuid = EditCaseSteps.aCase.getUuid();
@@ -453,6 +468,17 @@ public class EditCaseSteps implements En {
               () ->
                   Assert.assertEquals(
                       path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME)),
+              120);
+        });
+    When(
+        "I check if generated document based on {string} appeared in Documents tab for UI created case in Edit Case directory for DE",
+        (String name) -> {
+          String uuid = EditCaseSteps.aCase.getUuid();
+          String path = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertEquals(
+                      path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME_DE)),
               120);
         });
     When(
@@ -469,7 +495,11 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CREATE_QUARANTINE_ORDER_BUTTON);
         });
-
+    And(
+        "I click on Create button in Create Quarantine Order form DE",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_TEMPLATES_POPUP_DE);
+        });
     When(
         "I check if generated document for Case based on {string} was downloaded properly",
         (String name) -> {
@@ -713,6 +743,18 @@ public class EditCaseSteps implements En {
                   .build(); // TODO: Create POJO updater class
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+
+    When(
+        "I select Case Classification Confirmed",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              By.xpath("//*[contains(text(),'Confirmed case')]"));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I select {string} as Basis for Confirmation",
+        (String basis) -> webDriverHelpers.selectFromCombobox(CASE_CONFIRMATION_BASIS_COMBOBOX, basis));
 
     When(
         "In created case I select Outcome Of Case Status to ([^\"]*)",
@@ -1369,6 +1411,84 @@ public class EditCaseSteps implements En {
           webDriverHelpers.accessWebSite(
               runningConfiguration.getEnvironmentUrlForMarket(locale) + caseLinkPath + uuid);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(REPORT_DATE_INPUT);
+        });
+    When(
+        "I check that text appearing in hover over Expected Follow-up is based on Report date",
+        () -> {
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXPECTED_FOLLOWUP_LABEL);
+          webDriverHelpers.hoverToElement(EXPECTED_FOLLOWUP_LABEL);
+          String displayedText =
+              webDriverHelpers.getTextFromWebElement(EXPECTED_FOLLOWUP_POPUP_TEXT);
+          softly.assertEquals(
+              displayedText,
+              "Das erwartete Nachverfolgungs bis Datum f\u00FCr diesen Fall basiert auf seinem Meldedatum ("
+                  + apiState
+                      .getCreatedCase()
+                      .getReportDate()
+                      .toInstant()
+                      .atZone(ZoneId.systemDefault())
+                      .toLocalDate()
+                      .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                  + ")",
+              "Message is incorrect");
+          softly.assertAll();
+        });
+    When(
+        "I check that text appearing in hover over Expected Follow-up is based on Symptoms collection date",
+        () -> {
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXPECTED_FOLLOWUP_LABEL);
+          webDriverHelpers.hoverToElement(EXPECTED_FOLLOWUP_LABEL);
+          String displayedText =
+              webDriverHelpers.getTextFromWebElement(EXPECTED_FOLLOWUP_POPUP_TEXT);
+          softly.assertEquals(
+              displayedText,
+              "Das erwartete Nachverfolgungs bis Datum f\u00FCr diesen Fall basiert auf seinem fr\u00FChesten Probenentnahme-Datum ("
+                  + CreateNewSampleSteps.sampleCollectionDateForFollowUpDate.format(
+                      DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                  + ")",
+              "Message is incorrect");
+          softly.assertAll();
+        });
+    When(
+        "I check that text appearing in hover based over Symptoms onset date over Expected Follow-up consists of date days is equal to symptoms onset date",
+        () -> {
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.scrollToElement(EXPECTED_FOLLOWUP_LABEL);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXPECTED_FOLLOWUP_LABEL);
+          webDriverHelpers.hoverToElement(EXPECTED_FOLLOWUP_LABEL);
+          String displayedText =
+              webDriverHelpers.getTextFromWebElement(EXPECTED_FOLLOWUP_POPUP_TEXT);
+          softly.assertEquals(
+              displayedText,
+              "Das erwartete Nachverfolgungs bis Datum f\u00FCr diesen Fall basiert auf seinem Symptom Startdatum ("
+                  + SymptomsTabSteps.dateOfSymptomsForFollowUpDate.format(
+                      DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                  + ")",
+              "Message is incorrect");
+          softly.assertAll();
+        });
+    When(
+        "I check that date appearing in Expected Follow-up based on Symptoms Onset date consists of date {int} ahead of symptoms onset date",
+        (Integer expected) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXPECTED_FOLLOWUP_LABEL);
+          String displayedText = webDriverHelpers.getValueFromWebElement(EXPECTED_FOLLOWUP_VALUE);
+          softly.assertEquals(
+              displayedText,
+              SymptomsTabSteps.dateOfSymptomsForFollowUpDate
+                  .plusDays(expected)
+                  .format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+              "Message is incorrect");
+          softly.assertAll();
+        });
+    When(
+        "I check that External Token field is visible on Edit Case page",
+        () -> {
+          boolean elementVisible =
+              webDriverHelpers.isElementVisibleWithTimeout(EXTERNAL_TOKEN_INPUT, 10);
+          softly.assertTrue(elementVisible, "External Token field is not visible!");
+          softly.assertAll();
         });
 
     When(
@@ -2082,6 +2202,14 @@ public class EditCaseSteps implements En {
         });
 
     When(
+        "I change disease to {string} in the case tab",
+        (String disease) -> {
+          webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CHANGE_DISEASE_POPUP_TITLE);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM);
+        });
+
+    When(
         "I check the end of processing date in the archive popup and select Archive cases checkbox",
         () -> {
           String endOfProcessingDate;
@@ -2236,6 +2364,111 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
+
+    When(
+        "^I click Link Event button on Edit Case Page$",
+        () -> {
+          webDriverHelpers.scrollToElement(LINK_EVENT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON);
+        });
+
+    When(
+        "I check if disease is set for {string} in Case Edit Directory",
+        (String disease) -> {
+          webDriverHelpers.scrollToElement(DISEASE_INPUT);
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(DISEASE_INPUT), disease, "Incorrect disease");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check the created data for different place of stay region and district are correctly displayed on Edit case page$",
+        () -> {
+          aCase = collectCasePersonDataWithDifferentPlaceOfStay();
+          System.out.print(collectCasePersonDataWithDifferentPlaceOfStay().getPlaceOfStayRegion());
+          System.out.print(
+              collectCasePersonDataWithDifferentPlaceOfStay().getPlaceOfStayDistrict());
+          createdCase = CreateNewCaseSteps.caze;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              aCase,
+              createdCase,
+              List.of(
+                  "dateOfReport",
+                  "disease",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "placeOfStay",
+                  "placeOfStayRegion",
+                  "placeOfStayDistrict",
+                  "placeDescription",
+                  "firstName",
+                  "lastName",
+                  "dateOfBirth"));
+        });
+
+    And(
+        "^I check that the responsible jurisdiction region is different from the place of stay region$",
+        () -> {
+          softly.assertNotEquals(
+              collectCasePersonDataWithDifferentPlaceOfStay().getPlaceOfStayRegion(),
+              collectCasePersonDataWithDifferentPlaceOfStay().getResponsibleRegion(),
+              "The responsible jurisdiction region is not different from the place of stay region!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check that the responsible jurisdiction district is different from the place of stay district$",
+        () -> {
+          softly.assertNotEquals(
+              collectCasePersonDataWithDifferentPlaceOfStay().getPlaceOfStayDistrict(),
+              collectCasePersonDataWithDifferentPlaceOfStay().getResponsibleDistrict(),
+              "The responsible jurisdiction district is not different from the place of stay district!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check the facility and place of stay created data are correctly displayed on Edit case page$",
+        () -> {
+          aCase = collectCasePersonDataWithFacilityAndDifferentPlaceOfStay();
+          createdCase = CreateNewCaseSteps.caze;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              aCase,
+              createdCase,
+              List.of(
+                  "dateOfReport",
+                  "disease",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "placeOfStay",
+                  "placeOfStayRegion",
+                  "placeOfStayDistrict",
+                  "facility",
+                  "firstName",
+                  "lastName",
+                  "dateOfBirth"));
+        });
+
+    And(
+        "^I check the point of entry and place of stay created data are correctly displayed on Edit case page$",
+        () -> {
+          aCase = collectCasePersonDataWithPointOfEntryAndDifferentPlaceOfStay();
+          createdCase = CreateNewCaseSteps.caze;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              aCase,
+              createdCase,
+              List.of(
+                  "dateOfReport",
+                  "disease",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "placeOfStayRegion",
+                  "placeOfStayDistrict",
+                  "pointOfEntry",
+                  "firstName",
+                  "lastName",
+                  "dateOfBirth"));
+        });
   }
 
   private Vaccination collectVaccinationData() {
@@ -2251,6 +2484,64 @@ public class EditCaseSteps implements En {
       return LocalDate.parse(dateOfReport, DATE_FORMATTER_DE);
     }
     return null;
+  }
+
+  private Case collectCasePersonDataWithFacilityAndDifferentPlaceOfStay() {
+    Case userInfo = getUserInformation();
+
+    return Case.builder()
+        .dateOfReport(getDateOfReport())
+        .firstName(userInfo.getFirstName())
+        .lastName(userInfo.getLastName())
+        .dateOfBirth(userInfo.getDateOfBirth())
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
+        .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
+        .responsibleDistrict(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
+        .responsibleCommunity(webDriverHelpers.getValueFromWebElement(COMMUNITY_INPUT))
+        .placeOfStay(webDriverHelpers.getTextFromWebElement(PLACE_OF_STAY_SELECTED_VALUE))
+        .placeOfStayRegion(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_REGION_INPUT))
+        .placeOfStayDistrict(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_DISTRICT_INPUT))
+        .facility(webDriverHelpers.getValueFromWebElement(FACILITY_HEALTH_INPUT))
+        .build();
+  }
+
+  private Case collectCasePersonDataWithPointOfEntryAndDifferentPlaceOfStay() {
+    Case userInfo = getUserInformation();
+
+    return Case.builder()
+        .dateOfReport(getDateOfReport())
+        .firstName(userInfo.getFirstName())
+        .lastName(userInfo.getLastName())
+        .dateOfBirth(userInfo.getDateOfBirth())
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
+        .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
+        .responsibleDistrict(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
+        .placeOfStayRegion(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_REGION_INPUT))
+        .placeOfStayDistrict(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_DISTRICT_INPUT))
+        .pointOfEntry(webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_TEXT))
+        .build();
+  }
+
+  private Case collectCasePersonDataWithDifferentPlaceOfStay() {
+    Case userInfo = getUserInformation();
+
+    return Case.builder()
+        .dateOfReport(getDateOfReport())
+        .firstName(userInfo.getFirstName())
+        .lastName(userInfo.getLastName())
+        .dateOfBirth(userInfo.getDateOfBirth())
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
+        .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
+        .responsibleDistrict(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
+        .responsibleCommunity(webDriverHelpers.getValueFromWebElement(COMMUNITY_INPUT))
+        .placeOfStay(webDriverHelpers.getTextFromWebElement(PLACE_OF_STAY_SELECTED_VALUE))
+        .placeDescription(webDriverHelpers.getValueFromWebElement(PLACE_DESCRIPTION_INPUT))
+        .placeOfStayRegion(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_REGION_INPUT))
+        .placeOfStayDistrict(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_DISTRICT_INPUT))
+        .build();
   }
 
   private Case collectCasePersonUuid() {

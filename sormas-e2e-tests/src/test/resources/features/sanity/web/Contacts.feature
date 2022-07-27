@@ -948,7 +948,7 @@ Feature: Contacts end to end tests
     And I check if reason for deletion as "Löschen auf Anforderung einer anderen Behörde" is available
     And I check if reason for deletion as "Entität ohne Rechtsgrund angelegt" is available
     And I check if reason for deletion as "Abgabe des Vorgangs wegen Nicht-Zuständigkeit" is available
-    And I check if reason for deletion as "Löschen von Duplikaten" is available
+    And I check if reason for deletion as "Löschen von Dublikaten" is available
     And I check if reason for deletion as "Anderer Grund" is available
     Then I click on No option in Confirm deletion popup
     Then I click on Delete button from contact
@@ -967,7 +967,85 @@ Feature: Contacts end to end tests
     And I check if External token input on case edit page is disabled
     And I check if Case or event information text area on case edit page is disabled
 
-  @tmsLink=SORDEV-9792 @env_de
+  @issue=SORDEV-10361 @env_main
+  Scenario: Test Hide "buried" within Person present condition for Covid-19 for Contacts
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click CHOOSE CASE button
+    And I search for the last case uuid in the CHOOSE SOURCE Contact window
+    And I open the first found result in the CHOOSE SOURCE Contact window
+    And I click on SAVE new contact button
+    Then I check the linked case information is correctly displayed
+    And I check the created data for complex contact is correctly displayed on Edit Contact page
+    Then I open Contact Person tab
+    And I check the created data is correctly displayed on Edit Contact Person page
+    Then I copy uuid of current person
+    Then I check if Present condition of person combobox has value "Alive"
+    And I check if Present condition of person combobox has value "Dead"
+    And I check if Present condition of person combobox has value "Unknown"
+    Then I check if Present condition of person combobox has no value "Buried"
+    Then I open the Case Contacts tab
+    And I navigate to case tab
+    And I change disease to "Ebola Virus Disease" in the case tab
+    Then I click on Save button in Case form
+    Then I open the Case Contacts tab
+    And I click on the first Contact ID from Contacts Directory in Contacts in Case
+    Then I open Contact Person tab
+    Then I check if Present condition of person combobox has value "Alive"
+    And I check if Present condition of person combobox has value "Dead"
+    And I check if Present condition of person combobox has value "Unknown"
+    Then I check if Present condition of person combobox has value "Buried"
+    Then I set Present condition of person to "Buried"
+    And I check if "Date of burial" field is present in case person
+    And I check if "Burial conductor" field is present in case person
+    And I check if "Burial place description" field is present in case person
+    Then I click on Save button in Case form
+    Then I open the Case Contacts tab
+    And I navigate to case tab
+    And I change disease to "COVID-19" in the case tab
+    Then I click on Save button in Case form
+    Then I click on the Persons button from navbar
+    And I search by copied uuid of the person in Person Directory
+    Then I check if Present condition of person combobox has value "Alive"
+    And I check if Present condition of person combobox has value "Dead"
+    And I check if Present condition of person combobox has value "Unknown"
+    Then I check if Present condition of person combobox has value "Buried"
+    Then I click on first person in person directory
+    Then I check if Present condition of person combobox has value "Alive"
+    And I check if Present condition of person combobox has value "Dead"
+    And I check if Present condition of person combobox has value "Unknown"
+    Then I check if Present condition of person combobox has value "Buried"
+    Then I set Present condition of person to "Buried"
+    And I check if "Date of burial" field is present in case person
+    And I check if "Burial conductor" field is present in case person
+    And I check if "Burial place description" field is present in case person
+
+  @issue=SORDEV-10361 @env_main
+  Scenario: Test Hide "buried" within Person present condition for Covid-19 for Import Contacts
+    Given I log in as a Admin User
+    And I click on the Contacts button from navbar
+    And I prepare detailed contact CSV with "COVID-19" as a disease and "Buried" as a present condition
+    Then I click on the More button on Contact directory page
+    And I click on the Import button from Contact directory
+    Then I select created CSV file with detailed contact
+    And I click on the "START DATA IMPORT" button from the Import Detailed Contact popup
+    And I check if csv file for detailed contact is imported successfully
+    Then I search for created detailed contact by first and last name of the person
+    Then I click on the first Contact ID from Contacts Directory
+    Then I check if disease is set for "COVID-19" in Contact Edit Directory
+    And I open Contact Person tab
+    Then I check if Present condition of person combobox has value "Buried"
+    And I delete created csv file for detailed contact import
+
+  @issue=SORDEV-9792 @env_de
   Scenario: Test CoreAdo: Introduce "end of processing date" for contacts
     Given I log in as a Admin User
     When I click on the Contacts button from navbar
@@ -1000,7 +1078,22 @@ Feature: Contacts end to end tests
     Then I filter with last created contact using contact UUID
     And I check that number of displayed contact results is 1
 
-  @tmsLink=SORDEV-10227 @env_de
+  @issue=SORDEV-6185 @env_de
+  Scenario: Test Add information to followup warning message for Contacts
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    Then I navigate to the last created contact via the url
+    And I check that text appearing in hover over Expected Follow-up is based on Report date on Edit Contact Page
+    Then I change the date of last contact to 5 days ago for DE version
+    And I click SAVE button on Edit Contact Page
+    And I check that text appearing in hover over Expected Follow-up is based on Last Contact date on Edit Contact Page
+
+  @issue=SORDEV-10227 @env_de
   Scenario: Test Permanent deletion for Person for Contact
     Given I log in as a National User
     And I click on the Contacts button from navbar
@@ -1021,3 +1114,37 @@ Feature: Contacts end to end tests
     And I click on the Persons button from navbar
     Then I filter the last created person linked with Contact
     And I check that number of displayed Person results is 0
+
+  @issue=SORDEV-5565 @env_de
+  Scenario: Document Templates create quarantine order for Contact bulk DE
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    When I fill a new contact form for DE version
+    And I click on SAVE new contact button
+    Then I check the created data is correctly displayed on Edit Contact page for DE version
+    And I click on the Contacts button from navbar
+    And I click on the More button on Contact directory page
+    And I click Enter Bulk Edit Mode on Contact directory page
+    And I select last created UI result in grid in Contact Directory for Bulk Action
+    And I select last created API result in grid in Contact Directory for Bulk Action
+    And I click on Bulk Actions combobox on Contact Directory Page
+    And I click on Create Quarantine Order from Bulk Actions combobox on Contact Directory Page
+    And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Contact directory for DE
+    And I select "ExampleDocumentTemplateContacts.docx" Quarantine Order in Create Quarantine Order form in Edit Contact directory
+    And I click on Create button in Create Quarantine Order form DE
+    And I click on close button in Create Quarantine Order form
+    And I check if downloaded zip file for Quarantine Order is correct for DE version
+    And I click on the More button on Contact directory page
+    Then I click Leave Bulk Edit Mode on Contact directory page
+    Then I navigate to the last created UI contact via the url
+    And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab for UI created contact in Edit Contact directory for DE
+    And I navigate to the last created contact via the url
+    And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab in Edit Contact directory for DE
+    And I delete downloaded file created from Quarantine order

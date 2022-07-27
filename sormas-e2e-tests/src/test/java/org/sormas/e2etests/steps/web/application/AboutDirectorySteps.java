@@ -268,7 +268,39 @@ public class AboutDirectorySteps implements En {
               CASE_CLASSIFICATION_RULES_HYPERLINK, 15);
           webDriverHelpers.clickOnWebElementBySelector(CASE_CLASSIFICATION_RULES_HYPERLINK);
         });
+
+    When(
+        "I check if Data Dictionary in {string} record has no {string} as a disease",
+        (String recordName, String disease) -> {
+          softly.assertFalse(
+              readXlsxFile(DATA_DICTIONARY_FILE_PATH, recordName, disease),
+              disease + " exists in " + recordName);
+          softly.assertAll();
+        });
   }
+
+  @SneakyThrows
+  private static boolean readXlsxFile(String fileName, String recordName, String disease) {
+    List<String> diseaseList = new ArrayList<String>();
+    try {
+      Workbook workbook = new XSSFWorkbook(DOWNLOADS_FOLDER + fileName);
+      Sheet sheet = workbook.getSheetAt(0);
+      for (Row row : sheet) {
+        for (Cell cell : row) {
+          if (cell.getStringCellValue().equals(recordName)) {
+            String[] items = row.getCell(8).toString().split("\\s*,\\s*");
+            for (String item : items) diseaseList.add(item);
+          }
+        }
+      }
+    } catch (IOException e) {
+      throw new Exception(String.format("Unable to read Excel File due to: %s", e.getMessage()));
+    }
+    if (diseaseList.contains(disease))
+      return true;
+     else
+      return false;
+    }
 
   @SneakyThrows
   private static void readXlsxDictionaryFile(String fileName) {

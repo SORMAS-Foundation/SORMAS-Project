@@ -336,7 +336,7 @@ Feature: Create travel entries
     When I click on the Persons button from navbar
     And I fill UUID of the collected person from last created Travel Entry
     Then I apply on the APPLY FILTERS button
-    And I click on Travel Entry aggrgation button in Person Directory for DE specific
+    And I click on Travel Entry aggregation button in Person Directory for DE specific
     And I click on first person in person directory
     Then I check if data of created Travel Entry is in Travel Entry tab on Edit Person Page for De specific
 
@@ -385,7 +385,7 @@ Feature: Create travel entries
       And I check if reason for deletion as "Löschen auf Anforderung einer anderen Behörde" is available
       And I check if reason for deletion as "Entität ohne Rechtsgrund angelegt" is available
       And I check if reason for deletion as "Abgabe des Vorgangs wegen Nicht-Zuständigkeit" is available
-      And I check if reason for deletion as "Löschen von Duplikaten" is available
+      And I check if reason for deletion as "Löschen von Dublikaten" is available
       And I check if reason for deletion as "Anderer Grund" is available
       Then I click on No option in Confirm deletion popup
       Then I click on Delete button from travel entry
