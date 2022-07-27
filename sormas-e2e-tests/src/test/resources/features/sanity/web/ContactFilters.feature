@@ -216,7 +216,8 @@ Feature: Contact filter functionality
     And I set contact vaccination status to <status>
     When I click on the Contacts button from navbar
     And I click SHOW MORE FILTERS button on Contact directory page
-    Then I set contact vaccination status filter to <status> and apply
+    Then I set contact vaccination status filter to <status>
+    And I apply contact filters
     Then I check that created Contact is visible with <status> status
 
     Examples:

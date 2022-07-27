@@ -1121,7 +1121,7 @@ public class ContactDirectorySteps implements En {
         });
 
     Then(
-        "I set contact vaccination status filter to ([^\"]*) and apply",
+        "I set contact vaccination status filter to ([^\"]*)",
         (String vaccinationStatus) ->
             webDriverHelpers.selectFromCombobox(
                 CONTACT_VACCINATION_STATUS_FILTER_COMBOBOX, vaccinationStatus));
