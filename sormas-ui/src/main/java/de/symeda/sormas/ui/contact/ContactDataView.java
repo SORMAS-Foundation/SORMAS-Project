@@ -238,21 +238,24 @@ public class ContactDataView extends AbstractContactView {
 			&& UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
 			if (!FacadeProvider.getFeatureConfigurationFacade()
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-				final ImmunizationListCriteria immunizationListCriteria =
-					new ImmunizationListCriteria.Builder(contactDto.getPerson()).wihDisease(contactDto.getDisease()).build();
-				layout.addSidePanelComponent(
-					new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria, this::showUnsavedChangesPopup)),
-					IMMUNIZATION_LOC);
+				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {
+					ContactDto refreshedContact = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
+					return new ImmunizationListCriteria.Builder(refreshedContact.getPerson()).withDisease(refreshedContact.getDisease()).build();
+				}, this::showUnsavedChangesPopup)), IMMUNIZATION_LOC);
 			} else {
-				VaccinationListCriteria criteria = new VaccinationListCriteria.Builder(contactDto.getPerson()).withDisease(contactDto.getDisease())
-					.build()
-					.vaccinationAssociationType(VaccinationAssociationType.CONTACT)
-					.contactReference(getContactRef())
-					.region(contactDto.getRegion() != null ? contactDto.getRegion() : caseDto.getResponsibleRegion())
-					.district(contactDto.getDistrict() != null ? contactDto.getDistrict() : caseDto.getResponsibleDistrict());
-				layout.addSidePanelComponent(
-					new SideComponentLayout(new VaccinationListComponent(criteria, this::showUnsavedChangesPopup)),
-					VACCINATIONS_LOC);
+				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
+					ContactDto refreshedContact = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
+					CaseDataDto refreshedCase = null;
+					if (refreshedContact.getCaze() != null) {
+						refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(refreshedContact.getCaze().getUuid());
+					}
+					return new VaccinationListCriteria.Builder(refreshedContact.getPerson()).withDisease(refreshedContact.getDisease())
+						.build()
+						.vaccinationAssociationType(VaccinationAssociationType.CONTACT)
+						.contactReference(getContactRef())
+						.region(refreshedContact.getRegion() != null ? refreshedContact.getRegion() : refreshedCase.getResponsibleRegion())
+						.district(refreshedContact.getDistrict() != null ? refreshedContact.getDistrict() : refreshedCase.getResponsibleDistrict());
+				}, this::showUnsavedChangesPopup)), VACCINATIONS_LOC);
 			}
 		}
 

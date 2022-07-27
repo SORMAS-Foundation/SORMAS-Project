@@ -184,24 +184,32 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			&& event.getDisease() != null) {
 			if (!FacadeProvider.getFeatureConfigurationFacade()
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-				final ImmunizationListCriteria immunizationListCriteria =
-					new ImmunizationListCriteria.Builder(eventParticipant.getPerson().toReference()).wihDisease(event.getDisease()).build();
 				layout.addSidePanelComponent(
-					new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria, this::showUnsavedChangesPopup)),
+					new SideComponentLayout(
+						new ImmunizationListComponent(
+							() -> new ImmunizationListCriteria.Builder(eventParticipant.getPerson().toReference()).withDisease(event.getDisease())
+								.build(),
+							this::showUnsavedChangesPopup)),
 					IMMUNIZATION_LOC);
 			} else {
-				VaccinationListCriteria criteria = vaccinationCriteria.vaccinationAssociationType(VaccinationAssociationType.EVENT_PARTICIPANT)
-					.eventParticipantReference(getReference())
-					.region(eventParticipant.getRegion() != null ? eventParticipant.getRegion() : event.getEventLocation().getRegion())
-					.district(eventParticipant.getDistrict() != null ? eventParticipant.getDistrict() : event.getEventLocation().getDistrict());
-				layout.addSidePanelComponent(
-					new SideComponentLayout(new VaccinationListComponent(criteria, this::showUnsavedChangesPopup)),
-					VACCINATIONS_LOC);
+				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
+					EventParticipantDto refreshedEventParticipant =
+						FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(getReference().getUuid());
+					return vaccinationCriteria.vaccinationAssociationType(VaccinationAssociationType.EVENT_PARTICIPANT)
+						.eventParticipantReference(getReference())
+						.region(
+							refreshedEventParticipant.getRegion() != null
+								? refreshedEventParticipant.getRegion()
+								: event.getEventLocation().getRegion())
+						.district(
+							refreshedEventParticipant.getDistrict() != null
+								? refreshedEventParticipant.getDistrict()
+								: event.getEventLocation().getDistrict());
+				}, this::showUnsavedChangesPopup)), VACCINATIONS_LOC);
 			}
 		}
 
-		EditPermissionType eventParticipantEditAllowed =
-			FacadeProvider.getEventParticipantFacade().isEditAllowed(eventParticipantRef.getUuid());
+		EditPermissionType eventParticipantEditAllowed = FacadeProvider.getEventParticipantFacade().isEditAllowed(eventParticipantRef.getUuid());
 
 		if (eventParticipantEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
