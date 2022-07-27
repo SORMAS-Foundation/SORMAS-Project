@@ -168,7 +168,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		}
 
 		User currentUser = userService.getCurrentUser();
-		if (currentUser.getUserRoles().stream().anyMatch(r -> DataHelper.isSame(r, source))) {
+		if (currentUser != null && currentUser.getUserRoles().stream().anyMatch(r -> DataHelper.isSame(r, source))) {
 			Set<UserRole> currentUserRoles = currentUser.getUserRoles();
 			Set<UserRight> currentUserRights = UserRole.getUserRights(currentUserRoles);
 			Set<UserRight> newUserRights = UserRoleDto
@@ -582,11 +582,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 
 	@Override
 	public Set<UserRoleDto> getDefaultUserRolesAsDto() {
-		return Stream.of(DefaultUserRole.values()).map(r -> {
-			UserRoleDto role = UserRoleDto.build();
-			r.toUserRole(role);
-			return role;
-		}).collect(Collectors.toSet());
+		return Stream.of(DefaultUserRole.values()).map(DefaultUserRole::toUserRole).collect(Collectors.toSet());
 	}
 
 	@Override

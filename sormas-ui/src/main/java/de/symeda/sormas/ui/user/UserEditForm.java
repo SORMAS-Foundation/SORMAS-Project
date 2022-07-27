@@ -23,7 +23,6 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
-import com.vaadin.v7.data.util.converter.Converter;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -33,9 +32,9 @@ import java.util.stream.Collectors;
 
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextField;
 
@@ -276,7 +275,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 		}
 
 		final ComboBox region = (ComboBox) getFieldGroup().getField(UserDto.REGION);
-		region.setVisible(useRegion);
+		region.setVisible(useRegion || hasOptionalHealthFacility);
 		setRequired(useRegion, UserDto.REGION);
 		if (!useRegion) {
 			region.clear();

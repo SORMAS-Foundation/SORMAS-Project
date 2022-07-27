@@ -632,9 +632,9 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return responsibleUserByEventUuid;
 	}
 
-	public boolean isCaptionUnique(String uuid, String userName) {
+	public boolean isLoginUnique(String excludedUuid, String userName) {
 		User user = getByUserName(userName);
-		return user == null || user.getUuid().equals(uuid);
+		return user == null || user.getUuid().equals(excludedUuid);
 	}
 
 	public String resetPassword(String userUuid) {

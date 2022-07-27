@@ -186,13 +186,27 @@ public class UserRoleDto extends EntityDto {
 		return I18N_PREFIX;
 	}
 
-	@SuppressWarnings("serial") public static class UserRoleValidationException extends ValidationException {
+	@Transient
+	public NotificationTypes getNotificationTypes() {
+		return NotificationTypes.of(smsNotificationTypes, emailNotificationTypes);
+	}
+
+	@Transient
+	public void setNotificationTypes(NotificationTypes notificationTypes) {
+		this.smsNotificationTypes = notificationTypes.sms;
+		this.emailNotificationTypes = notificationTypes.email;
+	}
+
+	@SuppressWarnings("serial")
+	public static class UserRoleValidationException extends ValidationException {
 
 		private final UserRoleDto checkedUserRole;
 		private final UserRoleDto forbiddenUserRole;
 
 		public UserRoleValidationException(UserRoleDto checkedUserRole, UserRoleDto forbiddenUserRole) {
-			super(checkedUserRole.getCaption() + " " + I18nProperties.getString(Strings.messageUserRoleCombination) + " " + forbiddenUserRole.getCaption());
+			super(
+				checkedUserRole.getCaption() + " " + I18nProperties.getString(Strings.messageUserRoleCombination) + " "
+					+ forbiddenUserRole.getCaption());
 			this.checkedUserRole = checkedUserRole;
 			this.forbiddenUserRole = forbiddenUserRole;
 		}
@@ -204,17 +218,6 @@ public class UserRoleDto extends EntityDto {
 		public UserRoleDto getForbiddenUserRole() {
 			return forbiddenUserRole;
 		}
-	}
-
-	@Transient
-	public NotificationTypes getNotificationTypes() {
-		return NotificationTypes.of(smsNotificationTypes, emailNotificationTypes);
-	}
-
-	@Transient
-	public void getNotificationTypes(NotificationTypes notificationTypes) {
-		this.smsNotificationTypes = notificationTypes.sms;
-		this.emailNotificationTypes = notificationTypes.email;
 	}
 
 	public static class NotificationTypes {

@@ -744,7 +744,7 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	public boolean isLoginUnique(String uuid, String userName) {
-		return userService.isCaptionUnique(uuid, userName);
+		return userService.isLoginUnique(uuid, userName);
 	}
 
 	@Override

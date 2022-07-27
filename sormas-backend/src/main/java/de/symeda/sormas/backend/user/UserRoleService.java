@@ -17,9 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -38,11 +35,14 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.NotificationProtocol;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -154,9 +154,9 @@ public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
 		return filter;
 	}
 
-	public boolean isCaptionUnique(String uuid, String caption) {
+	public boolean isCaptionUnique(String excludedUuid, String caption) {
 		UserRole userRole = getByCaption(caption.trim());
-		return userRole == null || userRole.getUuid().equals(uuid);
+		return userRole == null || userRole.getUuid().equals(excludedUuid);
 	}
 
 	@Override

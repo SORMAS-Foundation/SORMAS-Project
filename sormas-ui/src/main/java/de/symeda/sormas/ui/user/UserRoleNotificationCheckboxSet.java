@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -110,6 +111,7 @@ public class UserRoleNotificationCheckboxSet extends CustomField<UserRoleDto.Not
 
 		headerLayout.setExpandRatio(groupLabel, 0.5f);
 		headerLayout.setExpandRatio(buttonsLayout, 0.5f);
+		headerLayout.setComponentAlignment(buttonsLayout, Alignment.MIDDLE_RIGHT);
 
 		return headerLayout;
 	}

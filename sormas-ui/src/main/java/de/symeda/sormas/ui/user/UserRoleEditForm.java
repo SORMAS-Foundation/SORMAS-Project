@@ -55,8 +55,8 @@ public class UserRoleEditForm extends AbstractEditForm<UserRoleDto> {
 	private final static List<String> defaultRightsOrder = Arrays.asList("_VIEW", "_EDIT", "_CREATE");
 
 	private static final String HTML_LAYOUT = fluidRowLocs(TEMPLATE_INFO_LOC)
-		+ fluidRowLocs(UserRoleDto.CAPTION, TEMPLATE_USER_ROLE)
-		+ fluidRowLocs(UserRoleDto.JURISDICTION_LEVEL, "")
+		+ fluidRowLocs(TEMPLATE_USER_ROLE, "")
+		+ fluidRowLocs(UserRoleDto.CAPTION, UserRoleDto.JURISDICTION_LEVEL)
 		+ fluidRowLocs(UserRoleDto.DESCRIPTION)
 		+ fluidRowLocs(UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY)
 		+ fluidRowLocs(UserRoleDto.HAS_ASSOCIATED_DISTRICT_USER)

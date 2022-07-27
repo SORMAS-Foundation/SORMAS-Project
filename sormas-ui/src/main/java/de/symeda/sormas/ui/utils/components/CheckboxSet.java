@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import com.vaadin.event.SerializableEventListener;
 import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -146,6 +147,7 @@ public class CheckboxSet<T> extends CustomField<Set<T>> {
 
 		headerLayout.setExpandRatio(groupLabel, 0.5f);
 		headerLayout.setExpandRatio(buttonsLayout, 0.5f);
+		headerLayout.setComponentAlignment(buttonsLayout, Alignment.MIDDLE_RIGHT);
 
 		return headerLayout;
 	}

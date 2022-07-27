@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Stream;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
 
@@ -1663,11 +1662,9 @@ public enum DefaultUserRole {
 		return I18nProperties.getEnumCaptionShort(this);
 	}
 
-	public static DefaultUserRole forName(String name) {
-		return Stream.of(values()).filter(v -> v.name().equals(name)).findFirst().orElse(null);
-	}
+	public UserRoleDto toUserRole() {
+		UserRoleDto userRole = UserRoleDto.build();
 
-	public void toUserRole(UserRoleDto userRole) {
 		userRole.setCaption(I18nProperties.getEnumCaption(this));
 		userRole.setPortHealthUser(isPortHealthUser());
 		userRole.setHasAssociatedDistrictUser(hasAssociatedDistrictUser());
@@ -1677,5 +1674,7 @@ public enum DefaultUserRole {
 		userRole.setSmsNotificationTypes(getSmsNotificationTypes());
 		userRole.setEmailNotificationTypes(getEmailNotificationTypes());
 		userRole.setUserRights(getDefaultUserRights());
+
+		return userRole;
 	}
 }
