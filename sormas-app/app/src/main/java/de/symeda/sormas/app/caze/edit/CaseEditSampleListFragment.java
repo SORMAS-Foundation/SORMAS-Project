@@ -28,10 +28,12 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.core.adapter.databinding.OnListItemClickListener;
 import de.symeda.sormas.app.databinding.FragmentFormListLayoutBinding;
@@ -116,6 +118,6 @@ public class CaseEditSampleListFragment extends BaseEditFragment<FragmentFormLis
 
 	@Override
 	public boolean isShowNewAction() {
-		return true;
+		return ConfigProvider.hasUserRight(UserRight.SAMPLE_EDIT);
 	}
 }

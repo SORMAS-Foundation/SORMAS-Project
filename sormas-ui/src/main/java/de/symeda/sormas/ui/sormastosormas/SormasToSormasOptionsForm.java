@@ -20,7 +20,6 @@ import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_4;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_5;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
-import de.symeda.sormas.api.caze.CaseDataDto;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -41,6 +40,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -63,8 +63,7 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 	private static final String HTML_LAYOUT = fluidRowLocs(SormasToSormasOptionsDto.ORGANIZATION)
 		+ fluidRowLocs(TARGET_VALIDATION_ERROR_LOC)
 		+ fluidRowLocs(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP)
-		+ fluidRowLocs(SormasToSormasOptionsDto.PSEUDONYMIZE_PERSONAL_DATA)
-		+ fluidRowLocs(SormasToSormasOptionsDto.PSEUDONYMIZE_SENSITIVE_DATA)
+		+ fluidRowLocs(SormasToSormasOptionsDto.PSEUDONYMIZE_DATA)
 		+ CUSTOM_OPTIONS_PLACE_HOLDER
 		+ fluidRowLocs(SormasToSormasOptionsDto.COMMENT);
 
@@ -282,10 +281,8 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 		if (hasOptions) {
 
 			CheckBox handoverOwnership = addField(SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP);
-			CheckBox pseudonimyzePersonalData = addField(SormasToSormasOptionsDto.PSEUDONYMIZE_PERSONAL_DATA);
-			CheckBox pseudonymizeSensitiveData = addField(SormasToSormasOptionsDto.PSEUDONYMIZE_SENSITIVE_DATA);
-
-			pseudonymizeSensitiveData.addStyleNames(CssStyles.VSPACE_3);
+			CheckBox pseudonymizeData = addField(SormasToSormasOptionsDto.PSEUDONYMIZE_DATA);
+			pseudonymizeData.addStyleNames(CssStyles.VSPACE_3);
 
 			targetCombo.addValueChangeListener(e -> {
 				SormasServerDescriptor selectedServer = (SormasServerDescriptor) e.getProperty().getValue();
@@ -314,8 +311,7 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 					if (s.getRequestStatus() != ShareRequestStatus.ACCEPTED) {
 						handoverOwnership.setValue(s.isOwnershipHandedOver());
 					}
-					pseudonimyzePersonalData.setValue(s.isPseudonymizedPersonalData());
-					pseudonimyzePersonalData.setValue(s.isPseudonymizedSensitiveData());
+					pseudonymizeData.setValue(s.isPseudonymizedPersonalData() || s.isPseudonymizedSensitiveData());
 
 					if (updateCustomOptionsByPreviousShare != null) {
 						updateCustomOptionsByPreviousShare.accept(this, s);
@@ -325,25 +321,15 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 			handoverOwnership.addValueChangeListener(e -> {
 				boolean ownershipHandedOver = (boolean) e.getProperty().getValue();
-				pseudonimyzePersonalData.setEnabled(!ownershipHandedOver);
-				pseudonymizeSensitiveData.setEnabled(!ownershipHandedOver);
+				pseudonymizeData.setEnabled(!ownershipHandedOver);
 
 				if (ownershipHandedOver) {
-					pseudonimyzePersonalData.setValue(false);
-					pseudonymizeSensitiveData.setValue(false);
+					pseudonymizeData.setValue(false);
 				}
 			});
 
-			pseudonimyzePersonalData.addValueChangeListener(e -> {
-				boolean pseudonimyze = (boolean) e.getProperty().getValue() || pseudonymizeSensitiveData.getValue();
-				handoverOwnership.setEnabled(!pseudonimyze);
-				if (pseudonimyze) {
-					handoverOwnership.setValue(false);
-				}
-			});
-
-			pseudonymizeSensitiveData.addValueChangeListener(e -> {
-				boolean pseudonimyze = (boolean) e.getProperty().getValue() || pseudonimyzePersonalData.getValue();
+			pseudonymizeData.addValueChangeListener(e -> {
+				boolean pseudonimyze = (boolean) e.getProperty().getValue();
 				handoverOwnership.setEnabled(!pseudonimyze);
 				if (pseudonimyze) {
 					handoverOwnership.setValue(false);
@@ -360,7 +346,7 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 			}
 
 			if (CollectionUtils.isEmpty(customOptions)) {
-				pseudonymizeSensitiveData.addStyleNames(CssStyles.VSPACE_3);
+				pseudonymizeData.addStyleNames(CssStyles.VSPACE_3);
 			} else {
 				getField(customOptions.get(customOptions.size() - 1)).addStyleNames(CssStyles.VSPACE_3);
 			}

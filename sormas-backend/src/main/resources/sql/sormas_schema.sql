@@ -11654,5 +11654,9 @@ INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (471,
 UPDATE users SET password = LPAD(password, 64, '0') WHERE LENGTH(password) < 64;
 INSERT INTO schema_version (version_number, comment) VALUES (472, 'Adjust password hashes with leading zeros #9726');
 
+-- 2022-06-17 Add user roles view to UI #4462
+INSERT INTO userroles_userrights (userrole_id, userright) SELECT userrole_id, 'USER_ROLE_VIEW' FROM userroles_userrights WHERE userright = 'USER_EDIT';
+
+INSERT INTO schema_version (version_number, comment) VALUES (473, 'Add user roles view to UI #4462');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

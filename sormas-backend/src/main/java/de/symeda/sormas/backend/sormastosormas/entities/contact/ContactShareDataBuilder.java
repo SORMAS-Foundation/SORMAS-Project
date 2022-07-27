@@ -56,12 +56,12 @@ public class ContactShareDataBuilder
 	}
 
 	@Override
-	protected SormasToSormasContactDto doBuildShareData(Contact contact, ShareRequestInfo requestInfo) {
+	protected SormasToSormasContactDto doBuildShareData(Contact contact, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
 		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+			dataBuilderHelper.createPseudonymizer(requestInfo);
 
 		PersonDto personDto = dataBuilderHelper
-			.getPersonDto(contact.getPerson(), pseudonymizer, requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+			.getPersonDto(contact.getPerson(), pseudonymizer, requestInfo);
 		ContactDto contactDto = dataBuilderHelper.getContactDto(contact, pseudonymizer);
 
 		return new SormasToSormasContactDto(personDto, contactDto);
@@ -76,7 +76,7 @@ public class ContactShareDataBuilder
 	@Override
 	public SormasToSormasContactPreview doBuildShareDataPreview(Contact contact, ShareRequestInfo requestInfo) {
 		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+			dataBuilderHelper.createPseudonymizer(requestInfo);
 
 		return dataBuilderHelper.getContactPreview(contact, pseudonymizer);
 

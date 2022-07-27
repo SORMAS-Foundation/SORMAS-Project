@@ -21,6 +21,7 @@ package org.sormas.e2etests.steps.web.application.contacts;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_CONNECTION_NUMBER;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISPLAY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_MEANS_OF_TRANSPORT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_MEANS_OF_TRANSPORT_DETAILS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_SEAT_NUMBER;
@@ -31,8 +32,14 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LEAV
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MORE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getMergeDuplicatesButtonById;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_CASE_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_CASE_POPUP_HEADER;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.IMPORT_CASE_CONTACTS_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.IMPORT_POPUP_BUTTON;
@@ -73,6 +80,10 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.TYPE_OF_PLACE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.WEARING_MASK_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.WEARING_PPE_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.LineListingPopup.LINE_LISTING_SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
+import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.CLOSE_DETAILED_EXPORT_POPUP;
+import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.IMPORT_SUCCESSFUL_FACILITY_IMPORT_CSV;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ACTION_MERGE_CONTACT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ACTIVE_CONTACT_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ALL_BUTTON_CONTACT;
@@ -141,16 +152,37 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.contacts.EditContactSteps.aContact;
 import static org.sormas.e2etests.steps.web.application.contacts.EditContactSteps.collectedContact;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.javafaker.Faker;
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.CSVWriter;
+import com.opencsv.exceptions.CsvException;
 import cucumber.api.java8.En;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.entities.pojo.csv.DetailedContactCSV;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.pojo.web.EpidemiologicalData;
@@ -168,9 +200,10 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
+@Slf4j
 public class ContactDirectorySteps implements En {
-  Faker faker = new Faker();
 
   protected WebDriverHelpers webDriverHelpers;
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
@@ -178,10 +211,19 @@ public class ContactDirectorySteps implements En {
   public static EpidemiologicalData dataSavedFromCheckbox;
   public static EpidemiologicalData specificCaseData;
   public static Contact contact;
+  public static final String userDirPath = System.getProperty("user.dir");
+  public static Faker faker;
 
   public static String contactID1;
   public static String contactID2;
   public static String leadingContactUUID;
+  private static String contactCSVName;
+  private static String detailedContactCSVFile;
+  private static String[] detailedContactHeader1, detailedContactHeader2, detailedContactHeader3;
+  private static String uploadFileDirectoryAndName;
+  public static String firstName;
+  public static String lastName;
+  public static String contactUUIDFromCSV;
 
   @Inject
   public ContactDirectorySteps(
@@ -191,8 +233,10 @@ public class ContactDirectorySteps implements En {
       ContactService contactService,
       DataOperations dataOperations,
       Faker faker,
+      SoftAssert softly,
       RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
+    this.faker = faker;
 
     When(
         "^I navigate to the last created contact via the url$",
@@ -278,7 +322,10 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
-
+    And(
+        "I click on checkbox to upload generated document to entities in Create Quarantine Order form in Case directory for DE",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE));
     When(
         "I collect the leading contact UUID displayed on Contact Directory Page",
         () -> leadingContactUUID = getContactIDByIndex(1));
@@ -896,8 +943,10 @@ public class ContactDirectorySteps implements En {
     When(
         "^I click on Line Listing button$",
         () -> {
+          TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LINE_LISTING);
           webDriverHelpers.doubleClickOnWebElementBySelector(LINE_LISTING);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(LINE_LISTING_SAVE_BUTTON);
         });
 
     And(
@@ -1113,6 +1162,176 @@ public class ContactDirectorySteps implements En {
               CONTACT_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+
+    And(
+        "I apply {string} to combobox on Contact Directory Page",
+        (String caseParameter) ->
+            webDriverHelpers.selectFromCombobox(CASE_DISPLAY_FILTER_COMBOBOX, caseParameter));
+
+    When(
+        "I prepare detailed contact CSV with {string} as a disease and {string} as a present condition",
+        (String disease, String pCondition) -> {
+          long timestamp = System.currentTimeMillis();
+          detailedContactCSVFile = "./uploads/sormas_contacts_sordev_10361.csv";
+          Map<String, Object> reader;
+          reader = parseCSVintoPOJODetailedContactCSV(detailedContactCSVFile);
+          contactCSVName = "detailedContactCSVTestFile" + timestamp + ".csv";
+          writeCSVFromMapDetailedContact(reader, contactCSVName, disease, pCondition);
+        });
+
+    When(
+        "I select created CSV file with detailed contact",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FILE_PICKER);
+          webDriverHelpers.sendFile(FILE_PICKER, userDirPath + "/uploads/" + contactCSVName);
+        });
+
+    When(
+        "I click on the {string} button from the Import Detailed Contact popup",
+        (String buttonName) -> {
+          webDriverHelpers.clickWebElementByText(IMPORT_POPUP_BUTTON, buttonName);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_CASE_POPUP_HEADER, 2)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_CASE_CHECKBOX);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+          }
+        });
+
+    When(
+        "I search for created detailed contact by first and last name of the person",
+        () -> {
+          webDriverHelpers.fillAndSubmitInWebElement(
+              PERSON_LIKE_SEARCH_INPUT, firstName + " " + lastName);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I check if csv file for detailed contact is imported successfully",
+        () -> {
+          webDriverHelpers.isElementVisibleWithTimeout(IMPORT_SUCCESSFUL_FACILITY_IMPORT_CSV, 10);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
+          webDriverHelpers.clickOnWebElementBySelector(CLOSE_DETAILED_EXPORT_POPUP);
+        });
+
+    When(
+        "I check if disease is set for {string} in Contact Edit Directory",
+        (String disease) -> {
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(DISEASE_COMBOBOX);
+          webDriverHelpers.scrollToElement(DISEASE_INPUT);
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(DISEASE_INPUT), disease, "Incorrect disease");
+          softly.assertAll();
+        });
+
+    When(
+        "I delete created csv file for detailed contact import",
+        () -> {
+          Path path = Paths.get(userDirPath + "/uploads/" + contactCSVName);
+          Files.delete(path);
+        });
+  }
+
+  public Map<String, Object> parseCSVintoPOJODetailedContactCSV(String fileName) {
+
+    List<String[]> r = null;
+    String[] values = new String[] {};
+    ObjectMapper mapper = new ObjectMapper();
+    DetailedContactCSV detailedContactCSV = new DetailedContactCSV();
+
+    try {
+
+      CSVReader headerReader = new CSVReader(new FileReader(fileName));
+      String[] nextLine;
+      nextLine = headerReader.readNext();
+      detailedContactHeader1 = nextLine;
+      nextLine = headerReader.readNext();
+      detailedContactHeader2 = nextLine;
+      nextLine = headerReader.readNext();
+      detailedContactHeader3 = nextLine;
+    } catch (IOException e) {
+      log.error("IOException csvReader: ", e);
+    } catch (CsvException e) {
+      log.error("CsvException header reader: ", e);
+    }
+    CSVParser csvParser = new CSVParserBuilder().withSeparator(',').build(); // custom separator
+    // Convert POJO to Map
+    Map<String, Object> detailedContactPojo =
+        mapper.convertValue(detailedContactCSV, new TypeReference<Map<String, Object>>() {});
+
+    try (CSVReader reader =
+        new CSVReaderBuilder(new FileReader(fileName))
+            .withCSVParser(csvParser) // custom CSV parser
+            .withSkipLines(3) // skip the first three lines, headers info
+            .build()) {
+      r = reader.readAll();
+    } catch (IOException e) {
+      log.error("IOException csvReader: ", e);
+    } catch (CsvException e) {
+      log.error("CsvException csvReader: ", e);
+    }
+    for (int i = 0; i < r.size(); i++) {
+      values = r.get(i);
+    }
+
+    String[] keys = detailedContactPojo.keySet().toArray(new String[0]);
+
+    try {
+      for (int i = 0; i < keys.length; i++) {
+        detailedContactPojo.put(keys[i], values[i]);
+      }
+
+    } catch (NullPointerException e) {
+      log.error("Null pointer exception csvReader: ", e);
+    }
+    return detailedContactPojo;
+  }
+
+  public static void writeCSVFromMapDetailedContact(
+      Map<String, Object> detailedContact,
+      String createdFileName,
+      String disease,
+      String pCondition) {
+    uploadFileDirectoryAndName = userDirPath + "/uploads/" + createdFileName;
+
+    File file = new File(uploadFileDirectoryAndName);
+    try {
+      FileWriter outputfile = new FileWriter(file);
+      CSVWriter writer =
+          new CSVWriter(
+              outputfile,
+              ',',
+              CSVWriter.NO_QUOTE_CHARACTER,
+              CSVWriter.NO_ESCAPE_CHARACTER,
+              CSVWriter.DEFAULT_LINE_END);
+      List<String[]> data = new ArrayList<String[]>();
+      firstName = faker.name().firstName();
+      lastName = faker.name().lastName();
+      contactUUIDFromCSV = UUID.randomUUID().toString().substring(0, 26).toUpperCase();
+      String personUUID = UUID.randomUUID().toString().substring(0, 26).toUpperCase();
+      int lRandom = ThreadLocalRandom.current().nextInt(8999999, 9999999 + 1);
+      detailedContact.computeIfPresent("uuid", (k, v) -> v = contactUUIDFromCSV);
+      detailedContact.computeIfPresent("personUuid", (k, v) -> v = personUUID);
+      detailedContact.computeIfPresent("personFirstName", (k, v) -> v = firstName);
+      detailedContact.computeIfPresent("personLastName", (k, v) -> v = lastName);
+      detailedContact.computeIfPresent("disease", (k, v) -> v = disease);
+      detailedContact.computeIfPresent("personPresentCondition", (k, v) -> v = pCondition);
+      String[] rowdata = detailedContact.values().toArray(new String[0]);
+      ArrayList<String> sArray = new ArrayList<String>();
+      for (String s : rowdata) {
+        sArray.add("\"" + s + "\"");
+      }
+      detailedContactHeader1[0] = "\"" + detailedContactHeader1[0] + "\"";
+      data.add(detailedContactHeader1);
+      data.add(detailedContactHeader2);
+      data.add(detailedContactHeader3);
+      data.add(sArray.toArray(new String[0]));
+      writer.writeAll(data);
+      writer.close();
+    } catch (IOException e) {
+      log.error("IOException csvWriter: ", e);
+    }
   }
 
   private void searchAfterContactByMultipleOptions(String idPhoneNameEmail) {

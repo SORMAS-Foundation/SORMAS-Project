@@ -295,7 +295,14 @@ public enum FeatureType {
 		new FeatureType[] {
 			TASK_MANAGEMENT },
 		null,
-		null);
+		null),
+	CASE_AND_CONTACT_BULK_ACTIONS(true,
+		true,
+		new FeatureType[] {
+			CASE_SURVEILANCE,
+			CONTACT_TRACING },
+		null,
+		ImmutableMap.of(FeatureTypeProperty.S2S_SHARING, Boolean.FALSE));
 
 	public static final FeatureType[] SURVEILLANCE_FEATURE_TYPES = {
 		FeatureType.CASE_SURVEILANCE,

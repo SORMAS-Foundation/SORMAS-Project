@@ -84,7 +84,6 @@ import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -306,6 +305,12 @@ public class EditContactsSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_RADIO_BUTTON);
             webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
           }
+        });
+    When(
+        "^I collect contact UUID displayed on Edit Contact Page$",
+        () -> {
+          contactUUID = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
+          contactsUUIDList.add(contactUUID);
         });
 
     Then(

@@ -138,6 +138,7 @@ import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.api.visit.VisitSummaryExportDetailsDto;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -358,6 +359,7 @@ public class ContactFacadeEjb
 		UserRight._CONTACT_EDIT })
 	public ContactDto save(ContactDto dto, boolean handleChanges, boolean handleCaseChanges, boolean checkChangeDate, boolean internal) {
 		final Contact existingContact = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
+		FacadeHelper.checkCreateAndEditRights(existingContact, userService, UserRight.CONTACT_CREATE, UserRight.CONTACT_EDIT);
 
 		if (internal && existingContact != null && !service.isEditAllowed(existingContact).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorContactNotEditable));
@@ -848,9 +850,10 @@ public class ContactFacadeEjb
 							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
 							Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
 
-							List<Vaccination> relevantSortedVaccinations = getRelevantSortedVaccinations(
-								exportContact.getUuid(),
-								filteredImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList()));
+							List<Vaccination> relevantSortedVaccinations = vaccinationService.getRelevantSortedVaccinations(
+								filteredImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList()),
+								exportContact.getLastContactDate(),
+								exportContact.getReportDate());
 							Vaccination firstVaccination = null;
 							Vaccination lastVaccination = null;
 
@@ -2258,15 +2261,6 @@ public class ContactFacadeEjb
 	private User getRandomDistrictContactResponsible(District district) {
 
 		return userService.getRandomDistrictUser(district, UserRight.CONTACT_RESPONSIBLE);
-	}
-
-	private List<Vaccination> getRelevantSortedVaccinations(String caseUuid, List<Vaccination> vaccinations) {
-		Contact contact = contactService.getByUuid(caseUuid);
-
-		return vaccinations.stream()
-			.filter(v -> vaccinationService.isVaccinationRelevant(contact, v))
-			.sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
-			.collect(Collectors.toList());
 	}
 
 	private String getNumberOfDosesFromVaccinations(Vaccination vaccination) {

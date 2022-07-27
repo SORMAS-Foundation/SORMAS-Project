@@ -93,7 +93,7 @@ public class ShareDataBuilder {
 		shares.forEach(s -> {
 			if (s.getCaze() != null) {
 				try {
-					cases.add(caseShareDataBuilder.buildShareData(s.getCaze(), requestInfo));
+					cases.add(caseShareDataBuilder.buildShareData(s.getCaze(), requestInfo, s.isOwnershipHandedOver()));
 				} catch (SormasToSormasValidationException e) {
 					validationErrors.addAll(e.getErrors());
 				}
@@ -101,7 +101,7 @@ public class ShareDataBuilder {
 
 			if (s.getContact() != null) {
 				try {
-					contacts.add(contactShareDataBuilder.buildShareData(s.getContact(), requestInfo));
+					contacts.add(contactShareDataBuilder.buildShareData(s.getContact(), requestInfo, s.isOwnershipHandedOver()));
 				} catch (SormasToSormasValidationException e) {
 					validationErrors.addAll(e.getErrors());
 				}
@@ -109,7 +109,7 @@ public class ShareDataBuilder {
 			}
 			if (s.getSample() != null) {
 				try {
-					samples.add(sampleShareDataBuilder.buildShareData(s.getSample(), requestInfo));
+					samples.add(sampleShareDataBuilder.buildShareData(s.getSample(), requestInfo, s.isOwnershipHandedOver()));
 				} catch (SormasToSormasValidationException e) {
 					validationErrors.addAll(e.getErrors());
 				}
@@ -117,7 +117,7 @@ public class ShareDataBuilder {
 
 			if (s.getEvent() != null) {
 				try {
-					events.add(eventShareDataBuilder.buildShareData(s.getEvent(), requestInfo));
+					events.add(eventShareDataBuilder.buildShareData(s.getEvent(), requestInfo, s.isOwnershipHandedOver()));
 				} catch (SormasToSormasValidationException e) {
 					validationErrors.addAll(e.getErrors());
 				}
@@ -125,7 +125,8 @@ public class ShareDataBuilder {
 
 			if (s.getEventParticipant() != null) {
 				try {
-					eventParticipants.add(eventParticipantShareDataBuilder.buildShareData(s.getEventParticipant(), requestInfo));
+					eventParticipants
+						.add(eventParticipantShareDataBuilder.buildShareData(s.getEventParticipant(), requestInfo, s.isOwnershipHandedOver()));
 				} catch (SormasToSormasValidationException e) {
 					validationErrors.addAll(e.getErrors());
 				}
@@ -133,7 +134,7 @@ public class ShareDataBuilder {
 
 			if (s.getImmunization() != null) {
 				try {
-					immunizations.add(immunizationShareDataBuilder.buildShareData(s.getImmunization(), requestInfo));
+					immunizations.add(immunizationShareDataBuilder.buildShareData(s.getImmunization(), requestInfo, s.isOwnershipHandedOver()));
 				} catch (SormasToSormasValidationException e) {
 					validationErrors.addAll(e.getErrors());
 				}
