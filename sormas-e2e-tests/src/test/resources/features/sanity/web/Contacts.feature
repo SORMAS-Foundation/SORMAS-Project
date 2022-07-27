@@ -967,7 +967,7 @@ Feature: Contacts end to end tests
     And I check if External token input on case edit page is disabled
     And I check if Case or event information text area on case edit page is disabled
 
-  @issue=SORDEV-10361 @env_main
+  @tmsLink=SORDEV-10361 @env_main
   Scenario: Test Hide "buried" within Person present condition for Covid-19 for Contacts
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -1028,7 +1028,7 @@ Feature: Contacts end to end tests
     And I check if "Burial conductor" field is present in case person
     And I check if "Burial place description" field is present in case person
 
-  @issue=SORDEV-10361 @env_main
+  @tmsLink=SORDEV-10361 @env_main
   Scenario: Test Hide "buried" within Person present condition for Covid-19 for Import Contacts
     Given I log in as a Admin User
     And I click on the Contacts button from navbar
@@ -1045,7 +1045,7 @@ Feature: Contacts end to end tests
     Then I check if Present condition of person combobox has value "Buried"
     And I delete created csv file for detailed contact import
 
-  @issue=SORDEV-9792 @env_de
+  @tmsLink=SORDEV-9792 @env_de
   Scenario: Test CoreAdo: Introduce "end of processing date" for contacts
     Given I log in as a Admin User
     When I click on the Contacts button from navbar
@@ -1078,7 +1078,7 @@ Feature: Contacts end to end tests
     Then I filter with last created contact using contact UUID
     And I check that number of displayed contact results is 1
 
-  @issue=SORDEV-6185 @env_de
+  @tmsLink=SORDEV-6185 @env_de
   Scenario: Test Add information to followup warning message for Contacts
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -1093,7 +1093,7 @@ Feature: Contacts end to end tests
     And I click SAVE button on Edit Contact Page
     And I check that text appearing in hover over Expected Follow-up is based on Last Contact date on Edit Contact Page
 
-  @issue=SORDEV-10227 @env_de
+  @tmsLink=SORDEV-10227 @env_de
   Scenario: Test Permanent deletion for Person for Contact
     Given I log in as a National User
     And I click on the Contacts button from navbar
@@ -1115,7 +1115,7 @@ Feature: Contacts end to end tests
     Then I filter the last created person linked with Contact
     And I check that number of displayed Person results is 0
 
-  @issue=SORDEV-5565 @env_de
+  @tmsLink=SORDEV-5565 @env_de
   Scenario: Document Templates create quarantine order for Contact bulk DE
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

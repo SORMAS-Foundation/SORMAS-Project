@@ -299,7 +299,7 @@ Feature: Epidemiological data coverage
     Then I click on edit button for the last searched facility
     And I archive facility
 
-  @issue=SORDEV-5204 @env_main
+  @tmsLink=SORDEV-5204 @env_main
   Scenario: Test continent and subcontinent in location entry in exposure and activity as case
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

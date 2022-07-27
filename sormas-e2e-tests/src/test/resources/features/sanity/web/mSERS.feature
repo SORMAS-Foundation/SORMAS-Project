@@ -1,7 +1,7 @@
 @UI @Sanity @mSERS
 Feature: mSERS functionalities
 
-  @issue=SORDEV-11929 @env_main
+  @tmsLink=SORDEV-11929 @env_main
   Scenario:Allow surveillance officer to create aggregate reports (mSERS) and view reports of their district
     Given I log in as a Surveillance Officer
     When I click on the mSERS button from navbar

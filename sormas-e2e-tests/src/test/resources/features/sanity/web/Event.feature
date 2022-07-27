@@ -1216,7 +1216,7 @@ Feature: Create events
     And I click on Events aggregation button in Person Directory for DE specific
     And I check that number of displayed Person results is 0
 
-  @issue=SORDEV-5565 @env_de
+  @tmsLink=SORDEV-5565 @env_de
   Scenario: Document Templates create quarantine order for Event Participant bulk DE
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -1239,7 +1239,7 @@ Feature: Create events
     And I check if downloaded zip file for Quarantine Order is correct for DE version
     And I delete downloaded file created from Quarantine order
 
-  @issue=SORDEV-10361 @env_main
+  @tmsLink=SORDEV-10361 @env_main
   Scenario: Test Hide "buried" within Person present condition for Covid-19 for Events
     Given I log in as a Admin User
     And I click on the Events button from navbar

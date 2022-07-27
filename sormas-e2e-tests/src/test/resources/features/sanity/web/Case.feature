@@ -1462,7 +1462,7 @@ Feature: Case end to end tests
     Then I click on Merge Duplicates on Case directory for DE
     And I check if message about long loading times appear for DE
 
-    @issue=SORDEV-10361 @env_main
+    @tmsLink=SORDEV-10361 @env_main
     Scenario: Test Hide "buried" within Person present condition for Covid-19 for Cases
       Given I log in as a Admin User
       And I click on the Cases button from navbar
@@ -1504,7 +1504,7 @@ Feature: Case end to end tests
       And I check if Present condition of person combobox has value "Unknown"
       Then I check if Present condition of person combobox has no value "Buried"
 
-  @issue=SORDEV-10361 @env_main
+  @tmsLink=SORDEV-10361 @env_main
   Scenario: Test Hide "buried" within Person present condition for Covid-19 for Import Detailed Case
     Given I log in as a Admin User
     And I click on the Cases button from navbar
@@ -1521,7 +1521,7 @@ Feature: Case end to end tests
     Then I check if Present condition of person combobox has value "Buried"
     And I delete created csv file for detailed case import
 
-    @issue=SORDEV-9792 @env_de
+    @tmsLink=SORDEV-9792 @env_de
       Scenario: Test CoreAdo: Introduce "end of processing date" for cases
       Given I log in as a Admin User
       And I click on the Cases button from navbar
@@ -1552,7 +1552,7 @@ Feature: Case end to end tests
       Then I filter with last created case using case UUID
       And I check that number of displayed cases results is 1
 
-  @env_main @issue=SORDEV-5104
+  @env_main @tmsLink=SORDEV-5104
   Scenario: Check if external token is visible on Edit Case Page
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -1564,7 +1564,7 @@ Feature: Case end to end tests
     Then I navigate to the last created case via the url
     And I check that External Token field is visible on Edit Case page
 
-  @env_de @issue=SORDEV-5104
+  @env_de @tmsLink=SORDEV-5104
   Scenario: Check if external token is visible on Edit Case Page for DE
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -1576,7 +1576,7 @@ Feature: Case end to end tests
     Then I navigate to the last created case via the url
     And I check that External Token field is visible on Edit Case page
 
-  @issue=SORDEV-10227 @env_de
+  @tmsLink=SORDEV-10227 @env_de
   Scenario: Test Permanent deletion for Person for Case
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -1598,7 +1598,7 @@ Feature: Case end to end tests
     Then I filter the last created person linked with Case
     And I check that number of displayed Person results is 0
 
-  @issue=SORDEV-6185 @env_de
+  @tmsLink=SORDEV-6185 @env_de
   Scenario: Test Add information to followup warning message for Cases
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -1632,7 +1632,7 @@ Feature: Case end to end tests
     And I check that text appearing in hover over Expected Follow-up is based on Symptoms collection date
 
 
-  @issue=SORDEV-5141 @env_main
+  @tmsLink=SORDEV-5141 @env_main
   Scenario: Check extended disease properties classification
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -1643,7 +1643,7 @@ Feature: Case end to end tests
     And I select "Epidemiological confirmation" as Basis for Confirmation
     And I select "Laboratory diagnostic confirmation" as Basis for Confirmation
 
-  @issue=SORDEV-5565 @env_de
+  @tmsLink=SORDEV-5565 @env_de
   Scenario: Document Templates create quarantine order for Case bulk DE
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -1682,7 +1682,7 @@ Feature: Case end to end tests
     And I check if generated document based on "ExampleDocumentTemplateCases.docx" appeared in Documents tab for UI created case in Edit Case directory for DE
     And I delete downloaded file created from Quarantine order
 
-  @issue=SORDEV-6839 @env_main
+  @tmsLink=SORDEV-6839 @env_main
   Scenario: Check the split of jurisdiction and place of stay
     Given I log in as a National User
     And I click on the Cases button from navbar
