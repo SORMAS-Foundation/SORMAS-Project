@@ -548,7 +548,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	public void copyOrMergeVaccinations(ImmunizationDto immunizationDto, Immunization newImmunization, List<VaccinationDto> leadPersonVaccinations) {
 
 		List<Vaccination> vaccinationEntities = new ArrayList<>();
-	
+
 		/**
 		 * This map structure will contain all duplicated vaccines for lead person and the vaccine form "follow" person
 		 * with witch to be updated to.
@@ -560,21 +560,18 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		Map<String, VaccinationDto> duplicateVaccinations = new HashedMap();
 
 		for (VaccinationDto vaccinationDto : immunizationDto.getVaccinations()) {
-			Optional<VaccinationDto> duplicateVaccination = leadPersonVaccinations != null
-				? leadPersonVaccinations.stream().filter(v -> isDuplicateOf(vaccinationDto, v)).findFirst()
-				: Optional.empty();
-
-			if (duplicateVaccination.isPresent()) {
-				VaccinationDto vac = duplicateVaccinations.get(duplicateVaccination.get().getUuid());
-				if(vac == null){
-					duplicateVaccinations.put(duplicateVaccination.get().getUuid(),vaccinationDto);
-				}
-				else {
-					if(vac.getChangeDate().before(vaccinationDto.getChangeDate())){
-						duplicateVaccinations.put(duplicateVaccination.get().getUuid(),vaccinationDto);
+			List<VaccinationDto> duplicateLeadVaccinations = leadPersonVaccinations != null
+				? leadPersonVaccinations.stream().filter(v -> isDuplicateOf(vaccinationDto, v)).collect(Collectors.toList())
+				: new ArrayList<>();
+			if(duplicateLeadVaccinations.size() > 0){
+				for(VaccinationDto duplicateVaccination : duplicateLeadVaccinations){
+					VaccinationDto cachedVaccination = duplicateVaccinations.get(duplicateVaccination.getUuid());
+					if (cachedVaccination == null || cachedVaccination.getChangeDate().before(vaccinationDto.getChangeDate())) {
+						duplicateVaccinations.put(duplicateVaccination.getUuid(), vaccinationDto);
 					}
 				}
-			} else {
+			}
+		 else {
 				Vaccination vaccination = new Vaccination();
 				vaccination.setUuid(DataHelper.createUuid());
 				vaccination = fillOrBuildEntity(vaccinationDto, vaccination, false);
