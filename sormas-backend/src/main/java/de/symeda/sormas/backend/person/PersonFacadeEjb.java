@@ -52,7 +52,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.immunization.entity.Immunization;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1726,46 +1725,6 @@ public class PersonFacadeEjb implements PersonFacade {
 			for (ImmunizationDto immunizationDto : immunizationFacade.getByPersonUuids(Collections.singletonList(otherPerson.getUuid()))) {
 				immunizationFacade.copyImmunizationToLeadPerson(immunizationDto, leadPerson, leadPersonVaccinations);
 			}
-		}
-
-		DtoHelper.copyDtoValues(leadPerson, otherPerson, false);
-		savePerson(leadPerson);
-	}
-	@RightsAllowed(UserRight._PERSON_EDIT)
-	public void mergePerson2(PersonDto leadPerson, PersonDto otherPerson) {
-
-		// Make sure the resulting person does not have multiple primary contact details
-		Set<PersonContactDetailType> primaryContactDetailTypes = new HashSet<>();
-		for (PersonContactDetailDto contactDetailDto : leadPerson.getPersonContactDetails()) {
-			if (contactDetailDto.isPrimaryContact()) {
-				primaryContactDetailTypes.add(contactDetailDto.getPersonContactDetailType());
-			}
-		}
-		for (PersonContactDetailDto contactDetailDto : otherPerson.getPersonContactDetails()) {
-			if (contactDetailDto.isPrimaryContact() && primaryContactDetailTypes.contains(contactDetailDto.getPersonContactDetailType())) {
-				contactDetailDto.setPrimaryContact(false);
-			}
-		}
-		if (!leadPerson.getUuid().equals(otherPerson.getUuid())) {
-			List<ImmunizationDto> leadPersonImmunizations = immunizationFacade.getByPersonUuids(Collections.singletonList(leadPerson.getUuid()));
-			List<ImmunizationDto> followPersonImmunizations = immunizationFacade.getByPersonUuids(Collections.singletonList(otherPerson.getUuid()));
-
-			immunizationFacade.copyImmunizationToLeadPerson(leadPerson, leadPersonImmunizations, followPersonImmunizations);
-			/*
-			List<Immunization> immunizations = immunizationFacade.getMergedImmunizations(leadPersonImmunizations, followPersonImmunizations);
-			for(Immunization immunization : immunizations){
-				immunization.setPerson(personService.getByReferenceDto(leadPerson.toReference()));
-//				.persist(immunization);
-			}
-
-			List<VaccinationDto> leadPersonVaccinations = null;
-			if (leadPersonImmunizations != null) {
-				leadPersonVaccinations = leadPersonImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList());
-			}
-
-			for (ImmunizationDto immunizationDto : immunizationFacade.getByPersonUuids(Collections.singletonList(otherPerson.getUuid()))) {
-				immunizationFacade.copyImmunizationToLeadPerson(immunizationDto, leadPerson, leadPersonVaccinations);
-			}*/
 		}
 
 		DtoHelper.copyDtoValues(leadPerson, otherPerson, false);

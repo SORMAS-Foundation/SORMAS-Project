@@ -22,10 +22,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -43,7 +41,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import ca.uhn.fhir.rest.annotation.Delete;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -645,7 +642,6 @@ public class ImmunizationFacadeEjb
 	@RightsAllowed({
 		UserRight._IMMUNIZATION_CREATE,
 		UserRight._PERSON_EDIT })
-	@Deprecated
 	public void copyImmunizationToLeadPerson(ImmunizationDto immunizationDto, PersonDto leadPerson, List<VaccinationDto> leadPersonVaccinations) {
 
 		Immunization newImmunization = new Immunization();
@@ -656,105 +652,9 @@ public class ImmunizationFacadeEjb
 		newImmunization.setPerson(personService.getByReferenceDto(leadPerson.toReference()));
 		service.persist(newImmunization);
 
-
-//		List<VaccinationDto> mergeVacc = vaccinationFacade.getListOfMergedVaccination(leadPersonVaccinations, null);
-
-
 		vaccinationFacade.copyOrMergeVaccinations(immunizationDto, newImmunization, leadPersonVaccinations);
 
-
 		service.ensurePersisted(newImmunization);
-	}
-
-	@RightsAllowed({
-			UserRight._IMMUNIZATION_CREATE,
-			UserRight._PERSON_EDIT })
-	public void copyImmunizationToLeadPerson(PersonDto leadPerson, List<ImmunizationDto> leadPersonImmunizations, List<ImmunizationDto> followPersonImmunizations) {
-
-		List<VaccinationDto> leadPersonVaccinations = null;
-		if (leadPersonImmunizations != null) {
-			leadPersonVaccinations = leadPersonImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList());
-		}
-
-		//eliminate duplicates from lead Vaccinations
-		List<VaccinationDto> leadPersonVaccinationsWithoutDuplicates = vaccinationFacade.getMergedVaccinationForCase(leadPersonVaccinations);
-		for(ImmunizationDto immunizationDto : leadPersonImmunizations){
-			List<VaccinationDto> vaccinationDtos = new ArrayList<>(immunizationDto.getVaccinations());
-
-			for(int i =0 ; i< vaccinationDtos.size(); i++){
-				VaccinationDto vaccinationDto = vaccinationDtos.get(i);
-				if(leadPersonVaccinationsWithoutDuplicates.contains(vaccinationDto)){
-					VaccinationDto vdto = leadPersonVaccinationsWithoutDuplicates.stream().filter( v-> v.equals(vaccinationDto)).findFirst().orElse(null);
-//					immunizationDto.getVaccinations().set(i, vdto);
-					vaccinationFacade.save(vdto);
-					//TODO replace dto with the new one
-				}
-				else {
-					//TODO eliminate dto deom imunization
-					vaccinationFacade.deleteWithImmunization(vaccinationDto.getUuid(), null);
-//					immunizationDto.getVaccinations().remove(i);
-				}
-			}
-		}
-
-		for (ImmunizationDto immunizationDto : followPersonImmunizations) {
-			Immunization newImmunization = new Immunization();
-			newImmunization.setUuid(DataHelper.createUuid());
-
-			newImmunization = fillOrBuildEntity(immunizationDto, newImmunization, false, false);
-
-			newImmunization.setPerson(personService.getByReferenceDto(leadPerson.toReference()));
-			service.persist(newImmunization);
-
-			vaccinationFacade.copyOrMergeVaccinations(immunizationDto, newImmunization, leadPersonVaccinationsWithoutDuplicates);
-
-
-			service.ensurePersisted(newImmunization);
-
-		}
-	}
-
-	@RightsAllowed({UserRight._IMMUNIZATION_CREATE })
-	@Deprecated
-	public List<Immunization> getMergedImmunizations(List<ImmunizationDto> leadPersonImmunizations, List<ImmunizationDto> followPersonImmunizations){
-
-		List<VaccinationDto> leadPersonVaccinations = null;
-		if (leadPersonImmunizations != null) {
-			leadPersonVaccinations = leadPersonImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList());
-		}
-
-		//eliminate duplicates from lead Vaccinations
-		List<VaccinationDto> leadPersonVaccinationsWithoutDuplicates = vaccinationFacade.getMergedVaccinationForCase(leadPersonVaccinations);
-		for(ImmunizationDto immunizationDto : leadPersonImmunizations){
-			List<VaccinationDto> vaccinationDtos = immunizationDto.getVaccinations();
-			for(VaccinationDto vaccinationDto: vaccinationDtos){
-				if(leadPersonVaccinationsWithoutDuplicates.contains(vaccinationDto)){
-					//TODO replace dto with the new one
-				}
-				else {
-					//TODO eliminate dto deom imunization
-				}
-			}
-		}
-
-		for (ImmunizationDto immunizationDto : followPersonImmunizations) {
-//			immunizationFacade.copyImmunizationToLeadPerson(immunizationDto, leadPerson, leadPersonVaccinations);
-			Immunization newImmunization = new Immunization();
-			newImmunization.setUuid(DataHelper.createUuid());
-
-			newImmunization = fillOrBuildEntity(immunizationDto, newImmunization, false, false);
-
-//			newImmunization.setPerson(personService.getByReferenceDto(leadPerson.toReference()));
-			service.persist(newImmunization);
-
-			vaccinationFacade.copyOrMergeVaccinations(immunizationDto, newImmunization, leadPersonVaccinationsWithoutDuplicates);
-
-
-			service.ensurePersisted(newImmunization);
-
-		}
-		return null;
-
 	}
 
 	@Override
