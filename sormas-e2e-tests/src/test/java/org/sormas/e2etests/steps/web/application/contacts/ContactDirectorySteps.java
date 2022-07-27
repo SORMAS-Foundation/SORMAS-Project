@@ -1122,11 +1122,13 @@ public class ContactDirectorySteps implements En {
 
     Then(
         "I set contact vaccination status filter to ([^\"]*) and apply",
-        (String vaccinationStatus) -> {
-          webDriverHelpers.selectFromCombobox(
-              CONTACT_VACCINATION_STATUS_FILTER_COMBOBOX, vaccinationStatus);
-          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
-        });
+        (String vaccinationStatus) ->
+            webDriverHelpers.selectFromCombobox(
+                CONTACT_VACCINATION_STATUS_FILTER_COMBOBOX, vaccinationStatus));
+
+    And(
+        "I apply contact filters",
+        () -> webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON));
 
     Then(
         "I check that created Contact is visible with ([^\"]*) status",
