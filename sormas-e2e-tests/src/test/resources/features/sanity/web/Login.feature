@@ -11,8 +11,6 @@ Feature: Login with different type of users
     Then I check that English language is selected in User Settings
     And I click on logout button
 
-
-
     Examples:
       | user                      |
       | National User             |
@@ -35,7 +33,6 @@ Feature: Login with different type of users
     And I check that Deutsch language is selected in User Settings
     And I click on logout button
 
-
     Examples:
       | user                      |
       | National User             |
@@ -47,6 +44,7 @@ Feature: Login with different type of users
       | Point of Entry Supervisor |
       | Admin User                |
       | Rest AUTOMATION           |
+
   @issue=SORQA-69 @env_de
   Scenario: Check German language setting
     Given I log in with National User
