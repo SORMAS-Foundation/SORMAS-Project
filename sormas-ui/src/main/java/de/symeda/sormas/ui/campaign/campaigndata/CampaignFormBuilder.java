@@ -23,46 +23,26 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.validation.constraints.Size;
-
-import org.apache.commons.math3.util.Precision;
-
 import com.google.common.collect.Sets;
-import com.vaadin.data.converter.StringToFloatConverter;
-import com.vaadin.flow.component.Html;
 import com.vaadin.server.Page;
 import com.vaadin.server.Page.Styles;
 import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Accordion;
-import com.vaadin.ui.CheckBoxGroup;
-import com.vaadin.ui.Component;
 import com.vaadin.v7.ui.DateField;
-import com.vaadin.v7.ui.CustomField;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property.ReadOnlyException;
 import com.vaadin.v7.data.Validator;
-import com.vaadin.v7.data.util.ObjectProperty;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.util.converter.Converter.ConversionException;
 import com.vaadin.v7.data.validator.RegexpValidator;
 import com.vaadin.v7.shared.ui.label.ContentMode;
-import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.Label;
@@ -70,6 +50,7 @@ import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.MapperUtil;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.data.translation.TranslationElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
@@ -80,8 +61,6 @@ import de.symeda.sormas.api.campaign.form.CampaignFormElementType;
 import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.utils.FieldConstraints;
-import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.campaign.jsonHelpers.BasicCheckboxHelper;
@@ -91,7 +70,6 @@ import de.symeda.sormas.ui.campaign.jsonHelpers.RadioBasicGroup;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.NumberNumericValueValidator;
-import de.symeda.sormas.ui.utils.NumberValidator;
 import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
 
 
@@ -102,9 +80,11 @@ public class CampaignFormBuilder {
 	private final VerticalLayout campaignFormLayout;
 	private final Locale userLocale;
 	private Map<String, String> userTranslations = null;
+	private Map<String, String> userOptTranslations = null;
 	Map<String, Field<?>> fields;
-	private List<String> optionsValues;
+	private Map<String, String> optionsValues = null;
 	private List<String> constraints;
+	private List<CampaignFormTranslations> translationsOpt;
 
 	public CampaignFormBuilder(List<CampaignFormElement> formElements, List<CampaignFormDataEntry> formValues,
 			VerticalLayout campaignFormLayout, List<CampaignFormTranslations> translations) {
@@ -117,6 +97,7 @@ public class CampaignFormBuilder {
 		}
 		this.campaignFormLayout = campaignFormLayout;
 		this.fields = new HashMap<>();
+		this.translationsOpt = translations;
 
 		this.userLocale = I18nProperties.getUserLanguage().getLocale();
 		if (userLocale != null) {
@@ -132,7 +113,7 @@ public class CampaignFormBuilder {
 		int sectionCount = 0;
 		
 		int ii=0;
-		System.out.println("Got one____");
+		//System.out.println("Got one____");
 		VerticalLayout vertical = new VerticalLayout ();
 		vertical.setSizeFull();
 		vertical.setWidthFull();
@@ -141,12 +122,8 @@ public class CampaignFormBuilder {
 		
 		TabSheet accrd = new TabSheet();
 		accrd.setHeight(750, Unit.PIXELS);
-		//accrd.addStyleName(ValoTheme.TABSHEET_FRAMED);
-		//accrd.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
         
-		//accrd.setHeight(750, Unit.PIXELS);
 		int accrd_count = 0;
-		//campaignFormLayout.addComponent(accrd);
 		
 		for (CampaignFormElement formElement : formElements) {
 			System.out.println("Gotint it..."+ ii++);
@@ -154,7 +131,6 @@ public class CampaignFormBuilder {
 			
 			
 			List<CampaignFormElementStyle> styles;
-			// List<CampaignFormElementOptions> options;
 			if (formElement.getStyles() != null) {
 				styles = Arrays.stream(formElement.getStyles()).map(CampaignFormElementStyle::fromString)
 						.collect(Collectors.toList());
@@ -163,16 +139,36 @@ public class CampaignFormBuilder {
 			}
 
 			if (formElement.getOptions() != null) {
+					
+				if (userLocale != null) {
+					translationsOpt.stream().filter(t -> t.getLanguageCode().equals(userLocale.toString()))
+					.findFirst().ifPresent(filteredTranslations -> filteredTranslations.getTranslations().stream()
+					.filter(cd -> cd.getOptions() != null)
+					.findFirst().ifPresent(optionsList -> userOptTranslations = optionsList.getOptions().stream()
+					.filter(c -> c.getCaption() != null).collect(Collectors.toMap(MapperUtil::getKey, MapperUtil::getCaption))));
+				}
+				
 
 				CampaignFormElementOptions campaignFormElementOptions = new CampaignFormElementOptions();
-				optionsValues = (List) Arrays.stream(formElement.getOptions()).collect(Collectors.toList());
-				ListIterator<String> lstItems = optionsValues.listIterator();
-				int i = 1;
-				campaignFormElementOptions.setOptionsListValues(optionsValues);
+				optionsValues = formElement.getOptions().stream().collect(Collectors.toMap(MapperUtil::getKey, MapperUtil::getCaption));  // .collect(Collectors.toList());
+				
+				System.out.println("_______________________ "+userOptTranslations);
+				if(userOptTranslations == null) {
+					campaignFormElementOptions.setOptionsListValues(optionsValues);
+					//get18nOptCaption(formElement.getId(), optionsValues));
+				}else {
+					campaignFormElementOptions.setOptionsListValues(userOptTranslations);
+					
+				}
+				
 			} else {
-				optionsValues = new ArrayList<>();
+				optionsValues = new HashMap<String, String>();
 			}
 
+			
+			
+			
+			
 			if (formElement.getConstraints() != null) {
 				System.out.println("iiiiiiiiiiiiiiiiiiiiiiiiii");
 				CampaignFormElementOptions campaignFormElementOptions = new CampaignFormElementOptions();
@@ -319,7 +315,7 @@ public class CampaignFormBuilder {
 
 	@SuppressWarnings("unchecked")
 	private <T extends Field<?>> T createField(String fieldId, String caption, CampaignFormElementType type,
-			List<CampaignFormElementStyle> styles, List optionz, boolean isOnError) {
+			List<CampaignFormElementStyle> styles, Map optionz, boolean isOnError) {
 		SormasFieldGroupFieldFactory fieldFactory = new SormasFieldGroupFieldFactory(new FieldVisibilityCheckers(),
 				UiFieldAccessCheckers.getNoop());
 
@@ -562,7 +558,7 @@ public class CampaignFormBuilder {
 		return Integer.parseInt(colStyle.substring(colStyle.indexOf("-") + 1)) / 12f * 100;
 	}
 
-	public <T extends Field<?>> void setFieldValue(T field, CampaignFormElementType type, Object value, List options) {
+	public <T extends Field<?>> void setFieldValue(T field, CampaignFormElementType type, Object value, Map<String,String> options) {
 
 		switch (type) {
 		case YES_NO:
@@ -656,11 +652,12 @@ public class CampaignFormBuilder {
 			}
 			;
 			if (value != null) {
-				String dcxsq = value.toString().replace("[", "").replace("]", "").replaceAll(", ", ",");
-				String strArraxyq[] = dcxsq.split(",");
-				for (int i = 0; i < strArraxyq.length; i++) {
-					((ComboBox) field).select(strArraxyq[i]);
-				}
+				String dxz = options.get(value);
+				//String dcxsq = value.toString().replace("[", "").replace("]", "").replaceAll(", ", ",");
+				//String strArraxyq[] = dcxsq.split(",");
+				//for (int i = 0; i < strArraxyq.length; i++) {
+					((ComboBox) field).select(value);
+				//}
 			}
 			;
 
@@ -793,6 +790,8 @@ public class CampaignFormBuilder {
 
 		return defaultCaption;
 	}
+	
+	
 
 	public List<CampaignFormDataEntry> getFormValues() {
 		return fields.keySet().stream().map(id -> {

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
+import de.symeda.sormas.api.campaign.form.CampaignFormTranslations;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
 import de.symeda.sormas.app.BaseEditActivity;
@@ -84,6 +85,7 @@ public class CampaignFormDataEditActivity extends BaseEditActivity<CampaignFormD
         }
 
         final List<CampaignFormDataEntry> formValues = campaignFormDataToSave.getFormValues();
+
         final List<CampaignFormDataEntry> filledFormValues = new ArrayList<>();
         formValues.forEach(campaignFormDataEntry -> {
             if (campaignFormDataEntry.getId() != null && campaignFormDataEntry.getValue() != null) {

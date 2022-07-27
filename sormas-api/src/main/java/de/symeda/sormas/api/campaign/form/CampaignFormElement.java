@@ -6,10 +6,12 @@ import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_SMALL;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import javax.validation.constraints.Size;
 
+import de.symeda.sormas.api.MapperUtil;
 import de.symeda.sormas.api.i18n.Validations;
 
 public class CampaignFormElement implements Serializable {
@@ -54,7 +56,7 @@ public class CampaignFormElement implements Serializable {
 	private String max;
 	private String min;
 	private String[] styles;
-	private String[] options;
+	private List<MapperUtil> options;
 	private String[] constraints;
 	@Size(max = CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String dependingOn;
@@ -94,15 +96,14 @@ public class CampaignFormElement implements Serializable {
 		this.styles = styles;
 	}
 
-	public String[] getOptions() {
+
+	public List<MapperUtil> getOptions() {
 		return options;
 	}
 
-	public void setOptions(String[] options) {
+	public void setOptions(List<MapperUtil> options) {
 		this.options = options;
 	}
-	
-	
 
 	public String[] getConstraints() {
 		return constraints;
@@ -186,7 +187,8 @@ public class CampaignFormElement implements Serializable {
 		return important == that.important && Objects.equals(type, that.type) && Objects.equals(id, that.id)
 				&& Objects.equals(caption, that.caption) && Objects.equals(expression, that.expression)
 				&& Objects.equals(max, that.max) && Objects.equals(min, that.min)
-				&& Arrays.equals(styles, that.styles) && Arrays.equals(options, that.options)
+				&& Arrays.equals(styles, that.styles)
+				//&& Arrays.equals(options, that.options)
 				&& Arrays.equals(constraints, that.constraints)
 				&& Objects.equals(dependingOn, that.dependingOn)
 				&& Arrays.equals(dependingOnValues, that.dependingOnValues)
@@ -197,7 +199,7 @@ public class CampaignFormElement implements Serializable {
 	public int hashCode() {
 		int result = Objects.hash(type, id, caption, expression, dependingOn, important, warnonerror);
 		result = 31 * result + Arrays.hashCode(styles);
-		result = 31 * result + Arrays.hashCode(options);
+	//	result = 31 * result + Arrays.hashCode(options);
 		result = 31 * result + Arrays.hashCode(constraints);
 		result = 31 * result + Arrays.hashCode(dependingOnValues);
 		return result;

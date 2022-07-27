@@ -70,7 +70,7 @@ public class CampaignFormDataFragmentUtils {
 			if (type == CampaignFormElementType.YES_NO) {
 				ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, (Boolean) expressionValue);
 			} else {
-				ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue.toString());
+				ControlTextEditField.setValue((ControlTextEditField) dynamicField, expressionValue == null ? null: expressionValue.toString());
 			}
 			dynamicField.setEnabled(false);
 		} catch (SpelEvaluationException e) {
@@ -218,7 +218,7 @@ public class CampaignFormDataFragmentUtils {
 			CampaignFormElement campaignFormElement,
 			Context context,
 			Map<String, String> userTranslations,
-			List<String> isIntegerField) {
+			Map<String, String> isIntegerField) {
 		return new ControlSpinnerField(context) {
 
 			@Override

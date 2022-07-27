@@ -1,6 +1,9 @@
 package de.symeda.sormas.api.campaign.form;
 
 import java.util.List;
+import java.util.Map;
+
+import de.symeda.sormas.api.MapperUtil;
 
 public class CampaignFormElementOptions {
 	public static Integer max = null;
@@ -34,15 +37,19 @@ public class CampaignFormElementOptions {
 
 
 	// List Methods constraints
-	public static List<String> optionsListValues;
+	public static Map<String, String> optionsListValues;
 
-	public static List<String> getOptionsListValues() {
+	
+
+	public static Map<String, String> getOptionsListValues() {
 		return optionsListValues;
 	}
 
-	public void setOptionsListValues(List<String> optionsListValues) {
-		this.optionsListValues = optionsListValues;
+	public static void setOptionsListValues(Map<String, String> optionsListValues) {
+		CampaignFormElementOptions.optionsListValues = optionsListValues;
 	}
+
+
 
 	// List Methods constraints
 	public static List<String> constraintsListValues;
@@ -60,9 +67,5 @@ public class CampaignFormElementOptions {
 		return "CampaignFormElementOptions [getOptionsListValues()=" + getOptionsListValues() + "]";
 	}
 
-	public List CampaignFormElementOptions() {
-		return getOptionsListValues();
-		// TODO Auto-generated constructor stub
-	}
 
 }

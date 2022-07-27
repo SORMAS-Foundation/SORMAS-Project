@@ -59,7 +59,7 @@ public class ExpressionProcessor {
 		final Map<String, Field<?>> fields = campaignFormBuilder.getFields();
 		final List<CampaignFormElement> formElements = campaignFormBuilder.getFormElements();
 		formElements.stream()
-			.filter(formElement -> formElement.getExpression() != null)
+			.filter(formElement -> formElement.getExpression() == null)
 			.filter(formElement -> fields.get(formElement.getId()) != null)
 			.forEach(formElement -> {
 				fields.get(formElement.getId()).addValueChangeListener((Property.ValueChangeListener) valueChangeEvent -> checkExpression());
@@ -90,6 +90,7 @@ public class ExpressionProcessor {
 	}
 
 	private void checkExpression() {
+		System.out.println("jjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj" );
 		EvaluationContext context = refreshEvaluationContext(campaignFormBuilder.getFormValues());
 		final List<CampaignFormElement> formElements = campaignFormBuilder.getFormElements();
 		formElements.stream().filter(element -> element.getExpression() != null).forEach(e -> {
@@ -110,14 +111,14 @@ public class ExpressionProcessor {
 						.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 								CampaignFormElementType.fromString(e.getType()),
 								null,
-								opt);
+								null);
 					} else {
 
 						campaignFormBuilder
 						.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 								CampaignFormElementType.fromString(e.getType()),
 								value,
-								opt);
+								null);
 					}
 					
 					
@@ -134,7 +135,7 @@ public class ExpressionProcessor {
 					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 							CampaignFormElementType.fromString(e.getType()),
 							!Double.isFinite((double) value) ? 0.0 : Precision.round((double) value, 2),
-							opt);
+									null);
 				} 
 			} catch (SpelEvaluationException evaluationException) {
 				//LOG.error("Error evaluating expression: {} / {}", evaluationException.getMessageCode(), evaluationException.getMessage());
