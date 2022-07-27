@@ -1931,9 +1931,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testMergeCaseWithDuplicatedVaccines() {
-
-		//TODO : TESSSSSSSSSSSSSSSSSSSSSSTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
-
 		// Create leadCase
 		RDCF rdcf = creator.createRDCF();
 		UserDto leadUser = creator.createUser(rdcf, "First", "User");
