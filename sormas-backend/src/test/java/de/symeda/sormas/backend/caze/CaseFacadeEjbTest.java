@@ -1706,6 +1706,172 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testMergeCaseWithDuplicatedVaccines() {
+
+
+		//TODO : TESSSSSSSSSSSSSSSSSSSSSSTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+
+		// Create leadCase
+		RDCF rdcf = creator.createRDCF();
+		UserDto leadUser = creator.createUser(rdcf, "First", "User");
+//		UserReferenceDto leadUserReference = new UserReferenceDto(leadUser.getUuid());
+		PersonDto leadPerson = creator.createPerson("Alex", "Miller");
+
+
+		CaseDataDto leadCase = creator.createCase(
+			leadUser.toReference(), leadPerson.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.SUSPECT,
+			InvestigationStatus.PENDING,
+			new Date(),
+				rdcf);
+		//public ImmunizationDto createImmunization(Disease disease, PersonReferenceDto person, UserReferenceDto reportingUser, RDCF rdcf) {
+		ImmunizationDto immunizationDto = creator.createImmunization(leadCase.getDisease(),leadPerson.toReference(), leadUser.toReference(), rdcf);
+
+		/*
+		* VaccinationDto createVaccinationWithDetails(
+		UserReferenceDto reportingUser,
+		ImmunizationReferenceDto immunization,
+		HealthConditionsDto healthConditions,
+		Date vaccinationDate,
+		Vaccine vaccine,
+		VaccineManufacturer vaccineManufacturer,
+		VaccinationInfoSource infoSource,
+		String vaccineInn,
+		String vaccineBatchNumber,
+		String vaccineAtcCode,
+		String vaccineDose) {
+		*
+		* */
+
+		HealthConditionsDto healthConditions = new HealthConditionsDto();
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(2022,6,1);
+
+		//vaccine without duplicate
+		creator.createVaccinationWithDetails(
+				leadUser.toReference(),
+				immunizationDto.toReference(),
+				healthConditions,
+				new Date(),
+				Vaccine.OXFORD_ASTRA_ZENECA,
+				VaccineManufacturer.ASTRA_ZENECA,
+				null,
+				null,
+				null,
+				null,
+				null);
+
+		//pfizer vaccines duplicate
+		VaccinationDto leadVacc1 = creator.createVaccinationWithDetails(
+			leadUser.toReference(),
+			immunizationDto.toReference(),
+			healthConditions,
+			calendar.getTime(),
+			Vaccine.COMIRNATY,
+			VaccineManufacturer.BIONTECH_PFIZER,
+			null,
+			null,
+			"123",
+			null,
+			"dose1");
+		creator.createVaccinationWithDetails(
+				leadUser.toReference(),
+				immunizationDto.toReference(),
+				healthConditions,
+				calendar.getTime(),
+				Vaccine.COMIRNATY,
+				VaccineManufacturer.BIONTECH_PFIZER,
+				VaccinationInfoSource.VACCINATION_CARD,
+				"inn1",
+				"456",
+				null,
+				null);
+		creator.createVaccinationWithDetails(
+				leadUser.toReference(),
+				immunizationDto.toReference(),
+				healthConditions,
+				calendar.getTime(),
+				Vaccine.COMIRNATY,
+				VaccineManufacturer.BIONTECH_PFIZER,
+				VaccinationInfoSource.VACCINATION_CARD,
+				null,
+				null,
+				"888",
+				null);
+
+		//------------------------------------------------
+		UserDto followUser = creator.createUser(rdcf, "Second", "User");
+		PersonDto followPerson = creator.createPerson("Scott", "Miller");
+
+
+		CaseDataDto followCase = creator.createCase(
+				followUser.toReference(), followPerson.toReference(),
+				Disease.CORONAVIRUS,
+				CaseClassification.SUSPECT,
+				InvestigationStatus.PENDING,
+				new Date(),
+				rdcf);
+
+		ImmunizationDto followImmunizationDto = creator.createImmunization(followCase.getDisease(),followPerson.toReference(), followUser.toReference(), rdcf);
+//vaccine without duplicate
+		creator.createVaccinationWithDetails(
+				followUser.toReference(),
+				followImmunizationDto.toReference(),
+				healthConditions,
+				new Date(),
+				Vaccine.AD26_COV2_S,
+				VaccineManufacturer.JOHNSON_JOHNSON,
+				null,
+				null,
+				null,
+				null,
+				null);
+		creator.createVaccinationWithDetails(
+				followUser.toReference(),
+				followImmunizationDto.toReference(),
+				healthConditions,
+				calendar.getTime(),
+				Vaccine.COMIRNATY,
+				VaccineManufacturer.BIONTECH_PFIZER,
+				VaccinationInfoSource.ORAL_COMMUNICATION,
+				null,
+				null,
+				"888",
+				null);
+		creator.createVaccinationWithDetails(
+				followUser.toReference(),
+				followImmunizationDto.toReference(),
+				healthConditions,
+				calendar.getTime(),
+				Vaccine.COMIRNATY,
+				VaccineManufacturer.BIONTECH_PFIZER,
+				VaccinationInfoSource.ORAL_COMMUNICATION,
+				null,
+				null,
+				"888",
+				"dose2");
+
+		List<VaccinationDto> ll8 = getVaccinationFacade().getAllVaccinations(leadPerson.getUuid(), leadCase.getDisease());
+		List<String> puid = new ArrayList<>();
+		puid.add(leadPerson.getUuid());
+
+//		getCaseFacade().mergeCase(leadCase.getUuid(), followCase.getUuid());
+
+//		CaseDataDto resultCaseDto = getCaseFacade().getCaseDataByUuid(leadCase.getUuid());
+//		List<VaccinationDto> ll = getVaccinationFacade().getAllVaccinations(followPerson.getUuid(), followCase.getDisease());
+		assertNotNull(ll8);
+
+		List<VaccinationDto> ll9 = getVaccinationFacade().getAllVaccinations(followPerson.getUuid(), followCase.getDisease());
+		assertNotNull(ll9);
+
+		getCaseFacade().mergeCase(leadCase.getUuid(), followCase.getUuid());
+
+		ll8 = getVaccinationFacade().getAllVaccinations(leadPerson.getUuid(), leadCase.getDisease());
+		assertNotNull(ll8);
+	}
+
+	@Test
 	public void testMergeCase() throws IOException {
 
 		// 1. Create
@@ -1717,17 +1883,17 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonReferenceDto leadPersonReference = new PersonReferenceDto(leadPerson.getUuid());
 		RDCF leadRdcf = creator.createRDCF();
 		CaseDataDto leadCase = creator.createCase(
-			leadUserReference,
-			leadPersonReference,
-			Disease.DENGUE,
-			CaseClassification.SUSPECT,
-			InvestigationStatus.PENDING,
-			new Date(),
-			leadRdcf,
-			(c) -> {
-				c.setAdditionalDetails("Test additional details");
-				c.setFollowUpComment("Test followup comment");
-			});
+				leadUserReference,
+				leadPersonReference,
+				Disease.DENGUE,
+				CaseClassification.SUSPECT,
+				InvestigationStatus.PENDING,
+				new Date(),
+				leadRdcf,
+				(c) -> {
+					c.setAdditionalDetails("Test additional details");
+					c.setFollowUpComment("Test followup comment");
+				});
 		leadCase.setPregnant(YesNoUnknown.UNKNOWN);
 		leadCase.getEpiData().setActivityAsCaseDetailsKnown(YesNoUnknown.NO);
 		getCaseFacade().save(leadCase);
@@ -1744,36 +1910,36 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		PersonReferenceDto otherPersonReference = new PersonReferenceDto(otherPerson.getUuid());
 		RDCF otherRdcf = creator.createRDCF("Reg2", "Dis2", "Comm2", "Fac2", "Poe2");
 		CaseDataDto otherCase = creator.createCase(
-			otherUserReference,
-			otherPersonReference,
-			Disease.CHOLERA,
-			CaseClassification.SUSPECT,
-			InvestigationStatus.PENDING,
-			new Date(),
-			otherRdcf,
-			(c) -> {
-				c.setAdditionalDetails("Test other additional details");
-				c.setFollowUpComment("Test other followup comment");
-			});
+				otherUserReference,
+				otherPersonReference,
+				Disease.CHOLERA,
+				CaseClassification.SUSPECT,
+				InvestigationStatus.PENDING,
+				new Date(),
+				otherRdcf,
+				(c) -> {
+					c.setAdditionalDetails("Test other additional details");
+					c.setFollowUpComment("Test other followup comment");
+				});
 		otherCase.setCaseIdIsm(12345);
 		CaseReferenceDto otherCaseReference = getCaseFacade().getReferenceByUuid(otherCase.getUuid());
 		ContactDto contact =
-			creator.createContact(otherUserReference, otherUserReference, otherPersonReference, otherCase, new Date(), new Date(), null);
+				creator.createContact(otherUserReference, otherUserReference, otherPersonReference, otherCase, new Date(), new Date(), null);
 		Region region = creator.createRegion("");
 		District district = creator.createDistrict("", region);
 		SampleDto sample = creator.createSample(
-			otherCaseReference,
-			otherUserReference,
-			creator.createFacility("", region, district, creator.createCommunity("", district)));
+				otherCaseReference,
+				otherUserReference,
+				creator.createFacility("", region, district, creator.createCommunity("", district)));
 		TaskDto task = creator.createTask(
-			TaskContext.CASE,
-			TaskType.CASE_INVESTIGATION,
-			TaskStatus.PENDING,
-			otherCaseReference,
-			new ContactReferenceDto(),
-			new EventReferenceDto(),
-			new Date(),
-			otherUserReference);
+				TaskContext.CASE,
+				TaskType.CASE_INVESTIGATION,
+				TaskStatus.PENDING,
+				otherCaseReference,
+				new ContactReferenceDto(),
+				new EventReferenceDto(),
+				new Date(),
+				otherUserReference);
 		TreatmentDto treatment = creator.createTreatment(otherCase);
 		PrescriptionDto prescription = creator.createPrescription(otherCase);
 		ClinicalVisitDto visit = creator.createClinicalVisit(otherCase);
@@ -1803,21 +1969,21 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		});
 
 		DocumentDto document = creator.createDocument(
-			leadUserReference,
-			"document.pdf",
-			"application/pdf",
-			42L,
-			DocumentRelatedEntityType.CASE,
-			leadCase.getUuid(),
-			"content".getBytes(StandardCharsets.UTF_8));
+				leadUserReference,
+				"document.pdf",
+				"application/pdf",
+				42L,
+				DocumentRelatedEntityType.CASE,
+				leadCase.getUuid(),
+				"content".getBytes(StandardCharsets.UTF_8));
 		DocumentDto otherDocument = creator.createDocument(
-			leadUserReference,
-			"other_document.pdf",
-			"application/pdf",
-			42L,
-			DocumentRelatedEntityType.CASE,
-			otherCase.getUuid(),
-			"other content".getBytes(StandardCharsets.UTF_8));
+				leadUserReference,
+				"other_document.pdf",
+				"application/pdf",
+				42L,
+				DocumentRelatedEntityType.CASE,
+				otherCase.getUuid(),
+				"other content".getBytes(StandardCharsets.UTF_8));
 
 		// 2. Merge
 
@@ -1890,9 +2056,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// 4.7 Visits;
 		List<String> mergedVisits = getVisitFacade().getIndexList(new VisitCriteria().caze(mergedCase.toReference()), null, null, null)
-			.stream()
-			.map(VisitIndexDto::getUuid)
-			.collect(Collectors.toList());
+				.stream()
+				.map(VisitIndexDto::getUuid)
+				.collect(Collectors.toList());
 		assertEquals(2, mergedVisits.size());
 		assertTrue(mergedVisits.contains(leadVisit.getUuid()));
 		assertTrue(mergedVisits.contains(otherVisit.getUuid()));
@@ -1906,7 +2072,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		// 4.8 Linked Surveillance Reports
 		List<SurveillanceReportDto> surveillanceReportList =
-			getSurveillanceReportFacade().getByCaseUuids(Collections.singletonList(mergedCase.getUuid()));
+				getSurveillanceReportFacade().getByCaseUuids(Collections.singletonList(mergedCase.getUuid()));
 		MatcherAssert.assertThat(surveillanceReportList, hasSize(1));
 
 		// 5 Documents
