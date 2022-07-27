@@ -11670,4 +11670,15 @@ ALTER TABLE sormastosormassharerequest_history ADD COLUMN shareassociatedcontact
 
 INSERT INTO schema_version (version_number, comment) VALUES (474, 'S2S_deactivate share parameter ''share associated contacts'' (for cases) #9146');
 
+-- 2022-07-25 Allow diseases to be used case-based and aggregated at the same time
+ALTER TABLE  diseaseconfiguration RENAME COLUMN casebased TO casesurveillanceenabled;
+ALTER TABLE  diseaseconfiguration_history RENAME COLUMN casebased TO casesurveillanceenabled;
+ALTER TABLE diseaseconfiguration ADD COLUMN aggregatereportingenabled boolean;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN aggregatereportingenabled boolean;
+
+UPDATE diseaseconfiguration SET aggregatereportingenabled = NOT casesurveillanceenabled;
+UPDATE diseaseconfiguration_history SET aggregatereportingenabled = NOT casesurveillanceenabled;
+
+INSERT INTO schema_version (version_number, comment) VALUES (475, 'Allow diseases to be used case-based and aggregated at the same time #9629');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

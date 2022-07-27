@@ -217,7 +217,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 			.collect(Collectors.toList());
 		DatabaseHelper.getAggregateReportDao().sortAggregateReports(userReports);
 
-		List<Disease> diseaseList = DiseaseConfigurationCache.getInstance().getAllDiseases(true, null, false);
+		List<Disease> diseaseList = DiseaseConfigurationCache.getInstance().getAllDiseases(true, null, false, true);
 		List<Disease> diseasesWithoutReport = new ArrayList<>(diseaseList);
 		List<DiseaseAgeGroup> diseaseAgeGroupsWithoutReport = new ArrayList<>();
 		diseaseList.forEach(disease -> {
@@ -252,9 +252,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 				aggregateReports.stream().map(aggregateReport -> aggregateReport.getAgeGroup()).collect(Collectors.toList());
 
 			List<DiseaseAgeGroup> noDataAgeGroups = diseaseAgeGroupsWithoutReport.stream()
-				.filter(
-					diseaseAgeGroup -> diseaseAgeGroup.getDisease().equals(disease)
-						&& !diseaseAgeGroups.contains(diseaseAgeGroup.getAgeGroup()))
+				.filter(diseaseAgeGroup -> diseaseAgeGroup.getDisease().equals(disease) && !diseaseAgeGroups.contains(diseaseAgeGroup.getAgeGroup()))
 				.collect(Collectors.toList());
 
 			if (!noDataAgeGroups.isEmpty()) {
