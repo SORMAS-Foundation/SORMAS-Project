@@ -49,11 +49,9 @@ public class TaskManagementPage {
   public static final By TASK_EXPORT_BUTTON = By.id("export");
   public static final By BASIC_EXPORT_BUTTON = By.id("exportBasic");
   public static final By DETAILED_EXPORT_BUTTON = By.id("exportDetailed");
-
   public static final By CUSTOM_EXPORT_BUTTON = By.id("exportCustom");
   public static final By DETAILED_EXPORT_POPUP_LABEL =
       By.xpath("//div[contains(text(),'Detailed Export')]");
-
   public static final By NEW_CUSTOM_EXPORT_BUTTON = By.id("exportNewExportConfiguration");
   public static final By SAVE_CUSTOM_EXPORT_BUTTON = By.id("actionSave");
   public static final By CUSTOM_TASK_EXPORT_DOWNLOAD_BUTTON =
