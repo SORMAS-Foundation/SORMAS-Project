@@ -11700,15 +11700,15 @@ ALTER TABLE sharerequestinfo ALTER COLUMN datatype SET NOT NULL;
 INSERT INTO schema_version (version_number, comment) VALUES (477, 'S2S_added sample after sharing a case/contact does not get shared #9771');
 
 -- 2022-07-26 Turn OccupationType into a customizable enum #5015
---ALTER TABLE customizableenumvalue ADD COLUMN defaultvalue boolean DEFAULT false;
---ALTER TABLE customizableenumvalue_history ADD COLUMN defaultvalue boolean DEFAULT false;
+ALTER TABLE customizableenumvalue ADD COLUMN defaultvalue boolean DEFAULT false;
+ALTER TABLE customizableenumvalue_history ADD COLUMN defaultvalue boolean DEFAULT false;
 
 DO $$
     DECLARE rec RECORD;
 BEGIN
 FOR rec IN SELECT DISTINCT occupationtype FROM person WHERE occupationtype != 'HEALTHCARE_WORKER' AND occupationtype != 'LABORATORY_STAFF' AND occupationtype != 'OTHER'
 LOOP
-    INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'OCCUPATION_TYPE', rec.occupationtype, rec.occupationtype);
+    INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, properties) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'OCCUPATION_TYPE', rec.occupationtype, rec.occupationtype, '{"hasDetails":true}');
 END LOOP;
 END;
 $$ LANGUAGE plpgsql;

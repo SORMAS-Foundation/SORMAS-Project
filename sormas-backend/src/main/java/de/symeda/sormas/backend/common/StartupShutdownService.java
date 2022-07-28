@@ -820,7 +820,7 @@ public class StartupShutdownService {
 					userRoleService.ensurePersisted(userRole);
 				}
 				break;
-			case 475:
+			case 478:
 				// Add proper captions and translations to occupation types
 				List<OccupationType> occupationTypes = customizableEnumFacade.getEnumValues(CustomizableEnumType.OCCUPATION_TYPE, null);
 				occupationTypes.forEach(o -> {
