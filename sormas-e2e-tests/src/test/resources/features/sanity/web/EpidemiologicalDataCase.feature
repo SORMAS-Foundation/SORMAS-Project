@@ -22,7 +22,7 @@ Feature: Epidemiological data coverage
     Then I am checking all Activity data is saved and displayed
 
     #TODO to be investigated if is defect
-    @issue=SORDEV-5522 @env_main
+    @tmsLink=SORDEV-5522 @env_main
   Scenario: Validate all fields are present and functional on Epidemiological page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -57,7 +57,7 @@ Feature: Epidemiological data coverage
     And I open saved activity from Epidemiological Data
     Then I am checking all Activity data is saved and displayed
 
-  @issue=SORDEV-5523 @env_main
+  @tmsLink=SORDEV-5523 @env_main
   Scenario: Enter an exposure data in Case Directory
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -107,7 +107,7 @@ Feature: Epidemiological data coverage
     And I search and chose the last case uuid created via API in the CHOOSE CASE Contact window
     And I click on SAVE button in create contact form
 
-  @issue=SORDEV-5523 @env_de
+  @tmsLink=SORDEV-5523 @env_de
   Scenario: Enter an exposure data in Case Directory for DE version
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -165,7 +165,7 @@ Feature: Epidemiological data coverage
     And I search and chose the last case uuid created via UI in the CHOOSE CASE Contact window
     And I click on SAVE button in create contact form
 
-  @issue=SORDEV-5525 @env_de
+  @tmsLink=SORDEV-5525 @env_de
   Scenario: Enter an activity as case in Epidemiological data tab in Cases for DE version
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -185,7 +185,7 @@ Feature: Epidemiological data coverage
     And  I click on save button in Exposure for Epidemiological data tab in Cases
     And I check if created Activity as Case appears in a grid for Epidemiological data tab in Cases
 
-  @issue=SORDEV-5839 @env_main
+  @tmsLink=SORDEV-5839 @env_main
   Scenario: Make facility selection on LocationForm more intuitive
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -202,7 +202,7 @@ Feature: Epidemiological data coverage
     Then I set Facility Type as a Hospital in a new Exposure for Epidemiological data
     And I check if Facility field has blue exclamation mark and displays correct message
 
-  @issue=SORDEV-5977 @env_main
+  @tmsLink=SORDEV-5977 @env_main
   Scenario: Improve exposure table display
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -220,7 +220,7 @@ Feature: Epidemiological data coverage
     Then I check if data is correctly displayed in Exposures table in Epidemiological data tab
 
 
-  @issue=SORDEV-5524 @env_main @ignore
+  @tmsLink=SORDEV-5524 @env_main @ignore
   Scenario: Enter an activity as case in Epidemiological data tab in Cases
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -264,7 +264,7 @@ Feature: Epidemiological data coverage
     And I click on save button in Exposure for Epidemiological data tab in Cases
     And I check that edit Activity as Case vision button is visible and clickable
 
-  @issue=SORDEV-5563 @env_de
+  @tmsLink=SORDEV-5563 @env_de
   Scenario: Add contact person details to facilities case exposure investigation and activity as case
     Given I log in as a Admin User
     Then I click on the Configuration button from navbar
@@ -299,7 +299,7 @@ Feature: Epidemiological data coverage
     Then I click on edit button for the last searched facility
     And I archive facility
 
-  @issue=SORDEV-5204 @env_main
+  @tmsLink=SORDEV-5204 @env_main
   Scenario: Test continent and subcontinent in location entry in exposure and activity as case
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

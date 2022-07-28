@@ -1837,7 +1837,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 							I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY)));
 				}
 
-				if (!userService.hasRight(UserRight.CASE_TRANSFER)) {
+				if (existingCaze.getHealthFacility() != null && !userService.hasRight(UserRight.CASE_TRANSFER)) {
 					throw new AccessDeniedException(
 						String.format(
 							I18nProperties.getString(Strings.errorNoRightsForChangingField),

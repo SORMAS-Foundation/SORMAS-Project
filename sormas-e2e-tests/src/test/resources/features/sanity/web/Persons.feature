@@ -1,7 +1,7 @@
 @UI @Sanity @Persons
 Feature: Edit Persons
 
-  @env_main @issue=SORQA-110
+  @env_main @tmsLink=SORQA-110
   Scenario: Edit existent person
     Given I log in with National User
     When I click on the Contacts button from navbar
@@ -20,7 +20,7 @@ Feature: Edit Persons
     Then I click on save button from Edit Person page
     And I check that previous edited person is correctly displayed in Edit Person page
 
-  @issue=SORDEV-8466 @env_main
+  @tmsLink=SORDEV-8466 @env_main
   Scenario: Check Filters on Person page work as expected
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -86,7 +86,7 @@ Feature: Edit Persons
     And I apply on the APPLY FILTERS button
     And I click on the RESET FILTERS button for Person
 
-  @issue=SORDEV-8468 @env_main
+  @tmsLink=SORDEV-8468 @env_main
   Scenario: Edit existent person and provoke errors in the Edit Person page
     Given I log in with National User
     When I click on the Persons button from navbar
@@ -107,7 +107,7 @@ Feature: Edit Persons
     And I click the Done button in Person Contact Details popup
     Then I check that an invalid data error message appears
 
-  @issue=SORDEV-8469 @env_main
+  @tmsLink=SORDEV-8469 @env_main
   Scenario: Test for navigating through Case, Contact and Immunization cards on Edit Person Page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -139,13 +139,13 @@ Feature: Edit Persons
     And I click on Edit Immunization button for Immunization created through API from Immunization card on Edit Person page
     Then I navigate to the last created via api Person page via URL
 
-  @issue=SORDEV-8467 @env_main
+  @tmsLink=SORDEV-8467 @env_main
   Scenario: Test column structure in Person directory
     Given I log in with National User
     And I click on the Persons button from navbar
     Then I check that the Person table structure is correct
 
-  @issue=SORDEV-5630 @env_de
+  @tmsLink=SORDEV-5630 @env_de
   Scenario: Test a general comment field in person entity
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -154,7 +154,7 @@ Feature: Edit Persons
     Then I navigate to the last created via api Person page via URL
     And I check General comment field is enabled on Edit Person page
 
-  @issue=SORDEV-7424 @env_main
+  @tmsLink=SORDEV-7424 @env_main
   Scenario: Test event participant person sex required
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -166,7 +166,7 @@ Feature: Edit Persons
     And I add only first and last name data and check is sex combobox required for event participant creation
     When I check if error display correctly expecting sex error
 
-  @issue=SORDEV-10227 @env_de
+  @tmsLink=SORDEV-10227 @env_de
   Scenario: Test Permanent deletion for Person for Travel Entry, Event Participant, Case and Contact combined
     Given API: I create a new event
     Then API: I check that POST call body is "OK"

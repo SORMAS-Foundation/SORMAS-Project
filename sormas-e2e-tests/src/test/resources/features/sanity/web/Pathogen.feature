@@ -2,7 +2,7 @@
 
 Feature: Pathogen Functionalities
 
-  @issue=SORDEV-5492 @env_main
+  @tmsLink=SORDEV-5492 @env_main
   Scenario: Add a Pathogen test from Samples with IgM test type and verify the fields
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -22,7 +22,7 @@ Feature: Pathogen Functionalities
     And I check that if Four Fold Increase Antibody Titer displayed
     And I delete the Pathogen test
 
-  @issue=SORDEV-5492 @env_main
+  @tmsLink=SORDEV-5492 @env_main
   Scenario: Add a Pathogen test from Samples with IgG test type and verify the fields
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -42,7 +42,7 @@ Feature: Pathogen Functionalities
     And I check that if Four Fold Increase Antibody Titer displayed
     And I delete the Pathogen test
 
-  @issue=SORDEV-5492 @env_main
+  @tmsLink=SORDEV-5492 @env_main
   Scenario: Add a Pathogen test from Samples with PCR RT PCR test type and verify the fields
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -62,7 +62,7 @@ Feature: Pathogen Functionalities
     And I check that if PCR RT PCR fields are correctly displayed
     And I delete the Pathogen test
 
-  @issue=SORDEV-5492 @env_main
+  @tmsLink=SORDEV-5492 @env_main
   Scenario: Add a Pathogen test from Samples with CQ Value Detection test type and verify the fields
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -82,7 +82,7 @@ Feature: Pathogen Functionalities
     And I check that if CQ CT Value field is correctly displayed
     And I delete the Pathogen test
 
-  @issue=SORDEV-5492 @env_main
+  @tmsLink=SORDEV-5492 @env_main
   Scenario: Add a Pathogen test from Samples with Sequencing test type and verify the fields
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -102,7 +102,7 @@ Feature: Pathogen Functionalities
     And I check that if Sequencing or DNA Microarray field is correctly displayed
     And I delete the Pathogen test
 
-  @issue=SORDEV-5492 @env_main
+  @tmsLink=SORDEV-5492 @env_main
   Scenario: Add a Pathogen test from Samples with DNA Microarray test type and verify the fields
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -122,7 +122,7 @@ Feature: Pathogen Functionalities
     And I check that if Sequencing or DNA Microarray field is correctly displayed
     And I delete the Pathogen test
 
-  @issue=SORDEV-5492 @env_main
+  @tmsLink=SORDEV-5492 @env_main
   Scenario: Add a Pathogen test from Samples with Other test type and verify the fields
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -142,7 +142,7 @@ Feature: Pathogen Functionalities
     And I check that if Other field is correctly displayed
     And I delete the Pathogen test
 
-  @issue=SORDEV-8058 @env_main
+  @tmsLink=SORDEV-8058 @env_main
   Scenario: Unify pathogen test saving logic between cases and contacts
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -167,7 +167,7 @@ Feature: Pathogen Functionalities
     When I open created Sample
     Then I check if Pathogen test result in Samples is displayed correctly and save
 
-  @issue=SORDEV-8058 @env_main
+  @tmsLink=SORDEV-8058 @env_main
   Scenario: Unify pathogen test saving logic between cases and event participants
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -194,7 +194,7 @@ Feature: Pathogen Functionalities
     When I open created Sample
     Then I check if Pathogen test result in Samples is displayed correctly and save
 
-    @issue=SORDEV-7092 @env_de
+    @tmsLink=SORDEV-7092 @env_de
       Scenario: Test Enhance availability of pathogen test information
       Given API: I create a new person
       Then API: I check that POST call body is "OK"

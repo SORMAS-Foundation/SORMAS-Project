@@ -1,7 +1,7 @@
 @UI @Sanity @Vaccination @Filters
 Feature: Vaccination tests
 
-  @issue=SORDEV-9585 @env_de
+  @tmsLink=SORDEV-9585 @env_de
   Scenario: Test Add reduced vaccination module to document creation for Contact
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -30,7 +30,7 @@ Feature: Vaccination tests
     And I check if generated document for contact based on "VaccinationGenerationTest_Contacts.docx" contains all required fields
     Then I delete downloaded file created from "VaccinationGenerationTest_Contacts.docx" Document Template for Contact
 
-  @issue=SORDEV-9585 @env_de
+  @tmsLink=SORDEV-9585 @env_de
   Scenario: Test Add reduced vaccination module to document creation for Case
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -59,7 +59,7 @@ Feature: Vaccination tests
     And I check if generated document for Case based on "VaccinationGenerationTest_Cases.docx" contains all required fields
     Then I delete downloaded file created from "VaccinationGenerationTest_Cases.docx" Document Template
 
-  @issue=SORDEV-9585 @env_de
+  @tmsLink=SORDEV-9585 @env_de
   Scenario: Test Add reduced vaccination module to document creation for Event
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -90,7 +90,7 @@ Feature: Vaccination tests
   #leading case - only vaccination date and name
   #discarded case - all fields and same vaccination name and date
   #expected - one vaccination updated with the information given by the vaccination of the discarded case
-  @issue=SORDEV-11570 @env_de
+  @tmsLink=SORDEV-11570 @env_de
   Scenario: Duplicate detection for vaccinations when merging cases[1]
     Given I log in as a Admin User
     When I click on the Cases button from navbar
@@ -136,7 +136,7 @@ Feature: Vaccination tests
   #leading case - all fields and same vaccination name and date
   #discarded case - all fields with different value than leading case and same vaccination name and date
   #expected - one vaccination updated with the information given by the vaccination of the leading case
-  @issue=SORDEV-11570 @env_de
+  @tmsLink=SORDEV-11570 @env_de
   Scenario: Duplicate detection for vaccinations when merging cases[2]
     Given I log in as a Admin User
     When I click on the Cases button from navbar
@@ -183,7 +183,7 @@ Feature: Vaccination tests
   #leading case - only vaccination date
   #discarded case - only vaccination date same as leading
   #expected - two vaccinations with same vaccination date
-  @issue=SORDEV-11570 @env_de
+  @tmsLink=SORDEV-11570 @env_de
   Scenario: Duplicate detection for vaccinations when merging cases[3]
     Given I log in as a Admin User
     When I click on the Cases button from navbar
@@ -232,7 +232,7 @@ Feature: Vaccination tests
   #leading case - only vaccination name
   #discarded case - only vaccination name same as leading
   #expected - two vaccinations with same vaccination name
-  @issue=SORDEV-11570 @env_de
+  @tmsLink=SORDEV-11570 @env_de
   Scenario: Duplicate detection for vaccinations when merging cases[4]
     Given I log in as a Admin User
     When I click on the Cases button from navbar
@@ -280,7 +280,7 @@ Feature: Vaccination tests
   #leading case - everything but vaccination date and name
   #discarded case - everything but vaccination date and name
   #expected - two vaccinations without vaccination name and date
-  @issue=SORDEV-11570 @env_de
+  @tmsLink=SORDEV-11570 @env_de
   Scenario: Duplicate detection for vaccinations when merging cases[5]
     Given I log in as a Admin User
     When I click on the Cases button from navbar
@@ -328,7 +328,7 @@ Feature: Vaccination tests
   #leading contact - only vaccination date and name
   #discarded contact - all fields and same vaccination name and date
   #expected - one vaccination updated with the information given by the vaccination of the discarded contact
-  @issue=SORDEV-11753 @env_de
+  @tmsLink=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts [1]
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -383,7 +383,7 @@ Feature: Vaccination tests
   #leading contact - all fields and same vaccination name and date
   #discarded contact - all fields with different value than leading contact and same vaccination name and date
   #expected - one vaccination updated with the information given by the vaccination of the leading contact
-  @issue=SORDEV-11753 @env_de
+  @tmsLink=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts [2]
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -439,7 +439,7 @@ Feature: Vaccination tests
   #leading contact - only vaccination date
   #discarded contact - only vaccination date same as leading
   #expected - two vaccinations with same vaccination date
-  @issue=SORDEV-11753 @env_de
+  @tmsLink=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts [3]
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -497,7 +497,7 @@ Feature: Vaccination tests
   #leading contact - only vaccination name
   #discarded contact - only vaccination name same as leading
   #expected - two vaccinations with same vaccination name
-  @issue=SORDEV-11753 @env_de
+  @tmsLink=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts[4]
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -556,7 +556,7 @@ Feature: Vaccination tests
   #leading contact - everything but vaccination date and name
   #discarded contact - everything but vaccination date and name
   #expected - two vaccinations without vaccination name and date
-  @issue=SORDEV-11753 @env_de
+  @tmsLink=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts[5]
     Given API: I create a new person
     And API: I check that POST call body is "OK"
