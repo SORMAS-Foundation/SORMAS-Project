@@ -15,7 +15,7 @@ Feature: Sample filter functionality
     When I search for samples created with the API
     Then I check the displayed Laboratory filter dropdown
 
-  @issue=SORDEV-5981 @env_main
+  @tmsLink=SORDEV-5981 @env_main
   Scenario: Check all filters are work properly in Samples directory
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -74,7 +74,7 @@ Feature: Sample filter functionality
     And I select "Referred to other lab" filter from quick filter
     And I click on reset filters button from Sample Directory
 
-  @issue=SORDEV-5982 @env_de
+  @tmsLink=SORDEV-5982 @env_de
   Scenario: Check all filters are work properly in Samples directory for DE version
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

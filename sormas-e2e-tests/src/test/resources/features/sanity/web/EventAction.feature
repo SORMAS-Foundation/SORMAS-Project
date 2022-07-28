@@ -2,7 +2,7 @@
 Feature: Create event actions
 
 
-@issue=SORDEV-5564 @env_main
+@tmsLink=SORDEV-5564 @env_main
 Scenario: Event - follow-up of actions: attach documents at the level of the action carried out
 Given API: I create a new event
 Then API: I check that POST call body is "OK"
