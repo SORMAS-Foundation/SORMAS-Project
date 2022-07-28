@@ -71,11 +71,11 @@ public final class DiseaseConfigurationCache {
 				nonPrimaryDiseases.add(disease);
 			}
 			if (Boolean.TRUE.equals(configuration.getCaseSurveillanceEnabled())
-				|| (configuration.getCaseSurveillanceEnabled() == null && disease.isDefaultCaseBased())) {
+				|| (configuration.getCaseSurveillanceEnabled() == null && disease.isDefaultCaseSurveillanceEnabled())) {
 				caseBasedDiseases.add(disease);
 			}
 			if (Boolean.TRUE.equals(configuration.getAggregateReportingEnabled())
-				|| (configuration.getAggregateReportingEnabled() == null && !disease.isDefaultCaseBased())) {
+				|| (configuration.getAggregateReportingEnabled() == null && disease.isDefaultAggregateReportingEnabled())) {
 				aggregateDiseases.add(disease);
 			}
 			if (Boolean.TRUE.equals(configuration.getFollowUpEnabled())

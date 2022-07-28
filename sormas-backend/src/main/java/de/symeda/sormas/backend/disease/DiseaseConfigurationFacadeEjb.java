@@ -288,10 +288,10 @@ public class DiseaseConfigurationFacadeEjb implements DiseaseConfigurationFacade
 			} else {
 				nonPrimaryDiseases.add(disease);
 			}
-			if (enabled(configuration.getCaseSurveillanceEnabled(), disease.isDefaultCaseBased())) {
+			if (enabled(configuration.getCaseSurveillanceEnabled(), disease.isDefaultCaseSurveillanceEnabled())) {
 				caseSurveillanceDiseases.add(disease);
 			}
-			if (enabled(configuration.getAggregateReportingEnabled(), !disease.isDefaultCaseBased())) {
+			if (enabled(configuration.getAggregateReportingEnabled(), disease.isDefaultAggregateReportingEnabled())) {
 				aggregateReportingDiseases.add(disease);
 			}
 			if (Boolean.TRUE.equals(configuration.getFollowUpEnabled())

@@ -11677,7 +11677,6 @@ ALTER TABLE diseaseconfiguration ADD COLUMN aggregatereportingenabled boolean;
 ALTER TABLE diseaseconfiguration_history ADD COLUMN aggregatereportingenabled boolean;
 
 UPDATE diseaseconfiguration SET aggregatereportingenabled = NOT casesurveillanceenabled;
-UPDATE diseaseconfiguration_history SET aggregatereportingenabled = NOT casesurveillanceenabled;
 
 INSERT INTO schema_version (version_number, comment) VALUES (475, 'Allow diseases to be used case-based and aggregated at the same time #9629');
 
