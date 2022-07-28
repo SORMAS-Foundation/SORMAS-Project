@@ -18,7 +18,7 @@ Feature: Follow-up new visit functionality
     And I click on edit Visit button
     Then I validate all fields from Visit
 
-  @issue=SORDEV-5528 @env_main
+  @tmsLink=SORDEV-5528 @env_main
   Scenario: Fill the therapy tab for follow-up test
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -54,7 +54,7 @@ Feature: Follow-up new visit functionality
     And I navigate to symptoms tab
     Then I check if created data is correctly displayed in Symptoms tab for Set cleared to UNKNOWN
 
-  @issue=SORDEV-5084 @env_main
+  @tmsLink=SORDEV-5084 @env_main
   Scenario: Test Link phone-numbers in the follow-up to tel
     Given I log in with National User
     And I click on the Cases button from navbar

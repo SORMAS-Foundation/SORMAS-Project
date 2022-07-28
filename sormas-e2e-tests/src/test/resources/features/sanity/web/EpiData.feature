@@ -14,7 +14,7 @@ Feature: Cover Epidemiological data Tab from Contacts
     And I check and fill all data for a new EpiData Exposure
     Then I am checking all data is saved and displayed on edit Exposure page
 
-  @issue=SORDEV-5204 @env_main
+  @tmsLink=SORDEV-5204 @env_main
   Scenario: Test continent and subcontinent in location entry in exposure
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
