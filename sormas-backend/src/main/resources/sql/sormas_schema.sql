@@ -11670,4 +11670,10 @@ ALTER TABLE sormastosormassharerequest_history ADD COLUMN shareassociatedcontact
 
 INSERT INTO schema_version (version_number, comment) VALUES (474, 'S2S_deactivate share parameter ''share associated contacts'' (for cases) #9146');
 
+-- 2022-07-25 Make region and district required for aggregate reports
+DELETE FROM aggregatereport
+WHERE region_id IS NULL OR district_id IS NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (475, 'Make region and district required for aggregate reports #9847');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
