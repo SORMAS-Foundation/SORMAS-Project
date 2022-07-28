@@ -341,4 +341,6 @@ public class EditCasePage {
       By.xpath("//*[contains(text(),'Neuen Ereignisteilnehmer hinzuf\u00FCgen')]");
   public static final By CHANGE_DISEASE_POPUP_TITLE =
       By.xpath("//div[text()='Change case disease']");
+  public static final By PLACE_OF_STAY_REGION_INPUT = By.cssSelector("#region input");
+  public static final By PLACE_OF_STAY_DISTRICT_INPUT = By.cssSelector("#district input");
 }

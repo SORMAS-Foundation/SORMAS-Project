@@ -123,7 +123,7 @@ public class SormasToSormasController {
 			options -> FacadeProvider.getSormasToSormasLabMessageFacade()
 				.sendExternalMessages(Collections.singletonList(labMessage.getUuid()), options),
 			callback,
-			SormasToSormasOptionsForm.withoutOptions(),
+			SormasToSormasOptionsForm.forExternalMessage(),
 			new SormasToSormasOptionsDto());
 	}
 

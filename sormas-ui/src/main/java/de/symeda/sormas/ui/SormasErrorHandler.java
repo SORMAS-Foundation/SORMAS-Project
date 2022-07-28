@@ -77,6 +77,7 @@ public class SormasErrorHandler implements ErrorHandler {
 		ErrorMessage errorMessage = getErrorMessageForException(t);
 
 		if (t != null) {
+			t.printStackTrace();
 			// log the error or warning
 			if (errorMessage instanceof SystemError) {
 				logger.error(getMessage(t), t);

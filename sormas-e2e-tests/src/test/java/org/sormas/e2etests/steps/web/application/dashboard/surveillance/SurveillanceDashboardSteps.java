@@ -1076,5 +1076,26 @@ public class SurveillanceDashboardSteps implements En {
           Assert.assertEquals(
               confirmedCases_EN, confirmedCases_DE, "Counters for confirmed cases are not equal!");
         });
+    Then(
+        "^I check that the Total number of COVID-19 cases excludes those marked \"not a case\" in German$",
+        () -> {
+          int covidTotalCases =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(
+                      SurveillanceDashboardPage.TOTAL_DATA_FIRST_DISEASE_BOX));
+          int covidNewCases =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(SurveillanceDashboardPage.CASE_COUNTER));
+          int covidNotACases =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(
+                      SurveillanceDashboardPage.CASES_METRICS_NOT_A_CASE_COUNTER_DE));
+
+          softly.assertEquals(
+              covidTotalCases,
+              covidNewCases - covidNotACases,
+              "The total number of COVID-19 cases does not exclude those marked \"not a case\" correctly!");
+          softly.assertAll();
+        });
   }
 }
