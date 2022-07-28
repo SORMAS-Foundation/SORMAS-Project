@@ -54,6 +54,9 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 	@Column
 	private String description;
 
+	@Column
+	private boolean defaultValue;
+
 	@Column(name = "descriptionTranslations")
 	private String descriptionTranslationsJson;
 	private List<CustomizableEnumTranslation> descriptionTranslations;
@@ -216,6 +219,14 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 		this.properties = properties;
 		Gson gson = new Gson();
 		propertiesJson = gson.toJson(properties);
+	}
+
+	public boolean isDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(boolean defaultValue) {
+		this.defaultValue = defaultValue;
 	}
 
 	@Override

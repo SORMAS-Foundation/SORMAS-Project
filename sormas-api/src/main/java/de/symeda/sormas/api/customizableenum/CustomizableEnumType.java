@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.customizableenum;
 
+import org.apache.commons.text.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +52,11 @@ public enum CustomizableEnumType {
 
 	public Class<? extends CustomizableEnum> getEnumClass() {
 		return enumClass;
+	}
+
+	@Override
+	public String toString() {
+		return WordUtils.capitalize(name().toLowerCase(), '_').replace("_", "");
 	}
 
 }

@@ -11671,6 +11671,9 @@ ALTER TABLE sormastosormassharerequest_history ADD COLUMN shareassociatedcontact
 INSERT INTO schema_version (version_number, comment) VALUES (474, 'S2S_deactivate share parameter ''share associated contacts'' (for cases) #9146');
 
 -- 2022-07-26 Turn OccupationType into a customizable enum #5015
+--ALTER TABLE customizableenumvalue ADD COLUMN defaultvalue boolean DEFAULT false;
+--ALTER TABLE customizableenumvalue_history ADD COLUMN defaultvalue boolean DEFAULT false;
+
 DO $$
     DECLARE rec RECORD;
 BEGIN
@@ -11681,5 +11684,5 @@ END LOOP;
 END;
 $$ LANGUAGE plpgsql;
 
-INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (475, 'Turn OccupationType into a customizable enum #5015');
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (475, 'Turn OccupationType into a customizable enum #5015', true);
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

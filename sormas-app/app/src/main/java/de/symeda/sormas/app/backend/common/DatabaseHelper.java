@@ -15,21 +15,6 @@
 
 package de.symeda.sormas.app.backend.common;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
-import android.util.Log;
-
-import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
-
-import org.apache.commons.lang3.StringUtils;
-
 import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.sql.SQLException;
@@ -45,6 +30,21 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+import android.util.Log;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.VaccinationStatus;
@@ -2992,6 +2992,10 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(AggregateReport.class).executeRaw("UPDATE aggregateReport SET changeDate = 0;");
 				getDao(DiseaseConfiguration.class).executeRaw("ALTER TABLE diseaseConfiguration ADD COLUMN ageGroupsString text;");
 				getDao(DiseaseConfiguration.class).executeRaw("UPDATE diseaseConfiguration SET changeDate = 0;");
+
+			case 337:
+				currentVersion = 337;
+				getDao(CustomizableEnumValue.class).executeRaw("ALTER TABLE customizableEnumValue ADD COLUMN defaultValue boolean DEFAULT false;");
 
 				// ATTENTION: break should only be done after last version
 				break;

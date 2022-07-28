@@ -70,7 +70,7 @@ public class OccupationType extends CustomizableEnum implements Serializable {
 		Map<String, Object> propertiesDetailsTrue = new HashMap<>();
 		propertiesDetailsTrue.put(HAS_DETAILS, true);
 		Map<String, Object> propertiesDetailsFalse = new HashMap<>();
-		propertiesDetailsTrue.put(HAS_DETAILS, false);
+		propertiesDetailsFalse.put(HAS_DETAILS, false);
 		defaultValues.put("HEALTHCARE_WORKER", propertiesDetailsTrue);
 		defaultValues.put("LABORATORY_STAFF", propertiesDetailsFalse);
 		defaultValues.put("OTHER", propertiesDetailsTrue);

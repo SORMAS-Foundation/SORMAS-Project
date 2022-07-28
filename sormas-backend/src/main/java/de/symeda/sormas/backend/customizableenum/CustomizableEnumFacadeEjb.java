@@ -197,7 +197,14 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 		for (CustomizableEnumValue customizableEnumValue : enumValueEntities.get(type)) {
 			// define caption
 			String caption;
-			if (isCountryLanguage || CollectionUtils.isEmpty(customizableEnumValue.getTranslations())) {
+			if (customizableEnumValue.isDefaultValue()) {
+				// Default values use translations provided in the properties files
+				caption = I18nProperties.getEnumCaption(language, customizableEnumValue.getDataType().toString(), customizableEnumValue.getValue());
+
+				if (StringUtils.isBlank(caption)) {
+					caption = customizableEnumValue.getCaption();
+				}
+			} else if (isCountryLanguage || CollectionUtils.isEmpty(customizableEnumValue.getTranslations())) {
 				// If the enum value does not have any translations or the user uses the server language,
 				// add the server language to the cache and use the default caption of the enum value
 				caption = customizableEnumValue.getCaption();
@@ -295,6 +302,7 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 		target.setDescription(source.getDescription());
 		target.setDescriptionTranslations(source.getDescriptionTranslations());
 		target.setProperties(source.getProperties());
+		target.setDefaultValue(source.isDefaultValue());
 
 		return target;
 	}
