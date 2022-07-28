@@ -28,8 +28,7 @@ public class Constants {
 				"load",
 				"check",
 				"uses",
-				"fetch",
-				"can")));
+				"fetch")));
 	public static final Set<String> updatePrefix = Collections.unmodifiableSet(
 		new HashSet<>(
 			Arrays.asList(

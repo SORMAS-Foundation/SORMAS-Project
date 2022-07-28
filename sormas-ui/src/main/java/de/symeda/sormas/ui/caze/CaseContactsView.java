@@ -398,7 +398,7 @@ public class CaseContactsView extends AbstractCaseView {
 	}
 
 	protected boolean isCaseEditAllowed() {
-		return FacadeProvider.getCaseFacade().canEditContact(getReference().getUuid()).equals(EditPermissionType.ALLOWED);
+		return FacadeProvider.getCaseFacade().isEditContactAllowed(getReference().getUuid()).equals(EditPermissionType.ALLOWED);
 	}
 
 	public void updateFilterComponents() {

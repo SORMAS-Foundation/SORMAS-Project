@@ -233,5 +233,5 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 	void dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts);
 
 	void setResultingCase(EventParticipantReferenceDto eventParticipantReferenceDto, CaseReferenceDto caseReferenceDto);
-	EditPermissionType canEditContact(String uuid);
+	EditPermissionType isEditContactAllowed(String uuid);
 }

@@ -2598,9 +2598,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public EditPermissionType canEditContact(String uuid) {
+	public EditPermissionType isEditContactAllowed(String uuid) {
 		Case ado = service.getByUuid(uuid);
-		return service.canAddContact(ado);
+		return service.isAddContactAllowed(ado);
 	}
 
 	@Override
