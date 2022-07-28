@@ -138,7 +138,7 @@ Feature: Dashboard counters
     Then I click on reset filters on Surveillance Dashboard Page
     Then I verify that filters were reset on Surveillance Dashboard Page
 
-    @issue=SORDEV-6604 @env_main
+    @tmsLink=SORDEV-6604 @env_main
     Scenario: Differentiate strings for confirmed cases and confirmed contacts on dashboard
       Given I log in as a Admin User
       And I click on the Users from navbar
@@ -161,7 +161,7 @@ Feature: Dashboard counters
       And I compare English and German confirmed counter
       And I compare English and German confirmed contacts counter
 
-  @env_de @issue=SORDEV-6137
+  @env_de @tmsLink=SORDEV-6137
   Scenario: Test if "not a case" is excluded from the total case count
     Given I log in with National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard

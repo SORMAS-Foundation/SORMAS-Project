@@ -11670,6 +11670,35 @@ ALTER TABLE sormastosormassharerequest_history ADD COLUMN shareassociatedcontact
 
 INSERT INTO schema_version (version_number, comment) VALUES (474, 'S2S_deactivate share parameter ''share associated contacts'' (for cases) #9146');
 
+-- 2022-07-25 Make region and district required for aggregate reports
+DELETE FROM aggregatereport
+WHERE region_id IS NULL OR district_id IS NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (475, 'Make region and district required for aggregate reports #9847');
+
+-- 2022-07-26 Minimum deletion period 7 days #9471
+UPDATE deletionconfiguration SET deletionPeriod = 7 WHERE deletionPeriod IS NOT NULL AND deletionPeriod < 7;
+ALTER TABLE deletionconfiguration ADD CONSTRAINT chk_min_deletion_period CHECK (deletionPeriod IS NULL OR deletionPeriod >= 7);
+
+INSERT INTO schema_version (version_number, comment) VALUES (476, 'Minimum deletion period 7 days #9471');
+
+-- 2022-07-25 S2S_added sample after sharing a case/contact does not get shared #9771
+ALTER TABLE sharerequestinfo ADD COLUMN datatype varchar(255);
+ALTER TABLE sharerequestinfo_history ADD COLUMN datatype varchar(255);
+
+UPDATE sharerequestinfo sr SET datatype = (
+    SELECT CASE
+       WHEN (EXISTS(SELECT caze_id FROM sormastosormasshareinfo s JOIN sharerequestinfo_shareinfo ss ON ss.sharerequestinfo_id = r.id WHERE s.id = ss.shareinfo_id AND caze_id IS NOT NULL)) THEN 'CASE'
+       WHEN (EXISTS(SELECT contact_id FROM sormastosormasshareinfo s JOIN sharerequestinfo_shareinfo ss ON ss.sharerequestinfo_id = r.id WHERE s.id = ss.shareinfo_id  AND contact_id IS NOT NULL)) THEN 'CONTACT'
+       WHEN (EXISTS(SELECT event_id FROM sormastosormasshareinfo s JOIN sharerequestinfo_shareinfo ss ON ss.sharerequestinfo_id = r.id WHERE s.id = ss.shareinfo_id  AND event_id IS NOT NULL)) THEN 'EVENT'
+    END
+    FROM sharerequestinfo r where r.id = sr.id
+);
+
+ALTER TABLE sharerequestinfo ALTER COLUMN datatype SET NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (477, 'S2S_added sample after sharing a case/contact does not get shared #9771');
+
 -- 2022-07-26 Turn OccupationType into a customizable enum #5015
 --ALTER TABLE customizableenumvalue ADD COLUMN defaultvalue boolean DEFAULT false;
 --ALTER TABLE customizableenumvalue_history ADD COLUMN defaultvalue boolean DEFAULT false;
@@ -11684,5 +11713,6 @@ END LOOP;
 END;
 $$ LANGUAGE plpgsql;
 
-INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (475, 'Turn OccupationType into a customizable enum #5015', true);
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (478, 'Turn OccupationType into a customizable enum #5015', true);
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
