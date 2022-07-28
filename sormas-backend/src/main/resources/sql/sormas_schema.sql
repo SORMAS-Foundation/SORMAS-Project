@@ -11659,6 +11659,17 @@ INSERT INTO userroles_userrights (userrole_id, userright) SELECT userrole_id, 'U
 
 INSERT INTO schema_version (version_number, comment) VALUES (473, 'Add user roles view to UI #4462');
 
+-- 2022-07-15 S2S_deactivate share parameter 'share associated contacts' (for cases) #9146
+UPDATE featureconfiguration set featuretype = 'SORMAS_TO_SORMAS_SHARE_CASES', properties = json_build_object('SHARE_ASSOCIATED_CONTACTS',false,'SHARE_SAMPLES',true,'SHARE_IMMUNIZATIONS',true) where featuretype = 'SORMAS_TO_SORMAS_SHARE_CASES_WITH_CONTACTS_AND_SAMPLES';
+UPDATE featureconfiguration set properties = json_build_object('SHARE_SAMPLES',true,'SHARE_IMMUNIZATIONS',true) where featuretype = 'SORMAS_TO_SORMAS_SHARE_EVENTS';
+INSERT INTO featureconfiguration (id, uuid, creationdate, changedate, enabled, featuretype, properties)
+    VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), (SELECT CASE WHEN EXISTS(SELECT id FROM featureconfiguration WHERE featuretype = 'SORMAS_TO_SORMAS_SHARE_CASES') THEN (SELECT enabled FROM featureconfiguration WHERE featuretype = 'SORMAS_TO_SORMAS_SHARE_CASES') ELSE true END), 'SORMAS_TO_SORMAS_SHARE_CONTACTS', json_build_object('SHARE_SAMPLES',true,'SHARE_IMMUNIZATIONS',true));
+
+ALTER TABLE sormastosormassharerequest ADD COLUMN shareassociatedcontactsdisabled boolean DEFAULT false;
+ALTER TABLE sormastosormassharerequest_history ADD COLUMN shareassociatedcontactsdisabled boolean DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (474, 'S2S_deactivate share parameter ''share associated contacts'' (for cases) #9146');
+
 -- 2022-07-26 Turn OccupationType into a customizable enum #5015
 DO $$
     DECLARE rec RECORD;
@@ -11670,6 +11681,5 @@ END LOOP;
 END;
 $$ LANGUAGE plpgsql;
 
-INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (474, 'Turn OccupationType into a customizable enum #5015');
-
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (475, 'Turn OccupationType into a customizable enum #5015');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
