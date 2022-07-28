@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.report.aggregate;
 
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -206,6 +208,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 
 		Date latestLocalChangeDate = null;
 		User user = ConfigProvider.getUser();
+		boolean triggerDuplicateWarning = false;
 
 		final Map<Disease, List<AggregateReport>> reportsByDisease = new HashMap<>();
 		final EpiWeek epiWeek = (EpiWeek) contentBinding.aggregateReportsWeek.getValue();
@@ -280,6 +283,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 				binding.setData(report);
 				if (isDuplicateByDiseaseEpiWeekAndInfrastructure(disease, epiWeek, selectedInfrastructure, selectedUser)) {
 					binding.diseaseName.setTextColor(getResources().getColor(R.color.red));
+					triggerDuplicateWarning = true;
 				}
 				if (latestLocalChangeDate == null
 					|| (report.getLocalChangeDate() != null && latestLocalChangeDate.before(report.getLocalChangeDate()))) {
@@ -293,6 +297,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 
 				if (isDuplicateByDiseaseEpiWeekAndInfrastructure(disease, epiWeek, selectedInfrastructure, selectedUser)) {
 					diseaseBinding.diseaseName.setTextColor(getResources().getColor(R.color.red));
+					triggerDuplicateWarning = true;
 				}
 
 				for (AggregateReport report : aggregateReports) {
@@ -329,6 +334,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 				binding.setData(data);
 				if (isDuplicateByDiseaseEpiWeekAndInfrastructure(disease, epiWeek, selectedInfrastructure, selectedUser)) {
 					binding.diseaseName.setTextColor(getResources().getColor(R.color.red));
+					triggerDuplicateWarning = true;
 				}
 				userReports.add(data);
 			} else {
@@ -339,6 +345,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 
 				if (isDuplicateByDiseaseEpiWeekAndInfrastructure(disease, epiWeek, selectedInfrastructure, selectedUser)) {
 					viewBinding.diseaseName.setTextColor(getResources().getColor(R.color.red));
+					triggerDuplicateWarning = true;
 				}
 
 				for (String ageGroup : ageGroups) {
@@ -363,6 +370,10 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 		} else {
 			getSubHeadingHandler().updateSubHeadingTitle(
 				String.format(r.getString(R.string.caption_latest_submission), DateFormatHelper.formatLocalDateTime(latestLocalChangeDate)));
+		}
+
+		if (triggerDuplicateWarning) {
+			NotificationHelper.showNotification((NotificationContext) getActivity(), WARNING, getString(R.string.message_aggregate_report_found));
 		}
 	}
 
