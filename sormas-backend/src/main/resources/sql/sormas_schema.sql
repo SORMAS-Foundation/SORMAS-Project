@@ -11708,7 +11708,7 @@ DO $$
 BEGIN
 FOR rec IN SELECT DISTINCT occupationtype FROM person WHERE occupationtype != 'HEALTHCARE_WORKER' AND occupationtype != 'LABORATORY_STAFF' AND occupationtype != 'OTHER'
 LOOP
-    INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption, properties) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'OCCUPATION_TYPE', rec.occupationtype, rec.occupationtype, '{"hasDetails":true}');
+    INSERT INTO customizableenumvalue(id, uuid, changedate, creationdate, datatype, value, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'OCCUPATION_TYPE', rec.occupationtype, rec.occupationtype);
 END LOOP;
 END;
 $$ LANGUAGE plpgsql;

@@ -834,10 +834,12 @@ public class StartupShutdownService {
 								I18nProperties.getEnumCaption(l, OccupationType.I18N_PREFIX, o.getValue())));
 					});
 					String translationsString = "[" + String.join(",", translations) + "]";
+					String propertiesString = "{\"hasDetails\":true}";
 					em.createQuery(
-						"UPDATE CustomizableEnumValue SET caption = :enum_caption, translations = :enum_translations WHERE value = :enum_value")
+						"UPDATE CustomizableEnumValue c SET c.caption = :enum_caption, c.translations = :enum_translations, c.properties = :enum_properties WHERE c.value = :enum_value")
 						.setParameter("enum_caption", caption)
 						.setParameter("enum_translations", translationsString)
+						.setParameter("enum_properties", propertiesString)
 						.setParameter("enum_value", o.getValue())
 						.executeUpdate();
 				});
