@@ -1658,7 +1658,6 @@ public interface Captions {
 	String Person_burialConductor = "Person.burialConductor";
 	String Person_burialDate = "Person.burialDate";
 	String Person_burialPlaceDescription = "Person.burialPlaceDescription";
-	String Person_business_occupationDetails = "Person.business.occupationDetails";
 	String Person_causeOfDeath = "Person.causeOfDeath";
 	String Person_causeOfDeathDetails = "Person.causeOfDeathDetails";
 	String Person_causeOfDeathDisease = "Person.causeOfDeathDisease";
@@ -1678,7 +1677,6 @@ public interface Captions {
 	String Person_generalPractitionerDetails = "Person.generalPractitionerDetails";
 	String Person_gestationAgeAtBirth = "Person.gestationAgeAtBirth";
 	String Person_hasCovidApp = "Person.hasCovidApp";
-	String Person_healthcare_occupationDetails = "Person.healthcare.occupationDetails";
 	String Person_internalToken = "Person.internalToken";
 	String Person_lastDisease = "Person.lastDisease";
 	String Person_matchingCase = "Person.matchingCase";
@@ -1695,7 +1693,6 @@ public interface Captions {
 	String Person_occupationFacilityType = "Person.occupationFacilityType";
 	String Person_occupationRegion = "Person.occupationRegion";
 	String Person_occupationType = "Person.occupationType";
-	String Person_other_occupationDetails = "Person.other.occupationDetails";
 	String Person_otherContactDetails = "Person.otherContactDetails";
 	String Person_otherSalutation = "Person.otherSalutation";
 	String Person_passportNumber = "Person.passportNumber";
@@ -1711,7 +1708,6 @@ public interface Captions {
 	String Person_salutation = "Person.salutation";
 	String Person_sex = "Person.sex";
 	String Person_symptomJournalStatus = "Person.symptomJournalStatus";
-	String Person_transporter_occupationDetails = "Person.transporter.occupationDetails";
 	String Person_uuid = "Person.uuid";
 	String personAgeAndBirthdate = "personAgeAndBirthdate";
 	String PersonContactDetail = "PersonContactDetail";
