@@ -25,6 +25,8 @@ Feature: Continent end to end tests
     And I check that continent list is correctly displayed
     Then I click on logout button from navbar
     Given I log in as a National Language User
+    Then I click on the User Settings button from navbar
+    And I select "Deutsch" language from Combobox in User settings
     And I click on the Configuration button from navbar
     When I navigate to continents tab in Configuration
     And I check that continent list is correctly displayed in German
@@ -38,6 +40,8 @@ Feature: Continent end to end tests
     And I check that continent list is correctly displayed in German
     Then I click on logout button from navbar
     Given I log in as a National Language User
+    Then I click on the User Settings button from navbar
+    And I select "English" language from Combobox in User settings
     And I click on the Configuration button from navbar
     When I navigate to continents tab in Configuration
     And I check that continent list is correctly displayed
