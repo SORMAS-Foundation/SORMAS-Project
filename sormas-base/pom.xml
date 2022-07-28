@@ -801,8 +801,7 @@
 			<dependency>
 				<groupId>info.novatec</groupId>
 				<artifactId>bean-test</artifactId>
-				<version>0.2.Final</version>
-				<scope>test</scope>
+				<version>0.2.0.Final</version>
 			</dependency>
 
 			<dependency>
@@ -1293,9 +1292,10 @@
 			</releases>
 		</repository>
 		<repository>
-			<id>Novatec</id>
-			<name>Novatec Repository</name>
-			<url>https://repository.novatec-gmbh.de/content/repositories/novatec</url>
+			<id>BeanTest</id>
+			<name>Self hosted repository for info.novatec:bean-test</name>
+			<url>https://sormas-vitagroup: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@maven.pkg.github.com/hzi-braunschweig/BeanTest</url>
+			<!-- Temporal workaround: Contains access token to download from Github Packages (and only for that use case) -->
 		</repository>
 		<repository>
 			<id>osgeo</id>
