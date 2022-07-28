@@ -1505,8 +1505,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			.getFollowUpEndDate();
 	}
 
-	public EditPermissionType getEditPermissionTypeCaseContact(Case caze) {
-		// we allow CaseContactViewEdit independently of the ownership handover
+	public EditPermissionType canAddContact(Case caze) {
+		// we allow CaseContactViewEdit independently of the origin info
 
 		if (!inJurisdictionOrOwned(caze) || sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze)) {
 			return EditPermissionType.REFUSED;
