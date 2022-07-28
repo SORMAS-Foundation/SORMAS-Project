@@ -60,7 +60,7 @@ Feature: Create events
     And I navigate via URL to last Person created from edit Event page
     Then I check if event is available at person information
 
-  @issue=SORDEV-5475 @env_main
+  @tmsLink=SORDEV-5475 @env_main
   Scenario: Verify error messages while adding a participant to an event
     Given I log in with National User
     And I click on the Events button from navbar
@@ -114,7 +114,7 @@ Feature: Create events
     And I open the Action recently created from Event tab
     And I check that Action created from Event tab is correctly displayed in Event Actions tab
 
-    @issue=SORDEV-5520 @env_main
+    @tmsLink=SORDEV-5520 @env_main
   Scenario: Add a New action from Event Actions tab and verify the fields.
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -144,7 +144,7 @@ Feature: Create events
     And I collect the event actions from table view
     And I am checking if all the fields are correctly displayed in the Event directory Actions table
 
-  @issue=SORDEV-5476 @env_main
+  @tmsLink=SORDEV-5476 @env_main
   Scenario: Add a Task from event and verify the fields
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -170,7 +170,7 @@ Feature: Create events
     When I am accessing the event tab using the created event via api
     Then I am checking event group name and id is correctly displayed
 
-  @issue=SORDEV-5496 @env_main
+  @tmsLink=SORDEV-5496 @env_main
   Scenario: Generate and download Event document
     Given I log in with National User
     And I click on the Events button from navbar
@@ -179,7 +179,7 @@ Feature: Create events
     When I create and download an event document from template
     And I verify that the event document is downloaded and correctly named
 
-  @issue=SORDEV-5491 @env_main
+  @tmsLink=SORDEV-5491 @env_main
   Scenario: Add a participant to an event and create case
     Given I log in with National User
     And I click on the Events button from navbar
@@ -195,7 +195,7 @@ Feature: Create events
     And I fill all fields for a new case created for event participant
     And I click on save case button
 
-  @issue=SORDEV-9426 @env_main
+  @tmsLink=SORDEV-9426 @env_main
   Scenario: Filter for the report date of events
     Given I log in with National User
     And I click on the Events button from navbar
@@ -205,7 +205,7 @@ Feature: Create events
     And I apply on the APPLY FILTERS button from Event
     And I check that the dates of displayed Event results are correct
 
-  @issue=SORDEV-5571 @env_main
+  @tmsLink=SORDEV-5571 @env_main
   Scenario: Event group screen from Event Directory Page
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -220,7 +220,7 @@ Feature: Create events
     And I click on SAVE button in Link Event to group form
     And I click on Unlink Event button on Event Directory Page
 
-  @issue=SORDEV-5571 @env_main
+  @tmsLink=SORDEV-5571 @env_main
   Scenario: Event group screen using Group Id on Edit Event Page
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -236,7 +236,7 @@ Feature: Create events
     And I click on Linked Group Id on Edit Event Page
     And I click on Unlink Event button on Event Directory Page
 
-  @issue=SORDEV-5571 @env_main
+  @tmsLink=SORDEV-5571 @env_main
   Scenario: Event group screen using Group Id in grid
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -253,7 +253,7 @@ Feature: Create events
     And I click on Group Id in Events result on Event Directory Page
     And I click on Unlink Event button on Event Directory Page
 
-  @issue=SORDEV-5570 @env_main
+  @tmsLink=SORDEV-5570 @env_main
   Scenario: Testing Event screen Impact
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -274,7 +274,7 @@ Feature: Create events
     And I apply on the APPLY FILTERS button from Event
     And I check the number of displayed Event results from All button is 1
 
-  @issue=SORDEV-5572 @env_main
+  @tmsLink=SORDEV-5572 @env_main
   Scenario: Testing Event group adding for new event
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -301,7 +301,7 @@ Feature: Create events
     And I check that name appearing in hover is equal to name of linked Event group
     And I check the number of displayed Event results from All button is 1
 
-  @issue=SORDEV-9355 @env_main
+  @tmsLink=SORDEV-9355 @env_main
   Scenario: Day of birth filter for event participant test
     Given I log in with National User
     And I click on the Events button from navbar
@@ -317,7 +317,7 @@ Feature: Create events
     Then I click on Apply filters button in event participant list
     Then I check if filtered participant appears in the event participants list
 
-  @issue=SORDEV-7138  @env_main
+  @tmsLink=SORDEV-7138  @env_main
   Scenario: Add a participant to an event and bulk create contacts
     Given I log in as a Admin User
     And I click on the Events button from navbar
@@ -337,7 +337,7 @@ Feature: Create events
     And I create a new Contacts from Event Participants using Line Listing
     And I save the new contacts from Event Participants using line listing feature in Event Participant tab
 
-  @issue=SORDEV-5480  @env_main
+  @tmsLink=SORDEV-5480  @env_main
   Scenario: Import Events
     Given I log in as a Admin User
     And I click on the Events button from navbar
@@ -349,7 +349,7 @@ Feature: Create events
     And I close the Import Events popups
     And I check that four new events have appeared in Events directory
 
-  @issue=SORDEV-5569 @env_main
+  @tmsLink=SORDEV-5569 @env_main
   Scenario: Testing Event groups view filters with sorting actions
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -396,7 +396,7 @@ Feature: Create events
     And I click on a Export button in Event Group Directory
     And I click on a Basic Export button from Export options in Event Group Directory
 
-  @issue=SORDEV-5481 @env_main
+  @tmsLink=SORDEV-5481 @env_main
   Scenario: Export and import event participant
     Given I log in as a Admin User
     And I click on the Events button from navbar
@@ -418,7 +418,7 @@ Feature: Create events
     And I check that an import success notification appears in the Import Event Participant popup
     Then I delete exported file from Event Participant Directory
 
-  @issue=SORDEV-10049  @env_main
+  @tmsLink=SORDEV-10049  @env_main
   Scenario: Test basic export of event participant
     Given I log in as a Admin User
     And I click on the Events button from navbar
@@ -433,7 +433,7 @@ Feature: Create events
     And I click Export button in Event Participant Directory
     And I click on Basic Export button in Event Participant Directory
 
-  @issue=SORDEV-10051  @env_main
+  @tmsLink=SORDEV-10051  @env_main
   Scenario: Test custom export of event participant
     Given I log in as a Admin User
     And I click on the Events button from navbar
@@ -455,7 +455,7 @@ Feature: Create events
     Then I check if downloaded data generated by custom event option is correct
     Then I delete exported file from Event Participant Directory
 
-    @issue=SORDEV-10359 @env_main
+    @tmsLink=SORDEV-10359 @env_main
     Scenario: Test Access to the event directory filtered on the events of a group
       Given API: I create a new event
       Then API: I check that POST call body is "OK"
@@ -475,7 +475,7 @@ Feature: Create events
       And I click on the Navigate to event directory filtered on this event group
       And I check the if Event is displayed correctly in Events Directory table
 
-  @issue=SORDEV-7461 @env_main
+  @tmsLink=SORDEV-7461 @env_main
   Scenario: Testing bulk edit of Events
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -503,7 +503,7 @@ Feature: Create events
     And I navigate to the last created Event page via URL
     Then I check if Event Management Status is set to "PENDING"
 
-  @issue=SORDEV-5967 @env_de
+  @tmsLink=SORDEV-5967 @env_de
   Scenario: Add evidence fields for event clusters
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -533,7 +533,7 @@ Feature: Create events
     Then I check the all options for Verification on materials on Laboratory diagnostic evidence appears and there are checked for De version
     And I click on SAVE button in edit event form
 
-  @issue=SORDEV-8048 @env_de
+  @tmsLink=SORDEV-8048 @env_de
   Scenario: Test Default value for disease if only one is used by the server for Events and Pathogen test
     Given I log in with National User
     Then I click on the Events button from navbar
@@ -550,7 +550,7 @@ Feature: Create events
     Then I click on the new pathogen test from the Edit Sample page for DE version
     And I check if default disease value for new Pathogen test is set for COVID-19
 
-  @issue=SORDEV-9477 @env_main
+  @tmsLink=SORDEV-9477 @env_main
   Scenario: Add a person search option on creation forms
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -603,7 +603,7 @@ Feature: Create events
     Then I add a participant created by API create person
     Then I check if participant appears in the participants list of event created with API
 
-  @issue=SORDEV-10265 @env_main
+  @tmsLink=SORDEV-10265 @env_main
   Scenario: Manual archiving for events
     Given I log in as a Admin User
     And I click on the Events button from navbar
@@ -624,7 +624,7 @@ Feature: Create events
     And I click on the first row from archived event participant
     Then I check if Archive button changed name to De-Archive
 
-  @issue=SORDEV-10265 @env_main
+  @tmsLink=SORDEV-10265 @env_main
   Scenario: Manual archiving for event participats
     Given I log in as a Admin User
     And I click on the Events button from navbar
@@ -644,7 +644,7 @@ Feature: Create events
     Then I click on the Event participant tab
     Then I check if participant appears in the event participants list
 
-  @issue=SORDEV-10265 @env_main
+  @tmsLink=SORDEV-10265 @env_main
   Scenario: Manual archiving for bulk event participats
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -687,7 +687,7 @@ Feature: Create events
     Then I click on the Event participant tab
     Then I check if participant added form API appears in the event participants list
 
-  @issue=SORDEV-9786 @env_main
+  @tmsLink=SORDEV-9786 @env_main
   Scenario: Test The "urine p.m." enum value should be hidden when Covid19 is selected as disease
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -707,7 +707,7 @@ Feature: Create events
     And I click on New Sample
     And I check if value "Urine p.m" is unavailable in Type of Sample combobox on Create new Sample page
 
-  @issue=SORDEV-8665 @env_main
+  @tmsLink=SORDEV-8665 @env_main
   Scenario: Test Move the responsible user filter in the event directory next to the jurisdiction filters
     Given I log in with National User
     Then I click on the Events button from navbar
@@ -715,7 +715,7 @@ Feature: Create events
     And I check that Responsible User Info icon is visible on Event Directory Page
     And I check the displayed message is correct after hover to Responsible User Info icon
 
-  @issue=SORDEV-9946 @env_de
+  @tmsLink=SORDEV-9946 @env_de
   Scenario: Test Hide country specific fields in the 'Pick or create person' form of the duplicate detection pop-up, in German and French systems
     Given I log in as a Admin User
     And I click on the Events button from navbar
@@ -731,7 +731,7 @@ Feature: Create events
     And I click on save button in Add Participant form
     And I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
 
-  @env_main @issue=SORDEV-7460
+  @env_main @tmsLink=SORDEV-7460
   Scenario: Test Extend the exposure and event startDate and endDate to include a startTime and endTime
     Given I log in with National User
     Then I click on the Events button from navbar
@@ -746,7 +746,7 @@ Feature: Create events
     And  I search for the last event uuid created by UI
     Then I check that Date of EVENT displays event start date and event end date in table on event directory
 
-  @issue=SORDEV-8667 @env_main
+  @tmsLink=SORDEV-8667 @env_main
   Scenario: Test Adjustments to the jurisdiction definition process of event participants
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -774,7 +774,7 @@ Feature: Create events
     Then I click on the Event participant tab
     And I add a participant to the event
 
-  @issue=SORDEV-10254 @env_main
+  @tmsLink=SORDEV-10254 @env_main
   Scenario: Manual archive Event participants/Events
     Given I log in as a Admin User
     And I click on the Events button from navbar
@@ -808,7 +808,7 @@ Feature: Create events
     And I choose Active event participants from combobox in the Event participant tab
     Then I check if participant appears in the event participants list
 
-  @issue=SORDEV-9788 @env_de
+  @tmsLink=SORDEV-9788 @env_de
   Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Event Participant directory
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -823,7 +823,7 @@ Feature: Create events
     And I check that Passport Number is not visible in Person search popup
     And I check that Nickname is not visible in Person search popup
 
-  @issue=SORDEV-6076 @env_main
+  @tmsLink=SORDEV-6076 @env_main
   Scenario: Test Make event report date editable
     Given I log in with National User
     And I click on the Events button from navbar
@@ -846,7 +846,7 @@ Feature: Create events
     And I check if error popup contains Date of report has to be after or on the same day as Start date
     And I check if error popup contains Start date has to be before or on the same day as Date of report
 
-  @issue=SORDEV-5563 @env_de
+  @tmsLink=SORDEV-5563 @env_de
   Scenario: Add contact person details to facilities event participant
     Given I log in as a Admin User
     Then I click on the Configuration button from navbar
@@ -924,7 +924,7 @@ Feature: Create events
     Then I am accessing the event tab using the created event via api
     Then I check if editable fields are read only for an archived event
 
-  @issue=SORDEV-7094 @env_main
+  @tmsLink=SORDEV-7094 @env_main
   Scenario Outline: Test Event identification source fields
     Given I log in with National User
     And I click on the Events button from navbar
@@ -939,7 +939,7 @@ Feature: Create events
       | BACKWARD-TRACING |
       | FORWARD-TRACING  |
 
-  @issue=SORDEV-7095 @env_main
+  @tmsLink=SORDEV-7095 @env_main
   Scenario: Test Addition of a Variant field in the "EVENT" part
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -960,7 +960,7 @@ Feature: Create events
     And I select "B.1.617.3" Disease Variant filter on Event Directory Page
     And I apply on the APPLY FILTERS button from Event
 
-  @issue=SORDEV-7467 @env_main
+  @tmsLink=SORDEV-7467 @env_main
   Scenario Outline: Test Allow surveillance supervisors and contact supervisors to access bulk-edition in the event directory
     Given I log in as a <user>
     Then I click on the Events button from navbar
@@ -977,7 +977,7 @@ Feature: Create events
       | Contact Supervisor        |
       | Surveillance Supervisor   |
 
-  @issue=SORDEV-6609 @env_de
+  @tmsLink=SORDEV-6609 @env_de
   Scenario: Test for event internal token
     Given I log in as a National User
     And I click on the Events button from navbar
@@ -991,7 +991,7 @@ Feature: Create events
     And I filter for SAMPLE TOKEN in Events Directory
     Then I check that at least one SAMPLE TOKEN is displayed in table
 
-  @issue=SORDEV-11455 @env_main
+  @tmsLink=SORDEV-11455 @env_main
   Scenario: Add reason for deletion to confirmation dialogue
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -1017,7 +1017,7 @@ Feature: Create events
     And I check if Reason for deletion is set to "Entity created without legal reason" on Edit Event Page
     And I check if Delete button on Edit Event Page is disabled
 
-    @issue=SORDEV-8055 @env_main
+    @tmsLink=SORDEV-8055 @env_main
     Scenario Outline: Allow users to select the used delimiter when importing files
       Given I log in as a Admin User
       And I click on the Events button from navbar
@@ -1032,7 +1032,7 @@ Feature: Create events
         | Tab             |
         | Default (Comma) |
 
-  @issue=SORQA-7093 @env_main
+  @tmsLink=SORQA-7093 @env_main
   Scenario: Allow the admin surveillance supervisor to delete events
     Given API: I create a new event
     And API: I check that POST call body is "OK"
@@ -1046,7 +1046,7 @@ Feature: Create events
     When I confirm popup window
     And I check that previous opened Event was deleted
 
-  @issue=SORQA-7093 @env_main
+  @tmsLink=SORQA-7093 @env_main
   Scenario: Allow the admin surveillance supervisor to archive events
     Given API: I create a new event
     And API: I check that POST call body is "OK"
@@ -1059,7 +1059,7 @@ Feature: Create events
     When I confirm Archive event popup
     And I check event is it archived
 
-  @issue=SORDEV-11452 @env_main
+  @tmsLink=SORDEV-11452 @env_main
   Scenario: Add reason for deletion to confirmation dialogue
     Given I log in as a Admin User
     And I click on the Events button from navbar
@@ -1095,7 +1095,7 @@ Feature: Create events
     And I check if General comment on event participant edit page is disabled
     And I check if Passport number input on event participant edit page is disabled
 
-  @issue=SORDEV-11452 @env_de
+  @tmsLink=SORDEV-11452 @env_de
   Scenario: Add reason for deletion to confirmation dialogue for DE version
     Given I log in as a Admin User
     And I click on the Events button from navbar
@@ -1111,7 +1111,7 @@ Feature: Create events
     And I check if reason for deletion as "Löschen auf Anforderung einer anderen Behörde" is available
     And I check if reason for deletion as "Entität ohne Rechtsgrund angelegt" is available
     And I check if reason for deletion as "Abgabe des Vorgangs wegen Nicht-Zuständigkeit" is available
-    And I check if reason for deletion as "Löschen von Duplikaten" is available
+    And I check if reason for deletion as "Löschen von Dublikaten" is available
     And I check if reason for deletion as "Anderer Grund" is available
     Then I click on No option in Confirm deletion popup
     Then I click on Delete button from contact
@@ -1130,7 +1130,7 @@ Feature: Create events
     And I check if General comment on event participant edit page is disabled
     And I check if Involvement description input on event participant edit page is disabled
 
-  @issue=SORDEV-9792 @env_de
+  @tmsLink=SORDEV-9792 @env_de
   Scenario: Test CoreAdo: Introduce "end of processing date" for events
     Given I log in as a Admin User
     And I click on the Events button from navbar
@@ -1162,7 +1162,7 @@ Feature: Create events
     And I search for specific event by uuid in event directory
     And I check that number of displayed Event results is 1
 
-  @issue=SORDEV-9792 @env_de
+  @tmsLink=SORDEV-9792 @env_de
   Scenario: Test CoreAdo: Introduce "end of processing date" for event participants
     Given I log in as a Admin User
     And I click on the Events button from navbar
@@ -1189,7 +1189,7 @@ Feature: Create events
     Then I choose Aktive Ereignisteilnehmer from combobox in the Event participant tab
     And I check that number of displayed Event participants results is 1
 
-  @issue=SORDEV-10227 @env_de
+  @tmsLink=SORDEV-10227 @env_de
   Scenario: Test Permanent deletion for Person for Event Participant
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -1216,7 +1216,7 @@ Feature: Create events
     And I click on Events aggregation button in Person Directory for DE specific
     And I check that number of displayed Person results is 0
 
-  @issue=SORDEV-5565 @env_de
+  @tmsLink=SORDEV-5565 @env_de
   Scenario: Document Templates create quarantine order for Event Participant bulk DE
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -1238,3 +1238,45 @@ Feature: Create events
     And I click on close button in Create Quarantine Order form
     And I check if downloaded zip file for Quarantine Order is correct for DE version
     And I delete downloaded file created from Quarantine order
+
+  @tmsLink=SORDEV-10361 @env_main
+  Scenario: Test Hide "buried" within Person present condition for Covid-19 for Events
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    When I create a new event with specific data
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    Then I check the created data is correctly displayed in event edit page
+    Given I add a participant to the event
+    Then I check if Present condition of person combobox has value "Alive"
+    And I check if Present condition of person combobox has value "Dead"
+    And I check if Present condition of person combobox has value "Unknown"
+    Then I check if Present condition of person combobox has no value "Buried"
+    And I navigate to EVENT PARTICIPANT from edit event page
+    And I back to the Event tab
+    And I change disease to "Ebola Virus Disease" in the event tab
+    Then I click on Save Button in Edit Event directory
+    And I navigate to EVENT PARTICIPANT from edit event page
+    And I click on the first row from event participant list
+    Then I check if Present condition of person combobox has value "Alive"
+    And I check if Present condition of person combobox has value "Dead"
+    And I check if Present condition of person combobox has value "Unknown"
+    Then I check if Present condition of person combobox has value "Buried"
+    Then I set Present condition of person to "Buried"
+    And I check if "Date of burial" field is present in case person
+    And I check if "Burial conductor" field is present in case person
+    And I check if "Burial place description" field is present in case person
+    Then I click on the Event participant tab
+    And I click yes on the DISCARD UNSAVED CHANGES popup if it appears
+    And I navigate to EVENT PARTICIPANT from edit event page
+    And I back to the Event tab
+    And I change disease to "COVID-19" in the event tab
+    Then I click on Save Button in Edit Event directory
+    And I navigate to EVENT PARTICIPANT from edit event page
+    And I click on Create in Case ID row in event participant list
+    Then I check if Present condition of person combobox has value "Alive"
+    And I check if Present condition of person combobox has value "Dead"
+    And I check if Present condition of person combobox has value "Unknown"
+    Then I check if Present condition of person combobox has no value "Buried"

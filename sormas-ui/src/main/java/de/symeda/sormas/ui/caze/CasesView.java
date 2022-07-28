@@ -707,7 +707,7 @@ public class CasesView extends AbstractView {
 					},
 						FacadeProvider.getFeatureConfigurationFacade()
 							.isPropertyValueTrue(FeatureType.CASE_AND_CONTACT_BULK_ACTIONS, FeatureTypeProperty.S2S_SHARING)
-							&& FacadeProvider.getSormasToSormasFacade().isSharingCasesContactsAndSamplesEnabledForUser()));
+							&& FacadeProvider.getSormasToSormasFacade().isSharingCasesEnabledForUser()));
 					menuBarItems.add(
 						new MenuBarHelper.MenuBarItem(
 							I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
@@ -839,7 +839,7 @@ public class CasesView extends AbstractView {
 	private boolean isBulkEditAllowed() {
 		return FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_AND_CONTACT_BULK_ACTIONS)
 			&& (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_CASE_SAMPLES)
-				|| FacadeProvider.getSormasToSormasFacade().isSharingCasesContactsAndSamplesEnabledForUser());
+				|| FacadeProvider.getSormasToSormasFacade().isSharingCasesEnabledForUser());
 	}
 
 	private HorizontalLayout dateRangeFollowUpVisitsFilterLayout() {

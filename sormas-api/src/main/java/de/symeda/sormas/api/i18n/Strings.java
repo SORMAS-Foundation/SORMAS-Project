@@ -1160,6 +1160,10 @@ public interface Strings {
 	String messageSamplesDeleted = "messageSamplesDeleted";
 	String messageSelectedPeriodTooLong = "messageSelectedPeriodTooLong";
 	String messageSetContactRegionAndDistrict = "messageSetContactRegionAndDistrict";
+	String messageShareAssociatedContactsDisabled = "messageShareAssociatedContactsDisabled";
+	String messageShareAssociatedContactsDisabledOnSourceSystem = "messageShareAssociatedContactsDisabledOnSourceSystem";
+	String messageShareImmunizationsDisabled = "messageShareImmunizationsDisabled";
+	String messageShareSamplesDisabled = "messageShareSamplesDisabled";
 	String messageSpecifyColumnAttribute = "messageSpecifyColumnAttribute";
 	String messageSpecifyFilterAttributes = "messageSpecifyFilterAttributes";
 	String messageSpecifyRowAttribute = "messageSpecifyRowAttribute";

@@ -1,7 +1,7 @@
 @UI @Sanity @Case @Reinfection
 Feature: Case reinfection end to end tests
 
-@issue=SORDEV-9153 @env_de
+@tmsLink=SORDEV-9153 @env_de
 Scenario: Test Add reinfection details and status to cases
   Given I log in with National User
   And I click on the Cases button from navbar

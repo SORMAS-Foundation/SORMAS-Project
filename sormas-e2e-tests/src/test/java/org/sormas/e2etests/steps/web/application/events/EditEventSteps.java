@@ -55,6 +55,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.COUNTRY
 import static org.sormas.e2etests.pages.application.events.EditEventPage.COUNTRY_COMBOBOX_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.COUNTRY_INFO_ICON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.COUNTRY_INFO_POPUP_TEXT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.CREATE_CASE_IN_EVENT_PARTICIPANT_LIST_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CREATE_CONTACTS_BULK_EDIT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CREATE_QUARANTINE_ORDER_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DELETE_BUTTON_DISABLED;
@@ -1775,6 +1776,12 @@ public class EditEventSteps implements En {
           LocalDate eventStartDate = LocalDate.now().minusDays(21 + daysBeforeVaccinationDate);
           fillStartDataDE(eventStartDate);
         });
+
+    When(
+        "I click on Create in Case ID row in event participant list",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(
+                CREATE_CASE_IN_EVENT_PARTICIPANT_LIST_BUTTON));
   }
 
   private String collectEventParticipantUuid() {

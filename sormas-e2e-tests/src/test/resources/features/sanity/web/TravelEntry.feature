@@ -1,7 +1,7 @@
 @UI @Sanity @TravelEntries
 Feature: Create travel entries
 
-  @issue=SORDEV-8266 @env_de
+  @tmsLink=SORDEV-8266 @env_de
   Scenario: Upload Travel Entry CSV
     Given I log in as a National User
     And I click on the Entries button from navbar
@@ -12,7 +12,7 @@ Feature: Create travel entries
     And I confirm the save Travel Entries Import popup
     Then I check that an import success notification appears in the Import Travel Entries popup
 
-  @issue=SORDEV-8266 @env_de
+  @tmsLink=SORDEV-8266 @env_de
   Scenario: Create a Travel Entry
     Given I log in as a National User
     And I click on the Entries button from navbar
@@ -23,7 +23,7 @@ Feature: Create travel entries
     And I navigate to person tab in Edit travel entry page
     And I check the created data is correctly displayed on Edit travel entry person page for DE version
 
-  @issue=SORDEV-8266 @env_de
+  @tmsLink=SORDEV-8266 @env_de
   Scenario: Create a Travel Entry through case view
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -34,7 +34,7 @@ Feature: Create travel entries
     And I click on Save button from the new travel entry form
     Then I check the created data is correctly displayed on Edit case travel entry page for DE version
 
-    @issue=SORDEV-8268 @env_de
+    @tmsLink=SORDEV-8268 @env_de
     Scenario: Create a case for a travel entry
       Given I log in as a National User
       And I click on the Entries button from navbar
@@ -62,7 +62,7 @@ Feature: Create travel entries
       Then I navigate to epidemiological data tab in Edit case page
       And I check if created travel entries are listed in the epidemiological data tab
 
-  @issue=SORQA-199 @env_de
+  @tmsLink=SORQA-199 @env_de
   Scenario: Test Inactive Destrict Feauture for Travel Entries
     Given I log in as a Admin User
     Then I click on the Configuration button from navbar
@@ -91,7 +91,7 @@ Feature: Create travel entries
     And I click on the New Travel Entry button from Travel Entries directory
     Then I check if archived district is unavailable
 
-  @issue=SORDEV-9477 @env_de
+  @tmsLink=SORDEV-9477 @env_de
   Scenario: Add a person search option on creation forms
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -115,7 +115,7 @@ Feature: Create travel entries
     And I open the last created person linked with Case
     And I check that EDIT TRAVEL ENTRY button appears on Edit Person page
 
-  @issue=SORDEV-10360 @env_de
+  @tmsLink=SORDEV-10360 @env_de
   Scenario: Test add Date of arrival to Travel Entry and fill it when importing DEA information
     Given I log in as a National User
     And I click on the Entries button from navbar
@@ -142,7 +142,7 @@ Feature: Create travel entries
     And I open the imported person on Travel entry directory page
     And I check the information about Dates for imported travel entry on Edit Travel entry page
 
-  @issue=SORDEV-9818 @env_de
+  @tmsLink=SORDEV-9818 @env_de
   Scenario: Bulk deleting entries in Travel Entry Directory
     Given I log in as a Admin User
     And I click on the Entries button from navbar
@@ -153,7 +153,7 @@ Feature: Create travel entries
     And I click yes on the CONFIRM REMOVAL popup from Task Directory page
     And I choose the reason of deletion in popup for Travel Entry
 
-  @issue=SORDEV-9818 @env_de
+  @tmsLink=SORDEV-9818 @env_de
   Scenario: Deleting entry assigned to a person in Travel Entry Directory
     Given I log in as a Admin User
     And I click on the Entries button from navbar
@@ -184,7 +184,7 @@ Feature: Create travel entries
     And I click on first person in person directory
     Then I check if there is no travel entry assigned to Person
 
-  @issue=SORDEV-9946 @env_de
+  @tmsLink=SORDEV-9946 @env_de
   Scenario: Test Hide country specific fields in the 'Pick or create person' form of the duplicate detection pop-up, in German and French systems
     Given I log in as a National User
     And I click on the Entries button from navbar
@@ -196,7 +196,7 @@ Feature: Create travel entries
     When I fill the required fields in a new travel entry form with same person data
     And I click on Save button from the new travel entry form
     Then I check if National Health Id, Nickname and Passport number appear in Pick or create person popup
-    @issue=SORDEV-7166 @env_de
+    @tmsLink=SORDEV-7166 @env_de
     Scenario: Test Link DEA TravelEntries to cases
       Given I log in as a Admin User
       And I click on the Entries button from navbar
@@ -225,13 +225,13 @@ Feature: Create travel entries
       Then I search for second created travel entry by UUID for person in Travel Entries Directory
       And I check if second Travel Entry UUID is available in Travel Entries Directory List
 
-  @issue=SORDEV-7162 @env_de
+  @tmsLink=SORDEV-7162 @env_de
   Scenario: Test column structure in Travel Entries directory
     Given I log in with National User
     And I click on the Entries button from navbar
     Then I check that the Entries table structure is correct DE specific
 
-  @issue=SORDEV-9788 @env_de
+  @tmsLink=SORDEV-9788 @env_de
   Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Travel Entry directory
     Given I log in with National User
     And I click on the Entries button from navbar
@@ -241,7 +241,7 @@ Feature: Create travel entries
     And I check that Passport Number is not visible in Person search popup
     And I check that Nickname is not visible in Person search popup
 
-  @issue=SORDEV-8043 @env_de
+  @tmsLink=SORDEV-8043 @env_de
   Scenario: Test Add TravelEntries to tasks
     Given I log in as a Admin User
     And I click on the Entries button from navbar
@@ -264,7 +264,7 @@ Feature: Create travel entries
     And I check displayed task's context of first result is Einreise
     And I click on associated link to Travel Entry
 
-  @issue=SORDEV-8411 @env_de
+  @tmsLink=SORDEV-8411 @env_de
   Scenario: Test Travel Entry conversion to case
     Given I log in with National User
     When I click on the Cases button from navbar
@@ -290,7 +290,7 @@ Feature: Create travel entries
     Then I check that differing Point Of Entry is correctly displayed on Edit case page
     And I check that Case Origin is set to Point Of Entry
 
-  @issue=SORDEV-7167 @env_de
+  @tmsLink=SORDEV-7167 @env_de
   Scenario: Test DEA TravelEntry form
     Given I log in as a Admin User
     When I click on the Entries button from navbar
@@ -306,7 +306,7 @@ Feature: Create travel entries
     And I close input data error popup
     And I fill the person-related required fields in the new entry form DE specific
 
-  @issue=SORDEV-8037 @env_de
+  @tmsLink=SORDEV-8037 @env_de
   Scenario: Test Add documents and document templates to TravelEntries
     Given I log in as a National User
     And I click on the Entries button from navbar
@@ -323,7 +323,7 @@ Feature: Create travel entries
     And I check if downloaded file is correct for "ExampleDocumentTemplateTravelEntry.docx" in Edit Travel Entry directory
     And I delete downloaded file created from "ExampleDocumentTemplateTravelEntry.docx" Document Template for Travel Entry
 
-  @issue=SORDEV-7160 @env_de
+  @tmsLink=SORDEV-7160 @env_de
   Scenario: Test TravelEntries III: TravelEntry list for person forms
     Given I log in as a National User
     And I click on the Entries button from navbar
@@ -340,7 +340,7 @@ Feature: Create travel entries
     And I click on first person in person directory
     Then I check if data of created Travel Entry is in Travel Entry tab on Edit Person Page for De specific
 
-    @issue=SORDEV-7161 @env_de
+    @tmsLink=SORDEV-7161 @env_de
     Scenario: Test DEA TravelEntry import
       Given I log in as a Admin User
       And I click on the Entries button from navbar
@@ -356,7 +356,7 @@ Feature: Create travel entries
       Then I close import popup in Travel Entry
       Then I check if the New Travel Entry button is displayed in Travel Entries directory
 
-  @issue=SORDEV-8053 @env_de
+  @tmsLink=SORDEV-8053 @env_de
   Scenario: Test Allow DEA travel entries to be imported without specifying a point of entry
     Given I log in as a Admin User
     And I click on the Entries button from navbar
@@ -372,7 +372,7 @@ Feature: Create travel entries
     And I click on first filtered record in Travel Entry
     And I check that Point of Entry and Point of Entry details are generated automatically by system and appear on Edit Travel Entry page
 
-    @issue=SORDEV-11453 @env_de
+    @tmsLink=SORDEV-11453 @env_de
       Scenario: [Travel Entry] Add reason for deletion to confirmation dialogue
       Given I log in as a Admin User
       And I click on the Entries button from navbar
@@ -385,7 +385,7 @@ Feature: Create travel entries
       And I check if reason for deletion as "Löschen auf Anforderung einer anderen Behörde" is available
       And I check if reason for deletion as "Entität ohne Rechtsgrund angelegt" is available
       And I check if reason for deletion as "Abgabe des Vorgangs wegen Nicht-Zuständigkeit" is available
-      And I check if reason for deletion as "Löschen von Duplikaten" is available
+      And I check if reason for deletion as "Löschen von Dublikaten" is available
       And I check if reason for deletion as "Anderer Grund" is available
       Then I click on No option in Confirm deletion popup
       Then I click on Delete button from travel entry
@@ -402,7 +402,7 @@ Feature: Create travel entries
       When I back to deleted travel entry by url
       Then I check if reason of deletion is set to "Löschen auf Anforderung der betroffenen Person nach DSGVO"
       And I check if External ID input on travel entry edit page is disabled
-  @issue=SORDEV-10227 @env_de
+  @tmsLink=SORDEV-10227 @env_de
   Scenario: Test Permanent deletion for Person for Travel Entry
     Given I log in as a National User
     And I click on the Entries button from navbar
@@ -429,7 +429,7 @@ Feature: Create travel entries
     And I check that number of displayed Person results is 0
 
 
-    @issue=SORDEV-9792 @env_de
+    @tmsLink=SORDEV-9792 @env_de
     Scenario: Test CoreAdo: Introduce "end of processing date" for travel entries
       Given I log in as a Admin User
       And I click on the Entries button from navbar

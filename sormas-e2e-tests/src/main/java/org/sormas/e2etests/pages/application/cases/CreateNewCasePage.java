@@ -132,4 +132,13 @@ public class CreateNewCasePage {
   public static final By POINT_OF_ENTRY_DETAILS =
       By.cssSelector(".popupContent #pointOfEntryDetails");
   public static final By DATE_OF_REPORT_NO_POPUP_INPUT = By.cssSelector("#reportDate input");
+  public static final By RESPONSIBLE_JURISDICTION_LABEL =
+      By.cssSelector("[location='responsibleJurisdictionHeadingLoc'] div");
+  public static final By PLACE_OF_STAY_LABEL =
+      By.cssSelector("[location='placeOfStayHeadingLoc'] div");
+  public static final By DIFFERENT_PLACE_OF_STAY_CHECKBOX_LABEL =
+      By.xpath("//*[@id='differentPlaceOfStayJurisdiction']/label");
+  public static final By PLACE_OF_STAY_REGION_COMBOBOX = By.cssSelector(".v-window #region div");
+  public static final By PLACE_OF_STAY_DISTRICT_COMBOBOX =
+      By.cssSelector(".v-window #district div");
 }
