@@ -28,14 +28,15 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
+import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasPersonPreview;
+import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 
@@ -122,7 +123,11 @@ public class CasePreviewGrid extends Grid<SormasToSormasCasePreview> {
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(
-				I18nProperties.findPrefixCaption(column.getId(), SormasToSormasCasePreview.I18N_PREFIX, SormasToSormasPersonPreview.I18N_PREFIX));
+				I18nProperties.findPrefixCaption(
+					column.getId(),
+					SormasToSormasCasePreview.I18N_PREFIX,
+					SormasToSormasPersonPreview.I18N_PREFIX,
+					SymptomsDto.I18N_PREFIX));
 		}
 	}
 }
