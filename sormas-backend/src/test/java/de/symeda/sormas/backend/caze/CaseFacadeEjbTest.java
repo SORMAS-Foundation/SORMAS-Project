@@ -1975,7 +1975,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			null,
 			null,
 			null,
-			null);
+			"dose1");
 		VaccinationDto duplicateLeadVacc2 = creator.createVaccinationWithDetails(
 			leadUser.toReference(),
 			immunizationDto.toReference(),
@@ -1987,7 +1987,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			null,
 			null,
 			null,
-			null);
+			"dose2");
 
 		//------------------------------------------------
 		UserDto followUser = creator.createUser(rdcf, "Second", "User");
@@ -2026,10 +2026,22 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			Vaccine.COMIRNATY,
 			VaccineManufacturer.BIONTECH_PFIZER,
 			VaccinationInfoSource.ORAL_COMMUNICATION,
-			null,
+			"inn1",
 			null,
 			null,
 			null);
+		creator.createVaccinationWithDetails(
+				followUser.toReference(),
+				followImmunizationDto.toReference(),
+				healthConditions,
+				calendar.getTime(),
+				Vaccine.COMIRNATY,
+				VaccineManufacturer.BIONTECH_PFIZER,
+				VaccinationInfoSource.ORAL_COMMUNICATION,
+				null,
+				null,
+				"abc",
+				null);
 		creator.createVaccinationWithDetails(
 			followUser.toReference(),
 			followImmunizationDto.toReference(),
@@ -2039,9 +2051,9 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			VaccineManufacturer.BIONTECH_PFIZER,
 			VaccinationInfoSource.VACCINATION_CARD,
 			null,
+			"123",
 			null,
-			null,
-			null);
+			"dose99");
 
 		assertEquals(null, duplicateLeadVacc1.getVaccinationInfoSource());
 		assertEquals(null, duplicateLeadVacc2.getVaccinationInfoSource());
@@ -2053,10 +2065,16 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(4, mergedVaccines.size());
 		VaccinationDto mergedDuplciateVacc1 =
 			mergedVaccines.stream().filter(v -> v.getUuid().equals(duplicateLeadVacc1.getUuid())).findFirst().orElse(null);
+		assertEquals(null, mergedDuplciateVacc1.getVaccinationInfoSource());
+		assertEquals("dose1", mergedDuplciateVacc1.getVaccineDose());
+
 		VaccinationDto mergedDuplciateVacc2 =
 			mergedVaccines.stream().filter(v -> v.getUuid().equals(duplicateLeadVacc2.getUuid())).findFirst().orElse(null);
-		assertEquals(VaccinationInfoSource.VACCINATION_CARD, mergedDuplciateVacc1.getVaccinationInfoSource());
 		assertEquals(VaccinationInfoSource.VACCINATION_CARD, mergedDuplciateVacc2.getVaccinationInfoSource());
+		assertEquals("123", mergedDuplciateVacc2.getVaccineBatchNumber());
+		assertEquals("inn1", mergedDuplciateVacc2.getVaccineInn());
+		assertEquals("dose2", mergedDuplciateVacc2.getVaccineDose());
+		assertEquals("abc", mergedDuplciateVacc2.getVaccineAtcCode());
 	}
 
 	@Test

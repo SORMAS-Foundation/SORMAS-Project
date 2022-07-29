@@ -29,6 +29,7 @@ import javax.ejb.Stateless;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.EntityDto;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 
@@ -548,30 +549,18 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	public void copyOrMergeVaccinations(ImmunizationDto immunizationDto, Immunization newImmunization, List<VaccinationDto> leadPersonVaccinations) {
 
 		List<Vaccination> vaccinationEntities = new ArrayList<>();
+		List<VaccinationDto> followPersonVaccinationWithoutDuplicates = getMergedVaccination(immunizationDto.getVaccinations());
 
-		/**
-		 * This map structure will contain all duplicated vaccines for lead person and the vaccine form "follow" person
-		 * with witch to be updated to.
-		 * In case there are more vaccines duplicate (from follow person) to the same lead vaccine , we are going to take the latest
-		 * changed and the other ones are ignored.
-		 * key : the uuid of the vaccine from the lead person
-		 * value : the latest duplicated vaccine from follow person
-		 */
-		Map<String, VaccinationDto> duplicateVaccinations = new HashedMap();
-
-		for (VaccinationDto vaccinationDto : immunizationDto.getVaccinations()) {
+		for (VaccinationDto vaccinationDto : followPersonVaccinationWithoutDuplicates) {
 			List<VaccinationDto> duplicateLeadVaccinations = leadPersonVaccinations != null
 				? leadPersonVaccinations.stream().filter(v -> isDuplicateOf(vaccinationDto, v)).collect(Collectors.toList())
 				: new ArrayList<>();
+			duplicateLeadVaccinations.sort(Comparator.comparing(EntityDto::getChangeDate).reversed());
 			if(duplicateLeadVaccinations.size() > 0){
-				for(VaccinationDto duplicateVaccination : duplicateLeadVaccinations){
-					VaccinationDto cachedVaccination = duplicateVaccinations.get(duplicateVaccination.getUuid());
-					if (cachedVaccination == null || cachedVaccination.getChangeDate().before(vaccinationDto.getChangeDate())) {
-						duplicateVaccinations.put(duplicateVaccination.getUuid(), vaccinationDto);
-					}
-				}
-			}
-		 else {
+				VaccinationDto duplicateVaccination = duplicateLeadVaccinations.get(0);
+				VaccinationDto updatedVaccination = DtoHelper.copyDtoValues(duplicateVaccination, vaccinationDto, false);
+				save(updatedVaccination);
+			} else {
 				Vaccination vaccination = new Vaccination();
 				vaccination.setUuid(DataHelper.createUuid());
 				vaccination = fillOrBuildEntity(vaccinationDto, vaccination, false);
@@ -585,15 +574,49 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 				vaccinationEntities.add(vaccination);
 			}
 		}
-
-		for (Map.Entry<String, VaccinationDto> entry : duplicateVaccinations.entrySet()) {
-			VaccinationDto vaccinationDto = leadPersonVaccinations.stream().filter(v -> v.getUuid().equals(entry.getKey())).findFirst().orElse(null);
-			VaccinationDto updatedVaccination = DtoHelper.copyDtoValues(vaccinationDto, entry.getValue(), false);
-			save(updatedVaccination);
-		}
-
 		newImmunization.getVaccinations().clear();
 		newImmunization.getVaccinations().addAll(vaccinationEntities);
+	}
+
+	/**
+	 * This method will return the list with vaccination for a person and merge all duplicates.
+	 * The lead vaccine will be considered the latest vaccine changed.
+	 * !! The list of merged vaccines is not persisted in DB
+	 */
+	private List<VaccinationDto> getMergedVaccination(List<VaccinationDto> vaccinationDtos) {
+		if (vaccinationDtos == null || vaccinationDtos.isEmpty()) {
+			return new ArrayList<>();
+		}
+		List<VaccinationDto> vaccinationsWithoutDuplicates = new ArrayList<>();
+		for (VaccinationDto vaccinationDto : vaccinationDtos) {
+			int duplicateIndex = 0;
+			VaccinationDto duplicateVaccine = null;
+			for (int i = 0; i < vaccinationsWithoutDuplicates.size(); i++) {
+				if (isDuplicateOf(vaccinationDto, vaccinationsWithoutDuplicates.get(i))) {
+					duplicateVaccine = vaccinationsWithoutDuplicates.get(i);
+					duplicateIndex = i;
+					break;
+				}
+			}
+
+			if (duplicateVaccine == null) {
+				vaccinationsWithoutDuplicates.add(vaccinationDto);
+			} else {
+				VaccinationDto targetVaccine;
+				VaccinationDto sourceVaccine;
+				if (duplicateVaccine.getChangeDate().after(vaccinationDto.getChangeDate())) {
+					targetVaccine = duplicateVaccine;
+					sourceVaccine = vaccinationDto;
+				} else {
+					targetVaccine = vaccinationDto;
+					sourceVaccine = duplicateVaccine;
+				}
+
+				VaccinationDto updatedVaccination = DtoHelper.copyDtoValues(targetVaccine, sourceVaccine, false);
+				vaccinationsWithoutDuplicates.set(duplicateIndex, updatedVaccination);
+			}
+		}
+		return vaccinationsWithoutDuplicates;
 	}
 
 	private boolean isDuplicateOf(VaccinationDto vaccination1, VaccinationDto vaccination2) {
