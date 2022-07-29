@@ -43,6 +43,7 @@ import javax.persistence.criteria.Selection;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.task.TaskContext;
@@ -50,7 +51,9 @@ import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskJurisdictionFlagsDto;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -634,6 +637,36 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		}
 
 		return assignee;
+	}
+
+	public List<Task> findBy(UserReferenceDto assignee, ContactReferenceDto contact, TaskType type, List<TaskStatus> statuses) {
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Task> cq = cb.createQuery(getElementClass());
+		final Root<Task> from = cq.from(getElementClass());
+
+		final TaskJoins joins = new TaskJoins(from);
+
+		Predicate filter = null;
+
+		if (assignee != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getAssignee().get(User.UUID), assignee.getUuid()));
+		}
+		if (type != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Task.TASK_TYPE), type));
+		}
+		if (statuses != null && !statuses.isEmpty()) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.in(from.get(Task.TASK_STATUS)).value(statuses));
+		}
+		if (contact != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getContact().get(Contact.UUID), contact.getUuid()));
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		return em.createQuery(cq).getResultList();
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

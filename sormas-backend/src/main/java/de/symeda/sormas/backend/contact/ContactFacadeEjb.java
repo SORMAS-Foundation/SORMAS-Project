@@ -1760,11 +1760,11 @@ public class ContactFacadeEjb
 			}
 
 			// find already existing tasks
-			TaskCriteria pendingUserTaskCriteria = new TaskCriteria().contact(contact.toReference())
-				.taskType(TaskType.CONTACT_FOLLOW_UP)
-				.assigneeUser(assignee.toReference())
-				.taskStatus(TaskStatus.PENDING);
-			List<Task> pendingUserTasks = taskService.findBy(pendingUserTaskCriteria, true);
+			List<Task> pendingUserTasks = taskService.findBy(
+				assignee.toReference(),
+				contact.toReference(),
+				TaskType.CONTACT_FOLLOW_UP,
+				Arrays.asList(TaskStatus.IN_PROGRESS, TaskStatus.PENDING));
 
 			if (!pendingUserTasks.isEmpty()) {
 				// the user still has a pending task for this contact
