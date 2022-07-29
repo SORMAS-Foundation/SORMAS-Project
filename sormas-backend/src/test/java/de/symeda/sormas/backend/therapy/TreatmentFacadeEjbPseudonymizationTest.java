@@ -59,6 +59,7 @@ public class TreatmentFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			rdcf1.facility.getUuid(),
 			"Surv",
 			"Off1",
+			creator.getUserRoleReference(DefaultUserRole.CASE_OFFICER),
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
@@ -68,6 +69,7 @@ public class TreatmentFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			rdcf2.facility.getUuid(),
 			"Surv",
 			"Off2",
+			creator.getUserRoleReference(DefaultUserRole.CASE_OFFICER),
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");

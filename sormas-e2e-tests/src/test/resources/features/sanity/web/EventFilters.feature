@@ -1,7 +1,7 @@
 @UI @Sanity @Event @UI
 Feature: Event Directory filters check
 
-  @issue=SORDEV-5915 @env_main
+  @tmsLink=SORDEV-5915 @env_main
   Scenario: Check all filters are working properly in Event directory
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -43,7 +43,7 @@ Feature: Event Directory filters check
     And I check the number of displayed Event results from All button is 0
     And I click on the RESET FILTERS button from Event
 
-  @issue=SORDEV-5917 @env_de
+  @tmsLink=SORDEV-5917 @env_de
   Scenario: Check all filters are working properly in Event directory for DE version
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -82,7 +82,7 @@ Feature: Event Directory filters check
     And I check the number of displayed Event results from All button is 0
     And I click on the RESET FILTERS button from Event
 
-  @issue=SORQA-77 @env_main
+  @tmsLink=SORQA-77 @env_main
   Scenario: Filters for Region, District, Community, Reporting user and Event statuses on Event Directory Page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -135,7 +135,7 @@ Feature: Event Directory filters check
     And I apply on the APPLY FILTERS button from Event
     And I check the number of displayed Event results from All button is 0
 
-  @issue=SORQA-77 @env_main
+  @tmsLink=SORQA-77 @env_main
   Scenario: Date filters and aggregation buttons in Event Directory
     Given API: I create a new event
     Then API: I check that POST call body is "OK"

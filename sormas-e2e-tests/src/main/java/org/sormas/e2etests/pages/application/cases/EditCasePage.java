@@ -54,6 +54,8 @@ public class EditCasePage {
   public static final By CASE_CLASSIFICATION_SPAN =
       By.cssSelector("#caseClassification span input:checked+label");
   public static final By CASE_CLASSIFICATION_INPUT = By.cssSelector("#caseClassification input");
+  public static final By CASE_CONFIRMATION_BASIS_COMBOBOX =
+      By.cssSelector("#caseConfirmationBasis div");
   public static final By CLINICAL_CONFIRMATION_COMBOBOX =
       By.cssSelector("#clinicalConfirmation div");
   public static final By EPIDEMIOLOGICAL_CONFIRMATION_COMBOBOX =
@@ -234,6 +236,9 @@ public class EditCasePage {
   public static final By GENERATED_DOCUMENT_NAME =
       By.xpath(
           "//div[text()='Documents']/../parent::div/../../following-sibling::div//div[@class='v-label v-widget caption-truncated v-label-caption-truncated v-label-undef-w']");
+  public static final By GENERATED_DOCUMENT_NAME_DE =
+      By.xpath(
+          "//div[text()='Dokumente']/../parent::div/../../following-sibling::div//div[@class='v-label v-widget caption-truncated v-label-caption-truncated v-label-undef-w']");
   public static final By ARCHIVE_CASE_BUTTON = By.id("archiveDearchive");
   public static final By CONFIRM_ACTION = By.id("actionConfirm");
   public static final By ARCHIVE_RELATED_CONTACTS_CHECKBOX =
@@ -287,6 +292,9 @@ public class EditCasePage {
   public static final By EDIT_IMMUNIZATION_BUTTON =
       By.xpath(
           "//div[@location='immunizations']//div[@class='v-slot v-slot-link v-slot-compact v-align-right']");
+  public static final By BUTTONS_IN_VACCINATIONS_LOCATION =
+      By.xpath(
+          "//div[contains(@location,\"vaccinations\")]//div[contains(@id,\"edit-vaccination\")]");
   public static final By GENERAL_COMMENT_TEXT_AREA = By.id("additionalDetails");
 
   public static By getCaseIDPathByIndex(int index) {
@@ -308,4 +316,31 @@ public class EditCasePage {
   public static final By IMMUNIZATION_CARD_IMMUNIZATION_UUID =
       By.xpath(
           "//div[@location='immunizations']//div[@class='v-slot v-slot-bold v-slot-uppercase v-align-middle']");
+  public static final By EXPECTED_FOLLOWUP_LABEL =
+      By.xpath(
+          "//div[contains(@location, \"expectedFollowUpUntilDateLoc\")]//div[@class=\"v-captiontext\"]");
+  public static final By EXPECTED_FOLLOWUP_POPUP_TEXT = By.xpath("//div[@class='v-tooltip-text']");
+  public static final By EXPECTED_FOLLOWUP_VALUE =
+      By.xpath("  //div[contains(@location, \"expectedFollowUpUntilDateLoc\")]//input");
+
+  public static final By VACCINATION_CARD_VACCINATION_NAME =
+      By.xpath("//div[contains(text(),'Impfstoffname:')]");
+  public static final By VACCINATION_CARD_VACCINATION_DATE =
+      By.xpath(
+          "//div[@location='vaccinations']//div[@class='v-slot v-slot-bold v-slot-uppercase v-align-right v-align-middle']/div");
+  public static final By EDIT_VACCINATION_BUTTON =
+      By.xpath(
+          "//div[@location='vaccinations']//div[@class='v-button v-widget link v-button-link compact v-button-compact']");
+  public static final By VACCINATION_CARD_INFO_ICON =
+      By.xpath(
+          "//div[@location = 'vaccinations']//span[contains(@class, 'v-icon v-icon-info_circle')]");
+  public static final By VACCINATION_CARD_INFO_POPUP_TEXT =
+      By.xpath("//div[@class='v-tooltip-text']");
+  public static final By LINK_EVENT_BUTTON_DE = By.id("Ereignis verkn\u00FCpfen");
+  public static final By ADD_A_PARTICIPANT_HEADER_DE =
+      By.xpath("//*[contains(text(),'Neuen Ereignisteilnehmer hinzuf\u00FCgen')]");
+  public static final By CHANGE_DISEASE_POPUP_TITLE =
+      By.xpath("//div[text()='Change case disease']");
+  public static final By PLACE_OF_STAY_REGION_INPUT = By.cssSelector("#region input");
+  public static final By PLACE_OF_STAY_DISTRICT_INPUT = By.cssSelector("#district input");
 }

@@ -94,6 +94,7 @@ import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -277,15 +278,6 @@ public class EventParticipantFacadeEjb
 		}
 	}
 
-	private List<Vaccination> getRelevantSortedVaccinations(String eventUuid, List<Vaccination> vaccinations) {
-		Event event = eventService.getByUuid(eventUuid);
-
-		return vaccinations.stream()
-			.filter(v -> vaccinationService.isVaccinationRelevant(event, v))
-			.sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
-			.collect(Collectors.toList());
-	}
-
 	private String getNumberOfDosesFromVaccinations(Vaccination vaccination) {
 		return vaccination != null ? vaccination.getVaccineDose() : "";
 	}
@@ -336,6 +328,7 @@ public class EventParticipantFacadeEjb
 		UserRight._EVENTPARTICIPANT_EDIT })
 	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto, boolean checkChangeDate, boolean internal) {
 		EventParticipant existingParticipant = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
+		FacadeHelper.checkCreateAndEditRights(existingParticipant, userService, UserRight.EVENTPARTICIPANT_CREATE, UserRight.EVENTPARTICIPANT_EDIT);
 
 		if (internal && existingParticipant != null && !service.isEditAllowed(existingParticipant).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventParticipantNotEditable));
@@ -657,6 +650,7 @@ public class EventParticipantFacadeEjb
 			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(eventParticipantQueryContext)),
 
 			event.get(Event.UUID),
+			event.get(Event.REPORT_DATE_TIME),
 
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.EVENT_INVESTIGATION_STATUS),
@@ -804,9 +798,11 @@ public class EventParticipantFacadeEjb
 						Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
 						Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
 
-						List<Vaccination> relevantSortedVaccinations = getRelevantSortedVaccinations(
-							exportDto.getEventUuid(),
-							filteredImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList()));
+						List<Vaccination> relevantSortedVaccinations = vaccinationService.getRelevantSortedVaccinations(
+							filteredImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList()),
+							exportDto.getEventStartDate(),
+							exportDto.getEventEndDate(),
+							exportDto.getEventReportDateTime());
 						Vaccination firstVaccination = null;
 						Vaccination lastVaccination = null;
 

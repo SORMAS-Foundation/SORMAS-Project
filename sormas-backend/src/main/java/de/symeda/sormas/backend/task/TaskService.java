@@ -522,11 +522,36 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			}
 		}
 
+		if (getCurrentUser() != null) {
+			Predicate taskContextFilter = buildTaskContextFilter(taskQueryContext);
+			filter = CriteriaBuilderHelper.and(cb, filter, taskContextFilter);
+		}
+
 		return filter;
 	}
 
-	private Predicate buildActiveTasksFilter(TaskQueryContext taskQueryContext) {
+	private Predicate buildTaskContextFilter(TaskQueryContext taskQueryContext) {
+		From<?, Task> from = taskQueryContext.getRoot();
+		CriteriaBuilder cb = taskQueryContext.getCriteriaBuilder();
 
+		List<TaskContext> allowTaskContext = new ArrayList<>();
+		allowTaskContext.add(TaskContext.GENERAL);
+		if (hasRight(UserRight.CASE_VIEW)) {
+			allowTaskContext.add(TaskContext.CASE);
+		}
+		if (hasRight(UserRight.CONTACT_VIEW)) {
+			allowTaskContext.add(TaskContext.CONTACT);
+		}
+		if (hasRight(UserRight.EVENT_VIEW)) {
+			allowTaskContext.add(TaskContext.EVENT);
+		}
+		if (hasRight(UserRight.TRAVEL_ENTRY_VIEW)) {
+			allowTaskContext.add(TaskContext.TRAVEL_ENTRY);
+		}
+		return cb.in(from.get(Task.TASK_CONTEXT)).value(allowTaskContext);
+	}
+
+	private Predicate buildActiveTasksFilter(TaskQueryContext taskQueryContext) {
 		From<?, Task> from = taskQueryContext.getRoot();
 		CriteriaBuilder cb = taskQueryContext.getCriteriaBuilder();
 		TaskJoins joins = taskQueryContext.getJoins();

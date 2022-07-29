@@ -45,6 +45,7 @@ import de.symeda.sormas.ui.task.TaskController;
 import de.symeda.sormas.ui.therapy.TherapyController;
 import de.symeda.sormas.ui.travelentry.TravelEntryController;
 import de.symeda.sormas.ui.user.UserController;
+import de.symeda.sormas.ui.user.UserRoleController;
 import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.BaseControllerProvider;
 import de.symeda.sormas.ui.vaccination.VaccinationController;
@@ -158,6 +159,10 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static UserController getUserController() {
 		return get().userController;
+	}
+
+	public static UserRoleController getUserRoleController() {
+		return get().getUserRoleController();
 	}
 
 	public static TaskController getTaskController() {

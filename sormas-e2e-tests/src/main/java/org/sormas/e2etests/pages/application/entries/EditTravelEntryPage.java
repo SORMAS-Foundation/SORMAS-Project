@@ -63,4 +63,5 @@ public class EditTravelEntryPage {
   public static final By DISCARD_TASK_BUTTON = By.cssSelector(".popupContent #discard");
   public static final By SAVE_TASK_BUTTON = By.cssSelector(".popupContent #commit");
   public static final By TASK_STATUS_RADIOBUTTON = By.cssSelector(".popupContent #taskStatus");
+  public static final By DELETE_BUTTON = By.id("delete");
 }

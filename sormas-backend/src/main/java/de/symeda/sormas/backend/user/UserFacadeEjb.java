@@ -75,6 +75,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
@@ -565,6 +566,11 @@ public class UserFacadeEjb implements UserFacade {
 			}
 		}
 
+		// current user should be able to edit itself
+		if (!DataHelper.isSame(userService.getCurrentUser(), dto)) {
+			FacadeHelper.checkCreateAndEditRights(oldUser, userService, UserRight.USER_CREATE, UserRight.USER_EDIT);
+		}
+
 		User user = fromDto(dto, true);
 
 		try {
@@ -677,7 +683,7 @@ public class UserFacadeEjb implements UserFacade {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	private User fromDto(UserDto source, boolean checkChangeDate) {
+	public User fromDto(UserDto source, boolean checkChangeDate) {
 
 		User target = DtoHelper.fillOrBuildEntity(source, userService.getByUuid(source.getUuid()), userService::createUser, checkChangeDate);
 

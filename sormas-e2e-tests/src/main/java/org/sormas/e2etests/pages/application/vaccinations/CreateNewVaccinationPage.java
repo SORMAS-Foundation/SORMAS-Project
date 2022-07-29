@@ -42,4 +42,6 @@ public class CreateNewVaccinationPage {
   public static final By ATC_CODE_INPUT = By.cssSelector(".v-window #vaccineAtcCode");
   public static final By SAVE_VACCINATION_FORM_BUTTON = By.cssSelector(".v-window #commit");
   public static final By NEW_VACCINATION_DE_BUTTON = By.id("Neue Impfung");
+  public static final By NEXT_PAGE_VACCINATION_TAB = By.id("nextPage");
+  public static final By REPORT_DATE_INPUT = By.cssSelector(".v-window #reportDate input");
 }

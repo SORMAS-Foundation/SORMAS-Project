@@ -20,9 +20,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
@@ -47,6 +45,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
 import de.symeda.sormas.api.user.DefaultUserRole;
@@ -55,7 +54,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
 import de.symeda.sormas.backend.sormastosormas.share.ShareRequestData;
-import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SormasToSormasShareRequestTest extends SormasToSormasTest {
@@ -73,11 +72,10 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 
 	@Test
 	public void testSendCaseShareRequest() throws SormasToSormasException {
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson("John", "Doe", Sex.MALE, 1964, 4, 12);
-		UserReferenceDto officer =
-			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
 			dto.setPerson(person.toReference());
 			dto.setDisease(Disease.CORONAVIRUS);
@@ -136,11 +134,10 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 
 	@Test
 	public void testResendCaseShareRequest() throws SormasToSormasException {
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson("John", "Doe", Sex.MALE, 1964, 4, 12);
-		UserReferenceDto officer =
-			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
 			dto.setPerson(person.toReference());
 			dto.setDisease(Disease.CORONAVIRUS);
@@ -149,6 +146,7 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 		});
 
 		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
+			ShareRequestDataType.CASE,
 			getUserService().getByUuid(officer.getUuid()),
 			SECOND_SERVER_ID,
 			false,
@@ -212,10 +210,10 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 
 	@Test(expected = SormasToSormasException.class)
 	public void testResendCaseShareRequestWithoutResponodingToFirstOne() throws SormasToSormasException {
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson("John", "Doe", Sex.MALE, 1964, 4, 12);
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
 			dto.setPerson(person.toReference());
 			dto.setDisease(Disease.CORONAVIRUS);
@@ -224,6 +222,7 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 		});
 
 		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
+			ShareRequestDataType.CASE,
 			getUserService().getByUuid(officer.getUuid()),
 			SECOND_SERVER_ID,
 			false,
@@ -252,11 +251,10 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 
 	@Test
 	public void testShareWithModifiedOptions() throws SormasToSormasException {
+		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson("John", "Doe", Sex.MALE, 1964, 4, 12);
-		UserReferenceDto officer =
-			creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
 			dto.setPerson(person.toReference());
 			dto.setDisease(Disease.CORONAVIRUS);
@@ -265,6 +263,7 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 		});
 
 		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
+			ShareRequestDataType.CASE,
 			getUserService().getByUuid(officer.getUuid()),
 			SECOND_SERVER_ID,
 			false,

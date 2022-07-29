@@ -84,7 +84,9 @@ import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -253,9 +255,9 @@ public class EditContactsSteps implements En {
     When(
         "I delete exported file from Case Contact Directory",
         () -> {
-          File toDelete =
-              new File(userDirPath + "/downloads/sormas_contacts_" + LocalDate.now() + "_.csv");
-          toDelete.deleteOnExit();
+          String toDelete = userDirPath + "/downloads/sormas_contacts_" + LocalDate.now() + "_.csv";
+          Path path = Paths.get(toDelete);
+          Files.delete(path);
         });
 
     When(
@@ -303,6 +305,12 @@ public class EditContactsSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_RADIO_BUTTON);
             webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
           }
+        });
+    When(
+        "^I collect contact UUID displayed on Edit Contact Page$",
+        () -> {
+          contactUUID = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
+          contactsUUIDList.add(contactUUID);
         });
 
     Then(

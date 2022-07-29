@@ -18,7 +18,9 @@
 
 package org.sormas.e2etests.steps.web.application;
 
+import static org.sormas.e2etests.pages.application.NavBarPage.ACTION_CONFIRM_GDPR_POPUP;
 import static org.sormas.e2etests.pages.application.NavBarPage.DISCARD_USER_SETTINGS_BUTTON;
+import static org.sormas.e2etests.pages.application.NavBarPage.GDPR_CHECKBOX;
 import static org.sormas.e2etests.pages.application.NavBarPage.USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.LOGOUT_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
@@ -91,6 +93,10 @@ public class LoginSteps implements En {
           log.info("Clicking on login button");
           webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
           webDriverHelpers.waitForPageLoaded();
+          if (webDriverHelpers.isElementVisibleWithTimeout(GDPR_CHECKBOX, 10)) {
+            webDriverHelpers.clickOnWebElementBySelector(GDPR_CHECKBOX);
+            webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_GDPR_POPUP);
+          }
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 50);
         });
 

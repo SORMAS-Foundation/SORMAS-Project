@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +26,8 @@ import java.util.Set;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+
+import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface UserRoleFacade {
@@ -66,4 +69,10 @@ public interface UserRoleFacade {
 	UserRoleReferenceDto getUserRoleReferenceById(long id);
 
 	Map<UserRoleDto, Set<UserRight>> getUserRoleRights();
+
+	long count(UserRoleCriteria userRoleCriteria);
+
+	List<UserRoleDto> getIndexList(UserRoleCriteria userRoleCriteria, int first, int max, List<SortProperty> sortProperties);
+
+	String generateUserRolesDocument() throws IOException;
 }

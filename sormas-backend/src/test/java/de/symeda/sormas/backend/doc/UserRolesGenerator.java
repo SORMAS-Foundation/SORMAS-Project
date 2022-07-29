@@ -30,13 +30,13 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 /**
  * Intentionally named *Generator because we don't want Maven to execute this class automatically.
  */
-public class UserRightsGenerator extends AbstractBeanTest {
+public class UserRolesGenerator extends AbstractBeanTest {
 
 	@Test
-	public void generateUserRights() throws IOException {
-		File output = new File("../sormas-api/src/main/resources/doc/SORMAS_User_Rights.xlsx");
+	public void generateUserRoles() throws IOException {
+		File output = new File("../sormas-api/src/main/resources/doc/SORMAS_User_Roles.xlsx");
 
-		String documentPath = getUserRightsFacade().generateUserRightsDocument();
+		String documentPath = getUserRoleFacade().generateUserRolesDocument();
 
 		Files.copy(Paths.get(documentPath), output.toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}

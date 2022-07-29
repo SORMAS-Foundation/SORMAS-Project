@@ -458,6 +458,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>USER_ROLE_VIEW</role-name>
+        <group-name>USER_ROLE_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>SEND_MANUAL_EXTERNAL_MESSAGES</role-name>
         <group-name>SEND_MANUAL_EXTERNAL_MESSAGES</group-name>
     </security-role-mapping>

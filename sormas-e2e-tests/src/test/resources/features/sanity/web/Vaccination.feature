@@ -1,7 +1,7 @@
 @UI @Sanity @Vaccination @Filters
 Feature: Vaccination tests
 
-  @issue=SORDEV-9585 @env_de
+  @tmsLink=SORDEV-9585 @env_de
   Scenario: Test Add reduced vaccination module to document creation for Contact
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -30,7 +30,7 @@ Feature: Vaccination tests
     And I check if generated document for contact based on "VaccinationGenerationTest_Contacts.docx" contains all required fields
     Then I delete downloaded file created from "VaccinationGenerationTest_Contacts.docx" Document Template for Contact
 
-  @issue=SORDEV-9585 @env_de
+  @tmsLink=SORDEV-9585 @env_de
   Scenario: Test Add reduced vaccination module to document creation for Case
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -59,7 +59,7 @@ Feature: Vaccination tests
     And I check if generated document for Case based on "VaccinationGenerationTest_Cases.docx" contains all required fields
     Then I delete downloaded file created from "VaccinationGenerationTest_Cases.docx" Document Template
 
-  @issue=SORDEV-9585 @env_de
+  @tmsLink=SORDEV-9585 @env_de
   Scenario: Test Add reduced vaccination module to document creation for Event
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -87,7 +87,248 @@ Feature: Vaccination tests
     And I check if generated document for Event Participant based on "VaccinationGenerationTest_EventParticipants.docx" contains all required fields
     Then I delete downloaded file created from "VaccinationGenerationTest_EventParticipants.docx" Document Template for Event Participant
 
-  @issue=SORDEV-11753 @env_de
+  #leading case - only vaccination date and name
+  #discarded case - all fields and same vaccination name and date
+  #expected - one vaccination updated with the information given by the vaccination of the discarded case
+  @tmsLink=SORDEV-11570 @env_de
+  Scenario: Duplicate detection for vaccinations when merging cases[1]
+    Given I log in as a Admin User
+    When I click on the Cases button from navbar
+    Then I click on Line Listing button
+    And I create a new duplicate case in line listing feature popup for DE version
+    And I save the new line listing case
+    When I click on the Cases button from navbar
+    Then I click on Line Listing button
+    And I create a new duplicate case in line listing feature popup for DE version
+    And I save the new line listing case
+    And I Pick a new person in Pick or create person popup during contact creation for DE
+    And I filter by Person's full name of last created duplicated line listing case on Case Directory Page
+    And I click APPLY BUTTON in Case Directory Page
+    And I collect the leading case UUID displayed on Case Directory Page
+    And I open 1 case in order from list
+    And I click NEW VACCINATION button for DE
+    And I set new vaccination name the same as duplicate for DE
+    And I set new vaccination date the same as duplicate for DE
+    And I click SAVE button in new Vaccination form
+    When I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I filter by Person's full name of last created duplicated line listing case on Case Directory Page
+    And I click APPLY BUTTON in Case Directory Page
+    And I open 2 case in order from list
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data for duplicates in new Vaccination form for DE
+    And I click SAVE button in new Vaccination form
+    And I click on the Cases button from navbar
+    And I click on the More button on Case directory page
+    Then I click on Merge Duplicates on Case directory page
+    And I click APPLY BUTTON in Merge Duplicates View on Contact Directory Page
+    And I click on Merge button of leading case created through line listing in Merge Duplicate Cases page
+    Then I click to Confirm action in Merge Duplicates Cases popup
+    And I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I filter by Person's full name of last created duplicated line listing case on Case Directory Page
+    And I click APPLY BUTTON in Case Directory Page
+    And I open 1 case in order from list
+    And I check that number of added Vaccinations is 1
+    And I click to edit 1 vaccination on Edit Case page
+    And I check that displayed data in form is equal to whole data from duplicated entry
+
+  #leading case - all fields and same vaccination name and date
+  #discarded case - all fields with different value than leading case and same vaccination name and date
+  #expected - one vaccination updated with the information given by the vaccination of the leading case
+  @tmsLink=SORDEV-11570 @env_de
+  Scenario: Duplicate detection for vaccinations when merging cases[2]
+    Given I log in as a Admin User
+    When I click on the Cases button from navbar
+    Then I click on Line Listing button
+    And I create a new duplicate case in line listing feature popup for DE version
+    And I save the new line listing case
+    When I click on the Cases button from navbar
+    Then I click on Line Listing button
+    And I create a new duplicate case in line listing feature popup for DE version
+    And I save the new line listing case
+    And I Pick a new person in Pick or create person popup during contact creation for DE
+    And I filter by Person's full name of last created duplicated line listing case on Case Directory Page
+    And I click APPLY BUTTON in Case Directory Page
+    And I collect the leading case UUID displayed on Case Directory Page
+    And I open 1 case in order from list
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data for duplicates in new Vaccination form for DE
+    And I click SAVE button in new Vaccination form
+    When I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I filter by Person's full name of last created duplicated line listing case on Case Directory Page
+    And I click APPLY BUTTON in Case Directory Page
+    And I open 2 case in order from list
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data in new Vaccination form for DE
+    And I set new vaccination name the same as duplicate for DE
+    And I set new vaccination date the same as duplicate for DE
+    And I click SAVE button in new Vaccination form
+    And I click on the Cases button from navbar
+    And I click on the More button on Case directory page
+    Then I click on Merge Duplicates on Case directory page
+    And I click APPLY BUTTON in Merge Duplicates View on Contact Directory Page
+    And I click on Merge button of leading case created through line listing in Merge Duplicate Cases page
+    Then I click to Confirm action in Merge Duplicates Cases popup
+    And I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I filter by Person's full name of last created duplicated line listing case on Case Directory Page
+    And I click APPLY BUTTON in Case Directory Page
+    And I open 1 case in order from list
+    And I check that number of added Vaccinations is 1
+    And I click to edit 1 vaccination on Edit Case page
+    And I check that displayed vaccination date in form is equal to name from duplicated entry
+
+  #leading case - only vaccination date
+  #discarded case - only vaccination date same as leading
+  #expected - two vaccinations with same vaccination date
+  @tmsLink=SORDEV-11570 @env_de
+  Scenario: Duplicate detection for vaccinations when merging cases[3]
+    Given I log in as a Admin User
+    When I click on the Cases button from navbar
+    Then I click on Line Listing button
+    And I create a new duplicate case in line listing feature popup for DE version
+    And I save the new line listing case
+    When I click on the Cases button from navbar
+    Then I click on Line Listing button
+    And I create a new duplicate case in line listing feature popup for DE version
+    And I save the new line listing case
+    And I Pick a new person in Pick or create person popup during contact creation for DE
+    And I filter by Person's full name of last created duplicated line listing case on Case Directory Page
+    And I click APPLY BUTTON in Case Directory Page
+    And I collect the leading case UUID displayed on Case Directory Page
+    And I open 1 case in order from list
+    And I click NEW VACCINATION button for DE
+    And I set new vaccination date the same as duplicate for DE
+    And I click SAVE button in new Vaccination form
+    When I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I filter by Person's full name of last created duplicated line listing case on Case Directory Page
+    And I click APPLY BUTTON in Case Directory Page
+    And I open 2 case in order from list
+    And I click NEW VACCINATION button for DE
+    And I fill new vaccination data for duplicates in new Vaccination form for DE
+    And I set new vaccination date the same as duplicate for DE
+    And I click SAVE button in new Vaccination form
+    And I click on the Cases button from navbar
+    And I click on the More button on Case directory page
+    Then I click on Merge Duplicates on Case directory page
+    And I click APPLY BUTTON in Merge Duplicates View on Contact Directory Page
+    And I click on Merge button of leading case created through line listing in Merge Duplicate Cases page
+    Then I click to Confirm action in Merge Duplicates Cases popup
+    And I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I filter by Person's full name of last created duplicated line listing case on Case Directory Page
+    And I click APPLY BUTTON in Case Directory Page
+    And I open 1 case in order from list
+    And I check that number of added Vaccinations is 2
+    And I click to edit 1 vaccination on Edit Case page
+    And I check that displayed vaccination date in form is equal to date from duplicated entry
+    And I close vaccination form in Edit Case directory
+    And I click to edit 2 vaccination on Edit Case page
+    And I check that displayed vaccination date in form is equal to date from duplicated entry
+
+  #leading case - only vaccination name
+  #discarded case - only vaccination name same as leading
+  #expected - two vaccinations with same vaccination name
+  @tmsLink=SORDEV-11570 @env_de
+  Scenario: Duplicate detection for vaccinations when merging cases[4]
+    Given I log in as a Admin User
+    When I click on the Cases button from navbar
+    Then I click on Line Listing button
+    And I create a new duplicate case in line listing feature popup for DE version
+    And I save the new line listing case
+    When I click on the Cases button from navbar
+    Then I click on Line Listing button
+    And I create a new duplicate case in line listing feature popup for DE version
+    And I save the new line listing case
+    And I Pick a new person in Pick or create person popup during contact creation for DE
+    And I filter by Person's full name of last created duplicated line listing case on Case Directory Page
+    And I click APPLY BUTTON in Case Directory Page
+    And I collect the leading case UUID displayed on Case Directory Page
+    And I open 1 case in order from list
+    And I click NEW VACCINATION button for DE
+    And I set new vaccination name the same as duplicate for DE
+    And I click SAVE button in new Vaccination form
+    When I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I filter by Person's full name of last created duplicated line listing case on Case Directory Page
+    And I click APPLY BUTTON in Case Directory Page
+    And I open 2 case in order from list
+    And I click NEW VACCINATION button for DE
+    And I set new vaccination name the same as duplicate for DE
+    And I click SAVE button in new Vaccination form
+    And I click on the Cases button from navbar
+    And I click on the More button on Case directory page
+    Then I click on Merge Duplicates on Case directory page
+    And I click APPLY BUTTON in Merge Duplicates View on Contact Directory Page
+    And I click on Merge button of leading case created through line listing in Merge Duplicate Cases page
+    Then I click to Confirm action in Merge Duplicates Cases popup
+    And I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I filter by Person's full name of last created duplicated line listing case on Case Directory Page
+    And I click APPLY BUTTON in Case Directory Page
+    And I open 1 case in order from list
+    And I check that number of added Vaccinations is 2
+    And I click to edit 1 vaccination on Edit Case page
+    And I check that displayed vaccination date in form is equal to name from duplicated entry
+    And I close vaccination form in Edit Case directory
+    And I click to edit 2 vaccination on Edit Case page
+    And I check that displayed vaccination date in form is equal to name from duplicated entry
+
+  #leading case - everything but vaccination date and name
+  #discarded case - everything but vaccination date and name
+  #expected - two vaccinations without vaccination name and date
+  @tmsLink=SORDEV-11570 @env_de
+  Scenario: Duplicate detection for vaccinations when merging cases[5]
+    Given I log in as a Admin User
+    When I click on the Cases button from navbar
+    Then I click on Line Listing button
+    And I create a new duplicate case in line listing feature popup for DE version
+    And I save the new line listing case
+    When I click on the Cases button from navbar
+    Then I click on Line Listing button
+    And I create a new duplicate case in line listing feature popup for DE version
+    And I save the new line listing case
+    And I Pick a new person in Pick or create person popup during contact creation for DE
+    And I filter by Person's full name of last created duplicated line listing case on Case Directory Page
+    And I click APPLY BUTTON in Case Directory Page
+    And I collect the leading case UUID displayed on Case Directory Page
+    And I open 1 case in order from list
+    And I click NEW VACCINATION button for DE
+    And I fill new duplicate vaccination data in new Vaccination form for DE without vaccination date and name
+    And I click SAVE button in new Vaccination form
+    When I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I filter by Person's full name of last created duplicated line listing case on Case Directory Page
+    And I click APPLY BUTTON in Case Directory Page
+    And I open 2 case in order from list
+    And I click NEW VACCINATION button for DE
+    And I fill new duplicate vaccination data in new Vaccination form for DE without vaccination date and name
+    And I click SAVE button in new Vaccination form
+    And I click on the Cases button from navbar
+    And I click on the More button on Case directory page
+    Then I click on Merge Duplicates on Case directory page
+    And I click APPLY BUTTON in Merge Duplicates View on Contact Directory Page
+    And I click on Merge button of leading case created through line listing in Merge Duplicate Cases page
+    Then I click to Confirm action in Merge Duplicates Cases popup
+    And I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I filter by Person's full name of last created duplicated line listing case on Case Directory Page
+    And I click APPLY BUTTON in Case Directory Page
+    And I open 1 case in order from list
+    And I check that number of added Vaccinations is 2
+    And I click to edit 1 vaccination on Edit Case page
+    And I check that displayed vaccination form has empty vaccination date and name
+    And I close vaccination form in Edit Case directory
+    And I click to edit 2 vaccination on Edit Case page
+    And I check that displayed vaccination form has empty vaccination date and name
+
+  #leading contact - only vaccination date and name
+  #discarded contact - all fields and same vaccination name and date
+  #expected - one vaccination updated with the information given by the vaccination of the discarded contact
+  @tmsLink=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts [1]
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -139,7 +380,10 @@ Feature: Vaccination tests
     And I click to edit 1 vaccination on Edit Contact page
     And I check that displayed data in form is equal to whole data from duplicated entry
 
-  @issue=SORDEV-11753 @env_de
+  #leading contact - all fields and same vaccination name and date
+  #discarded contact - all fields with different value than leading contact and same vaccination name and date
+  #expected - one vaccination updated with the information given by the vaccination of the leading contact
+  @tmsLink=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts [2]
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -192,7 +436,10 @@ Feature: Vaccination tests
     And I click to edit 1 vaccination on Edit Contact page
     And I check that displayed vaccination date in form is equal to name from duplicated entry
 
-  @issue=SORDEV-11753 @env_de
+  #leading contact - only vaccination date
+  #discarded contact - only vaccination date same as leading
+  #expected - two vaccinations with same vaccination date
+  @tmsLink=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts [3]
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -247,7 +494,10 @@ Feature: Vaccination tests
     And I click to edit 2 vaccination on Edit Contact page
     And I check that displayed vaccination date in form is equal to date from duplicated entry
 
-  @issue=SORDEV-11753 @env_de
+  #leading contact - only vaccination name
+  #discarded contact - only vaccination name same as leading
+  #expected - two vaccinations with same vaccination name
+  @tmsLink=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts[4]
     Given API: I create a new person
     And API: I check that POST call body is "OK"
@@ -303,7 +553,10 @@ Feature: Vaccination tests
     And I click to edit 2 vaccination on Edit Contact page
     And I check that displayed vaccination date in form is equal to name from duplicated entry
 
-  @issue=SORDEV-11753 @env_de
+  #leading contact - everything but vaccination date and name
+  #discarded contact - everything but vaccination date and name
+  #expected - two vaccinations without vaccination name and date
+  @tmsLink=SORDEV-11753 @env_de
   Scenario: Duplicate detection for vaccinations when merging contacts[5]
     Given API: I create a new person
     And API: I check that POST call body is "OK"
