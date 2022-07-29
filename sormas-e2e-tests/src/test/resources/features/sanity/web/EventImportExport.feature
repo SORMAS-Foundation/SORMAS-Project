@@ -95,7 +95,7 @@ Given I log in as a Admin User
     And I check that displayed vaccination name is equal to "Comirnaty (COVID-19-mRNA Impfstoff)"
     And I close vaccination form in Edit Event Participant directory
 
-  @issue=SORDEV-8046 @env_main
+  @tmsLink=SORDEV-8046 @env_main
   Scenario: Check for Investigation Start and End columns in the detailed event export
     Given I log in as a National User
     And I click on the Events button from navbar
