@@ -725,7 +725,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 	}
 
 	public CustomizableEnumFacade getCustomizableEnumFacade() {
-		return getBean(CustomizableEnumFacadeEjb.class);
+		return getBean(CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal.class);
 	}
 
 	public ShareDataBuilderHelper getShareDataBuilderHelper() {
