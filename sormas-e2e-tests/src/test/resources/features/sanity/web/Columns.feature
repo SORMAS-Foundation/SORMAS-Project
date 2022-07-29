@@ -1,7 +1,7 @@
 @UI @Sanity @Columns
 Feature: Test column sorting for different entities
 
-@env_main @issue=SORDEV-5342 @Task
+@env_main @tmsLink=SORDEV-5342 @Task
 Scenario Outline: Sort column <col> alphabetically in Tasks directory
   Given I log in with National User
   And I click on the Tasks button from navbar
@@ -24,7 +24,7 @@ Scenario Outline: Sort column <col> alphabetically in Tasks directory
     |13 |
     |14 |
 
-@env_main @issue=SORDEV-5342 @Task
+@env_main @tmsLink=SORDEV-5342 @Task
 Scenario Outline: Sort column <col> by last name in Tasks directory
   Given I log in with National User
   And I click on the Tasks button from navbar
@@ -39,7 +39,7 @@ Scenario Outline: Sort column <col> by last name in Tasks directory
     | col |
     |10 |
 
-@env_main @issue=SORDEV-5342 @Task
+@env_main @tmsLink=SORDEV-5342 @Task
 Scenario Outline: Sort column <col> by date and time in Tasks directory
   Given I log in with National User
   And I click on the Tasks button from navbar
@@ -55,7 +55,7 @@ Scenario Outline: Sort column <col> by date and time in Tasks directory
     |8 |
     |9 |
 
-@env_main @issue=SORDEV-5342 @Persons
+@env_main @tmsLink=SORDEV-5342 @Persons
 Scenario Outline: Sort column <col> alphabetically in Persons directory
   Given I log in with National User
   And I click on the Persons button from navbar
@@ -80,7 +80,7 @@ Scenario Outline: Sort column <col> alphabetically in Persons directory
     |11 |
     |12 |
 
-@env_main @issue=SORDEV-5342 @Persons
+@env_main @tmsLink=SORDEV-5342 @Persons
 Scenario Outline: Sort column <col> by age in Persons directory
   Given I log in with National User
   And I click on the Persons button from navbar
@@ -95,7 +95,7 @@ Scenario Outline: Sort column <col> by age in Persons directory
     | col |
     |4 |
 
-@env_main @issue=SORDEV-5342 @Case
+@env_main @tmsLink=SORDEV-5342 @Case
 Scenario Outline: Sort column <col> alphabetically in Cases directory
   Given I log in with National User
   And I click on the Cases button from navbar
@@ -126,7 +126,7 @@ Scenario Outline: Sort column <col> alphabetically in Cases directory
     |19 |
     |21 |
 
-@env_main @issue=SORDEV-5342 @Case
+@env_main @tmsLink=SORDEV-5342 @Case
 Scenario Outline: Sort column <col> by date and time in Cases directory
   Given I log in with National User
   And I click on the Cases button from navbar
@@ -142,7 +142,7 @@ Scenario Outline: Sort column <col> by date and time in Cases directory
     |15 |
     |16 |
 
-@env_main @issue=SORDEV-5342 @Case
+@env_main @tmsLink=SORDEV-5342 @Case
 Scenario Outline: Sort column <col> by date in Cases directory
   Given I log in with National User
   And I click on the Cases button from navbar
@@ -157,7 +157,7 @@ Scenario Outline: Sort column <col> by date in Cases directory
     | col |
     |18 |
 
-@env_main @issue=SORDEV-5342 @Contacts
+@env_main @tmsLink=SORDEV-5342 @Contacts
 Scenario Outline: Sort column <col> alphabetically in Contacts directory
   Given I log in with National User
   And I click on the Contacts button from navbar
@@ -182,7 +182,7 @@ Scenario Outline: Sort column <col> alphabetically in Contacts directory
 #    |10 |  Non-alphabetical sorting order - find out whether it's a bug or a feature
     |12 |
 
-@env_main @issue=SORDEV-5342 @Contacts
+@env_main @tmsLink=SORDEV-5342 @Contacts
 Scenario Outline: Sort column <col> by date in Contacts directory
   Given I log in with National User
   And I click on the Contacts button from navbar
@@ -197,7 +197,7 @@ Scenario Outline: Sort column <col> by date in Contacts directory
     | col |
     |11 |
 
-@env_main @issue=SORDEV-5342 @issue=SORQA-78 @Event
+@env_main @tmsLink=SORDEV-5342 @tmsLink=SORQA-78 @Event
 Scenario Outline: Sort column <col> alphabetically in Events directory
   Given I log in with National User
   And I click on the Events button from navbar
@@ -231,7 +231,7 @@ Scenario Outline: Sort column <col> alphabetically in Events directory
     |22 |
     |23 |
 
-@env_main @issue=SORDEV-5342 @Event
+@env_main @tmsLink=SORDEV-5342 @Event
 Scenario Outline: Sort column <col> by date in Events directory
   Given I log in with National User
   And I click on the Events button from navbar
@@ -246,7 +246,7 @@ Scenario Outline: Sort column <col> by date in Events directory
     | col |
     |11 |
 
-@env_main @issue=SORDEV-5342 @Sample
+@env_main @tmsLink=SORDEV-5342 @Sample
 Scenario Outline: Sort column <col> alphabetically in Samples directory
   Given I log in with National User
   And I click on the Sample button from navbar
@@ -270,7 +270,7 @@ Scenario Outline: Sort column <col> alphabetically in Samples directory
     |13 |
     |14 |
 
-@env_main @issue=SORDEV-5342 @Sample
+@env_main @tmsLink=SORDEV-5342 @Sample
 Scenario Outline: Sort column <col> by last name in Samples directory
   Given I log in with National User
   And I click on the Sample button from navbar
@@ -287,7 +287,7 @@ Scenario Outline: Sort column <col> by last name in Samples directory
     |5 |
     |6 |
 
-@env_main @issue=SORDEV-5342 @Sample
+@env_main @tmsLink=SORDEV-5342 @Sample
 Scenario Outline: Sort column <col> by date in Samples directory
   Given I log in with National User
   And I click on the Sample button from navbar
@@ -302,7 +302,7 @@ Scenario Outline: Sort column <col> by date in Samples directory
     | col |
     |11 |
 
-@env_de @issue=SORDEV-7162 @TravelEntries
+@env_de @tmsLink=SORDEV-7162 @TravelEntries
 Scenario Outline: Sort column <col> alphabetically in Entries directory
   Given I log in with National User
   And I click on the Entries button from navbar
@@ -325,7 +325,7 @@ Scenario Outline: Sort column <col> alphabetically in Entries directory
 #    |8 |   Non-alphabetical sorting order - find out whether it's a bug or a feature
 #    |9 |   Non-alphabetical sorting order - find out whether it's a bug or a feature
 
-@env_de @issue=SORDEV-7162 @TravelEntries
+@env_de @tmsLink=SORDEV-7162 @TravelEntries
 Scenario Outline: Sort column <col> by date in Entries directory
   Given I log in with National User
   And I click on the Entries button from navbar

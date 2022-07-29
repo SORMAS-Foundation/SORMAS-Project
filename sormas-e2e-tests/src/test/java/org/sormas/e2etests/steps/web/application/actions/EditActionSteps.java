@@ -19,16 +19,28 @@
 package org.sormas.e2etests.steps.web.application.actions;
 
 import static org.sormas.e2etests.pages.application.actions.EditActionPage.*;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.ACTION_CONFIRM_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE_UPLOADED_TEST_FILE;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NEW_DOCUMENT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.START_DATA_IMPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
+import static org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps.userDirPath;
 
 import cucumber.api.java8.En;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Action;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.steps.BaseSteps;
+import org.testng.Assert;
 
 public class EditActionSteps implements En {
 
@@ -38,7 +50,8 @@ public class EditActionSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
   @Inject
-  public EditActionSteps(WebDriverHelpers webDriverHelpers, BaseSteps baseSteps) {
+  public EditActionSteps(
+      WebDriverHelpers webDriverHelpers, BaseSteps baseSteps, AssertHelpers assertHelpers) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
 
@@ -48,6 +61,55 @@ public class EditActionSteps implements En {
           action = CreateNewActionSteps.action;
           Action collectedAction = collectActionData();
           ComparisonHelper.compareEqualEntities(action, collectedAction);
+        });
+
+    When(
+        "I click on ([^\"]*) button from NEW DOCUMENT in Event Action tab",
+        (String buttonName) -> {
+          webDriverHelpers.clickOnWebElementBySelector(NEW_DOCUMENT_BUTTON);
+          webDriverHelpers.clickWebElementByText(START_DATA_IMPORT_BUTTON, buttonName);
+        });
+    When(
+        "I upload ([^\"]*) file to the Event Action",
+        (String fileType) -> {
+          webDriverHelpers.sendFile(FILE_PICKER, userDirPath + "/uploads/" + fileType);
+        });
+    When(
+        "I check if ([^\"]*) file is available in Event Action documents",
+        (String fileType) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              By.xpath(String.format(CASE_UPLOADED_TEST_FILE, fileType)), 5);
+        });
+    When(
+        "I check if ([^\"]*) file is downloaded correctly from Event Action tab",
+        (String filename) -> {
+          String file = userDirPath + "/downloads/" + filename;
+          Path path = Paths.get(file);
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      filename + " wasn't downloaded: " + path.toAbsolutePath()),
+              30);
+          Files.delete(path); // clean
+        });
+    When(
+        "I download last updated document file from Event Action tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DOWNLOAD_LAST_UPDATED_DOCUMENT);
+        });
+    When(
+        "I delete last uploaded document file from Event Action tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DELETE_LAST_UPDATED_DOCUMENT);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_POPUP_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+    When(
+        "I check if last uploaded file was deleted from document files in Event Action tab",
+        () -> {
+          webDriverHelpers.checkWebElementContainsText(
+              NO_DOCUMENT_TEXT, "There are no documents for this Action");
         });
   }
 

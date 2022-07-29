@@ -99,6 +99,10 @@ public abstract class AbstractEventView extends AbstractDetailView<EventReferenc
 		return FacadeProvider.getEventFacade().isEditAllowed(getEventRef().getUuid()).equals(EditPermissionType.ALLOWED);
 	}
 
+	protected boolean isEventDeleted() {
+		return FacadeProvider.getEventFacade().isDeleted(getEventRef().getUuid());
+	}
+
 	public EventReferenceDto getEventRef() {
 		return getReference();
 	}

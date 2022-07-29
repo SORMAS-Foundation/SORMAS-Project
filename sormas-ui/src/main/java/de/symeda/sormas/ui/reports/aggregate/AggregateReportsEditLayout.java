@@ -9,10 +9,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.utils.AgeGroupUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import com.vaadin.server.ErrorMessage;
+import com.vaadin.server.UserError;
 import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -41,6 +39,7 @@ import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
 import de.symeda.sormas.api.report.DiseaseAgeGroup;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.utils.AgeGroupUtils;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.UserProvider;
@@ -118,13 +117,16 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		comboBoxRegion.setWidth(250, Unit.PIXELS);
 		comboBoxRegion.setCaption(I18nProperties.getPrefixCaption(AggregateReportDto.I18N_PREFIX, AggregateReportDto.REGION));
 		comboBoxRegion.setItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+		comboBoxRegion.setRequiredIndicatorVisible(true);
 		comboBoxRegion.addValueChangeListener(e -> {
 			RegionReferenceDto region = e.getValue();
 			comboBoxDistrict.clear();
 			if (region != null) {
+				comboBoxRegion.setComponentError(null);
 				comboBoxDistrict.setItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()));
 				comboBoxDistrict.setEnabled(true);
 			} else {
+				comboBoxRegion.setComponentError(new UserError(I18nProperties.getString(Validations.required)));
 				comboBoxDistrict.setEnabled(false);
 			}
 		});
@@ -132,6 +134,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		comboBoxDistrict = new ComboBox<>();
 		comboBoxDistrict.setWidth(250, Unit.PIXELS);
 		comboBoxDistrict.setCaption(I18nProperties.getPrefixCaption(AggregateReportDto.I18N_PREFIX, AggregateReportDto.DISTRICT));
+		comboBoxDistrict.setRequiredIndicatorVisible(true);
 		comboBoxDistrict.addValueChangeListener(e -> {
 			DistrictReferenceDto district = e.getValue();
 			if (comboBoxFacility != null) {
@@ -141,6 +144,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 				comboBoxPoe.clear();
 			}
 			if (district != null) {
+				comboBoxDistrict.setComponentError(null);
 				if (comboBoxFacility != null) {
 					comboBoxFacility.setItems(FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(district, false));
 					comboBoxFacility.setEnabled(true);
@@ -150,6 +154,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 					comboBoxPoe.setEnabled(true);
 				}
 			} else {
+				comboBoxDistrict.setComponentError(new UserError(I18nProperties.getString(Validations.required)));
 				comboBoxFacility.setEnabled(false);
 				comboBoxPoe.setEnabled(false);
 			}
