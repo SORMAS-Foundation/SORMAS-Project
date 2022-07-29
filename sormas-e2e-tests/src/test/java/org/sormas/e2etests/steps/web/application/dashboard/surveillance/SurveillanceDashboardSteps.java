@@ -15,24 +15,31 @@
 
 package org.sormas.e2etests.steps.web.application.dashboard.surveillance;
 
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CASE_STATUS_MAP_POINTS;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONFIRMED_COUNTER_LABEL_ON_SURVEILLANCE_DASHBOARD;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONFIRMED_COUNTER_LABEL_ON_SURVEILLANCE_DASHBOARD_DE;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONFIRMED_COUNTER_ON_SURVEILLANCE_DASHBOARD;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONFIRMED_COUNTER_ON_SURVEILLANCE_DASHBOARD_DE;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONFIRMED_CURVE_ON_SURVEILLANCE_DASHBOARD;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.DATE_TYPE;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.MONKEYPOX_BOX_IN_CAROUSEL_SLIDER_BAR;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.REFERENCE_DEFINITION_FULFILLED_CASES_NUMBER;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.REGION_COMBOBOX_DROPDOWN;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.TIME_PERIOD_COMBOBOX;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.TIME_PERIOD_YESTERDAY_BUTTON;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.ZOOM_OUT_BUTTON_ON_MAP;
 
 import cucumber.api.java8.En;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
+import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
@@ -46,11 +53,14 @@ public class SurveillanceDashboardSteps implements En {
   private int newCasesCounterAfter;
   public static String confirmedCases_EN;
   public static String confirmedCases_DE;
+  private static BaseSteps baseSteps;
 
   @Inject
-  public SurveillanceDashboardSteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
+  public SurveillanceDashboardSteps(
+      WebDriverHelpers webDriverHelpers, SoftAssert softly, BaseSteps baseSteps) {
     this.webDriverHelpers = webDriverHelpers;
     this.softly = softly;
+    this.baseSteps = baseSteps;
 
     When(
         "^I save value for COVID disease counter in Surveillance Dashboard$",
@@ -1097,5 +1107,41 @@ public class SurveillanceDashboardSteps implements En {
               "The total number of COVID-19 cases does not exclude those marked \"not a case\" correctly!");
           softly.assertAll();
         });
+
+    And(
+        "^I choose MONKEYPOX in a disease filter on Surveillance Dashboard$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(MONKEYPOX_BOX_IN_CAROUSEL_SLIDER_BAR);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
+
+    And(
+        "^I count the number of points on the Case Status Map$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          List<WebElement> pointsOnMap = getPointsTable(CASE_STATUS_MAP_POINTS);
+          int pointsCounter = pointsOnMap.size();
+          // CHANGE IT
+          System.out.print("Total number of points on the map = " + pointsCounter);
+        });
+
+    And(
+        "^I click the zoom out button (\\d+) times on the Case Status Map$",
+        (Integer numberOfZooms) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ZOOM_OUT_BUTTON_ON_MAP);
+          int counter = 0;
+          while (counter < numberOfZooms) {
+            webDriverHelpers.waitUntilElementIsVisibleAndClickable(ZOOM_OUT_BUTTON_ON_MAP);
+            webDriverHelpers.clickOnWebElementBySelector(ZOOM_OUT_BUTTON_ON_MAP);
+            counter++;
+          }
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
+  }
+
+  private List<WebElement> getPointsTable(By selector) {
+    webDriverHelpers.waitUntilElementIsVisibleAndClickable(ZOOM_OUT_BUTTON_ON_MAP);
+    return baseSteps.getDriver().findElements(selector);
   }
 }

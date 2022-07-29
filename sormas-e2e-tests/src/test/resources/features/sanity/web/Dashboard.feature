@@ -168,3 +168,39 @@ Feature: Dashboard counters
     And I select "COVID-19" in TabSheet of Surveillance Dashboard
     Then I check that the Total number of COVID-19 cases excludes those marked "not a case" in German
 
+  @issue=SORDEV-6142 @env_main
+  Scenario: Check that number of points on the dashboard map is rendered by the time filter
+      Given I log in with National User
+      And I click on the Dashboard button from navbar
+      And I expand Case status map on Surveillance Dashboard Page
+      And I click on the Time Period combobox from Surveillance Dashboard
+      And I choose yesterday from the Surveillance Dashboard Time Period combobox
+      And I click on the APPLY FILTERS button
+      And I choose MONKEYPOX in a disease filter on Surveillance Dashboard
+      And I click the zoom out button 4 times on the Case Status Map
+      And I count the number of points on the Case Status Map
+      And I click on the Cases button from navbar
+      And I click on the NEW CASE button
+      When I fill new case form with specific data
+      Then I click on save case button
+      And I collect uuid of the case
+      And I change disease to "Monkeypox" in the case tab
+      And I confirm changes in selected Case
+      And I navigate to case person tab
+      And I fill specific address data in Case Person tab
+      And I click on Geocode button to get GPS coordinates in Case Person Tab
+      And I click on save button to Save Person data in Case Person Tab
+      And I click on the Dashboard button from navbar
+      And I expand Case status map on Surveillance Dashboard Page
+      And I click on the Time Period combobox from Surveillance Dashboard
+      And I choose yesterday from the Surveillance Dashboard Time Period combobox
+      And I click on the APPLY FILTERS button
+      And I choose MONKEYPOX in a disease filter on Surveillance Dashboard
+      And I click the zoom out button 4 times on the Case Status Map
+      And I count the number of points on the Case Status Map
+      And I click on the Cases button from navbar
+      And I filter with last created case using case UUID
+      And I click on the first Case ID from Case Directory
+      And I delete the case
+
+
