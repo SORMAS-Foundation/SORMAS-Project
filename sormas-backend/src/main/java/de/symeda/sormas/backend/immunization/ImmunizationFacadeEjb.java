@@ -367,9 +367,7 @@ public class ImmunizationFacadeEjb
 
 		service.ensurePersisted(immunization);
 
-		if (existingImmunization != null) {
-			onImmunizationChanged(immunization, internal);
-		}
+		onImmunizationChanged(immunization, internal);
 
 		return convertToDto(immunization, pseudonymizer);
 	}
