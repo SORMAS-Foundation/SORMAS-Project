@@ -1,9 +1,12 @@
 package de.symeda.sormas.ui.user;
 
 import java.util.stream.Collectors;
+
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
+
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRoleCriteria;
 import de.symeda.sormas.api.user.UserRoleDto;
@@ -19,8 +22,15 @@ public class UserRoleGrid extends FilteredGrid<UserRoleDto, UserRoleCriteria> {
 
 		setColumns(UserRoleDto.CAPTION, UserRoleDto.JURISDICTION_LEVEL, UserRoleDto.DESCRIPTION);
 
+		// Column<UserRoleDto, String> userRolesColumn = ((Column<UserRoleDto, String>) getColumn(UserRoleDto.CAPTION));
+		//userRolesColumn.setSortProperty(UserRoleDto.CAPTION);
+
 		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(UserRoleDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+			if (column.getId().equals(UserRoleDto.CAPTION)) {
+				column.setCaption(I18nProperties.getCaption(Captions.userRole));
+			} else {
+				column.setCaption(I18nProperties.getPrefixCaption(UserRoleDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+			}
 		}
 	}
 
