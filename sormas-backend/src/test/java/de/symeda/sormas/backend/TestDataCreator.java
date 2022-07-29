@@ -1835,12 +1835,13 @@ public class TestDataCreator {
 		return populationData;
 	}
 
-	public void updateDiseaseConfiguration(Disease disease, Boolean active, Boolean primary, Boolean caseBased) {
+	public void updateDiseaseConfiguration(Disease disease, Boolean active, Boolean primary, Boolean caseSurveillance, Boolean aggregateReporting) {
 		DiseaseConfigurationDto config =
 			DiseaseConfigurationFacadeEjbLocal.toDto(beanTest.getDiseaseConfigurationService().getDiseaseConfiguration(disease));
 		config.setActive(active);
 		config.setPrimaryDisease(primary);
-		config.setCaseBased(caseBased);
+		config.setCaseSurveillanceEnabled(caseSurveillance);
+		config.setAggregateReportingEnabled(aggregateReporting);
 		beanTest.getDiseaseConfigurationFacade().saveDiseaseConfiguration(config);
 	}
 

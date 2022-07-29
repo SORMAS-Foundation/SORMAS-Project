@@ -11698,4 +11698,14 @@ UPDATE sharerequestinfo sr SET datatype = (
 ALTER TABLE sharerequestinfo ALTER COLUMN datatype SET NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (477, 'S2S_added sample after sharing a case/contact does not get shared #9771');
+-- 2022-07-25 Allow diseases to be used case-based and aggregated at the same time
+ALTER TABLE  diseaseconfiguration RENAME COLUMN casebased TO casesurveillanceenabled;
+ALTER TABLE  diseaseconfiguration_history RENAME COLUMN casebased TO casesurveillanceenabled;
+ALTER TABLE diseaseconfiguration ADD COLUMN aggregatereportingenabled boolean;
+ALTER TABLE diseaseconfiguration_history ADD COLUMN aggregatereportingenabled boolean;
+
+UPDATE diseaseconfiguration SET aggregatereportingenabled = NOT casesurveillanceenabled;
+
+INSERT INTO schema_version (version_number, comment) VALUES (478, 'Allow diseases to be used case-based and aggregated at the same time #9629');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
