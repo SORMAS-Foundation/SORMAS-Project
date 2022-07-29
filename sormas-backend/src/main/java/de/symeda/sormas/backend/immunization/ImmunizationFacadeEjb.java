@@ -588,17 +588,19 @@ public class ImmunizationFacadeEjb
 
 	@Override
 	public List<ImmunizationDto> getByPersonUuids(List<String> uuids) {
-		return service.getByPersonUuids(uuids).stream().map(i -> toDto(i)).collect(Collectors.toList());
+		return service.getByPersonUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
+	@RightsAllowed({
+		UserRight._IMMUNIZATION_CREATE,
+		UserRight._IMMUNIZATION_EDIT })
 	public void onImmunizationChanged(Immunization immunization, boolean syncShares) {
 		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
 			syncSharesAsync(immunization);
 		}
 	}
 
-	@RightsAllowed(UserRight._IMMUNIZATION_EDIT)
-	public void syncSharesAsync(Immunization immunization) {
+	private void syncSharesAsync(Immunization immunization) {
 		//sync case/contact/event this immunization was shared with
 
 		SormasToSormasOriginInfo sormasToSormasOriginInfo = immunization.getSormasToSormasOriginInfo();
