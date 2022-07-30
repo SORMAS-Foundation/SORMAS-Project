@@ -308,13 +308,13 @@ public class ImportFacadeEjb implements ImportFacade {
 		importColumns.add(ImportColumn.from(CampaignFormDataDto.class, REGION, RegionReferenceDto.class, separator));
 		importColumns.add(ImportColumn.from(CampaignFormDataDto.class, DISTRICT, DistrictReferenceDto.class, separator));
 		importColumns.add(ImportColumn.from(CampaignFormDataDto.class, COMMUNITY, CommunityReferenceDto.class, separator));
-
+System.out.println("YESSSS");
 		CampaignFormMetaDto campaignFormMetaDto = campaignFormMetaFacade.getCampaignFormMetaByUuid(campaignFormUuid);
 		campaignFormMetaDto.getCampaignFormElements()
 			.stream()
 			.filter(
-				e -> !(CampaignFormElementType.SECTION.name().equalsIgnoreCase(e.getType()) || !(CampaignFormElementType.DAYWISE.name().equalsIgnoreCase(e.getType())
-					|| CampaignFormElementType.LABEL.name().equalsIgnoreCase(e.getType()))))
+				e -> !(CampaignFormElementType.SECTION.name().equalsIgnoreCase(e.getType())
+						|| CampaignFormElementType.DAYWISE.name().equalsIgnoreCase(e.getType()) || CampaignFormElementType.LABEL.name().equalsIgnoreCase(e.getType())))
 			.forEach(formElement -> importColumns.add(new ImportColumn(formElement.getId(), formElement.getCaption(), formElement.getType())));
 		writeTemplate(Paths.get(getCampaignFormImportTemplateFilePath()), importColumns, false);
 

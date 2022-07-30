@@ -595,8 +595,9 @@ public class CampaignFormBuilder {
 				try {
 
 					String vc = value + "";
-					Date dst = vc.contains("00:00:00") ? dateFormatter(value + "") : new Date((Long) value);
-					;
+					System.out.println(value);
+					Date dst = vc.contains("00:00:00") ? dateFormatter(value) : dateFormatterLongAndMobile(value);
+				
 
 					((DateField) field).setValue(value != null ? dst : null);
 
@@ -666,12 +667,37 @@ public class CampaignFormBuilder {
 			throw new IllegalArgumentException(type.toString());
 		}
 	}
+	
+	
+	
+	private Date dateFormatterLongAndMobile(Object value){
 
-	private Date dateFormatter(String value) throws ParseException {
+		String dateStr = value+"";
+		DateFormat formatter = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss a");
+		DateFormat formatterx = new SimpleDateFormat("dd/MM/yyyy");
+		Date date;
+		System.out.println("date in question "+value);
+		
+		try {
+			date = (Date) formatter.parse(dateStr);
+		} catch (ParseException e) {
+			
+			try {
+				date = (Date) formatterx.parse(dateStr);
+			} catch (ParseException ed) {
+				 date = new Date((Long) value);
+			 }
+		}
+		
+	return date;
+	}
+	
+	
+
+	private Date dateFormatter(Object value) throws ParseException {
 		// TODO Auto-generated method stub
 
-		System.out.println(">>>>>>>>>>>>>>>>>>> daTE VALEUE to checked >>" + value);
-		String dateStr = value;
+		String dateStr = value+"";
 		DateFormat formatter = new SimpleDateFormat("E MMM dd HH:mm:ss Z yyyy");
 		Date date;
 

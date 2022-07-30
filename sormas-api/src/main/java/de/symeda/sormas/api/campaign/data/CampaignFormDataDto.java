@@ -66,8 +66,8 @@ public class CampaignFormDataDto extends EntityDto {
 	private CommunityReferenceDto community;
 	private UserReferenceDto creatingUser;
 	private String formType;
-	private Double latitude;
-	private Double longitude;
+	//private Double latitude;
+	//private Double longitude;
 
 	public static CampaignFormDataDto build(
 		CampaignReferenceDto campaign,
@@ -182,7 +182,7 @@ public class CampaignFormDataDto extends EntityDto {
 		this.creatingUser = creatingUser;
 	}
 
-	public Double getLatitude() {
+	/*public Double getLatitude() {
 		return latitude;
 	}
 
@@ -199,7 +199,7 @@ public class CampaignFormDataDto extends EntityDto {
 		longitude = Math.round(longitude * 10000000) / 10000000.0;
 		this.longitude = longitude;
 	}
-
+*/
 	
 	
 	

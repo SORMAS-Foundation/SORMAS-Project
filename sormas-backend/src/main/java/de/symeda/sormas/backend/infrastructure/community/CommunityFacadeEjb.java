@@ -308,7 +308,7 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 	@Override
 	public List<CommunityReferenceDto> getByExternalID(Long ext_id, DistrictReferenceDto districtRef, boolean includeArchivedEntities) {
 
-		return service.getByExternalID(ext_id, districtService.getByReferenceDto(districtRef), includeArchivedEntities)
+		return service.getByExternalId(ext_id, districtService.getByReferenceDto(districtRef), includeArchivedEntities)
 			.stream()
 			.map(CommunityFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());

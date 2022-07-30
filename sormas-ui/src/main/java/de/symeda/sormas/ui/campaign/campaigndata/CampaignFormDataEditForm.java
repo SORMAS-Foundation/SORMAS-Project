@@ -72,8 +72,9 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		this.area = area;
 	}
 
-	private static final String HTML_LAYOUT = fluidRowLocs(CampaignFormDataDto.FORM_DATE, CampaignFormDataDto.LATITUDE,
-			CampaignFormDataDto.LONGITUDE) + fluidRowLocs(CampaignFormDataEditForm.AREA, CampaignFormDataDto.REGION)// ,
+	private static final String HTML_LAYOUT = fluidRowLocs(CampaignFormDataDto.FORM_DATE//, CampaignFormDataDto.LATITUDE,
+			//CampaignFormDataDto.LONGITUDE
+			) + fluidRowLocs(CampaignFormDataEditForm.AREA, CampaignFormDataDto.REGION)// ,
 																													// CampaignFormDataDto.FORM_TYPE)
 			+ fluidRowLocs(CampaignFormDataDto.DISTRICT, CampaignFormDataDto.COMMUNITY)// ,
 																						// CampaignFormDataDto.FORM_TYPE)
@@ -97,8 +98,8 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		ComboBox cbCampaign = addField(CampaignFormDataDto.CAMPAIGN, ComboBox.class);
 		cbCampaign.addItems(FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference());
 
-		addField(CampaignFormDataDto.LONGITUDE, TextField.class);
-		addField(CampaignFormDataDto.LATITUDE, TextField.class);
+	//	addField(CampaignFormDataDto.LONGITUDE, TextField.class);
+	//	addField(CampaignFormDataDto.LATITUDE, TextField.class);
 		ComboBox cbRegion = addInfrastructureField(CampaignFormDataDto.REGION);
 		ComboBox cbArea = addInfrastructureField(CampaignFormDataDto.AREA);
 		ComboBox cbDistrict = addInfrastructureField(CampaignFormDataDto.DISTRICT);

@@ -695,56 +695,56 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
 
       if (daywise) {
 
-          if (dayy > 0) {
+          if (dayy > 1) {
               spec = mTabHost.newTabSpec("tab1").setIndicator("D1",//caption_1,
                       res.getDrawable(R.drawable.ic_clear_black_24dp))
                       .setContent(R.id.tabSheet1);
               mTabHost.addTab(spec);
               mTabHost.getTabWidget().getChildAt(0).getLayoutParams().width = 140;
           }
-          if (dayy > 1) {
+          if (dayy > 2) {
               spec = mTabHost.newTabSpec("tab2").setIndicator("D2",//caption_1,
                       res.getDrawable(R.drawable.ic_clear_black_24dp))
                       .setContent(R.id.tabSheet2);
               mTabHost.addTab(spec);
               mTabHost.getTabWidget().getChildAt(1).getLayoutParams().width = 140;
           }
-          if (dayy > 2) {
+          if (dayy > 3) {
               spec = mTabHost.newTabSpec("tab3").setIndicator("D3",//caption_1,
                       res.getDrawable(R.drawable.ic_clear_black_24dp))
                       .setContent(R.id.tabSheet3);
               mTabHost.addTab(spec);
               mTabHost.getTabWidget().getChildAt(2).getLayoutParams().width = 140;
           }
-          if (dayy > 3) {
+          if (dayy > 4) {
               spec = mTabHost.newTabSpec("tab4").setIndicator("D4",//caption_1,
                       res.getDrawable(R.drawable.ic_clear_black_24dp))
                       .setContent(R.id.tabSheet4);
               mTabHost.addTab(spec);
               mTabHost.getTabWidget().getChildAt(3).getLayoutParams().width = 140;
           }
-          if (dayy > 4) {
+          if (dayy > 5) {
               spec = mTabHost.newTabSpec("tab5").setIndicator("D5",//caption_1,
                       res.getDrawable(R.drawable.ic_clear_black_24dp))
                       .setContent(R.id.tabSheet5);
               mTabHost.addTab(spec);
               mTabHost.getTabWidget().getChildAt(4).getLayoutParams().width = 140;
           }
-          if (dayy > 5) {
+          if (dayy > 6) {
               spec = mTabHost.newTabSpec("tab6").setIndicator("D6",//caption_1,
                       res.getDrawable(R.drawable.ic_clear_black_24dp))
                       .setContent(R.id.tabSheet6);
               mTabHost.addTab(spec);
               mTabHost.getTabWidget().getChildAt(5).getLayoutParams().width = 140;
           }
-          if (dayy > 6) {
+          if (dayy > 7) {
               spec = mTabHost.newTabSpec("tab7").setIndicator("D7",//caption_1,
                       res.getDrawable(R.drawable.ic_clear_black_24dp))
                       .setContent(R.id.tabSheet7);
               mTabHost.addTab(spec);
               mTabHost.getTabWidget().getChildAt(6).getLayoutParams().width = 140;
           }
-          if (dayy > 7) {
+          if (dayy > 8) {
               spec = mTabHost.newTabSpec("tab8").setIndicator("D8",//caption_1,
                       res.getDrawable(R.drawable.ic_clear_black_24dp))
                       .setContent(R.id.tabSheet8);
@@ -784,11 +784,12 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
 
 System.out.println(input);
         System.out.println(DateHelper.parseDate(input, dateFormat));
-        Date date = DateHelper.parseDate(input, dateFormat);
+     //   Date date = DateHelper.parseDate(input, dateFormat);
         Calendar dateCalendar = Calendar.getInstance();
         Calendar cachedCalendar = Calendar.getInstance();
 
-        System.out.println(date);
+    //    System.err.println(date);
+        Date date = new Date(getMilliFromDate(input));
         dateCalendar.setTime(date);
 
         cachedCalendar.set(Calendar.YEAR, dateCalendar.get(Calendar.YEAR));

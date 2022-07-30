@@ -76,13 +76,13 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 		return em.createQuery(cq).getResultList();
 	}
 	
-	public List<Community> getByExternalID(Long ext_id, District district_ext, boolean includeArchivedEntities) {
+	public List<Community> getByExternalId(Long ext_id, District district_ext, boolean includeArchivedEntities) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Community> cq = cb.createQuery(getElementClass());
 		Root<Community> from = cq.from(getElementClass());
 
-		Predicate filter = cb.equal(from.get("externalID"), ext_id);
+		Predicate filter = cb.equal(from.get("externalId"), ext_id);
 		
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));

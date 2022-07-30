@@ -48,7 +48,8 @@
         <plugins>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.2.0</version>
+                
+                 <version>3.2.0</version>
                 <executions>
                     <execution>
                         <id>copy-resources-1</id>
@@ -181,7 +182,7 @@
                                 <todir>sormas/config/</todir>
                             </configfile>
                         </configfiles>
-                    </configuration>
+                    </configuration> 
                     <deployables>
                         <deployable>
                             <groupId>de.symeda.sormas</groupId>

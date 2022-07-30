@@ -166,8 +166,8 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setCommunity(communityService.getByReferenceDto(source.getCommunity()));
 		target.setCreatingUser(userService.getByReferenceDto(source.getCreatingUser()));
-		target.setLat(source.getLatitude());
-		target.setLon(source.getLongitude());
+	//	target.setLat(source.getLatitude());
+		//target.setLon(source.getLongitude());
 		return target;
 	}
 
@@ -188,8 +188,8 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
 		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
 		target.setCreatingUser(UserFacadeEjb.toReferenceDto(source.getCreatingUser()));
-		target.setLatitude(source.getLat());
-		target.setLongitude(source.getLon());
+	//	target.setLatitude(source.getLat());
+	//	target.setLongitude(source.getLon());
 		return target;
 	}
 
