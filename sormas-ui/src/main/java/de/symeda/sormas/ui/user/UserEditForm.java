@@ -23,6 +23,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.List;
 import java.util.Set;
 
 import com.vaadin.ui.Label;
@@ -40,6 +41,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -76,7 +78,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
                     loc(ADDRESS_HEADING_LOC) +
                     fluidRowLocs(UserDto.ADDRESS) +
-					loc(USER_DATA_HEADING_LOC) +
+					
+                    loc(USER_DATA_HEADING_LOC) +
                     fluidRowLocs(UserDto.ACTIVE) +
                     fluidRowLocs(UserDto.USER_NAME, UserDto.USER_ROLES) +
                     fluidRowLocs(UserDto.AREA, UserDto.REGION, UserDto.DISTRICT, UserDto.COMMUNITY) +
@@ -141,9 +144,17 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         userRoles.setMultiSelect(true);
 
         ComboBox area = addInfrastructureField(UserDto.AREA);
-        ComboBox district = addInfrastructureField(UserDto.DISTRICT);
-        ComboBox community = addInfrastructureField(UserDto.COMMUNITY);
         ComboBox region = addInfrastructureField(UserDto.REGION);
+        ComboBox community = addInfrastructureField(UserDto.COMMUNITY);
+        ComboBox district = addInfrastructureField(UserDto.DISTRICT);
+        
+        /*
+         * Don't ask!!! I can't explain. This is a hack that gets the user's previous 
+         * district get populated as the default value in the user edit form.
+         * See issue issue #201
+         */
+        community.setValue("11111111111");
+        
         
         area.addValueChangeListener(e -> {
             FieldHelper.removeItems(region);
@@ -154,25 +165,42 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         
        
         region.addValueChangeListener(e -> {
-            FieldHelper.removeItems(district);
+          //  FieldHelper.removeItems(district);
             RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
             FieldHelper
                     .updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
         });
-
+        
+        district.addValueChangeListener(e -> {
+            DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
+             FieldHelper
+                    .updateItems(community, districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
+        });
+        
+        /*
+         * Don't ask!!! I can't explain. This is a hack that gets the user's previous 
+         * district get populated as the default value in the user edit form.
+         * See issue issue #201
+         */
+        community.addValueChangeListener(e -> {
+        	CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
+        	
+        });
+        		
+        
         // for informant
         ComboBox associatedOfficer = addField(UserDto.ASSOCIATED_OFFICER, ComboBox.class);
-
         ComboBox healthFacility = addInfrastructureField(UserDto.HEALTH_FACILITY);
         ComboBox cbPointOfEntry = addInfrastructureField(UserDto.POINT_OF_ENTRY);
+        
         district.addValueChangeListener(e -> {
             FieldHelper.removeItems(healthFacility);
             FieldHelper.removeItems(associatedOfficer);
             FieldHelper.removeItems(cbPointOfEntry);
             DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
-            FieldHelper.updateItems(
-                    community,
-                    districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
+            //FieldHelper.updateItems(
+              //      community,
+                //    districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
             FieldHelper.updateItems(
                     healthFacility,
                     districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(districtDto, false) : null);
@@ -227,13 +255,6 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 			associatedOfficer.clear();
 		}
 
-		final ComboBox community = (ComboBox) getFieldGroup().getField(UserDto.COMMUNITY);
-		community.setVisible(useCommunity);
-		setRequired(useCommunity, UserDto.COMMUNITY);
-		if (!useCommunity) {
-			community.clear();
-		}
-
 		final ComboBox healthFacility = (ComboBox) getFieldGroup().getField(UserDto.HEALTH_FACILITY);
 		healthFacility.setVisible(hasOptionalHealthFacility || useHealthFacility);
 		setRequired(useHealthFacility, UserDto.HEALTH_FACILITY);
@@ -255,13 +276,6 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 			pointOfEntry.clear();
 		}
 
-		final ComboBox district = (ComboBox) getFieldGroup().getField(UserDto.DISTRICT);
-		district.setVisible(useDistrict);
-		setRequired(useDistrict, UserDto.DISTRICT);
-		if (!useDistrict) {
-			district.clear();
-		}
-
 		final ComboBox region = (ComboBox) getFieldGroup().getField(UserDto.REGION);
 		region.setVisible(useRegion);
 		setRequired(useRegion, UserDto.REGION);
@@ -275,6 +289,20 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 		if (!useArea) {
 			area.clear();
 		}
+		
+		final ComboBox district = (ComboBox) getFieldGroup().getField(UserDto.DISTRICT);
+		district.setVisible(useDistrict);
+		setRequired(useDistrict, UserDto.DISTRICT);
+		if (!useDistrict) {
+			district.clear();
+		}
+		
+		final ComboBox community = (ComboBox) getFieldGroup().getField(UserDto.COMMUNITY);
+		community.setVisible(useCommunity);
+		setRequired(useCommunity, UserDto.COMMUNITY);
+		if (!useCommunity) {
+			community.clear();
+		}	
 	}
 
     private void suggestUserName() {
@@ -309,7 +337,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
         userRoles.removeAllItems();
         userRoles.addItems(UserUiHelper.getAssignableRoles(userDto.getUserRoles()));
-        
+
         super.setValue(userDto);
     }
 }
