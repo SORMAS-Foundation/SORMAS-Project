@@ -514,6 +514,19 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
+        "^I create a new case with specific data and Bayern jurisdiction",
+        () -> {
+          caze = caseService.buildGeneratedCase();
+          fillAllCaseFieldsWithBayernJurisdiction(caze);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+
+          TimeUnit.SECONDS.sleep(2);
+        });
+
+    When(
         "^I create a new case with Facility as a Place of stay$",
         () -> {
           caze = caseService.buildGeneratedCaseWithFacility();
@@ -1273,6 +1286,25 @@ public class CreateNewCaseSteps implements En {
     fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
     fillPlaceDescription(caze.getPlaceDescription());
   }
+
+    private void fillAllCaseFieldsWithBayernJurisdiction(Case caze) {
+        selectCaseOrigin(caze.getCaseOrigin());
+        fillDisease(caze.getDisease());
+        selectResponsibleRegion("Bayern");
+        selectResponsibleDistrict("LK Ansbach");
+        selectResponsibleCommunity("Aurach");
+        selectPlaceOfStay(caze.getPlaceOfStay());
+        fillFirstName(caze.getFirstName());
+        fillLastName(caze.getLastName());
+        fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
+        selectSex(caze.getSex());
+        selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+        fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
+        fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+        fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+        fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+        fillPlaceDescription(caze.getPlaceDescription());
+    }
 
   private void fillAllCaseFieldsForFacility(Case caze) {
     selectCaseOrigin(caze.getCaseOrigin());

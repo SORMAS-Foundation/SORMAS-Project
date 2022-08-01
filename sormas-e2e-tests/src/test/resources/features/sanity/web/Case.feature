@@ -1575,3 +1575,13 @@ Feature: Case end to end tests
 
   @issue=SORQA-8483 @env_main
   Scenario: Test Assigned to user list of task should consider related entities jurisdiction
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    And I click on the NEW USER button
+    And I create first new user for test with Bayern jurisdiction
+    And I click on the NEW USER button
+    And I create second new user for test with Saarland jurisdiction
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data
+    And I open last created case

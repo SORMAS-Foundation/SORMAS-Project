@@ -50,6 +50,10 @@ public class CreateNewUserSteps implements En {
   public static User editUser;
   public static String userName;
   public static String userPass;
+  public static String userAfirstName;
+  public static String userAlastName;
+  public static String userBfirstName;
+  public static String userBlastName;
   private final BaseSteps baseSteps;
   private static int amountOfRecords;
 
@@ -348,6 +352,94 @@ public class CreateNewUserSteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 30);
         });
+
+    And(
+        "I create first new user for test with Bayern jurisdiction",
+        () -> {
+          user = userService.buildGeneratedUserWithRole("Clinician");
+          fillFirstName(user.getFirstName());
+          fillLastName(user.getLastName());
+          fillEmailAddress(user.getEmailAddress());
+          fillPhoneNumber(user.getPhoneNumber());
+          selectLanguage(user.getLanguage());
+          selectCountry("Germany");
+          selectRegion("Bayern");
+          selectDistrict("LK Ansbach");
+          selectCommunity("Aurach");
+          selectFacilityCategory(user.getFacilityCategory());
+          selectFacilityType(user.getFacilityType());
+          selectFacility(user.getFacility());
+          fillFacilityNameAndDescription(user.getFacilityNameAndDescription());
+          fillStreet(user.getStreet());
+          fillHouseNr(user.getHouseNumber());
+          fillAdditionalInformation(user.getAdditionalInformation());
+          fillPostalCode(user.getPostalCode());
+          fillCity(user.getCity());
+          selectAreaType(user.getAreaType());
+          fillGpsLatitude(user.getGpsLatitude());
+          fillGpsLongitude(user.getGpsLongitude());
+          fillGpsAccuracy(user.getGpsAccuracy());
+          selectActive(user.getActive());
+          fillUserName(user.getUserName());
+          selectUserRole("Clinician");
+          selectUserRole("Surveillance Supervisor");
+          selectUserRole("Contact Supervisor");
+          selectSecondRegion("Bayern");
+          userName = user.getUserName();
+          userAfirstName = user.getFirstName();
+          userAlastName = user.getLastName();
+          webDriverHelpers.scrollToElement(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          closeNewPasswordPopUp();
+
+          System.out.println(userAfirstName);
+          System.out.println(userAlastName);
+        });
+
+    And(
+        "I create second new user for test with Saarland jurisdiction",
+        () -> {
+          user = userService.buildGeneratedUserWithRole("Clinician");
+          fillFirstName(user.getFirstName());
+          fillLastName(user.getLastName());
+          fillEmailAddress(user.getEmailAddress());
+          fillPhoneNumber(user.getPhoneNumber());
+          selectLanguage(user.getLanguage());
+          selectCountry("Germany");
+          selectRegion("Saarland");
+          selectDistrict("LK Saarlouis");
+          selectCommunity("Lebach");
+          selectFacilityCategory(user.getFacilityCategory());
+          selectFacilityType(user.getFacilityType());
+          selectFacility(user.getFacility());
+          fillFacilityNameAndDescription(user.getFacilityNameAndDescription());
+          fillStreet(user.getStreet());
+          fillHouseNr(user.getHouseNumber());
+          fillAdditionalInformation(user.getAdditionalInformation());
+          fillPostalCode(user.getPostalCode());
+          fillCity(user.getCity());
+          selectAreaType(user.getAreaType());
+          fillGpsLatitude(user.getGpsLatitude());
+          fillGpsLongitude(user.getGpsLongitude());
+          fillGpsAccuracy(user.getGpsAccuracy());
+          selectActive(user.getActive());
+          fillUserName(user.getUserName());
+          selectUserRole("Clinician");
+          selectUserRole("Surveillance Supervisor");
+          selectUserRole("Contact Supervisor");
+          selectSecondRegion("Saarland");
+          userName = user.getUserName();
+          userBfirstName = user.getFirstName();
+          userBlastName = user.getLastName();
+          webDriverHelpers.scrollToElement(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          closeNewPasswordPopUp();
+
+          System.out.println(userBfirstName);
+          System.out.println(userBlastName);
+        });
   }
 
   private void fillFirstName(String firstName) {
@@ -376,6 +468,10 @@ public class CreateNewUserSteps implements En {
 
   private void selectRegion(String region) {
     webDriverHelpers.selectFromCombobox(REGION_COMBOBOX, region);
+  }
+
+  private void selectSecondRegion(String region) {
+    webDriverHelpers.selectFromCombobox(SECOND_REGION_COMBOBOX, region);
   }
 
   private void selectSurveillanceRegion(String surveillanceRegion) {
