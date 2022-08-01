@@ -11658,31 +11658,6 @@ INSERT INTO userroles_userrights (userrole_id, userright) SELECT userrole_id, 'U
 
 INSERT INTO schema_version (version_number, comment) VALUES (473, 'Add user roles view to UI #4462');
 
--- 2022-07-1 Edit and create user roles #4463
-DO $$
-    DECLARE rec RECORD;
-    BEGIN
-        FOR rec IN (select ur.userrole_id from userroles_userrights ur
-                    where ur.userright = 'USER_EDIT')
-            LOOP
-                INSERT INTO userroles_userrights(userrole_id, userright) VALUES (rec.userrole_id, 'USER_ROLE_EDIT');
-                INSERT INTO userroles_userrights(userrole_id, userright) VALUES (rec.userrole_id, 'USER_ROLE_DELETE');
-            END LOOP;
-    END;
-$$ LANGUAGE plpgsql;
-
-update userroles_smsnotificationtypes set notificationtype = 'CASE_DISEASE_CHANGED' where notificationtype = 'DISEASE_CHANGED';
-update userroles_emailnotificationtypes set notificationtype = 'CASE_DISEASE_CHANGED' where notificationtype = 'DISEASE_CHANGED';
-update userroles_smsnotificationtypes set notificationtype = 'CONTACT_VISIT_COMPLETED' where notificationtype = 'VISIT_COMPLETED';
-update userroles_emailnotificationtypes set notificationtype = 'CONTACT_VISIT_COMPLETED' where notificationtype = 'VISIT_COMPLETED';
-
-INSERT INTO schema_version (version_number, comment) VALUES (474, 'Edit and create user roles #4463');
-
--- 2022-07-05 Implement user right dependencies #5058
-delete from userroles_userrights where userright in ('CONTACT_CLASSIFY', 'CONTACT_ASSIGN');
-
-INSERT INTO schema_version (version_number, comment) VALUES (475, 'Implement user right dependencies #5058');
-
 -- 2022-07-15 S2S_deactivate share parameter 'share associated contacts' (for cases) #9146
 UPDATE featureconfiguration set featuretype = 'SORMAS_TO_SORMAS_SHARE_CASES', properties = json_build_object('SHARE_ASSOCIATED_CONTACTS',false,'SHARE_SAMPLES',true,'SHARE_IMMUNIZATIONS',true) where featuretype = 'SORMAS_TO_SORMAS_SHARE_CASES_WITH_CONTACTS_AND_SAMPLES';
 UPDATE featureconfiguration set properties = json_build_object('SHARE_SAMPLES',true,'SHARE_IMMUNIZATIONS',true) where featuretype = 'SORMAS_TO_SORMAS_SHARE_EVENTS';
@@ -11692,7 +11667,7 @@ INSERT INTO featureconfiguration (id, uuid, creationdate, changedate, enabled, f
 ALTER TABLE sormastosormassharerequest ADD COLUMN shareassociatedcontactsdisabled boolean DEFAULT false;
 ALTER TABLE sormastosormassharerequest_history ADD COLUMN shareassociatedcontactsdisabled boolean DEFAULT false;
 
-INSERT INTO schema_version (version_number, comment) VALUES (476, 'S2S_deactivate share parameter ''share associated contacts'' (for cases) #9146');
+INSERT INTO schema_version (version_number, comment) VALUES (474, 'S2S_deactivate share parameter ''share associated contacts'' (for cases) #9146');
 
 -- 2022-07-25 Make region and district required for aggregate reports
 DELETE FROM aggregatereport
@@ -11732,6 +11707,30 @@ UPDATE diseaseconfiguration SET aggregatereportingenabled = NOT casesurveillance
 
 INSERT INTO schema_version (version_number, comment) VALUES (478, 'Allow diseases to be used case-based and aggregated at the same time #9629');
 
+-- 2022-07-1 Edit and create user roles #4463
+DO $$
+    DECLARE rec RECORD;
+    BEGIN
+        FOR rec IN (select ur.userrole_id from userroles_userrights ur
+                    where ur.userright = 'USER_EDIT')
+            LOOP
+                INSERT INTO userroles_userrights(userrole_id, userright) VALUES (rec.userrole_id, 'USER_ROLE_EDIT');
+                INSERT INTO userroles_userrights(userrole_id, userright) VALUES (rec.userrole_id, 'USER_ROLE_DELETE');
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+update userroles_smsnotificationtypes set notificationtype = 'CASE_DISEASE_CHANGED' where notificationtype = 'DISEASE_CHANGED';
+update userroles_emailnotificationtypes set notificationtype = 'CASE_DISEASE_CHANGED' where notificationtype = 'DISEASE_CHANGED';
+update userroles_smsnotificationtypes set notificationtype = 'CONTACT_VISIT_COMPLETED' where notificationtype = 'VISIT_COMPLETED';
+update userroles_emailnotificationtypes set notificationtype = 'CONTACT_VISIT_COMPLETED' where notificationtype = 'VISIT_COMPLETED';
+
+INSERT INTO schema_version (version_number, comment) VALUES (479, 'Edit and create user roles #4463');
+
+-- 2022-07-05 Implement user right dependencies #5058
+delete from userroles_userrights where userright in ('CONTACT_CLASSIFY', 'CONTACT_ASSIGN');
+
+INSERT INTO schema_version (version_number, comment) VALUES (480, 'Implement user right dependencies #5058');
 
 -- 2022-07-26 Turn OccupationType into a customizable enum #5015
 ALTER TABLE customizableenumvalue ADD COLUMN defaultvalue boolean DEFAULT false;
@@ -11747,5 +11746,7 @@ END LOOP;
 END;
 $$ LANGUAGE plpgsql;
 
-INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (479, 'Turn OccupationType into a customizable enum #5015', true);
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (481, 'Turn OccupationType into a customizable enum #5015', true);
+
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -278,7 +278,7 @@ public class TestDataCreator {
 		return createUser(regionUuid, districtUuid, facilityUuid, firstName, lastName, userRole);
 	}
 
-	private UserRoleReferenceDto createUserRole(String caption, JurisdictionLevel jurisdictionLevel, UserRight... userRights) {
+	public UserRoleReferenceDto createUserRole(String caption, JurisdictionLevel jurisdictionLevel, UserRight... userRights) {
 		UserRoleDto userRole = new UserRoleDto();
 		userRole.setCaption(caption);
 		userRole.setJurisdictionLevel(jurisdictionLevel);
