@@ -192,6 +192,7 @@ public class ShareDataBuilderHelper {
 		options.setWithAssociatedContacts(originInfo.isWithAssociatedContacts());
 		options.setWithSamples(originInfo.isWithSamples());
 		options.setWithEventParticipants(originInfo.isWithEventParticipants());
+		options.setWithImmunizations(originInfo.isWithImmunizations());
 		options.setComment(originInfo.getComment());
 
 		return options;

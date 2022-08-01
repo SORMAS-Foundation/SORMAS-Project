@@ -64,6 +64,7 @@ import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -605,8 +606,15 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 			taskContexts
 				.containsAll(Arrays.asList(TaskContext.GENERAL, TaskContext.CASE, TaskContext.CONTACT, TaskContext.EVENT, TaskContext.TRAVEL_ENTRY)));
 
-		UserDto userPOE = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.POE_NATIONAL_USER));
-		loginWith(userPOE);
+		UserDto noEventNoCaseViewUser = creator.createUser(
+			rdcf,
+			creator.createUserRole(
+				"NoEventNoCaseView",
+				JurisdictionLevel.NATION,
+				UserRight.CASE_VIEW,
+				UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS,
+				UserRight.TRAVEL_ENTRY_VIEW));
+		loginWith(noEventNoCaseViewUser);
 		assertFalse(getUserService().hasRight(UserRight.EVENT_VIEW));
 		assertFalse(getUserService().hasRight(UserRight.CONTACT_VIEW));
 		assertTrue(getUserService().hasRight(UserRight.CASE_VIEW));

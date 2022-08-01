@@ -77,13 +77,14 @@ public class MSersDirectorySteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(REPORT_DATA_BUTTON));
     When(
         "I check if there number of results in grid in mSers directory is {int}",
-        (Integer expected) -> assertHelpers.assertWithPoll(
-            () ->
-                Assert.assertEquals(
-                    webDriverHelpers.getNumberOfElements(RESULT_IN_GRID),
-                    expected.intValue(),
-                    "Number of results visible in grid different than expected"),
-            10));
+        (Integer expected) ->
+            assertHelpers.assertWithPoll(
+                () ->
+                    Assert.assertEquals(
+                        webDriverHelpers.getNumberOfElements(RESULT_IN_GRID),
+                        expected.intValue(),
+                        "Number of results visible in grid different than expected"),
+                10));
     When(
         "I check that number of results in grid in mSers directory greater than {int}",
         (Integer expected) -> {
