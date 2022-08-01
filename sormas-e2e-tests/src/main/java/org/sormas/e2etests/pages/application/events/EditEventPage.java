@@ -181,8 +181,6 @@ public class EditEventPage {
     return By.xpath("//*[contains(text(),\"" + groupEventName + "\")]");
   }
 
-  public static final By NEW_IMMUNIZATION_BUTTON = By.cssSelector("[id='New immunization']");
-
   public static By getEventParticipantUUIDbyIndex(int index) {
     return By.xpath(
         String.format(
