@@ -18,9 +18,12 @@
 package org.sormas.e2etests.enums;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 // TODO refactor class usage
 @Getter
+@Slf4j
 public enum FacilityUUIDs {
   OtherFacility("SORMAS-CONSTID-OTHERS-FACILITY"),
   StandardEinrichtung("Standard Einrichtung");
@@ -29,6 +32,16 @@ public enum FacilityUUIDs {
 
   FacilityUUIDs(String option) {
     this.option = option;
+  }
+
+  @SneakyThrows
+  public static String getNameValueForUuid(String opt) {
+    log.warn("Please migrate to new implementation and take data from EnvironmentManager class");
+    FacilityUUIDs[] facilityValuesOptions = FacilityUUIDs.values();
+    for (FacilityUUIDs value : facilityValuesOptions) {
+      if (value.option.equalsIgnoreCase(opt)) return value.name();
+    }
+    throw new Exception("Unable to find " + opt + " value in Region Enum");
   }
 
   @Override
