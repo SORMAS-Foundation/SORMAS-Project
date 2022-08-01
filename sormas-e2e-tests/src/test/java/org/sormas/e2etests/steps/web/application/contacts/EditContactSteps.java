@@ -1207,6 +1207,7 @@ public class EditContactSteps implements En {
     When(
         "I filter with last created contact using contact UUID",
         () -> {
+          TimeUnit.SECONDS.sleep(2); // wait for the system
           webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, contactUUID);
           TimeUnit.SECONDS.sleep(2); // wait for the system
           webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
