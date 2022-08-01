@@ -186,7 +186,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 339;
+	public static final int DATABASE_VERSION = 340;
 
 	private static DatabaseHelper instance = null;
 
@@ -3016,6 +3016,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 338;
 
 				getDao(UserRole.class).executeRaw("UPDATE userRoles set userRights = replace(replace(replace(userRights, '\"CONTACT_CLASSIFY\"', ''), '\"CONTACT_ASSIGN\"', ''), ',,', ',')");
+
+			case 339:
+				currentVersion = 339;
+
+				getDao(FeatureConfiguration.class).executeRaw("UPDATE featureConfiguration set featuretype = 'SORMAS_TO_SORMAS_SHARE_CASES' where featuretype = 'SORMAS_TO_SORMAS_SHARE_CASES_WITH_CONTACTS_AND_SAMPLES'");
 
 				// ATTENTION: break should only be done after last version
 				break;
