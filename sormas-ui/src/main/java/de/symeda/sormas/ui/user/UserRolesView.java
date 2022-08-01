@@ -6,6 +6,7 @@ import java.nio.file.Files;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.LoggerFactory;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileDownloader;
@@ -18,6 +19,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -27,6 +29,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleCriteria;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
@@ -94,11 +97,13 @@ public class UserRolesView extends AbstractUserView {
 
 		addHeaderComponent(exportUserRightsButton);
 
-		createButton = ButtonHelper.createIconButton(
-			Captions.userRoleNewUserRole,
-			VaadinIcons.PLUS_CIRCLE,
-			e -> ControllerProvider.getUserRoleController().create(),
-			ValoTheme.BUTTON_PRIMARY);
+		if (UserProvider.getCurrent().hasUserRight(UserRight.USER_ROLE_EDIT)) {
+			createButton = ButtonHelper.createIconButton(
+				Captions.userRoleNewUserRole,
+				VaadinIcons.PLUS_CIRCLE,
+				e -> ControllerProvider.getUserRoleController().create(),
+				ValoTheme.BUTTON_PRIMARY);
+		}
 
 		addHeaderComponent(createButton);
 	}
