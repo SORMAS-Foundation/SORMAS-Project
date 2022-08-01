@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +26,8 @@ import java.util.Set;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+
+import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
 public interface UserRoleFacade {
@@ -41,15 +44,15 @@ public interface UserRoleFacade {
 
 	UserRoleDto getByUuid(String uuid);
 
+	UserRoleReferenceDto getReferenceByUuid(String uuid);
+
 	UserRoleDto saveUserRole(@Valid UserRoleDto dto);
 
-	void deleteUserRole(UserRoleDto dto);
+	void deleteUserRole(UserRoleReferenceDto dto);
 
 	boolean hasUserRight(Collection<UserRoleDto> userRoles, UserRight userRight);
 
 	boolean hasAnyUserRight(Collection<UserRoleDto> userRoles, Collection<UserRight> userRights);
-
-	Set<UserRoleDto> getEnabledUserRoles();
 
 	Set<UserRoleReferenceDto> getAllAsReference();
 
@@ -63,7 +66,17 @@ public interface UserRoleFacade {
 
 	void validateUserRoleCombination(Collection<UserRoleDto> roles) throws UserRoleDto.UserRoleValidationException;
 
-	UserRoleReferenceDto getUserRoleReferenceById(long id);
+	UserRoleReferenceDto getReferenceById(long id);
 
 	Map<UserRoleDto, Set<UserRight>> getUserRoleRights();
+
+	long count(UserRoleCriteria userRoleCriteria);
+
+	List<UserRoleDto> getIndexList(UserRoleCriteria userRoleCriteria, int first, int max, List<SortProperty> sortProperties);
+
+	String generateUserRolesDocument() throws IOException;
+
+	Set<UserRoleDto> getDefaultUserRolesAsDto();
+
+	Collection<UserRoleDto> getByReferences(Set<UserRoleReferenceDto> userRoles);
 }

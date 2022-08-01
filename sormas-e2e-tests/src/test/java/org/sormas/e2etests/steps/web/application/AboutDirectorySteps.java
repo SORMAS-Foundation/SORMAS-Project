@@ -1,14 +1,6 @@
 package org.sormas.e2etests.steps.web.application;
 
-import static org.sormas.e2etests.pages.application.AboutPage.CASE_CLASSIFICATION_RULES_HYPERLINK;
-import static org.sormas.e2etests.pages.application.AboutPage.DATA_DICTIONARY_BUTTON;
-import static org.sormas.e2etests.pages.application.AboutPage.FULL_CHANGELOG_HYPERLINK;
-import static org.sormas.e2etests.pages.application.AboutPage.OFFICIAL_SORMAS_WEBSITE_HYPERLINK;
-import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_GITHUB_HYPERLINK;
-import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_HYPERLINK;
-import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_HYPERLINK_TARGET;
-import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
-import static org.sormas.e2etests.pages.application.AboutPage.WHATS_NEW_HYPERLINK;
+import static org.sormas.e2etests.pages.application.AboutPage.*;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.LANGUAGE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.SAVE_BUTTON;
 
@@ -18,36 +10,49 @@ import cucumber.api.java8.En;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.sormas.e2etests.common.MoreResources;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
+@Slf4j
 public class AboutDirectorySteps implements En {
-  public static final String userDirPath = System.getProperty("user.dir");
+  public static final String DOWNLOADS_FOLDER = System.getProperty("user.dir") + "//downloads//";
   public static final List<String> xlsxFileContentList = new ArrayList<>();
   public static String language;
-  private static final Logger log = LoggerFactory.getLogger(MoreResources.class);
+  public static final String DATA_PROTECTION_DICTIONARY_FILE_PATH =
+      String.format("sormas_data_protection_dictionary_%s_.xlsx", LocalDate.now());
+  public static final String DATA_DICTIONARY_FILE_PATH =
+      String.format("sormas_data_dictionary_%s_.xlsx", LocalDate.now());
+  public static final String DEUTSCH_DATA_DICTIONARY_FILE_PATH =
+      String.format("sormas_datenbeschreibungsverzeichnis_%s_.xlsx", LocalDate.now());
+  public static final String CASE_CLASSIFICATION_HTML_FILE_PATH = "classification_rules.html";
 
   @Inject
-  public AboutDirectorySteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
+  public AboutDirectorySteps(
+      WebDriverHelpers webDriverHelpers, SoftAssert softly, AssertHelpers assertHelpers) {
 
     When(
         "I check that current Sormas version is shown on About directory page",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SORMAS_VERSION_HYPERLINK);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SORMAS_VERSION_LINK);
         });
 
     When(
@@ -56,7 +61,6 @@ public class AboutDirectorySteps implements En {
           language = chosenLanguage;
           webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, chosenLanguage);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoaded();
         });
 
     When(
@@ -95,19 +99,76 @@ public class AboutDirectorySteps implements En {
         });
 
     When(
-        "I click on Data Dictionary hyperlink and download XLSX file in About directory",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(DATA_DICTIONARY_BUTTON);
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              DATA_DICTIONARY_BUTTON, 50);
-          TimeUnit.SECONDS.sleep(3); // waiting for DATA_DICTIONARY_BUTTON
+        "^I click on ([^\"]*) hyperlink and download XLSX file from About directory$",
+        (String dictionaryName) -> {
+          Path path;
+          switch (dictionaryName) {
+            case "Data Protection Dictionary":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  DATA_PROTECTION_DICTIONARY_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(DATA_PROTECTION_DICTIONARY_BUTTON);
+              path = Paths.get(DOWNLOADS_FOLDER + DATA_PROTECTION_DICTIONARY_FILE_PATH);
+              break;
+            case "Data Dictionary":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  DATA_DICTIONARY_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(DATA_DICTIONARY_BUTTON);
+              path = Paths.get(DOWNLOADS_FOLDER + DATA_DICTIONARY_FILE_PATH);
+              break;
+            case "Deutsch Data Dictionary":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  DATA_DICTIONARY_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(DATA_DICTIONARY_BUTTON);
+              path = Paths.get(DOWNLOADS_FOLDER + DEUTSCH_DATA_DICTIONARY_FILE_PATH);
+              break;
+            default:
+              throw new Exception("No XLSX path provided!");
+          }
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      dictionaryName + " wasn't downloaded: " + path.toAbsolutePath()),
+              30);
         });
 
     When(
-        "^I read data from downloaded XLSX Data Dictionary file$",
-        () -> {
-          readXlsxFile();
-          TimeUnit.SECONDS.sleep(5); // waiting for xlsx file is read
+        "^I validate data from downloaded XLSX ([^\"]*) file$",
+        (String dictionaryName) -> {
+          switch (dictionaryName) {
+            case "Data Protection Dictionary":
+              readXlsxDictionaryFile(DATA_PROTECTION_DICTIONARY_FILE_PATH);
+              break;
+            case "Data Dictionary":
+              readXlsxDictionaryFile(DATA_DICTIONARY_FILE_PATH);
+              break;
+            case "Deutsch Data Dictionary":
+              deleteFile(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
+              break;
+            default:
+              throw new Exception("No XLSX path provided!");
+          }
+        });
+
+    Then(
+        "^I delete ([^\"]*) downloaded file from About Directory$",
+        (String dictionaryName) -> {
+          switch (dictionaryName) {
+            case "Data Protection Dictionary":
+              deleteFile(DATA_PROTECTION_DICTIONARY_FILE_PATH);
+              break;
+            case "Data Dictionary":
+              deleteFile(DATA_DICTIONARY_FILE_PATH);
+              break;
+            case "Deutsch Data Dictionary":
+              deleteFile(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
+              break;
+            case "Case Classification Html":
+              deleteFile(CASE_CLASSIFICATION_HTML_FILE_PATH);
+              break;
+            default:
+              throw new Exception("No XLSX path provided!");
+          }
         });
 
     When(
@@ -128,17 +189,6 @@ public class AboutDirectorySteps implements En {
           }
         });
 
-    When(
-        "I delete exported xlsx file from user downloads directory",
-        () -> {
-          File toDelete =
-              new File(
-                  userDirPath
-                      + "//downloads//sormas_datenbeschreibungsverzeichnis_"
-                      + LocalDate.now()
-                      + "_.xlsx");
-          toDelete.deleteOnExit();
-        });
     When(
         "^I click on Sormas version in About directory and i get redirected to github$",
         () -> {
@@ -214,34 +264,51 @@ public class AboutDirectorySteps implements En {
     When(
         "^I click on Case Classification Rules hyperlink and download HTML file in About directory$",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(CASE_CLASSIFICATION_RULES_HYPERLINK);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              CASE_CLASSIFICATION_RULES_HYPERLINK, 50);
+              CASE_CLASSIFICATION_RULES_HYPERLINK, 15);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_CLASSIFICATION_RULES_HYPERLINK);
         });
+
     When(
-        "^I delete the downloaded Case Classification Rules html and Data Dictionary xlsx file from download directory$",
-        () -> {
-          File html = new File(userDirPath + "//downloads//classification_rules.html");
-          File xlsx =
-              new File(
-                  userDirPath
-                      + "//downloads//sormas_data_dictionary_"
-                      + LocalDate.now()
-                      + "_.xlsx");
-          html.deleteOnExit();
-          xlsx.deleteOnExit();
+        "I check if Data Dictionary in {string} record has no {string} as a disease",
+        (String recordName, String disease) -> {
+          softly.assertFalse(
+              readXlsxFile(DATA_DICTIONARY_FILE_PATH, recordName, disease),
+              disease + " exists in " + recordName);
+          softly.assertAll();
         });
   }
 
-  private static void readXlsxFile() {
+  @SneakyThrows
+  private static boolean readXlsxFile(String fileName, String recordName, String disease) {
+    List<String> diseaseList = new ArrayList<String>();
     try {
-      FileInputStream excelFile =
-          new FileInputStream(
-              new File(
-                  userDirPath
-                      + "//downloads//sormas_data_dictionary_"
-                      + LocalDate.now()
-                      + "_.xlsx"));
+      Workbook workbook = new XSSFWorkbook(DOWNLOADS_FOLDER + fileName);
+      Sheet sheet = workbook.getSheetAt(0);
+      for (Row row : sheet) {
+        for (Cell cell : row) {
+          if (cell.getStringCellValue().equals(recordName)) {
+            String[] items = row.getCell(8).toString().split("\\s*,\\s*");
+            for (String item : items) diseaseList.add(item);
+          }
+        }
+      }
+    } catch (IOException e) {
+      throw new Exception(String.format("Unable to read Excel File due to: %s", e.getMessage()));
+    }
+    if (diseaseList.contains(disease))
+      return true;
+     else
+      return false;
+    }
+
+  @SneakyThrows
+  private static void readXlsxDictionaryFile(String fileName) {
+    try {
+      FileInputStream excelFile = new FileInputStream(DOWNLOADS_FOLDER + fileName);
+      Assert.assertTrue(
+          FileUtils.sizeOf(new File(DOWNLOADS_FOLDER + fileName)) > 10,
+          "Downloaded dictionary is empty");
       Workbook workbook = new XSSFWorkbook(excelFile);
       Sheet datatypeSheet = workbook.getSheetAt(0);
       Iterator<Row> iterator = datatypeSheet.iterator();
@@ -263,7 +330,18 @@ public class AboutDirectorySteps implements En {
       }
       log.info("All data is read properly from chosen xlsx file");
     } catch (IOException e) {
-      log.error("Exception caught: File not found", e);
+      throw new Exception(String.format("Unable to read Excel File due to: %s", e.getMessage()));
+    }
+  }
+
+  @SneakyThrows
+  private void deleteFile(String fileName) {
+    File file = new File(DOWNLOADS_FOLDER + fileName);
+    try {
+      file.deleteOnExit();
+    } catch (Exception any) {
+      throw new Exception(
+          String.format("Unable to delete file: [ %s ] due to: [ %s]", fileName, any.getMessage()));
     }
   }
 }

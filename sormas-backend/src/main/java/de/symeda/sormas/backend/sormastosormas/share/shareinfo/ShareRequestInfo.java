@@ -16,6 +16,8 @@
 package de.symeda.sormas.backend.sormastosormas.share.shareinfo;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -27,6 +29,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -45,6 +48,8 @@ public class ShareRequestInfo extends AbstractDomainObject {
 	public static final String REQUEST_STATUS = "requestStatus";
 	public static final String SHARE_REQUEST_INFO_SHARE_INFO_JOIN_COLUMN = "sharerequestinfo_id";
 	public static final String SHARE_REQUEST_INFO_SHARE_INFO_INVERS_JOIN_COLUMN = "shareinfo_id";
+
+	private ShareRequestDataType dataType;
 
 	private List<SormasToSormasShareInfo> shares;
 
@@ -67,6 +72,15 @@ public class ShareRequestInfo extends AbstractDomainObject {
 	private String comment;
 
 	private String responseComment;
+
+	@Enumerated(EnumType.STRING)
+	public ShareRequestDataType getDataType() {
+		return dataType;
+	}
+
+	public void setDataType(ShareRequestDataType dataType) {
+		this.dataType = dataType;
+	}
 
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = SHARE_REQUEST_INFO_SHARE_INFO_TABLE,
@@ -169,5 +183,22 @@ public class ShareRequestInfo extends AbstractDomainObject {
 
 	public void setResponseComment(String responseComment) {
 		this.responseComment = responseComment;
+	}
+
+	public List<AbstractDomainObject> extractSharedMainEntities() {
+		return shares.stream().map(this::extractSharedMainEntity).filter(Objects::nonNull).collect(Collectors.toList());
+	}
+
+	private AbstractDomainObject extractSharedMainEntity(SormasToSormasShareInfo shareInfo) {
+		switch (dataType) {
+		case CASE:
+			return shareInfo.getCaze();
+		case CONTACT:
+			return shareInfo.getContact();
+		case EVENT:
+			return shareInfo.getEvent();
+		default:
+			throw new RuntimeException("Unknown share data type [" + dataType + "]");
+		}
 	}
 }

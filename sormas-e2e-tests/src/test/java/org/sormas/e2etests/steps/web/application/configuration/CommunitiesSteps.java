@@ -393,6 +393,7 @@ public class CommunitiesSteps implements En {
   private List<Map<String, String>> getTableRowsData() {
     Map<String, Integer> headers = extractColumnHeadersHashMap();
     headers.remove("EDIT");
+    headers.remove("BEARBEITEN");
     List<WebElement> tableRows = getTableRows();
     List<HashMap<Integer, String>> tableDataList = new ArrayList<>();
     tableRows.forEach(

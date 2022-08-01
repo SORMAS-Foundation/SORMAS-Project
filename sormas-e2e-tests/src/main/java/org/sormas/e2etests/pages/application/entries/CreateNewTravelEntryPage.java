@@ -72,4 +72,5 @@ public class CreateNewTravelEntryPage {
   public static final By INPUT_DATA_ERROR_POPUP =
       By.xpath(
           "//div[@class='v-Notification error v-Notification-error']//div[contains(@class,'popupContent')]");
+  public static final By TRAVEL_ENTRY_TAB_BUTTON = By.id("tab-travelEntries");
 }

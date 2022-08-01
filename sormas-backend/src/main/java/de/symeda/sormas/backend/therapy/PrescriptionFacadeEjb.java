@@ -28,6 +28,7 @@ import de.symeda.sormas.api.therapy.PrescriptionFacade;
 import de.symeda.sormas.api.therapy.PrescriptionIndexDto;
 import de.symeda.sormas.api.therapy.PrescriptionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -108,6 +109,8 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		UserRight._PRESCRIPTION_EDIT })
 	public PrescriptionDto savePrescription(@Valid PrescriptionDto prescription) {
 		Prescription existingPrescription = service.getByUuid(prescription.getUuid());
+		FacadeHelper.checkCreateAndEditRights(existingPrescription, userService, UserRight.PRESCRIPTION_CREATE, UserRight.PRESCRIPTION_EDIT);
+
 		PrescriptionDto existingPrescriptionDto = toDto(existingPrescription);
 
 		restorePseudonymizedDto(prescription, existingPrescription, existingPrescriptionDto);

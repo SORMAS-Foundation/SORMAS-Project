@@ -218,7 +218,7 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 	@Override
 	protected List<SormasToSormasShareInfo> getOrCreateShareInfos(Contact contact, SormasToSormasOptionsDto options, User user, boolean forSync) {
 		String organizationId = options.getOrganization().getId();
-		SormasToSormasShareInfo eventShareInfo = contact.getSormasToSormasShares()
+		SormasToSormasShareInfo contactShareInfo = contact.getSormasToSormasShares()
 			.stream()
 			.filter(s -> s.getOrganizationId().equals(organizationId))
 			.findFirst()
@@ -248,7 +248,7 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 						.orElseGet(() -> ShareInfoHelper.createShareInfo(organizationId, i, SormasToSormasShareInfo::setImmunization, options)));
 		}
 
-		return Stream.of(Stream.of(eventShareInfo), sampleShareInfos, immunizationShareInfos)
+		return Stream.of(Stream.of(contactShareInfo), sampleShareInfos, immunizationShareInfos)
 			.flatMap(Function.identity())
 			.collect(Collectors.toList());
 	}

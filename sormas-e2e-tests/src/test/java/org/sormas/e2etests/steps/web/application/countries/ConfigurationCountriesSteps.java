@@ -100,11 +100,25 @@ public class ConfigurationCountriesSteps implements En {
               "Albania is not correctly displayed!");
           softly.assertAll();
         });
+
+    When(
+        "I check that Albania is correctly displayed in German",
+        () -> {
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          softly.assertTrue(
+              tableRowsData
+                  .toString()
+                  .contains(
+                      "ISO CODE=ALB, SUBKONTINENT=S\u00fcdosteuropa, EXTERNE ID=21000125, UNO CODE=8, NAME=Albanien"),
+              "Albania is not correctly displayed!");
+          softly.assertAll();
+        });
   }
 
   private List<Map<String, String>> getTableRowsData() {
     Map<String, Integer> headers = extractColumnHeadersHashMap();
     headers.remove("EDIT");
+    headers.remove("BEARBEITEN");
     List<WebElement> tableRows = getTableRows();
     List<HashMap<Integer, String>> tableDataList = new ArrayList<>();
     tableRows.forEach(

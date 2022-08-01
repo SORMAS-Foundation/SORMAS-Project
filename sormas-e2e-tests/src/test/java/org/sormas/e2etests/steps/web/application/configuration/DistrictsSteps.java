@@ -253,6 +253,22 @@ public class DistrictsSteps implements En {
               "Voreingestellter Landkreis is not correctly displayed!");
           softly.assertAll();
         });
+
+    When(
+        "I check that Voreingestellter Landkreis is correctly displayed in German",
+        () -> {
+          webDriverHelpers.fillAndSubmitInWebElement(
+              SEARCH_DISTRICT_INPUT, "Voreingestellter Landkreis");
+          TimeUnit.SECONDS.sleep(2); // wait for filter
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          softly.assertTrue(
+              tableRowsData
+                  .toString()
+                  .contains(
+                      "EPID-NUMMER=DIS, BUNDESLAND=Voreingestellte Bundesl\u00e4nder, EXTERNE ID=, BEV\u00d6LKERUNG=, WACHSTUMSRATE=, NAME=Voreingestellter Landkreis"),
+              "Voreingestellter Landkreis is not correctly displayed!");
+          softly.assertAll();
+        });
   }
 
   public void fillDistrictName(String communityName) {
@@ -371,6 +387,7 @@ public class DistrictsSteps implements En {
   private List<Map<String, String>> getTableRowsData() {
     Map<String, Integer> headers = extractColumnHeadersHashMap();
     headers.remove("EDIT");
+    headers.remove("BEARBEITEN");
     List<WebElement> tableRows = getTableRows();
     List<HashMap<Integer, String>> tableDataList = new ArrayList<>();
     tableRows.forEach(

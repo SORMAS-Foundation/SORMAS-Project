@@ -89,6 +89,7 @@ public class EditEventPage {
   public static final By FIRST_GROUP_ID = By.xpath("//table/tbody/tr[1]/td[2]");
   public static final By TOTAL_ACTIONS_COUNTER = By.cssSelector(".badge");
   public static final By CREATE_CONTACTS_BULK_EDIT_BUTTON = By.id("bulkActions-3");
+  public static final By CREATE_QUARANTINE_ORDER_EVENT_PARTICIPANT = By.id("bulkActions-5");
   public static final By EVENT_MANAGEMENT_STATUS_CHECK =
       By.cssSelector("#eventManagementStatus input:checked[type='checkbox'] ~ label");
   public static final By EVENT_CLUSTER_EDIT = By.xpath("//span[.='Cluster']");
@@ -179,4 +180,16 @@ public class EditEventPage {
   public static By getGroupEventName(String groupEventName) {
     return By.xpath("//*[contains(text(),\"" + groupEventName + "\")]");
   }
+
+  public static final By NEW_IMMUNIZATION_BUTTON = By.cssSelector("[id='New immunization']");
+
+  public static By getEventParticipantUUIDbyIndex(int index) {
+    return By.xpath(
+        String.format(
+            "(//input[@type=\"checkbox\"])[%x]/../../following-sibling::td/a", index + 2));
+  }
+
+  public static final By FIRST_EVENT_PARTICIPANT_FROM_LIST = By.cssSelector("tr td a");
+  public static final By CREATE_CASE_IN_EVENT_PARTICIPANT_LIST_BUTTON =
+      By.xpath("(//tr//td//a)[3]");
 }

@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -118,6 +119,7 @@ import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentType;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -179,6 +181,20 @@ public class TestDataCreator {
 			createUserRoles();
 		}
 		return userRoleMap.get(userRole);
+	}
+
+	public UserDto createTestUser() {
+
+		UserDto user = UserDto.build();
+		user.setFirstName("ad");
+		user.setLastName("min");
+		user.setUserName("admin");
+		user.setUserRoles(
+			new HashSet<>(Arrays.asList(getUserRoleReference(DefaultUserRole.ADMIN), getUserRoleReference(DefaultUserRole.NATIONAL_USER))));
+
+		beanTest.getUserService().persist(beanTest.getUserFacade().fromDto(user, false));
+
+		return user;
 	}
 
 	public UserDto createUser(RDCF rdcf, UserRoleReferenceDto userRole, Consumer<UserDto> customConfig) {
@@ -247,6 +263,27 @@ public class TestDataCreator {
 
 	public UserDto createUser(RDCF rdcf, String firstName, String lastName, Disease limitedDisease, UserRoleReferenceDto... roles) {
 		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), null, rdcf.facility.getUuid(), firstName, lastName, limitedDisease, roles);
+	}
+
+	public UserDto createUser(
+		String regionUuid,
+		String districtUuid,
+		String facilityUuid,
+		String firstName,
+		String lastName,
+		String caption,
+		JurisdictionLevel jurisdictionLevel,
+		UserRight... userRights) {
+		UserRoleReferenceDto userRole = createUserRole(caption, jurisdictionLevel, userRights);
+		return createUser(regionUuid, districtUuid, facilityUuid, firstName, lastName, userRole);
+	}
+
+	public UserRoleReferenceDto createUserRole(String caption, JurisdictionLevel jurisdictionLevel, UserRight... userRights) {
+		UserRoleDto userRole = new UserRoleDto();
+		userRole.setCaption(caption);
+		userRole.setJurisdictionLevel(jurisdictionLevel);
+		userRole.setUserRights(Arrays.stream(userRights).collect(Collectors.toSet()));
+		return beanTest.getUserRoleFacade().saveUserRole(userRole).toReference();
 	}
 
 	private UserDto createUser(
@@ -1796,12 +1833,13 @@ public class TestDataCreator {
 		return populationData;
 	}
 
-	public void updateDiseaseConfiguration(Disease disease, Boolean active, Boolean primary, Boolean caseBased) {
+	public void updateDiseaseConfiguration(Disease disease, Boolean active, Boolean primary, Boolean caseSurveillance, Boolean aggregateReporting) {
 		DiseaseConfigurationDto config =
 			DiseaseConfigurationFacadeEjbLocal.toDto(beanTest.getDiseaseConfigurationService().getDiseaseConfiguration(disease));
 		config.setActive(active);
 		config.setPrimaryDisease(primary);
-		config.setCaseBased(caseBased);
+		config.setCaseSurveillanceEnabled(caseSurveillance);
+		config.setAggregateReportingEnabled(aggregateReporting);
 		beanTest.getDiseaseConfigurationFacade().saveDiseaseConfiguration(config);
 	}
 

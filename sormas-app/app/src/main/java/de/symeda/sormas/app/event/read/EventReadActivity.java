@@ -15,21 +15,23 @@
 
 package de.symeda.sormas.app.event.read;
 
-import java.util.List;
-
 import android.content.Context;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import java.util.List;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.event.Event;
 import de.symeda.sormas.app.backend.event.EventEditAuthorization;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
@@ -106,8 +108,8 @@ public class EventReadActivity extends BaseReadActivity<Event> {
 		final Event selectedEvent = DatabaseHelper.getEventDao().getByReferenceDto(referenceDto);
 
 		if (editMenu != null) {
-			if (EventEditAuthorization.isEventEditAllowed(selectedEvent)
-				|| (getActiveFragment() != null && getActiveFragment() instanceof EventReadPersonsInvolvedListFragment)) {
+			if (ConfigProvider.hasUserRight(UserRight.EVENT_EDIT) && (EventEditAuthorization.isEventEditAllowed(selectedEvent)
+				|| (getActiveFragment() != null && getActiveFragment() instanceof EventReadPersonsInvolvedListFragment))) {
 				editMenu.setVisible(true);
 			} else {
 				editMenu.setVisible(false);

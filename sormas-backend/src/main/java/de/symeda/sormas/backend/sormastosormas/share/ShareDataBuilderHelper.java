@@ -65,31 +65,31 @@ public class ShareDataBuilderHelper {
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacadeEjb;
 
-	public Pseudonymizer createPseudonymizer(boolean pseudonymizePersonalData, boolean pseudonymizeSensitiveData) {
+	public Pseudonymizer createPseudonymizer(ShareRequestInfo requestInfo) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultNoCheckers(false);
 
-		if (pseudonymizePersonalData) {
+		if (requestInfo.isPseudonymizedPersonalData()) {
 			pseudonymizer.addFieldAccessChecker(PersonalDataFieldAccessChecker.forcedNoAccess(), PersonalDataFieldAccessChecker.forcedNoAccess());
 		}
-		if (pseudonymizeSensitiveData) {
+		if (requestInfo.isPseudonymizedSensitiveData()) {
 			pseudonymizer.addFieldAccessChecker(SensitiveDataFieldAccessChecker.forcedNoAccess(), SensitiveDataFieldAccessChecker.forcedNoAccess());
 		}
 
 		return pseudonymizer;
 	}
 
-	public PersonDto getPersonDto(Person person, Pseudonymizer pseudonymizer, boolean pseudonymizedPersonalData, boolean pseudonymizedSensitiveData) {
+	public PersonDto getPersonDto(Person person, Pseudonymizer pseudonymizer, ShareRequestInfo requestInfo) {
 		PersonDto personDto = personFacade.convertToDto(person, pseudonymizer, true);
 
-		pseudonymiePerson(personDto, pseudonymizedPersonalData, pseudonymizedSensitiveData);
+		pseudonymiePerson(personDto, requestInfo);
 
 		clearIgnoredProperties(personDto);
 
 		return personDto;
 	}
 
-	public void pseudonymiePerson(PersonDto personDto, boolean pseudonymizedPersonalData, boolean pseudonymizedSensitiveData) {
-		if (pseudonymizedPersonalData || pseudonymizedSensitiveData) {
+	public void pseudonymiePerson(PersonDto personDto, ShareRequestInfo requestInfo) {
+		if (requestInfo.isPseudonymizedPersonalData() || requestInfo.isPseudonymizedSensitiveData()) {
 			personDto.setFirstName(I18nProperties.getCaption(Captions.inaccessibleValue));
 			personDto.setLastName(I18nProperties.getCaption(Captions.inaccessibleValue));
 		}
@@ -178,8 +178,7 @@ public class ShareDataBuilderHelper {
 		options.setWithEventParticipants(requestInfo.isWithEventParticipants());
 		options.setWithImmunizations(requestInfo.isWithImmunizations());
 		options.setComment(requestInfo.getComment());
-		options.setPseudonymizePersonalData(requestInfo.isPseudonymizedPersonalData());
-		options.setPseudonymizeSensitiveData(requestInfo.isPseudonymizedSensitiveData());
+		options.setPseudonymizeData(requestInfo.isPseudonymizedPersonalData() || requestInfo.isPseudonymizedSensitiveData());
 
 		return options;
 
@@ -193,6 +192,7 @@ public class ShareDataBuilderHelper {
 		options.setWithAssociatedContacts(originInfo.isWithAssociatedContacts());
 		options.setWithSamples(originInfo.isWithSamples());
 		options.setWithEventParticipants(originInfo.isWithEventParticipants());
+		options.setWithImmunizations(originInfo.isWithImmunizations());
 		options.setComment(originInfo.getComment());
 
 		return options;

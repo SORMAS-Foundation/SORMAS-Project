@@ -36,7 +36,9 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitExportDto;
@@ -55,7 +57,7 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	private TestDataCreator.RDCF rdcf2;
 	private UserDto user1;
 	private UserDto user2;
-	private UserDto observerUser;
+	private UserDto nationalVisitUser;
 	private PersonDto person;
 
 	@Override
@@ -69,6 +71,7 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			rdcf1.facility.getUuid(),
 			"Surv",
 			"Off1",
+			creator.getUserRoleReference(DefaultUserRole.CONTACT_OFFICER),
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
@@ -78,10 +81,11 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			rdcf2.facility.getUuid(),
 			"Surv",
 			"Off2",
+			creator.getUserRoleReference(DefaultUserRole.CONTACT_OFFICER),
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
-		observerUser = creator
-			.createUser(null, null, null, null, "National", "Observer", creator.getUserRoleReference(DefaultUserRole.NATIONAL_OBSERVER));
+		nationalVisitUser =
+			creator.createUser(null, null, null, "National", "Visit User", "National Visit User", JurisdictionLevel.NATION, UserRight.VISIT_EDIT);
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 
@@ -149,7 +153,7 @@ public class VisitFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	public void testUpdatePseudonymized() {
 		VisitDto visit = createVisit(user2, person).visit;
 
-		loginWith(observerUser);
+		loginWith(nationalVisitUser);
 
 		visit.setReportLat(null);
 		visit.setReportLon(null);

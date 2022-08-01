@@ -52,9 +52,8 @@ public class EventParticipantShareDataBuilder
 	}
 
 	@Override
-	public SormasToSormasEventParticipantDto doBuildShareData(EventParticipant data, ShareRequestInfo requestInfo) {
-		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+	public SormasToSormasEventParticipantDto doBuildShareData(EventParticipant data, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
 		EventParticipantDto eventParticipantDto = eventParticipantFacade.convertToDto(data, pseudonymizer);
 
@@ -62,10 +61,7 @@ public class EventParticipantShareDataBuilder
 		eventParticipantDto.setSormasToSormasOriginInfo(null);
 		dataBuilderHelper.clearIgnoredProperties(eventParticipantDto.getPerson());
 
-		dataBuilderHelper.pseudonymiePerson(
-			eventParticipantDto.getPerson(),
-			requestInfo.isPseudonymizedPersonalData(),
-			requestInfo.isPseudonymizedSensitiveData());
+		dataBuilderHelper.pseudonymiePerson(eventParticipantDto.getPerson(), requestInfo);
 
 		return new SormasToSormasEventParticipantDto(eventParticipantDto);
 	}
@@ -77,8 +73,7 @@ public class EventParticipantShareDataBuilder
 
 	@Override
 	public SormasToSormasEventParticipantPreview doBuildShareDataPreview(EventParticipant eventParticipant, ShareRequestInfo requestInfo) {
-		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
 		SormasToSormasEventParticipantPreview preview = new SormasToSormasEventParticipantPreview();
 

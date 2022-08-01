@@ -3,6 +3,7 @@ import com.github.sherter.googlejavaformatgradleplugin.GoogleJavaFormat
 plugins {
 	id "com.github.sherter.google-java-format" version "0.9"
 	id "com.diffplug.spotless" version "5.12.4"
+	id "ua.eshepelyuk.ManifestClasspath" version "1.0.0"
 }
 
 apply plugin: "java"
@@ -74,6 +75,8 @@ dependencies {
 	compile 'com.detectlanguage:detectlanguage:1.1.0'
 
 	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3'
+	implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '1.2.4'
+
 
 
 }

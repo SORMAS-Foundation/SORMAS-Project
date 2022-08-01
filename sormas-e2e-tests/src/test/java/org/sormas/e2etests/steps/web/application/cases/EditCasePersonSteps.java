@@ -289,6 +289,40 @@ public class EditCasePersonSteps implements En {
           softly.assertFalse(elementVisible, option + " is visible!");
           softly.assertAll();
         });
+
+    When(
+        "I check if Present condition of person combobox has value {string}",
+        (String option) -> {
+          softly.assertTrue(
+              webDriverHelpers.checkIfElementExistsInCombobox(PRESENT_CONDITION_COMBOBOX, option));
+          softly.assertAll();
+        });
+
+    When(
+        "I check if Present condition of person combobox has no value {string}",
+        (String option) -> {
+          softly.assertFalse(
+              webDriverHelpers.checkIfElementExistsInCombobox(PRESENT_CONDITION_COMBOBOX, option));
+          softly.assertAll();
+        });
+
+    When(
+        "I check if {string} field is present in case person",
+        (String option) -> {
+          By selector = null;
+          switch (option) {
+            case "Date of burial":
+              selector = DATE_OF_BURIAL_INPUT;
+              break;
+            case "Cause of death":
+              selector = CASE_OF_DEATH_COMBOBOX;
+              break;
+          }
+        });
+
+    When(
+        "I set Present condition of person to {string}",
+        (String option) -> webDriverHelpers.selectFromCombobox(PRESENT_CONDITION_COMBOBOX, option));
   }
 
   private void selectCountry(String country) {

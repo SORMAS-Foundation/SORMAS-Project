@@ -35,6 +35,8 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.report.AggregateCaseCountDto;
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
@@ -45,6 +47,7 @@ import de.symeda.sormas.api.utils.AgeGroupUtils;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -131,9 +134,22 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		if (dto.getAgeGroup() != null && dto.getAgeGroup().isEmpty()) {
 			AgeGroupUtils.validateAgeGroup(dto.getAgeGroup());
 		}
+
+		validate(dto);
 		AggregateReport report = fromDto(dto, true);
 		service.ensurePersisted(report);
 		return toDto(report);
+	}
+
+	@Override
+	public void validate(AggregateReportDto aggregateReportDto) throws ValidationRuntimeException {
+		if (aggregateReportDto.getRegion() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validRegion));
+		}
+
+		if (aggregateReportDto.getDistrict() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDistrict));
+		}
 	}
 
 	@Override
@@ -275,7 +291,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		if (criteria != null && criteria.getShowZeroRows()) {
 			List<EpiWeek> epiWeekList = DateHelper.createEpiWeekListFromInterval(criteria.getEpiWeekFrom(), criteria.getEpiWeekTo());
 			if (criteria.getDisease() == null) {
-				for (Disease disease : diseaseConfigurationFacade.getAllDiseases(true, null, false)) {
+				for (Disease disease : diseaseConfigurationFacade.getAllDiseases(true, null, false, true)) {
 					if (!reportSet.containsKey(disease)) {
 						for (EpiWeek epiWeek : epiWeekList) {
 							addZeroRowToList(resultList, selectedRegion, selectedDistrict, selectedFacility, selectedPoindOfEntry, disease, epiWeek);
@@ -595,7 +611,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 
 		List<AggregateReportDto> reports = getAggregateReports(criteria);
 
-		List<Disease> diseaseList = diseaseConfigurationFacade.getAllDiseases(true, false, false);
+		List<Disease> diseaseList = diseaseConfigurationFacade.getAllDiseases(true, false, false, true);
 
 		Set<AggregateReportDto> userList = new HashSet<>();
 		diseaseList.forEach(disease -> {
