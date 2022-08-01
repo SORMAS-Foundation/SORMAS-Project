@@ -1240,10 +1240,15 @@ public class CaseDirectorySteps implements En {
         });
 
     Then(
-        "I set case vaccination status filter to ([^\"]*) and apply",
+        "I set case vaccination status filter to ([^\"]*)",
         (String vaccinationStatus) -> {
           webDriverHelpers.selectFromCombobox(
               CASE_VACCINATION_STATUS_FILTER_COMBOBOX, vaccinationStatus);
+        });
+
+    And(
+        "I apply case filters",
+        () -> {
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
         });
   }

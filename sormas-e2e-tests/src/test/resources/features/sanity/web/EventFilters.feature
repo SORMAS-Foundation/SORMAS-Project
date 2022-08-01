@@ -178,7 +178,8 @@ Feature: Event Directory filters check
     And I navigate to EVENT from edit event page
     When I add a participant to the event in DE
     Then I set participant vaccination status to <status>
-    Then I set event vaccination status filter to <status> and apply
+    Then I set event vaccination status filter to <status>
+    And I apply event filters
     Then I check that created Event is visible with <status> status
 
 

@@ -440,7 +440,8 @@ Feature: Case filter functionality
     And I open the last created Case via API
     And I set case vaccination status to <status>
     And I click on the Cases button from navbar
-    And I set case vaccination status filter to <status> and apply
+    And I set case vaccination status filter to <status>
+    And I apply case filters
     Then I check that created Case is visible with <status> status
 
     Examples:

@@ -1305,10 +1305,15 @@ public class EventDirectorySteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(SHOW_MORE_LESS_FILTERS));
 
     Then(
-        "I set event vaccination status filter to ([^\"]*) and apply",
+        "I set event vaccination status filter to ([^\"]*)",
         (String vaccinationStatus) -> {
           webDriverHelpers.selectFromCombobox(
               EVENT_PARTICIPANT_VACCINATION_STATUS_FILTER_COMBOBOX, vaccinationStatus);
+        });
+
+    And(
+        "I apply event filters",
+        () -> {
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
         });
 
