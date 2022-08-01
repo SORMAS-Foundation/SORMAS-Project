@@ -358,10 +358,13 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 					contentBinding.caseDataPointOfEntry.setRequired(false);
 					contentBinding.caseDataPointOfEntry.setValue(null);
 					contentBinding.caseDataHealthFacility.setRequired(true);
+					contentBinding.facilityOrHome.setRequired(true);
 				} else {
 					contentBinding.caseDataPointOfEntry.setVisibility(VISIBLE);
 					contentBinding.caseDataHealthFacility.setRequired(false);
 					contentBinding.caseDataPointOfEntry.setRequired(true);
+					contentBinding.facilityOrHome.setRequired(false);
+					contentBinding.facilityOrHome.setValue(null);
 				}
 			});
 		} else {
