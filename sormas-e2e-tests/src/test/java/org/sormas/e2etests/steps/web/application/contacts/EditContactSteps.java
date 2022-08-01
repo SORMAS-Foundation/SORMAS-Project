@@ -1173,7 +1173,7 @@ public class EditContactSteps implements En {
               webDriverHelpers.getValueFromWebElement(END_OF_PROCESSING_DATE_POPUP_INPUT);
           softly.assertEquals(
               endOfProcessingDate,
-              LocalDate.now().format(DateTimeFormatter.ofPattern("d.MM.yyyy")),
+              LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
               "End of processing date is invalid");
           softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(EditContactPage.DELETE_POPUP_YES_BUTTON);
