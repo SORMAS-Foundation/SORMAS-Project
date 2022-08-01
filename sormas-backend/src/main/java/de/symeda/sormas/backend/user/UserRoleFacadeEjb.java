@@ -73,7 +73,6 @@ import de.symeda.sormas.api.user.UserRoleFacade;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -354,7 +353,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 			}
 			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.desc(userRole.get(AbstractDomainObject.CHANGE_DATE)));
+			cq.orderBy(cb.asc(userRole.get(UserRole.CAPTION)));
 		}
 
 		cq.select(userRole);

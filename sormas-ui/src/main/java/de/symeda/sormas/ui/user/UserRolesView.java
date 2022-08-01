@@ -6,6 +6,7 @@ import java.nio.file.Files;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.LoggerFactory;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.FileDownloader;
@@ -18,6 +19,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -73,12 +75,10 @@ public class UserRolesView extends AbstractUserView {
 
 		addComponent(gridLayout);
 
-		//DELETE remained things after the old export 4882
 		Button exportUserRightsButton = ButtonHelper.createIconButton(Captions.exportUserRoles, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
 
 		new FileDownloader(new StreamResource(() -> new DownloadUtil.DelayedInputStream((out) -> {
 			try {
-				// String documentPath = FacadeProvider.getUserRightsFacade().generateUserRightsDocument();
 				String documentPath = FacadeProvider.getUserRoleFacade().generateUserRolesDocument();
 				IOUtils.copy(Files.newInputStream(new File(documentPath).toPath()), out);
 			} catch (IOException e) {

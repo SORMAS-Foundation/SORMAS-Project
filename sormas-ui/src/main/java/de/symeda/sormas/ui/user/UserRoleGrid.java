@@ -22,14 +22,11 @@ public class UserRoleGrid extends FilteredGrid<UserRoleDto, UserRoleCriteria> {
 
 		setColumns(UserRoleDto.CAPTION, UserRoleDto.JURISDICTION_LEVEL, UserRoleDto.DESCRIPTION);
 
-		// Column<UserRoleDto, String> userRolesColumn = ((Column<UserRoleDto, String>) getColumn(UserRoleDto.CAPTION));
-		//userRolesColumn.setSortProperty(UserRoleDto.CAPTION);
-
 		for (Column<?, ?> column : getColumns()) {
 			if (column.getId().equals(UserRoleDto.CAPTION)) {
 				column.setCaption(I18nProperties.getCaption(Captions.userRole));
 			} else {
-				column.setCaption(I18nProperties.getPrefixCaption(UserRoleDto.I18N_PREFIX, column.getId().toString(), column.getCaption()));
+				column.setCaption(I18nProperties.getPrefixCaption(UserRoleDto.I18N_PREFIX, column.getId(), column.getCaption()));
 			}
 		}
 	}
