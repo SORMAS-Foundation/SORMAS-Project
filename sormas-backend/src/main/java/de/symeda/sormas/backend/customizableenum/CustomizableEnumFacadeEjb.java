@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.customizableenum;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -163,7 +164,9 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 			diseaseValuesStream = enumValuesByDisease.get(enumClass).get(Optional.empty()).stream();
 		}
 
-		return diseaseValuesStream.map(value -> buildCustomizableEnum(type, value, language, enumClass)).collect(Collectors.toList());
+		return diseaseValuesStream.map(value -> buildCustomizableEnum(type, value, language, enumClass))
+			.sorted(Comparator.comparing(CustomizableEnum::getCaption))
+			.collect(Collectors.toList());
 	}
 
 	@Lock(LockType.READ)
