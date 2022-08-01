@@ -186,7 +186,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 338;
+	public static final int DATABASE_VERSION = 339;
 
 	private static DatabaseHelper instance = null;
 
@@ -2995,6 +2995,25 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 337:
 				currentVersion = 337;
+				getDao(DiseaseConfiguration.class).executeRaw("ALTER TABLE diseaseConfiguration RENAME TO tmp_diseaseConfiguration");
+				getDao(DiseaseConfiguration.class).executeRaw("CREATE TABLE diseaseConfiguration(id integer primary key autoincrement, uuid VARCHAR(36) NOT NULL, " +
+						"changeDate TIMESTAMP NOT NULL, creationDate TIMESTAMP NOT NULL, lastOpenedDate TIMESTAMP, localChangeDate TIMESTAMP NOT NULL, modified INTEGER, " +
+						"snapshot INTEGER, disease VARCHAR(255), active boolean, primaryDisease boolean, followUpEnabled boolean, followUpDuration INTEGER, " +
+						"caseSurveillanceEnabled boolean, caseFollowUpDuration INTEGER, eventParticipantFollowUpDuration INTEGER, " +
+						"extendedClassification boolean, extendedClassificationMulti boolean, ageGroupsString text, UNIQUE(snapshot, uuid));");
+				getDao(DiseaseConfiguration.class).executeRaw("ALTER TABLE diseaseconfiguration ADD COLUMN aggregateReportingEnabled boolean;");
+				getDao(DiseaseConfiguration.class).executeRaw("INSERT INTO diseaseConfiguration (id, uuid, changeDate, creationDate, lastOpenedDate, " +
+						"localChangeDate, modified, snapshot, disease, active, primaryDisease, followUpEnabled, followUpDuration, " +
+						"caseSurveillanceEnabled, caseFollowUpDuration, eventParticipantFollowUpDuration, extendedClassification, extendedClassificationMulti, " +
+						"ageGroupsString, aggregateReportingEnabled) " +
+						"SELECT id, uuid, changeDate, creationDate, lastOpenedDate, localChangeDate, modified, snapshot, disease, active, primaryDisease, " +
+						"followUpEnabled, followUpDuration, caseBased, caseFollowUpDuration, eventParticipantFollowUpDuration, extendedClassification, " +
+						"extendedClassificationMulti, ageGroupsString, NOT caseBased " +
+						"FROM tmp_diseaseConfiguration;");
+				getDao(DiseaseConfiguration.class).executeRaw("DROP TABLE tmp_diseaseConfiguration");
+
+			case 338:
+				currentVersion = 338;
 				getDao(CustomizableEnumValue.class).executeRaw("ALTER TABLE customizableEnumValue ADD COLUMN defaultValue boolean;");
 
 				// ATTENTION: break should only be done after last version

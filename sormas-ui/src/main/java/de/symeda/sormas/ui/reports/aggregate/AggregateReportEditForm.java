@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.reports.aggregate;
 
+import com.vaadin.ui.CustomLayout;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.v7.ui.Label;
@@ -135,5 +136,14 @@ public class AggregateReportEditForm extends AbstractEditForm<AggregateReportDto
 
 	public void setDeaths(int deaths) {
 		deathField.setValue(String.valueOf(deaths));
+	}
+
+	public boolean isFirstGroup() {
+		return firstGroup;
+	}
+
+	@Override
+	protected CustomLayout getContent() {
+		return (CustomLayout) super.getContent();
 	}
 }
