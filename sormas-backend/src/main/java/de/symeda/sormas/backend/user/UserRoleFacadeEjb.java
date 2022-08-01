@@ -25,6 +25,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,6 +34,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -370,7 +372,8 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		}
 
 		try (OutputStream fos = Files.newOutputStream(documentPath)) {
-			generateUserRolesDocument(getUserRoleRights(), fos);
+			TreeMap<UserRoleDto, Set<UserRight>> userRolesRights = getSortedUserRolesRights();
+			generateUserRolesDocument(userRolesRights, fos);
 		} catch (IOException e) {
 			Files.deleteIfExists(documentPath);
 			throw e;
@@ -525,6 +528,14 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 
 		workbook.write(outStream);
 		workbook.close();
+	}
+
+	private TreeMap<UserRoleDto, Set<UserRight>> getSortedUserRolesRights() {
+		Map<UserRoleDto, Set<UserRight>> userRoleRights = getUserRoleRights();
+		TreeMap<UserRoleDto, Set<UserRight>> sortedMap = new TreeMap<>(Comparator.comparing(UserRoleDto::getCaption));
+		sortedMap.putAll(userRoleRights);
+
+		return sortedMap;
 	}
 
 	private String getTranslationForBoolean(boolean value) {
