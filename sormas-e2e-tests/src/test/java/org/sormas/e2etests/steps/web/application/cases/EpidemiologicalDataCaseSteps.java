@@ -720,7 +720,9 @@ public class EpidemiologicalDataCaseSteps implements En {
 
     And(
         "^I check if the subcontinent combobox is available in the location section in Exposure form$",
-        () -> webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SUBCONTINENT_COMBOBOX));
+        () ->
+            webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                SUBCONTINENT_COMBOBOX));
 
     And(
         "^I select \"([^\"]*)\" as a country in Exposure form$",

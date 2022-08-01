@@ -2217,7 +2217,7 @@ public class EditCaseSteps implements En {
               webDriverHelpers.getValueFromWebElement(END_OF_PROCESSING_DATE_POPUP_INPUT);
           softly.assertEquals(
               endOfProcessingDate,
-              LocalDate.now().format(DateTimeFormatter.ofPattern("d.MM.yyyy")),
+              LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
               "End of processing date is invalid");
           softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(ARCHIVE_RELATED_CONTACTS_CHECKBOX);
