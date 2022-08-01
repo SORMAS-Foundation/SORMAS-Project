@@ -3,7 +3,7 @@ Feature: About Directory end to end tests
 
   #fails due to known defect, downloaded file is not in german, is in english.
   @tmsLink=SORDEV-6474 @env_main @issue=8069
-  Scenario: Check language options in Data Dictionary depending on the user language setting
+  Scenario: SORDEV-6474 Check language options in Data Dictionary depending on the user language setting
     Given  I log in as a National Language User
     And I click on the About button from navbar
     Then I click on the User Settings button from navbar
@@ -16,7 +16,7 @@ Feature: About Directory end to end tests
     And I set on default language as English in User settings
 
   @tmsLink=SORQA-219 @env_main @precon
-  Scenario: Check current Sormas version is show
+  Scenario: SORQA-219 Check current Sormas version is show
     Given I log in with National User
     And I click on the About button from navbar
     Then I check that current Sormas version is shown on About directory page
@@ -60,7 +60,7 @@ Feature: About Directory end to end tests
     And I delete Data Dictionary downloaded file from About Directory
 
   @tmsLink=SORDEV-10361 @env_main
-  Scenario: Test Hide "buried" within Person present condition for Covid-19 for About
+  Scenario: SORDEV-10361 Test Hide "buried" within Person present condition for Covid-19 for About
     Given I log in as a Admin User
     And I click on the About button from navbar
     And I click on Data Dictionary hyperlink and download XLSX file from About directory
