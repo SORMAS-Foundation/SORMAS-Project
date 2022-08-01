@@ -17,7 +17,7 @@ Feature: Continent end to end tests
     Then I check that number of continents is 6
     And I check that Africa is correctly displayed in German
 
-  @issue=SORQA-7139 @env_main
+  @tmsLink=SORQA-7139 @env_main
   Scenario: Check continent display language in English
     Given I log in as a National User
     And I click on the Configuration button from navbar
@@ -32,7 +32,7 @@ Feature: Continent end to end tests
     And I check that continent list is correctly displayed in German
 
 
-  @issue=SORQA-7139 @env_de
+  @tmsLink=SORQA-7139 @env_de
   Scenario: Check continent display language in German
     Given I log in as a National User
     And I click on the Configuration button from navbar
