@@ -25,6 +25,7 @@ import javax.ejb.Stateless;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
@@ -172,13 +173,17 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 	private void sendDeleteRequest(DeleteParameters params) throws ExternalSurveillanceToolException {
 		String serviceUrl = configFacade.getExternalSurveillanceToolGatewayUrl().trim();
-		Response response = ClientBuilder.newBuilder()
-			.connectTimeout(30, TimeUnit.SECONDS)
-			.build()
-			.target(serviceUrl)
-			.path("delete")
-			.request()
-			.post(Entity.json(params));
+
+		Invocation.Builder request =
+			ClientBuilder.newBuilder().connectTimeout(30, TimeUnit.SECONDS).build().target(serviceUrl).path("delete").request();
+
+		Response response;
+		try {
+			response = request.post(Entity.json(params));
+		} catch (Exception e) {
+			logger.error("Failed to send delete request to external surveillance tool", e);
+			throw new ExternalSurveillanceToolException(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorDeleting));
+		}
 
 		int statusCode = response.getStatus();
 
