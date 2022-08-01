@@ -427,7 +427,7 @@ Feature: Case filter functionality
       | "Recovered"      | 0       | 0       | 1       | 0       |
       | "Unknown"        | 0       | 0       | 0       | 1       |
 
-  @issue=SORQA-5969 @env_de
+  @tmsLink=SORQA-5969 @env_de
   Scenario Outline: Test vaccination status filter <status> and columns to case
     When API: I create a new person
     Then API: I check that POST call body is "OK"

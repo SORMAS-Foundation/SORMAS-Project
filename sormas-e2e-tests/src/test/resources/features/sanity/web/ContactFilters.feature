@@ -202,7 +202,7 @@ Feature: Contact filter functionality
     And I check that number of displayed contact results is 0
     And I click "Nur Kontakte von anderen Instanzen" checkbox on Contact directory page for DE version
 
-  @issue=SORQA-5969 @env_de
+  @tmsLink=SORQA-5969 @env_de
   Scenario Outline: Test vaccination status filter <status> and columns to contact
     When API: I create a new person
     Then API: I check that POST call body is "OK"
