@@ -820,11 +820,12 @@ public class StartupShutdownService {
 					userRoleService.ensurePersisted(userRole);
 				}
 				break;
-			case 479:
+			case 481:
 				// Add proper captions and translations to occupation types
 				List<OccupationType> occupationTypes = customizableEnumFacade.getEnumValues(CustomizableEnumType.OCCUPATION_TYPE, null);
 				occupationTypes.forEach(o -> {
-					String caption = I18nProperties.getEnumCaption(null, OccupationType.I18N_PREFIX, o.getValue());
+					String value = o.getValue();
+					String caption = I18nProperties.getEnumCaption(null, OccupationType.I18N_PREFIX, value);
 					List<String> translations = new ArrayList<>();
 					Arrays.stream(Language.values()).forEach(l -> {
 						translations.add(
@@ -835,12 +836,13 @@ public class StartupShutdownService {
 					});
 					String translationsString = "[" + String.join(",", translations) + "]";
 					String propertiesString = "{\"hasDetails\":true}";
+					boolean hasDetails = value.equals("BUSINESSMAN_WOMAN") || value.equals("TRANSPORTER");
 					em.createQuery(
 						"UPDATE CustomizableEnumValue c SET c.caption = :enum_caption, c.translations = :enum_translations, c.properties = :enum_properties WHERE c.value = :enum_value")
 						.setParameter("enum_caption", caption)
 						.setParameter("enum_translations", translationsString)
-						.setParameter("enum_properties", propertiesString)
-						.setParameter("enum_value", o.getValue())
+						.setParameter("enum_properties", hasDetails ? propertiesString : null)
+						.setParameter("enum_value", value)
 						.executeUpdate();
 				});
 

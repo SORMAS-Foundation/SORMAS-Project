@@ -11749,5 +11749,4 @@ $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (481, 'Turn OccupationType into a customizable enum #5015', true);
 
-
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
