@@ -116,6 +116,7 @@ import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.pages.application.cases.CreateNewCasePage;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage;
@@ -537,15 +538,8 @@ public class CreateNewTravelEntrySteps implements En {
         "I check if downloaded file is correct for {string} in Edit Travel Entry directory",
         (String name) -> {
           String uuid = aTravelEntry.getUuid();
-          Path path =
-              Paths.get(
-                  userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name);
-          assertHelpers.assertWithPoll20Second(
-              () ->
-                  Assert.assertTrue(
-                      Files.exists(path),
-                      "Quarantine order document was not downloaded. Path used for check: "
-                          + path.toAbsolutePath()));
+          String filePath = uuid.substring(0, 6).toUpperCase() + "-" + name;
+            FilesHelper.waitForFileToDownload(filePath, 30);
         });
     When(
         "I check if generated document based on {string} appeared in Documents tab in Edit Travel Entry directory",
@@ -562,10 +556,8 @@ public class CreateNewTravelEntrySteps implements En {
         "I delete downloaded file created from {string} Document Template for Travel Entry",
         (String name) -> {
           String uuid = aTravelEntry.getUuid();
-          File toDelete =
-              new File(
-                  userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name);
-          toDelete.deleteOnExit();
+          String filePath = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          FilesHelper.deleteFile(filePath);
         });
     When(
         "I collect travel UUID from travel entry",

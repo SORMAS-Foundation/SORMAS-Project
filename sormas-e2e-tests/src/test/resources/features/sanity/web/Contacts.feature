@@ -454,7 +454,6 @@ Feature: Contacts end to end tests
     And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab for UI created contact in Edit Contact directory
     And I navigate to the last created contact via the url
     And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab in Edit Contact directory
-    And I delete downloaded file created from Quarantine order
 
   @tmsLink=SORDEV-8048 @env_de
   Scenario: Test Default value for disease if only one is used by the server for Contacts
@@ -1147,4 +1146,3 @@ Feature: Contacts end to end tests
     And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab for UI created contact in Edit Contact directory for DE
     And I navigate to the last created contact via the url
     And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab in Edit Contact directory for DE
-    And I delete downloaded file created from Quarantine order
