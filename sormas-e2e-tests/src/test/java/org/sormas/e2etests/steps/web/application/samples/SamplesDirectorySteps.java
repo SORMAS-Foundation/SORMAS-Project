@@ -72,6 +72,7 @@ import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.RestAssuredClient;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.environmentdata.manager.EnvironmentManager;
+import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 import org.testng.Assert;
@@ -529,9 +530,8 @@ public class SamplesDirectorySteps implements En {
     When(
         "I delete exported file from Sample Directory",
         () -> {
-          File toDelete =
-              new File(userDirPath + "/downloads/sormas_samples_" + LocalDate.now() + "_.csv");
-          toDelete.deleteOnExit();
+            String filePath = "sormas_samples_" + LocalDate.now() + "_.csv";
+            FilesHelper.deleteFile(filePath);
         });
   }
 

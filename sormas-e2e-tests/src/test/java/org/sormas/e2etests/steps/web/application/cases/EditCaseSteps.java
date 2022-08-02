@@ -217,11 +217,7 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.contacts.ContactDirectorySteps.exposureData;
 
 import cucumber.api.java8.En;
-import java.io.File;
 import java.io.FileInputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -252,6 +248,7 @@ import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
@@ -427,15 +424,8 @@ public class EditCaseSteps implements En {
         "I check if downloaded file is correct for {string} Quarantine Order in Edit Case directory",
         (String name) -> {
           String uuid = apiState.getCreatedCase().getUuid();
-          Path path =
-              Paths.get(
-                  userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name);
-          assertHelpers.assertWithPoll20Second(
-              () ->
-                  Assert.assertTrue(
-                      Files.exists(path),
-                      "Quarantine order document was not downloaded. Path used for check: "
-                          + path.toAbsolutePath()));
+          String filePath = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          FilesHelper.waitForFileToDownload(filePath, 120);
         });
     When(
         "I check if generated document based on {string} appeared in Documents tab for API created case in Edit Case directory",
@@ -485,10 +475,8 @@ public class EditCaseSteps implements En {
         "I delete downloaded file created from {string} Document Template",
         (String name) -> {
           String uuid = apiState.getCreatedCase().getUuid();
-          File toDelete =
-              new File(
-                  userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name);
-          toDelete.deleteOnExit();
+          String filePath = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          FilesHelper.deleteFile(filePath);
         });
     And(
         "I click on Create button in Create Quarantine Order form",
@@ -504,16 +492,8 @@ public class EditCaseSteps implements En {
         "I check if generated document for Case based on {string} was downloaded properly",
         (String name) -> {
           String uuid = apiState.getCreatedCase().getUuid();
-          String pathToFile =
-              userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name;
-          Path path = Paths.get(pathToFile);
-          assertHelpers.assertWithPoll(
-              () ->
-                  Assert.assertTrue(
-                      Files.exists(path),
-                      "Case document was not downloaded. Path used for check: "
-                          + path.toAbsolutePath()),
-              120);
+          String pathToFile = uuid.substring(0, 6).toUpperCase() + "-" + name;
+            FilesHelper.waitForFileToDownload(pathToFile, 120);
         });
     When(
         "I check if generated document for Case based on {string} contains all required fields",
@@ -1385,21 +1365,10 @@ public class EditCaseSteps implements En {
         "I verify that the case document is downloaded and correctly named",
         () -> {
           String uuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
-          Path path =
-              Paths.get(
-                  userDirPath
-                      + "/downloads/"
-                      + uuid.substring(0, 6).toUpperCase()
-                      + "-"
-                      + aQuarantineOrder.getDocumentTemplate());
-          assertHelpers.assertWithPoll(
-              () ->
-                  Assert.assertTrue(
-                      Files.exists(path),
-                      String.format(
-                          "Case document was not downloaded. Searching path was: %s",
-                          path.toAbsolutePath())),
-              120);
+          String filePath =  uuid.substring(0, 6).toUpperCase()
+                  + "-"
+                  + aQuarantineOrder.getDocumentTemplate();
+          FilesHelper.waitForFileToDownload(filePath, 120);
         });
 
     When(
