@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.74.0</version>
+	<version>1.74.1</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -801,7 +801,27 @@
 			<dependency>
 				<groupId>info.novatec</groupId>
 				<artifactId>bean-test</artifactId>
-				<version>0.2.Final</version>
+				<version>0.2.Final_Local</version>
+				<scope>system</scope>
+				<systemPath>${project.basedir}/../sormas-base/dependencies/bean-test-0.2.Final.jar</systemPath>
+				<!-- Changed scope "test" to "system" as workaround for currently no publicly available maven artifact -->
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.weld.se</groupId>
+				<artifactId>weld-se</artifactId>
+				<version>2.1.2.Final</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.deltaspike.core</groupId>
+				<artifactId>deltaspike-core-impl</artifactId>
+				<version>1.2.1</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.deltaspike.cdictrl</groupId>
+				<artifactId>deltaspike-cdictrl-weld</artifactId>
+				<version>1.2.1</version>
 				<scope>test</scope>
 			</dependency>
 
@@ -1291,11 +1311,6 @@
 			<releases>
 				<enabled>false</enabled>
 			</releases>
-		</repository>
-		<repository>
-			<id>Novatec</id>
-			<name>Novatec Repository</name>
-			<url>https://repository.novatec-gmbh.de/content/repositories/novatec</url>
 		</repository>
 		<repository>
 			<id>osgeo</id>

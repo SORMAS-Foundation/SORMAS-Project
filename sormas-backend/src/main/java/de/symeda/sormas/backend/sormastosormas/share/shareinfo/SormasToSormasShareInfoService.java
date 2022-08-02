@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.sormastosormas.share.shareinfo;
 
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -33,7 +32,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.backend.caze.Case;
@@ -204,7 +203,7 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 
 		return q.getResultList().stream().findFirst().orElse(null);
 	}
-	
+
 	public List<SormasToSormasShareInfo> getByAssociatedEntity(String associatedObjectField, String associatedObjectUuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SormasToSormasShareInfo> cq = cb.createQuery(SormasToSormasShareInfo.class);
@@ -257,12 +256,14 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 	private void handleOwnershipChangeInExternalSurvTool(boolean isOwnershipHandedOver, List<Case> cases, List<Event> events)
 		throws ExternalSurveillanceToolException {
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && isOwnershipHandedOver) {
-			if (cases.size() > 0) {
-				externalSurveillanceToolGatewayFacade.deleteCases(cases.stream().map(caseFacade::toDto).collect(Collectors.toList()));
+			List<Case> sharedCases = cases.stream().filter(c -> !c.getExternalShares().isEmpty()).collect(Collectors.toList());
+			if (sharedCases.size() > 0) {
+				externalSurveillanceToolGatewayFacade.deleteCases(sharedCases.stream().map(caseFacade::toDto).collect(Collectors.toList()));
 			}
 
-			if (events.size() > 0) {
-				externalSurveillanceToolGatewayFacade.deleteEvents(events.stream().map(eventFacade::toDto).collect(Collectors.toList()));
+			List<Event> sharedEvents = events.stream().filter(e -> !e.getExternalShares().isEmpty()).collect(Collectors.toList());
+			if (sharedEvents.size() > 0) {
+				externalSurveillanceToolGatewayFacade.deleteEvents(sharedEvents.stream().map(eventFacade::toDto).collect(Collectors.toList()));
 			}
 		}
 	}
