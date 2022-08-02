@@ -75,6 +75,8 @@ dependencies {
 	compile 'com.detectlanguage:detectlanguage:1.1.0'
 
 	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.9.3'
+	implementation group: 'net.lingala.zip4j', name: 'zip4j', version: '1.2.4'
+
 
 
 }
