@@ -15,22 +15,45 @@
 
 package org.sormas.e2etests.steps.web.application.dashboard.surveillance;
 
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.AFP_BOX_IN_CAROUSEL_SLIDER_BAR;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.ANTHRAX_BOX_IN_CAROUSEL_SLIDER_BAR;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CASE_STATUS_MAP_POINTS;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CHOLERA_BOX_IN_CAROUSEL_SLIDER_BAR;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONFIRMED_COUNTER_LABEL_ON_SURVEILLANCE_DASHBOARD;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONFIRMED_COUNTER_LABEL_ON_SURVEILLANCE_DASHBOARD_DE;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONFIRMED_COUNTER_ON_SURVEILLANCE_DASHBOARD;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONFIRMED_COUNTER_ON_SURVEILLANCE_DASHBOARD_DE;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONFIRMED_CURVE_ON_SURVEILLANCE_DASHBOARD;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONTACT_STATUS_MAP_POINTS;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.COVID_19_BOX_IN_CAROUSEL_SLIDER_BAR;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CRS_BOX_IN_CAROUSEL_SLIDER_BAR;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.DASHBOARD_LAYERS_BUTTON;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.DASHBOARD_LAYERS_SHOW_CASES;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.DASHBOARD_LAYERS_SHOW_CONTACTS;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.DASHBOARD_TODAY;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.DATE_TYPE;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.DENGUE_BOX_IN_CAROUSEL_SLIDER_BAR;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.EVD_BOX_IN_CAROUSEL_SLIDER_BAR;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.GUINEA_WORM_BOX_IN_CAROUSEL_SLIDER_BAR;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.LASSA_BOX_IN_CAROUSEL_SLIDER_BAR;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.MEASLES_BOX_IN_CAROUSEL_SLIDER_BAR;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.MENINGITIS_BOX_IN_CAROUSEL_SLIDER_BAR;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.MONKEYPOX_BOX_IN_CAROUSEL_SLIDER_BAR;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.NEW_FLU_BOX_IN_CAROUSEL_SLIDER_BAR;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.PLAGUE_BOX_IN_CAROUSEL_SLIDER_BAR;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.POLIO_BOX_IN_CAROUSEL_SLIDER_BAR;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.RABIES_BOX_IN_CAROUSEL_SLIDER_BAR;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.REFERENCE_DEFINITION_FULFILLED_CASES_NUMBER;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.REGION_COMBOBOX_DROPDOWN;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.TIME_PERIOD_COMBOBOX;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.TIME_PERIOD_YESTERDAY_BUTTON;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.VHF_BOX_IN_CAROUSEL_SLIDER_BAR;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.YELLOW_FEVER_BOX_IN_CAROUSEL_SLIDER_BAR;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.ZOOM_OUT_BUTTON_ON_MAP;
 
 import cucumber.api.java8.En;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -51,9 +74,11 @@ public class SurveillanceDashboardSteps implements En {
   private int covid19DiseaseCounterAfter;
   private int newCasesCounterBefore;
   private int newCasesCounterAfter;
+  private static BaseSteps baseSteps;
   public static String confirmedCases_EN;
   public static String confirmedCases_DE;
-  private static BaseSteps baseSteps;
+  public static List<Integer> numberOfCases = new ArrayList<Integer>();
+  public static List<Integer> numberOfContacts = new ArrayList<Integer>();
 
   @Inject
   public SurveillanceDashboardSteps(
@@ -1109,20 +1134,75 @@ public class SurveillanceDashboardSteps implements En {
         });
 
     And(
-        "^I choose MONKEYPOX in a disease filter on Surveillance Dashboard$",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(MONKEYPOX_BOX_IN_CAROUSEL_SLIDER_BAR);
+        "I choose {string} in a disease filter on Surveillance Dashboard",
+        (String option) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          switch (option.toUpperCase()) {
+            case "AFP":
+              webDriverHelpers.clickOnWebElementBySelector(AFP_BOX_IN_CAROUSEL_SLIDER_BAR);
+              break;
+            case "ANTHRAX":
+              webDriverHelpers.clickOnWebElementBySelector(ANTHRAX_BOX_IN_CAROUSEL_SLIDER_BAR);
+              break;
+            case "COVID-19":
+              webDriverHelpers.clickOnWebElementBySelector(COVID_19_BOX_IN_CAROUSEL_SLIDER_BAR);
+              break;
+            case "CHOLERA":
+              webDriverHelpers.clickOnWebElementBySelector(CHOLERA_BOX_IN_CAROUSEL_SLIDER_BAR);
+              break;
+            case "CRS":
+              webDriverHelpers.clickOnWebElementBySelector(CRS_BOX_IN_CAROUSEL_SLIDER_BAR);
+              break;
+            case "DENGUE":
+              webDriverHelpers.clickOnWebElementBySelector(DENGUE_BOX_IN_CAROUSEL_SLIDER_BAR);
+              break;
+            case "EVD":
+              webDriverHelpers.clickOnWebElementBySelector(EVD_BOX_IN_CAROUSEL_SLIDER_BAR);
+              break;
+            case "GUINEA WORM":
+              webDriverHelpers.clickOnWebElementBySelector(GUINEA_WORM_BOX_IN_CAROUSEL_SLIDER_BAR);
+              break;
+            case "RABIES":
+              webDriverHelpers.clickOnWebElementBySelector(RABIES_BOX_IN_CAROUSEL_SLIDER_BAR);
+              break;
+            case "NEW FLU":
+              webDriverHelpers.clickOnWebElementBySelector(NEW_FLU_BOX_IN_CAROUSEL_SLIDER_BAR);
+              break;
+            case "LASSA":
+              webDriverHelpers.clickOnWebElementBySelector(LASSA_BOX_IN_CAROUSEL_SLIDER_BAR);
+              break;
+            case "MEASLES":
+              webDriverHelpers.clickOnWebElementBySelector(MEASLES_BOX_IN_CAROUSEL_SLIDER_BAR);
+              break;
+            case "MENINGITIS":
+              webDriverHelpers.clickOnWebElementBySelector(MENINGITIS_BOX_IN_CAROUSEL_SLIDER_BAR);
+              break;
+            case "MONKEYPOX":
+              webDriverHelpers.clickOnWebElementBySelector(MONKEYPOX_BOX_IN_CAROUSEL_SLIDER_BAR);
+              break;
+            case "PLAGUE":
+              webDriverHelpers.clickOnWebElementBySelector(PLAGUE_BOX_IN_CAROUSEL_SLIDER_BAR);
+              break;
+            case "POLIO":
+              webDriverHelpers.clickOnWebElementBySelector(POLIO_BOX_IN_CAROUSEL_SLIDER_BAR);
+              break;
+            case "VHF":
+              webDriverHelpers.clickOnWebElementBySelector(VHF_BOX_IN_CAROUSEL_SLIDER_BAR);
+              break;
+            case "YELLOW FEVER":
+              webDriverHelpers.clickOnWebElementBySelector(YELLOW_FEVER_BOX_IN_CAROUSEL_SLIDER_BAR);
+              break;
+          }
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
     And(
-        "^I count the number of points on the Case Status Map$",
+        "^I count the number of cases displayed on the Case Status Map$",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           List<WebElement> pointsOnMap = getPointsTable(CASE_STATUS_MAP_POINTS);
           int pointsCounter = pointsOnMap.size();
-          // CHANGE IT
-          System.out.print("Total number of points on the map = " + pointsCounter);
+          numberOfCases.add(pointsCounter);
         });
 
     And(
@@ -1137,6 +1217,84 @@ public class SurveillanceDashboardSteps implements En {
             counter++;
           }
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
+
+    And(
+        "^I check that number of cases on the Case Status Map for yesterday has increased by \"([^\"]*)\"$",
+        (Integer numberOfCasesAdded) -> {
+          int previousNumberOfPoints = numberOfCases.get(0);
+          int currentNumbersOfPoints = numberOfCases.get(2);
+          softly.assertEquals(
+              currentNumbersOfPoints,
+              previousNumberOfPoints + numberOfCasesAdded,
+              "Number of points on the Case Status Map has not increased by " + numberOfCasesAdded);
+          softly.assertAll();
+        });
+
+    And(
+        "^I check that number of contacts on the Case Status Map for yesterday has increased by \"([^\"]*)\"$",
+        (Integer numberOfCasesAdded) -> {
+          int previousNumberOfPoints = numberOfContacts.get(0);
+          int currentNumbersOfPoints = numberOfContacts.get(2);
+          softly.assertEquals(
+              currentNumbersOfPoints,
+              previousNumberOfPoints + numberOfCasesAdded,
+              "Number of points on the Case Status Map has not increased by " + numberOfCasesAdded);
+          softly.assertAll();
+        });
+
+    And(
+        "^I choose today from the Surveillance Dashboard Time Period combobox$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DASHBOARD_TODAY);
+        });
+
+    And(
+        "^I check that number of cases on the Case Status Map for today has not changed$",
+        () -> {
+          int previousNumberOfPoints = numberOfCases.get(1);
+          int currentNumbersOfPoints = numberOfCases.get(3);
+          softly.assertEquals(
+              currentNumbersOfPoints,
+              previousNumberOfPoints,
+              "Number of points on the Case Status Map has changed!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I check that number of contacts on the Case Status Map for today has not changed$",
+        () -> {
+          int previousNumberOfPoints = numberOfContacts.get(1);
+          int currentNumbersOfPoints = numberOfContacts.get(3);
+          softly.assertEquals(
+              currentNumbersOfPoints,
+              previousNumberOfPoints,
+              "Number of points on the Case Status Map has changed!");
+          softly.assertAll();
+        });
+
+    And(
+        "^I click Layers button on Surveillance Dashboard Page$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DASHBOARD_LAYERS_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(DASHBOARD_LAYERS_SHOW_CASES);
+        });
+
+    And(
+        "^I click checkbox to select Show contacts from Layers on the Case Status Map$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(DASHBOARD_LAYERS_SHOW_CONTACTS));
+
+    And(
+        "^I click checkbox to unselect Show cases from Layers on the Case Status Map$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(DASHBOARD_LAYERS_SHOW_CASES));
+
+    And(
+        "^I count the number of contacts displayed on the Case Status Map$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          List<WebElement> pointsOnMap = getPointsTable(CONTACT_STATUS_MAP_POINTS);
+          int pointsCounter = pointsOnMap.size();
+          numberOfContacts.add(pointsCounter);
         });
   }
 

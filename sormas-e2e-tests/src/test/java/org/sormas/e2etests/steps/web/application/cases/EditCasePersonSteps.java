@@ -179,7 +179,10 @@ public class EditCasePersonSteps implements En {
 
     When(
         "I click on Geocode button to get GPS coordinates in Case Person Tab",
-        () -> webDriverHelpers.clickOnWebElementBySelector(GEOCODE_BUTTON));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(GEOCODE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
 
     When(
         "I click on save button to Save Person data in Case Person Tab",

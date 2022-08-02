@@ -434,4 +434,7 @@ public class SurveillanceDashboardPage {
   public static final By CASE_STATUS_MAP_POINTS =
       By.xpath(
           "//div[contains(@class,'leaflet-marker-icon marker case unclassified leaflet-zoom-animated leaflet-interactive')]");
+  public static final By CONTACT_STATUS_MAP_POINTS =
+      By.xpath(
+          "//div[contains(@class, 'leaflet-marker-icon marker contact overdue leaflet-zoom-animated leaflet-interactive')]");
 }
