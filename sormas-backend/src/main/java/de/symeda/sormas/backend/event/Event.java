@@ -68,6 +68,7 @@ import de.symeda.sormas.backend.action.Action;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
@@ -218,6 +219,8 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	private String internalToken;
 
 	private EventIdentificationSource eventIdentificationSource;
+
+	private List<ExternalShareInfo> externalShares = new ArrayList<>(0);
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -809,4 +812,14 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	public void setEventIdentificationSource(EventIdentificationSource eventIdentificationSource) {
 		this.eventIdentificationSource = eventIdentificationSource;
 	}
+
+	@OneToMany(mappedBy = ExternalShareInfo.EVENT, fetch = FetchType.LAZY)
+	public List<ExternalShareInfo> getExternalShares() {
+		return externalShares;
+	}
+
+	public void setExternalShares(List<ExternalShareInfo> externalShares) {
+		this.externalShares = externalShares;
+	}
+
 }

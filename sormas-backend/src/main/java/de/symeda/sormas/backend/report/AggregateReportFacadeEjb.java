@@ -266,6 +266,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		}
 
 		cq.groupBy(expressions);
+		cq.orderBy(cb.asc(root.get(AggregateReport.CHANGE_DATE)));
 
 		List<AggregateCaseCountDto> queryResult = em.createQuery(cq).getResultList();
 		Map<Disease, AggregateCaseCountDto> reportSet = new HashMap<>();
@@ -386,11 +387,13 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 					if (dto.getChangeDate().getTime() > similar.getChangeDate().getTime()) {
 						resultList.remove(similar);
 						resultList.add(dto);
+						reportsToBeSummed.remove(similar);
 					}
 				} else {
 					if (dto.hasHigherJurisdictionLevel(similar)) { // higher jurisdiction level data exists we do not take into consideration lower level data
 						resultList.remove(similar);
 						resultList.add(dto);
+						reportsToBeSummed.remove(similar);
 					} else if (dto.hasSameJurisdictionLevel(similar)) { // same jurisdiction level we sum data (for example data for 2 facilities in one district)
 						if (reportsToBeSummed.containsKey(similar)) {
 							final List<AggregateCaseCountDto> sumList = reportsToBeSummed.get(similar);

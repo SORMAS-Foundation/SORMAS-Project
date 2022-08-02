@@ -31,6 +31,8 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -90,6 +92,8 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
 	private ExternalMessageService externalMessageService;
@@ -162,17 +166,40 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		return target;
 	}
 
-	@Override
-	public ExternalMessageDto save(@Valid ExternalMessageDto dto) {
-		return save(dto, true);
+	private ExternalMessageDto saveWithFallback(ExternalMessageDto dto) {
+		try {
+			return save(dto, true, true);
+		} catch (Exception e) {
+			logger.error(
+				String.format(
+					"Could not save full external message with UUID %s, falling back to saving minimal version. Underlying error: %s",
+					dto.getUuid(),
+					e.getMessage()));
+			ExternalMessageDto minimalMessage = ExternalMessageDto.build();
+			minimalMessage.setUuid(dto.getUuid());
+			minimalMessage.setExternalMessageDetails(dto.getExternalMessageDetails());
+			minimalMessage.setStatus(dto.getStatus());
+			minimalMessage.setType(dto.getType());
+			minimalMessage.setMessageDateTime(dto.getMessageDateTime());
+
+			return save(minimalMessage);
+		}
 	}
 
-	public ExternalMessageDto save(@Valid ExternalMessageDto dto, boolean checkChangeDate) {
+	@Override
+	public ExternalMessageDto save(@Valid ExternalMessageDto dto) {
+		return save(dto, true, true);
+	}
+
+	public ExternalMessageDto save(@Valid ExternalMessageDto dto, boolean checkChangeDate, boolean newTransaction) {
 		ExternalMessage externalMessage = externalMessageService.getByUuid(dto.getUuid());
 
 		externalMessage = fromDto(dto, externalMessage, checkChangeDate);
-		externalMessageService.ensurePersisted(externalMessage);
-
+		if (newTransaction) {
+			externalMessageService.ensurePersistedInNewTransaction(externalMessage);
+		} else {
+			externalMessageService.ensurePersisted(externalMessage);
+		}
 		return toDto(externalMessage);
 	}
 
@@ -417,7 +444,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 		}
 		ExternalMessageResult<List<ExternalMessageDto>> externalMessageResult = fetchExternalMessages(since);
 		if (externalMessageResult.isSuccess()) {
-			externalMessageResult.getValue().forEach(this::save);
+			externalMessageResult.getValue().forEach(this::saveWithFallback);
 			// we have successfully completed our synchronization
 			syncFacadeEjb.reportSuccessfulSyncWithTimestamp(currentSync, externalMessageResult.getSynchronizationDate());
 
