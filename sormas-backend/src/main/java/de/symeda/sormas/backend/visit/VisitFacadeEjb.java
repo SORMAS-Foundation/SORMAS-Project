@@ -464,18 +464,19 @@ public class VisitFacadeEjb implements VisitFacade {
 			if (resultList.size() > 0) {
 
 				Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-				Map<Long, UserReference> visitUsers = userService
-					.getUserReferencesByIds(
-						resultList.stream().map(VisitExportDto::getVisitUserId).filter(Objects::nonNull).collect(Collectors.toSet()))
-					.stream()
-					.collect(Collectors.toMap(UserReference::getId, Function.identity()));
+				Set<Long> userIds = resultList.stream().map(VisitExportDto::getVisitUserId).filter(Objects::nonNull).collect(Collectors.toSet());
+				Map<Long, UserReference> visitUsers = userIds.isEmpty()
+					? null
+					: userService.getUserReferencesByIds(userIds).stream().collect(Collectors.toMap(UserReference::getId, Function.identity()));
 				for (VisitExportDto exportDto : resultList) {
 					boolean inJurisdiction = exportDto.getInJurisdiction();
 
-					UserReference user = visitUsers.get(exportDto.getVisitUserId());
+					UserReference user = visitUsers != null ? visitUsers.get(exportDto.getVisitUserId()) : null;
 
-					exportDto.setVisitUserName(user.getName());
-					exportDto.setVisitUserRoles(user.getUserRoles().stream().map(UserRoleFacadeEjb::toReferenceDto).collect(Collectors.toSet()));
+					if (user != null) {
+						exportDto.setVisitUserName(user.getName());
+						exportDto.setVisitUserRoles(user.getUserRoles().stream().map(UserRoleFacadeEjb::toReferenceDto).collect(Collectors.toSet()));
+					}
 
 					pseudonymizer.pseudonymizeDto(VisitExportDto.class, exportDto, inJurisdiction, v -> {
 						if (v.getSymptoms() != null) {
