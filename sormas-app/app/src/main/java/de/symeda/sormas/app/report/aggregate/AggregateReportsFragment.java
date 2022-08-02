@@ -93,20 +93,28 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 	}
 
 	private void setupControls() {
-		EpiWeek epiWeek = DateHelper.getPreviousEpiWeek(new Date());
+		EpiWeek previousEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
+		EpiWeek currentEpiWeek = DateHelper.getEpiWeek(new Date());
 
-		contentBinding.aggregateReportsYear.initializeSpinner(DataUtils.toItems(DateHelper.getYearsToNow()), epiWeek.getYear(), field -> {
+		contentBinding.aggregateReportsYear.initializeSpinner(DataUtils.toItems(DateHelper.getYearsToNow()), previousEpiWeek.getYear(), field -> {
 			Integer year = (Integer) field.getValue();
 			if (year != null) {
-				contentBinding.aggregateReportsWeek.setSpinnerData(DataUtils.toItems(DateHelper.createEpiWeekList(year)));
+				if (year.equals(currentEpiWeek.getYear())) {
+					contentBinding.aggregateReportsWeek
+						.setSpinnerData(DataUtils.toItems(DateHelper.createEpiWeekListFromInterval(new EpiWeek(year, 1), currentEpiWeek)));
+				} else {
+					contentBinding.aggregateReportsWeek.setSpinnerData(DataUtils.toItems(DateHelper.createEpiWeekList(year)));
+				}
+
 			} else {
 				contentBinding.aggregateReportsWeek.setSpinnerData(null);
 			}
 		});
 
-		contentBinding.aggregateReportsWeek.initializeSpinner(DataUtils.toItems(DateHelper.createEpiWeekList(epiWeek.getYear())), epiWeek, field -> {
-			updateByEpiWeek();
-		});
+		contentBinding.aggregateReportsWeek
+			.initializeSpinner(DataUtils.toItems(DateHelper.createEpiWeekList(previousEpiWeek.getYear())), previousEpiWeek, field -> {
+				updateByEpiWeek();
+			});
 
 		contentBinding.reportSelector.addValueChangedListener(field -> {
 			EpiWeekFilterOption filter = (EpiWeekFilterOption) field.getValue();
