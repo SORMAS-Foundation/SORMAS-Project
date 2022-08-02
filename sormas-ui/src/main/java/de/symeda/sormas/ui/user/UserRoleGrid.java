@@ -11,7 +11,10 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRoleCriteria;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
+import de.symeda.sormas.ui.utils.UuidRenderer;
 
 public class UserRoleGrid extends FilteredGrid<UserRoleDto, UserRoleCriteria> {
 
@@ -20,7 +23,10 @@ public class UserRoleGrid extends FilteredGrid<UserRoleDto, UserRoleCriteria> {
 		setSizeFull();
 		setLazyDataProvider();
 
-		setColumns(UserRoleDto.CAPTION, UserRoleDto.JURISDICTION_LEVEL, UserRoleDto.DESCRIPTION);
+		setColumns(UserRoleDto.UUID, UserRoleDto.CAPTION, UserRoleDto.JURISDICTION_LEVEL, UserRoleDto.DESCRIPTION);
+
+		((Column<UserRoleDto, String>) getColumn(UserRoleDto.UUID)).setRenderer(new UuidRenderer());
+		addItemClickListener(new ShowDetailsListener<>(UserRoleDto.UUID, e -> ControllerProvider.getUserRoleController().editData(e.getUuid())));
 
 		for (Column<?, ?> column : getColumns()) {
 			if (column.getId().equals(UserRoleDto.CAPTION)) {

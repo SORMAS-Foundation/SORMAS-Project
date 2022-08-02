@@ -291,7 +291,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		if (criteria != null && criteria.getShowZeroRows()) {
 			List<EpiWeek> epiWeekList = DateHelper.createEpiWeekListFromInterval(criteria.getEpiWeekFrom(), criteria.getEpiWeekTo());
 			if (criteria.getDisease() == null) {
-				for (Disease disease : diseaseConfigurationFacade.getAllDiseases(true, null, false)) {
+				for (Disease disease : diseaseConfigurationFacade.getAllDiseases(true, null, false, true)) {
 					if (!reportSet.containsKey(disease)) {
 						for (EpiWeek epiWeek : epiWeekList) {
 							addZeroRowToList(resultList, selectedRegion, selectedDistrict, selectedFacility, selectedPoindOfEntry, disease, epiWeek);
@@ -611,7 +611,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 
 		List<AggregateReportDto> reports = getAggregateReports(criteria);
 
-		List<Disease> diseaseList = diseaseConfigurationFacade.getAllDiseases(true, false, false);
+		List<Disease> diseaseList = diseaseConfigurationFacade.getAllDiseases(true, false, false, true);
 
 		Set<AggregateReportDto> userList = new HashSet<>();
 		diseaseList.forEach(disease -> {

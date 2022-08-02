@@ -158,7 +158,7 @@ public class NotificationServiceTest extends AbstractBeanTest {
 
 		// VISIT_COMPLETED would normally only be sent to the SURVEILLANCE_SUPERVISOR
 		notificationService.sendNotifications(
-			NotificationType.VISIT_COMPLETED,
+			NotificationType.CONTACT_VISIT_COMPLETED,
 			Collections.singletonList(region),
 			Collections.singletonList(survOffUser),
 			MessageSubject.VISIT_COMPLETED,

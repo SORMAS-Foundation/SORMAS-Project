@@ -9,14 +9,12 @@ import org.junit.Test;
 
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.TestDataCreator;
 
 public class UserTest extends AbstractBeanTest {
 
 	@Test
 	public void testHasAnyUserRole() {
 
-		final TestDataCreator creator = new TestDataCreator(this);
 		User u = new User();
 		Set<UserRole> userRoles = new HashSet<>();
 		u.setUserRoles(userRoles);

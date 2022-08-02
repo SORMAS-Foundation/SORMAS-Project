@@ -329,7 +329,7 @@ public class TaskFacadeEjb implements TaskFacade {
 					DataHelper.getShortUuid(ado.getAssigneeUser().getUuid()));
 
 				notificationService.sendNotifications(
-					NotificationType.VISIT_COMPLETED,
+					NotificationType.CONTACT_VISIT_COMPLETED,
 					JurisdictionHelper.getContactRegions(ado.getContact()),
 					ado.getObserverUsers(),
 					MessageSubject.VISIT_COMPLETED,

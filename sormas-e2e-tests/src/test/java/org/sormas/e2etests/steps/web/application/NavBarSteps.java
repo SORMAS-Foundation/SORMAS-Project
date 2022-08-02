@@ -239,6 +239,14 @@ public class NavBarSteps implements En {
         });
 
     When(
+        "^I click on the Statistics button from navbar$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.STATISTICS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+        });
+
+    When(
         "^I click on the Sample button from navbar and start timer$",
         () -> {
           webDriverHelpers.waitForPageLoaded();

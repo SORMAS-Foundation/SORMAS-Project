@@ -214,7 +214,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			reports = FacadeProvider.getAggregateReportFacade().getSimilarAggregateReports(selectedAggregateReport);
 		}
 
-		List<Disease> diseaseList = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, null, false);
+		List<Disease> diseaseList = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, null, false, true);
 		diseaseMap = diseaseList.stream().collect(Collectors.toMap(Disease::toString, disease -> disease));
 		diseaseMap.values().forEach(disease -> {
 			List<String> ageGroups = FacadeProvider.getDiseaseConfigurationFacade().getAgeGroups(disease);
