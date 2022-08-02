@@ -58,6 +58,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -176,29 +177,27 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 	}
 
 	protected ShareRequestInfo createShareRequestInfo(
+		ShareRequestDataType dataType,
 		User sender,
 		String serverId,
 		boolean ownershipHandedOver,
 		Consumer<SormasToSormasShareInfo> setTarget) {
-		return createShareRequestInfo(sender, serverId, ownershipHandedOver, ShareRequestStatus.PENDING, setTarget);
+		return createShareRequestInfo(dataType, sender, serverId, ownershipHandedOver, ShareRequestStatus.PENDING, setTarget);
 	}
 
 	protected ShareRequestInfo createShareRequestInfo(
+		ShareRequestDataType dataType,
 		User sender,
 		String serverId,
 		boolean ownershipHandedOver,
 		ShareRequestStatus status,
 		Consumer<SormasToSormasShareInfo> setTarget) {
 
-		SormasToSormasShareInfo shareInfo = new SormasToSormasShareInfo();
-
-		shareInfo.setOwnershipHandedOver(ownershipHandedOver);
-		shareInfo.setOrganizationId(serverId);
-
-		setTarget.accept(shareInfo);
+		SormasToSormasShareInfo shareInfo = createShareInfo(serverId, ownershipHandedOver, setTarget);
 
 		ShareRequestInfo requestInfo = new ShareRequestInfo();
 		requestInfo.setUuid(DataHelper.createUuid());
+		requestInfo.setDataType(dataType);
 		requestInfo.setSender(sender);
 		requestInfo.setRequestStatus(status);
 		requestInfo.setShares(new ArrayList<>());

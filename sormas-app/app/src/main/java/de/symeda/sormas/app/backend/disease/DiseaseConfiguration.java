@@ -15,9 +15,6 @@
 
 package de.symeda.sormas.app.backend.disease;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
 import java.util.List;
 
 import javax.persistence.Column;
@@ -25,6 +22,9 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
+
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.utils.AgeGroupUtils;
@@ -51,7 +51,10 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 	private Boolean primaryDisease;
 
 	@DatabaseField
-	private Boolean caseBased;
+	private Boolean caseSurveillanceEnabled;
+
+	@DatabaseField
+	private Boolean aggregateReportingEnabled;
 
 	@DatabaseField
 	private Boolean followUpEnabled;
@@ -100,12 +103,20 @@ public class DiseaseConfiguration extends AbstractDomainObject {
 		this.primaryDisease = primaryDisease;
 	}
 
-	public Boolean getCaseBased() {
-		return caseBased;
+	public Boolean getCaseSurveillanceEnabled() {
+		return caseSurveillanceEnabled;
 	}
 
-	public void setCaseBased(Boolean caseBased) {
-		this.caseBased = caseBased;
+	public void setCaseSurveillanceEnabled(Boolean caseSurveillanceEnabled) {
+		this.caseSurveillanceEnabled = caseSurveillanceEnabled;
+	}
+
+	public Boolean getAggregateReportingEnabled() {
+		return aggregateReportingEnabled;
+	}
+
+	public void setAggregateReportingEnabled(Boolean aggregateReportingEnabled) {
+		this.aggregateReportingEnabled = aggregateReportingEnabled;
 	}
 
 	public Boolean getFollowUpEnabled() {

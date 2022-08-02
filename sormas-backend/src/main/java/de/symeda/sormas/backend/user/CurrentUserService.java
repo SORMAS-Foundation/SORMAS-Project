@@ -42,6 +42,10 @@ public class CurrentUserService {
 	public User getCurrentUser() {
 		final String currentUsername = context.getCallerPrincipal().getName();
 
+		if (currentUsername == null) {
+			return null;
+		}
+
 		User cachedUser = userCache.get(currentUsername);
 		if (cachedUser != null) {
 			return cachedUser;

@@ -259,7 +259,7 @@ public class ContactDataView extends AbstractContactView {
 			}
 		}
 
-		boolean sormasToSormasfeatureEnabled = FacadeProvider.getSormasToSormasFacade().isSharingCasesContactsAndSamplesEnabledForUser();
+		boolean sormasToSormasfeatureEnabled = FacadeProvider.getSormasToSormasFacade().isSharingContactsEnabledForUser();
 		if (sormasToSormasfeatureEnabled || contactDto.getSormasToSormasOriginInfo() != null) {
 			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
 			sormasToSormasLocLayout.setMargin(false);
