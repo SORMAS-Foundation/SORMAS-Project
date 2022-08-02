@@ -90,7 +90,7 @@ public class ProcessedSampleDataPersister extends ProcessedDataPersister<SampleD
 			ExternalMessageDto externalMessage = s2sExternalMessage.getEntity();
 
 			handleValidationError(
-				() -> externalMessageFacade.save(externalMessage, false),
+				() -> externalMessageFacade.save(externalMessage, false, false),
 				Captions.ExternalMessage,
 				buildValidationGroupName(Captions.ExternalMessage, externalMessage),
 				externalMessage);
