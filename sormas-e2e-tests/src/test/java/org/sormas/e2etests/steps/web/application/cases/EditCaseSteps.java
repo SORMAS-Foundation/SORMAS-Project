@@ -754,7 +754,8 @@ public class EditCaseSteps implements En {
 
     When(
         "I select {string} as Basis for Confirmation",
-        (String basis) -> webDriverHelpers.selectFromCombobox(CASE_CONFIRMATION_BASIS_COMBOBOX, basis));
+        (String basis) ->
+            webDriverHelpers.selectFromCombobox(CASE_CONFIRMATION_BASIS_COMBOBOX, basis));
 
     When(
         "In created case I select Outcome Of Case Status to ([^\"]*)",

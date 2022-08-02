@@ -7,31 +7,20 @@ import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.SAVE
 import com.detectlanguage.DetectLanguage;
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
-import lombok.experimental.Helper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.files.FilesHelper;
-import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 @Slf4j
@@ -47,8 +36,7 @@ public class AboutDirectorySteps implements En {
   public static final String CASE_CLASSIFICATION_HTML_FILE_PATH = "classification_rules.html";
 
   @Inject
-  public AboutDirectorySteps(
-      WebDriverHelpers webDriverHelpers, SoftAssert softly) {
+  public AboutDirectorySteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
 
     When(
         "I check that current Sormas version is shown on About directory page",
@@ -107,19 +95,19 @@ public class AboutDirectorySteps implements En {
               webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
                   DATA_PROTECTION_DICTIONARY_BUTTON);
               webDriverHelpers.clickOnWebElementBySelector(DATA_PROTECTION_DICTIONARY_BUTTON);
-                FilesHelper.waitForFileToDownload(DATA_PROTECTION_DICTIONARY_FILE_PATH, 30);
+              FilesHelper.waitForFileToDownload(DATA_PROTECTION_DICTIONARY_FILE_PATH, 30);
               break;
             case "Data Dictionary":
               webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
                   DATA_DICTIONARY_BUTTON);
               webDriverHelpers.clickOnWebElementBySelector(DATA_DICTIONARY_BUTTON);
-                FilesHelper.waitForFileToDownload(DATA_DICTIONARY_FILE_PATH, 30);
+              FilesHelper.waitForFileToDownload(DATA_DICTIONARY_FILE_PATH, 30);
               break;
             case "Deutsch Data Dictionary":
               webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
                   DATA_DICTIONARY_BUTTON);
               webDriverHelpers.clickOnWebElementBySelector(DATA_DICTIONARY_BUTTON);
-                FilesHelper.waitForFileToDownload(DEUTSCH_DATA_DICTIONARY_FILE_PATH, 30);
+              FilesHelper.waitForFileToDownload(DEUTSCH_DATA_DICTIONARY_FILE_PATH, 30);
               break;
             default:
               throw new Exception("No XLSX path provided!");
@@ -137,7 +125,7 @@ public class AboutDirectorySteps implements En {
               readXlsxDictionaryFile(DATA_DICTIONARY_FILE_PATH);
               break;
             case "Deutsch Data Dictionary":
-                readXlsxDictionaryFile(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
+              readXlsxDictionaryFile(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
               break;
             default:
               throw new Exception("No XLSX path provided!");
@@ -152,13 +140,13 @@ public class AboutDirectorySteps implements En {
               FilesHelper.deleteFile(DATA_PROTECTION_DICTIONARY_FILE_PATH);
               break;
             case "Data Dictionary":
-                FilesHelper.deleteFile(DATA_DICTIONARY_FILE_PATH);
+              FilesHelper.deleteFile(DATA_DICTIONARY_FILE_PATH);
               break;
             case "Deutsch Data Dictionary":
-                FilesHelper.deleteFile(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
+              FilesHelper.deleteFile(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
               break;
             case "Case Classification Html":
-                FilesHelper.deleteFile(CASE_CLASSIFICATION_HTML_FILE_PATH);
+              FilesHelper.deleteFile(CASE_CLASSIFICATION_HTML_FILE_PATH);
               break;
             default:
               throw new Exception("No XLSX path provided!");
@@ -288,13 +276,11 @@ public class AboutDirectorySteps implements En {
         }
       }
     } catch (Exception any) {
-      throw new Exception(String.format("Unable to read Excel File due to: %s", e.getMessage()));
+      throw new Exception(String.format("Unable to read Excel File due to: %s", any.getMessage()));
     }
-    if (diseaseList.contains(disease))
-      return true;
-     else
-      return false;
-    }
+    if (diseaseList.contains(disease)) return true;
+    else return false;
+  }
 
   @SneakyThrows
   private static void readXlsxDictionaryFile(String fileName) {
@@ -321,7 +307,7 @@ public class AboutDirectorySteps implements En {
       }
       log.info("All data is read properly from chosen xlsx file");
     } catch (Exception any) {
-      throw new Exception(String.format("Unable to read Excel File due to: %s", e.getMessage()));
+      throw new Exception(String.format("Unable to read Excel File due to: %s", any.getMessage()));
     }
   }
 }
