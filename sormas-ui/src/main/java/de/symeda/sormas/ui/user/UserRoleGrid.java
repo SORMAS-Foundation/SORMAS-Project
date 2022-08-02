@@ -30,7 +30,7 @@ public class UserRoleGrid extends FilteredGrid<UserRoleDto, UserRoleCriteria> {
 
 		for (Column<?, ?> column : getColumns()) {
 			if (column.getId().equals(UserRoleDto.CAPTION)) {
-				column.setCaption(I18nProperties.getCaption(Captions.userRole));
+				column.setCaption(I18nProperties.getCaption(Captions.UserRole));
 			} else {
 				column.setCaption(I18nProperties.getPrefixCaption(UserRoleDto.I18N_PREFIX, column.getId(), column.getCaption()));
 			}
