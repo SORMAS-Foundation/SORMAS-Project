@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
+import lombok.experimental.Helper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -29,12 +30,12 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 @Slf4j
 public class AboutDirectorySteps implements En {
-  public static final String DOWNLOADS_FOLDER = System.getProperty("user.dir") + "//downloads//";
   public static final List<String> xlsxFileContentList = new ArrayList<>();
   public static String language;
   public static final String DATA_PROTECTION_DICTIONARY_FILE_PATH =
@@ -47,7 +48,7 @@ public class AboutDirectorySteps implements En {
 
   @Inject
   public AboutDirectorySteps(
-      WebDriverHelpers webDriverHelpers, SoftAssert softly, AssertHelpers assertHelpers) {
+      WebDriverHelpers webDriverHelpers, SoftAssert softly) {
 
     When(
         "I check that current Sormas version is shown on About directory page",
@@ -101,35 +102,28 @@ public class AboutDirectorySteps implements En {
     When(
         "^I click on ([^\"]*) hyperlink and download XLSX file from About directory$",
         (String dictionaryName) -> {
-          Path path;
           switch (dictionaryName) {
             case "Data Protection Dictionary":
               webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
                   DATA_PROTECTION_DICTIONARY_BUTTON);
               webDriverHelpers.clickOnWebElementBySelector(DATA_PROTECTION_DICTIONARY_BUTTON);
-              path = Paths.get(DOWNLOADS_FOLDER + DATA_PROTECTION_DICTIONARY_FILE_PATH);
+                FilesHelper.waitForFileToDownload(DATA_PROTECTION_DICTIONARY_FILE_PATH, 30);
               break;
             case "Data Dictionary":
               webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
                   DATA_DICTIONARY_BUTTON);
               webDriverHelpers.clickOnWebElementBySelector(DATA_DICTIONARY_BUTTON);
-              path = Paths.get(DOWNLOADS_FOLDER + DATA_DICTIONARY_FILE_PATH);
+                FilesHelper.waitForFileToDownload(DATA_DICTIONARY_FILE_PATH, 30);
               break;
             case "Deutsch Data Dictionary":
               webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
                   DATA_DICTIONARY_BUTTON);
               webDriverHelpers.clickOnWebElementBySelector(DATA_DICTIONARY_BUTTON);
-              path = Paths.get(DOWNLOADS_FOLDER + DEUTSCH_DATA_DICTIONARY_FILE_PATH);
+                FilesHelper.waitForFileToDownload(DEUTSCH_DATA_DICTIONARY_FILE_PATH, 30);
               break;
             default:
               throw new Exception("No XLSX path provided!");
           }
-          assertHelpers.assertWithPoll(
-              () ->
-                  Assert.assertTrue(
-                      Files.exists(path),
-                      dictionaryName + " wasn't downloaded: " + path.toAbsolutePath()),
-              30);
         });
 
     When(
@@ -143,7 +137,7 @@ public class AboutDirectorySteps implements En {
               readXlsxDictionaryFile(DATA_DICTIONARY_FILE_PATH);
               break;
             case "Deutsch Data Dictionary":
-              deleteFile(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
+                readXlsxDictionaryFile(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
               break;
             default:
               throw new Exception("No XLSX path provided!");
@@ -155,16 +149,16 @@ public class AboutDirectorySteps implements En {
         (String dictionaryName) -> {
           switch (dictionaryName) {
             case "Data Protection Dictionary":
-              deleteFile(DATA_PROTECTION_DICTIONARY_FILE_PATH);
+              FilesHelper.deleteFile(DATA_PROTECTION_DICTIONARY_FILE_PATH);
               break;
             case "Data Dictionary":
-              deleteFile(DATA_DICTIONARY_FILE_PATH);
+                FilesHelper.deleteFile(DATA_DICTIONARY_FILE_PATH);
               break;
             case "Deutsch Data Dictionary":
-              deleteFile(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
+                FilesHelper.deleteFile(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
               break;
             case "Case Classification Html":
-              deleteFile(CASE_CLASSIFICATION_HTML_FILE_PATH);
+                FilesHelper.deleteFile(CASE_CLASSIFICATION_HTML_FILE_PATH);
               break;
             default:
               throw new Exception("No XLSX path provided!");
@@ -283,7 +277,7 @@ public class AboutDirectorySteps implements En {
   private static boolean readXlsxFile(String fileName, String recordName, String disease) {
     List<String> diseaseList = new ArrayList<String>();
     try {
-      Workbook workbook = new XSSFWorkbook(DOWNLOADS_FOLDER + fileName);
+      Workbook workbook = FilesHelper.getExcelFile(fileName);
       Sheet sheet = workbook.getSheetAt(0);
       for (Row row : sheet) {
         for (Cell cell : row) {
@@ -293,7 +287,7 @@ public class AboutDirectorySteps implements En {
           }
         }
       }
-    } catch (IOException e) {
+    } catch (Exception any) {
       throw new Exception(String.format("Unable to read Excel File due to: %s", e.getMessage()));
     }
     if (diseaseList.contains(disease))
@@ -305,11 +299,8 @@ public class AboutDirectorySteps implements En {
   @SneakyThrows
   private static void readXlsxDictionaryFile(String fileName) {
     try {
-      FileInputStream excelFile = new FileInputStream(DOWNLOADS_FOLDER + fileName);
-      Assert.assertTrue(
-          FileUtils.sizeOf(new File(DOWNLOADS_FOLDER + fileName)) > 10,
-          "Downloaded dictionary is empty");
-      Workbook workbook = new XSSFWorkbook(excelFile);
+      FilesHelper.validateFileIsNotEmpty(fileName);
+      Workbook workbook = FilesHelper.getExcelFile(fileName);
       Sheet datatypeSheet = workbook.getSheetAt(0);
       Iterator<Row> iterator = datatypeSheet.iterator();
 
@@ -329,19 +320,8 @@ public class AboutDirectorySteps implements En {
         }
       }
       log.info("All data is read properly from chosen xlsx file");
-    } catch (IOException e) {
-      throw new Exception(String.format("Unable to read Excel File due to: %s", e.getMessage()));
-    }
-  }
-
-  @SneakyThrows
-  private void deleteFile(String fileName) {
-    File file = new File(DOWNLOADS_FOLDER + fileName);
-    try {
-      file.deleteOnExit();
     } catch (Exception any) {
-      throw new Exception(
-          String.format("Unable to delete file: [ %s ] due to: [ %s]", fileName, any.getMessage()));
+      throw new Exception(String.format("Unable to read Excel File due to: %s", e.getMessage()));
     }
   }
 }
