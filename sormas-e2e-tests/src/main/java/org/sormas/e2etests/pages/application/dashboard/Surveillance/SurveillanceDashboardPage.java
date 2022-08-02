@@ -431,4 +431,10 @@ public class SurveillanceDashboardPage {
   public static final By CONFIRMED_CURVE_ON_SURVEILLANCE_DASHBOARD =
       By.cssSelector(
           "svg > g.highcharts-legend > g > g > g.highcharts-legend-item.highcharts-column-series.highcharts-color-undefined.highcharts-series-3 > text > tspan");
+  public static final By CASE_STATUS_MAP_POINTS =
+      By.xpath(
+          "//div[contains(@class,'leaflet-marker-icon marker case unclassified leaflet-zoom-animated leaflet-interactive')]");
+  public static final By CONTACT_STATUS_MAP_POINTS =
+      By.xpath(
+          "//div[contains(@class, 'leaflet-marker-icon marker contact overdue leaflet-zoom-animated leaflet-interactive')]");
 }
