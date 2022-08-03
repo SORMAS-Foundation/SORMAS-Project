@@ -278,7 +278,7 @@ Feature: Sample Functionalities
     And I select Sent dispatched checkbox in new sample page
     And I select Received checkbox in new sample page
     Then I check is Sent dispatched Date and Received Date fields required
-    And I click Add Pathogen test in Sample creation page in German
+    And I click Add Pathogen test in Sample creation page
     And I check DATE AND TIME OF RESULT field
     And I click on save sample button
     Then I check error popup message in German
