@@ -534,7 +534,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 				}
 			} else {
 				contentBinding.caseDataQuarantineOrderedVerbally.setVisibility(GONE);
-				contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(GONE);
+				contentBinding.caseDataQuarantineOrderedOfficialDocument.setVisibility(GONE);Œœ
 				contentBinding.caseDataQuarantineExtended.setVisibility(GONE);
 				contentBinding.caseDataQuarantineReduced.setVisibility(GONE);
 			}

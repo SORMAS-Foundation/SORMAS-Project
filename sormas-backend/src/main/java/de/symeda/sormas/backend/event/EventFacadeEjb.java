@@ -161,6 +161,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
 	@EJB
 	private EventParticipantService eventParticipantService;
+	@EJB
+	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
 	@Resource
 	private ManagedScheduledExecutorService executorService;
 
@@ -338,6 +340,19 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			});
 		}
 		return deletedEventUuids;
+	}
+
+	@RightsAllowed({
+		UserRight._CASE_DELETE,
+		UserRight._SYSTEM })
+	public void deleteEventInExternalSurveillanceTool(Event event) throws ExternalSurveillanceToolException {
+
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && event.getExternalId() != null && !event.getExternalId().isEmpty()) {
+			List<Event> eventsWithSameExternalId = service.getByExternalId(event.getExternalId());
+			if (eventsWithSameExternalId != null && eventsWithSameExternalId.size() == 1) {
+				externalSurveillanceToolGatewayFacade.deleteEvents(Collections.singletonList(toDto(event)));
+			}
+		}
 	}
 
 	@Override

@@ -47,6 +47,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventCriteriaDateType;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -73,6 +74,7 @@ import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -86,6 +88,8 @@ import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
@@ -115,7 +119,13 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
+	private SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
+	@EJB
 	private ExternalShareInfoService externalShareInfoService;
+	@EJB
+	private DocumentService documentService;
+	@EJB
+	private EventFacadeEjb.EventFacadeEjbLocal eventFacade;
 	@EJB
 	private ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
 
@@ -565,6 +575,16 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			eventParticipantService.delete(eventParticipant, deletionDetails);
 		}
 
+		deleteEventLinks(event);
+		deleteEventInExternalSurveillanceTool(event);
+
+		// Mark the event as deleted
+		super.delete(event, deletionDetails);
+	}
+
+	@Override
+	public void deletePermanent(Event event) {
+
 		// Delete all tasks associated with this event
 		List<Task> tasks = taskService.findBy(new TaskCriteria().event(new EventReferenceDto(event.getUuid())), true);
 		for (Task task : tasks) {
@@ -577,8 +597,51 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			actionService.deletePermanent(action);
 		}
 
-		// Mark the event as deleted
-		super.delete(event, deletionDetails);
+		sormasToSormasShareInfoService.getByAssociatedEntity(SormasToSormasShareInfo.EVENT, event.getUuid()).forEach(s -> {
+			s.setEvent(null);
+			if (sormasToSormasShareInfoFacade.hasAnyEntityReference(s)) {
+				sormasToSormasShareInfoService.ensurePersisted(s);
+			} else {
+				sormasToSormasShareInfoService.deletePermanent(s);
+			}
+		});
+
+		externalShareInfoService.getShareInfoByEvent(event.getUuid()).forEach(e -> {
+			externalShareInfoService.deletePermanent(e);
+		});
+
+		documentService.getRelatedToEntity(DocumentRelatedEntityType.EVENT, event.getUuid()).forEach(d -> documentService.markAsDeleted(d));
+
+		deleteEventInExternalSurveillanceTool(event);
+		deleteEventLinks(event);
+
+		super.deletePermanent(event);
+	}
+
+	private void deleteEventLinks(Event event) {
+		event.getSubordinateEvents().forEach(subEvent -> {
+			subEvent.setSuperordinateEvent(null);
+			ensurePersisted(subEvent);
+		});
+	}
+
+	private void deleteEventInExternalSurveillanceTool(Event event) {
+		try {
+			eventFacade.deleteEventInExternalSurveillanceTool(event);
+		} catch (ExternalSurveillanceToolException e) {
+			throw new ExternalSurveillanceToolRuntimeException(e.getMessage(), e.getErrorCode());
+		}
+	}
+
+	public List<Event> getByExternalId(String externalId) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Event> cq = cb.createQuery(Event.class);
+		Root<Event> caseRoot = cq.from(Event.class);
+
+		cq.where(cb.equal(caseRoot.get(Event.EXTERNAL_ID), externalId), cb.equal(caseRoot.get(Event.DELETED), Boolean.FALSE));
+
+		return em.createQuery(cq).getResultList();
 	}
 
 	public Predicate buildCriteriaFilter(EventCriteria eventCriteria, EventQueryContext eventQueryContext) {

@@ -34,13 +34,16 @@ import javax.persistence.criteria.Root;
 import de.symeda.sormas.api.action.ActionCriteria;
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.action.ActionStatEntry;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventActionExportDto;
 import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventQueryContext;
 import de.symeda.sormas.backend.event.EventService;
@@ -54,18 +57,68 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 	@EJB
 	private EventService eventService;
 
+	@EJB
+	private DocumentService documentService;
+
 	public ActionService() {
 		super(Action.class);
 	}
 
-	public List<Action> getAllActionsAfter(Date date, User user) {
+	public List<Action> getAllAfter(Date since, Integer batchSize, String lastSynchronizedUuid) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Action> cq = cb.createQuery(getElementClass());
+		Root<Action> root = cq.from(getElementClass());
+
+		ActionQueryContext queryContext = new ActionQueryContext(cb, cq, root);
+
+		Predicate filter = createActiveFilter(cb, queryContext.getJoins().getEvent());
+		filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(queryContext));
+		if (since != null) {
+			Predicate dateFilter = createChangeDateFilter(cb, root, since, lastSynchronizedUuid);
+			if (filter != null) {
+				filter = cb.and(filter, dateFilter);
+			} else {
+				filter = dateFilter;
+			}
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.distinct(true);
+
+		return getBatchedQueryResults(cb, cq, root, batchSize);
+	}
+
+	public List<String> getAllActiveUuids() {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Action> from = cq.from(getElementClass());
+		ActionQueryContext queryContext = new ActionQueryContext(cb, cq, from);
+
+		Predicate filter = createActiveFilter(cb, queryContext.getJoins().getEvent());
+
+		if (getCurrentUser() != null) {
+			Predicate userFilter = createUserFilter(cb, cq, from);
+			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+		}
+
+		cq.where(filter);
+		cq.select(from.get(Case.UUID));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<Action> getAllActiveActionsAfter(Date date, User user) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Action> cq = cb.createQuery(getElementClass());
 		Root<Action> from = cq.from(getElementClass());
 		ActionQueryContext queryContext = new ActionQueryContext(cb, cq, from);
 
-		Predicate filter = null;
+		Predicate filter = createActiveFilter(cb, queryContext.getJoins().getEvent());
 		if (user != null) {
 			Predicate userFilter = createUserFilter(queryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
@@ -128,6 +181,11 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		}
 
 		return filter;
+	}
+
+	public Predicate createActiveFilter(CriteriaBuilder cb, From<?, Event> from) {
+
+		return cb.and(cb.isFalse(from.get(Event.ARCHIVED)), cb.isFalse(from.get(Event.DELETED)));
 	}
 
 	/**
@@ -532,5 +590,13 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		cq.select(cb.count(action.get(Action.UUID)));
 
 		return em.createQuery(cq).getSingleResult();
+	}
+
+	@Override
+	public void deletePermanent(Action action) {
+
+		documentService.getRelatedToEntity(DocumentRelatedEntityType.ACTION, action.getUuid()).forEach(d -> documentService.markAsDeleted(d));
+
+		super.deletePermanent(action);
 	}
 }
