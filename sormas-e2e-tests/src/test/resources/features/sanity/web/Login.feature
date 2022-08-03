@@ -50,7 +50,7 @@ Feature: Login with different type of users
     Given I log in with National User
     Then I check that German word for Configuration is present in the left main menu
 
-  @tmsLink=SORQA-435 @env_main
+  @tmsLink=SORDEV-12126 @env_main
   Scenario: Test new language (Urdu-Pk)
     Given I log in as a Admin User
     When I click on the User Settings button from navbar
