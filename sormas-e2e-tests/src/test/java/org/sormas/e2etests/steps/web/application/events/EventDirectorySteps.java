@@ -161,6 +161,7 @@ import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
 import org.sormas.e2etests.state.ApiState;
@@ -1054,13 +1055,10 @@ public class EventDirectorySteps implements En {
     When(
         "I delete exported file from Event Participant Directory",
         () -> {
-          File toDelete =
-              new File(
-                  userDirPath
-                      + "/downloads/sormas_event_participants_"
+          String filePath = "sormas_event_participants_"
                       + LocalDate.now()
-                      + "_.csv");
-          toDelete.deleteOnExit();
+                      + "_.csv";
+            FilesHelper.deleteFile(filePath);
         });
     When(
         "I check that an import success notification appears in the Import Event Participant popup",

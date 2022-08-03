@@ -895,7 +895,6 @@ Feature: Case end to end tests
     And I filter by CaseID of last created UI Case on Case directory page
     Then I open last created case
     And I check if generated document based on "ExampleDocumentTemplateCases.docx" appeared in Documents tab for UI created case in Edit Case directory
-    And I delete downloaded file created from Quarantine order
 
   @tmsLink=SORDEV-9477 @env_main
   Scenario: Add a person search option on creation forms
@@ -1680,7 +1679,6 @@ Feature: Case end to end tests
     And I filter by CaseID of last created UI Case on Case directory page
     Then I open last created case
     And I check if generated document based on "ExampleDocumentTemplateCases.docx" appeared in Documents tab for UI created case in Edit Case directory for DE
-    And I delete downloaded file created from Quarantine order
 
   @tmsLink=SORDEV-6839 @env_main
   Scenario: Check the split of jurisdiction and place of stay

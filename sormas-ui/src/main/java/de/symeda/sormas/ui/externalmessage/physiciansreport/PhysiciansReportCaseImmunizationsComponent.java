@@ -17,7 +17,6 @@ package de.symeda.sormas.ui.externalmessage.physiciansreport;
 
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 
-import de.symeda.sormas.ui.utils.DirtyCheckPopup;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,6 +54,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DeletableUtils;
+import de.symeda.sormas.ui.utils.DirtyCheckPopup;
 import de.symeda.sormas.ui.vaccination.VaccinationEditForm;
 
 public class PhysiciansReportCaseImmunizationsComponent extends CommitDiscardWrapperComponent<VerticalLayout> {
@@ -208,12 +208,11 @@ public class PhysiciansReportCaseImmunizationsComponent extends CommitDiscardWra
 		VaccinationListItem collapsedComponent = vaccinationList.getItemByVaccination(vaccination);
 
 		currentVaccinationEditComponent = ControllerProvider.getVaccinationController()
-			.getVaccinationEditComponent(
-				vaccination,
-				caze.getDisease(),
-				UiFieldAccessCheckers.getDefault(caze.isPseudonymized()),
-				false,
-				vaccinationsToUpdate::add);
+			.getVaccinationEditComponent(vaccination, caze.getDisease(), UiFieldAccessCheckers.getDefault(caze.isPseudonymized()), false, (v) -> {
+				if (!vaccinationsToCreate.contains(v)) {
+					vaccinationsToUpdate.add(v);
+				}
+			});
 
 		currentVaccinationEditComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionCancel));
 		currentVaccinationEditComponent.getButtonsPanel()

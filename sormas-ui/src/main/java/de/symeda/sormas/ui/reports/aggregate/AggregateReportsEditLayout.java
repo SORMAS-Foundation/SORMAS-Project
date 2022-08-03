@@ -3,9 +3,9 @@ package de.symeda.sormas.ui.reports.aggregate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.HashSet;import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -536,6 +536,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 	private void updateEpiWeekFields() {
 
 		boolean enableEpiweekFields;
+		EpiWeek thisEpiweek = DateHelper.getEpiWeek(Calendar.getInstance().getTime());
 
 		if (EpiWeekFilterOption.LAST_WEEK.equals(epiWeekOptions.getValue())) {
 			EpiWeek lastEpiweek = DateHelper.getPreviousEpiWeek(Calendar.getInstance().getTime());
@@ -543,7 +544,6 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			comboBoxEpiWeek.setValue(lastEpiweek);
 			enableEpiweekFields = false;
 		} else if (EpiWeekFilterOption.THIS_WEEK.equals(epiWeekOptions.getValue())) {
-			EpiWeek thisEpiweek = DateHelper.getEpiWeek(Calendar.getInstance().getTime());
 			comboBoxYear.setValue(thisEpiweek.getYear());
 			comboBoxEpiWeek.setValue(thisEpiweek);
 			enableEpiweekFields = false;
@@ -558,7 +558,13 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 
 		if (year != null) {
 			EpiWeek selectedEpiWeek = comboBoxEpiWeek.getValue();
-			List<EpiWeek> epiWeekOptions = DateHelper.createEpiWeekList(year);
+			List<EpiWeek> epiWeekOptions;
+			Calendar now = new GregorianCalendar();
+			if (year == now.get(Calendar.YEAR)) {
+				epiWeekOptions = DateHelper.createEpiWeekListFromInterval(new EpiWeek(year, 1), thisEpiweek);
+			} else {
+				epiWeekOptions = DateHelper.createEpiWeekList(year);
+			}
 			comboBoxEpiWeek.setItems(epiWeekOptions);
 			if (selectedEpiWeek != null) {
 				EpiWeek adjustedEpiWeek = DateHelper.getSameEpiWeek(selectedEpiWeek, epiWeekOptions);

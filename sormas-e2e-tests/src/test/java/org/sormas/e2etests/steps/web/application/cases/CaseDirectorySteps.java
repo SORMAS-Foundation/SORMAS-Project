@@ -18,7 +18,6 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
-import static org.checkerframework.checker.units.UnitsTools.min;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_OKAY;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_RESET_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_SEARCH_POPUP;
@@ -185,6 +184,7 @@ import org.sormas.e2etests.enums.PresentCondition;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -253,35 +253,17 @@ public class CaseDirectorySteps implements En {
     When(
         "I check if downloaded zip file for Quarantine Order is correct",
         () -> {
-          Path path =
-              Paths.get(userDirPath + "/downloads/sormas_documents_" + LocalDate.now() + "_.zip");
-          assertHelpers.assertWithPoll(
-              () ->
-                  Assert.assertTrue(
-                      Files.exists(path),
-                      "Quarantine order document was not downloaded. Path used for check: "
-                          + path.toAbsolutePath()),
-              120);
+            String fileName = "sormas_documents_" + LocalDate.now() + "_.zip";
+            FilesHelper.waitForFileToDownload(fileName, 120);
+            FilesHelper.deleteFile(fileName);
+
         });
     When(
         "I check if downloaded zip file for Quarantine Order is correct for DE version",
         () -> {
-          Path path =
-              Paths.get(userDirPath + "/downloads/sormas_dokumente_" + LocalDate.now() + "_.zip");
-          assertHelpers.assertWithPoll(
-              () ->
-                  Assert.assertTrue(
-                      Files.exists(path),
-                      "Quarantine order document was not downloaded. Path used for check: "
-                          + path.toAbsolutePath()),
-              10);
-        });
-    When(
-        "I delete downloaded file created from Quarantine order",
-        () -> {
-          File toDelete =
-              new File(userDirPath + "/downloads/sormas_documents_" + LocalDate.now() + "_.zip");
-          toDelete.deleteOnExit();
+            String fileName = "sormas_dokumente_" + LocalDate.now() + "_.zip";
+            FilesHelper.waitForFileToDownload(fileName, 120);
+            FilesHelper.deleteFile(fileName);
         });
     When(
         "I search for the last case uuid created via Api in the CHOOSE SOURCE Contact window",
@@ -1146,16 +1128,8 @@ public class CaseDirectorySteps implements En {
         "I check if Import Guide for cases was downloaded correctly",
         () -> {
           String fileName = "SORMAS_Import_Guide.pdf";
-          Path path = Paths.get(userDirPath + "/downloads/" + fileName);
-
-          assertHelpers.assertWithPoll(
-              () ->
-                  Assert.assertTrue(
-                      Files.exists(path),
-                      String.format(
-                          "SORMAS_Import_Guide was not downloaded. Searching path was: %s",
-                          path.toAbsolutePath())),
-              20);
+          FilesHelper.waitForFileToDownload(fileName, 30);
+            FilesHelper.deleteFile(fileName);
         });
 
     When(
@@ -1165,16 +1139,8 @@ public class CaseDirectorySteps implements En {
               "sormas_data_dictionary_"
                   + LocalDate.now().format(formatterDataDictionary)
                   + "_.xlsx";
-          Path path = Paths.get(userDirPath + "/downloads/" + fileName);
-
-          assertHelpers.assertWithPoll(
-              () ->
-                  Assert.assertTrue(
-                      Files.exists(path),
-                      String.format(
-                          "SORMAS_Import_Guide was not downloaded. Searching path was: %s",
-                          path.toAbsolutePath())),
-              20);
+          FilesHelper.waitForFileToDownload(fileName, 20);
+          FilesHelper.deleteFile(fileName);
         });
     When(
         "I check that ([^\"]*) is visible in Pick or Create Person popup for De",

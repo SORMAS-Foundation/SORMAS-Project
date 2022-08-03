@@ -299,6 +299,7 @@ public interface Strings {
 	String errorNoPopulationDataLocations = "errorNoPopulationDataLocations";
 	String errorNoRightsForChangingField = "errorNoRightsForChangingField";
 	String errorNoRightsForChangingMultipleFields = "errorNoRightsForChangingMultipleFields";
+	String errorNotifyingExternalSurveillanceTool = "errorNotifyingExternalSurveillanceTool";
 	String errorNotRequiredRights = "errorNotRequiredRights";
 	String errorOccurred = "errorOccurred";
 	String errorProblemOccurred = "errorProblemOccurred";

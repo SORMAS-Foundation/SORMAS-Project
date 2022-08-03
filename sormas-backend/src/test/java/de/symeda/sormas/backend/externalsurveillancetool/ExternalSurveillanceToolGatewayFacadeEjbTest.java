@@ -36,7 +36,6 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolExc
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
@@ -223,8 +222,10 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 	}
 
 	private CaseDataDto createCaseDataDto() {
+
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = useSurveillanceOfficerLogin(rdcf);
+
 		PersonDto personDto = creator.createPerson("James", "Smith", p -> {
 			LocationDto homeAddress = p.getAddress();
 			homeAddress.setAddressType(PersonAddressType.HOME);
@@ -240,8 +241,6 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 			p.setBirthdateYYYY(1978);
 			p.setBirthdateMM(10);
 			p.setBirthdateDD(22);
-
-			p.setOccupationType(OccupationType.ACCOMMODATION_AND_FOOD_SERVICES);
 
 			LocationDto workPlaceAddress = LocationDto.build();
 			workPlaceAddress.setAddressType(PersonAddressType.PLACE_OF_WORK);
