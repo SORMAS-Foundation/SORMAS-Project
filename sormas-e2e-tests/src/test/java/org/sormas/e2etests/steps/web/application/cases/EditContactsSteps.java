@@ -103,6 +103,7 @@ import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.services.ContactService;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
@@ -255,9 +256,8 @@ public class EditContactsSteps implements En {
     When(
         "I delete exported file from Case Contact Directory",
         () -> {
-          String toDelete = userDirPath + "/downloads/sormas_contacts_" + LocalDate.now() + "_.csv";
-          Path path = Paths.get(toDelete);
-          Files.delete(path);
+          String filePath = "sormas_contacts_" + LocalDate.now() + "_.csv";
+            FilesHelper.deleteFile(filePath);
         });
 
     When(

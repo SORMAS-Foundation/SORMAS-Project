@@ -188,7 +188,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@Override
 	public ExternalMessageDto save(@Valid ExternalMessageDto dto) {
-		return save(dto, true, true);
+		return save(dto, true, false);
 	}
 
 	public ExternalMessageDto save(@Valid ExternalMessageDto dto, boolean checkChangeDate, boolean newTransaction) {

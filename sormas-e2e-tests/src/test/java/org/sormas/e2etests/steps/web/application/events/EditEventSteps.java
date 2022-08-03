@@ -190,11 +190,7 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
-import java.io.File;
 import java.io.FileInputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -223,6 +219,7 @@ import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.pages.application.events.EditEventPage;
 import org.sormas.e2etests.state.ApiState;
@@ -1069,15 +1066,8 @@ public class EditEventSteps implements En {
           String uuid =
               eventParticipantData.substring(
                   eventParticipantData.indexOf("(") + 1, eventParticipantData.indexOf(")"));
-          String pathToFile = userDirPath + "/downloads/" + uuid.toUpperCase() + "-" + name;
-          Path path = Paths.get(pathToFile);
-          assertHelpers.assertWithPoll(
-              () ->
-                  Assert.assertTrue(
-                      Files.exists(path),
-                      "Case document was not downloaded. Path used for check: "
-                          + path.toAbsolutePath()),
-              120);
+         String filePath = uuid.toUpperCase() + "-" + name;
+         FilesHelper.waitForFileToDownload(filePath, 120);
         });
     When(
         "I check if generated document for Event Participant based on {string} contains all required fields",
@@ -1186,8 +1176,8 @@ public class EditEventSteps implements En {
           String uuid =
               eventParticipantData.substring(
                   eventParticipantData.indexOf("(") + 1, eventParticipantData.indexOf(")"));
-          File toDelete = new File(userDirPath + "/downloads/" + uuid.toUpperCase() + "-" + name);
-          toDelete.deleteOnExit();
+          String filePath = uuid.toUpperCase() + "-" + name;
+            FilesHelper.deleteFile(filePath);
         });
     When(
         "^I create a new event group$",
@@ -1319,20 +1309,10 @@ public class EditEventSteps implements En {
         "I verify that the event document is downloaded and correctly named",
         () -> {
           String uuid = webDriverHelpers.getValueFromWebElement(EditEventPage.UUID_INPUT);
-          Path path =
-              Paths.get(
-                  userDirPath
-                      + "/downloads/"
-                      + uuid.substring(0, 6).toUpperCase()
-                      + "-"
-                      + aEventHandout.getDocumentTemplate());
-          assertHelpers.assertWithPoll(
-              () ->
-                  Assert.assertTrue(
-                      Files.exists(path),
-                      "Event document was not downloaded. Searched after path: "
-                          + path.toAbsolutePath()),
-              120);
+          String filePath =  uuid.substring(0, 6).toUpperCase()
+                  + "-"
+                  + aEventHandout.getDocumentTemplate();
+          FilesHelper.waitForFileToDownload(filePath, 120);
         });
     When(
         "I set Place of stay to {string}, Facility Category to {string} and  Facility Type to {string} in Edit Event directory",
