@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
@@ -126,17 +125,17 @@ public class TaskServiceTest extends AbstractBeanTest {
 		// find only by assignee
 		TaskDto taskUser = creator.createTask(user.toReference());
 
-		List<Task> result = getTaskService().findBy(user.toReference(), null, null, null);
+		List<Task> result = getTaskService().findByAssigneeContactTypeAndStatuses(user.toReference(), null, null, null);
 		assertEquals(1, result.size());
 		assertEquals(taskUser.getUuid(), result.get(0).getUuid());
 
-		result = getTaskService().findBy(user.toReference(), contact.toReference(), null, null);
+		result = getTaskService().findByAssigneeContactTypeAndStatuses(user.toReference(), contact.toReference(), null, null);
 		assertTrue(result.isEmpty());
 
-		result = getTaskService().findBy(user.toReference(), null, TaskType.CONTACT_FOLLOW_UP, null);
+		result = getTaskService().findByAssigneeContactTypeAndStatuses(user.toReference(), null, TaskType.CONTACT_FOLLOW_UP, null);
 		assertTrue(result.isEmpty());
 
-		result = getTaskService().findBy(user.toReference(), null, null, Collections.singletonList(TaskStatus.IN_PROGRESS));
+		result = getTaskService().findByAssigneeContactTypeAndStatuses(user.toReference(), null, null, TaskStatus.IN_PROGRESS);
 		assertTrue(result.isEmpty());
 
 		// find only by contact
@@ -150,34 +149,35 @@ public class TaskServiceTest extends AbstractBeanTest {
 			null,
 			otherUser.toReference());
 
-		result = getTaskService().findBy(null, contact.toReference(), null, null);
+		result = getTaskService().findByAssigneeContactTypeAndStatuses(null, contact.toReference(), null, null);
 		assertEquals(1, result.size());
 		assertEquals(taskContactOtherUser.getUuid(), result.get(0).getUuid());
 
 		// find only by type
-		result = getTaskService().findBy(null, null, TaskType.CONTACT_FOLLOW_UP, null);
+		result = getTaskService().findByAssigneeContactTypeAndStatuses(null, null, TaskType.CONTACT_FOLLOW_UP, null);
 		assertEquals(1, result.size());
 		assertEquals(taskContactOtherUser.getUuid(), result.get(0).getUuid());
 
 		// find only by statuses
-		result = getTaskService().findBy(null, null, null, Collections.singletonList(TaskStatus.IN_PROGRESS));
+		result = getTaskService().findByAssigneeContactTypeAndStatuses(null, null, null, TaskStatus.IN_PROGRESS);
 		assertEquals(1, result.size());
 		assertEquals(taskContactOtherUser.getUuid(), result.get(0).getUuid());
 
 		// find by multiple statuses
-		result = getTaskService().findBy(null, null, null, Arrays.asList(TaskStatus.DONE, TaskStatus.IN_PROGRESS));
+		result = getTaskService().findByAssigneeContactTypeAndStatuses(null, null, null, TaskStatus.DONE, TaskStatus.IN_PROGRESS);
 		assertEquals(1, result.size());
 		assertEquals(taskContactOtherUser.getUuid(), result.get(0).getUuid());
 
 		// find multiple
-		result = getTaskService().findBy(null, null, null, Arrays.asList(TaskStatus.PENDING, TaskStatus.IN_PROGRESS));
+		result = getTaskService().findByAssigneeContactTypeAndStatuses(null, null, null, TaskStatus.PENDING, TaskStatus.IN_PROGRESS);
 		assertEquals(2, result.size());
 		List<String> resultUuidList = Arrays.asList(taskUser.getUuid(), taskContactOtherUser.getUuid());
 		assertTrue(resultUuidList.contains(result.get(0).getUuid()));
 		assertTrue(resultUuidList.contains(result.get(1).getUuid()));
 
 		// find by multiple
-		result = getTaskService().findBy(user.toReference(), null, TaskType.OTHER, Arrays.asList(TaskStatus.PENDING, TaskStatus.IN_PROGRESS));
+		result = getTaskService()
+			.findByAssigneeContactTypeAndStatuses(user.toReference(), null, TaskType.OTHER, TaskStatus.PENDING, TaskStatus.IN_PROGRESS);
 		assertEquals(1, result.size());
 		assertEquals(taskUser.getUuid(), result.get(0).getUuid());
 	}

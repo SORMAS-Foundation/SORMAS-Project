@@ -20,7 +20,6 @@ package de.symeda.sormas.backend.report;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -377,8 +376,12 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 				// task
 				continue;
 			} else {
-				List<Task> existingTasks = taskService
-					.findBy(user.toReference(), null, TaskType.WEEKLY_REPORT_GENERATION, Arrays.asList(TaskStatus.IN_PROGRESS, TaskStatus.PENDING));
+				List<Task> existingTasks = taskService.findByAssigneeContactTypeAndStatuses(
+					user.toReference(),
+					null,
+					TaskType.WEEKLY_REPORT_GENERATION,
+					TaskStatus.IN_PROGRESS,
+					TaskStatus.PENDING);
 
 				if (!existingTasks.isEmpty()) {
 					// There is already a task for generating the Weekly Report for last week

@@ -41,6 +41,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -639,7 +641,11 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		return assignee;
 	}
 
-	public List<Task> findBy(UserReferenceDto assignee, ContactReferenceDto contact, TaskType type, List<TaskStatus> statuses) {
+	public List<Task> findByAssigneeContactTypeAndStatuses(
+		UserReferenceDto assignee,
+		ContactReferenceDto contact,
+		TaskType type,
+		TaskStatus... statuses) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Task> cq = cb.createQuery(getElementClass());
@@ -655,8 +661,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		if (type != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Task.TASK_TYPE), type));
 		}
-		if (statuses != null && !statuses.isEmpty()) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.in(from.get(Task.TASK_STATUS)).value(statuses));
+		if (!ArrayUtils.isEmpty(statuses)) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.in(from.get(Task.TASK_STATUS)).value(Arrays.asList(statuses)));
 		}
 		if (contact != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getContact().get(Contact.UUID), contact.getUuid()));
