@@ -41,5 +41,4 @@ public class NavBarPage {
   public static final By DISCARD_USER_SETTINGS_BUTTON = By.id("discard");
   public static final By GDPR_CHECKBOX =   By.cssSelector(".popupContent input + label");
   public static final By ACTION_CONFIRM_GDPR_POPUP = By.cssSelector(".popupContent #Confirm");
-
 }

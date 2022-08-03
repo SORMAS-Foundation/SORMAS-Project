@@ -1030,7 +1030,7 @@ public class WebDriverHelpers {
     for (Object popupMessage : popupElements) {
       popupElementXPath = popupXPath + "//li[contains(text(),'" + popupMessage + "')]";
       lookingElement = By.xpath(popupElementXPath.replace("By.xpath:", ""));
-      getWebElement(lookingElement);
+      Assert.assertTrue(isElementVisibleWithTimeout(lookingElement, 10));
     }
   }
 }

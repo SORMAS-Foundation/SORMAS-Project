@@ -40,15 +40,15 @@ import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CONJ_BILIRUBIN_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CREATININE_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_AND_TIME_OF_RESULTS;
-import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_AND_TIME_OF_RESULTS_DE;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_AND_TIME_OF_RESULTS_INPUT_FIELD;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_OF_RESULT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_SAMPLE_COLLECTED;
-import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_SAMPLE_RECEIVED;
-import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_SAMPLE_SEND;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_SAMPLE_RECEIVED_INPUT_FIELD;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_SAMPLE_SEND_INPUT_FIELD;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_TEST_REPORT;
-import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.ERROR_POPUP;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.FIELD_SAMPLE_ID_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.FINAL_LABORATORY_RESULT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.GENERIC_ERROR_POPUP;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.HAEMOGLOBIN_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.HAEMOGLOBIN_IN_URINE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.HAEMOGLOBIN_IN_URINE_INPUT;
@@ -680,14 +680,14 @@ public class CreateNewSampleSteps implements En {
         });
 
     And(
-        "I select Sent dispatched checkbox",
+        "I select Sent dispatched checkbox in new sample page",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAMPLE_SHIPPED_CHECKBOX);
           webDriverHelpers.clickOnWebElementBySelector(SAMPLE_SHIPPED_CHECKBOX);
         });
 
     And(
-        "I select Received checkbox",
+        "I select Received checkbox in new sample page",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAMPLE_RECEIVED_CHECKBOX);
           webDriverHelpers.clickOnWebElementBySelector(SAMPLE_RECEIVED_CHECKBOX);
@@ -696,20 +696,19 @@ public class CreateNewSampleSteps implements En {
     Then(
         "I check is Sent dispatched Date and Received Date fields required",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DATE_SAMPLE_SEND);
-
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DATE_SAMPLE_RECEIVED);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DATE_SAMPLE_SEND_INPUT_FIELD);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DATE_SAMPLE_RECEIVED_INPUT_FIELD);
         });
 
     And(
-        "I click Add Pathogen test in Sample creation page in German",
+        "I click Add Pathogen test in Sample creation page",
         () -> webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST_BUTTON_DE));
 
     And(
         "I check DATE AND TIME OF RESULT field",
         () -> {
           TimeUnit.SECONDS.sleep(10);
-          webDriverHelpers.getWebElement(DATE_AND_TIME_OF_RESULTS_DE);
+          webDriverHelpers.getWebElement(DATE_AND_TIME_OF_RESULTS_INPUT_FIELD);
         });
 
     And(
@@ -721,7 +720,7 @@ public class CreateNewSampleSteps implements En {
     Then(
         "I check error popup message in German",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(ERROR_POPUP);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(GENERIC_ERROR_POPUP);
           List<String> popupExpected =
               List.of(
                   "Probentyp",
@@ -729,7 +728,7 @@ public class CreateNewSampleSteps implements En {
                   "Labor",
                   "Ergebnis verifiziert von Laborleitung",
                   "Art des Tests");
-          webDriverHelpers.checkIsPopupContainsList(ERROR_POPUP, popupExpected);
+          webDriverHelpers.checkIsPopupContainsList(GENERIC_ERROR_POPUP, popupExpected);
         });
 
     When(
@@ -794,7 +793,7 @@ public class CreateNewSampleSteps implements En {
 
   private void fillReceivedDate(LocalDate receivedDate) {
     webDriverHelpers.clearAndFillInWebElement(
-        DATE_SAMPLE_RECEIVED, DATE_FORMATTER.format(receivedDate));
+        DATE_SAMPLE_RECEIVED_INPUT_FIELD, DATE_FORMATTER.format(receivedDate));
   }
 
   public void selectLaboratoryName(String laboratoryName) {
@@ -1015,7 +1014,7 @@ public class CreateNewSampleSteps implements En {
 
   private LocalDate getReceivedDate() {
     return LocalDate.parse(
-        webDriverHelpers.getValueFromWebElement(DATE_SAMPLE_RECEIVED), DATE_FORMATTER);
+        webDriverHelpers.getValueFromWebElement(DATE_SAMPLE_RECEIVED_INPUT_FIELD), DATE_FORMATTER);
   }
 
   private String getSpecimenCondition() {

@@ -263,7 +263,7 @@ Feature: Sample Functionalities
     And I confirm update case result
     Then I check if Update case disease variant popup is available
 
-  @issue=SORDEV-7427 @env_de
+  @tmsLink=SORDEV-7427 @env_de
   Scenario: Test Make date fields in sample creation mask and information non-compulsory
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -275,8 +275,8 @@ Feature: Sample Functionalities
     And I click on the Cases button from navbar
     And I open the last created Case via API
     Then I click on New Sample in German
-    And I select Sent dispatched checkbox
-    And I select Received checkbox
+    And I select Sent dispatched checkbox in new sample page
+    And I select Received checkbox in new sample page
     Then I check is Sent dispatched Date and Received Date fields required
     And I click Add Pathogen test in Sample creation page in German
     And I check DATE AND TIME OF RESULT field
