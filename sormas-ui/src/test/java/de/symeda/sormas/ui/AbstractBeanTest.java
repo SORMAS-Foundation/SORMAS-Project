@@ -152,8 +152,8 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		nativeQuery.executeUpdate();
 
 		nativeQuery = em.createNativeQuery(
-			"INSERT INTO userroles (id, uuid, creationdate, changedate, caption, jurisdictionLevel, enabled, porthealthuser) values (1, '"
-				+ DataHelper.createUuid() + "', now(), now(), 'Admin init', 'NONE', false, false)");
+			"INSERT INTO userroles (id, uuid, creationdate, changedate, caption, jurisdictionLevel, enabled, porthealthuser, hasassociateddistrictuser, hasoptionalhealthfacility) values (1, '"
+				+ DataHelper.createUuid() + "', now(), now(), 'Admin init', 'NONE', false, false, false, false)");
 		nativeQuery.executeUpdate();
 
 		nativeQuery = em.createNativeQuery("INSERT INTO userroles_userrights (userrole_id, userright) values (1, 'USER_EDIT')");
