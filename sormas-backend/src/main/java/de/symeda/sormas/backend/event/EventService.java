@@ -597,6 +597,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			actionService.deletePermanent(action);
 		}
 
+		event.getEventPersons().forEach(eventParticipant -> eventParticipantService.deletePermanent(eventParticipant));
+
 		sormasToSormasShareInfoService.getByAssociatedEntity(SormasToSormasShareInfo.EVENT, event.getUuid()).forEach(s -> {
 			s.setEvent(null);
 			if (sormasToSormasShareInfoFacade.hasAnyEntityReference(s)) {

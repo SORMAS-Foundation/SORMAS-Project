@@ -46,6 +46,8 @@ import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 
@@ -230,6 +232,46 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 
 		assertEquals(0, getImmunizationService().count());
 		assertEquals(0, getVaccinationService().count());
+	}
+
+	@Test
+	public void testEventAutomaticDeletion() {
+
+		createDeletionConfigurations();
+		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.IMMUNIZATION);
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto person = creator.createPerson();
+		EventDto event = creator.createEvent(user.toReference(), Disease.EVD);
+		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
+
+		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
+		SessionImpl em = (SessionImpl) getEntityManager();
+		QueryImplementor query = em.createQuery("select e from events e where e.uuid=:uuid");
+		query.setParameter("uuid", event.getUuid());
+		Event singleResult = (Event) query.getSingleResult();
+		singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		em.save(singleResult);
+
+		QueryImplementor evPQuery = em.createQuery("select ep from EventParticipant ep where ep.uuid=:uuid");
+		evPQuery.setParameter("uuid", eventParticipant.getUuid());
+		EventParticipant evPResult = (EventParticipant) evPQuery.getSingleResult();
+		evPResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		evPResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		em.save(evPResult);
+
+		assertEquals(1, getEventService().count());
+		assertEquals(1, getEventParticipantService().count());
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertEquals(0, getEventService().count());
+		assertEquals(0, getEventParticipantService().count());
 	}
 
 	@Test
