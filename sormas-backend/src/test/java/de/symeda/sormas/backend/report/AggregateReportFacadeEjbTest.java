@@ -106,7 +106,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
 
 		List<AggregateCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
-		int aggregatedDiseaseCount = getDiseaseConfigurationFacade().getAllDiseases(true, null, false).size();
+		int aggregatedDiseaseCount = getDiseaseConfigurationFacade().getAllDiseases(true, null, false, true).size();
 		Assert.assertEquals(aggregatedDiseaseCount, indexList.size());
 		Assert.assertEquals(1, indexList.stream().filter(aggregatedCaseCountDto -> aggregatedCaseCountDto.getDeaths() == 3).count());
 	}
@@ -132,7 +132,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 
 		List<AggregateCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
 
-		int aggregatedDiseaseCount = getDiseaseConfigurationFacade().getAllDiseases(true, null, false).size();
+		int aggregatedDiseaseCount = getDiseaseConfigurationFacade().getAllDiseases(true, null, false, true).size();
 		Assert.assertEquals(aggregatedDiseaseCount + 8 - 1, indexList.size());
 
 		int index = 0;
@@ -276,7 +276,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testAggregatereportSummarizeConsidersUpperLevelData(){
+	public void testAggregatereportSummarizeConsidersUpperLevelData() {
 		useNationalUserLogin();
 
 		createAggregateReport(2, 2, 2, rdcf.region, rdcf.district, facility2.toReference(), null);
