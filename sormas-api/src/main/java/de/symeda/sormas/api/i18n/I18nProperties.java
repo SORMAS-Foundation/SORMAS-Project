@@ -141,11 +141,20 @@ public final class I18nProperties {
 			return getEnumCaption(language, (InfectionSetting) value);
 		}
 
-		String caption = getInstance(language).enumProperties.getString(value.getClass().getSimpleName() + "." + value.name());
+		return getEnumCaption(language, value.getClass().getSimpleName(), value.name());
+	}
+
+	public static String getEnumCaption(Language language, String prefix, String value) {
+
+		if (language == null) {
+			language = userLanguage.get();
+		}
+
+		String caption = getInstance(language).enumProperties.getString(prefix + "." + value);
 		if (caption != null) {
 			return caption;
 		} else {
-			return value.name();
+			return value;
 		}
 	}
 
@@ -373,7 +382,7 @@ public final class I18nProperties {
 	 * remove spaces und everything in brackets following (e.g. "Australia (Continent)" => "AUSTRALIA") for use with i18n-files
 	 */
 	private static String cleanContinentOrSubcontinentDefaultName(String defaultName) {
-		if(defaultName == null) {
+		if (defaultName == null) {
 			return null;
 		}
 		return defaultName.substring(0, defaultName.contains("(") ? defaultName.indexOf("(") : defaultName.length())
