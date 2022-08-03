@@ -162,7 +162,7 @@ public class TestDataCreator {
 			userRoleDto.setEmailNotificationTypes(defaultUserRole.getEmailNotificationTypes());
 			userRoleDto.setSmsNotificationTypes(defaultUserRole.getSmsNotificationTypes());
 			userRoleDto.setJurisdictionLevel(defaultUserRole.getJurisdictionLevel());
-			beanTest.getUserRoleService().persist(beanTest.getUserRoleFacade().fromDto(userRoleDto, false));
+			userRoleDto = beanTest.getUserRoleFacade().saveUserRole(userRoleDto);
 			userRoleDtoMap.put(defaultUserRole, userRoleDto.toReference());
 			UserRole userRole = beanTest.getEagerUserRole(userRoleDto.getUuid());
 			userRoleMap.put(defaultUserRole, userRole);
@@ -278,12 +278,10 @@ public class TestDataCreator {
 		return createUser(regionUuid, districtUuid, facilityUuid, firstName, lastName, userRole);
 	}
 
-	private UserRoleReferenceDto createUserRole(String caption, JurisdictionLevel jurisdictionLevel, UserRight... userRights) {
+	public UserRoleReferenceDto createUserRole(String caption, JurisdictionLevel jurisdictionLevel, UserRight... userRights) {
 		UserRoleDto userRole = new UserRoleDto();
 		userRole.setCaption(caption);
-		userRole.setEmailNotificationTypes(new ArrayList<>());
 		userRole.setJurisdictionLevel(jurisdictionLevel);
-		userRole.setSmsNotificationTypes(new ArrayList<>());
 		userRole.setUserRights(Arrays.stream(userRights).collect(Collectors.toSet()));
 		return beanTest.getUserRoleFacade().saveUserRole(userRole).toReference();
 	}

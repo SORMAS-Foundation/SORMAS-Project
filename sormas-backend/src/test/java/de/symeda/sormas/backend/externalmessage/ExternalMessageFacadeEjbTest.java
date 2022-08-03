@@ -185,4 +185,37 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		creator.createLabMessage(lm -> lm.setSample(sample2.toReference()));
 		assertTrue(getLabMessageFacade().existsExternalMessageForEntity(eventParticipant.toReference()));
 	}
+
+//	This test currently does not work because the bean tests used don't support @TransactionAttribute tags.
+//	This test should be enabled once there is a new test framework in use.
+//	@Test
+//	public void testSaveWithFallback() {
+//
+//		// valid message
+//		ExternalMessageDto validMessage = ExternalMessageDto.build();
+//		validMessage.setReportId("reportId");
+//		validMessage.setStatus(ExternalMessageStatus.FORWARDED);
+//		validMessage.setTestReports(Collections.singletonList(TestReportDto.build()));
+//		validMessage.setPersonFirstName("Dude");
+//		validMessage.setExternalMessageDetails("Details");
+//		getLabMessageFacade().saveWithFallback(validMessage);
+//		ExternalMessageDto savedMessage = getLabMessageFacade().getByUuid(validMessage.getUuid());
+//		assertEquals(validMessage, savedMessage);
+//
+//		// Invalid message
+//		ExternalMessageDto invalidMessage = ExternalMessageDto.build();
+//		invalidMessage.setExternalMessageDetails("Details");
+//		invalidMessage.setPersonFirstName(String.join("", Collections.nCopies(50, "MaliciousDude")));
+//		getLabMessageFacade().saveWithFallback(invalidMessage);
+//		savedMessage = getLabMessageFacade().getByUuid(invalidMessage.getUuid());
+//		assertEquals(invalidMessage.getUuid(), savedMessage.getUuid());
+//		assertEquals(invalidMessage.getStatus(), savedMessage.getStatus());
+//		assertEquals(invalidMessage.getExternalMessageDetails(), savedMessage.getExternalMessageDetails());
+//		assertNull(savedMessage.getPersonFirstName());
+//
+//		// make sure that valid message still exists
+//		savedMessage = getLabMessageFacade().getByUuid(validMessage.getUuid());
+//		assertEquals(validMessage, savedMessage);
+//
+//	}
 }

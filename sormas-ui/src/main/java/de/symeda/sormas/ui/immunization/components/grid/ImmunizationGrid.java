@@ -10,6 +10,7 @@ import com.vaadin.ui.renderers.TextRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.immunization.ImmunizationCriteria;
 import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
@@ -17,6 +18,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.immunization.ImmunizationPersonView;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
@@ -31,6 +33,13 @@ public class ImmunizationGrid extends FilteredGrid<ImmunizationIndexDto, Immuniz
 		setLazyDataProvider();
 		setCriteria(criteria);
 		initColumns();
+		addItemClickListener(new ShowDetailsListener<>(ImmunizationIndexDto.PERSON_UUID, e -> {
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PERSON_MANAGEMENT)) {
+				ControllerProvider.getPersonController().navigateToPerson(e.getPersonUuid());
+			} else {
+				ControllerProvider.getImmunizationController().navigateToView(ImmunizationPersonView.VIEW_NAME, e.getUuid());
+			}
+		}));
 		addItemClickListener(
 			new ShowDetailsListener<>(
 				ImmunizationIndexDto.UUID,

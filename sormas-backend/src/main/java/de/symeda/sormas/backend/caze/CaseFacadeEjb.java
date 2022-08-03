@@ -2159,7 +2159,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					newCase.getDisease().toString());
 
 				notificationService.sendNotifications(
-					NotificationType.DISEASE_CHANGED,
+					NotificationType.CASE_DISEASE_CHANGED,
 					JurisdictionHelper.getCaseRegions(newCase),
 					null,
 					MessageSubject.DISEASE_CHANGED,
@@ -2595,6 +2595,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			eventParticipant.setResultingCase(caseService.getByUuid(caseReferenceDto.getUuid()));
 			eventParticipantService.ensurePersisted(eventParticipant);
 		}
+	}
+
+	@Override
+	public EditPermissionType isEditContactAllowed(String uuid) {
+		Case ado = service.getByUuid(uuid);
+		return service.isAddContactAllowed(ado);
 	}
 
 	@Override

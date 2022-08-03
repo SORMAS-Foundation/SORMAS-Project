@@ -11649,7 +11649,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (470, 'Allow surveil
 -- 2022-06-27 Allow external lab users to edit samples #8892
 INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (471, 'Allow external lab users to edit samples #8892', true);
 
-
 -- 2022-07-05 Adjust password hashes with leading zeros #9726
 UPDATE users SET password = LPAD(password, 64, '0') WHERE LENGTH(password) < 64;
 INSERT INTO schema_version (version_number, comment) VALUES (472, 'Adjust password hashes with leading zeros #9726');
@@ -11691,6 +11690,7 @@ UPDATE sharerequestinfo sr SET datatype = (
        WHEN (EXISTS(SELECT caze_id FROM sormastosormasshareinfo s JOIN sharerequestinfo_shareinfo ss ON ss.sharerequestinfo_id = r.id WHERE s.id = ss.shareinfo_id AND caze_id IS NOT NULL)) THEN 'CASE'
        WHEN (EXISTS(SELECT contact_id FROM sormastosormasshareinfo s JOIN sharerequestinfo_shareinfo ss ON ss.sharerequestinfo_id = r.id WHERE s.id = ss.shareinfo_id  AND contact_id IS NOT NULL)) THEN 'CONTACT'
        WHEN (EXISTS(SELECT event_id FROM sormastosormasshareinfo s JOIN sharerequestinfo_shareinfo ss ON ss.sharerequestinfo_id = r.id WHERE s.id = ss.shareinfo_id  AND event_id IS NOT NULL)) THEN 'EVENT'
+       ELSE 'CASE' -- hardcode CASE for share request with no shared object due to permanent deletions
     END
     FROM sharerequestinfo r where r.id = sr.id
 );
@@ -11698,6 +11698,7 @@ UPDATE sharerequestinfo sr SET datatype = (
 ALTER TABLE sharerequestinfo ALTER COLUMN datatype SET NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (477, 'S2S_added sample after sharing a case/contact does not get shared #9771');
+
 -- 2022-07-25 Allow diseases to be used case-based and aggregated at the same time
 ALTER TABLE  diseaseconfiguration RENAME COLUMN casebased TO casesurveillanceenabled;
 ALTER TABLE  diseaseconfiguration_history RENAME COLUMN casebased TO casesurveillanceenabled;
@@ -11707,5 +11708,47 @@ ALTER TABLE diseaseconfiguration_history ADD COLUMN aggregatereportingenabled bo
 UPDATE diseaseconfiguration SET aggregatereportingenabled = NOT casesurveillanceenabled;
 
 INSERT INTO schema_version (version_number, comment) VALUES (478, 'Allow diseases to be used case-based and aggregated at the same time #9629');
+
+-- 2022-07-1 Edit and create user roles #4463
+DO $$
+    DECLARE rec RECORD;
+    BEGIN
+        FOR rec IN (select ur.userrole_id from userroles_userrights ur
+                    where ur.userright = 'USER_EDIT')
+            LOOP
+                INSERT INTO userroles_userrights(userrole_id, userright) VALUES (rec.userrole_id, 'USER_ROLE_EDIT');
+                INSERT INTO userroles_userrights(userrole_id, userright) VALUES (rec.userrole_id, 'USER_ROLE_DELETE');
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+update userroles_smsnotificationtypes set notificationtype = 'CASE_DISEASE_CHANGED' where notificationtype = 'DISEASE_CHANGED';
+update userroles_emailnotificationtypes set notificationtype = 'CASE_DISEASE_CHANGED' where notificationtype = 'DISEASE_CHANGED';
+update userroles_smsnotificationtypes set notificationtype = 'CONTACT_VISIT_COMPLETED' where notificationtype = 'VISIT_COMPLETED';
+update userroles_emailnotificationtypes set notificationtype = 'CONTACT_VISIT_COMPLETED' where notificationtype = 'VISIT_COMPLETED';
+
+INSERT INTO schema_version (version_number, comment) VALUES (479, 'Edit and create user roles #4463');
+
+-- 2022-07-05 Implement user right dependencies #5058
+delete from userroles_userrights where userright in ('CONTACT_CLASSIFY', 'CONTACT_ASSIGN');
+
+INSERT INTO schema_version (version_number, comment) VALUES (480, 'Implement user right dependencies #5058');
+
+-- 2022-08-01 llow surveillance officer to export aggregate reports #9747 #9052
+INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+SELECT userrole_id, 'AGGREGATE_REPORT_EXPORT', tstzrange(now(), null)
+FROM userroles_userrights uu
+WHERE uu.userright = 'AGGREGATE_REPORT_VIEW'
+  AND exists(SELECT uu2.userrole_id
+             FROM userroles_userrights uu2
+             WHERE uu2.userrole_id = uu.userrole_id
+               AND uu2.userright = 'CASE_EDIT')
+  AND NOT exists(SELECT uu2.userrole_id
+                 FROM userroles_userrights uu2
+                 WHERE uu2.userrole_id = uu.userrole_id
+                   AND uu2.userright = 'AGGREGATE_REPORT_EXPORT');
+
+INSERT INTO schema_version (version_number, comment) VALUES (481, 'Allow surveillance officer to export aggregate reports #9747 #9052');
+
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
