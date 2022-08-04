@@ -100,6 +100,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 
 		cq.where(filter);
 		cq.select(from.get(Action.UUID));
+		cq.distinct(true);
 
 		return em.createQuery(cq).getResultList();
 	}
