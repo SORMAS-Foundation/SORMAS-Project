@@ -284,10 +284,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		contactProximity = addField(ContactDto.CONTACT_PROXIMITY, NullableOptionGroup.class);
 		contactProximity.setCaption(I18nProperties.getCaption(Captions.Contact_contactProximityLongForm));
 		contactProximity.removeStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
-		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
-			contactCategory = addField(ContactDto.CONTACT_CATEGORY, NullableOptionGroup.class);
+		addField(ContactDto.CONTACT_PROXIMITY_DETAILS, TextField.class);
+		contactCategory = addField(ContactDto.CONTACT_CATEGORY, NullableOptionGroup.class);
 
+		if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contactProximity.addValueChangeListener(e -> {
 				if (getInternalValue().getContactProximity() != e.getProperty().getValue() || contactCategory.isModified()) {
 					updateContactCategory((ContactProximity) contactProximity.getNullableValue());
