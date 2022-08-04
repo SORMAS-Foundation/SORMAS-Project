@@ -52,6 +52,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATI
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CASE_OR_EVENT_INFORMATION_CONTACT_TEXT_AREA;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.EXTERNAL_TOKEN_CONTACT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RELATIONSHIP_WITH_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
@@ -1130,6 +1131,13 @@ public class EditContactSteps implements En {
               webDriverHelpers.isElementEnabled(CASE_OR_EVENT_INFORMATION_CONTACT_TEXT_AREA),
               "Case or event information text area is enabled");
           softly.assertAll();
+        });
+
+    And(
+        "I set contact vaccination status to ([^\"]*)",
+        (String vaccinationStatus) -> {
+          webDriverHelpers.selectFromCombobox(VACCINATION_STATUS_COMBOBOX, vaccinationStatus);
+          webDriverHelpers.clickOnWebElementBySelector(COMMIT_BUTTON);
         });
 
     And(

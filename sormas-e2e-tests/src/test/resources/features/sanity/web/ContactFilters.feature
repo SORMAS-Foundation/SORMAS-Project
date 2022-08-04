@@ -275,3 +275,28 @@ Feature: Contact filter functionality
     And I click APPLY BUTTON in Contact Directory Page
     And I check that number of displayed contact results is 0
 
+
+
+  @tmsLink=SORQA-5969 @env_de
+  Scenario Outline: Test vaccination status filter <status> and columns to contact
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    When I click on the Contacts button from navbar
+    Then I search after last created contact via API by UUID and open
+    And I set contact vaccination status to <status>
+    When I click on the Contacts button from navbar
+    And I click SHOW MORE FILTERS button on Contact directory page
+    Then I set contact vaccination status filter to <status>
+    And I apply contact filters
+    Then I check that created Contact is visible with <status> status
+
+    Examples:
+      | status    |
+      | Geimpft   |
+      | Ungeimpft |
+      | Unbekannt |

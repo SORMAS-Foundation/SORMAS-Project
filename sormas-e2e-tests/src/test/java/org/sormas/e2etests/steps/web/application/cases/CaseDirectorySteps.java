@@ -108,6 +108,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getC
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getCheckboxByIndex;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getMergeDuplicatesButtonById;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getResultByIndex;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getVaccinationStatusCasesByText;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FIRST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LAST_NAME_INPUT;
@@ -133,6 +134,7 @@ import static org.sormas.e2etests.pages.application.configuration.DocumentTempla
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.CLOSE_DETAILED_EXPORT_POPUP;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.IMPORT_SUCCESSFUL_FACILITY_IMPORT_CSV;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.PERSON_LIKE_SEARCH_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.getCheckboxByUUID;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
@@ -489,6 +491,21 @@ public class CaseDirectorySteps implements En {
           TimeUnit.SECONDS.sleep(1); // wait for system reaction
           webDriverHelpers.doubleClickOnWebElementBySelector(getCaseResultsUuidLocator(caseUUID));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+        });
+
+    Then(
+        "I check that created Case is visible with ([^\"]*) status",
+        (String vaccinationStatus) -> {
+          String caseUUID = apiState.getCreatedCase().getUuid();
+          Assert.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(getCaseResultsUuidLocator(caseUUID), 5),
+              "There is no case with expected status");
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              getVaccinationStatusCasesByText(vaccinationStatus));
+          Assert.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(
+                  getVaccinationStatusCasesByText(vaccinationStatus), 5),
+              "There is no case with expected status");
         });
 
     When(
@@ -1292,6 +1309,19 @@ public class CaseDirectorySteps implements En {
         () -> {
           Path path = Paths.get(userDirPath + "/uploads/" + caseCSVName);
           Files.delete(path);
+        });
+
+    Then(
+        "I set case vaccination status filter to ([^\"]*)",
+        (String vaccinationStatus) -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_VACCINATION_STATUS_FILTER_COMBOBOX, vaccinationStatus);
+        });
+
+    And(
+        "I apply case filters",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
         });
   }
 

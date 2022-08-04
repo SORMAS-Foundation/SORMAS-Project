@@ -426,3 +426,26 @@ Feature: Case filter functionality
       | "Deceased"       | 0       | 1       | 0       | 0       |
       | "Recovered"      | 0       | 0       | 1       | 0       |
       | "Unknown"        | 0       | 0       | 0       | 1       |
+
+  @tmsLink=SORQA-5969 @env_de
+  Scenario Outline: Test vaccination status filter <status> and columns to case
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    And I set case vaccination status to <status>
+    And I click on the Cases button from navbar
+    And I set case vaccination status filter to <status>
+    And I apply case filters
+    Then I check that created Case is visible with <status> status
+
+    Examples:
+      | status    |
+      | Geimpft   |
+      | Ungeimpft |
+      | Unbekannt |
