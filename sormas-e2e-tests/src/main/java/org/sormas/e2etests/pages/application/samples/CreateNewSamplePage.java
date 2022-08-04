@@ -44,6 +44,7 @@ public class CreateNewSamplePage {
   public static final By LABORATORY_NAME_POPUP_INPUT =
       By.cssSelector(".popupContent [id='labDetails']");
   public static final By RECEIVED_OPTION_BUTTON = By.cssSelector("[id='received'] label");
+  public static final By DATE_SAMPLE_RECEIVED = By.cssSelector("[id='receivedDate'] input");
   public static final By DATE_SAMPLE_SEND_INPUT_FIELD =
       By.xpath("//div[@id='shipmentDate' and not(contains(@class, 'v-required'))]");
   public static final By DATE_SAMPLE_RECEIVED_INPUT_FIELD =
