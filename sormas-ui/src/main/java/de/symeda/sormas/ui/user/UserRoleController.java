@@ -133,8 +133,7 @@ public class UserRoleController {
 
 					if (usersWithOnlyRole.isEmpty()) {
 						FacadeProvider.getUserRoleFacade().deleteUserRole(userRoleRef);
-						// TODO - navigate to user roles view
-						UI.getCurrent().getNavigator().navigateTo(UsersView.VIEW_NAME);
+						UI.getCurrent().getNavigator().navigateTo(UserRolesView.VIEW_NAME);
 					} else {
 						VaadinUiUtil.showSimplePopupWindow(
 							I18nProperties.getString(Strings.headingDeleteUserRoleNotPossible),
@@ -143,6 +142,9 @@ public class UserRoleController {
 								usersWithOnlyRole.stream().map(r -> DataHelper.getShortUuid(r.getUuid())).collect(Collectors.joining(", "))),
 							ContentMode.HTML);
 					}
+				} else {
+					FacadeProvider.getUserRoleFacade().deleteUserRole(userRoleRef);
+					UI.getCurrent().getNavigator().navigateTo(UserRolesView.VIEW_NAME);
 				}
 			}, I18nProperties.getCaption(UserRoleDto.I18N_PREFIX), () -> {
 				long userCountWithRole = FacadeProvider.getUserFacade().getUserCountHavingRole(userRoleRef);
@@ -152,15 +154,17 @@ public class UserRoleController {
 
 		String enableDisableCaptionKey = userRole.isEnabled() ? Captions.actionDisable : Captions.actionEnable;
 		Button enableDisableButton = ButtonHelper.createButton(enableDisableCaptionKey, I18nProperties.getCaption(enableDisableCaptionKey), e -> {
+			UserRoleDto refreshedUserRole = editView.getWrappedComponent().getValue();
+
 			boolean isCommitSuccessFul = true;
-			if (editView.isModified()) {
+			if (editView.isDirty()) {
 				isCommitSuccessFul = editView.commitAndHandle();
+				refreshedUserRole = FacadeProvider.getUserRoleFacade().getByUuid(refreshedUserRole.getUuid());
 			}
 
 			if (isCommitSuccessFul) {
-				UserRoleDto formData = editView.getWrappedComponent().getValue();
-				formData.setEnabled(!userRole.isEnabled());
-				FacadeProvider.getUserRoleFacade().saveUserRole(formData);
+				refreshedUserRole.setEnabled(!refreshedUserRole.isEnabled());
+				FacadeProvider.getUserRoleFacade().saveUserRole(refreshedUserRole);
 
 				SormasUI.refreshView();
 			}

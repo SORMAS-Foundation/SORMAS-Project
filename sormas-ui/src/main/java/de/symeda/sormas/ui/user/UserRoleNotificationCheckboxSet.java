@@ -16,6 +16,9 @@
 package de.symeda.sormas.ui.user;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -50,6 +53,8 @@ public class UserRoleNotificationCheckboxSet extends CustomField<UserRoleDto.Not
 
 	private VerticalLayout layout;
 
+	private List<CheckboxRow> rows = Collections.emptyList();
+
 	@Override
 	protected Component initContent() {
 		layout = new VerticalLayout();
@@ -67,15 +72,26 @@ public class UserRoleNotificationCheckboxSet extends CustomField<UserRoleDto.Not
 	}
 
 	protected void setInternalValue(UserRoleDto.NotificationTypes newValue) {
-		super.setInternalValue(UserRoleDto.NotificationTypes.of(newValue.getSms(), newValue.getEmail()));
+		HashSet<NotificationType> smsNotifications = new HashSet<>(newValue.getSms());
+		HashSet<NotificationType> emailNotifications = new HashSet<>(newValue.getEmail());
+		UserRoleDto.NotificationTypes internalValue = UserRoleDto.NotificationTypes.of(smsNotifications, emailNotifications);
+		super.setInternalValue(internalValue);
+
+		rows.stream().map(r -> r.checkboxes).flatMap(Collection::stream).forEach(c -> {
+			c.smsCb.setValue(smsNotifications.contains((NotificationType) c.smsCb.getData()));
+			c.emailCb.setValue(emailNotifications.contains((NotificationType) c.emailCb.getData()));
+		});
 	}
 
 	private void buildCheckboxes() {
+		rows = new ArrayList<>();
 		for (NotificationTypeGroup group : NotificationTypeGroup.values()) {
-			List<CheckboxRow> rows = createGroupRows(group);
+			List<CheckboxRow> groupRows = createGroupRows(group);
 
-			layout.addComponent(createGroupHeader(group, rows));
-			layout.addComponents(rows.toArray(new Component[] {}));
+			layout.addComponent(createGroupHeader(group, groupRows));
+			layout.addComponents(groupRows.toArray(new Component[] {}));
+
+			rows.addAll(groupRows);
 		}
 	}
 
@@ -127,6 +143,7 @@ public class UserRoleNotificationCheckboxSet extends CustomField<UserRoleDto.Not
 
 			rows.add(new CheckboxRow(item1, item2));
 		}
+
 		return rows;
 	}
 
@@ -135,6 +152,7 @@ public class UserRoleNotificationCheckboxSet extends CustomField<UserRoleDto.Not
 		NotificationType item,
 		Function<NotificationType, CheckboxSetItemDataSource<NotificationType>> dataSourceFactory) {
 		CheckBox checkBox = new CheckBox(I18nProperties.getCaption(captionTag), dataSourceFactory.apply(item));
+		checkBox.setData(item);
 		checkBox.addValueChangeListener(e -> fireValueChange(false));
 
 		return checkBox;
@@ -163,14 +181,13 @@ public class UserRoleNotificationCheckboxSet extends CustomField<UserRoleDto.Not
 
 		private static final long serialVersionUID = -3874252190392021250L;
 
-		private final NotificationTypeCheckboxes left;
-		private final NotificationTypeCheckboxes right;
+		private final List<NotificationTypeCheckboxes> checkboxes = new ArrayList<>();
 
 		public CheckboxRow(NotificationType leftGroup, NotificationType rightGroup) {
 			setWidthFull();
 			setMargin(false);
 
-			left = new NotificationTypeCheckboxes(leftGroup);
+			NotificationTypeCheckboxes left = new NotificationTypeCheckboxes(leftGroup);
 			addComponent(left);
 			setExpandRatio(left, 0.45f);
 
@@ -178,35 +195,32 @@ public class UserRoleNotificationCheckboxSet extends CustomField<UserRoleDto.Not
 			addComponent(spacer);
 			setExpandRatio(spacer, 0.1f);
 
-			right = rightGroup != null ? new NotificationTypeCheckboxes(rightGroup) : null;
-			// if there is no rightGroup, create an empty container to keep the first checkbox in the first half of tha space
-			Component rightComponent = right != null ? right : new HorizontalLayout();
+			checkboxes.add(left);
+
+			Component rightComponent;
+			if (rightGroup != null) {
+				NotificationTypeCheckboxes right = new NotificationTypeCheckboxes(rightGroup);
+				rightComponent = right;
+				checkboxes.add(right);
+			} else {
+				// if there is no rightGroup, create an empty container to keep the first checkbox in the first half of tha space
+				rightComponent = new HorizontalLayout();
+			}
+
 			addComponent(rightComponent);
 			setExpandRatio(rightComponent, 0.45f);
 		}
 
 		public void checkAll() {
-			left.checkAll();
-
-			if (right != null) {
-				right.checkAll();
-			}
+			checkboxes.forEach(NotificationTypeCheckboxes::checkAll);
 		}
 
 		public void checkAllSms() {
-			left.checkSms();
-
-			if (right != null) {
-				right.checkSms();
-			}
+			checkboxes.forEach(NotificationTypeCheckboxes::checkSms);
 		}
 
 		public void checkAllEmail() {
-			left.checkEmail();
-
-			if (right != null) {
-				right.checkEmail();
-			}
+			checkboxes.forEach(NotificationTypeCheckboxes::checkEmail);
 		}
 	}
 
