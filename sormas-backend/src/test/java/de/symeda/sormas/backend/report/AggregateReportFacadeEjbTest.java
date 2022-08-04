@@ -266,6 +266,13 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(13, indexListRegionGrouping.get(0).getDeaths());
 		Assert.assertNull(indexListRegionGrouping.get(0).getReportingUser());
 
+		criteria.setAggregateReportGroupingLevel(null);
+		List<AggregateCaseCountDto> indexListNullGrouping = getAggregateReportFacade().getIndexList(criteria);
+		Assert.assertEquals(1, indexListNullGrouping.size());
+		Assert.assertEquals(6, indexListNullGrouping.get(0).getNewCases());
+		Assert.assertEquals(13, indexListNullGrouping.get(0).getDeaths());
+		Assert.assertNull(indexListNullGrouping.get(0).getReportingUser());
+
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.DISTRICT);
 		createAggregateReport(4, 4, 4, rdcf.region, rdcf.district, null, null);
 		List<AggregateCaseCountDto> indexListDistrictGroupingWhenDistrictData = getAggregateReportFacade().getIndexList(criteria);
