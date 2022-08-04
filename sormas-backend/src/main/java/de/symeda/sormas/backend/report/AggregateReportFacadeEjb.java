@@ -194,10 +194,9 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 				root.get(AggregateReport.EPI_WEEK),
 				root.get(AggregateReport.AGE_GROUP)));
 
-		AggregateReportGroupingLevel groupingLevel = null;
-
-		if (criteria != null && criteria.getAggregateReportGroupingLevel() != null) {
-			groupingLevel = criteria.getAggregateReportGroupingLevel();
+		final AggregateReportGroupingLevel groupingLevel = criteria != null && criteria.getAggregateReportGroupingLevel() != null
+			? criteria.getAggregateReportGroupingLevel()
+			: AggregateReportGroupingLevel.REGION;
 
 			if (groupingLevel.equals(AggregateReportGroupingLevel.REGION)) {
 				filter = CriteriaBuilderHelper.and(
@@ -244,7 +243,6 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 			List<Path<Object>> pointOfEntryPath = Arrays.asList(pointOfEntryJoin.get(PointOfEntry.NAME), pointOfEntryJoin.get(PointOfEntry.ID));
 			expressions.addAll(pointOfEntryPath);
 			selectionList.addAll(pointOfEntryPath);
-		}
 
 		selectionList.addAll(
 			Arrays.asList(
@@ -371,7 +369,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 
 	private List<AggregateCaseCountDto> summarizeAggregateData(
-		final AggregateReportGroupingLevel finalGroupingLevel,
+		final AggregateReportGroupingLevel groupingLevel,
 		List<AggregateCaseCountDto> queryResult) {
 		final List<AggregateCaseCountDto> resultList = new ArrayList<>();
 		final Map<AggregateCaseCountDto, List<AggregateCaseCountDto>> reportsToBeSummed = new HashMap<>();
@@ -380,7 +378,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		for (AggregateCaseCountDto dto : queryResult) {
 
 			// Would be faster to sort the query results by jurisdiction and only check the last resultList entry for similarity instead of always going through the whole list.
-			final Optional<AggregateCaseCountDto> optionalDto = resultList.stream().filter(a -> dto.similar(a, finalGroupingLevel)).findAny();
+			final Optional<AggregateCaseCountDto> optionalDto = resultList.stream().filter(a -> dto.similar(a, groupingLevel)).findAny();
 			if (optionalDto.isPresent()) {
 				final AggregateCaseCountDto similar = optionalDto.get();
 				if (dto.hasEqualJurisdiction(similar)) { // for exact same jurisdiction we use the most recent data
@@ -447,7 +445,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		// remove reporting user from rows that have been summerized/aggregated
 		resultList.forEach(aggregatedCaseCountDto -> {
 			if (aggregatedCaseCountDto.getReportingUser() != null
-				&& AggregateReportGroupingLevel.getByJurisdictionLevel(aggregatedCaseCountDto.getJurisdictionlevel()) != finalGroupingLevel) {
+				&& AggregateReportGroupingLevel.getByJurisdictionLevel(aggregatedCaseCountDto.getJurisdictionlevel()) != groupingLevel) {
 				aggregatedCaseCountDto.setReportingUser(null);
 			}
 		});
