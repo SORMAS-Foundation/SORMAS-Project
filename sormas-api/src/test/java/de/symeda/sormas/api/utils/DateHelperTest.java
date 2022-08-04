@@ -378,6 +378,9 @@ public class DateHelperTest {
 	@Test
 	public void testAddDays() {
 
+		// Mimic previous behaviour before switching to java.time.
+		assertThat(DateHelper.addDays(null, 0), equalTo(UtilDate.today()));
+
 		assertThat(DateHelper.addDays(UtilDate.now(), 0), equalTo(UtilDate.today()));
 		assertThat(DateHelper.addDays(UtilDate.today(), 0), equalTo(UtilDate.today()));
 		assertThat(DateHelper.addDays(UtilDate.now(), 1), equalTo(UtilDate.tomorrow()));
@@ -386,6 +389,9 @@ public class DateHelperTest {
 
 	@Test
 	public void testSubtractDays() {
+
+		// Mimic previous behaviour before switching to java.time.
+		assertThat(DateHelper.subtractDays(null, 0), equalTo(UtilDate.today()));
 
 		assertThat(DateHelper.subtractDays(UtilDate.now(), 0), equalTo(UtilDate.today()));
 		assertThat(DateHelper.subtractDays(UtilDate.today(), 0), equalTo(UtilDate.today()));
@@ -396,6 +402,9 @@ public class DateHelperTest {
 	@Test
 	public void testAddWeeks() {
 
+		// Mimic previous behaviour before switching to java.time.
+		assertThat(DateHelper.addWeeks(null, 1), equalTo(UtilDate.from(LocalDate.now().plusWeeks(1))));
+
 		Date date = UtilDate.of(2022, Month.MAY, 4);
 		assertThat(DateHelper.addWeeks(date, 0), equalTo(date));
 		assertThat(DateHelper.addWeeks(date, 1), equalTo(UtilDate.of(2022, Month.MAY, 11)));
@@ -404,6 +413,9 @@ public class DateHelperTest {
 
 	@Test
 	public void testSubtractWeeks() {
+
+		// Mimic previous behaviour before switching to java.time.
+		assertThat(DateHelper.subtractWeeks(null, 1), equalTo(UtilDate.from(LocalDate.now().minusWeeks(1))));
 
 		Date date = UtilDate.of(2022, Month.MAY, 4);
 		assertThat(DateHelper.subtractWeeks(date, 0), equalTo(date));
@@ -414,6 +426,9 @@ public class DateHelperTest {
 	@Test
 	public void testAddMonths() {
 
+		// Mimic previous behaviour before switching to java.time.
+		assertThat(DateHelper.addMonths(null, 1), equalTo(UtilDate.from(LocalDate.now().plusMonths(1))));
+
 		Date date = UtilDate.of(2022, Month.MAY, 4);
 		assertThat(DateHelper.addMonths(date, 0), equalTo(date));
 		assertThat(DateHelper.addMonths(date, 1), equalTo(UtilDate.of(2022, Month.JUNE, 4)));
@@ -422,6 +437,9 @@ public class DateHelperTest {
 
 	@Test
 	public void testSubtractMonths() {
+
+		// Mimic previous behaviour before switching to java.time.
+		assertThat(DateHelper.subtractMonths(null, 1), equalTo(UtilDate.from(LocalDate.now().minusMonths(1))));
 
 		Date date = UtilDate.of(2022, Month.MAY, 4);
 		assertThat(DateHelper.subtractMonths(date, 0), equalTo(date));
@@ -432,6 +450,9 @@ public class DateHelperTest {
 	@Test
 	public void testAddYears() {
 
+		// Mimic previous behaviour before switching to java.time.
+		assertThat(DateHelper.addYears(null, 1), equalTo(UtilDate.from(LocalDate.now().plusYears(1))));
+
 		Date date = UtilDate.of(2022, Month.MAY, 4);
 		assertThat(DateHelper.addYears(date, 0), equalTo(date));
 		assertThat(DateHelper.addYears(date, 1), equalTo(UtilDate.of(2023, Month.MAY, 4)));
@@ -440,6 +461,9 @@ public class DateHelperTest {
 
 	@Test
 	public void testSubtractYears() {
+
+		// Mimic previous behaviour before switching to java.time.
+		assertThat(DateHelper.subtractYears(null, 1), equalTo(UtilDate.from(LocalDate.now().minusYears(1))));
 
 		Date date = UtilDate.of(2022, Month.MAY, 4);
 		assertThat(DateHelper.subtractYears(date, 0), equalTo(date));

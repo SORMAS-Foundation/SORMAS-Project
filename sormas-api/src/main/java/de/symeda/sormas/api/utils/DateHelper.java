@@ -543,35 +543,35 @@ public final class DateHelper {
 	}
 
 	public static Date addDays(Date date, int amountOfDays) {
-		return UtilDate.from(UtilDate.toLocalDate(date).plusDays(amountOfDays));
+		return UtilDate.from(UtilDate.toLocalDate(handleNull(date)).plusDays(amountOfDays));
 	}
 
 	public static Date subtractDays(Date date, int amountOfDays) {
-		return UtilDate.from(UtilDate.toLocalDate(date).minusDays(amountOfDays));
+		return UtilDate.from(UtilDate.toLocalDate(handleNull(date)).minusDays(amountOfDays));
 	}
 
 	public static Date addWeeks(Date date, int amountOfWeeks) {
-		return UtilDate.from(UtilDate.toLocalDate(date).plusWeeks(amountOfWeeks));
+		return UtilDate.from(UtilDate.toLocalDate(handleNull(date)).plusWeeks(amountOfWeeks));
 	}
 
 	public static Date subtractWeeks(Date date, int amountOfWeeks) {
-		return UtilDate.from(UtilDate.toLocalDate(date).minusWeeks(amountOfWeeks));
+		return UtilDate.from(UtilDate.toLocalDate(handleNull(date)).minusWeeks(amountOfWeeks));
 	}
 
 	public static Date addMonths(Date date, int amountOfMonths) {
-		return UtilDate.from(UtilDate.toLocalDate(date).plusMonths(amountOfMonths));
+		return UtilDate.from(UtilDate.toLocalDate(handleNull(date)).plusMonths(amountOfMonths));
 	}
 
 	public static Date subtractMonths(Date date, int amountOfMonths) {
-		return UtilDate.from(UtilDate.toLocalDate(date).minusMonths(amountOfMonths));
+		return UtilDate.from(UtilDate.toLocalDate(handleNull(date)).minusMonths(amountOfMonths));
 	}
 
 	public static Date addYears(Date date, int amountOfYears) {
-		return UtilDate.from(UtilDate.toLocalDate(date).plusYears(amountOfYears));
+		return UtilDate.from(UtilDate.toLocalDate(handleNull(date)).plusYears(amountOfYears));
 	}
 
 	public static Date subtractYears(Date date, int amountOfYears) {
-		return UtilDate.from(UtilDate.toLocalDate(date).minusYears(amountOfYears));
+		return UtilDate.from(UtilDate.toLocalDate(handleNull(date)).minusYears(amountOfYears));
 	}
 
 	public static Date addSeconds(Date date, int amountOfSeconds) {
