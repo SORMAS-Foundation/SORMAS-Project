@@ -20,10 +20,8 @@ package de.symeda.sormas.backend.user;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -120,7 +118,7 @@ public class UserRole extends AbstractDomainObject {
 	}
 
 	@Column
-	public boolean hasOptionalHealthFacility() {
+	public boolean getHasOptionalHealthFacility() {
 		return hasOptionalHealthFacility;
 	}
 
@@ -129,7 +127,7 @@ public class UserRole extends AbstractDomainObject {
 	}
 
 	@Column
-	public boolean hasAssociatedDistrictUser() {
+	public boolean getHasAssociatedDistrictUser() {
 		return hasAssociatedDistrictUser;
 	}
 

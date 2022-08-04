@@ -15,21 +15,6 @@
 
 package de.symeda.sormas.app.backend.common;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
-import android.util.Log;
-
-import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
-
-import org.apache.commons.lang3.StringUtils;
-
 import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.sql.SQLException;
@@ -45,6 +30,21 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
+
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+import android.util.Log;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.VaccinationStatus;
@@ -186,7 +186,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 340;
+	public static final int DATABASE_VERSION = 341;
 
 	private static DatabaseHelper instance = null;
 
@@ -2996,31 +2996,36 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			case 337:
 				currentVersion = 337;
 				getDao(DiseaseConfiguration.class).executeRaw("ALTER TABLE diseaseConfiguration RENAME TO tmp_diseaseConfiguration");
-				getDao(DiseaseConfiguration.class).executeRaw("CREATE TABLE diseaseConfiguration(id integer primary key autoincrement, uuid VARCHAR(36) NOT NULL, " +
-						"changeDate TIMESTAMP NOT NULL, creationDate TIMESTAMP NOT NULL, lastOpenedDate TIMESTAMP, localChangeDate TIMESTAMP NOT NULL, modified INTEGER, " +
-						"snapshot INTEGER, disease VARCHAR(255), active boolean, primaryDisease boolean, followUpEnabled boolean, followUpDuration INTEGER, " +
-						"caseSurveillanceEnabled boolean, caseFollowUpDuration INTEGER, eventParticipantFollowUpDuration INTEGER, " +
-						"extendedClassification boolean, extendedClassificationMulti boolean, ageGroupsString text, UNIQUE(snapshot, uuid));");
+				getDao(DiseaseConfiguration.class).executeRaw(
+					"CREATE TABLE diseaseConfiguration(id integer primary key autoincrement, uuid VARCHAR(36) NOT NULL, "
+						+ "changeDate TIMESTAMP NOT NULL, creationDate TIMESTAMP NOT NULL, lastOpenedDate TIMESTAMP, localChangeDate TIMESTAMP NOT NULL, modified INTEGER, "
+						+ "snapshot INTEGER, disease VARCHAR(255), active boolean, primaryDisease boolean, followUpEnabled boolean, followUpDuration INTEGER, "
+						+ "caseSurveillanceEnabled boolean, caseFollowUpDuration INTEGER, eventParticipantFollowUpDuration INTEGER, "
+						+ "extendedClassification boolean, extendedClassificationMulti boolean, ageGroupsString text, UNIQUE(snapshot, uuid));");
 				getDao(DiseaseConfiguration.class).executeRaw("ALTER TABLE diseaseconfiguration ADD COLUMN aggregateReportingEnabled boolean;");
-				getDao(DiseaseConfiguration.class).executeRaw("INSERT INTO diseaseConfiguration (id, uuid, changeDate, creationDate, lastOpenedDate, " +
-						"localChangeDate, modified, snapshot, disease, active, primaryDisease, followUpEnabled, followUpDuration, " +
-						"caseSurveillanceEnabled, caseFollowUpDuration, eventParticipantFollowUpDuration, extendedClassification, extendedClassificationMulti, " +
-						"ageGroupsString, aggregateReportingEnabled) " +
-						"SELECT id, uuid, changeDate, creationDate, lastOpenedDate, localChangeDate, modified, snapshot, disease, active, primaryDisease, " +
-						"followUpEnabled, followUpDuration, caseBased, caseFollowUpDuration, eventParticipantFollowUpDuration, extendedClassification, " +
-						"extendedClassificationMulti, ageGroupsString, NOT caseBased " +
-						"FROM tmp_diseaseConfiguration;");
+				getDao(DiseaseConfiguration.class).executeRaw(
+					"INSERT INTO diseaseConfiguration (id, uuid, changeDate, creationDate, lastOpenedDate, "
+						+ "localChangeDate, modified, snapshot, disease, active, primaryDisease, followUpEnabled, followUpDuration, "
+						+ "caseSurveillanceEnabled, caseFollowUpDuration, eventParticipantFollowUpDuration, extendedClassification, extendedClassificationMulti, "
+						+ "ageGroupsString, aggregateReportingEnabled) "
+						+ "SELECT id, uuid, changeDate, creationDate, lastOpenedDate, localChangeDate, modified, snapshot, disease, active, primaryDisease, "
+						+ "followUpEnabled, followUpDuration, caseBased, caseFollowUpDuration, eventParticipantFollowUpDuration, extendedClassification, "
+						+ "extendedClassificationMulti, ageGroupsString, NOT caseBased " + "FROM tmp_diseaseConfiguration;");
 				getDao(DiseaseConfiguration.class).executeRaw("DROP TABLE tmp_diseaseConfiguration");
 
 			case 338:
 				currentVersion = 338;
-
-				getDao(UserRole.class).executeRaw("UPDATE userRoles set userRights = replace(replace(replace(userRights, '\"CONTACT_CLASSIFY\"', ''), '\"CONTACT_ASSIGN\"', ''), ',,', ',')");
+				getDao(UserRole.class).executeRaw(
+					"UPDATE userRoles set userRights = replace(replace(replace(userRights, '\"CONTACT_CLASSIFY\"', ''), '\"CONTACT_ASSIGN\"', ''), ',,', ',')");
 
 			case 339:
 				currentVersion = 339;
+				getDao(FeatureConfiguration.class).executeRaw(
+					"UPDATE featureConfiguration set featuretype = 'SORMAS_TO_SORMAS_SHARE_CASES' where featuretype = 'SORMAS_TO_SORMAS_SHARE_CASES_WITH_CONTACTS_AND_SAMPLES'");
 
-				getDao(FeatureConfiguration.class).executeRaw("UPDATE featureConfiguration set featuretype = 'SORMAS_TO_SORMAS_SHARE_CASES' where featuretype = 'SORMAS_TO_SORMAS_SHARE_CASES_WITH_CONTACTS_AND_SAMPLES'");
+			case 340:
+				currentVersion = 340;
+				getDao(CustomizableEnumValue.class).executeRaw("ALTER TABLE customizableEnumValue ADD COLUMN defaultValue boolean;");
 
 				// ATTENTION: break should only be done after last version
 				break;

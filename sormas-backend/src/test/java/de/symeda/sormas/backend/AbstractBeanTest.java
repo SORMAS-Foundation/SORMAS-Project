@@ -210,6 +210,7 @@ import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLoca
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
+import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb.PrescriptionFacadeEjbLocal;
 import de.symeda.sormas.backend.therapy.PrescriptionService;
 import de.symeda.sormas.backend.therapy.TherapyFacadeEjb.TherapyFacadeEjbLocal;
@@ -220,7 +221,6 @@ import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserRightsFacadeEjb.UserRightsFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb.UserRoleFacadeEjbLocal;
@@ -727,7 +727,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 	}
 
 	public CustomizableEnumFacade getCustomizableEnumFacade() {
-		return getBean(CustomizableEnumFacadeEjb.class);
+		return getBean(CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal.class);
 	}
 
 	public ShareDataBuilderHelper getShareDataBuilderHelper() {
@@ -951,5 +951,9 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public InfoFacade getInfoFacade() {
 		return getBean(InfoFacadeEjb.InfoFacadeEjbLocal.class);
+	}
+
+	public TaskService getTaskService() {
+		return getBean(TaskService.class);
 	}
 }
