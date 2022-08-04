@@ -347,7 +347,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		UserRight._SYSTEM })
 	public void deleteEventInExternalSurveillanceTool(Event event) throws ExternalSurveillanceToolException {
 
-		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && event.getExternalId() != null && !event.getExternalId().isEmpty()) {
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && StringUtils.isNotBlank(event.getExternalId())) {
 			List<Event> eventsWithSameExternalId = service.getByExternalId(event.getExternalId());
 			if (eventsWithSameExternalId != null && eventsWithSameExternalId.size() == 1) {
 				externalSurveillanceToolGatewayFacade.deleteEvents(Collections.singletonList(toDto(event)));

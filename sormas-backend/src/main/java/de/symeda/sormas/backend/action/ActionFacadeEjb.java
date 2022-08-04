@@ -165,12 +165,7 @@ public class ActionFacadeEjb implements ActionFacade {
 	@Override
 	public List<ActionDto> getAllActiveActionsAfter(Date date) {
 
-		User user = userService.getCurrentUser();
-		if (user == null) {
-			return Collections.emptyList();
-		}
-
-		return actionService.getAllActiveActionsAfter(date, user).stream().map(this::toDto).collect(Collectors.toList());
+		return actionService.getAllAfter(date, null, null).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override

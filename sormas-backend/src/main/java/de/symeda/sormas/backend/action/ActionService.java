@@ -40,7 +40,6 @@ import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.document.DocumentService;
@@ -75,12 +74,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		Predicate filter = createActiveFilter(cb, queryContext.getJoins().getEvent());
 		filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(queryContext));
 		if (since != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, root, since, lastSynchronizedUuid);
-			if (filter != null) {
-				filter = cb.and(filter, dateFilter);
-			} else {
-				filter = dateFilter;
-			}
+			filter = CriteriaBuilderHelper.and(cb, filter, createChangeDateFilter(cb, root, since, lastSynchronizedUuid));
 		}
 		if (filter != null) {
 			cq.where(filter);
@@ -101,37 +95,12 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		Predicate filter = createActiveFilter(cb, queryContext.getJoins().getEvent());
 
 		if (getCurrentUser() != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, from));
 		}
 
 		cq.where(filter);
-		cq.select(from.get(Case.UUID));
+		cq.select(from.get(Action.UUID));
 
-		return em.createQuery(cq).getResultList();
-	}
-
-	public List<Action> getAllActiveActionsAfter(Date date, User user) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Action> cq = cb.createQuery(getElementClass());
-		Root<Action> from = cq.from(getElementClass());
-		ActionQueryContext queryContext = new ActionQueryContext(cb, cq, from);
-
-		Predicate filter = createActiveFilter(cb, queryContext.getJoins().getEvent());
-		if (user != null) {
-			Predicate userFilter = createUserFilter(queryContext);
-			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
-		}
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date);
-			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
-		}
-		if (filter != null) {
-			cq.where(filter);
-		}
-		cq.orderBy(cb.desc(from.get(Action.CHANGE_DATE)));
-		cq.distinct(true);
 		return em.createQuery(cq).getResultList();
 	}
 

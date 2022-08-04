@@ -575,7 +575,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			eventParticipantService.delete(eventParticipant, deletionDetails);
 		}
 
-		deleteSubordinateEvents(event);
+		removeFromSubordinateEvents(event);
 		deleteEventInExternalSurveillanceTool(event);
 
 		// Mark the event as deleted
@@ -615,7 +615,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		documentService.getRelatedToEntity(DocumentRelatedEntityType.EVENT, event.getUuid()).forEach(d -> documentService.markAsDeleted(d));
 
 		deleteEventInExternalSurveillanceTool(event);
-		deleteSubordinateEvents(event);
+		removeFromSubordinateEvents(event);
 
 		super.deletePermanent(event);
 	}
@@ -641,7 +641,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		CriteriaQuery<Event> cq = cb.createQuery(Event.class);
 		Root<Event> eventRoot = cq.from(Event.class);
 
-		cq.where(cb.equal(caseRoot.get(Event.EXTERNAL_ID), externalId), cb.equal(caseRoot.get(Event.DELETED), Boolean.FALSE));
+		cq.where(cb.equal(eventRoot.get(Event.EXTERNAL_ID), externalId), cb.equal(eventRoot.get(Event.DELETED), Boolean.FALSE));
 
 		return em.createQuery(cq).getResultList();
 	}

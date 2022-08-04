@@ -238,7 +238,7 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 	public void testEventAutomaticDeletion() {
 
 		createDeletionConfigurations();
-		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.IMMUNIZATION);
+		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.EVENT);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator
