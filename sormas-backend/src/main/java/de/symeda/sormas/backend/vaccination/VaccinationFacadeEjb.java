@@ -29,13 +29,12 @@ import javax.ejb.Stateless;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.EntityDto;
-import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.Vaccine;
@@ -562,7 +561,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 				? leadPersonVaccinations.stream().filter(v -> isDuplicateOf(vaccinationDto, v)).collect(Collectors.toList())
 				: new ArrayList<>();
 			duplicateLeadVaccinations.sort(Comparator.comparing(EntityDto::getChangeDate).reversed());
-			if(duplicateLeadVaccinations.size() > 0){
+			if (duplicateLeadVaccinations.size() > 0) {
 				VaccinationDto duplicateVaccination = duplicateLeadVaccinations.get(0);
 				VaccinationDto updatedVaccination = DtoHelper.copyDtoValues(duplicateVaccination, vaccinationDto, false);
 				save(updatedVaccination);
