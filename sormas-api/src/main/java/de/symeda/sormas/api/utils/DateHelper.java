@@ -38,6 +38,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -581,47 +582,55 @@ public final class DateHelper {
 		return calendar.getTime();
 	}
 
+	/**
+	 * Mimics previous behaviour before switching to java.time.
+	 */
+	private static Date handleNull(Date date) {
+
+		return Optional.ofNullable(date).orElse(UtilDate.now());
+	}
+
 	public static Date getStartOfDay(Date date) {
 
-		return UtilDate.from(UtilDate.toLocalDate(date).atStartOfDay());
+		return UtilDate.from(UtilDate.toLocalDate(handleNull(date)));
 	}
 
 	public static Date getEndOfDay(Date date) {
 
-		return UtilDate.from(UtilDate.toLocalDate(date).plusDays(1).atStartOfDay().minus(1, ChronoUnit.MILLIS));
+		return UtilDate.from(UtilDate.toLocalDate(handleNull(date)).plusDays(1).atStartOfDay().minus(1, ChronoUnit.MILLIS));
 	}
 
 	public static Date getStartOfWeek(Date date) {
 
-		LocalDate localDate = UtilDate.toLocalDate(date);
+		LocalDate localDate = UtilDate.toLocalDate(handleNull(date));
 		return UtilDate.from(localDate.minusDays(localDate.getDayOfWeek().getValue() - 1));
 	}
 
 	public static Date getEndOfWeek(Date date) {
 
-		LocalDate localDate = UtilDate.toLocalDate(date);
+		LocalDate localDate = UtilDate.toLocalDate(handleNull(date));
 		return getEndOfDay(UtilDate.from(localDate.plusDays(DayOfWeek.SUNDAY.getValue() - localDate.getDayOfWeek().getValue())));
 	}
 
 	public static Date getStartOfMonth(Date date) {
 
-		return UtilDate.from(UtilDate.toLocalDate(date).withDayOfMonth(1));
+		return UtilDate.from(UtilDate.toLocalDate(handleNull(date)).withDayOfMonth(1));
 	}
 
 	public static Date getEndOfMonth(Date date) {
 
-		LocalDate localDate = UtilDate.toLocalDate(date);
+		LocalDate localDate = UtilDate.toLocalDate(handleNull(date));
 		return getEndOfDay(UtilDate.from(localDate.plusMonths(1).withDayOfMonth(1).minusDays(1)));
 	}
 
 	public static Date getStartOfYear(Date date) {
 
-		return UtilDate.of(UtilDate.toLocalDate(date).getYear(), Month.JANUARY, 1);
+		return UtilDate.of(UtilDate.toLocalDate(handleNull(date)).getYear(), Month.JANUARY, 1);
 	}
 
 	public static Date getEndOfYear(Date date) {
 
-		return getEndOfDay(UtilDate.of(UtilDate.toLocalDate(date).getYear(), Month.DECEMBER, 31));
+		return getEndOfDay(UtilDate.of(UtilDate.toLocalDate(handleNull(date)).getYear(), Month.DECEMBER, 31));
 	}
 
 	public static boolean isBetween(Date date, Date start, Date end) {

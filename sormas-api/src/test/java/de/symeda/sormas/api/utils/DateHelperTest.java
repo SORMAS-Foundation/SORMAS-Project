@@ -450,11 +450,17 @@ public class DateHelperTest {
 	@Test
 	public void testGetStartOfDay() {
 
+		// Mimic previous behaviour before switching to java.time.
+		assertThat(DateHelper.getStartOfDay(null), equalTo(UtilDate.today()));
+
 		assertThat(DateHelper.getStartOfDay(UtilDate.now()), equalTo(UtilDate.today()));
 	}
 
 	@Test
 	public void testGetEndOfDay() {
+
+		// Mimic previous behaviour before switching to java.time.
+		assertThat(DateHelper.getEndOfDay(null), equalTo(UtilDate.from(LocalDate.now().plusDays(1).atStartOfDay().minus(1, ChronoUnit.MILLIS))));
 
 		Date date = UtilDate.of(2022, Month.MAY, 4);
 		Date expected = UtilDate.from(LocalDateTime.of(2022, Month.MAY, 5, 0, 0).minus(1, ChronoUnit.MILLIS));
@@ -465,6 +471,10 @@ public class DateHelperTest {
 	public void testGetStartOfWeek() {
 
 		LocalDate monday = LocalDate.now().minusDays(LocalDate.now().getDayOfWeek().getValue() - 1);
+
+		// Mimic previous behaviour before switching to java.time.
+		assertThat(DateHelper.getStartOfWeek(null), equalTo(UtilDate.from(monday)));
+
 		assertThat(DateHelper.getStartOfWeek(UtilDate.now()), equalTo(UtilDate.from(monday)));
 	}
 
@@ -472,6 +482,10 @@ public class DateHelperTest {
 	public void testGetEndOfWeek() {
 
 		LocalDate sunday = LocalDate.now().plusDays(7 - LocalDate.now().getDayOfWeek().getValue());
+
+		// Mimic previous behaviour before switching to java.time.
+		assertThat(DateHelper.getEndOfWeek(null), equalTo(DateHelper.getEndOfDay(UtilDate.from(sunday))));
+
 		assertThat(DateHelper.getEndOfWeek(UtilDate.now()), equalTo(DateHelper.getEndOfDay(UtilDate.from(sunday))));
 	}
 
@@ -479,6 +493,10 @@ public class DateHelperTest {
 	public void testGetStartOfMonth() {
 
 		LocalDate firstOfMonth = LocalDate.now().withDayOfMonth(1);
+
+		// Mimic previous behaviour before switching to java.time.
+		assertThat(DateHelper.getStartOfMonth(null), equalTo(UtilDate.from(firstOfMonth)));
+
 		assertThat(DateHelper.getStartOfMonth(UtilDate.now()), equalTo(UtilDate.from(firstOfMonth)));
 	}
 
@@ -486,6 +504,10 @@ public class DateHelperTest {
 	public void testGetEndOfMonth() {
 
 		LocalDate endOfMonth = LocalDate.now().plusMonths(1).withDayOfMonth(1).minusDays(1);
+
+		// Mimic previous behaviour before switching to java.time.
+		assertThat(DateHelper.getEndOfMonth(null), equalTo(DateHelper.getEndOfDay(UtilDate.from(endOfMonth))));
+
 		assertThat(DateHelper.getEndOfMonth(UtilDate.now()), equalTo(DateHelper.getEndOfDay(UtilDate.from(endOfMonth))));
 	}
 
@@ -493,6 +515,10 @@ public class DateHelperTest {
 	public void testGetStartOfYear() {
 
 		LocalDate firstOfYear = LocalDate.now().withDayOfMonth(1).withMonth(1);
+
+		// Mimic previous behaviour before switching to java.time.
+		assertThat(DateHelper.getStartOfYear(null), equalTo(UtilDate.from(firstOfYear)));
+
 		assertThat(DateHelper.getStartOfYear(UtilDate.now()), equalTo(UtilDate.from(firstOfYear)));
 	}
 
@@ -500,6 +526,10 @@ public class DateHelperTest {
 	public void testGetEndOfYear() {
 
 		LocalDate endOfYear = LocalDate.now().withMonth(12).withDayOfMonth(31);
+
+		// Mimic previous behaviour before switching to java.time.
+		assertThat(DateHelper.getEndOfYear(null), equalTo(DateHelper.getEndOfDay(UtilDate.from(endOfYear))));
+
 		assertThat(DateHelper.getEndOfYear(UtilDate.now()), equalTo(DateHelper.getEndOfDay(UtilDate.from(endOfYear))));
 	}
 
