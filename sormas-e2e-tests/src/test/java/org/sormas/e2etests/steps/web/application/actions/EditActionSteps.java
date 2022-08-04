@@ -39,6 +39,7 @@ import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Action;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
 
@@ -83,15 +84,8 @@ public class EditActionSteps implements En {
     When(
         "I check if ([^\"]*) file is downloaded correctly from Event Action tab",
         (String filename) -> {
-          String file = userDirPath + "/downloads/" + filename;
-          Path path = Paths.get(file);
-          assertHelpers.assertWithPoll(
-              () ->
-                  Assert.assertTrue(
-                      Files.exists(path),
-                      filename + " wasn't downloaded: " + path.toAbsolutePath()),
-              30);
-          Files.delete(path); // clean
+            FilesHelper.waitForFileToDownload(filename, 50);
+            FilesHelper.deleteFile(filename);
         });
     When(
         "I download last updated document file from Event Action tab",

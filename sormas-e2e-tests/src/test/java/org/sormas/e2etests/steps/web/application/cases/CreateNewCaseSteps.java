@@ -54,8 +54,10 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FACI
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FACILITY_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FIRST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FIRST_NAME_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FIRST_NAME_NO_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LAST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LAST_NAME_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LAST_NAME_NO_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LINE_LISTING_DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LINE_LISTING_DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NATIONAL_HEALTH_ID_ATTRIBUTE;
@@ -1039,6 +1041,20 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+
+    When(
+        "I check if first and last person name for case person tab is correct",
+        () -> {
+          softly.assertEquals(
+              caze.getFirstName(),
+              webDriverHelpers.getValueFromWebElement(FIRST_NAME_NO_POPUP_INPUT),
+              "First names are not equal");
+          softly.assertEquals(
+              caze.getLastName(),
+              webDriverHelpers.getValueFromWebElement(LAST_NAME_NO_POPUP_INPUT),
+              "First names are not equal");
+          softly.assertAll();
         });
 
     When("I copy url of current case", () -> currentUrl = webDriverHelpers.returnURL());

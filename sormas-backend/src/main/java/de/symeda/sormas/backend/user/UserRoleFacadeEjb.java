@@ -249,8 +249,8 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		target.setEnabled(source.isEnabled());
 		target.setCaption(source.getCaption());
 		target.setDescription(source.getDescription());
-		target.setHasOptionalHealthFacility(source.hasOptionalHealthFacility());
-		target.setHasAssociatedDistrictUser(source.hasAssociatedDistrictUser());
+		target.setHasOptionalHealthFacility(source.getHasOptionalHealthFacility());
+		target.setHasAssociatedDistrictUser(source.getHasAssociatedDistrictUser());
 		target.setPortHealthUser(source.isPortHealthUser());
 		target.setEmailNotificationTypes(new HashSet<>(source.getEmailNotificationTypes()));
 		target.setSmsNotificationTypes(new HashSet<>(source.getSmsNotificationTypes()));
@@ -383,6 +383,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
+				case UserRoleDto.UUID:
 				case UserRoleDto.CAPTION:
 				case UserRoleDto.JURISDICTION_LEVEL:
 				case UserRoleDto.DESCRIPTION:

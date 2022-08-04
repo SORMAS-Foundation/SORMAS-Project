@@ -454,7 +454,6 @@ Feature: Contacts end to end tests
     And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab for UI created contact in Edit Contact directory
     And I navigate to the last created contact via the url
     And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab in Edit Contact directory
-    And I delete downloaded file created from Quarantine order
 
   @tmsLink=SORDEV-8048 @env_de
   Scenario: Test Default value for disease if only one is used by the server for Contacts
@@ -948,7 +947,7 @@ Feature: Contacts end to end tests
     And I check if reason for deletion as "Löschen auf Anforderung einer anderen Behörde" is available
     And I check if reason for deletion as "Entität ohne Rechtsgrund angelegt" is available
     And I check if reason for deletion as "Abgabe des Vorgangs wegen Nicht-Zuständigkeit" is available
-    And I check if reason for deletion as "Löschen von Dublikaten" is available
+    And I check if reason for deletion as "Löschen von Duplikaten" is available
     And I check if reason for deletion as "Anderer Grund" is available
     Then I click on No option in Confirm deletion popup
     Then I click on Delete button from contact
@@ -1147,4 +1146,3 @@ Feature: Contacts end to end tests
     And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab for UI created contact in Edit Contact directory for DE
     And I navigate to the last created contact via the url
     And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab in Edit Contact directory for DE
-    And I delete downloaded file created from Quarantine order

@@ -750,6 +750,17 @@ public class CreateNewSampleSteps implements En {
     When(
         "I check if Update case disease variant popup is available",
         () -> webDriverHelpers.isElementVisibleWithTimeout(UPDATE_CASE_DISEASE_VARIANT, 10));
+
+    When(
+        "I create sample with {string} as a Laboratory",
+        (String labor) -> {
+          sample = sampleService.buildSampleWithParametrizedLaboratory(labor);
+          selectPurposeOfSample(sample.getPurposeOfTheSample(), SAMPLE_PURPOSE_OPTIONS);
+          fillDateOfCollection(sample.getDateOfCollection());
+          fillTimeOfCollection(sample.getTimeOfCollection());
+          selectSampleType(sample.getSampleType());
+          selectLaboratory(sample.getLaboratory());
+        });
   }
 
   private void selectPurposeOfSample(String samplePurpose, By element) {

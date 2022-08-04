@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -627,5 +628,104 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(taskContexts.containsAll(Arrays.asList(TaskContext.GENERAL, TaskContext.CASE, TaskContext.TRAVEL_ENTRY)));
 		assertFalse(taskContexts.contains(TaskContext.CONTACT));
 		assertFalse(taskContexts.contains(TaskContext.EVENT));
+	}
+
+	@Test
+	public void testUserWithoutEventViewRightSeeHisAssignTask() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto noEventNoCaseViewUser = creator.createUser(
+			rdcf,
+			creator.createUserRole(
+				"NoEventNoCaseView",
+				JurisdictionLevel.NATION,
+				UserRight.CASE_VIEW,
+				UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS,
+				UserRight.TRAVEL_ENTRY_VIEW));
+
+		EventDto eventDto = creator.createEvent(user.toReference());
+		TaskDto taskEvent1 = creator.createTask(
+			TaskContext.EVENT,
+			TaskType.OTHER,
+			TaskStatus.PENDING,
+			null,
+			null,
+			eventDto.toReference(),
+			DateHelper.addDays(new Date(), 1),
+			user.toReference());
+		TaskDto taskEvent2 = creator.createTask(
+			TaskContext.EVENT,
+			TaskType.OTHER,
+			TaskStatus.PENDING,
+			null,
+			null,
+			eventDto.toReference(),
+			DateHelper.addDays(new Date(), 1),
+			noEventNoCaseViewUser.toReference());
+
+		TaskCriteria taskCriteria = new TaskCriteria();
+		taskCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+
+		List<TaskIndexDto> taskIndexDtos = getTaskFacade().getIndexList(taskCriteria, 0, 100, null);
+		assertEquals(2, taskIndexDtos.size());
+		List<String> tasksIds = taskIndexDtos.stream().map(t -> t.getUuid()).collect(Collectors.toList());
+		assertTrue(tasksIds.contains(taskEvent1.getUuid()));
+		assertTrue(tasksIds.contains(taskEvent2.getUuid()));
+
+		loginWith(noEventNoCaseViewUser);
+		assertFalse(getUserService().hasRight(UserRight.EVENT_VIEW));
+		assertFalse(getUserService().hasRight(UserRight.CONTACT_VIEW));
+		assertTrue(getUserService().hasRight(UserRight.CASE_VIEW));
+		assertTrue(getUserService().hasRight(UserRight.TRAVEL_ENTRY_VIEW));
+
+		taskIndexDtos = getTaskFacade().getIndexList(taskCriteria, 0, 100, null);
+		assertNotNull(taskIndexDtos);
+		tasksIds = taskIndexDtos.stream().map(t -> t.getUuid()).collect(Collectors.toList());
+		assertFalse(tasksIds.contains(taskEvent1.getUuid()));
+		assertTrue(tasksIds.contains(taskEvent2.getUuid()));
+	}
+
+	@Test
+	public void testUserWithoutEventViewRightSeeHisObservedTask() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto noEventNoCaseViewUser = creator.createUser(
+			rdcf,
+			creator.createUserRole(
+				"NoEventNoCaseView",
+				JurisdictionLevel.NATION,
+				UserRight.CASE_VIEW,
+				UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS,
+				UserRight.TRAVEL_ENTRY_VIEW));
+
+		EventDto eventDto = creator.createEvent(user.toReference());
+
+		TaskDto taskEvent1 = creator.createTask(TaskContext.EVENT, eventDto.toReference(), t -> {
+			t.setObserverUsers(Stream.of(user.toReference()).collect(Collectors.toSet()));
+		});
+		TaskDto taskEvent2 = creator.createTask(TaskContext.EVENT, eventDto.toReference(), t -> {
+			t.setObserverUsers(Stream.of(noEventNoCaseViewUser.toReference()).collect(Collectors.toSet()));
+		});
+
+		TaskCriteria taskCriteria = new TaskCriteria();
+		taskCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+
+		List<TaskIndexDto> taskIndexDtos = getTaskFacade().getIndexList(taskCriteria, 0, 100, null);
+		assertEquals(2, taskIndexDtos.size());
+		List<String> tasksIds = taskIndexDtos.stream().map(t -> t.getUuid()).collect(Collectors.toList());
+		assertTrue(tasksIds.contains(taskEvent1.getUuid()));
+		assertTrue(tasksIds.contains(taskEvent2.getUuid()));
+
+		loginWith(noEventNoCaseViewUser);
+		assertFalse(getUserService().hasRight(UserRight.EVENT_VIEW));
+		assertFalse(getUserService().hasRight(UserRight.CONTACT_VIEW));
+		assertTrue(getUserService().hasRight(UserRight.CASE_VIEW));
+		assertTrue(getUserService().hasRight(UserRight.TRAVEL_ENTRY_VIEW));
+
+		taskIndexDtos = getTaskFacade().getIndexList(taskCriteria, 0, 100, null);
+		assertNotNull(taskIndexDtos);
+		tasksIds = taskIndexDtos.stream().map(t -> t.getUuid()).collect(Collectors.toList());
+		assertFalse(tasksIds.contains(taskEvent1.getUuid()));
+		assertTrue(tasksIds.contains(taskEvent2.getUuid()));
 	}
 }

@@ -54,7 +54,7 @@ public class UserRoleDto extends EntityDto {
 	public static final String NOTIFICATION_TYPES = "notificationTypes";
 
 	private Set<UserRight> userRights;
-	private boolean enabled;
+	private boolean enabled = true;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String caption;

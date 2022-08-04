@@ -55,6 +55,11 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 	private String description;
 	private List<CustomizableEnumTranslation> descriptionTranslations;
 	private Map<String, Object> properties;
+	/**
+	 * Whether the value is a default value provided by the software. Default values don't need a caption
+	 * or translations because they can be translated via properties files.
+	 */
+	private boolean defaultValue;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
@@ -131,5 +136,14 @@ public class CustomizableEnumValue extends AbstractDomainObject {
 
 	public void setProperties(Map<String, Object> properties) {
 		this.properties = properties;
+	}
+
+	@Column
+	public boolean isDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(boolean defaultValue) {
+		this.defaultValue = defaultValue;
 	}
 }

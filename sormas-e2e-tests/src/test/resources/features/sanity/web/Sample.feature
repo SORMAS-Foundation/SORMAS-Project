@@ -262,3 +262,32 @@ Feature: Sample Functionalities
     And I save the created sample
     And I confirm update case result
     Then I check if Update case disease variant popup is available
+
+  @tmsLink=SORDEV-6849 @env_main
+  Scenario: Test Lab officers should have full access to entities whose sample was assigned to the lab officers lab
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create new case with COVID-19 and variant "B.1.1.529.5 - BA.5 (Omicron)"
+    And I click on New Sample
+    When I collect the sample UUID displayed on create new sample page
+    Then I create sample with "Voreingestelltes Labor" as a Laboratory
+    And I save the created sample
+    And I click on logout button from navbar
+    Given I log in as a Laboratory Officer
+    Then I check if "Cases" tab is available
+    And I check if "Contacts" tab is available
+    And I click on the Sample button from navbar
+    And I search for Sample using Sample UUID from the created Sample
+    When I open created Sample
+    Then I navigate to case tab
+    Then I navigate to case person tab
+    And I check if first and last person name for case person tab is correct
+    Then I navigate to Contacts tab in Edit case page
+    And I click on new contact button from Case Contacts tab
+    Then I click on discard button from new task
+    And I click on the Sample button from navbar
+    And I search for Sample using Sample UUID from the created Sample
+    When I open created Sample
+    Then I set type of sample to "Sera" on Sample Edit page
+    Then I set date sample was collected to yesterday on Sample Edit page

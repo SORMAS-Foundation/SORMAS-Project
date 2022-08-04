@@ -895,7 +895,6 @@ Feature: Case end to end tests
     And I filter by CaseID of last created UI Case on Case directory page
     Then I open last created case
     And I check if generated document based on "ExampleDocumentTemplateCases.docx" appeared in Documents tab for UI created case in Edit Case directory
-    And I delete downloaded file created from Quarantine order
 
   @tmsLink=SORDEV-9477 @env_main
   Scenario: Add a person search option on creation forms
@@ -1436,7 +1435,7 @@ Feature: Case end to end tests
     And I check if reason for deletion as "Löschen auf Anforderung einer anderen Behörde" is available
     And I check if reason for deletion as "Entität ohne Rechtsgrund angelegt" is available
     And I check if reason for deletion as "Abgabe des Vorgangs wegen Nicht-Zuständigkeit" is available
-    And I check if reason for deletion as "Löschen von Dublikaten" is available
+    And I check if reason for deletion as "Löschen von Duplikaten" is available
     And I check if reason for deletion as "Anderer Grund" is available
     Then I click on No option in Confirm deletion popup
     Then I click on Delete button from case
@@ -1680,7 +1679,6 @@ Feature: Case end to end tests
     And I filter by CaseID of last created UI Case on Case directory page
     Then I open last created case
     And I check if generated document based on "ExampleDocumentTemplateCases.docx" appeared in Documents tab for UI created case in Edit Case directory for DE
-    And I delete downloaded file created from Quarantine order
 
   @tmsLink=SORDEV-6839 @env_main
   Scenario: Check the split of jurisdiction and place of stay

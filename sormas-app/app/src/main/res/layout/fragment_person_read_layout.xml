@@ -338,8 +338,15 @@
             <de.symeda.sormas.app.component.controls.ControlTextReadField
                 android:id="@+id/person_occupationType"
                 app:value="@{data.occupationType}"
-                app:appendValue="@{data.occupationDetails}"
-                app:valueFormat="@string/two_strings_with_hyphen_format"
+                style="@style/ControlSingleColumnStyle" />
+
+
+            <de.symeda.sormas.app.component.controls.ControlTextReadField
+                android:id="@+id/person_occupationDetails"
+                app:value="@{data.occupationDetails}"
+                app:customizableEnumField="@{personOccupationType}"
+                app:customizableEnumProperty="@{OccupationType.HAS_DETAILS}"
+                app:customizableEnumValue="@{Boolean.TRUE}"
                 style="@style/ControlSingleColumnStyle" />
 
             <de.symeda.sormas.app.component.controls.ControlTextReadField

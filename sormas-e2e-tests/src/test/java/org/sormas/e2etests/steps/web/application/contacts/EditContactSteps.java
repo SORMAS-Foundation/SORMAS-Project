@@ -52,6 +52,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATI
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CASE_OR_EVENT_INFORMATION_CONTACT_TEXT_AREA;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.EXTERNAL_TOKEN_CONTACT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RELATIONSHIP_WITH_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
@@ -90,6 +91,7 @@ import org.sormas.e2etests.entities.services.ContactService;
 import org.sormas.e2etests.enums.TaskTypeValues;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.vaccination.CreateNewVaccinationSteps;
@@ -187,16 +189,8 @@ public class EditContactSteps implements En {
         "I check if generated document for Contact based on {string} was downloaded properly",
         (String name) -> {
           String uuid = apiState.getCreatedContact().getUuid();
-          String pathToFile =
-              userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name;
-          Path path = Paths.get(pathToFile);
-          assertHelpers.assertWithPoll(
-              () ->
-                  Assert.assertTrue(
-                      Files.exists(path),
-                      "Contact document was not downloaded. Path used for check: "
-                          + path.toAbsolutePath()),
-              120);
+          String pathToFile = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          FilesHelper.waitForFileToDownload(pathToFile, 50);
         });
     When(
         "I check if generated document for contact based on {string} contains all required fields",
@@ -721,16 +715,8 @@ public class EditContactSteps implements En {
         "I check if downloaded file is correct for {string} Quarantine Order in Edit Contact directory",
         (String name) -> {
           String uuid = apiState.getCreatedContact().getUuid();
-          Path path =
-              Paths.get(
-                  userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name);
-          assertHelpers.assertWithPoll(
-              () ->
-                  Assert.assertTrue(
-                      Files.exists(path),
-                      "Quarantine order document was not downloaded. Path used for check: "
-                          + path.toAbsolutePath()),
-              120);
+          String filePath = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          FilesHelper.waitForFileToDownload(filePath, 50);
         });
     When(
         "I check if generated document based on {string} appeared in Documents tab in Edit Contact directory",
@@ -758,10 +744,8 @@ public class EditContactSteps implements En {
         "I delete downloaded file created from {string} Document Template for Contact",
         (String name) -> {
           String uuid = apiState.getCreatedContact().getUuid();
-          String toDelete =
-              userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name;
-          Path path = Paths.get(toDelete);
-          Files.delete(path);
+          String filePath = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          FilesHelper.deleteFile(filePath);
         });
     When(
         "I select {string} template in Document Template form",
@@ -988,11 +972,9 @@ public class EditContactSteps implements En {
     When(
         "I check if ([^\"]*) file for contact is downloaded correctly",
         (String fileType) -> {
-          String file = "./downloads/testContact_" + fileType + "." + fileType;
-          Path path = Paths.get(file);
-          softly.assertTrue(Files.exists(path));
-          softly.assertAll();
-          Files.delete(path); // clean
+          String filePath = "testContact_" + fileType + "." + fileType;
+          FilesHelper.waitForFileToDownload(filePath, 50);
+          FilesHelper.deleteFile(filePath);
         });
 
     When(
@@ -1149,6 +1131,13 @@ public class EditContactSteps implements En {
               webDriverHelpers.isElementEnabled(CASE_OR_EVENT_INFORMATION_CONTACT_TEXT_AREA),
               "Case or event information text area is enabled");
           softly.assertAll();
+        });
+
+    And(
+        "I set contact vaccination status to ([^\"]*)",
+        (String vaccinationStatus) -> {
+          webDriverHelpers.selectFromCombobox(VACCINATION_STATUS_COMBOBOX, vaccinationStatus);
+          webDriverHelpers.clickOnWebElementBySelector(COMMIT_BUTTON);
         });
 
     And(
