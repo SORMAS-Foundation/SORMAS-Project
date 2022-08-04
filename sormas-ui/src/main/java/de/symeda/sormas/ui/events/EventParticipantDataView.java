@@ -31,6 +31,8 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.user.UserRight;
@@ -195,16 +197,15 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
 					EventParticipantDto refreshedEventParticipant =
 						FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(getReference().getUuid());
+					RegionReferenceDto region =
+						refreshedEventParticipant.getRegion() != null ? refreshedEventParticipant.getRegion() : event.getEventLocation().getRegion();
+					DistrictReferenceDto district = refreshedEventParticipant.getDistrict() != null
+						? refreshedEventParticipant.getDistrict()
+						: event.getEventLocation().getDistrict();
 					return vaccinationCriteria.vaccinationAssociationType(VaccinationAssociationType.EVENT_PARTICIPANT)
 						.eventParticipantReference(getReference())
-						.region(
-							refreshedEventParticipant.getRegion() != null
-								? refreshedEventParticipant.getRegion()
-								: event.getEventLocation().getRegion())
-						.district(
-							refreshedEventParticipant.getDistrict() != null
-								? refreshedEventParticipant.getDistrict()
-								: event.getEventLocation().getDistrict());
+						.region(region)
+						.district(district);
 				}, this::showUnsavedChangesPopup)), VACCINATIONS_LOC);
 			}
 		}
