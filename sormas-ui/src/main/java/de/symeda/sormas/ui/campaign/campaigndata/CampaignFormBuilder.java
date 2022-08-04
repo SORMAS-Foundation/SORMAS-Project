@@ -647,18 +647,12 @@ public class CampaignFormBuilder {
 					field.setEnabled(true);
 				} else if (value.equals(false)) {
 					field.setEnabled(false);
-					// Notification.show("Warning:", "Expression resulted in wrong value please
-					// check your data 4", Notification.TYPE_WARNING_MESSAGE);
 				}
 			}
 			;
 			if (value != null) {
 				String dxz = options.get(value);
-				//String dcxsq = value.toString().replace("[", "").replace("]", "").replaceAll(", ", ",");
-				//String strArraxyq[] = dcxsq.split(",");
-				//for (int i = 0; i < strArraxyq.length; i++) {
 					((ComboBox) field).select(value);
-				//}
 			}
 			;
 

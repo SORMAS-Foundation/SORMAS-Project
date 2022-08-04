@@ -617,7 +617,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                 mTabHost.addTab(spec);
                 mTabHost.getTabWidget().getChildAt(3).getLayoutParams().width = 140;
             }
-            if (dayy > 4) {
+          /*  if (dayy > 4) {
                 spec = mTabHost.newTabSpec("tab5").setIndicator("D5",//caption_1,
                         res.getDrawable(R.drawable.ic_clear_black_24dp))
                         .setContent(R.id.tabSheet5);
@@ -646,7 +646,7 @@ public class CampaignFormDataReadFragment extends BaseReadFragment<FragmentCampa
                 mTabHost.getTabWidget().getChildAt(7).getLayoutParams().width = 140;
             }
 
-
+*/
 
         }
 

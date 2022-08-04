@@ -57,13 +57,23 @@ public class CampaignDashboardView extends AbstractDashboardView {
 		setSizeFull();
 		setMargin(false);
 		setSpacing(false);
-		addStyleName("setwith-700px");
+		//addStyleName("setwith-700px");
 
 		
-		filterLayout.addStyleName("view-headerxxxx");
-		filterLayout.setHeightUndefined();
+		//filterLayout.addStyleName("view-headerxxxx");
+	//	filterLayout.setHeightUndefined();
 		filterLayout.setMargin(new MarginInfo(false, true));
 		filterLayout.setSpacing(true);
+		
+		
+		filterLayout.setHeightUndefined();
+		filterLayout.setWidthFull();
+		filterLayout.setSizeUndefined();
+		//filterLayout.setMargin(new MarginInfo(false, true));
+	//	filterLayout.setSpacing(false);
+		
+		
+		
 		
 		
 		

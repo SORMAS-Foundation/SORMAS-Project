@@ -29,11 +29,11 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
-public interface CommunityFacade extends GeoLocationFacade<CommunityDto, CommunityDto, CommunityReferenceDto, CommunityCriteria> {
+public interface CommunityFacade extends GeoLocationFacade<CommunityDto, CommunityDto, CommunityReferenceDto, CommunityCriteriaNew> {
 
 	List<CommunityReferenceDto> getAllActiveByDistrict(String districtUuid);
 
-	Page<CommunityDto> getIndexPage(CommunityCriteria communityCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
+	Page<CommunityDto> getIndexPage(CommunityCriteriaNew communityCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 
 	CommunityReferenceDto getCommunityReferenceByUuid(String uuid);
 

@@ -164,7 +164,8 @@ public class CampaignFormDataFragmentUtils {
 		CampaignFormElement campaignFormElement,
 		Context context,
 		Map<String, String> userTranslations,
-		Boolean isIntegerField) {
+		Boolean isIntegerField,
+		Boolean isRequired) {
 		return new ControlTextEditField(context) {
 
 			@Override
@@ -207,7 +208,7 @@ public class CampaignFormDataFragmentUtils {
 				super.inflateView(context, attrs, defStyle);
 				initLabel();
 				initLabelAndValidationListeners();
-				initInput(isIntegerField);
+				initInput(isIntegerField, isRequired);
 			}
 		};
 	}
@@ -258,7 +259,7 @@ public class CampaignFormDataFragmentUtils {
 			Context context,
 			Map<String, String> userTranslations,
 			Boolean isIntegerField,
-			FragmentManager fm) {
+			FragmentManager fm, boolean isRequired) {
 		return new ControlDateField(context) {
 
 			@Override
@@ -290,7 +291,7 @@ public class CampaignFormDataFragmentUtils {
 				initLabelAndValidationListeners();
 
 				initializeDateField(fm);
-				initInput(true);
+				initInput(true, isRequired);
 			}
 		};
 	}
@@ -328,6 +329,8 @@ public class CampaignFormDataFragmentUtils {
 				super.inflateView(context, attrs, defStyle);
 				initLabel();
 				initLabelAndValidationListeners();
+				//required = true;
+
 				initInput();
 			}
 		};
