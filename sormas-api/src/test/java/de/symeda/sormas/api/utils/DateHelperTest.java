@@ -556,39 +556,4 @@ public class DateHelperTest {
 
 		assertThat(DateHelper.getEndOfYear(UtilDate.now()), equalTo(DateHelper.getEndOfDay(UtilDate.from(endOfYear))));
 	}
-
-	@Test
-	public void testFindDateBounds() {
-
-		// Invalid entries
-		assertNull(DateHelper.findDateBounds(null));
-		assertNull(DateHelper.findDateBounds(""));
-		assertNull(DateHelper.findDateBounds(" "));
-		assertNull(DateHelper.findDateBounds("yesterday"));
-
-		// Year precision
-		assertEqualDateRange(DateHelper.findDateBounds("90"), LocalDate.of(1990, Month.JANUARY, 1), LocalDate.of(1991, Month.JANUARY, 1));
-		assertEqualDateRange(DateHelper.findDateBounds("08"), LocalDate.of(2008, Month.JANUARY, 1), LocalDate.of(2009, Month.JANUARY, 1));
-		assertEqualDateRange(DateHelper.findDateBounds("1830"), LocalDate.of(1830, Month.JANUARY, 1), LocalDate.of(1831, Month.JANUARY, 1));
-
-		int currentYear = LocalDate.now().getYear();
-
-		// Month precision
-		assertEqualDateRange(DateHelper.findDateBounds("3/01"), LocalDate.of(2001, Month.MARCH, 1), LocalDate.of(2001, Month.APRIL, 1));
-		assertEqualDateRange(DateHelper.findDateBounds("3/"), LocalDate.of(currentYear, Month.MARCH, 1), LocalDate.of(currentYear, Month.APRIL, 1));
-
-		// Day precision
-		assertEqualDateRange(DateHelper.findDateBounds("3/4/2012"), LocalDate.of(2012, Month.APRIL, 3), LocalDate.of(2012, Month.APRIL, 4));
-		assertEqualDateRange(DateHelper.findDateBounds("3/4/"), LocalDate.of(currentYear, Month.APRIL, 3), LocalDate.of(currentYear, Month.APRIL, 4));
-
-		// Currently not working conversions
-		assertNull(DateHelper.findDateBounds("3.01"));
-		assertNull(DateHelper.findDateBounds("3.4.2012"));
-	}
-
-	private static void assertEqualDateRange(Date[] actualRange, LocalDate expectedBegin, LocalDate expectedEnd) {
-
-		assertThat(actualRange[0], equalTo(UtilDate.from(expectedBegin)));
-		assertThat(actualRange[1], equalTo(UtilDate.from(expectedEnd)));
-	}
 }
