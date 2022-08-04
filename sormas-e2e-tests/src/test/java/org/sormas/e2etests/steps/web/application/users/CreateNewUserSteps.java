@@ -50,12 +50,9 @@ public class CreateNewUserSteps implements En {
   public static User editUser;
   public static String userName;
   public static String userPass;
-  public static String userAfirstName;
-  public static String userAlastName;
-  public static String userBfirstName;
-  public static String userBlastName;
   private final BaseSteps baseSteps;
   private static int amountOfRecords;
+  public HashMap<String, String> userWithRegion = new HashMap<String, String>();
 
   @Inject
   public CreateNewUserSteps(
@@ -354,18 +351,30 @@ public class CreateNewUserSteps implements En {
         });
 
     And(
-        "I create first new user for test with Bayern jurisdiction",
-        () -> {
+        "I create new user for test with {string} jurisdiction and {string} roles",
+        (String jurisdiction, String role) -> {
           user = userService.buildGeneratedUserWithRole("Clinician");
           fillFirstName(user.getFirstName());
           fillLastName(user.getLastName());
           fillEmailAddress(user.getEmailAddress());
           fillPhoneNumber(user.getPhoneNumber());
           selectLanguage(user.getLanguage());
-          selectCountry("Germany");
-          selectRegion("Bayern");
-          selectDistrict("LK Ansbach");
-          selectCommunity("Aurach");
+          switch (jurisdiction) {
+            case "Bayern":
+              System.out.println("Bayern");
+              selectCountry("Germany");
+              selectRegion("Bayern");
+              selectDistrict("LK Ansbach");
+              selectCommunity("Aurach");
+              break;
+            case "Saarland":
+              System.out.println("Bayern");
+              selectCountry("Germany");
+              selectRegion("Saarland");
+              selectDistrict("LK Saarlouis");
+              selectCommunity("Lebach");
+              break;
+          }
           selectFacilityCategory(user.getFacilityCategory());
           selectFacilityType(user.getFacilityType());
           selectFacility(user.getFacility());
@@ -381,64 +390,33 @@ public class CreateNewUserSteps implements En {
           fillGpsAccuracy(user.getGpsAccuracy());
           selectActive(user.getActive());
           fillUserName(user.getUserName());
-          selectUserRole("Clinician");
-          selectUserRole("Surveillance Supervisor");
-          selectUserRole("Contact Supervisor");
-          selectSecondRegion("Bayern");
+
+          List<String> roles = Arrays.asList(role.split(","));
+          for (String temp : roles) {
+            selectUserRole(temp);
+            if (temp.equals("Clinician")) {
+              switch (jurisdiction) {
+                case "Bayern":
+                  selectSecondRegion("Bayern");
+                  break;
+                case "Saarland":
+                  selectSecondRegion("Saarland");
+                  break;
+              }
+            }
+          }
+
           userName = user.getUserName();
-          userAfirstName = user.getFirstName();
-          userAlastName = user.getLastName();
           webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          userWithRegion.put(
+              String.format(user.getFirstName() + " " + user.getLastName()), jurisdiction);
           closeNewPasswordPopUp();
-
-          System.out.println(userAfirstName);
-          System.out.println(userAlastName);
-        });
-
-    And(
-        "I create second new user for test with Saarland jurisdiction",
-        () -> {
-          user = userService.buildGeneratedUserWithRole("Clinician");
-          fillFirstName(user.getFirstName());
-          fillLastName(user.getLastName());
-          fillEmailAddress(user.getEmailAddress());
-          fillPhoneNumber(user.getPhoneNumber());
-          selectLanguage(user.getLanguage());
-          selectCountry("Germany");
-          selectRegion("Saarland");
-          selectDistrict("LK Saarlouis");
-          selectCommunity("Lebach");
-          selectFacilityCategory(user.getFacilityCategory());
-          selectFacilityType(user.getFacilityType());
-          selectFacility(user.getFacility());
-          fillFacilityNameAndDescription(user.getFacilityNameAndDescription());
-          fillStreet(user.getStreet());
-          fillHouseNr(user.getHouseNumber());
-          fillAdditionalInformation(user.getAdditionalInformation());
-          fillPostalCode(user.getPostalCode());
-          fillCity(user.getCity());
-          selectAreaType(user.getAreaType());
-          fillGpsLatitude(user.getGpsLatitude());
-          fillGpsLongitude(user.getGpsLongitude());
-          fillGpsAccuracy(user.getGpsAccuracy());
-          selectActive(user.getActive());
-          fillUserName(user.getUserName());
-          selectUserRole("Clinician");
-          selectUserRole("Surveillance Supervisor");
-          selectUserRole("Contact Supervisor");
-          selectSecondRegion("Saarland");
-          userName = user.getUserName();
-          userBfirstName = user.getFirstName();
-          userBlastName = user.getLastName();
-          webDriverHelpers.scrollToElement(SAVE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
-          closeNewPasswordPopUp();
-
-          System.out.println(userBfirstName);
-          System.out.println(userBlastName);
+          userWithRegion.forEach(
+              (k, v) -> {
+                System.out.println(k + " " + v);
+              });
         });
   }
 

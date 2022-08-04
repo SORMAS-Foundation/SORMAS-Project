@@ -1573,15 +1573,16 @@ Feature: Case end to end tests
     And I save the created sample
     And I check that text appearing in hover over Expected Follow-up is based on Symptoms collection date
 
-  @issue=SORQA-8483 @env_main
+  @tmsLink=SORQA-8483 @env_main
   Scenario: Test Assigned to user list of task should consider related entities jurisdiction
     Given I log in as a Admin User
     And I click on the Users from navbar
     And I click on the NEW USER button
-    And I create first new user for test with Bayern jurisdiction
+    And I create new user for test with "Bayern" jurisdiction and "Clinician,Surveillance Supervisor,Contact Supervisor" roles
     And I click on the NEW USER button
-    And I create second new user for test with Saarland jurisdiction
+    And I create new user for test with "Saarland" jurisdiction and "Clinician,Surveillance Supervisor,Contact Supervisor" roles
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data
-    And I open last created case
+    And I click on New Task from Case page
+
