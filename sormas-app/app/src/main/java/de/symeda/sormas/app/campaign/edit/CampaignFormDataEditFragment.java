@@ -236,16 +236,16 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                           dynamicField = createControlCheckBoxField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
                           ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, Boolean.valueOf(value));
                       } else if (type == CampaignFormElementType.NUMBER || type == CampaignFormElementType.DECIMAL || type == CampaignFormElementType.RANGE) {
-                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true);
+                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, campaignFormElement.isImportant());
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DROPDOWN) {
                           dynamicField = createControlSpinnerFieldEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), optionsValues);
                           ControlSpinnerField.setValue((ControlSpinnerField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DATE) {
-                          dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager());
+                          dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager(), campaignFormElement.isImportant());
                           ControlDateField.setValue((ControlDateField) dynamicField, getDateValue(value));
                       } else {
-                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false);
+                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false, campaignFormElement.isImportant());
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
                       }
 
@@ -287,16 +287,16 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                           dynamicField = createControlCheckBoxField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
                           ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, Boolean.valueOf(value));
                       } else if (type == CampaignFormElementType.NUMBER || type == CampaignFormElementType.DECIMAL || type == CampaignFormElementType.RANGE) {
-                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true);
+                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, campaignFormElement.isImportant());
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DROPDOWN) {
                           dynamicField = createControlSpinnerFieldEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), optionsValues);
                           ControlSpinnerField.setValue((ControlSpinnerField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DATE) {
-                          dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager());
+                          dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager(), campaignFormElement.isImportant());
                           ControlDateField.setValue((ControlDateField) dynamicField, getDateValue(value));
                       } else {
-                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false);
+                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false, campaignFormElement.isImportant());
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
                       }
 
@@ -338,16 +338,16 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                           dynamicField = createControlCheckBoxField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
                           ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, Boolean.valueOf(value));
                       } else if (type == CampaignFormElementType.NUMBER || type == CampaignFormElementType.DECIMAL || type == CampaignFormElementType.RANGE) {
-                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true);
+                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, campaignFormElement.isImportant());
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DROPDOWN) {
                           dynamicField = createControlSpinnerFieldEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), optionsValues);
                           ControlSpinnerField.setValue((ControlSpinnerField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DATE) {
-                          dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager());
+                          dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager(), campaignFormElement.isImportant());
                           ControlDateField.setValue((ControlDateField) dynamicField, getDateValue(value));
                       } else {
-                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false);
+                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false, campaignFormElement.isImportant());
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
                       }
 
@@ -389,16 +389,16 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                           dynamicField = createControlCheckBoxField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
                           ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, Boolean.valueOf(value));
                       } else if (type == CampaignFormElementType.NUMBER || type == CampaignFormElementType.DECIMAL || type == CampaignFormElementType.RANGE) {
-                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true);
+                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, campaignFormElement.isImportant());
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DROPDOWN) {
                           dynamicField = createControlSpinnerFieldEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), optionsValues);
                           ControlSpinnerField.setValue((ControlSpinnerField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DATE) {
-                          dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager());
+                          dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager(), campaignFormElement.isImportant());
                           ControlDateField.setValue((ControlDateField) dynamicField, getDateValue(value));
                       } else {
-                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false);
+                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false, campaignFormElement.isImportant());
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
                       }
 
@@ -440,16 +440,16 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                           dynamicField = createControlCheckBoxField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
                           ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, Boolean.valueOf(value));
                       } else if (type == CampaignFormElementType.NUMBER || type == CampaignFormElementType.DECIMAL || type == CampaignFormElementType.RANGE) {
-                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true);
+                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, campaignFormElement.isImportant());
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DROPDOWN) {
                           dynamicField = createControlSpinnerFieldEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), optionsValues);
                           ControlSpinnerField.setValue((ControlSpinnerField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DATE) {
-                          dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager());
+                          dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager(), campaignFormElement.isImportant());
                           ControlDateField.setValue((ControlDateField) dynamicField, getDateValue(value));
                       } else {
-                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false);
+                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false, campaignFormElement.isImportant());
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
                       }
 
@@ -491,16 +491,16 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                           dynamicField = createControlCheckBoxField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
                           ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, Boolean.valueOf(value));
                       } else if (type == CampaignFormElementType.NUMBER || type == CampaignFormElementType.DECIMAL || type == CampaignFormElementType.RANGE) {
-                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true);
+                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, campaignFormElement.isImportant());
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DROPDOWN) {
                           dynamicField = createControlSpinnerFieldEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), optionsValues);
                           ControlSpinnerField.setValue((ControlSpinnerField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DATE) {
-                          dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager());
+                          dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager(), campaignFormElement.isImportant());
                           ControlDateField.setValue((ControlDateField) dynamicField, getDateValue(value));
                       } else {
-                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false);
+                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false, campaignFormElement.isImportant());
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
                       }
 
@@ -542,16 +542,16 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                           dynamicField = createControlCheckBoxField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
                           ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, Boolean.valueOf(value));
                       } else if (type == CampaignFormElementType.NUMBER || type == CampaignFormElementType.DECIMAL || type == CampaignFormElementType.RANGE) {
-                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true);
+                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, campaignFormElement.isImportant());
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DROPDOWN) {
                           dynamicField = createControlSpinnerFieldEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), optionsValues);
                           ControlSpinnerField.setValue((ControlSpinnerField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DATE) {
-                          dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager());
+                          dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager(), campaignFormElement.isImportant());
                           ControlDateField.setValue((ControlDateField) dynamicField, getDateValue(value));
                      } else {
-                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false);
+                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false, campaignFormElement.isImportant());
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
                       }
 
@@ -593,16 +593,16 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                           dynamicField = createControlCheckBoxField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
                           ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, Boolean.valueOf(value));
                       } else if (type == CampaignFormElementType.NUMBER || type == CampaignFormElementType.DECIMAL || type == CampaignFormElementType.RANGE) {
-                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true);
+                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, campaignFormElement.isImportant());
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DROPDOWN) {
                           dynamicField = createControlSpinnerFieldEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), optionsValues);
                           ControlSpinnerField.setValue((ControlSpinnerField) dynamicField, value);
                       } else if (type == CampaignFormElementType.DATE) {
-                          dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager());
+                          dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager(), campaignFormElement.isImportant());
                           ControlDateField.setValue((ControlDateField) dynamicField, getDateValue(value));
                       } else {
-                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false);
+                          dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false, campaignFormElement.isImportant());
                           ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
                       }
 
@@ -645,16 +645,16 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
                       dynamicField = createControlCheckBoxField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta));
                       ControlCheckBoxField.setValue((ControlCheckBoxField) dynamicField, Boolean.valueOf(value));
                   } else if (type == CampaignFormElementType.NUMBER || type == CampaignFormElementType.DECIMAL || type == CampaignFormElementType.RANGE) {
-                      dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true);
+                      dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, campaignFormElement.isImportant());
                       ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
                   } else if (type == CampaignFormElementType.DROPDOWN) {
                       dynamicField = createControlSpinnerFieldEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), optionsValues);
                       ControlSpinnerField.setValue((ControlSpinnerField) dynamicField, value);
                   } else if (type == CampaignFormElementType.DATE) {
-                      dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager());
+                      dynamicField = createControlDateEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), true, this.getFragmentManager(), campaignFormElement.isImportant());
                       ControlDateField.setValue((ControlDateField) dynamicField, getDateValue(value));
                   } else {
-                      dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false);
+                      dynamicField = createControlTextEditField(campaignFormElement, requireContext(), getUserTranslations(campaignFormMeta), false, campaignFormElement.isImportant());
                       ControlTextEditField.setValue((ControlTextEditField) dynamicField, value);
                   }
 
@@ -695,35 +695,35 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
 
       if (daywise) {
 
-          if (dayy > 1) {
+          if (dayy > 0) {
               spec = mTabHost.newTabSpec("tab1").setIndicator("D1",//caption_1,
                       res.getDrawable(R.drawable.ic_clear_black_24dp))
                       .setContent(R.id.tabSheet1);
               mTabHost.addTab(spec);
               mTabHost.getTabWidget().getChildAt(0).getLayoutParams().width = 140;
           }
-          if (dayy > 2) {
+          if (dayy > 1) {
               spec = mTabHost.newTabSpec("tab2").setIndicator("D2",//caption_1,
                       res.getDrawable(R.drawable.ic_clear_black_24dp))
                       .setContent(R.id.tabSheet2);
               mTabHost.addTab(spec);
               mTabHost.getTabWidget().getChildAt(1).getLayoutParams().width = 140;
           }
-          if (dayy > 3) {
+          if (dayy > 2) {
               spec = mTabHost.newTabSpec("tab3").setIndicator("D3",//caption_1,
                       res.getDrawable(R.drawable.ic_clear_black_24dp))
                       .setContent(R.id.tabSheet3);
               mTabHost.addTab(spec);
               mTabHost.getTabWidget().getChildAt(2).getLayoutParams().width = 140;
           }
-          if (dayy > 4) {
+          if (dayy > 3) {
               spec = mTabHost.newTabSpec("tab4").setIndicator("D4",//caption_1,
                       res.getDrawable(R.drawable.ic_clear_black_24dp))
                       .setContent(R.id.tabSheet4);
               mTabHost.addTab(spec);
               mTabHost.getTabWidget().getChildAt(3).getLayoutParams().width = 140;
           }
-          if (dayy > 5) {
+      /*    if (dayy > 5) {
               spec = mTabHost.newTabSpec("tab5").setIndicator("D5",//caption_1,
                       res.getDrawable(R.drawable.ic_clear_black_24dp))
                       .setContent(R.id.tabSheet5);
@@ -752,7 +752,7 @@ public class CampaignFormDataEditFragment extends BaseEditFragment<FragmentCampa
               mTabHost.getTabWidget().getChildAt(7).getLayoutParams().width = 140;
           }
 
-
+*/
 
       }
         return view;

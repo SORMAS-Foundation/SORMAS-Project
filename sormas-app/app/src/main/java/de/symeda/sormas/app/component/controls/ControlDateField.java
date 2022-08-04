@@ -279,10 +279,10 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 	protected void onFinishInflate() {
 		super.onFinishInflate();
 
-		initInput(false);
+		initInput(false,false);
 	}
 
-	protected void initInput(boolean isIntegerFlag) {
+	protected void initInput(boolean isIntegerFlag, boolean isRequired) {
 		input = (EditText) this.findViewById(R.id.date_input);
 		input.setInputType(InputType.TYPE_NULL);
 		input.setTextAlignment(getTextAlignment());
@@ -321,6 +321,16 @@ public class ControlDateField extends ControlPropertyEditField<Date> {
 				}
 			}
 		});
+
+
+		required = isRequired;
+
+		CharSequence valx = input.getText();
+		if(valx == null && required){
+			setSoftRequired(true);
+			input.setError("!");
+			return;
+		}
 
 //       setUpOnFocusChangeListener();
 		setUpOnClickListener();

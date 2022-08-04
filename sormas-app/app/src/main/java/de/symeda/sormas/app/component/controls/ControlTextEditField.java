@@ -260,10 +260,10 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 	protected void onFinishInflate() {
 		super.onFinishInflate();
 
-		initInput(false);
+		initInput(false, false);
 	}
 
-	protected void initInput(Boolean isIntegerFlag) {
+	protected void initInput(boolean isIntegerFlag, boolean isRequired) {
 		input = (EditText) this.findViewById(R.id.text_input);
 		if (getImeOptions() == EditorInfo.IME_NULL) {
 			setImeOptions(EditorInfo.IME_ACTION_DONE);
@@ -288,6 +288,8 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 				new InputFilter[] {
 					new InputFilter.LengthFilter(240) });
 		}
+
+		required = isRequired;
 /*
 		if (getMinLength() >= 0) {
 			input.setFilters(
@@ -295,6 +297,16 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 							new InputFilter.LengthFilter(getMinLength()) });
 		}
 */
+
+		CharSequence valx = input.getText();
+		if(valx == null && required){
+			setSoftRequired(true);
+
+			input.setError("!");
+			return;
+		}
+
+
 		input.addTextChangedListener(new TextWatcher() {
 
 			@Override
@@ -317,6 +329,9 @@ public class ControlTextEditField extends ControlPropertyEditField<String> {
 		setUpOnEditorActionListener();
 		setUpOnFocusChangeListener();
 		initializeOnClickListener();
+
+
+
 	}
 
 	@Override
