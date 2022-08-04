@@ -493,7 +493,7 @@ public class EditCaseSteps implements En {
         (String name) -> {
           String uuid = apiState.getCreatedCase().getUuid();
           String pathToFile = uuid.substring(0, 6).toUpperCase() + "-" + name;
-            FilesHelper.waitForFileToDownload(pathToFile, 120);
+          FilesHelper.waitForFileToDownload(pathToFile, 120);
         });
     When(
         "I check if generated document for Case based on {string} contains all required fields",
@@ -1365,9 +1365,8 @@ public class EditCaseSteps implements En {
         "I verify that the case document is downloaded and correctly named",
         () -> {
           String uuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
-          String filePath =  uuid.substring(0, 6).toUpperCase()
-                  + "-"
-                  + aQuarantineOrder.getDocumentTemplate();
+          String filePath =
+              uuid.substring(0, 6).toUpperCase() + "-" + aQuarantineOrder.getDocumentTemplate();
           FilesHelper.waitForFileToDownload(filePath, 120);
         });
 
@@ -2439,6 +2438,13 @@ public class EditCaseSteps implements En {
                   "lastName",
                   "dateOfBirth"));
         });
+
+    And(
+        "I set case vaccination status to ([^\"]*)",
+        (String vaccinationStatus) -> {
+          webDriverHelpers.selectFromCombobox(VACCINATION_STATUS_COMBOBOX, vaccinationStatus);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
   }
 
   private Vaccination collectVaccinationData() {
@@ -2512,13 +2518,6 @@ public class EditCaseSteps implements En {
         .placeOfStayRegion(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_REGION_INPUT))
         .placeOfStayDistrict(webDriverHelpers.getValueFromWebElement(PLACE_OF_STAY_DISTRICT_INPUT))
         .build();
-
-    And(
-        "I set case vaccination status to ([^\"]*)",
-        (String vaccinationStatus) -> {
-          webDriverHelpers.selectFromCombobox(VACCINATION_STATUS_COMBOBOX, vaccinationStatus);
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-        });
   }
 
   private Case collectCasePersonUuid() {

@@ -67,8 +67,7 @@ public class StatisticsSteps implements En {
           String[] Columns = parseEventGroupsDatabaseExportColumns(file);
           Files.delete(path);
           softly.assertTrue(
-              Arrays.asList(Columns).contains("id"),
-              "Downloaded data does not contain id column!");
+              Arrays.asList(Columns).contains("id"), "Downloaded data does not contain id column!");
           softly.assertTrue(
               Arrays.asList(Columns).contains("uuid"),
               "Downloaded data does not contain uuid column!");
