@@ -21,6 +21,8 @@ public class SurveillanceDashboardPage {
 
   public static final By SURVEILLANCE_DASHBOARD_NAME =
       By.xpath("//div[contains(text(),'Surveillance Dashboard')]");
+  public static final By SURVEILLANCE_DASHBOARD_NAME_URDU =
+      By.xpath("//div[contains(text(),'نگرانی کا ڈیش بورڈ')]");
   public static final By SURVEILLANCE_BUTTON =
       By.xpath("(//div[contains(@class,'v-select-optiongroup')]//span)[1]");
   public static final By CONTACTS_BUTTON =
@@ -272,6 +274,8 @@ public class SurveillanceDashboardPage {
   public static final By CASES_METRICS_SUSPECT_BOX = By.xpath("//div[contains(text(),'Suspect')]");
   public static final By CASES_METRICS_NOT_A_CASE_BOX =
       By.xpath("//div[contains(text(),'Not A Case')]");
+  public static final By CASES_METRICS_NOT_A_CASE_COUNTER_DE =
+      By.xpath("//div[contains(text(),'Kein Fall')]/parent::div/parent::div/div[1]/div");
   public static final By CASES_METRICS_NOT_YET_CLASSIFIED_BOX =
       By.xpath("//div[contains(text(),'Not Yet Classified')]");
   public static final By FATALITIES_COUNTER =
@@ -429,4 +433,10 @@ public class SurveillanceDashboardPage {
   public static final By CONFIRMED_CURVE_ON_SURVEILLANCE_DASHBOARD =
       By.cssSelector(
           "svg > g.highcharts-legend > g > g > g.highcharts-legend-item.highcharts-column-series.highcharts-color-undefined.highcharts-series-3 > text > tspan");
+  public static final By CASE_STATUS_MAP_POINTS =
+      By.xpath(
+          "//div[contains(@class,'leaflet-marker-icon marker case unclassified leaflet-zoom-animated leaflet-interactive')]");
+  public static final By CONTACT_STATUS_MAP_POINTS =
+      By.xpath(
+          "//div[contains(@class, 'leaflet-marker-icon marker contact overdue leaflet-zoom-animated leaflet-interactive')]");
 }

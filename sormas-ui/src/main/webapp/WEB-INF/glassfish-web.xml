@@ -221,11 +221,6 @@
     </security-role-mapping>
 
     <security-role-mapping>
-        <role-name>CONTACT_ASSIGN</role-name>
-        <group-name>CONTACT_ASSIGN</group-name>
-    </security-role-mapping>
-
-    <security-role-mapping>
         <role-name>CONTACT_EDIT</role-name>
         <group-name>CONTACT_EDIT</group-name>
     </security-role-mapping>
@@ -233,11 +228,6 @@
     <security-role-mapping>
         <role-name>CONTACT_DELETE</role-name>
         <group-name>CONTACT_DELETE</group-name>
-    </security-role-mapping>
-
-    <security-role-mapping>
-        <role-name>CONTACT_CLASSIFY</role-name>
-        <group-name>CONTACT_CLASSIFY</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
@@ -443,6 +433,21 @@
     <security-role-mapping>
         <role-name>USER_VIEW</role-name>
         <group-name>USER_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>USER_ROLE_EDIT</role-name>
+        <group-name>USER_ROLE_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>USER_ROLE_DELETE</role-name>
+        <group-name>USER_ROLE_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>USER_ROLE_VIEW</role-name>
+        <group-name>USER_ROLE_VIEW</group-name>
     </security-role-mapping>
 
     <security-role-mapping>

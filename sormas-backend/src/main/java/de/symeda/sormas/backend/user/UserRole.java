@@ -21,7 +21,7 @@ import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,10 +29,13 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.UniqueConstraint;
 
 import de.symeda.auditlog.api.Audited;
@@ -43,6 +46,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity(name = UserRole.TABLE_NAME)
 @Audited
+@EntityListeners(UserRole.UserRoleListener.class)
 public class UserRole extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 9053095630718041842L;
@@ -53,7 +57,9 @@ public class UserRole extends AbstractDomainObject {
 
 	public static final String USER_RIGHTS = "userRights";
 	public static final String CAPTION = "caption";
+	public static final String DESCRIPTION = "description";
 	public static final String ENABLED = "enabled";
+	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
 	public static final String EMAIL_NOTIFICATIONS = "emailNotificationTypes";
 	public static final String SMS_NOTIFICATIONS = "smsNotificationTypes";
 
@@ -65,8 +71,8 @@ public class UserRole extends AbstractDomainObject {
 	private boolean hasAssociatedDistrictUser;
 	private boolean portHealthUser;
 	private JurisdictionLevel jurisdictionLevel;
-	private List<NotificationType> emailNotificationTypes;
-	private List<NotificationType> smsNotificationTypes;
+	private Set<NotificationType> emailNotificationTypes = Collections.emptySet();
+	private Set<NotificationType> smsNotificationTypes = Collections.emptySet();
 
 	@ElementCollection(fetch = FetchType.EAGER)
 	@Enumerated(EnumType.STRING)
@@ -112,7 +118,7 @@ public class UserRole extends AbstractDomainObject {
 	}
 
 	@Column
-	public boolean hasOptionalHealthFacility() {
+	public boolean getHasOptionalHealthFacility() {
 		return hasOptionalHealthFacility;
 	}
 
@@ -121,7 +127,7 @@ public class UserRole extends AbstractDomainObject {
 	}
 
 	@Column
-	public boolean hasAssociatedDistrictUser() {
+	public boolean getHasAssociatedDistrictUser() {
 		return hasAssociatedDistrictUser;
 	}
 
@@ -155,11 +161,11 @@ public class UserRole extends AbstractDomainObject {
 			"userrole_id",
 			"notificationtype" }))
 	@Column(name = "notificationtype", nullable = false)
-	public List<NotificationType> getEmailNotificationTypes() {
+	public Set<NotificationType> getEmailNotificationTypes() {
 		return emailNotificationTypes;
 	}
 
-	public void setEmailNotificationTypes(List<NotificationType> emailNotifications) {
+	public void setEmailNotificationTypes(Set<NotificationType> emailNotifications) {
 		this.emailNotificationTypes = emailNotifications;
 	}
 
@@ -171,11 +177,11 @@ public class UserRole extends AbstractDomainObject {
 			"userrole_id",
 			"notificationtype" }))
 	@Column(name = "notificationtype", nullable = false)
-	public List<NotificationType> getSmsNotificationTypes() {
+	public Set<NotificationType> getSmsNotificationTypes() {
 		return smsNotificationTypes;
 	}
 
-	public void setSmsNotificationTypes(List<NotificationType> smsNotifications) {
+	public void setSmsNotificationTypes(Set<NotificationType> smsNotifications) {
 		this.smsNotificationTypes = smsNotifications;
 	}
 
@@ -202,5 +208,14 @@ public class UserRole extends AbstractDomainObject {
 	public static Set<UserRight> getUserRights(Collection<UserRole> userRoles) {
 
 		return userRoles.stream().flatMap(role -> role.getUserRights().stream()).collect(Collectors.toSet());
+	}
+
+	static class UserRoleListener {
+
+		@PrePersist
+		@PreUpdate
+		private void beforeAnyUpdate(UserRole userRole) {
+			UserCache.getInstance().flush();
+		}
 	}
 }

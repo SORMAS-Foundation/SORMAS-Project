@@ -61,16 +61,9 @@ public class ReceivedSampleProcessor
 
 	@Override
 	public void handleReceivedData(SormasToSormasSampleDto sharedData, Sample existingData, SormasToSormasOriginInfoDto originInfo) {
-		Map<String, PathogenTestDto> existingPathogenTests;
-		if (existingData != null) {
-			existingPathogenTests = existingData.getPathogenTests()
-				.stream()
-				.filter(Objects::nonNull)
-				.collect(Collectors.toMap(PathogenTest::getUuid, PathogenTestFacadeEjb::toDto));
-		} else {
-			existingPathogenTests = Collections.emptyMap();
-		}
 		updateReportingUser(sharedData.getEntity(), existingData);
+
+		Map<String, PathogenTestDto> existingPathogenTests = getExistingPathogenTests(existingData);
 		sharedData.getPathogenTests()
 			.forEach(pathogenTest -> handleIgnoredProperties(pathogenTest, existingPathogenTests.get(pathogenTest.getUuid())));
 	}
@@ -90,4 +83,16 @@ public class ReceivedSampleProcessor
 			Validations.sormasToSormasSampleExists);
 	}
 
+	private Map<String, PathogenTestDto> getExistingPathogenTests(Sample existingData) {
+		Map<String, PathogenTestDto> existingPathogenTests;
+		if (existingData != null) {
+			existingPathogenTests = existingData.getPathogenTests()
+				.stream()
+				.filter(Objects::nonNull)
+				.collect(Collectors.toMap(PathogenTest::getUuid, PathogenTestFacadeEjb::toDto));
+		} else {
+			existingPathogenTests = Collections.emptyMap();
+		}
+		return existingPathogenTests;
+	}
 }

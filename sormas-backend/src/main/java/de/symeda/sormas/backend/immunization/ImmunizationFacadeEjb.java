@@ -81,9 +81,11 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
+import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
@@ -103,6 +105,7 @@ import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.entities.contact.SormasToSormasContactFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
@@ -331,6 +334,7 @@ public class ImmunizationFacadeEjb
 		UserRight._IMMUNIZATION_EDIT })
 	public ImmunizationDto save(@Valid @NotNull ImmunizationDto dto, boolean checkChangeDate, boolean internal) {
 		Immunization existingImmunization = service.getByUuid(dto.getUuid());
+		FacadeHelper.checkCreateAndEditRights(existingImmunization, userService, UserRight.IMMUNIZATION_CREATE, UserRight.IMMUNIZATION_EDIT);
 
 		if (internal && existingImmunization != null && !service.isEditAllowed(existingImmunization).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorImmunizationNotEditable));
@@ -363,9 +367,7 @@ public class ImmunizationFacadeEjb
 
 		service.ensurePersisted(immunization);
 
-		if (existingImmunization != null && internal && sormasToSormasFacade.isFeatureConfigured()) {
-			syncSharesAsync(existingImmunization);
-		}
+		onImmunizationChanged(immunization, internal);
 
 		return convertToDto(immunization, pseudonymizer);
 	}
@@ -586,35 +588,81 @@ public class ImmunizationFacadeEjb
 
 	@Override
 	public List<ImmunizationDto> getByPersonUuids(List<String> uuids) {
-		return service.getByPersonUuids(uuids).stream().map(i -> toDto(i)).collect(Collectors.toList());
+		return service.getByPersonUuids(uuids).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
-	@RightsAllowed(UserRight._IMMUNIZATION_EDIT)
-	public void syncSharesAsync(Immunization immunization) {
+	@RightsAllowed({
+		UserRight._IMMUNIZATION_CREATE,
+		UserRight._IMMUNIZATION_EDIT })
+	public void onImmunizationChanged(Immunization immunization, boolean syncShares) {
+		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
+			syncSharesAsync(immunization);
+		}
+	}
+
+	private void syncSharesAsync(Immunization immunization) {
 		//sync case/contact/event this immunization was shared with
-		List<DataHelper.Pair<ShareRequestDataType, ShareTreeCriteria>> syncParams = immunization.getSormasToSormasShares()
-			.stream()
-			.map(immunizationShare -> ShareInfoHelper.getLatestAcceptedRequest(immunizationShare.getRequests().stream()).orElse(null))
-			.filter(Objects::nonNull)
-			.map(ShareRequestInfo::getShares)
-			.flatMap(Collection::stream)
-			.map(s -> {
-				if (s.getCaze() != null) {
-					return new DataHelper.Pair<>(ShareRequestDataType.CASE, new ShareTreeCriteria(s.getCaze().getUuid()));
-				}
 
-				if (s.getContact() != null) {
-					return new DataHelper.Pair<>(ShareRequestDataType.CONTACT, new ShareTreeCriteria(s.getContact().getUuid()));
-				}
+		SormasToSormasOriginInfo sormasToSormasOriginInfo = immunization.getSormasToSormasOriginInfo();
+		List<DataHelper.Pair<ShareRequestDataType, ShareTreeCriteria>> syncParams = new ArrayList<>();
+		if (sormasToSormasOriginInfo != null) {
+			if (!sormasToSormasOriginInfo.getCases().isEmpty()) {
+				syncParams.addAll(
+					immunization.getPerson()
+						.getCases()
+						.stream()
+						.filter(c -> DataHelper.isSame(c.getSormasToSormasOriginInfo(), sormasToSormasOriginInfo))
+						.map(c -> new DataHelper.Pair<>(ShareRequestDataType.CASE, new ShareTreeCriteria(c.getUuid())))
+						.collect(Collectors.toList()));
+			}
 
-				if (s.getEvent() != null) {
-					return new DataHelper.Pair<>(ShareRequestDataType.EVENT, new ShareTreeCriteria(s.getContact().getUuid()));
-				}
+			if (!sormasToSormasOriginInfo.getContacts().isEmpty()) {
+				syncParams.addAll(
+					immunization.getPerson()
+						.getContacts()
+						.stream()
+						.filter(c -> DataHelper.isSame(c.getSormasToSormasOriginInfo(), sormasToSormasOriginInfo))
+						.map(c -> new DataHelper.Pair<>(ShareRequestDataType.CONTACT, new ShareTreeCriteria(c.getUuid())))
+						.collect(Collectors.toList()));
+			}
 
-				return null;
-			})
-			.filter(Objects::nonNull)
-			.collect(Collectors.toList());
+			if (!sormasToSormasOriginInfo.getEvents().isEmpty()) {
+				syncParams.addAll(
+					immunization.getPerson()
+						.getEventParticipants()
+						.stream()
+						.map(EventParticipant::getEvent)
+						.distinct()
+						.filter(c -> DataHelper.isSame(c.getSormasToSormasOriginInfo(), sormasToSormasOriginInfo))
+						.map(e -> new DataHelper.Pair<>(ShareRequestDataType.EVENT, new ShareTreeCriteria(e.getUuid())))
+						.collect(Collectors.toList()));
+			}
+		}
+
+		syncParams.addAll(
+			immunization.getSormasToSormasShares()
+				.stream()
+				.map(immunizationShare -> ShareInfoHelper.getLatestAcceptedRequest(immunizationShare.getRequests().stream()).orElse(null))
+				.filter(Objects::nonNull)
+				.map(ShareRequestInfo::getShares)
+				.flatMap(Collection::stream)
+				.map(s -> {
+					if (s.getCaze() != null) {
+						return new DataHelper.Pair<>(ShareRequestDataType.CASE, new ShareTreeCriteria(s.getCaze().getUuid()));
+					}
+
+					if (s.getContact() != null) {
+						return new DataHelper.Pair<>(ShareRequestDataType.CONTACT, new ShareTreeCriteria(s.getContact().getUuid()));
+					}
+
+					if (s.getEvent() != null) {
+						return new DataHelper.Pair<>(ShareRequestDataType.EVENT, new ShareTreeCriteria(s.getEvent().getUuid()));
+					}
+
+					return null;
+				})
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList()));
 
 		executorService.schedule(() -> {
 			try {

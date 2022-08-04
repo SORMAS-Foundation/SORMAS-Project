@@ -20,6 +20,8 @@ import static java.time.Duration.ofSeconds;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -950,6 +952,19 @@ public class WebDriverHelpers {
                 String.format("Row element: %s wasn't selected within 20s", rowLocator)));
   }
 
+  public void isElementGreyedOut(By elementLocator) {
+    try {
+      assertHelpers.assertWithPoll20Second(
+          () ->
+              Assert.assertTrue(
+                  getAttributeFromWebElement(elementLocator, "class").contains("disabled")));
+    } catch (Throwable ignored) {
+      if (!getAttributeFromWebElement(elementLocator, "class").contains("disabled"))
+        throw new TimeoutException(
+            String.format("The element: %s is not greyed out", elementLocator));
+    }
+  }
+
   @SneakyThrows
   public void sendFile(By selector, String filePath) {
     try {
@@ -1021,6 +1036,19 @@ public class WebDriverHelpers {
       throw new NotFoundException(
           "Cannot close active window and switch to parent window because only one is available!");
     }
+  }
+
+  public boolean isFileExists(Path file_path) {
+    return Files.exists(file_path);
+  }
+
+  public void waitForFileExists(Path file_path, int seconds) {
+    assertHelpers.assertWithPoll(
+        () ->
+            Assert.assertTrue(
+                Files.exists(file_path),
+                String.format("File %s not exists after %s", file_path, seconds)),
+        seconds);
   }
 
   public void checkIsPopupContainsList(By popup, List popupElements) {

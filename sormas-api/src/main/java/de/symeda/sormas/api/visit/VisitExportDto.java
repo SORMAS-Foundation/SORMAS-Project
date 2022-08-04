@@ -2,6 +2,9 @@ package de.symeda.sormas.api.visit;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
@@ -12,6 +15,7 @@ import de.symeda.sormas.api.importexport.ExportProperty;
 import de.symeda.sormas.api.importexport.ExportTarget;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -46,6 +50,10 @@ public class VisitExportDto implements Serializable {
 	private String personUuid;
 
 	private VisitOrigin origin;
+
+	private String visitUserName;
+
+	private String visitUserRoles;
 
 	private boolean isInJurisdiction;
 
@@ -183,6 +191,22 @@ public class VisitExportDto implements Serializable {
 
 	@Order(9)
 	@ExportTarget(visitExportTypes = VisitExportType.CONTACT_VISITS)
+	@ExportProperty(value = VisitDto.VISIT_USER, combined = true)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public String getVisitUserName() {
+		return visitUserName;
+	}
+
+	@Order(10)
+	@ExportTarget(visitExportTypes = VisitExportType.CONTACT_VISITS)
+	@ExportProperty(value = VisitDto.VISIT_USER, combined = true)
+	@ExportGroup(ExportGroupType.ADDITIONAL)
+	public String getVisitUserRoles() {
+		return visitUserRoles;
+	}
+
+	@Order(11)
+	@ExportTarget(visitExportTypes = VisitExportType.CONTACT_VISITS)
 	@ExportProperty(VisitDto.SYMPTOMS)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public SymptomsDto getSymptoms() {
@@ -243,5 +267,13 @@ public class VisitExportDto implements Serializable {
 
 	public void setOrigin(VisitOrigin origin) {
 		this.origin = origin;
+	}
+
+	public void setVisitUserName(String visitUserName) {
+		this.visitUserName = visitUserName;
+	}
+
+	public void setVisitUserRoles(Set<UserRoleReferenceDto> roles) {
+		this.visitUserRoles = StringUtils.join(roles, ", ");
 	}
 }

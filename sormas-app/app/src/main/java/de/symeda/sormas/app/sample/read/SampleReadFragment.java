@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.app.sample.read;
 
+import static android.view.View.GONE;
+
 import android.os.Bundle;
 import android.view.View;
 
@@ -37,8 +39,6 @@ import de.symeda.sormas.app.backend.sample.AdditionalTest;
 import de.symeda.sormas.app.backend.sample.PathogenTest;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.databinding.FragmentSampleReadLayoutBinding;
-
-import static android.view.View.GONE;
 
 public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayoutBinding, Sample, Sample> {
 
@@ -188,5 +188,10 @@ public class SampleReadFragment extends BaseReadFragment<FragmentSampleReadLayou
 	@Override
 	public int getReadLayout() {
 		return R.layout.fragment_sample_read_layout;
+	}
+
+	@Override
+	public boolean showEditAction() {
+		return ConfigProvider.hasUserRight(UserRight.SAMPLE_EDIT);
 	}
 }

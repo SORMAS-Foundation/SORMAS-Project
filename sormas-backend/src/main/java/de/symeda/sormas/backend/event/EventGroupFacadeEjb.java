@@ -66,6 +66,7 @@ import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.NotificationService;
@@ -271,6 +272,9 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		UserRight._EVENTGROUP_EDIT })
 	public EventGroupDto saveEventGroup(@Valid @NotNull EventGroupDto dto, boolean checkChangeDate) {
 		User currentUser = userService.getCurrentUser();
+
+		EventGroup existingEventGroup = eventGroupService.getByUuid(dto.getUuid());
+		FacadeHelper.checkCreateAndEditRights(existingEventGroup, userService, UserRight.EVENTGROUP_CREATE, UserRight.EVENTGROUP_EDIT);
 
 		EventGroup eventGroup = fromDto(dto, checkChangeDate);
 

@@ -81,13 +81,14 @@ import de.symeda.sormas.ui.person.PersonsView;
 import de.symeda.sormas.ui.reports.ReportsView;
 import de.symeda.sormas.ui.reports.aggregate.AbstractAggregateReportsView;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportsView;
-import de.symeda.sormas.ui.reports.aggregate.ReportDataView;
 import de.symeda.sormas.ui.samples.SamplesView;
 import de.symeda.sormas.ui.sormastosormas.ShareRequestsView;
 import de.symeda.sormas.ui.statistics.AbstractStatisticsView;
 import de.symeda.sormas.ui.statistics.StatisticsView;
 import de.symeda.sormas.ui.task.TasksView;
 import de.symeda.sormas.ui.travelentry.TravelEntriesView;
+import de.symeda.sormas.ui.user.AbstractUserView;
+import de.symeda.sormas.ui.user.UserRolesView;
 import de.symeda.sormas.ui.user.UsersView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -252,9 +253,13 @@ public class MainScreen extends HorizontalLayout {
 				I18nProperties.getCaption(Captions.mainMenuStatistics),
 				VaadinIcons.BAR_CHART);
 		}
-		if (permitted(UserRight.USER_VIEW)) {
-			menu.addView(UsersView.class, UsersView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers), VaadinIcons.USERS);
+
+		if (UserProvider.getCurrent().hasUserAccess()) {
+			AbstractUserView.registerViews(navigator);
+
+			menu.addView(UsersView.class, AbstractUserView.ROOT_VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers), VaadinIcons.USERS);
 		}
+
 		if (UserProvider.getCurrent().hasConfigurationAccess()) {
 			AbstractConfigurationView.registerViews(navigator);
 			menu.addView(
@@ -339,6 +344,7 @@ public class MainScreen extends HorizontalLayout {
 				StatisticsView.VIEW_NAME,
 				PersonsView.VIEW_NAME,
 				UsersView.VIEW_NAME,
+				UserRolesView.VIEW_NAME,
 				OutbreaksView.VIEW_NAME,
 				RegionsView.VIEW_NAME,
 				DistrictsView.VIEW_NAME,

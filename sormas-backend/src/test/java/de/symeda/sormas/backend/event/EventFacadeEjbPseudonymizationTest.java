@@ -31,7 +31,9 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -43,7 +45,7 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	private TestDataCreator.RDCF rdcf2;
 	private UserDto user1;
 	private UserDto user2;
-	private UserDto observerUser;
+	private UserDto nationalEventUser;
 
 	@Override
 	public void init() {
@@ -68,8 +70,16 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			"Off2",
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
-		observerUser = creator
-			.createUser(null, null, null, null, "National", "Observer", creator.getUserRoleReference(DefaultUserRole.NATIONAL_OBSERVER));
+		nationalEventUser = creator.createUser(
+			null,
+			null,
+			null,
+			"National",
+			"Event User",
+			"National Event User",
+			JurisdictionLevel.NATION,
+			UserRight.EVENT_VIEW,
+			UserRight.EVENT_EDIT);
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}
@@ -92,7 +102,7 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	public void testUpdatePseudonymizedEvent() {
 		EventDto event = createEvent(user2, rdcf2);
 
-		loginWith(observerUser);
+		loginWith(nationalEventUser);
 
 		event.setConnectionNumber("updated");
 		event.setResponsibleUser(null);

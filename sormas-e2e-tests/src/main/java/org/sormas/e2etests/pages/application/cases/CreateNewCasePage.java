@@ -40,7 +40,9 @@ public class CreateNewCasePage {
       By.xpath("//div[@location='facilityOrHomeLoc']//label[contains(text(), 'Home')]");
   public static final By FIRST_NAME_INPUT =
       By.cssSelector(".v-window [location='firstName'] input");
+  public static final By FIRST_NAME_NO_POPUP_INPUT = By.cssSelector("#firstName");
   public static final By LAST_NAME_INPUT = By.cssSelector(".v-window [location='lastName'] input");
+  public static final By LAST_NAME_NO_POPUP_INPUT = By.cssSelector("#lastName");
   public static final By SEX_COMBOBOX =
       By.cssSelector(".v-window [location='sex'] div[role='combobox'] div");
   public static final By SAVE_BUTTON = By.id("commit");
@@ -80,6 +82,8 @@ public class CreateNewCasePage {
   public static final By PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON = By.id("actionSearch");
   public static final By CREATE_A_NEW_CASE_CONFIRMATION_BUTTON =
       By.xpath("//*[text()='Create a new case']");
+  public static final By CREATE_A_NEW_CASE_CONFIRMATION_BUTTON_DE =
+      By.xpath("//*[text()='Neuen Fall erstellen']");
   public static final By PICK_AN_EXISTING_CASE_CONFIRMATION_BUTTON =
       By.xpath("//*[text()='Pick an existing case']");
   public static final By CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON =
@@ -129,4 +133,14 @@ public class CreateNewCasePage {
       By.cssSelector(".popupContent #pointOfEntry div[role='button'");
   public static final By POINT_OF_ENTRY_DETAILS =
       By.cssSelector(".popupContent #pointOfEntryDetails");
+  public static final By DATE_OF_REPORT_NO_POPUP_INPUT = By.cssSelector("#reportDate input");
+  public static final By RESPONSIBLE_JURISDICTION_LABEL =
+      By.cssSelector("[location='responsibleJurisdictionHeadingLoc'] div");
+  public static final By PLACE_OF_STAY_LABEL =
+      By.cssSelector("[location='placeOfStayHeadingLoc'] div");
+  public static final By DIFFERENT_PLACE_OF_STAY_CHECKBOX_LABEL =
+      By.xpath("//*[@id='differentPlaceOfStayJurisdiction']/label");
+  public static final By PLACE_OF_STAY_REGION_COMBOBOX = By.cssSelector(".v-window #region div");
+  public static final By PLACE_OF_STAY_DISTRICT_COMBOBOX =
+      By.cssSelector(".v-window #district div");
 }

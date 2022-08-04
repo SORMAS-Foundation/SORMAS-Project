@@ -51,7 +51,9 @@ import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -63,7 +65,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	private TestDataCreator.RDCF rdcf2;
 	private UserDto user1;
 	private UserDto user2;
-	private UserDto observerUser;
+	private UserDto nationalContactUser;
 
 	@Override
 	public void init() {
@@ -88,8 +90,17 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			"Off2",
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
-		observerUser = creator
-			.createUser(null, null, null, null, "National", "Observer", creator.getUserRoleReference(DefaultUserRole.NATIONAL_OBSERVER));
+		nationalContactUser = creator.createUser(
+			null,
+			null,
+			null,
+			"National",
+			"Contact User",
+			"National Contact User",
+			JurisdictionLevel.NATION,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.CASE_VIEW);
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}
@@ -298,7 +309,7 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		CaseDataDto caze = createCase(user2, rdcf2);
 		ContactDto contact = createContact(user2, caze, rdcf2);
 
-		loginWith(observerUser);
+		loginWith(nationalContactUser);
 
 		contact.setReportingUser(null);
 		contact.setContactOfficer(null);

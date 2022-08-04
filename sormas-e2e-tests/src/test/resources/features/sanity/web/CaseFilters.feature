@@ -15,7 +15,7 @@ Feature: Case filter functionality
     Then I apply Disease filter "COVID-19" on Case directory page
     And I check that all displayed cases have "COVID-19" in grid Disease column
 
-  @issue=SORQA-30 @env_main
+  @tmsLink=SORQA-30 @env_main
   Scenario: Check Person related fields filter in Case directory page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -55,7 +55,7 @@ Feature: Case filter functionality
     And I check that number of displayed cases results is 0
     And I apply Present Condition filter on Case directory page to condition of last created person
 
-  @issue=SORQA-30 @env_main
+  @tmsLink=SORQA-30 @env_main
   Scenario: Check Case basic filters on Case directory page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -98,7 +98,7 @@ Feature: Case filter functionality
     And I check that number of displayed cases results is 0
     And I filter by CaseID on Case directory page
 
-  @issue=SORQA-30 @env_main
+  @tmsLink=SORQA-30 @env_main
   Scenario: Check Case region and facility related filters
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -139,7 +139,7 @@ Feature: Case filter functionality
     And I check that number of displayed cases results is 0
     And I apply Facility filter to "Standard Einrichtung" on Case directory page
 
-  @issue=SORQA-30 @env_main
+  @tmsLink=SORQA-30 @env_main
   Scenario: Check checkboxes filters on Case directory page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -186,7 +186,7 @@ Feature: Case filter functionality
     And I check that number of displayed cases results is 0
     And I click "Only port health cases without a facility" checkbox on Case directory page
 
-  @issue=SORQA-30 @env_main
+  @tmsLink=SORQA-30 @env_main
   Scenario: Check aggregation buttons on Case directory page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -210,7 +210,7 @@ Feature: Case filter functionality
     And I apply "Archived cases" to combobox on Case Directory Page
     And I check that number of displayed cases results is 0
 
-  @issue=SORQA-30 @env_main
+  @tmsLink=SORQA-30 @env_main
   Scenario: Check Case report date filters on Case directory page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -232,7 +232,7 @@ Feature: Case filter functionality
     And I check that number of displayed cases results is 0
     And I fill Cases from input to 1 days before mocked Case created on Case directory page
 
-  @issue=SORQA-30 @env_main
+  @tmsLink=SORQA-30 @env_main
   Scenario: Check complex filters regarding responsibilities, vaccination and quarantine
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -264,7 +264,7 @@ Feature: Case filter functionality
     And I check that number of displayed cases results is 0
     And I apply Vaccination Status filter to "Vaccinated" on Case directory page
 
-  @issue=SORQA-83 @env_de
+  @tmsLink=SORQA-83 @env_de
   Scenario: German Case Directory filters
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -301,7 +301,7 @@ Feature: Case filter functionality
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
 
-  @issue=SORQA-83 @env_de
+  @tmsLink=SORQA-83 @env_de
   Scenario: Check Case basic filters on Case directory page for DE version
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -323,7 +323,7 @@ Feature: Case filter functionality
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
 
-  @issue=SORQA-83 @env_de
+  @tmsLink=SORQA-83 @env_de
   Scenario: Check checkboxes filters on Case directory page for DE specific
     Given I log in as a Surveillance Officer
     And I click on the Cases button from navbar
@@ -376,7 +376,7 @@ Feature: Case filter functionality
     And I check that number of displayed cases results is 0
     And I click "Nur Einreisefälle ohne zugewiesene Einrichtung" checkbox on Case directory page
 
-  @issue=SORQA-83 @env_de
+  @tmsLink=SORQA-83 @env_de
   Scenario: Check Case report date filters on Case directory page for De specific
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -395,7 +395,7 @@ Feature: Case filter functionality
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
 
-  @issue=SORDEV-8629 @env_main
+  @tmsLink=SORDEV-8629 @env_main
   Scenario Outline: Check option <option> in Outcome of case filter
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -426,3 +426,26 @@ Feature: Case filter functionality
       | "Deceased"       | 0       | 1       | 0       | 0       |
       | "Recovered"      | 0       | 0       | 1       | 0       |
       | "Unknown"        | 0       | 0       | 0       | 1       |
+
+  @tmsLink=SORQA-5969 @env_de
+  Scenario Outline: Test vaccination status filter <status> and columns to case
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    And I set case vaccination status to <status>
+    And I click on the Cases button from navbar
+    And I set case vaccination status filter to <status>
+    And I apply case filters
+    Then I check that created Case is visible with <status> status
+
+    Examples:
+      | status    |
+      | Geimpft   |
+      | Ungeimpft |
+      | Unbekannt |

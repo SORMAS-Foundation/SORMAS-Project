@@ -25,9 +25,6 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import de.symeda.sormas.api.report.AggregateReportFacade;
-import de.symeda.sormas.backend.report.AggregateReport;
-import de.symeda.sormas.backend.report.AggregateReportFacadeEjb;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -73,6 +70,7 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
+import de.symeda.sormas.api.report.AggregateReportFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
@@ -94,7 +92,6 @@ import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRightsFacade;
 import de.symeda.sormas.api.vaccination.VaccinationFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.backend.action.ActionFacadeEjb;
@@ -175,6 +172,7 @@ import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb.OutbreakFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.report.AggregateReportFacadeEjb;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.AdditionalTestService;
@@ -212,6 +210,7 @@ import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLoca
 import de.symeda.sormas.backend.symptoms.SymptomsService;
 import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb;
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
+import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb.PrescriptionFacadeEjbLocal;
 import de.symeda.sormas.backend.therapy.PrescriptionService;
 import de.symeda.sormas.backend.therapy.TherapyFacadeEjb.TherapyFacadeEjbLocal;
@@ -221,9 +220,9 @@ import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserRightsFacadeEjb.UserRightsFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserRole;
+import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb.UserRoleFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRoleService;
 import de.symeda.sormas.backend.user.UserService;
@@ -250,14 +249,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		initH2Functions();
 		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
 		System.setProperty("java.naming.factory.initial", MockProducer.class.getCanonicalName());
-		UserDto user = creator.createUser(
-			null,
-			null,
-			null,
-			"ad",
-			"min",
-			creator.getUserRoleReference(DefaultUserRole.ADMIN),
-			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createTestUser();
 
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
 
@@ -735,7 +727,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 	}
 
 	public CustomizableEnumFacade getCustomizableEnumFacade() {
-		return getBean(CustomizableEnumFacadeEjb.class);
+		return getBean(CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal.class);
 	}
 
 	public ShareDataBuilderHelper getShareDataBuilderHelper() {
@@ -779,6 +771,23 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return survOff;
 	}
 
+	protected UserDto useCaseOfficerLogin(TestDataCreator.RDCF rdcf) {
+		if (rdcf == null) {
+			rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		}
+
+		UserDto caseOff = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Case",
+			"Off",
+			creator.getUserRoleReference(DefaultUserRole.CASE_OFFICER));
+		when(MockProducer.getPrincipal().getName()).thenReturn("CaseOff");
+
+		return caseOff;
+	}
+
 	public CampaignFormDataFacade getCampaignFormDataFacade() {
 		return getBean(CampaignFormDataFacadeEjbLocal.class);
 	}
@@ -794,6 +803,20 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 	protected UserDto useNationalUserLogin() {
 		UserDto natUser = creator.createUser("", "", "", "Nat", "Usr", creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		when(MockProducer.getPrincipal().getName()).thenReturn("NatUsr");
+
+		return natUser;
+	}
+
+	protected UserDto useNationalAdminLogin() {
+		UserDto natUser = creator.createUser(
+			"",
+			"",
+			"",
+			"National",
+			"Admin",
+			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER),
+			creator.getUserRoleReference(DefaultUserRole.ADMIN));
+		when(MockProducer.getPrincipal().getName()).thenReturn("NationalAdmin");
 
 		return natUser;
 	}
@@ -862,10 +885,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(ExternalShareInfoService.class);
 	}
 
-	public UserRightsFacade getUserRightsFacade() {
-		return getBean(UserRightsFacadeEjbLocal.class);
-	}
-
 	public SormasToSormasShareRequestFacade getSormasToSormasShareRequestFacade() {
 		return getBean(SormasToSormasShareRequestFacadeEJBLocal.class);
 	}
@@ -932,5 +951,9 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public InfoFacade getInfoFacade() {
 		return getBean(InfoFacadeEjb.InfoFacadeEjbLocal.class);
+	}
+
+	public TaskService getTaskService() {
+		return getBean(TaskService.class);
 	}
 }

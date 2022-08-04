@@ -19,6 +19,7 @@ public interface Strings {
 	String between = "between";
 	String bpm = "bpm";
 	String by = "by";
+	String checkboxSetTickAnAnswerForAll = "checkboxSetTickAnAnswerForAll";
 	String classificationAllOf = "classificationAllOf";
 	String classificationClassificationRules = "classificationClassificationRules";
 	String classificationConfirmed = "classificationConfirmed";
@@ -135,6 +136,7 @@ public interface Strings {
 	String confirmationDeleteTasks = "confirmationDeleteTasks";
 	String confirmationDeleteTravelEntries = "confirmationDeleteTravelEntries";
 	String confirmationDeleteTreatments = "confirmationDeleteTreatments";
+	String confirmationDeleteUserRole = "confirmationDeleteUserRole";
 	String confirmationDeleteVisits = "confirmationDeleteVisits";
 	String confirmationDisableAllLineListingNational = "confirmationDisableAllLineListingNational";
 	String confirmationDisableAllLineListingRegion = "confirmationDisableAllLineListingRegion";
@@ -180,6 +182,7 @@ public interface Strings {
 	String DefaultPassword_ownUserIntroduction = "DefaultPassword.ownUserIntroduction";
 	String DefaultPassword_ownUserNewPasswordSetHints = "DefaultPassword.ownUserNewPasswordSetHints";
 	String DefaultPassword_unchanged = "DefaultPassword.unchanged";
+	String disabled = "disabled";
 	String DiseaseNetworkDiagram_Classification_HEALTHY = "DiseaseNetworkDiagram.Classification.HEALTHY";
 	String DiseaseNetworkDiagram_heading = "DiseaseNetworkDiagram.heading";
 	String DiseaseNetworkDiagram_highRisk = "DiseaseNetworkDiagram.highRisk";
@@ -189,6 +192,7 @@ public interface Strings {
 	String DiseaseNetworkDiagram_subheading = "DiseaseNetworkDiagram.subheading";
 	String done = "done";
 	String edit = "edit";
+	String enabled = "enabled";
 	String entityAction = "entityAction";
 	String entityActions = "entityActions";
 	String entityActivityAsCase = "entityActivityAsCase";
@@ -266,6 +270,7 @@ public interface Strings {
 	String errorContactMerging = "errorContactMerging";
 	String errorContactNotEditable = "errorContactNotEditable";
 	String errorCreatingTemplateDirectory = "errorCreatingTemplateDirectory";
+	String errorDeleteUserRoleUsedAlone = "errorDeleteUserRoleUsedAlone";
 	String errorDeletingDocument = "errorDeletingDocument";
 	String errorDeletingDocumentTemplate = "errorDeletingDocumentTemplate";
 	String errorDocumentGeneration = "errorDocumentGeneration";
@@ -294,6 +299,7 @@ public interface Strings {
 	String errorNoPopulationDataLocations = "errorNoPopulationDataLocations";
 	String errorNoRightsForChangingField = "errorNoRightsForChangingField";
 	String errorNoRightsForChangingMultipleFields = "errorNoRightsForChangingMultipleFields";
+	String errorNotifyingExternalSurveillanceTool = "errorNotifyingExternalSurveillanceTool";
 	String errorNotRequiredRights = "errorNotRequiredRights";
 	String errorOccurred = "errorOccurred";
 	String errorProblemOccurred = "errorProblemOccurred";
@@ -448,6 +454,7 @@ public interface Strings {
 	String headingCreateNewTravelEntry = "headingCreateNewTravelEntry";
 	String headingCreateNewTreatment = "headingCreateNewTreatment";
 	String headingCreateNewUser = "headingCreateNewUser";
+	String headingCreateNewUserRole = "headingCreateNewUserRole";
 	String headingCreateNewVisit = "headingCreateNewVisit";
 	String headingCreatePathogenTestResult = "headingCreatePathogenTestResult";
 	String headingCreateSurveillanceReport = "headingCreateSurveillanceReport";
@@ -466,6 +473,7 @@ public interface Strings {
 	String headingDefineOutbreakDistricts = "headingDefineOutbreakDistricts";
 	String headingDeleteConfirmation = "headingDeleteConfirmation";
 	String headingDeleteContacts = "headingDeleteContacts";
+	String headingDeleteUserRoleNotPossible = "headingDeleteUserRoleNotPossible";
 	String headingDeleteVaccinations = "headingDeleteVaccinations";
 	String headingDisableLineListing = "headingDisableLineListing";
 	String headingDiscardUnsavedChanges = "headingDiscardUnsavedChanges";
@@ -643,6 +651,7 @@ public interface Strings {
 	String headingSamplesDeleted = "headingSamplesDeleted";
 	String headingSaveNotification = "headingSaveNotification";
 	String headingSaveUser = "headingSaveUser";
+	String headingSaveUserNotPossible = "headingSaveUserNotPossible";
 	String headingSecurityAlert = "headingSecurityAlert";
 	String headingSeeAllPersons = "headingSeeAllPersons";
 	String headingSelectCampaign = "headingSelectCampaign";
@@ -1158,6 +1167,10 @@ public interface Strings {
 	String messageSamplesDeleted = "messageSamplesDeleted";
 	String messageSelectedPeriodTooLong = "messageSelectedPeriodTooLong";
 	String messageSetContactRegionAndDistrict = "messageSetContactRegionAndDistrict";
+	String messageShareAssociatedContactsDisabled = "messageShareAssociatedContactsDisabled";
+	String messageShareAssociatedContactsDisabledOnSourceSystem = "messageShareAssociatedContactsDisabledOnSourceSystem";
+	String messageShareImmunizationsDisabled = "messageShareImmunizationsDisabled";
+	String messageShareSamplesDisabled = "messageShareSamplesDisabled";
 	String messageSpecifyColumnAttribute = "messageSpecifyColumnAttribute";
 	String messageSpecifyFilterAttributes = "messageSpecifyFilterAttributes";
 	String messageSpecifyRowAttribute = "messageSpecifyRowAttribute";
@@ -1192,6 +1205,7 @@ public interface Strings {
 	String messageUploadSuccessful = "messageUploadSuccessful";
 	String messageUserRightsExportFailed = "messageUserRightsExportFailed";
 	String messageUserRoleCombination = "messageUserRoleCombination";
+	String messageUserRoleSaved = "messageUserRoleSaved";
 	String messageUsersDisabled = "messageUsersDisabled";
 	String messageUsersEnabled = "messageUsersEnabled";
 	String messageUserSyncCanceled = "messageUserSyncCanceled";

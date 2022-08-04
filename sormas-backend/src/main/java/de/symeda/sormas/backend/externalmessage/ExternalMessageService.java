@@ -7,6 +7,8 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
@@ -46,6 +48,11 @@ public class ExternalMessageService extends AdoServiceWithUserFilter<ExternalMes
 		externalMessage.getTestReports().forEach(t -> testReportService.deletePermanent(t));
 
 		super.deletePermanent(externalMessage);
+	}
+
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void ensurePersistedInNewTransaction(ExternalMessage externalMessage) {
+		ensurePersisted(externalMessage);
 	}
 
 	@Override

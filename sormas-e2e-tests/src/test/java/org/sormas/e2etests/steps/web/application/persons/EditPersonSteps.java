@@ -54,6 +54,7 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACIL
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACILITY_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACILITY_TYPE_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FIRST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.GENERAL_COMMENT_FIELD;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.HOUSE_NUMBER_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.IMMUNIZATION_DISEASE_LABEL;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.IMMUNIZATION_ID_LABEL;
@@ -440,6 +441,13 @@ public class EditPersonSteps implements En {
           }
           softly.assertTrue(elementVisible, "Travel Entry isn't visible");
           softly.assertAll();
+        });
+    And(
+        "I check General comment field is enabled on Edit Person page",
+        () -> {
+          Assert.assertTrue(
+              webDriverHelpers.isElementEnabled(GENERAL_COMMENT_FIELD),
+              "There is no resizable General comment field on page");
         });
   }
 

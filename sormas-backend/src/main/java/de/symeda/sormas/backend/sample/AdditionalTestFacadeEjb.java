@@ -19,6 +19,7 @@ import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -86,7 +87,8 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 	}
 
 	public AdditionalTestDto saveAdditionalTest(@Valid AdditionalTestDto additionalTest, boolean checkChangeDate) {
-
+		AdditionalTest existingAdditionalTest = service.getByUuid(additionalTest.getUuid());
+		FacadeHelper.checkCreateAndEditRights(existingAdditionalTest, userService, UserRight.ADDITIONAL_TEST_CREATE, UserRight.ADDITIONAL_TEST_EDIT);
 		AdditionalTest entity = fromDto(additionalTest, checkChangeDate);
 		service.ensurePersisted(entity);
 		return toDto(entity);
@@ -115,7 +117,10 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 			return Collections.emptyList();
 		}
 
-		return service.getAllActiveAdditionalTestsAfter(date, user, batchSize, lastSynchronizedUuid).stream().map(e -> toDto(e)).collect(Collectors.toList());
+		return service.getAllActiveAdditionalTestsAfter(date, user, batchSize, lastSynchronizedUuid)
+			.stream()
+			.map(e -> toDto(e))
+			.collect(Collectors.toList());
 	}
 
 	@Override

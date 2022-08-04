@@ -149,25 +149,24 @@ public class CaseDataView extends AbstractCaseView {
 			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)) {
 			if (!FacadeProvider.getFeatureConfigurationFacade()
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-				final ImmunizationListCriteria immunizationListCriteria =
-					new ImmunizationListCriteria.Builder(caze.getPerson()).wihDisease(caze.getDisease()).build();
-				layout.addSidePanelComponent(
-					new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria, this::showUnsavedChangesPopup)),
-					IMMUNIZATION_LOC);
+				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(() -> {
+					CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
+					return new ImmunizationListCriteria.Builder(refreshedCase.getPerson()).withDisease(refreshedCase.getDisease()).build();
+				}, this::showUnsavedChangesPopup)), IMMUNIZATION_LOC);
 			} else {
-				VaccinationListCriteria criteria = new VaccinationListCriteria.Builder(caze.getPerson()).withDisease(caze.getDisease())
-					.build()
-					.vaccinationAssociationType(VaccinationAssociationType.CASE)
-					.caseReference(getCaseRef())
-					.region(caze.getResponsibleRegion())
-					.district(caze.getResponsibleDistrict());
-				layout.addSidePanelComponent(
-					new SideComponentLayout(new VaccinationListComponent(criteria, this::showUnsavedChangesPopup)),
-					VACCINATIONS_LOC);
+				layout.addSidePanelComponent(new SideComponentLayout(new VaccinationListComponent(() -> {
+					CaseDataDto refreshedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
+					return new VaccinationListCriteria.Builder(refreshedCase.getPerson()).withDisease(refreshedCase.getDisease())
+						.build()
+						.vaccinationAssociationType(VaccinationAssociationType.CASE)
+						.caseReference(getCaseRef())
+						.region(refreshedCase.getResponsibleRegion())
+						.district(refreshedCase.getResponsibleDistrict());
+				}, this::showUnsavedChangesPopup)), VACCINATIONS_LOC);
 			}
 		}
 
-		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isSharingCasesContactsAndSamplesEnabledForUser();
+		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isSharingCasesEnabledForUser();
 		if (sormasToSormasEnabled || caze.getSormasToSormasOriginInfo() != null) {
 			VerticalLayout sormasToSormasLocLayout = new VerticalLayout();
 			sormasToSormasLocLayout.setMargin(false);

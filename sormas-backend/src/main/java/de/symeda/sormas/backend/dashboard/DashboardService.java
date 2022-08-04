@@ -172,16 +172,35 @@ public class DashboardService {
 			cq.where(filter);
 			cq.groupBy(caze.get(Case.CASE_CLASSIFICATION));
 
-			result = em.createQuery(cq).getResultStream().collect(Collectors.toMap(tuple -> {
-				if (!configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
-					&& CaseClassification.getConfirmedClassifications().contains((CaseClassification) tuple[0])) {
-					return CaseClassification.CONFIRMED;
-				} else {
-					return (CaseClassification) tuple[0];
-				}
-			}, tuple -> ((Number) tuple[1]).intValue()));
+			List<Object[]> resultList = em.createQuery(cq).getResultList();
+			boolean aggregateConfirmed = !configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY);
+			result = getCasesCountByClassification(resultList, aggregateConfirmed);
 		} else {
 			result = Collections.emptyMap();
+		}
+
+		return result;
+	}
+
+	static Map<CaseClassification, Integer> getCasesCountByClassification(List<Object[]> classificationCountList, boolean aggregateConfirmed) {
+
+		Map<CaseClassification, Integer> result = classificationCountList.stream()
+			.collect(Collectors.toMap(tuple -> (CaseClassification) tuple[0], tuple -> ((Number) tuple[1]).intValue()));
+
+		if (aggregateConfirmed) {
+			CaseClassification confirmedKey = CaseClassification.CONFIRMED;
+			int confirmedSum = result.entrySet()
+				.stream()
+				.filter(e -> CaseClassification.getConfirmedClassifications().contains(e.getKey()))
+				.mapToInt(e -> e.getValue())
+				.sum();
+			for (CaseClassification caseClassification : CaseClassification.getConfirmedClassifications()) {
+				if (caseClassification == confirmedKey && confirmedSum > 0) {
+					result.put(confirmedKey, confirmedSum);
+				} else {
+					result.remove(caseClassification);
+				}
+			}
 		}
 
 		return result;

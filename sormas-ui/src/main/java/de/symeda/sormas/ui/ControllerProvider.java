@@ -45,6 +45,7 @@ import de.symeda.sormas.ui.task.TaskController;
 import de.symeda.sormas.ui.therapy.TherapyController;
 import de.symeda.sormas.ui.travelentry.TravelEntryController;
 import de.symeda.sormas.ui.user.UserController;
+import de.symeda.sormas.ui.user.UserRoleController;
 import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.BaseControllerProvider;
 import de.symeda.sormas.ui.vaccination.VaccinationController;
@@ -61,6 +62,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final VisitController visitController;
 	private final PersonController personController;
 	private final UserController userController;
+	private final UserRoleController userRoleController;
 	private final TaskController taskController;
 	private final ActionController actionController;
 	private final SampleController sampleController;
@@ -96,6 +98,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		visitController = new VisitController();
 		personController = new PersonController();
 		userController = new UserController();
+		userRoleController = new UserRoleController();
 		taskController = new TaskController();
 		actionController = new ActionController();
 		sampleController = new SampleController();
@@ -158,6 +161,10 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static UserController getUserController() {
 		return get().userController;
+	}
+
+	public static UserRoleController getUserRoleController() {
+		return get().userRoleController;
 	}
 
 	public static TaskController getTaskController() {
