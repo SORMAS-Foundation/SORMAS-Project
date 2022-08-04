@@ -144,34 +144,23 @@ public class ContactDataView extends AbstractContactView {
 				buttonsLayout.addComponent(removeCaseButton);
 			}
 
-			chooseCaseButton.addClickListener(e -> {
-				VaadinUiUtil.showConfirmationPopup(
-					I18nProperties.getString(Strings.headingDiscardUnsavedChanges),
-					new Label(I18nProperties.getString(Strings.confirmationContactSourceCaseDiscardUnsavedChanges)),
-					I18nProperties.getString(Strings.yes),
-					I18nProperties.getString(Strings.no),
-					480,
-					confirmed -> {
-						if (confirmed) {
-							editComponent.discard();
-							Disease selectedDisease = editComponent.getWrappedComponent().getSelectedDisease();
-							ControllerProvider.getContactController().openSelectCaseForContactWindow(selectedDisease, selectedCase -> {
-								if (selectedCase != null) {
-									editComponent.getWrappedComponent().setSourceCase(selectedCase.toReference());
-									ContactDto contactToChange = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
-									contactToChange.setCaze(selectedCase.toReference());
-									FacadeProvider.getContactFacade().save(contactToChange);
-									layout.addComponent(createCaseInfoLayout(selectedCase.getUuid()), CASE_LOC);
-									removeCaseButton.setVisible(true);
-									chooseCaseButton.setCaption(I18nProperties.getCaption(Captions.contactChangeCase));
-									ControllerProvider.getContactController().navigateToData(contactDto.getUuid());
-									new Notification(null, I18nProperties.getString(Strings.messageContactCaseChanged), Type.TRAY_NOTIFICATION, false)
-										.show(Page.getCurrent());
-								}
-							});
-						}
-					});
-			});
+			chooseCaseButton.addClickListener(e -> showUnsavedChangesPopup(() -> {
+				Disease selectedDisease = editComponent.getWrappedComponent().getSelectedDisease();
+				ControllerProvider.getContactController().openSelectCaseForContactWindow(selectedDisease, selectedCase -> {
+					if (selectedCase != null) {
+						editComponent.getWrappedComponent().setSourceCase(selectedCase.toReference());
+						ContactDto contactToChange = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
+						contactToChange.setCaze(selectedCase.toReference());
+						FacadeProvider.getContactFacade().save(contactToChange);
+						layout.addComponent(createCaseInfoLayout(selectedCase.getUuid()), CASE_LOC);
+						removeCaseButton.setVisible(true);
+						chooseCaseButton.setCaption(I18nProperties.getCaption(Captions.contactChangeCase));
+						ControllerProvider.getContactController().navigateToData(contactDto.getUuid());
+						new Notification(null, I18nProperties.getString(Strings.messageContactCaseChanged), Type.TRAY_NOTIFICATION, false)
+							.show(Page.getCurrent());
+					}
+				});
+			}));
 			removeCaseButton.addClickListener(e -> {
 				if (contactDto.getRegion() == null || contactDto.getDistrict() == null) {
 					// Ask user to fill in a region and district before removing the source case

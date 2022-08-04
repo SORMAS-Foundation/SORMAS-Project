@@ -540,7 +540,7 @@ public class EventParticipantExportDto implements Serializable {
 		EventParticipantDto.PERSON,
 		PersonDto.BIRTH_COUNTRY })
 	@ExportGroup(ExportGroupType.PERSON)
-	@HideForCountriesExcept
+	@HideForCountriesExcept(countries = {})
 	public String getBirthCountry() {
 		return birthCountry;
 	}
@@ -551,7 +551,7 @@ public class EventParticipantExportDto implements Serializable {
 		EventParticipantDto.PERSON,
 		PersonDto.CITIZENSHIP })
 	@ExportGroup(ExportGroupType.PERSON)
-	@HideForCountriesExcept
+	@HideForCountriesExcept(countries = {})
 	public String getCitizenship() {
 		return citizenship;
 	}

@@ -18,12 +18,10 @@ import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import de.symeda.sormas.backend.util.IterableHelper;
-import de.symeda.sormas.backend.visit.VisitService;
 
 @LocalBean
 @Singleton
@@ -39,10 +37,6 @@ public class CoreEntityDeletionService {
 	private DeletionConfigurationService deletionConfigurationService;
 	@EJB
 	private PersonService personService;
-	@EJB
-	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
-	@EJB
-	private VisitService visitService;
 
 	public CoreEntityDeletionService() {
 	}
@@ -94,6 +88,15 @@ public class CoreEntityDeletionService {
 		logger.debug("executeAutomaticDeletion() finished. {}s", DateHelper.durationSeconds(startTime));
 	}
 
+	private boolean supportsPermanentDeletion(CoreEntityType coreEntityType) {
+		return coreEntityType == CoreEntityType.IMMUNIZATION
+			|| coreEntityType == CoreEntityType.TRAVEL_ENTRY
+			|| coreEntityType == CoreEntityType.CASE
+			|| coreEntityType == CoreEntityType.CONTACT
+			|| coreEntityType == CoreEntityType.EVENT
+			|| coreEntityType == CoreEntityType.EVENT_PARTICIPANT;
+	}
+
 	@SuppressWarnings("rawtypes")
 	private static final class EntityTypeFacadePair {
 
@@ -108,12 +111,5 @@ public class CoreEntityDeletionService {
 		public static EntityTypeFacadePair of(CoreEntityType coreEntityType, AbstractCoreFacadeEjb entityFacade) {
 			return new EntityTypeFacadePair(coreEntityType, entityFacade);
 		}
-	}
-
-	private boolean supportsPermanentDeletion(CoreEntityType coreEntityType) {
-		return coreEntityType == CoreEntityType.IMMUNIZATION
-			|| coreEntityType == CoreEntityType.TRAVEL_ENTRY
-			|| coreEntityType == CoreEntityType.CASE
-			|| coreEntityType == CoreEntityType.CONTACT;
 	}
 }
