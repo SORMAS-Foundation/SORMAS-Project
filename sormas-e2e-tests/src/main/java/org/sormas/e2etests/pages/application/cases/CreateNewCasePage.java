@@ -40,7 +40,9 @@ public class CreateNewCasePage {
       By.xpath("//div[@location='facilityOrHomeLoc']//label[contains(text(), 'Home')]");
   public static final By FIRST_NAME_INPUT =
       By.cssSelector(".v-window [location='firstName'] input");
+  public static final By FIRST_NAME_NO_POPUP_INPUT = By.cssSelector("#firstName");
   public static final By LAST_NAME_INPUT = By.cssSelector(".v-window [location='lastName'] input");
+  public static final By LAST_NAME_NO_POPUP_INPUT = By.cssSelector("#lastName");
   public static final By SEX_COMBOBOX =
       By.cssSelector(".v-window [location='sex'] div[role='combobox'] div");
   public static final By SAVE_BUTTON = By.id("commit");

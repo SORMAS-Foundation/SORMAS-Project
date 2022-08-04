@@ -125,7 +125,6 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ge
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByIndex;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByUUID;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getVaccinationStatusEventParticipantByText;
-import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DESCRIPTION_OF_CREATE_CASE_FROM_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANT_DISPLAY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
@@ -133,7 +132,6 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.events.CreateNewEventSteps.DateOfEvent;
 
 import cucumber.api.java8.En;
-import java.io.File;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -1059,10 +1057,8 @@ public class EventDirectorySteps implements En {
     When(
         "I delete exported file from Event Participant Directory",
         () -> {
-          String filePath = "sormas_event_participants_"
-                      + LocalDate.now()
-                      + "_.csv";
-            FilesHelper.deleteFile(filePath);
+          String filePath = "sormas_event_participants_" + LocalDate.now() + "_.csv";
+          FilesHelper.deleteFile(filePath);
         });
     When(
         "I check that an import success notification appears in the Import Event Participant popup",

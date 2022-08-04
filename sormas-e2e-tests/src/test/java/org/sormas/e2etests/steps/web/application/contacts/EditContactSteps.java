@@ -190,7 +190,7 @@ public class EditContactSteps implements En {
         (String name) -> {
           String uuid = apiState.getCreatedContact().getUuid();
           String pathToFile = uuid.substring(0, 6).toUpperCase() + "-" + name;
-            FilesHelper.waitForFileToDownload(pathToFile, 50);
+          FilesHelper.waitForFileToDownload(pathToFile, 50);
         });
     When(
         "I check if generated document for contact based on {string} contains all required fields",
@@ -715,7 +715,7 @@ public class EditContactSteps implements En {
         "I check if downloaded file is correct for {string} Quarantine Order in Edit Contact directory",
         (String name) -> {
           String uuid = apiState.getCreatedContact().getUuid();
-          String filePath =  uuid.substring(0, 6).toUpperCase() + "-" + name;
+          String filePath = uuid.substring(0, 6).toUpperCase() + "-" + name;
           FilesHelper.waitForFileToDownload(filePath, 50);
         });
     When(

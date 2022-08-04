@@ -1096,8 +1096,8 @@ public class EditEventSteps implements En {
           String uuid =
               eventParticipantData.substring(
                   eventParticipantData.indexOf("(") + 1, eventParticipantData.indexOf(")"));
-         String filePath = uuid.toUpperCase() + "-" + name;
-         FilesHelper.waitForFileToDownload(filePath, 120);
+          String filePath = uuid.toUpperCase() + "-" + name;
+          FilesHelper.waitForFileToDownload(filePath, 120);
         });
     When(
         "I check if generated document for Event Participant based on {string} contains all required fields",
@@ -1207,7 +1207,7 @@ public class EditEventSteps implements En {
               eventParticipantData.substring(
                   eventParticipantData.indexOf("(") + 1, eventParticipantData.indexOf(")"));
           String filePath = uuid.toUpperCase() + "-" + name;
-            FilesHelper.deleteFile(filePath);
+          FilesHelper.deleteFile(filePath);
         });
     When(
         "^I create a new event group$",
@@ -1339,9 +1339,8 @@ public class EditEventSteps implements En {
         "I verify that the event document is downloaded and correctly named",
         () -> {
           String uuid = webDriverHelpers.getValueFromWebElement(EditEventPage.UUID_INPUT);
-          String filePath =  uuid.substring(0, 6).toUpperCase()
-                  + "-"
-                  + aEventHandout.getDocumentTemplate();
+          String filePath =
+              uuid.substring(0, 6).toUpperCase() + "-" + aEventHandout.getDocumentTemplate();
           FilesHelper.waitForFileToDownload(filePath, 120);
         });
     When(

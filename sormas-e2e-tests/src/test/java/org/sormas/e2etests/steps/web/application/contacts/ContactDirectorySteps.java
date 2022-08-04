@@ -1234,6 +1234,31 @@ public class ContactDirectorySteps implements En {
           Path path = Paths.get(userDirPath + "/uploads/" + contactCSVName);
           Files.delete(path);
         });
+
+    Then(
+        "I set contact vaccination status filter to ([^\"]*)",
+        (String vaccinationStatus) ->
+            webDriverHelpers.selectFromCombobox(
+                CONTACT_VACCINATION_STATUS_FILTER_COMBOBOX, vaccinationStatus));
+
+    And(
+        "I apply contact filters",
+        () -> webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON));
+
+    Then(
+        "I check that created Contact is visible with ([^\"]*) status",
+        (String vaccinationStatus) -> {
+          String contactUuid = apiState.getCreatedContact().getUuid();
+          Assert.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(getContactsByUUID(contactUuid), 5),
+              "There is no contact with expected uuid");
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              getVaccinationStatusContactsByText(vaccinationStatus));
+          Assert.assertTrue(
+              webDriverHelpers.isElementVisibleWithTimeout(
+                  getVaccinationStatusContactsByText(vaccinationStatus), 5),
+              "There is no contact with expected status");
+        });
   }
 
   public Map<String, Object> parseCSVintoPOJODetailedContactCSV(String fileName) {
@@ -1335,31 +1360,6 @@ public class ContactDirectorySteps implements En {
     } catch (IOException e) {
       log.error("IOException csvWriter: ", e);
     }
-
-    Then(
-        "I set contact vaccination status filter to ([^\"]*)",
-        (String vaccinationStatus) ->
-            webDriverHelpers.selectFromCombobox(
-                CONTACT_VACCINATION_STATUS_FILTER_COMBOBOX, vaccinationStatus));
-
-    And(
-        "I apply contact filters",
-        () -> webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON));
-
-    Then(
-        "I check that created Contact is visible with ([^\"]*) status",
-        (String vaccinationStatus) -> {
-          String contactUuid = apiState.getCreatedContact().getUuid();
-          Assert.assertTrue(
-              webDriverHelpers.isElementVisibleWithTimeout(getContactsByUUID(contactUuid), 5),
-              "There is no contact with expected uuid");
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
-              getVaccinationStatusContactsByText(vaccinationStatus));
-          Assert.assertTrue(
-              webDriverHelpers.isElementVisibleWithTimeout(
-                  getVaccinationStatusContactsByText(vaccinationStatus), 5),
-              "There is no contact with expected status");
-        });
   }
 
   private void searchAfterContactByMultipleOptions(String idPhoneNameEmail) {
