@@ -248,7 +248,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		final UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		user.setRegion(new RegionReferenceDto(rdcfEntities.region.getUuid()));
 		user.setLimitedDisease(Disease.EVD);
-		getUserFacade().saveUser(user);
+		getUserFacade().saveUser(user, false);
 		loginWith(user);
 
 		final PersonDto person1 = creator.createPerson("James", "Smith", Sex.MALE, 1920, 1, 1);

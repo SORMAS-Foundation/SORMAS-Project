@@ -299,7 +299,7 @@ public class MainScreen extends HorizontalLayout {
 			Button buttonGdpr = ButtonHelper.createButton(I18nProperties.getCaption(Captions.actionConfirm), event -> {
 				if (checkBoxGdpr.getValue()) {
 					user.setHasConsentedToGdpr(true);
-					FacadeProvider.getUserFacade().saveUser(user);
+					FacadeProvider.getUserFacade().saveUser(user, true);
 					navigator.getUI().removeWindow(subWindowGdpR);
 				}
 				navigator.getUI().removeWindow(subWindowGdpR);
