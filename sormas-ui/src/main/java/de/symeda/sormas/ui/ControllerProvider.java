@@ -62,6 +62,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final VisitController visitController;
 	private final PersonController personController;
 	private final UserController userController;
+	private final UserRoleController userRoleController;
 	private final TaskController taskController;
 	private final ActionController actionController;
 	private final SampleController sampleController;
@@ -97,6 +98,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		visitController = new VisitController();
 		personController = new PersonController();
 		userController = new UserController();
+		userRoleController = new UserRoleController();
 		taskController = new TaskController();
 		actionController = new ActionController();
 		sampleController = new SampleController();
@@ -162,7 +164,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	}
 
 	public static UserRoleController getUserRoleController() {
-		return get().getUserRoleController();
+		return get().userRoleController;
 	}
 
 	public static TaskController getTaskController() {

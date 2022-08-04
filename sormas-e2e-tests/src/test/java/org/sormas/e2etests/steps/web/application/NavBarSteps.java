@@ -94,6 +94,13 @@ public class NavBarSteps implements En {
         });
 
     When(
+        "^I click on the mSERS button from navbar$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.MSERS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+        });
+    When(
         "^I click on the Events button from navbar and start timer$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
@@ -228,6 +235,14 @@ public class NavBarSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.SAMPLE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+        });
+
+    When(
+        "^I click on the Statistics button from navbar$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.STATISTICS_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
         });
 

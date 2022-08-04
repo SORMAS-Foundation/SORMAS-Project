@@ -138,7 +138,7 @@ Feature: Dashboard counters
     Then I click on reset filters on Surveillance Dashboard Page
     Then I verify that filters were reset on Surveillance Dashboard Page
 
-    @issue=SORDEV-6604 @env_main
+    @tmsLink=SORDEV-6604 @env_main
     Scenario: Differentiate strings for confirmed cases and confirmed contacts on dashboard
       Given I log in as a Admin User
       And I click on the Users from navbar
@@ -161,5 +161,105 @@ Feature: Dashboard counters
       And I compare English and German confirmed counter
       And I compare English and German confirmed contacts counter
 
+  @env_de @tmsLink=SORDEV-6137
+  Scenario: Test if "not a case" is excluded from the total case count
+    Given I log in with National User
+    When I click on the Dashboard button from navbar and access Surveillance Dashboard
+    And I select "COVID-19" in TabSheet of Surveillance Dashboard
+    Then I check that the Total number of COVID-19 cases excludes those marked "not a case" in German
 
+  @tmsLink=SORDEV-6142 @env_main
+  Scenario: Check that number of cases on the dashboard map is rendered by the time filter
+      Given I log in with National User
+      When I click on the Dashboard button from navbar
+      And I expand Case status map on Surveillance Dashboard Page
+      And I click on the Time Period combobox from Surveillance Dashboard
+      And I choose yesterday from the Surveillance Dashboard Time Period combobox
+      And I click on the APPLY FILTERS button
+      And I choose "Monkeypox" in a disease filter on Surveillance Dashboard
+      And I click the zoom out button 4 times on the Case Status Map
+      And I count the number of cases displayed on the Case Status Map
+      And I click on the Time Period combobox from Surveillance Dashboard
+      And I choose today from the Surveillance Dashboard Time Period combobox
+      And I click on the APPLY FILTERS button
+      And I count the number of cases displayed on the Case Status Map
+      And I click on the Cases button from navbar
+      And I click on the NEW CASE button
+      And I fill new case form with specific data
+      And I click on save case button
+      And I collect uuid of the case
+      And I change disease to "Monkeypox" in the case tab
+      And I confirm changes in selected Case
+      And I navigate to case person tab
+      And I fill specific address data in Case Person tab
+      And I click on Geocode button to get GPS coordinates in Case Person Tab
+      And I click on save button to Save Person data in Case Person Tab
+      And I click on the Dashboard button from navbar
+      And I expand Case status map on Surveillance Dashboard Page
+      And I click on the Time Period combobox from Surveillance Dashboard
+      And I choose yesterday from the Surveillance Dashboard Time Period combobox
+      And I click on the APPLY FILTERS button
+      And I choose "Monkeypox" in a disease filter on Surveillance Dashboard
+      And I click the zoom out button 4 times on the Case Status Map
+      And I count the number of cases displayed on the Case Status Map
+      Then I check that number of cases on the Case Status Map for yesterday has increased by "1"
+      And I click on the Time Period combobox from Surveillance Dashboard
+      And I choose today from the Surveillance Dashboard Time Period combobox
+      And I click on the APPLY FILTERS button
+      And I count the number of cases displayed on the Case Status Map
+      Then I check that number of cases on the Case Status Map for today has not changed
+      And I click on the Cases button from navbar
+      And I filter with last created case using case UUID
+      And I click on the first Case ID from Case Directory
+      And I delete the case
+
+  @tmsLink=SORDEV-6142 @env_main
+  Scenario: Check that number of contacts on the dashboard map is rendered by the time filter
+    Given I log in with National User
+    When I click on the Dashboard button from navbar
+    And I expand Case status map on Surveillance Dashboard Page
+    And I click Layers button on Surveillance Dashboard Page
+    And I click checkbox to select Show contacts from Layers on the Case Status Map
+    And I click checkbox to unselect Show cases from Layers on the Case Status Map
+    And I click on the Time Period combobox from Surveillance Dashboard
+    And I choose yesterday from the Surveillance Dashboard Time Period combobox
+    And I click on the APPLY FILTERS button
+    And I choose "Cholera" in a disease filter on Surveillance Dashboard
+    And I click the zoom out button 4 times on the Case Status Map
+    And I count the number of contacts displayed on the Case Status Map
+    And I click on the Time Period combobox from Surveillance Dashboard
+    And I choose today from the Surveillance Dashboard Time Period combobox
+    And I click on the APPLY FILTERS button
+    And I count the number of contacts displayed on the Case Status Map
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a mandatory fields for a new contact and date of report to yesterday
+    And I click on SAVE new contact button and choose create new person in duplication detection
+    And I collect contact UUID displayed on Edit Contact Page
+    And I change disease to "Cholera" in the Edit contact page
+    And I click SAVE button on Edit Contact Page
+    And I open Contact Person tab
+    And I fill specific address data in Case Person tab
+    And I click on Geocode button to get GPS coordinates in Case Person Tab
+    And I click on save button to Save Person data in Case Person Tab
+    And I click on the Dashboard button from navbar
+    And I expand Case status map on Surveillance Dashboard Page
+    And I click Layers button on Surveillance Dashboard Page
+    And I click checkbox to select Show contacts from Layers on the Case Status Map
+    And I click checkbox to unselect Show cases from Layers on the Case Status Map
+    And I click on the Time Period combobox from Surveillance Dashboard
+    And I choose yesterday from the Surveillance Dashboard Time Period combobox
+    And I click on the APPLY FILTERS button
+    And I choose "Cholera" in a disease filter on Surveillance Dashboard
+    And I click the zoom out button 4 times on the Case Status Map
+    And I count the number of contacts displayed on the Case Status Map
+    Then I check that number of contacts on the Case Status Map for yesterday has increased by "1"
+    And I click on the Time Period combobox from Surveillance Dashboard
+    And I choose today from the Surveillance Dashboard Time Period combobox
+    And I click on the APPLY FILTERS button
+    And I count the number of contacts displayed on the Case Status Map
+    Then I check that number of contacts on the Case Status Map for today has not changed
+    And I click on the Contacts button from navbar
+    And I click on first created contact in Contact directory page by UUID
+    And I delete the contact
 

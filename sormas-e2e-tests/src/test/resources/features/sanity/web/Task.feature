@@ -10,7 +10,7 @@ Feature: Tasks functionalities
     And I open last created task from Tasks Directory
     Then I check the created task is correctly displayed on Edit task page
 
-  @issue=SORDEV-5476 @env_main
+  @tmsLink=SORDEV-5476 @env_main
   Scenario: Check the edit of task from Case
     Given I log in as a National User
     And I click on the Cases button from navbar
@@ -45,7 +45,7 @@ Feature: Tasks functionalities
     And I collect the task column objects
     Then I am checking if all the fields are correctly displayed in the Task Management table
 
-  @issue=SORDEV-6080 @env_main
+  @tmsLink=SORDEV-6080 @env_main
   Scenario: Bulk deleting tasks in Task Directory
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -71,7 +71,7 @@ Feature: Tasks functionalities
     And I check if popup message is "All selected tasks have been deleted"
     And I check that number of displayed tasks results is 0
 
-  @issue=SORDEV-6080 @env_main
+  @tmsLink=SORDEV-6080 @env_main
   Scenario: Bulk archiving tasks in Task Directory
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -97,7 +97,7 @@ Feature: Tasks functionalities
     And I check if popup message is "All selected tasks have been archived"
     And I check that number of displayed tasks results is 0
 
-  @issue=SORDEV-6080 @env_main
+  @tmsLink=SORDEV-6080 @env_main
   Scenario: Bulk editing tasks in Task Directory
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -126,7 +126,7 @@ Feature: Tasks functionalities
     And I check if popup message after bulk edit is "All tasks have been edited"
     And I check that number of displayed tasks results is 0
 
-  @issue=SORDEV-9156 @env_main
+  @tmsLink=SORDEV-9156 @env_main
   Scenario: Check the task observer is added
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -144,7 +144,7 @@ Feature: Tasks functionalities
     Then I open last created task by API using Contact UUID
     And I check that respected user is selected on Edit Task page
 
-  @env_main @issue=SORDEV-9474
+  @env_main @tmsLink=SORDEV-9474
   Scenario: Test Modify the field allowing to designate the observers of a task
     Given I log in with National User
     And I click on the Tasks button from navbar

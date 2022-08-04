@@ -61,7 +61,11 @@ public class ImmunizationController {
 	}
 
 	public void navigateToImmunization(String uuid) {
-		final String navigationState = ImmunizationDataView.VIEW_NAME + "/" + uuid;
+		navigateToView(ImmunizationDataView.VIEW_NAME, uuid);
+	}
+
+	public void navigateToView(String viewName, String uuid) {
+		final String navigationState = viewName + "/" + uuid;
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
@@ -131,9 +135,12 @@ public class ImmunizationController {
 		return null;
 	}
 
-	public CommitDiscardWrapperComponent<ImmunizationDataForm> getImmunizationDataEditComponent(ImmunizationDto immunizationDto, Consumer<Runnable> actionCallback) {
+	public CommitDiscardWrapperComponent<ImmunizationDataForm> getImmunizationDataEditComponent(
+		ImmunizationDto immunizationDto,
+		Consumer<Runnable> actionCallback) {
 
-		ImmunizationDataForm immunizationDataForm = new ImmunizationDataForm(immunizationDto.isPseudonymized(), immunizationDto.getRelatedCase(), actionCallback);
+		ImmunizationDataForm immunizationDataForm =
+			new ImmunizationDataForm(immunizationDto.isPseudonymized(), immunizationDto.getRelatedCase(), actionCallback);
 		immunizationDataForm.setValue(immunizationDto);
 
 		UserProvider currentUserProvider = UserProvider.getCurrent();

@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.sormastosormas.share.sharerequest;
 
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +36,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestCriteria;
@@ -195,23 +195,6 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 			.collect(Collectors.toList());
 	}
 
-	public SormasToSormasShareRequest fromDto(@NotNull SormasToSormasShareRequestDto source, boolean checkChangeDate) {
-
-		SormasToSormasShareRequest target =
-			DtoHelper.fillOrBuildEntity(source, shareRequestService.getByUuid(source.getUuid()), SormasToSormasShareRequest::new, checkChangeDate);
-
-		target.setDataType(source.getDataType());
-		target.setStatus(source.getStatus());
-		target.setOriginInfo(originInfoFacade.fromDto(source.getOriginInfo(), checkChangeDate));
-		target.setCasesList(source.getCases());
-		target.setContactsList(source.getContacts());
-		target.setEventsList(source.getEvents());
-		target.setEventParticipantsList(source.getEventParticipants());
-		target.setResponseComment(source.getResponseComment());
-
-		return target;
-	}
-
 	public static SormasToSormasShareRequestDto toDto(SormasToSormasShareRequest source) {
 		if (source == null) {
 			return null;
@@ -227,6 +210,25 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		target.setEvents(source.getEventsList());
 		target.setEventParticipants(source.getEventParticipantsList());
 		target.setResponseComment(source.getResponseComment());
+		target.setShareAssociatedContactsDisabled(source.isShareAssociatedContactsDisabled());
+
+		return target;
+	}
+
+	public SormasToSormasShareRequest fromDto(@NotNull SormasToSormasShareRequestDto source, boolean checkChangeDate) {
+
+		SormasToSormasShareRequest target =
+			DtoHelper.fillOrBuildEntity(source, shareRequestService.getByUuid(source.getUuid()), SormasToSormasShareRequest::new, checkChangeDate);
+
+		target.setDataType(source.getDataType());
+		target.setStatus(source.getStatus());
+		target.setOriginInfo(originInfoFacade.fromDto(source.getOriginInfo(), checkChangeDate));
+		target.setCasesList(source.getCases());
+		target.setContactsList(source.getContacts());
+		target.setEventsList(source.getEvents());
+		target.setEventParticipantsList(source.getEventParticipants());
+		target.setResponseComment(source.getResponseComment());
+		target.setShareAssociatedContactsDisabled(source.isShareAssociatedContactsDisabled());
 
 		return target;
 	}

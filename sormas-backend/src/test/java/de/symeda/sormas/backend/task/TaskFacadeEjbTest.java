@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -33,6 +34,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
@@ -60,8 +62,11 @@ import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -533,5 +538,94 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(rdcf2.region, taskIndexDtos.get(0).getRegion());
 		assertEquals(rdcf2.district, taskIndexDtos.get(0).getDistrict());
 		assertEquals(rdcf2.community, taskIndexDtos.get(0).getCommunity());
+	}
+
+	@Test
+	public void testGetTaskListForUserWithoutEventViewRight() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personDto = creator.createPerson();
+		CaseDataDto caze = creator.createCase(user.toReference(), personDto.toReference(), rdcf);
+
+		creator.createTask(
+			TaskContext.GENERAL,
+			TaskType.OTHER,
+			TaskStatus.PENDING,
+			null,
+			null,
+			null,
+			DateHelper.addDays(new Date(), 1),
+			user.toReference());
+
+		creator.createTask(
+			TaskContext.CASE,
+			TaskType.OTHER,
+			TaskStatus.PENDING,
+			caze.toReference(),
+			null,
+			null,
+			DateHelper.addDays(new Date(), 1),
+			user.toReference());
+
+		ContactDto contactDto = creator.createContact(rdcf, user.toReference(), personDto.toReference());
+		creator.createTask(
+			TaskContext.CONTACT,
+			TaskType.OTHER,
+			TaskStatus.PENDING,
+			null,
+			contactDto.toReference(),
+			null,
+			DateHelper.addDays(new Date(), 1),
+			user.toReference());
+
+		EventDto eventDto = creator.createEvent(user.toReference());
+		creator.createTask(
+			TaskContext.EVENT,
+			TaskType.OTHER,
+			TaskStatus.PENDING,
+			null,
+			null,
+			eventDto.toReference(),
+			DateHelper.addDays(new Date(), 1),
+			user.toReference());
+
+		TravelEntryDto travelEntryDto = creator
+			.createTravelEntry(personDto.toReference(), user.toReference(), Disease.CORONAVIRUS, rdcf.region, rdcf.district, rdcf.pointOfEntry);
+		creator.createTask(TaskContext.TRAVEL_ENTRY, travelEntryDto.toReference(), t -> {
+			t.setTaskStatus(TaskStatus.PENDING);
+			t.setAssigneeUser(user.toReference());
+		});
+
+		TaskCriteria taskCriteria = new TaskCriteria();
+		taskCriteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+
+		List<TaskIndexDto> taskIndexDtos = getTaskFacade().getIndexList(taskCriteria, 0, 100, null);
+		Set<TaskContext> taskContexts = taskIndexDtos.stream().map(t -> t.getTaskContext()).collect(Collectors.toSet());
+		assertEquals(5, taskContexts.size());
+		assertTrue(
+			taskContexts
+				.containsAll(Arrays.asList(TaskContext.GENERAL, TaskContext.CASE, TaskContext.CONTACT, TaskContext.EVENT, TaskContext.TRAVEL_ENTRY)));
+
+		UserDto noEventNoCaseViewUser = creator.createUser(
+			rdcf,
+			creator.createUserRole(
+				"NoEventNoCaseView",
+				JurisdictionLevel.NATION,
+				UserRight.CASE_VIEW,
+				UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS,
+				UserRight.TRAVEL_ENTRY_VIEW));
+		loginWith(noEventNoCaseViewUser);
+		assertFalse(getUserService().hasRight(UserRight.EVENT_VIEW));
+		assertFalse(getUserService().hasRight(UserRight.CONTACT_VIEW));
+		assertTrue(getUserService().hasRight(UserRight.CASE_VIEW));
+		assertTrue(getUserService().hasRight(UserRight.TRAVEL_ENTRY_VIEW));
+
+		taskIndexDtos = getTaskFacade().getIndexList(taskCriteria, 0, 100, null);
+		assertNotNull(taskIndexDtos);
+		taskContexts = taskIndexDtos.stream().map(t -> t.getTaskContext()).collect(Collectors.toSet());
+		assertEquals(3, taskContexts.size());
+		assertTrue(taskContexts.containsAll(Arrays.asList(TaskContext.GENERAL, TaskContext.CASE, TaskContext.TRAVEL_ENTRY)));
+		assertFalse(taskContexts.contains(TaskContext.CONTACT));
+		assertFalse(taskContexts.contains(TaskContext.EVENT));
 	}
 }

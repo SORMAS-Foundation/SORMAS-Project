@@ -68,6 +68,7 @@ import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
@@ -413,10 +414,11 @@ public class CaseController {
 		convertToCaseSelectComponent.addCommitListener(() -> {
 			List<SimilarContactDto> selectedContacts = convertToCaseSelectionField.getSelectedContacts();
 			if (!selectedContacts.isEmpty()) {
-				caze.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
+				CaseDataDto refreshedCaze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caze.getUuid());
+				refreshedCaze.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
+				saveCase(refreshedCaze);
 			}
-			CaseDataDto refreshedCaze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caze.getUuid());
-			saveCase(refreshedCaze);
+
 			setResultingCase(caze, selectedContacts, convertToCaseSelectionField.getSelectedEventParticipants());
 			SormasUI.refreshView();
 		});
@@ -1355,9 +1357,10 @@ public class CaseController {
 		EpiDataForm epiDataForm = new EpiDataForm(caze.getDisease(), CaseDataDto.class, caze.isPseudonymized(), sourceContactsToggleCallback);
 		epiDataForm.setValue(caze.getEpiData());
 
+		UserProvider currentUserProvider = UserProvider.getCurrent();
 		final CommitDiscardWrapperComponent<EpiDataForm> editView = new CommitDiscardWrapperComponent<EpiDataForm>(
 			epiDataForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
+			currentUserProvider.hasUserRight(UserRight.CASE_EDIT),
 			epiDataForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
@@ -1365,6 +1368,13 @@ public class CaseController {
 			cazeDto.setEpiData(epiDataForm.getValue());
 			saveCase(cazeDto);
 		});
+
+		if (currentUserProvider.hasUserRight(UserRight.CONTACT_VIEW)) {
+			long sourceContactCount = FacadeProvider.getContactFacade().count(new ContactCriteria().resultingCase(caze.toReference()));
+			if (sourceContactCount > 0) {
+				epiDataForm.disableContactWithSourceCaseKnownField();
+			}
+		}
 
 		return editView;
 	}
