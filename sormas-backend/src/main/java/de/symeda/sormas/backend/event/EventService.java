@@ -575,7 +575,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			eventParticipantService.delete(eventParticipant, deletionDetails);
 		}
 
-		deleteEventLinks(event);
+		deleteSubordinateEvents(event);
 		deleteEventInExternalSurveillanceTool(event);
 
 		// Mark the event as deleted
@@ -615,12 +615,12 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		documentService.getRelatedToEntity(DocumentRelatedEntityType.EVENT, event.getUuid()).forEach(d -> documentService.markAsDeleted(d));
 
 		deleteEventInExternalSurveillanceTool(event);
-		deleteEventLinks(event);
+		deleteSubordinateEvents(event);
 
 		super.deletePermanent(event);
 	}
 
-	private void deleteEventLinks(Event event) {
+	private void deleteSubordinateEvents(Event event) {
 		event.getSubordinateEvents().forEach(subEvent -> {
 			subEvent.setSuperordinateEvent(null);
 			ensurePersisted(subEvent);
