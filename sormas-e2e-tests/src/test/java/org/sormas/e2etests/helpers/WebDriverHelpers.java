@@ -1026,7 +1026,6 @@ public class WebDriverHelpers {
   }
 
   public boolean isFileExists(Path file_path) {
-    boolean file_exists;
     return Files.exists(file_path);
   }
 

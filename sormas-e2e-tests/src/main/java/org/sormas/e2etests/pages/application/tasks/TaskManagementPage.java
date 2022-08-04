@@ -63,12 +63,13 @@ public class TaskManagementPage {
           "//div[@class='popupContent']//div[contains(@id, '-delete') and not(contains(@id, 'null-delete'))]");
   public static final By CUSTOM_EXPORT_CONFIGURATION_NAME_INPUT =
       By.xpath("//div[@id='sormasui-1655777373-overlays']//input[@type='text']");
-  public static final By CUSTOM_EXPORT_TASK_CONTEXT_CHECKBOX =
-      By.xpath("//span[@class='v-checkbox v-widget']/label[contains(text(), 'Task context')]");
-  public static final By CUSTOM_EXPORT_TASK_TYPE_CHECKBOX =
-      By.xpath("//span[@class='v-checkbox v-widget']/label[contains(text(), 'Task type')]");
 
   public static By getCheckboxByIndex(String idx) {
     return By.xpath(String.format("(//input[@type=\"checkbox\"])[%s]", idx));
+  }
+
+  public static By getCustomExportCheckboxByText(String text) {
+    return By.xpath(
+        String.format("//span[@class='v-checkbox v-widget']/label[contains(text(), '%s')]", text));
   }
 }

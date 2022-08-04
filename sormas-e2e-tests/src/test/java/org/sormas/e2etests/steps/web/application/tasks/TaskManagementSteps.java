@@ -416,7 +416,7 @@ public class TaskManagementSteps implements En {
         "I click Export button in Task Directory",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(TASK_EXPORT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(TASK_EXPORT_BUTTON);
         });
 
@@ -448,30 +448,32 @@ public class TaskManagementSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(NEW_CUSTOM_EXPORT_BUTTON));
 
     Then(
-        "I fill Configuration Name field in Custom Task Export popup",
-        () -> {
-          String configurationName = LocalDate.now().toString();
+        "I fill Configuration Name field in Custom Task Export popup with ([^\"]*) name",
+        (String customExportName) -> {
+          String configurationName;
+          if (customExportName.equals("generated")) {
+            configurationName = LocalDate.now().toString();
+          } else {
+            configurationName = customExportName;
+          }
           webDriverHelpers.fillInWebElement(
               CUSTOM_EXPORT_CONFIGURATION_NAME_INPUT, configurationName);
         });
 
-    When(
-        "I select specific data to export in Export Configuration for Custom Task Export",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(CUSTOM_EXPORT_TASK_CONTEXT_CHECKBOX);
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_CUSTOM_EXPORT_BUTTON);
-        });
-
     And(
-        "I open edit last created Custom Export Configuration",
+        "I open last created Custom Export Configuration in Custom Export page",
         () -> webDriverHelpers.clickOnWebElementBySelector(CUSTOM_TASK_EXPORT_EDIT_BUTTON));
 
     And(
-        "I add specific data to export in existing Export Configuration for Custom Task Export",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(CUSTOM_EXPORT_TASK_TYPE_CHECKBOX);
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_CUSTOM_EXPORT_BUTTON);
+        "I add {string} data to export in existing Export Configuration for Custom Task Export",
+        (String customExportConfigurationCheckbox) -> {
+          System.out.println(getCustomExportCheckboxByText(customExportConfigurationCheckbox));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getCustomExportCheckboxByText(customExportConfigurationCheckbox));
         });
+    And(
+        "I save Export Configuration for Custom Task Export",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_CUSTOM_EXPORT_BUTTON));
 
     When(
         "I download last created custom task export file",
@@ -483,6 +485,7 @@ public class TaskManagementSteps implements En {
           }
           webDriverHelpers.clickOnWebElementBySelector(CUSTOM_TASK_EXPORT_DOWNLOAD_BUTTON);
           webDriverHelpers.waitForFileExists(file_path, 90);
+          Assert.assertTrue(webDriverHelpers.isFileExists(file_path));
         });
 
     When(
