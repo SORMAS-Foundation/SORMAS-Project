@@ -620,7 +620,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		super.deletePermanent(event);
 	}
 
-	private void deleteSubordinateEvents(Event event) {
+	private void removeFromSubordinateEvents(Event event) {
 		event.getSubordinateEvents().forEach(subEvent -> {
 			subEvent.setSuperordinateEvent(null);
 			ensurePersisted(subEvent);
