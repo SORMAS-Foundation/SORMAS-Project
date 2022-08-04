@@ -639,7 +639,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Event> cq = cb.createQuery(Event.class);
-		Root<Event> caseRoot = cq.from(Event.class);
+		Root<Event> eventRoot = cq.from(Event.class);
 
 		cq.where(cb.equal(caseRoot.get(Event.EXTERNAL_ID), externalId), cb.equal(caseRoot.get(Event.DELETED), Boolean.FALSE));
 
