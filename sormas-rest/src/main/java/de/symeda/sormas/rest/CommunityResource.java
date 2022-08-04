@@ -32,7 +32,7 @@ import javax.ws.rs.core.MediaType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.infrastructure.community.CommunityCriteria;
+import de.symeda.sormas.api.infrastructure.community.CommunityCriteriaNew;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
@@ -70,7 +70,7 @@ public class CommunityResource {
 	@POST
 	@Path("/indexList")
 	public Page<CommunityDto> getIndexList(
-		@RequestBody CriteriaWithSorting<CommunityCriteria> criteriaWithSorting,
+		@RequestBody CriteriaWithSorting<CommunityCriteriaNew> criteriaWithSorting,
 		@QueryParam("offset") int offset,
 		@QueryParam("size") int size) {
 		return FacadeProvider.getCommunityFacade()

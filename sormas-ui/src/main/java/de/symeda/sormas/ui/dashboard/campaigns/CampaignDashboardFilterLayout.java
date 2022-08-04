@@ -147,7 +147,8 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		campaignFilter.setRequired(true);
 		campaignFilter.setNullSelectionAllowed(false);
 		campaignFilter.setCaption(I18nProperties.getCaption(Captions.Campaign));
-		campaignFilter.setWidth(200, Unit.PIXELS);
+		
+		//campaignFilter.setWidth(200, Unit.PIXELS);
 		campaignFilter.setInputPrompt(I18nProperties.getString(Strings.promptCampaign));
 		campaignFilter.addItems(FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference().toArray());
 		campaignFilter.addValueChangeListener(e -> {
@@ -189,7 +190,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 		dashboardDataProvider.setArea(userArea);
 		areaFilter.setCaption(I18nProperties.getCaption(Captions.Campaign_area));
-		areaFilter.setWidth(200, Unit.PIXELS);
+		//areaFilter.setWidth(200, Unit.PIXELS);
 		areaFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllAreas));
 		areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
 		areaFilter.addValueChangeListener(e -> {
@@ -203,7 +204,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 		dashboardDataProvider.setRegion(userRegion);
 		regionFilter.setCaption(I18nProperties.getCaption(Captions.Campaign_region));
-		regionFilter.setWidth(200, Unit.PIXELS);
+		//regionFilter.setWidth(200, Unit.PIXELS);
 		regionFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllRegions));
 		regionFilter.addValueChangeListener(e -> {
 			final Object value = regionFilter.getValue();
@@ -216,7 +217,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 		dashboardDataProvider.setDistrict(userDistrict);
 		districtFilter.setCaption(I18nProperties.getCaption(Captions.Campaign_district));
-		districtFilter.setWidth(200, Unit.PIXELS);
+		//districtFilter.setWidth(200, Unit.PIXELS);
 		districtFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllDistricts));
 		if (userRegion != null) {
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(userRegion.getUuid()));
@@ -242,7 +243,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		}
 
 		campaignJurisdictionGroupByFilter.setCaption(I18nProperties.getCaption(Captions.campaignDiagramGroupBy));
-		campaignJurisdictionGroupByFilter.setWidth(200, Unit.PIXELS);
+		//campaignJurisdictionGroupByFilter.setWidth(200, Unit.PIXELS);
 
 		switch (campaignJurisdictionLevel) {
 		case AREA:

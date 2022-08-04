@@ -213,8 +213,8 @@ public class MainScreen extends HorizontalLayout {
 					I18nProperties.getCaption(Captions.mainMenuCampaigns), VaadinIcons.CLIPBOARD_CHECK);
 		}
 
-		menu.addView(CampaignGisView.class, CampaignGisView.VIEW_NAME, I18nProperties.getCaption("GIS"),
-				VaadinIcons.MAP_MARKER);
+		//menu.addView(CampaignGisView.class, CampaignGisView.VIEW_NAME, I18nProperties.getCaption("GIS"),
+		//		VaadinIcons.MAP_MARKER);
 
 		if (permitted(FeatureType.WEEKLY_REPORTING, UserRight.WEEKLYREPORT_VIEW)) {
 			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuReports),

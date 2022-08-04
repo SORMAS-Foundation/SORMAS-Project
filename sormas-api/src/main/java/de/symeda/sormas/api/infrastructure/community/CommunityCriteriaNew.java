@@ -27,9 +27,9 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
-public class CommunityCriteria extends BaseCriteria implements Serializable, Cloneable {
+public class CommunityCriteriaNew extends BaseCriteria implements Serializable, Cloneable {
 
-	private static final long serialVersionUID = 7815180508529134182L;
+	private static final long serialVersionUID = 78151805085134182L;
 
 	private CountryReferenceDto country;
 	private AreaReferenceDto area;
@@ -42,13 +42,13 @@ public class CommunityCriteria extends BaseCriteria implements Serializable, Clo
 		return country;
 	}
 
-	public CommunityCriteria country(CountryReferenceDto country) {
+	public CommunityCriteriaNew country(CountryReferenceDto country) {
 		this.country = country;
 
 		return this;
 	}
 
-	public CommunityCriteria area(AreaReferenceDto area) {
+	public CommunityCriteriaNew area(AreaReferenceDto area) {
 		this.area = area;
 		return this;
 	}
@@ -57,7 +57,7 @@ public class CommunityCriteria extends BaseCriteria implements Serializable, Clo
 		return area;
 	}
 	
-	public CommunityCriteria region(RegionReferenceDto region) {
+	public CommunityCriteriaNew region(RegionReferenceDto region) {
 		this.region = region;
 		return this;
 	}
@@ -66,7 +66,7 @@ public class CommunityCriteria extends BaseCriteria implements Serializable, Clo
 		return region;
 	}
 
-	public CommunityCriteria district(DistrictReferenceDto district) {
+	public CommunityCriteriaNew district(DistrictReferenceDto district) {
 		this.district = district;
 		return this;
 	}
@@ -80,12 +80,12 @@ public class CommunityCriteria extends BaseCriteria implements Serializable, Clo
 		return nameLike;
 	}
 
-	public CommunityCriteria nameLike(String nameLike) {
+	public CommunityCriteriaNew nameLike(String nameLike) {
 		this.nameLike = nameLike;
 		return this;
 	}
 
-	public CommunityCriteria relevanceStatus(EntityRelevanceStatus relevanceStatus) {
+	public CommunityCriteriaNew relevanceStatus(EntityRelevanceStatus relevanceStatus) {
 		this.relevanceStatus = relevanceStatus;
 		return this;
 	}

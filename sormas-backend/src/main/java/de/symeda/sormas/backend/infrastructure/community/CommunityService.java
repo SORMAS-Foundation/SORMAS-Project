@@ -33,7 +33,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
-import de.symeda.sormas.api.infrastructure.community.CommunityCriteria;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
+import de.symeda.sormas.api.infrastructure.community.CommunityCriteriaNew;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -107,7 +108,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 		return null;
 	}
 
-	public Predicate buildCriteriaFilter(CommunityCriteria criteria, CriteriaBuilder cb, Root<Community> from) {
+	public Predicate buildCriteriaFilter(CommunityCriteriaNew criteria, CriteriaBuilder cb, Root<Community> from) {
 		Join<Community, District> district = from.join(Community.DISTRICT, JoinType.LEFT);
 		Join<District, Region> region = district.join(District.REGION, JoinType.LEFT);
 		Join<Region, Area> area = region.join(Region.AREA, JoinType.LEFT);
@@ -129,8 +130,14 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 				filter = CriteriaBuilderHelper.and(cb, filter, countryFilter);
 			}
 		}
-		if (criteria.getArea() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(area.get(Area.UUID), criteria.getArea().getUuid()));
+		
+		System.out.println("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz ");
+		
+		AreaReferenceDto aread = criteria.getArea();
+		
+		if (aread != null) {
+			System.out.println("zzzzzzzzzzzzzzzzzzzz");
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(area.get(Area.UUID), aread.getUuid()));
 		}
 
 		if (criteria.getRegion() != null) {

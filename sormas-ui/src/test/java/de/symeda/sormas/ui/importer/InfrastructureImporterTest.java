@@ -26,7 +26,7 @@ import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryCriteria;
-import de.symeda.sormas.api.infrastructure.community.CommunityCriteria;
+import de.symeda.sormas.api.infrastructure.community.CommunityCriteriaNew;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictCriteria;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -186,7 +186,7 @@ public class InfrastructureImporterTest extends AbstractBeanTest {
 		File communityCsvFile = new File(getClass().getClassLoader().getResource("sormas_community_import_test.csv").toURI());
 		importer = new InfrastructureImporterExtension(communityCsvFile, user, InfrastructureType.COMMUNITY);
 		assertEquals(ImportResultStatus.COMPLETED_WITH_ERRORS, importer.runImport());
-		assertEquals(2, getCommunityFacade().count(new CommunityCriteria()));
+		assertEquals(2, getCommunityFacade().count(new CommunityCriteriaNew()));
 
 		// Import facility
 		File facilityCsvFile = new File(getClass().getClassLoader().getResource("sormas_facility_import_test.csv").toURI());
