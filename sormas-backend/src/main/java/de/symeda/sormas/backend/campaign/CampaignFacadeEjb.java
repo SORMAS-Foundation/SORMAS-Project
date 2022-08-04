@@ -207,7 +207,7 @@ public class CampaignFacadeEjb
 		validate(getByUuid(campaignReferenceDto.getUuid()));
 	}
 
-	public void validate(CampaignDto campaignDto) {
+	public void validate(@Valid CampaignDto campaignDto) {
 		final List<CampaignDashboardElement> campaignDashboardElements = campaignDto.getCampaignDashboardElements();
 		if (campaignDashboardElements != null) {
 

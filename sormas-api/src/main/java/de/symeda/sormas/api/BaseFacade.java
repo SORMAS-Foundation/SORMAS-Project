@@ -31,5 +31,5 @@ public interface BaseFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 
 	List<String> getObsoleteUuidsSince(Date since);
 
-	void validate(DTO dto) throws ValidationRuntimeException;
+	void validate(@Valid DTO dto) throws ValidationRuntimeException;
 }

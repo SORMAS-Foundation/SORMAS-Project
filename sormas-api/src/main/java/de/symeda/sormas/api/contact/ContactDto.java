@@ -23,6 +23,7 @@ import java.util.Date;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
@@ -161,7 +162,7 @@ public class ContactDto extends SormasToSormasShareableDto {
 
 	@Required
 	private Date reportDateTime;
-	@Required
+	@NotNull(message = Validations.validReportingUser)
 	private UserReferenceDto reportingUser;
 	@SensitiveData
 	@Pseudonymizer(LatitudePseudonymizer.class)

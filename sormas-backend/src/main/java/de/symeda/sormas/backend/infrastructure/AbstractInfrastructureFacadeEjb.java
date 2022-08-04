@@ -183,7 +183,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	// todo implement toDto() here
 
 	@Override
-	public void validate(DTO dto) throws ValidationRuntimeException {
+	public void validate(@Valid DTO dto) throws ValidationRuntimeException {
 		// todo we do not run any generic validation logic for infra yet
 	}
 }
