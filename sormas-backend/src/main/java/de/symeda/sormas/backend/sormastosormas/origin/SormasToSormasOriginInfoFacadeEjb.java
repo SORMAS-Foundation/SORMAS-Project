@@ -15,14 +15,17 @@
 
 package de.symeda.sormas.backend.sormastosormas.origin;
 
+import javax.annotation.security.PermitAll;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoFacade;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequestService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "SormasToSormasOriginInfoFacade")
 public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginInfoFacade {
@@ -36,22 +39,15 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 	@EJB
 	private SormasToSormasShareRequestService sormasToSormasShareRequestService;
 
-	public SormasToSormasOriginInfoDto saveOriginInfo(SormasToSormasOriginInfoDto originInfoDto) {
-
-		SormasToSormasOriginInfo originInfo = fromDto(originInfoDto, true);
-
-		originInfoService.ensurePersisted(originInfo);
-
-		return toDto(originInfo);
-	}
-
-	public SormasToSormasOriginInfo fromDto(SormasToSormasOriginInfoDto source, boolean checkChangeDate) {
+	@PermitAll
+	public static SormasToSormasOriginInfoDto toDto(SormasToSormasOriginInfo source) {
 		if (source == null) {
 			return null;
 		}
 
-		SormasToSormasOriginInfo target = DtoHelper
-			.fillOrBuildEntity(source, sormasToSormasOriginInfoService.getByUuid(source.getUuid()), SormasToSormasOriginInfo::new, checkChangeDate);
+		SormasToSormasOriginInfoDto target = new SormasToSormasOriginInfoDto();
+
+		DtoHelper.fillDto(target, source);
 
 		target.setOrganizationId(source.getOrganizationId());
 		target.setSenderName(source.getSenderName());
@@ -67,14 +63,28 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 		return target;
 	}
 
-	public static SormasToSormasOriginInfoDto toDto(SormasToSormasOriginInfo source) {
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_SHARE,
+		UserRight._SORMAS_TO_SORMAS_CLIENT })
+	public SormasToSormasOriginInfoDto saveOriginInfo(SormasToSormasOriginInfoDto originInfoDto) {
+
+		SormasToSormasOriginInfo originInfo = fromDto(originInfoDto, true);
+
+		originInfoService.ensurePersisted(originInfo);
+
+		return toDto(originInfo);
+	}
+
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_SHARE,
+		UserRight._SORMAS_TO_SORMAS_CLIENT })
+	public SormasToSormasOriginInfo fromDto(SormasToSormasOriginInfoDto source, boolean checkChangeDate) {
 		if (source == null) {
 			return null;
 		}
 
-		SormasToSormasOriginInfoDto target = new SormasToSormasOriginInfoDto();
-
-		DtoHelper.fillDto(target, source);
+		SormasToSormasOriginInfo target = DtoHelper
+			.fillOrBuildEntity(source, sormasToSormasOriginInfoService.getByUuid(source.getUuid()), SormasToSormasOriginInfo::new, checkChangeDate);
 
 		target.setOrganizationId(source.getOrganizationId());
 		target.setSenderName(source.getSenderName());

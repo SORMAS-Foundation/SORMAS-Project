@@ -54,6 +54,15 @@ import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb;
 import de.symeda.sormas.backend.report.AggregateReportFacadeEjb;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.AbstractSormasToSormasInterface;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.entities.caze.SormasToSormasCaseFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.entities.contact.SormasToSormasContactFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.entities.externalmessage.SormasToSormasExternalMessageFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequestFacadeEJB;
 import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb;
 import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb;
@@ -270,6 +279,51 @@ public class ArchitectureTest {
 	@ArchTest
 	public void testTaskFacadeEjbAuthorization(JavaClasses classes) {
 		assertFacadeEjbAnnotated(TaskFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testAbstractSormasToSormasInterfaceAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(AbstractSormasToSormasInterface.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testSormasToSormasCaseFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SormasToSormasCaseFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testSormasToSormasContactFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SormasToSormasContactFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testSormasToSormasEventFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SormasToSormasEventFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testSormasToSormasExternalMessageFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SormasToSormasExternalMessageFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testSormasToSormasShareInfoFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SormasToSormasShareInfoFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testSormasToSormasShareRequestFacadeEJBAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SormasToSormasShareRequestFacadeEJB.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testSormasToSormasOriginInfoFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SormasToSormasOriginInfoFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testSormasToSormasFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SormasToSormasFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
 	}
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {
