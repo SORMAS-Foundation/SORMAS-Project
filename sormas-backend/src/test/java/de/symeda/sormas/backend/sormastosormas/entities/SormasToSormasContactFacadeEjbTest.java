@@ -63,6 +63,7 @@ import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
@@ -89,6 +90,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 		CaseDataDto caze = creator.createCase(officer, creator.createPerson().toReference(), rdcf);
 
 		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
+			ShareRequestDataType.CONTACT,
 			getUserService().getByUuid(officer.getUuid()),
 			SECOND_SERVER_ID,
 			false,
@@ -152,6 +154,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 		CaseDataDto caze = creator.createCase(officer, creator.createPerson().toReference(), rdcf);
 
 		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
+			ShareRequestDataType.CASE,
 			getUserService().getByUuid(officer.getUuid()),
 			SECOND_SERVER_ID,
 			false,
@@ -340,18 +343,15 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 		SampleDto newSample = createRemoteSample(contact.toReference(), officer, rdcf.facility);
 
 		User officerUser = getUserService().getByReferenceDto(officer);
-		getShareRequestInfoService().persist(
-			createShareRequestInfo(
-				officerUser,
-				DEFAULT_SERVER_ID,
-				true,
-				i -> i.setContact(getContactService().getByReferenceDto(contact.toReference()))));
-		getShareRequestInfoService().persist(
-			createShareRequestInfo(
-				officerUser,
-				DEFAULT_SERVER_ID,
-				true,
-				i -> i.setSample(getSampleService().getByReferenceDto(sharedSample.toReference()))));
+		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
+			ShareRequestDataType.CONTACT,
+			officerUser,
+			DEFAULT_SERVER_ID,
+			true,
+			i -> i.setContact(getContactService().getByReferenceDto(contact.toReference())));
+		shareRequestInfo.getShares()
+			.add(createShareInfo(DEFAULT_SERVER_ID, true, i -> i.setSample(getSampleService().getByReferenceDto(sharedSample.toReference()))));
+		getShareRequestInfoService().persist(shareRequestInfo);
 
 		contact.setQuarantine(QuarantineType.HOTEL);
 
@@ -406,9 +406,15 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 			});
 
 		getShareRequestInfoService().persist(
-			createShareRequestInfo(getUserService().getByUuid(officer.getUuid()), SECOND_SERVER_ID, false, ShareRequestStatus.ACCEPTED, i -> {
-				i.setContact(getContactService().getByUuid(contact.getUuid()));
-			}));
+			createShareRequestInfo(
+				ShareRequestDataType.CONTACT,
+				getUserService().getByUuid(officer.getUuid()),
+				SECOND_SERVER_ID,
+				false,
+				ShareRequestStatus.ACCEPTED,
+				i -> {
+					i.setContact(getContactService().getByUuid(contact.getUuid()));
+				}));
 
 		contact.setAdditionalDetails("Test updated details");
 

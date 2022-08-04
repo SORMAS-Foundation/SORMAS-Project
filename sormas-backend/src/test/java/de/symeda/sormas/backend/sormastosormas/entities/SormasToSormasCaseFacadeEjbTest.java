@@ -76,6 +76,7 @@ import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
@@ -607,20 +608,17 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		SampleDto newSample2 = createRemoteSample(caze.toReference(), officer, rdcf.facility);
 
 		User officerUser = getUserService().getByReferenceDto(officer);
-		getShareRequestInfoService().persist(
-			createShareRequestInfo(officerUser, DEFAULT_SERVER_ID, true, i -> i.setCaze(getCaseService().getByReferenceDto(caze.toReference()))));
-		getShareRequestInfoService().persist(
-			createShareRequestInfo(
-				officerUser,
-				DEFAULT_SERVER_ID,
-				true,
-				i -> i.setContact(getContactService().getByReferenceDto(sharedContact.toReference()))));
-		getShareRequestInfoService().persist(
-			createShareRequestInfo(
-				officerUser,
-				DEFAULT_SERVER_ID,
-				true,
-				i -> i.setSample(getSampleService().getByReferenceDto(sharedSample.toReference()))));
+		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
+			ShareRequestDataType.CASE,
+			officerUser,
+			DEFAULT_SERVER_ID,
+			true,
+			i -> i.setCaze(getCaseService().getByReferenceDto(caze.toReference())));
+		shareRequestInfo.getShares()
+			.add(createShareInfo(DEFAULT_SERVER_ID, true, i -> i.setContact(getContactService().getByReferenceDto(sharedContact.toReference()))));
+		shareRequestInfo.getShares()
+			.add(createShareInfo(DEFAULT_SERVER_ID, true, i -> i.setSample(getSampleService().getByReferenceDto(sharedSample.toReference()))));
+		getShareRequestInfoService().persist(shareRequestInfo);
 
 		caze.setQuarantine(QuarantineType.HOTEL);
 
@@ -747,7 +745,12 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 		User officerUser = getUserService().getByReferenceDto(officer);
 		getShareRequestInfoService().persist(
-			createShareRequestInfo(officerUser, DEFAULT_SERVER_ID, true, i -> i.setCaze(getCaseService().getByReferenceDto(caze.toReference()))));
+			createShareRequestInfo(
+				ShareRequestDataType.CASE,
+				officerUser,
+				DEFAULT_SERVER_ID,
+				true,
+				i -> i.setCaze(getCaseService().getByReferenceDto(caze.toReference()))));
 
 		caze.setHealthFacilityDetails(rdcf.facility.getCaption());
 
@@ -845,6 +848,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 			(c) -> c.setSormasToSormasOriginInfo(caze.getSormasToSormasOriginInfo()));
 
 		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
+			ShareRequestDataType.CASE,
 			getUserService().getByUuid(officer.getUuid()),
 			SECOND_SERVER_ID,
 			false,
@@ -952,6 +956,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 		User officerUser = getUserService().getByReferenceDto(officer);
 		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
+			ShareRequestDataType.CASE,
 			officerUser,
 			SECOND_SERVER_ID,
 			true,
@@ -1011,6 +1016,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		// forwarded by the second system
 		User officerUser = getUserService().getByReferenceDto(officer);
 		ShareRequestInfo shareFromSecond = createShareRequestInfo(
+			ShareRequestDataType.CASE,
 			officerUser,
 			"shareFromSecond",
 			false,
@@ -1088,6 +1094,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 		User officerUser = getUserService().getByReferenceDto(officer);
 		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
+			ShareRequestDataType.CASE,
 			officerUser,
 			SECOND_SERVER_ID,
 			true,

@@ -129,6 +129,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			vaccination.getImmunization().getPerson().getId(),
 			vaccination.getImmunization().getDisease());
 
+		immunizationFacade.onImmunizationChanged(vaccination.getImmunization(), true);
+
 		return convertToDto(vaccination, pseudonymizer);
 	}
 
@@ -178,6 +180,10 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		vaccinationService.ensurePersisted(vaccination);
 
 		updateVaccinationStatuses(vaccination, null, vaccination.getImmunization().getPerson().getId(), disease);
+
+		if (immunizationFound) {
+			immunizationFacade.onImmunizationChanged(vaccination.getImmunization(), true);
+		}
 
 		return convertToDto(vaccination, Pseudonymizer.getDefault(userService::hasRight));
 	}

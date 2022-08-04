@@ -266,6 +266,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		}
 
 		cq.groupBy(expressions);
+		cq.orderBy(cb.asc(root.get(AggregateReport.CHANGE_DATE)));
 
 		List<AggregateCaseCountDto> queryResult = em.createQuery(cq).getResultList();
 		Map<Disease, AggregateCaseCountDto> reportSet = new HashMap<>();
@@ -291,7 +292,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		if (criteria != null && criteria.getShowZeroRows()) {
 			List<EpiWeek> epiWeekList = DateHelper.createEpiWeekListFromInterval(criteria.getEpiWeekFrom(), criteria.getEpiWeekTo());
 			if (criteria.getDisease() == null) {
-				for (Disease disease : diseaseConfigurationFacade.getAllDiseases(true, null, false)) {
+				for (Disease disease : diseaseConfigurationFacade.getAllDiseases(true, null, false, true)) {
 					if (!reportSet.containsKey(disease)) {
 						for (EpiWeek epiWeek : epiWeekList) {
 							addZeroRowToList(resultList, selectedRegion, selectedDistrict, selectedFacility, selectedPoindOfEntry, disease, epiWeek);
@@ -386,11 +387,13 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 					if (dto.getChangeDate().getTime() > similar.getChangeDate().getTime()) {
 						resultList.remove(similar);
 						resultList.add(dto);
+						reportsToBeSummed.remove(similar);
 					}
 				} else {
 					if (dto.hasHigherJurisdictionLevel(similar)) { // higher jurisdiction level data exists we do not take into consideration lower level data
 						resultList.remove(similar);
 						resultList.add(dto);
+						reportsToBeSummed.remove(similar);
 					} else if (dto.hasSameJurisdictionLevel(similar)) { // same jurisdiction level we sum data (for example data for 2 facilities in one district)
 						if (reportsToBeSummed.containsKey(similar)) {
 							final List<AggregateCaseCountDto> sumList = reportsToBeSummed.get(similar);
@@ -611,7 +614,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 
 		List<AggregateReportDto> reports = getAggregateReports(criteria);
 
-		List<Disease> diseaseList = diseaseConfigurationFacade.getAllDiseases(true, false, false);
+		List<Disease> diseaseList = diseaseConfigurationFacade.getAllDiseases(true, false, false, true);
 
 		Set<AggregateReportDto> userList = new HashSet<>();
 		diseaseList.forEach(disease -> {

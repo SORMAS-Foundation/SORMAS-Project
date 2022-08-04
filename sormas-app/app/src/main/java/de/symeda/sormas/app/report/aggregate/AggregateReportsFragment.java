@@ -1,5 +1,7 @@
 package de.symeda.sormas.app.report.aggregate;
 
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -91,20 +93,28 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 	}
 
 	private void setupControls() {
-		EpiWeek epiWeek = DateHelper.getPreviousEpiWeek(new Date());
+		EpiWeek previousEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
+		EpiWeek currentEpiWeek = DateHelper.getEpiWeek(new Date());
 
-		contentBinding.aggregateReportsYear.initializeSpinner(DataUtils.toItems(DateHelper.getYearsToNow()), epiWeek.getYear(), field -> {
+		contentBinding.aggregateReportsYear.initializeSpinner(DataUtils.toItems(DateHelper.getYearsToNow()), previousEpiWeek.getYear(), field -> {
 			Integer year = (Integer) field.getValue();
 			if (year != null) {
-				contentBinding.aggregateReportsWeek.setSpinnerData(DataUtils.toItems(DateHelper.createEpiWeekList(year)));
+				if (year.equals(currentEpiWeek.getYear())) {
+					contentBinding.aggregateReportsWeek
+						.setSpinnerData(DataUtils.toItems(DateHelper.createEpiWeekListFromInterval(new EpiWeek(year, 1), currentEpiWeek)));
+				} else {
+					contentBinding.aggregateReportsWeek.setSpinnerData(DataUtils.toItems(DateHelper.createEpiWeekList(year)));
+				}
+
 			} else {
 				contentBinding.aggregateReportsWeek.setSpinnerData(null);
 			}
 		});
 
-		contentBinding.aggregateReportsWeek.initializeSpinner(DataUtils.toItems(DateHelper.createEpiWeekList(epiWeek.getYear())), epiWeek, field -> {
-			updateByEpiWeek();
-		});
+		contentBinding.aggregateReportsWeek
+			.initializeSpinner(DataUtils.toItems(DateHelper.createEpiWeekList(previousEpiWeek.getYear())), previousEpiWeek, field -> {
+				updateByEpiWeek();
+			});
 
 		contentBinding.reportSelector.addValueChangedListener(field -> {
 			EpiWeekFilterOption filter = (EpiWeekFilterOption) field.getValue();
@@ -206,6 +216,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 
 		Date latestLocalChangeDate = null;
 		User user = ConfigProvider.getUser();
+		boolean triggerDuplicateWarning = false;
 
 		final Map<Disease, List<AggregateReport>> reportsByDisease = new HashMap<>();
 		final EpiWeek epiWeek = (EpiWeek) contentBinding.aggregateReportsWeek.getValue();
@@ -218,7 +229,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 			.collect(Collectors.toList());
 		DatabaseHelper.getAggregateReportDao().sortAggregateReports(userReports);
 
-		List<Disease> diseaseList = DiseaseConfigurationCache.getInstance().getAllDiseases(true, null, false);
+		List<Disease> diseaseList = DiseaseConfigurationCache.getInstance().getAllDiseases(true, null, false, true);
 		List<Disease> diseasesWithoutReport = new ArrayList<>(diseaseList);
 		List<DiseaseAgeGroup> diseaseAgeGroupsWithoutReport = new ArrayList<>();
 		diseaseList.forEach(disease -> {
@@ -278,6 +289,10 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 				contentBinding.submitReport.setEnabled(enabled);
 				AggregateReport report = aggregateReports.get(0);
 				binding.setData(report);
+				if (isDuplicateByDiseaseEpiWeekAndInfrastructure(disease, epiWeek, selectedInfrastructure, selectedUser)) {
+					binding.diseaseName.setTextColor(getResources().getColor(R.color.red));
+					triggerDuplicateWarning = true;
+				}
 				if (latestLocalChangeDate == null
 					|| (report.getLocalChangeDate() != null && latestLocalChangeDate.before(report.getLocalChangeDate()))) {
 					latestLocalChangeDate = report.getLocalChangeDate();
@@ -287,6 +302,12 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 				RowReportAggregateDiseaseLayoutBinding diseaseBinding =
 					DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_disease_layout, contentBinding.reportContent, true);
 				diseaseBinding.setDisease(disease.toString());
+
+				if (isDuplicateByDiseaseEpiWeekAndInfrastructure(disease, epiWeek, selectedInfrastructure, selectedUser)) {
+					diseaseBinding.diseaseName.setTextColor(getResources().getColor(R.color.red));
+					triggerDuplicateWarning = true;
+				}
+
 				for (AggregateReport report : aggregateReports) {
 					RowReportAggregateAgegroupLayoutBinding binding =
 						DataBindingUtil.inflate(inflater, R.layout.row_report_aggregate_agegroup_layout, contentBinding.reportContent, true);
@@ -319,12 +340,22 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 				contentBinding.submitReport.setEnabled(enabled);
 				AggregateReport data = DatabaseHelper.getAggregateReportDao().build(disease, epiWeek, selectedInfrastructure);
 				binding.setData(data);
+				if (isDuplicateByDiseaseEpiWeekAndInfrastructure(disease, epiWeek, selectedInfrastructure, selectedUser)) {
+					binding.diseaseName.setTextColor(getResources().getColor(R.color.red));
+					triggerDuplicateWarning = true;
+				}
 				userReports.add(data);
 			} else {
 				LayoutInflater diseaseInflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 				RowReportAggregateDiseaseLayoutBinding viewBinding =
 					DataBindingUtil.inflate(diseaseInflater, R.layout.row_report_aggregate_disease_layout, contentBinding.reportContent, true);
 				viewBinding.setDisease(disease.toString());
+
+				if (isDuplicateByDiseaseEpiWeekAndInfrastructure(disease, epiWeek, selectedInfrastructure, selectedUser)) {
+					viewBinding.diseaseName.setTextColor(getResources().getColor(R.color.red));
+					triggerDuplicateWarning = true;
+				}
+
 				for (String ageGroup : ageGroups) {
 					LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 					RowReportAggregateAgegroupLayoutBinding binding =
@@ -348,6 +379,28 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 			getSubHeadingHandler().updateSubHeadingTitle(
 				String.format(r.getString(R.string.caption_latest_submission), DateFormatHelper.formatLocalDateTime(latestLocalChangeDate)));
 		}
+
+		if (triggerDuplicateWarning) {
+			NotificationHelper.showNotification((NotificationContext) getActivity(), WARNING, getString(R.string.message_aggregate_report_found));
+		}
+	}
+
+	private boolean isDuplicateByDiseaseEpiWeekAndInfrastructure(
+		Disease disease,
+		EpiWeek epiWeek,
+		InfrastructureAdo selectedInfrastructure,
+		User selectedUser) {
+
+		List<AggregateReport> duplicates = reports.stream()
+			.filter(
+				aggregateReport -> aggregateReport.getDisease().equals(disease)
+					&& aggregateReport.getYear().equals(epiWeek.getYear())
+					&& aggregateReport.getEpiWeek().equals(epiWeek.getWeek())
+					&& isSameInfrastructure(aggregateReport, selectedInfrastructure))
+			.collect(Collectors.toList());
+
+		return duplicates.size() > 1 || (duplicates.size() == 1 && !duplicates.get(0).getReportingUser().equals(selectedUser));
+
 	}
 
 	private void showSubmitCaseNumbersConfirmationDialog() {
