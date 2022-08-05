@@ -814,7 +814,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private void updateDiseaseConfiguration(Disease disease) {
 		for (Object propertyId : getFieldGroup().getBoundPropertyIds()) {
 			boolean visible = DiseasesConfiguration.isDefinedOrMissing(ContactDto.class, (String) propertyId, disease);
-			getFieldGroup().getField(propertyId).setVisible(visible && getFieldGroup().getField(propertyId).isVisible());
+			getFieldGroup().getField(propertyId)
+				.setVisible(
+					visible
+						&& (getFieldGroup().getField(propertyId).isVisible()
+							|| (propertyId.equals(ContactDto.CONTACT_CATEGORY) && isVisibleAllowed((String) propertyId))));
 		}
 
 		FieldHelper.updateEnumData(
