@@ -102,10 +102,6 @@ public class EventParticipantsView extends AbstractEventView {
 		addStyleName("crud-view");
 
 		criteria = ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantCriteria.class);
-
-		if (criteria.getRelevanceStatus() == null) {
-			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
-		}
 	}
 
 	public HorizontalLayout createTopBar() {
@@ -388,9 +384,15 @@ public class EventParticipantsView extends AbstractEventView {
 
 		updateStatusButtons();
 
-		if (eventParticipantRelevanceStatusFilter != null) {
+		if (eventParticipantRelevanceStatusFilter != null && criteria.getRelevanceStatus() == null) {
+			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
 			boolean archived = FacadeProvider.getEventFacade().isArchived(getEventRef().getUuid());
 			eventParticipantRelevanceStatusFilter.setValue(archived ? EntityRelevanceStatus.ALL : criteria.getRelevanceStatus());
+		} else {
+			if (criteria.getRelevanceStatus() == null) {
+				criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+			}
+			eventParticipantRelevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}
 
 		filterForm.setValue(criteria);
