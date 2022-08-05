@@ -100,7 +100,6 @@ Feature: Event Directory filters check
     And I click on the Events button from navbar
     And I fill EVENT ID filter by API
     And I fill Event Group Id filter to one assigned to created event on Event Directory Page
-    And I fill Reporting User filter to "ReST User" on Event Directory Page
     And I click on Show more filters in Events
     And I apply Region filter to "Voreingestellte Bundesländer" on Event directory page
     And I apply District filter to "Voreingestellter Landkreis" on Event directory page
@@ -120,7 +119,6 @@ Feature: Event Directory filters check
     And I fill Reporting User filter to "Surveillance Supervisor" on Event Directory Page
     And I apply on the APPLY FILTERS button from Event
     And I check the number of displayed Event results from All button is 0
-    And I fill Reporting User filter to "ReST User" on Event Directory Page
     And I apply Region filter to "Bayern" on Event directory page
     And I apply on the APPLY FILTERS button from Event
     And I check the number of displayed Event results from All button is 0
