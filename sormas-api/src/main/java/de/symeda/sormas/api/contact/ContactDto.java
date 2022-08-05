@@ -197,9 +197,13 @@ public class ContactDto extends SormasToSormasShareableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String tracingAppDetails;
 	private ContactProximity contactProximity;
+	@HideForCountriesExcept
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String contactProximityDetails;
+	@HideForCountriesExcept
+	@Diseases({
+		Disease.CORONAVIRUS })
 	private ContactCategory contactCategory;
 	@Required
 	private ContactClassification contactClassification;

@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
@@ -246,7 +247,9 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 		} catch (ExternalSurveillanceToolException e) {
 			LOGGER.error("Failed to delete shared entities in external surveillance tool", e);
 
-			throw SormasToSormasException.fromStringProperty(Strings.unexpectedErrorSormasToSormasAccept);
+			throw SormasToSormasException.fromStringProperty(
+				Strings.unexpectedErrorSormasToSormasAccept,
+				I18nProperties.getString(Strings.errorNotifyingExternalSurveillanceTool) + ": " + e.getMessage());
 		}
 	}
 
@@ -293,9 +296,14 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 	}
 
 	@Override
-	public boolean isSharingCasesContactsAndSamplesEnabledForUser() {
+	public boolean isSharingCasesEnabledForUser() {
+		return isFeatureEnabledForUser() && featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_CASES);
+	}
+
+	@Override
+	public boolean isSharingContactsEnabledForUser() {
 		return isFeatureEnabledForUser()
-			&& featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_CASES_WITH_CONTACTS_AND_SAMPLES);
+			&& featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_SHARE_CONTACTS);
 	}
 
 	@Override

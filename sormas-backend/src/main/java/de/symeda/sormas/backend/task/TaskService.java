@@ -41,8 +41,11 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.task.TaskContext;
@@ -50,7 +53,9 @@ import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskJurisdictionFlagsDto;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -522,11 +527,38 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			}
 		}
 
+		if (getCurrentUser() != null) {
+			Predicate taskContextFilter = buildTaskContextFilter(taskQueryContext);
+			taskContextFilter = CriteriaBuilderHelper
+				.or(cb, taskContextFilter, createAssigneeOrObserverFilter(cb, joins.getAssignee(), joins.getTaskObservers(), getCurrentUser()));
+			filter = CriteriaBuilderHelper.and(cb, filter, taskContextFilter);
+		}
+
 		return filter;
 	}
 
-	private Predicate buildActiveTasksFilter(TaskQueryContext taskQueryContext) {
+	private Predicate buildTaskContextFilter(TaskQueryContext taskQueryContext) {
+		From<?, Task> from = taskQueryContext.getRoot();
+		CriteriaBuilder cb = taskQueryContext.getCriteriaBuilder();
 
+		List<TaskContext> allowTaskContext = new ArrayList<>();
+		allowTaskContext.add(TaskContext.GENERAL);
+		if (hasRight(UserRight.CASE_VIEW)) {
+			allowTaskContext.add(TaskContext.CASE);
+		}
+		if (hasRight(UserRight.CONTACT_VIEW)) {
+			allowTaskContext.add(TaskContext.CONTACT);
+		}
+		if (hasRight(UserRight.EVENT_VIEW)) {
+			allowTaskContext.add(TaskContext.EVENT);
+		}
+		if (hasRight(UserRight.TRAVEL_ENTRY_VIEW)) {
+			allowTaskContext.add(TaskContext.TRAVEL_ENTRY);
+		}
+		return cb.in(from.get(Task.TASK_CONTEXT)).value(allowTaskContext);
+	}
+
+	private Predicate buildActiveTasksFilter(TaskQueryContext taskQueryContext) {
 		From<?, Task> from = taskQueryContext.getRoot();
 		CriteriaBuilder cb = taskQueryContext.getCriteriaBuilder();
 		TaskJoins joins = taskQueryContext.getJoins();
@@ -634,6 +666,40 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		}
 
 		return assignee;
+	}
+
+	public List<Task> findByAssigneeContactTypeAndStatuses(
+		UserReferenceDto assignee,
+		ContactReferenceDto contact,
+		TaskType type,
+		TaskStatus... statuses) {
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Task> cq = cb.createQuery(getElementClass());
+		final Root<Task> from = cq.from(getElementClass());
+
+		final TaskJoins joins = new TaskJoins(from);
+
+		Predicate filter = null;
+
+		if (assignee != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getAssignee().get(User.UUID), assignee.getUuid()));
+		}
+		if (type != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Task.TASK_TYPE), type));
+		}
+		if (!ArrayUtils.isEmpty(statuses)) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.in(from.get(Task.TASK_STATUS)).value(Arrays.asList(statuses)));
+		}
+		if (contact != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getContact().get(Contact.UUID), contact.getUuid()));
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		return em.createQuery(cq).getResultList();
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)

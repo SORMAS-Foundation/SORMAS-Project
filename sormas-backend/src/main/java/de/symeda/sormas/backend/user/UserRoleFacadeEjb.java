@@ -25,15 +25,19 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -49,6 +53,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -64,15 +70,19 @@ import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleCriteria;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleFacade;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -124,15 +134,59 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	}
 
 	@Override
+	public UserRoleReferenceDto getReferenceByUuid(String uuid) {
+		return toReferenceDto(userRoleService.getByUuid(uuid));
+	}
+
+	@Override
 	public UserRoleDto saveUserRole(@Valid UserRoleDto dto) {
 
+		validate(dto);
+
 		UserRole entity = fromDto(dto, true);
+
 		userRoleService.ensurePersisted(entity);
 		return toDto(entity);
 	}
 
+	private void validate(UserRoleDto source) {
+		if (StringUtils.isBlank(source.getCaption())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyCaption));
+		}
+		if (Objects.isNull(source.getJurisdictionLevel())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.specifyJurisdictionLevel));
+		}
+		if (!userRoleService.isCaptionUnique(source.getUuid(), source.getCaption())) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.captionNotUnique));
+		}
+
+		Set<UserRight> userRights = source.getUserRights();
+		Set<UserRight> requiredUserRights = UserRight.getRequiredUserRights(userRights);
+		if (!userRights.containsAll(requiredUserRights)) {
+			throw new ValidationRuntimeException(
+				I18nProperties.getValidationError(
+					Validations.missingRequiredUserRights,
+					requiredUserRights.stream().filter(r -> !userRights.contains(r)).map(UserRight::toString).collect(Collectors.joining(", "))));
+		}
+
+		User currentUser = userService.getCurrentUser();
+		if (currentUser != null && currentUser.getUserRoles().stream().anyMatch(r -> DataHelper.isSame(r, source))) {
+			Set<UserRole> currentUserRoles = currentUser.getUserRoles();
+			Set<UserRight> currentUserRights = UserRole.getUserRights(currentUserRoles);
+			Set<UserRight> newUserRights = UserRoleDto
+				// replace old user role with the one being edited
+				.getUserRights(currentUserRoles.stream().map(r -> DataHelper.isSame(r, source) ? source : toDto(r)).collect(Collectors.toList()));
+
+			if (currentUserRights.contains(UserRight.USER_ROLE_EDIT) && !newUserRights.contains(UserRight.USER_ROLE_EDIT)) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.removeUserRightEditRightFromOwnUser));
+			} else if (currentUserRights.contains(UserRight.USER_EDIT) && !newUserRights.contains(UserRight.USER_EDIT)) {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.removeUserEditRightFromOwnUser));
+			}
+		}
+	}
+
 	@Override
-	public void deleteUserRole(UserRoleDto dto) {
+	public void deleteUserRole(UserRoleReferenceDto dto) {
 
 		UserRole entity = userRoleService.getByUuid(dto.getUuid());
 		userRoleService.deletePermanent(entity);
@@ -172,8 +226,8 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		target.setEnabled(source.isEnabled());
 		target.setCaption(source.getCaption());
 		target.setDescription(source.getDescription());
-		target.setHasOptionalHealthFacility(source.hasOptionalHealthFacility());
-		target.setHasAssociatedDistrictUser(source.hasAssociatedDistrictUser());
+		target.setHasOptionalHealthFacility(source.getHasOptionalHealthFacility());
+		target.setHasAssociatedDistrictUser(source.getHasAssociatedDistrictUser());
 		target.setPortHealthUser(source.isPortHealthUser());
 		target.setEmailNotificationTypes(source.getEmailNotificationTypes());
 		target.setSmsNotificationTypes(source.getSmsNotificationTypes());
@@ -195,27 +249,14 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		target.setEnabled(source.isEnabled());
 		target.setCaption(source.getCaption());
 		target.setDescription(source.getDescription());
-		target.setHasOptionalHealthFacility(source.hasOptionalHealthFacility());
-		target.setHasAssociatedDistrictUser(source.hasAssociatedDistrictUser());
+		target.setHasOptionalHealthFacility(source.getHasOptionalHealthFacility());
+		target.setHasAssociatedDistrictUser(source.getHasAssociatedDistrictUser());
 		target.setPortHealthUser(source.isPortHealthUser());
-		target.setEmailNotificationTypes(new ArrayList<>(source.getEmailNotificationTypes()));
-		target.setSmsNotificationTypes(new ArrayList<>(source.getSmsNotificationTypes()));
+		target.setEmailNotificationTypes(new HashSet<>(source.getEmailNotificationTypes()));
+		target.setSmsNotificationTypes(new HashSet<>(source.getSmsNotificationTypes()));
 		target.setJurisdictionLevel(source.getJurisdictionLevel());
 
 		return target;
-	}
-
-	@Override
-	public Set<UserRoleDto> getEnabledUserRoles() {
-
-		Set<UserRoleDto> userRoles = getAll().stream().collect(Collectors.toSet());
-
-		for (UserRoleDto userRole : userRoles) {
-			if (!userRole.isEnabled()) {
-				userRoles.remove(userRole);
-			}
-		}
-		return userRoles;
 	}
 
 	@Override
@@ -236,12 +277,12 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 
 	@Override
 	public boolean hasAssociatedDistrictUser(Set<UserRoleDto> userRoles) {
-		return userRoles.stream().filter(userRoleDto -> userRoleDto.hasAssociatedDistrictUser()).findFirst().orElse(null) != null;
+		return userRoles.stream().filter(UserRoleDto::getHasAssociatedDistrictUser).findFirst().orElse(null) != null;
 	}
 
 	@Override
 	public boolean hasOptionalHealthFacility(Set<UserRoleDto> userRoles) {
-		return userRoles.stream().filter(userRoleDto -> userRoleDto.hasOptionalHealthFacility()).findFirst().orElse(null) != null;
+		return userRoles.stream().filter(UserRoleDto::getHasOptionalHealthFacility).findFirst().orElse(null) != null;
 	}
 
 	public static UserRoleReferenceDto toReferenceDto(UserRole entity) {
@@ -285,7 +326,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 	}
 
 	@Override
-	public UserRoleReferenceDto getUserRoleReferenceById(long id) {
+	public UserRoleReferenceDto getReferenceById(long id) {
 		return toReferenceDto(userRoleService.getById(id));
 	}
 
@@ -342,6 +383,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
+				case UserRoleDto.UUID:
 				case UserRoleDto.CAPTION:
 				case UserRoleDto.JURISDICTION_LEVEL:
 				case UserRoleDto.DESCRIPTION:
@@ -354,7 +396,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 			}
 			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.desc(userRole.get(AbstractDomainObject.CHANGE_DATE)));
+			cq.orderBy(cb.asc(userRole.get(UserRole.CAPTION)));
 		}
 
 		cq.select(userRole);
@@ -371,7 +413,8 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		}
 
 		try (OutputStream fos = Files.newOutputStream(documentPath)) {
-			generateUserRolesDocument(getUserRoleRights(), fos);
+			TreeMap<UserRoleDto, Set<UserRight>> userRolesRights = getSortedUserRolesRights();
+			generateUserRolesDocument(userRolesRights, fos);
 		} catch (IOException e) {
 			Files.deleteIfExists(documentPath);
 			throw e;
@@ -384,7 +427,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		XSSFWorkbook workbook = new XSSFWorkbook();
 
 		// Create User Role sheet
-		String safeName = WorkbookUtil.createSafeSheetName(I18nProperties.getCaption(Captions.userRole));
+		String safeName = WorkbookUtil.createSafeSheetName(I18nProperties.getCaption(Captions.UserRole));
 		XSSFSheet sheet = workbook.createSheet(safeName);
 
 		// Define colors
@@ -431,7 +474,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		Row headerRow = sheet.createRow(rowCounter++);
 
 		Cell userRightHeadlineCell = headerRow.createCell(0);
-		userRightHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.userRole));
+		userRightHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRole));
 		userRightHeadlineCell.setCellStyle(boldStyle);
 
 		Cell captionHeadlineCell = headerRow.createCell(1);
@@ -513,10 +556,10 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 			portHealthUserCell.setCellValue(getTranslationForBoolean(userRole.isPortHealthUser()));
 
 			Cell hasAssociatedDistrictUserCell = row.createCell(columnIndex++);
-			hasAssociatedDistrictUserCell.setCellValue(getTranslationForBoolean(userRole.hasAssociatedDistrictUser()));
+			hasAssociatedDistrictUserCell.setCellValue(getTranslationForBoolean(userRole.getHasAssociatedDistrictUser()));
 
 			Cell hasOptionalHealthFacilityCell = row.createCell(columnIndex++);
-			hasOptionalHealthFacilityCell.setCellValue(getTranslationForBoolean(userRole.hasOptionalHealthFacility()));
+			hasOptionalHealthFacilityCell.setCellValue(getTranslationForBoolean(userRole.getHasOptionalHealthFacility()));
 
 			Cell enabledCell = row.createCell(columnIndex++);
 			enabledCell.setCellValue(getTranslationForBoolean(userRole.isEnabled()));
@@ -526,6 +569,14 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 
 		workbook.write(outStream);
 		workbook.close();
+	}
+
+	private TreeMap<UserRoleDto, Set<UserRight>> getSortedUserRolesRights() {
+		Map<UserRoleDto, Set<UserRight>> userRoleRights = getUserRoleRights();
+		TreeMap<UserRoleDto, Set<UserRight>> sortedMap = new TreeMap<>(Comparator.comparing(UserRoleDto::getCaption));
+		sortedMap.putAll(userRoleRights);
+
+		return sortedMap;
 	}
 
 	private String getTranslationForBoolean(boolean value) {
@@ -539,6 +590,23 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 			+ new Random().nextInt(Integer.MAX_VALUE) + ".xlsx";
 
 		return path.resolve(fileName);
+	}
+
+	@Override
+	public Set<UserRoleDto> getDefaultUserRolesAsDto() {
+		return Stream.of(DefaultUserRole.values()).map(DefaultUserRole::toUserRole).collect(Collectors.toSet());
+	}
+
+	@Override
+	public Collection<UserRoleDto> getByReferences(Set<UserRoleReferenceDto> references) {
+		if (CollectionUtils.isEmpty(references)) {
+			return Collections.emptyList();
+		}
+
+		return userRoleService.getByUuids(references.stream().map(UserRoleReferenceDto::getUuid).collect(Collectors.toList()))
+			.stream()
+			.map(UserRoleFacadeEjb::toDto)
+			.collect(Collectors.toList());
 	}
 
 	@LocalBean

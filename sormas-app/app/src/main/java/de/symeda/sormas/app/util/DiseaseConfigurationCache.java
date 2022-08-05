@@ -15,15 +15,10 @@
 
 package de.symeda.sormas.app.util;
 
-import android.util.Log;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,7 +29,6 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.dashboard.caze.CaseSummaryFragment;
 
 /**
  * Replicates logic of de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb backend class
@@ -76,9 +70,12 @@ public final class DiseaseConfigurationCache {
 			} else {
 				nonPrimaryDiseases.add(disease);
 			}
-			if (Boolean.TRUE.equals(configuration.getCaseBased()) || (configuration.getCaseBased() == null && disease.isDefaultCaseBased())) {
+			if (Boolean.TRUE.equals(configuration.getCaseSurveillanceEnabled())
+				|| (configuration.getCaseSurveillanceEnabled() == null && disease.isDefaultCaseSurveillanceEnabled())) {
 				caseBasedDiseases.add(disease);
-			} else {
+			}
+			if (Boolean.TRUE.equals(configuration.getAggregateReportingEnabled())
+				|| (configuration.getAggregateReportingEnabled() == null && disease.isDefaultAggregateReportingEnabled())) {
 				aggregateDiseases.add(disease);
 			}
 			if (Boolean.TRUE.equals(configuration.getFollowUpEnabled())
@@ -116,19 +113,17 @@ public final class DiseaseConfigurationCache {
 		}
 	}
 
-	public List<Disease> getAllDiseases(Boolean active, Boolean primary, boolean caseBased) {
+	public List<Disease> getAllDiseases(Boolean active, Boolean primary, boolean caseSurveillance) {
+		return getAllDiseases(active, primary, caseSurveillance, false);
+	}
 
-		// not an ideal solution, but will be changed with #9629 anyway
-		if (!caseBased && primary != null) {
-			primary = null;
-			Log.w(getClass().getSimpleName(), "primary should not be used for non-case-based diseases");
-		}
+	public List<Disease> getAllDiseases(Boolean active, Boolean primary, boolean caseSurveillance, boolean aggregateReporting) {
 
 		User currentUser = ConfigProvider.getUser();
 
 		Set<Disease> diseases = EnumSet.noneOf(Disease.class);
 
-		if (caseBased) {
+		if (caseSurveillance) {
 			if (currentUser.getLimitedDisease() != null) {
 				Disease limitedDisease = currentUser.getLimitedDisease();
 				diseases.add(limitedDisease);
@@ -141,7 +136,9 @@ public final class DiseaseConfigurationCache {
 			} else if (isFalse(primary)) {
 				diseases.retainAll(nonPrimaryDiseases);
 			}
-		} else {
+		}
+
+		if (aggregateReporting) {
 			diseases.addAll(aggregateDiseases);
 		}
 

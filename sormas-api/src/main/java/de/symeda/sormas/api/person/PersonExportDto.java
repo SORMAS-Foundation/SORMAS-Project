@@ -661,7 +661,7 @@ public class PersonExportDto implements Serializable {
 	@Order(73)
 	@ExportProperty(PersonDto.BIRTH_COUNTRY)
 	@ExportGroup(ExportGroupType.PERSON)
-	@HideForCountriesExcept
+	@HideForCountriesExcept(countries = {})
 	public String getBirthCountry() {
 		return birthCountry;
 	}
@@ -669,7 +669,7 @@ public class PersonExportDto implements Serializable {
 	@Order(74)
 	@ExportProperty(PersonDto.CITIZENSHIP)
 	@ExportGroup(ExportGroupType.PERSON)
-	@HideForCountriesExcept
+	@HideForCountriesExcept(countries = {})
 	public String getCitizenship() {
 		return citizenship;
 	}

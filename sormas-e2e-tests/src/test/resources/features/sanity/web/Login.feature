@@ -11,8 +11,6 @@ Feature: Login with different type of users
     Then I check that English language is selected in User Settings
     And I click on logout button
 
-
-
     Examples:
       | user                      |
       | National User             |
@@ -35,7 +33,6 @@ Feature: Login with different type of users
     And I check that Deutsch language is selected in User Settings
     And I click on logout button
 
-
     Examples:
       | user                      |
       | National User             |
@@ -47,7 +44,17 @@ Feature: Login with different type of users
       | Point of Entry Supervisor |
       | Admin User                |
       | Rest AUTOMATION           |
-  @issue=SORQA-69 @env_de
+
+  @tmsLink=SORQA-69 @env_de
   Scenario: Check German language setting
     Given I log in with National User
     Then I check that German word for Configuration is present in the left main menu
+
+  @tmsLink=SORDEV-12126 @env_main
+  Scenario: Test new language (Urdu-Pk)
+    Given I log in as a Admin User
+    When I click on the User Settings button from navbar
+    And I select "Urdu" language from Combobox in User settings
+    And I click on the User Settings button from navbar
+    Then I check that Surveillance Dashboard header is correctly displayed in Urdu language
+    And I select "انگریزی" language from Combobox in User settings

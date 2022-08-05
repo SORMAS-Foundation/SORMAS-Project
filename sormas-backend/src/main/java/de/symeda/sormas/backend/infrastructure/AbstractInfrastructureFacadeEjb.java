@@ -18,7 +18,6 @@ import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
-import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.common.AbstractBaseEjb;
 import de.symeda.sormas.backend.common.AbstractInfrastructureAdoService;
 import de.symeda.sormas.backend.common.InfrastructureAdo;
@@ -73,7 +72,6 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 			return null;
 		}
 		ADO existingEntity = service.getByUuid(dtoToSave.getUuid());
-		FacadeHelper.checkCreateAndEditRights(existingEntity, userService, UserRight.INFRASTRUCTURE_CREATE, UserRight.INFRASTRUCTURE_EDIT);
 
 		final User currentUser = userService.getCurrentUser();
 

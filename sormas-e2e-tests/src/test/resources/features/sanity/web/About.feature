@@ -2,7 +2,7 @@
 Feature: About Directory end to end tests
 
   #fails due to known defect, downloaded file is not in german, is in english.
-  @issue=SORDEV-6474 @env_main
+  @tmsLink=SORDEV-6474 @env_main @issue=8069
   Scenario: Check language options in Data Dictionary depending on the user language setting
     Given  I log in as a National Language User
     And I click on the About button from navbar
@@ -15,7 +15,7 @@ Feature: About Directory end to end tests
     Then I click on the User Settings button from navbar
     And I set on default language as English in User settings
 
-  @issue=SORQA-219 @env_main @precon
+  @tmsLink=SORQA-219 @env_main @precon
   Scenario: Check current Sormas version is show
     Given I log in with National User
     And I click on the About button from navbar
@@ -32,6 +32,14 @@ Feature: About Directory end to end tests
     Then I click on Full Changelog in About directory and i get redirected to github project release page of sormas
     And I click on Data Dictionary hyperlink and download XLSX file from About directory
     Then I delete Data Dictionary downloaded file from About Directory
+
+  @env_de @#8399
+  Scenario: Check important redirects in About section for DE
+    Given I log in with National User
+    Then I click on the About button from navbar
+    Then I click on Sormas version in About directory and i get redirected to github
+    And I click on Deutsch Data Dictionary hyperlink and download XLSX file from About directory
+    Then I delete Deutsch Data Dictionary downloaded file from About Directory
     Then I click on Case Classification Rules hyperlink and download HTML file in About directory
     Then I delete Case Classification Html downloaded file from About Directory
 
@@ -49,4 +57,14 @@ Feature: About Directory end to end tests
     And I click on the About button from navbar
     And I click on Data Dictionary hyperlink and download XLSX file from About directory
     And I validate data from downloaded XLSX Data Dictionary file
+    And I delete Data Dictionary downloaded file from About Directory
+
+  @tmsLink=SORDEV-10361 @env_main
+  Scenario: Test Hide "buried" within Person present condition for Covid-19 for About
+    Given I log in as a Admin User
+    And I click on the About button from navbar
+    And I click on Data Dictionary hyperlink and download XLSX file from About directory
+    Then I check if Data Dictionary in "Person.burialDate" record has no "COVID-19" as a disease
+    Then I check if Data Dictionary in "Person.burialPlaceDescription" record has no "COVID-19" as a disease
+    Then I check if Data Dictionary in "Person.burialConductor" record has no "COVID-19" as a disease
     And I delete Data Dictionary downloaded file from About Directory

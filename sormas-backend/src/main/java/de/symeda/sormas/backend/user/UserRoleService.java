@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.Query;
@@ -34,10 +35,14 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.NotificationProtocol;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleCriteria;
+import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -45,6 +50,9 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 @Stateless
 @LocalBean
 public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
+
+	@EJB
+	private UserService userService;
 
 	public UserRoleService() {
 		super(UserRole.class);
@@ -144,5 +152,29 @@ public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
 		}
 
 		return filter;
+	}
+
+	public boolean isCaptionUnique(String excludedUuid, String caption) {
+		UserRole userRole = getByCaption(caption.trim());
+		return userRole == null || userRole.getUuid().equals(excludedUuid);
+	}
+
+	@Override
+	public void deletePermanent(UserRole userRole) {
+
+		List<User> usersWithRole = userService.getAllWithRole(userRole);
+		for (User u : usersWithRole) {
+			if (u.getUserRoles().size() > 1) {
+				u.getUserRoles().remove(userRole);
+			} else if (u.getUserRoles().stream().noneMatch(r -> DataHelper.isSame(r, userRole))) {
+				u.getUserRoles().remove(userRole);
+			} else {
+				throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.cantRemoveLastRole));
+			}
+
+			userService.ensurePersisted(u);
+		}
+
+		super.deletePermanent(userRole);
 	}
 }

@@ -495,6 +495,7 @@
     <string name="main_menu_tasks">Aufgaben</string>
     <string name="main_menu_aggregate_reports">mSERS</string>
     <string name="message_already_saving">Bereits im Speicherprozess..</string>
+    <string name="message_aggregate_report_found">Achtung: Duplikat Berichte wurden für die Kriterien oben gefunden. In Rot markierte Krankheiten haben bereits Berichte.</string>
     <string name="message_case_infrastructure_data_changed">Sie haben die Infrastrukturdaten dieses Falls geändert. Möchten Sie den Fall an die neue Gesundheitseinrichtung übertragen (die Daten des Krankenhausaufenthaltes werden aktualisiert) oder nur die Daten bearbeiten, um einen Fehler zu korrigieren?</string>
     <string name="message_download_app_failed">Der Download der neuen SORMAS Version ist fehlgeschlagen. Bitte stellen Sie sicher, dass Sie die bestmögliche Internetverbindung haben und versuchen Sie es erneut oder informieren Sie einen Verantwortlichen, wenn Sie diesen Fehler trotz einer guten Internetverbindung immer wieder erhalten.</string>
     <string name="message_empty_password">Bitte geben Sie ein Passwort ein.</string>

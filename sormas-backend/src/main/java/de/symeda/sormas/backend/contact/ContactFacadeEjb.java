@@ -850,9 +850,10 @@ public class ContactFacadeEjb
 							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
 							Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
 
-							List<Vaccination> relevantSortedVaccinations = getRelevantSortedVaccinations(
-								exportContact.getUuid(),
-								filteredImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList()));
+							List<Vaccination> relevantSortedVaccinations = vaccinationService.getRelevantSortedVaccinations(
+								filteredImmunizations.stream().flatMap(i -> i.getVaccinations().stream()).collect(Collectors.toList()),
+								exportContact.getLastContactDate(),
+								exportContact.getReportDate());
 							Vaccination firstVaccination = null;
 							Vaccination lastVaccination = null;
 
@@ -1759,11 +1760,12 @@ public class ContactFacadeEjb
 			}
 
 			// find already existing tasks
-			TaskCriteria pendingUserTaskCriteria = new TaskCriteria().contact(contact.toReference())
-				.taskType(TaskType.CONTACT_FOLLOW_UP)
-				.assigneeUser(assignee.toReference())
-				.taskStatus(TaskStatus.PENDING);
-			List<Task> pendingUserTasks = taskService.findBy(pendingUserTaskCriteria, true);
+			List<Task> pendingUserTasks = taskService.findByAssigneeContactTypeAndStatuses(
+				assignee.toReference(),
+				contact.toReference(),
+				TaskType.CONTACT_FOLLOW_UP,
+				TaskStatus.IN_PROGRESS,
+				TaskStatus.PENDING);
 
 			if (!pendingUserTasks.isEmpty()) {
 				// the user still has a pending task for this contact
@@ -2260,15 +2262,6 @@ public class ContactFacadeEjb
 	private User getRandomDistrictContactResponsible(District district) {
 
 		return userService.getRandomDistrictUser(district, UserRight.CONTACT_RESPONSIBLE);
-	}
-
-	private List<Vaccination> getRelevantSortedVaccinations(String caseUuid, List<Vaccination> vaccinations) {
-		Contact contact = contactService.getByUuid(caseUuid);
-
-		return vaccinations.stream()
-			.filter(v -> vaccinationService.isVaccinationRelevant(contact, v))
-			.sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
-			.collect(Collectors.toList());
 	}
 
 	private String getNumberOfDosesFromVaccinations(Vaccination vaccination) {
