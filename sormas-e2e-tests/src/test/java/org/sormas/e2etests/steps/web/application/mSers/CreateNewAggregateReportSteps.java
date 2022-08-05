@@ -35,7 +35,7 @@ public class CreateNewAggregateReportSteps implements En {
       SoftAssert softly,
       AggregateReportService aggregateReportService) {
     this.webDriverHelpers = webDriverHelpers;
-    duplicateReport = aggregateReportService.buildGeneratedAggregateReport();
+    duplicateReport = aggregateReportService.buildAggredateReportsForDuplicates();
     When(
         "I check if Region combobox is set to {string} and is not editable in Create New Aggregate Report popup",
         (String region) -> {
@@ -66,7 +66,7 @@ public class CreateNewAggregateReportSteps implements En {
     When(
         "^I fill a new aggregate report with specific data for duplicates$",
         () -> {
-          fillAllFieldsForAggregateReport(duplicateReport);
+          fillFieldsForDuplicateReport(duplicateReport);
         });
     When(
         "^I change all fields of aggregate report$",
@@ -189,6 +189,12 @@ public class CreateNewAggregateReportSteps implements En {
     fillLabConfirmationsFor(
         "Yaws and Endemic Syphilis", report.getYawsAndEndemicSyphilisLabConfirmations());
     fillDeathsFor("Yaws and Endemic Syphilis", report.getYawsAndEndemicSyphilisDeaths());
+  }
+
+  private void fillFieldsForDuplicateReport(AggregateReport report) {
+    fillYear(report.getYear());
+    fillEpiWeek(report.getEpiWeek());
+    fillCasesFor("Acute Viral Hepatitis", report.getAcuteViralHepatitisCases());
   }
 
   private void fillAllFieldsForAggregateReport(AggregateReport report) {

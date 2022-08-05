@@ -167,4 +167,12 @@ public class AggregateReportService {
         .yawsAndEndemicSyphilisDeaths(faker.number().numberBetween(2, 12))
         .build();
   }
+
+  public AggregateReport buildAggredateReportsForDuplicates() {
+    return AggregateReport.builder()
+        .year("2004")
+        .epiWeek("Wk 1-2004 (12/29 - 1/4)")
+        .acuteViralHepatitisCases(faker.number().numberBetween(2, 12))
+        .build();
+  }
 }
