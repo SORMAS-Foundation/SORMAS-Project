@@ -9,6 +9,10 @@ public class MSersDirectoryPage {
   public static final By EPI_WEEK_FROM_COMOBOX = By.cssSelector("#epiWeekFrom > div");
   public static final By REPORT_DATA_BUTTON = By.cssSelector("#tab-aggregatereports-reportdata");
   public static final By RESULT_IN_GRID = By.xpath("//tr[contains(@class,'v-grid-row-has-data')]");
+  public static final By DISPLAY_ONLY_DUPLICATE_REPORTS_CHECKBOX =
+      By.cssSelector("[id='showOnlyDuplicates'] input");
+  public static final By EDIT_DELETE_ICON =
+      By.xpath("div[class=\"v-button v-widget borderless v-button-borderless\"]");
 
   public static By getEditButtonByIndex(int idx) {
     return By.xpath(
