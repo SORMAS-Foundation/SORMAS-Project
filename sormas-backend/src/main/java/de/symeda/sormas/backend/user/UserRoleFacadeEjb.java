@@ -344,7 +344,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<UserRole> root = cq.from(UserRole.class);
-        Join<UserRole, UserRight> userRightsJoin = root.join(UserRole.USER_RIGHTS, JoinType.LEFT);
+		Join<UserRole, UserRight> userRightsJoin = root.join(UserRole.USER_RIGHTS, JoinType.LEFT);
 
 		Predicate filter = null;
 
