@@ -18,6 +18,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageCriteria;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -163,6 +164,24 @@ public class ExternalMessageService extends AdoServiceWithUserFilter<ExternalMes
 
 		ExternalMessageCriteria criteria = new ExternalMessageCriteria();
 		criteria.setSample(sample);
+
+		Predicate filter = buildCriteriaFilter(cb, labMessageRoot, criteria);
+
+		cq.where(filter);
+		cq.distinct(true);
+
+		cq.orderBy(cb.desc(labMessageRoot.get(ExternalMessage.CREATION_DATE)));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<ExternalMessage> getForCase(CaseReferenceDto caze) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ExternalMessage> cq = cb.createQuery(ExternalMessage.class);
+		Root<ExternalMessage> labMessageRoot = cq.from(ExternalMessage.class);
+
+		ExternalMessageCriteria criteria = new ExternalMessageCriteria();
+		criteria.setCaze(caze);
 
 		Predicate filter = buildCriteriaFilter(cb, labMessageRoot, criteria);
 
