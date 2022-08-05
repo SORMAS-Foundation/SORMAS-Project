@@ -389,7 +389,8 @@ public class EventParticipantsView extends AbstractEventView {
 		updateStatusButtons();
 
 		if (eventParticipantRelevanceStatusFilter != null) {
-			eventParticipantRelevanceStatusFilter.setValue(criteria.getRelevanceStatus());
+			boolean archived = FacadeProvider.getEventFacade().isArchived(getEventRef().getUuid());
+			eventParticipantRelevanceStatusFilter.setValue(archived ? EntityRelevanceStatus.ALL : criteria.getRelevanceStatus());
 		}
 
 		filterForm.setValue(criteria);
