@@ -88,7 +88,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 		labUser = creator.createUser(null, null, null, "Lab", "Off", creator.getUserRoleReference(DefaultUserRole.LAB_USER));
 		labUser.setLaboratory(rdcf1.facility);
-		getUserFacade().saveUser(labUser);
+		getUserFacade().saveUser(labUser, false);
 
 		nationalClinician =
 			creator.createUser(null, null, null, null, "National", "Observer", creator.getUserRoleReference(DefaultUserRole.NATIONAL_CLINICIAN));

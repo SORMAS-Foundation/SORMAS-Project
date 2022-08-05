@@ -213,7 +213,7 @@ public class TestDataCreator {
 			customConfig.accept(user);
 		}
 
-		return beanTest.getUserFacade().saveUser(user);
+		return beanTest.getUserFacade().saveUser(user, false);
 	}
 
 	public UserDto createUser(RDCFEntities rdcf, UserRoleReferenceDto... roles) {
@@ -306,7 +306,7 @@ public class TestDataCreator {
 		user.setDistrict(beanTest.getDistrictFacade().getReferenceByUuid(districtUuid));
 		user.setCommunity(beanTest.getCommunityFacade().getReferenceByUuid(communityUuid));
 		user.setHealthFacility(beanTest.getFacilityFacade().getReferenceByUuid(facilityUuid));
-		return beanTest.getUserFacade().saveUser(user);
+		return beanTest.getUserFacade().saveUser(user, false);
 	}
 
 	public UserReferenceDto createUserRef(
