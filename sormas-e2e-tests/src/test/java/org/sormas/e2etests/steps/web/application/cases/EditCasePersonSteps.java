@@ -326,6 +326,16 @@ public class EditCasePersonSteps implements En {
     When(
         "I set Present condition of person to {string}",
         (String option) -> webDriverHelpers.selectFromCombobox(PRESENT_CONDITION_COMBOBOX, option));
+
+    And(
+        "^I check if person last name for case person tab is \"([^\"]*)\"$",
+        (String lastName) -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(LAST_NAME_INPUT),
+              lastName,
+              "Last names is incorrect!");
+          softly.assertAll();
+        });
   }
 
   private void selectCountry(String country) {

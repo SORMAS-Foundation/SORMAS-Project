@@ -449,3 +449,12 @@ Feature: Case filter functionality
       | Geimpft   |
       | Ungeimpft |
       | Unbekannt |
+
+  @tmsLink=SORDEV-5566 @env_main
+  Scenario: Test text search filed handling with special characters
+    Given I log in as a National User
+    And I click on the Cases button from navbar
+    And I filter by "Löser" as a Person's full name on Case Directory Page
+    And I click on the first Case ID from Case Directory
+    And I navigate to case person tab
+    And I check if person last name for case person tab is "Löser"
