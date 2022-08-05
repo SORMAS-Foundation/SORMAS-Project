@@ -40,12 +40,16 @@ import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CONJ_BILIRUBIN_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.CREATININE_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_AND_TIME_OF_RESULTS;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_AND_TIME_OF_RESULTS_INPUT_FIELD;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_OF_RESULT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_SAMPLE_COLLECTED;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_SAMPLE_RECEIVED;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_SAMPLE_RECEIVED_INPUT_FIELD;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_SAMPLE_SEND_INPUT_FIELD;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.DATE_TEST_REPORT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.FIELD_SAMPLE_ID_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.FINAL_LABORATORY_RESULT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.GENERIC_ERROR_POPUP;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.HAEMOGLOBIN_INPUT;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.HAEMOGLOBIN_IN_URINE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.HAEMOGLOBIN_IN_URINE_INPUT;
@@ -113,6 +117,8 @@ import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.EDIT_TEST_RESULTS_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.RESULT_VERIFIED_BY_LAB_SUPERVISOR_EDIT_OPTIONS;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_EDIT_PURPOSE_OPTIONS;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_RECEIVED_CHECKBOX;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_SHIPPED_CHECKBOX;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -267,7 +273,7 @@ public class CreateNewSampleSteps implements En {
               sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
           selectTestResult(sample.getTestResults());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
 
     When(
@@ -284,49 +290,49 @@ public class CreateNewSampleSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
         });
 
-    When(
-        "I create a new pathogen test result with {string} as disease and {string} as a test type",
-        (String diseaseType, String testType) -> {
-          sample = sampleService.buildPathogenTestResultTypeVerified(diseaseType, testType);
-          selectTypeOfTest(sample.getTypeOfTest());
-          selectTestedDisease(sample.getTestedDisease());
-          selectTestResult(sample.getSampleTestResults());
-          selectResultVerifiedByLabSupervisor(
-              sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
-        });
+      When(
+              "I create a new pathogen test result with {string} as disease and {string} as a test type",
+              (String diseaseType, String testType) -> {
+                  sample = sampleService.buildPathogenTestResultTypeVerified(diseaseType, testType);
+                  selectTypeOfTest(sample.getTypeOfTest());
+                  selectTestedDisease(sample.getTestedDisease());
+                  selectTestResult(sample.getSampleTestResults());
+                  selectResultVerifiedByLabSupervisor(
+                          sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+              });
 
-    When(
-        "I create new sample with pathogen test with {string} as disease and {string} as type of test",
-        (String diseaseType, String typeOfTest) -> {
-          sample =
-              sampleService.buildGeneratedSampleWithTestResultForSelectedDiseaseAndTestType(
-                  diseaseType, typeOfTest);
-          selectPurposeOfSample(sample.getPurposeOfTheSample(), SAMPLE_PURPOSE_OPTIONS);
-          fillDateOfCollection(sample.getDateOfCollection());
-          selectSampleType(sample.getSampleType());
-          webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST);
-          selectTestedDisease(sample.getTestedDisease());
-          selectTypeOfTest(sample.getTypeOfTest());
-          selectTestResult(sample.getSampleTestResults());
-          fillDateOfResult(sample.getDateOfResult(), Locale.ENGLISH);
-          selectLaboratory(sample.getLaboratory());
-          selectResultVerifiedByLabSupervisor(
-              sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
-        });
+      When(
+              "I create new sample with pathogen test with {string} as disease and {string} as type of test",
+              (String diseaseType, String typeOfTest) -> {
+                  sample =
+                          sampleService.buildGeneratedSampleWithTestResultForSelectedDiseaseAndTestType(
+                                  diseaseType, typeOfTest);
+                  selectPurposeOfSample(sample.getPurposeOfTheSample(), SAMPLE_PURPOSE_OPTIONS);
+                  fillDateOfCollection(sample.getDateOfCollection());
+                  selectSampleType(sample.getSampleType());
+                  webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST);
+                  selectTestedDisease(sample.getTestedDisease());
+                  selectTypeOfTest(sample.getTypeOfTest());
+                  selectTestResult(sample.getSampleTestResults());
+                  fillDateOfResult(sample.getDateOfResult(), Locale.ENGLISH);
+                  selectLaboratory(sample.getLaboratory());
+                  selectResultVerifiedByLabSupervisor(
+                          sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+              });
 
-    When(
-        "I set PCR RT PCR Test specification to {string} option",
-        (String option) -> {
-          webDriverHelpers.selectFromCombobox(PCR_TEST_SPECIFICATION_COMBOBOX_DIV, option);
-        });
+      When(
+              "I set PCR RT PCR Test specification to {string} option",
+              (String option) -> {
+                  webDriverHelpers.selectFromCombobox(PCR_TEST_SPECIFICATION_COMBOBOX_DIV, option);
+              });
 
-    When(
-        "I set Tested disease variant as {string}",
-        (String variant) -> {
-          webDriverHelpers.selectFromCombobox(TESTED_DISEASE_VARIANT, variant);
-        });
+      When(
+              "I set Tested disease variant as {string}",
+              (String variant) -> {
+                  webDriverHelpers.selectFromCombobox(TESTED_DISEASE_VARIANT, variant);
+              });
 
-    When(
+      When(
         "^I validate date and time is present on sample card$",
         () -> {
           String dateAndTimeVisible =
@@ -700,12 +706,13 @@ public class CreateNewSampleSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });
 
-    When(
-        "I confirm case with positive test result",
-        () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
-        });
+      When(
+              "I confirm case with positive test result",
+              () -> {
+                  webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
+                  webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
+              });
+
     When(
         "I confirm the Create case from event participant with positive test result",
         () -> {
@@ -741,6 +748,58 @@ public class CreateNewSampleSteps implements En {
               webDriverHelpers.checkIfElementExistsInCombobox(TYPE_OF_TEST_COMBOBOX, typeOfTest),
               "Type of test is incorrect");
           softly.assertAll();
+        });
+
+    And(
+        "I select Sent dispatched checkbox in new sample page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAMPLE_SHIPPED_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(SAMPLE_SHIPPED_CHECKBOX);
+        });
+
+    And(
+        "I select Received checkbox in new sample page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SAMPLE_RECEIVED_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(SAMPLE_RECEIVED_CHECKBOX);
+        });
+
+    Then(
+        "I check is Sent dispatched Date and Received Date fields required",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DATE_SAMPLE_SEND_INPUT_FIELD);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DATE_SAMPLE_RECEIVED_INPUT_FIELD);
+        });
+
+    And(
+        "I click Add Pathogen test in Sample creation page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST_BUTTON_DE));
+
+    And(
+        "I check DATE AND TIME OF RESULT field",
+        () -> {
+          TimeUnit.SECONDS.sleep(10);
+          webDriverHelpers.getWebElement(DATE_AND_TIME_OF_RESULTS_INPUT_FIELD);
+        });
+
+    And(
+        "I click on save sample button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    Then(
+        "I check error popup message in German",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(GENERIC_ERROR_POPUP);
+          List<String> popupExpected =
+              List.of(
+                  "Probentyp",
+                  "Probenentnahme-Datum",
+                  "Labor",
+                  "Ergebnis verifiziert von Laborleitung",
+                  "Art des Tests");
+          webDriverHelpers.checkIsPopupContainsList(GENERIC_ERROR_POPUP, popupExpected);
         });
 
     When(
@@ -816,7 +875,7 @@ public class CreateNewSampleSteps implements En {
 
   private void fillReceivedDate(LocalDate receivedDate) {
     webDriverHelpers.clearAndFillInWebElement(
-        DATE_SAMPLE_RECEIVED, DATE_FORMATTER.format(receivedDate));
+            DATE_SAMPLE_RECEIVED, DATE_FORMATTER.format(receivedDate));
   }
 
   public void selectLaboratoryName(String laboratoryName) {
