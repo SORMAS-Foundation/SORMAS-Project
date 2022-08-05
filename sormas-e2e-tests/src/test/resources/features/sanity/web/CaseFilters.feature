@@ -451,10 +451,23 @@ Feature: Case filter functionality
       | Unbekannt |
 
   @tmsLink=SORDEV-5568 @env_main
-  Scenario: Test text search filed handling with special characters
+  Scenario Outline: Test text search filed handling with special characters
     Given I log in as a National User
     And I click on the Cases button from navbar
-    And I filter by "Löser" as a Person's full name on Case Directory Page
+    And I click on the NEW CASE button
+    And I fill only mandatory fields for a new case form and set "<lastname>" as a last name
+    And I save a new case
+    And I back to the cases list from edit case
+    And I filter by "<lastname>" as a Person's full name on Case Directory Page
     And I click on the first Case ID from Case Directory
     And I navigate to case person tab
-    And I check if person last name for case person tab is "Löser"
+    And I check if person last name for case person tab is "<lastname>"
+    And I navigate to case tab
+    And I delete the case
+
+    Examples:
+    | lastname |
+    | Bärbel |
+    | Beauséjour |
+    | Świątek |
+    | قادر    |
