@@ -1278,6 +1278,21 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
+
+    And(
+        "I fill only mandatory fields for a new case form and set {string} as a last name",
+        (String surname) -> {
+          caze = caseService.buildGeneratedCaseForOnePerson(firstName, surname, dateOfBirth);
+          selectCaseOrigin(caze.getCaseOrigin());
+          fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+          fillDisease(caze.getDisease());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          selectSex(caze.getSex());
+        });
   }
 
   private void selectPlaceOfStayDistrict(String placeOfStayDistrict) {
