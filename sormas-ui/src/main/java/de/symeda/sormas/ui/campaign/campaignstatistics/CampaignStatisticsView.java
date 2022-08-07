@@ -58,6 +58,8 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		criteria = ViewModelProviders.of(getClass()).get(CampaignStatisticsCriteria.class);
 
 		campaignSelector = new CampaignSelector();
+		filterForm = new CampaignStatisticsFilterForm();
+		
 		criteria.setCampaign(campaignSelector.getValue());
 		criteria.setGroupingLevel(CampaignJurisdictionLevel.AREA);
 		addHeaderComponent(campaignSelector);
@@ -127,6 +129,7 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 		filtersLayout.setSpacing(true);
 
 		filterForm = createFilterForm();
+		criteria.setCampaignFormMeta(null); //makes sure campaign form selection is set to null always on page reload [issue 120]- iyanuu
 		filtersLayout.addComponent(filterForm);
 		filtersLayout.setComponentAlignment(filterForm, Alignment.TOP_LEFT);
 		filtersLayout.setExpandRatio(filterForm, 0.8f);
@@ -143,7 +146,8 @@ public class CampaignStatisticsView extends AbstractCampaignView {
 			Object value = e.getProperty().getValue();
 			importanceFilterSwitcher.setVisible(value != null);
 			grid.setColumnsVisibility(criteria.getGroupingLevel());
-			grid.reload();
+			grid.reload(); 
+			//navigateTo(criteria);
 		});
 
 		importanceFilterSwitcher.addValueChangeListener(e -> {
