@@ -299,8 +299,12 @@ public class SamplesDirectorySteps implements En {
     When(
         "^I search for Sample using Sample UUID from the created Sample",
         () -> {
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
           webDriverHelpers.fillAndSubmitInWebElement(
               SAMPLE_SEARCH_INPUT, CreateNewSampleSteps.sampleId);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilWebElementHasAttributeWithValue(
               SEARCH_RESULT_SAMPLE, "title", CreateNewSampleSteps.sampleId);
         });
