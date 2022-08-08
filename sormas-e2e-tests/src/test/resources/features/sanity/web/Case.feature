@@ -1728,5 +1728,6 @@ Feature: Case end to end tests
     And I create new user for test with "Saarland" jurisdiction and "Clinician,Surveillance Supervisor,Contact Supervisor" roles
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
-    When I create a new case with specific data
+    Then I create a new case with specific data and Bayern region
     And I click on New Task from Case page
+    And I check that there is only user with Bayern region for task

@@ -526,20 +526,25 @@ public class CreateNewCaseSteps implements En {
           TimeUnit.SECONDS.sleep(2);
         });
 
-    When("I choose {string} as a disease", (String disease) -> fillDisease(disease));
-
-    When(
-        "^I create a new case with specific data and Bayern jurisdiction",
-        () -> {
+    Then(
+        "I create a new case with specific data and ([^\"]*) region",
+        (String region) -> {
           caze = caseService.buildGeneratedCase();
-          fillAllCaseFieldsWithBayernJurisdiction(caze);
+          fillAllCaseFieldsWithSpecificRegion(caze, region);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(
+              CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON, 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          }
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
 
           TimeUnit.SECONDS.sleep(2);
         });
+
+    When("I choose {string} as a disease", (String disease) -> fillDisease(disease));
 
     When(
         "^I create a new case with Facility as a Place of stay$",
@@ -1460,24 +1465,33 @@ public class CreateNewCaseSteps implements En {
     fillPlaceDescription(caze.getPlaceDescription());
   }
 
-    private void fillAllCaseFieldsWithBayernJurisdiction(Case caze) {
-        selectCaseOrigin(caze.getCaseOrigin());
-        fillDisease(caze.getDisease());
+  private void fillAllCaseFieldsWithSpecificRegion(Case caze, String region) {
+    selectCaseOrigin(caze.getCaseOrigin());
+    fillDisease(caze.getDisease());
+    switch (region) {
+      case "Bayern":
         selectResponsibleRegion("Bayern");
         selectResponsibleDistrict("LK Ansbach");
         selectResponsibleCommunity("Aurach");
-        selectPlaceOfStay(caze.getPlaceOfStay());
-        fillFirstName(caze.getFirstName());
-        fillLastName(caze.getLastName());
-        fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
-        selectSex(caze.getSex());
-        selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
-        fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
-        fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
-        fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
-        fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
-        fillPlaceDescription(caze.getPlaceDescription());
+        break;
+      case "Saarland":
+        selectResponsibleRegion("Saarland");
+        selectResponsibleDistrict("LK Saarlouis");
+        selectResponsibleCommunity("Lebach");
+        break;
     }
+    selectPlaceOfStay(caze.getPlaceOfStay());
+    fillFirstName(caze.getFirstName());
+    fillLastName(caze.getLastName());
+    fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
+    selectSex(caze.getSex());
+    selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+    fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
+    fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+    fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+    fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+    fillPlaceDescription(caze.getPlaceDescription());
+  }
 
   private void fillAllCaseFieldsForFacility(Case caze) {
     selectCaseOrigin(caze.getCaseOrigin());

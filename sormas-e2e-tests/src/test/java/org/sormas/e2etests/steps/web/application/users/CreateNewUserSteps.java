@@ -52,7 +52,7 @@ public class CreateNewUserSteps implements En {
   public static String userPass;
   private final BaseSteps baseSteps;
   private static int amountOfRecords;
-  public HashMap<String, String> userWithRegion = new HashMap<String, String>();
+  public static HashMap<String, String> userWithRegion = new HashMap<String, String>();
 
   @Inject
   public CreateNewUserSteps(
@@ -361,14 +361,12 @@ public class CreateNewUserSteps implements En {
           selectLanguage(user.getLanguage());
           switch (jurisdiction) {
             case "Bayern":
-              System.out.println("Bayern");
               selectCountry("Germany");
               selectRegion("Bayern");
               selectDistrict("LK Ansbach");
               selectCommunity("Aurach");
               break;
             case "Saarland":
-              System.out.println("Bayern");
               selectCountry("Germany");
               selectRegion("Saarland");
               selectDistrict("LK Saarlouis");
@@ -411,12 +409,9 @@ public class CreateNewUserSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           userWithRegion.put(
-              String.format(user.getFirstName() + " " + user.getLastName()), jurisdiction);
+              String.format(user.getFirstName() + " " + user.getLastName().toUpperCase()),
+              jurisdiction);
           closeNewPasswordPopUp();
-          userWithRegion.forEach(
-              (k, v) -> {
-                System.out.println(k + " " + v);
-              });
         });
   }
 
