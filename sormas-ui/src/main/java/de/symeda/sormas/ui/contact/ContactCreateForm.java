@@ -50,6 +50,7 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.person.PersonCreateForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -113,7 +114,10 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	 * TODO use disease and case relation information given in ContactDto
 	 */
 	public ContactCreateForm(Disease disease, boolean hasCaseRelation, boolean asSourceContact, boolean showPersonSearchButton) {
-		super(ContactDto.class, ContactDto.I18N_PREFIX);
+		super(
+			ContactDto.class,
+			ContactDto.I18N_PREFIX,
+			FieldVisibilityCheckers.withDisease(disease).andWithCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
 
 		this.disease = disease;
 		this.hasCaseRelation = hasCaseRelation;
@@ -205,7 +209,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		cbDisease.addValueChangeListener(e -> {
 			disease = (Disease) e.getProperty().getValue();
 			setVisible(disease != null, ContactDto.CONTACT_PROXIMITY);
-			if (isConfiguredServer("de")) {
+			if (isConfiguredServer("de") && disease == Disease.CORONAVIRUS) {
 				contactCategory.setVisible(disease != null);
 				contactProximityDetails.setVisible(disease != null);
 			}
