@@ -337,7 +337,7 @@ Feature: Sample Functionalities
     Then I check if "Lab sample ID" combobox is available
     And I check if "Date sample received at lab" combobox is available
     And I check if "Specimen condition" combobox is available
-    And I check if Specimen condition combobox is mandatory
+    And I check if Specimen condition combobox is not mandatory
     And I click on Save Button in Sample Edit page
 
   @tmsLink=SORDEV-10588 @env_main
@@ -366,7 +366,7 @@ Feature: Sample Functionalities
     Then I check if "Lab sample ID" combobox is available
     And I check if "Date sample received at lab" combobox is available
     And I check if "Specimen condition" combobox is available
-    And I check if Specimen condition combobox is mandatory
+    And I check if Specimen condition combobox is not mandatory
     And I click on Save Button in Sample Edit page
 
   @tmsLink=SORDEV-10588 @env_main
@@ -400,7 +400,7 @@ Feature: Sample Functionalities
     Then I check if "Lab sample ID" combobox is available
     And I check if "Date sample received at lab" combobox is available
     And I check if "Specimen condition" combobox is available
-    And I check if Specimen condition combobox is mandatory
+    And I check if Specimen condition combobox is not mandatory
     And I click on Save Button in Sample Edit page
 
   @tmsLink=SORDEV-10588 @env_main
@@ -419,5 +419,5 @@ Feature: Sample Functionalities
     Then I check if "Lab sample ID" combobox is available
     And I check if "Date sample received at lab" combobox is available
     And I check if "Specimen condition" combobox is available
-    And I check if Specimen condition combobox is mandatory
+    And I check if Specimen condition combobox is not mandatory
     And I click on Save Button in Sample Edit page

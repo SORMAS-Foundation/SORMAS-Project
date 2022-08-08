@@ -197,7 +197,7 @@ public class EditSampleSteps implements En {
         });
 
     Then(
-        "I check if Specimen condition combobox is mandatory",
+        "I check if Specimen condition combobox is not mandatory",
         () ->
             webDriverHelpers.waitUntilElementIsVisibleAndClickable(
                 SPECIMEN_CONDITION_NOT_MANDATORY_COMBOBOX));
