@@ -50,12 +50,12 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
+import de.symeda.sormas.api.user.UserRoleFacade;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -219,11 +219,13 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 		final OptionGroup userRolesField = (OptionGroup)getFieldGroup().getField(UserDto.USER_ROLES);
 
         Set<UserRoleReferenceDto> userRolesFieldValue = (Set<UserRoleReferenceDto>) userRolesField.getValue();
-        final JurisdictionLevel jurisdictionLevel = UserRoleDto.getJurisdictionLevel(userRolesFieldValue.stream().map(userRole -> userRoleMap.get(userRole)).collect(Collectors.toSet()));
+        Set<UserRoleDto> userRoleDtos = userRolesFieldValue.stream().map(userRole -> userRoleMap.get(userRole)).collect(Collectors.toSet());
+        final JurisdictionLevel jurisdictionLevel = UserRoleDto.getJurisdictionLevel(userRoleDtos);
 
-		final boolean hasAssociatedDistrictUser = UserProvider.getCurrent().hasAssociatedDistrictUser();
-		final boolean hasOptionalHealthFacility = UserProvider.getCurrent().hasOptionalHealthFacility();
-		final boolean isPortHealthUser = UserProvider.getCurrent().isPortHealthUser();
+        UserRoleFacade userRoleFacade = FacadeProvider.getUserRoleFacade();
+        final boolean hasAssociatedDistrictUser = userRoleFacade.hasAssociatedDistrictUser(userRoleDtos);
+		final boolean hasOptionalHealthFacility = userRoleFacade.hasOptionalHealthFacility(userRoleDtos);
+		final boolean isPortHealthUser = userRoleFacade.isPortHealthUser(userRoleDtos);
 
 		final boolean usePointOfEntry = (isPortHealthUser && hasAssociatedDistrictUser) || jurisdictionLevel == JurisdictionLevel.POINT_OF_ENTRY;
 		final boolean useHealthFacility = jurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY;
