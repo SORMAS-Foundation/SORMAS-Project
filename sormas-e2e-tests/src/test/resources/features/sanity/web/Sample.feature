@@ -494,7 +494,7 @@ Feature: Sample Functionalities
     And I check if Specimen condition combobox is mandatory
     And I click on Save Button in Sample Edit page
 
-  @tmsLink=SORDEV-10588 @env_main @testIt
+  @tmsLink=SORDEV-10588 @env_main
   Scenario: Test "Specimen condition" should not be mandatory for sample added to case import
     Given I log in as a Admin User
     Then I click on the Cases button from navbar
