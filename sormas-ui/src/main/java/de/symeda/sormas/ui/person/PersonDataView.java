@@ -130,13 +130,20 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 			&& currentUser.hasUserRight(UserRight.IMMUNIZATION_VIEW)) {
 			if (!FacadeProvider.getFeatureConfigurationFacade()
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-				final ImmunizationListCriteria immunizationListCriteria = new ImmunizationListCriteria.Builder(getReference()).build();
 				layout.addComponent(
-					new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria, this::showUnsavedChangesPopup)),
+					new SideComponentLayout(
+						new ImmunizationListComponent(
+							() -> new ImmunizationListCriteria.Builder(getReference()).build(),
+							this::showUnsavedChangesPopup)),
 					IMMUNIZATION_LOC);
 			} else {
-				VaccinationListCriteria criteria = new VaccinationListCriteria.Builder(getReference()).build();
-				layout.addComponent(new SideComponentLayout(new VaccinationListComponent(criteria, this::showUnsavedChangesPopup, false)), VACCINATIONS_LOC);
+				layout.addComponent(
+					new SideComponentLayout(
+						new VaccinationListComponent(
+							() -> new VaccinationListCriteria.Builder(getReference()).build(),
+							this::showUnsavedChangesPopup,
+							false)),
+					VACCINATIONS_LOC);
 			}
 		}
 	}

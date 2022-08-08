@@ -92,7 +92,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			"OffCovid",
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 		covidLimitedDistrictUser.setLimitedDisease(Disease.CORONAVIRUS);
-		getUserFacade().saveUser(covidLimitedDistrictUser);
+		getUserFacade().saveUser(covidLimitedDistrictUser, false);
 	}
 
 	@Test

@@ -70,6 +70,7 @@ import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantD
 import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
@@ -438,8 +439,12 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 		SampleDto newSample = createSample(newEventParticipant.toReference(), officer, lab.toReference());
 
 		User officerUser = getUserService().getByReferenceDto(officer);
-		ShareRequestInfo shareRequestInfo =
-			createShareRequestInfo(officerUser, DEFAULT_SERVER_ID, true, i -> i.setEvent(getEventService().getByReferenceDto(event.toReference())));
+		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
+			ShareRequestDataType.EVENT,
+			officerUser,
+			DEFAULT_SERVER_ID,
+			true,
+			i -> i.setEvent(getEventService().getByReferenceDto(event.toReference())));
 		shareRequestInfo.setWithEventParticipants(true);
 		shareRequestInfo.getShares()
 			.add(
@@ -525,6 +530,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 		}, null);
 
 		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
+			ShareRequestDataType.EVENT,
 			getUserService().getByUuid(officer.getUuid()),
 			SECOND_SERVER_ID,
 			false,
@@ -666,6 +672,7 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 			null);
 
 		ShareRequestInfo shareRequestInfo = createShareRequestInfo(
+			ShareRequestDataType.EVENT,
 			getUserService().getByUuid(officer.getUuid()),
 			SECOND_SERVER_ID,
 			false,

@@ -296,6 +296,8 @@ public class EditCasePage {
       By.xpath(
           "//div[contains(@location,\"vaccinations\")]//div[contains(@id,\"edit-vaccination\")]");
   public static final By GENERAL_COMMENT_TEXT_AREA = By.id("additionalDetails");
+  public static final By VACCINATION_STATUS_COMBOBOX =
+      By.xpath("//div[@id='vaccinationStatus']/div");
 
   public static final By SURVEILLANCE_OFFICER_FIELD_ABOVE_GENERAL_COMMENT =
       By.xpath(
@@ -345,4 +347,6 @@ public class EditCasePage {
       By.xpath("//*[contains(text(),'Neuen Ereignisteilnehmer hinzuf\u00FCgen')]");
   public static final By CHANGE_DISEASE_POPUP_TITLE =
       By.xpath("//div[text()='Change case disease']");
+  public static final By PLACE_OF_STAY_REGION_INPUT = By.cssSelector("#region input");
+  public static final By PLACE_OF_STAY_DISTRICT_INPUT = By.cssSelector("#district input");
 }

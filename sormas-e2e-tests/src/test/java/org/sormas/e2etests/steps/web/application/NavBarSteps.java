@@ -94,6 +94,13 @@ public class NavBarSteps implements En {
         });
 
     When(
+        "^I click on the mSERS button from navbar$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.MSERS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+        });
+    When(
         "^I click on the Events button from navbar and start timer$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
@@ -232,6 +239,14 @@ public class NavBarSteps implements En {
         });
 
     When(
+        "^I click on the Statistics button from navbar$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.STATISTICS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+        });
+
+    When(
         "^I click on the Sample button from navbar and start timer$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
@@ -343,6 +358,21 @@ public class NavBarSteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
+        });
+
+    When(
+        "I check if {string} tab is available",
+        (String tabName) -> {
+          switch (tabName) {
+            case ("Cases"):
+              webDriverHelpers.isElementDisplayedAndNoLoadingSpinnerOrThrowException(
+                  NavBarPage.CASES_BUTTON);
+              break;
+            case ("Contacts"):
+              webDriverHelpers.isElementDisplayedAndNoLoadingSpinnerOrThrowException(
+                  NavBarPage.CONTACTS_BUTTON);
+              break;
+          }
         });
   }
 }

@@ -72,7 +72,7 @@ public class SormasOpenIdIdentityStore implements IdentityStore {
 		localeClaim.ifPresent(locale -> {
 			if (userDto != null && userDto.getLanguage() != null && !userDto.getLanguage().getLocale().getLanguage().equals(locale)) {
 				userDto.setLanguage(Language.fromLocaleString(localeClaim.get()));
-				FacadeProvider.getUserFacade().saveUser(userDto);
+				FacadeProvider.getUserFacade().saveUser(userDto, true);
 			}
 		});
 	}

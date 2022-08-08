@@ -63,6 +63,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.externaljournal.UserConfig;
@@ -71,6 +72,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -80,6 +82,9 @@ import de.symeda.sormas.backend.audit.AuditLoggerEjb;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
+import de.symeda.sormas.backend.customizableenum.CustomizableEnumValueService;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationService;
 import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
@@ -180,6 +185,10 @@ public class StartupShutdownService {
 	AuditLoggerEjb.AuditLoggerEjbLocal auditLogger;
 	@EJB
 	private UserRoleService userRoleService;
+	@EJB
+	private CustomizableEnumFacadeEjb.CustomizableEnumFacadeEjbLocal customizableEnumFacade;
+	@EJB
+	private CustomizableEnumValueService customizableEnumValueService;
 
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
@@ -810,6 +819,43 @@ public class StartupShutdownService {
 					userRole.getUserRights().add(UserRight.SEE_SENSITIVE_DATA_IN_JURISDICTION);
 					userRoleService.ensurePersisted(userRole);
 				}
+				break;
+			case 482:
+				// Add proper captions and translations to occupation types
+				List<OccupationType> occupationTypes = customizableEnumFacade.getEnumValues(CustomizableEnumType.OCCUPATION_TYPE, null);
+				occupationTypes.forEach(o -> {
+					String value = o.getValue();
+					String caption = I18nProperties.getEnumCaption(null, OccupationType.I18N_PREFIX, value);
+					List<String> translations = new ArrayList<>();
+					Arrays.stream(Language.values()).forEach(l -> {
+						translations.add(
+							String.format(
+								"{\"languageCode\":\"%s\",\"value\":\"%s\"}",
+								l.getLocale(),
+								I18nProperties.getEnumCaption(l, OccupationType.I18N_PREFIX, o.getValue())));
+					});
+					String translationsString = "[" + String.join(",", translations) + "]";
+					String propertiesString = "{\"hasDetails\":true}";
+					boolean hasDetails = value.equals("BUSINESSMAN_WOMAN") || value.equals("TRANSPORTER");
+					em.createQuery(
+						"UPDATE CustomizableEnumValue c SET c.caption = :enum_caption, c.translations = :enum_translations, c.properties = :enum_properties WHERE c.value = :enum_value")
+						.setParameter("enum_caption", caption)
+						.setParameter("enum_translations", translationsString)
+						.setParameter("enum_properties", hasDetails ? propertiesString : null)
+						.setParameter("enum_value", value)
+						.executeUpdate();
+				});
+
+				// Add default occupation types
+				OccupationType.getDefaultValues().forEach((k, v) -> {
+					CustomizableEnumValue entry = new CustomizableEnumValue();
+					entry.setDataType(CustomizableEnumType.OCCUPATION_TYPE);
+					entry.setValue(k);
+					entry.setCaption(k);
+					entry.setProperties(v);
+					entry.setDefaultValue(true);
+					customizableEnumValueService.ensurePersisted(entry);
+				});
 				break;
 
 			default:

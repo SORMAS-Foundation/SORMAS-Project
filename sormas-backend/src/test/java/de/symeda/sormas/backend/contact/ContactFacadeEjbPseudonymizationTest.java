@@ -90,8 +90,17 @@ public class ContactFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			"Off2",
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 
-		nationalContactUser = creator
-			.createUser(null, null, null, "National", "Contact User", "National Contact User", JurisdictionLevel.NATION, UserRight.CONTACT_EDIT);
+		nationalContactUser = creator.createUser(
+			null,
+			null,
+			null,
+			"National",
+			"Contact User",
+			"National Contact User",
+			JurisdictionLevel.NATION,
+			UserRight.CONTACT_VIEW,
+			UserRight.CONTACT_EDIT,
+			UserRight.CASE_VIEW);
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}

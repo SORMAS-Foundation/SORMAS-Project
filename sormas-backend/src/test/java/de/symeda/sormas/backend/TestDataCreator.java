@@ -162,7 +162,7 @@ public class TestDataCreator {
 			userRoleDto.setEmailNotificationTypes(defaultUserRole.getEmailNotificationTypes());
 			userRoleDto.setSmsNotificationTypes(defaultUserRole.getSmsNotificationTypes());
 			userRoleDto.setJurisdictionLevel(defaultUserRole.getJurisdictionLevel());
-			beanTest.getUserRoleService().persist(beanTest.getUserRoleFacade().fromDto(userRoleDto, false));
+			userRoleDto = beanTest.getUserRoleFacade().saveUserRole(userRoleDto);
 			userRoleDtoMap.put(defaultUserRole, userRoleDto.toReference());
 			UserRole userRole = beanTest.getEagerUserRole(userRoleDto.getUuid());
 			userRoleMap.put(defaultUserRole, userRole);
@@ -213,7 +213,7 @@ public class TestDataCreator {
 			customConfig.accept(user);
 		}
 
-		return beanTest.getUserFacade().saveUser(user);
+		return beanTest.getUserFacade().saveUser(user, false);
 	}
 
 	public UserDto createUser(RDCFEntities rdcf, UserRoleReferenceDto... roles) {
@@ -278,12 +278,10 @@ public class TestDataCreator {
 		return createUser(regionUuid, districtUuid, facilityUuid, firstName, lastName, userRole);
 	}
 
-	private UserRoleReferenceDto createUserRole(String caption, JurisdictionLevel jurisdictionLevel, UserRight... userRights) {
+	public UserRoleReferenceDto createUserRole(String caption, JurisdictionLevel jurisdictionLevel, UserRight... userRights) {
 		UserRoleDto userRole = new UserRoleDto();
 		userRole.setCaption(caption);
-		userRole.setEmailNotificationTypes(new ArrayList<>());
 		userRole.setJurisdictionLevel(jurisdictionLevel);
-		userRole.setSmsNotificationTypes(new ArrayList<>());
 		userRole.setUserRights(Arrays.stream(userRights).collect(Collectors.toSet()));
 		return beanTest.getUserRoleFacade().saveUserRole(userRole).toReference();
 	}
@@ -308,7 +306,7 @@ public class TestDataCreator {
 		user.setDistrict(beanTest.getDistrictFacade().getReferenceByUuid(districtUuid));
 		user.setCommunity(beanTest.getCommunityFacade().getReferenceByUuid(communityUuid));
 		user.setHealthFacility(beanTest.getFacilityFacade().getReferenceByUuid(facilityUuid));
-		return beanTest.getUserFacade().saveUser(user);
+		return beanTest.getUserFacade().saveUser(user, false);
 	}
 
 	public UserReferenceDto createUserRef(
@@ -1835,12 +1833,13 @@ public class TestDataCreator {
 		return populationData;
 	}
 
-	public void updateDiseaseConfiguration(Disease disease, Boolean active, Boolean primary, Boolean caseBased) {
+	public void updateDiseaseConfiguration(Disease disease, Boolean active, Boolean primary, Boolean caseSurveillance, Boolean aggregateReporting) {
 		DiseaseConfigurationDto config =
 			DiseaseConfigurationFacadeEjbLocal.toDto(beanTest.getDiseaseConfigurationService().getDiseaseConfiguration(disease));
 		config.setActive(active);
 		config.setPrimaryDisease(primary);
-		config.setCaseBased(caseBased);
+		config.setCaseSurveillanceEnabled(caseSurveillance);
+		config.setAggregateReportingEnabled(aggregateReporting);
 		beanTest.getDiseaseConfigurationFacade().saveDiseaseConfiguration(config);
 	}
 

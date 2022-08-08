@@ -56,7 +56,7 @@ public class ActionResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}")
 	public List<ActionDto> getAll(@PathParam("since") long since) {
-		return FacadeProvider.getActionFacade().getAllActionsAfter(new Date(since));
+		return FacadeProvider.getActionFacade().getAllActiveActionsAfter(new Date(since));
 	}
 
 	@POST
@@ -78,7 +78,7 @@ public class ActionResource extends EntityDtoResource {
 	@GET
 	@Path("/uuids")
 	public List<String> getAllUuids() {
-		return FacadeProvider.getActionFacade().getAllUuids();
+		return FacadeProvider.getActionFacade().getAllActiveUuids();
 	}
 
 	@POST

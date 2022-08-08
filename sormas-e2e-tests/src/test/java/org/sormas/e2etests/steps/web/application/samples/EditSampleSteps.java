@@ -166,6 +166,14 @@ public class EditSampleSteps implements En {
               DELETE_SAMPLE_REASON_POPUP, "Entity created without legal reason");
           webDriverHelpers.clickOnWebElementBySelector(SAMPLE_DELETION_POPUP_YES_BUTTON);
         });
+
+    When(
+        "I set type of sample to {string} on Sample Edit page",
+        (String sampleType) -> selectSampleType(sampleType));
+
+    When(
+        "I set date sample was collected to yesterday on Sample Edit page",
+        () -> fillDateOfCollection(LocalDate.now().minusDays(1)));
   }
 
   private void selectPurposeOfSample(String samplePurpose, By element) {

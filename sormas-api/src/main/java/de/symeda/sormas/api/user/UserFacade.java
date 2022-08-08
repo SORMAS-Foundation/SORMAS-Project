@@ -42,7 +42,7 @@ public interface UserFacade {
 
 	UserDto getByUuid(String uuid);
 
-	UserDto saveUser(@Valid UserDto dto);
+	UserDto saveUser(@Valid UserDto dto, boolean isCurrentUser);
 
 	boolean isLoginUnique(String uuid, String userName);
 
@@ -145,4 +145,8 @@ public interface UserFacade {
 	List<UserReferenceWithTaskNumbersDto> getAssignableUsersWithTaskNumbers(@NotNull TaskContextIndex taskContextIndex);
 
 	Set<UserRoleDto> getUserRoles(UserDto user);
+
+	long getUserCountHavingRole(UserRoleReferenceDto userRoleRef);
+
+	List<UserReferenceDto> getUsersHavingOnlyRole(UserRoleReferenceDto userRoleRef);
 }

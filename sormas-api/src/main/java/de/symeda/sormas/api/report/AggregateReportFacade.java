@@ -30,4 +30,6 @@ public interface AggregateReportFacade {
 	void deleteAggregateReports(List<String> uuids);
 
 	long countWithCriteria(AggregateReportCriteria criteria);
+
+	void validate(AggregateReportDto dto);
 }

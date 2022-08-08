@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.user;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -46,8 +47,11 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRoleDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -102,9 +106,10 @@ public class UserController {
 		UserEditForm userEditForm = new UserEditForm(false);
 		UserDto userDto = FacadeProvider.getUserFacade().getByUuid(userUuid);
 		userEditForm.setValue(userDto);
+		UserProvider userProvider = UserProvider.getCurrent();
 		final CommitDiscardWrapperComponent<UserEditForm> editView = new CommitDiscardWrapperComponent<UserEditForm>(
 			userEditForm,
-			UserProvider.getCurrent().hasUserRight(UserRight.USER_EDIT),
+			userProvider.hasUserRight(UserRight.USER_EDIT),
 			userEditForm.getFieldGroup());
 
 		// Add reset password button
@@ -126,6 +131,29 @@ public class UserController {
 							closeWindowCallback.run();
 						}
 					});
+				}
+				if (DataHelper.isSame(user, userProvider.getUser())) {
+
+					Set<UserRight> oldUserRights =
+						UserRoleDto.getUserRights(FacadeProvider.getUserRoleFacade().getByReferences(existingUser.getUserRoles()));
+					Set<UserRight> newUserRights = UserRoleDto.getUserRights(FacadeProvider.getUserRoleFacade().getByReferences(user.getUserRoles()));
+
+					if (oldUserRights.contains(UserRight.USER_ROLE_EDIT) && !newUserRights.contains(UserRight.USER_ROLE_EDIT)) {
+						new Notification(
+							I18nProperties.getString(Strings.messageCheckInputData),
+							I18nProperties.getValidationError(Validations.removeRolesWithEditRightFromOwnUser),
+							Notification.Type.ERROR_MESSAGE,
+							true).show(Page.getCurrent());
+					} else if (!newUserRights.contains(UserRight.USER_EDIT)) {
+						new Notification(
+							I18nProperties.getString(Strings.messageCheckInputData),
+							I18nProperties.getValidationError(Validations.removeRolesWithEditUserFromOwnUser),
+							Notification.Type.ERROR_MESSAGE,
+							true).show(Page.getCurrent());
+					} else {
+						saveUser(user);
+						closeWindowCallback.run();
+					}
 				} else {
 					saveUser(user);
 					closeWindowCallback.run();
@@ -147,7 +175,7 @@ public class UserController {
 	}
 
 	private void saveUser(UserDto user) {
-		FacadeProvider.getUserFacade().saveUser(user);
+		FacadeProvider.getUserFacade().saveUser(user, false);
 		refreshView();
 	}
 
@@ -166,7 +194,7 @@ public class UserController {
 			public void onCommit() {
 				if (!createForm.getFieldGroup().isModified()) {
 					UserDto dto = createForm.getValue();
-					dto = FacadeProvider.getUserFacade().saveUser(dto);
+					dto = FacadeProvider.getUserFacade().saveUser(dto, false);
 					refreshView();
 					makeInitialPassword(dto.getUuid(), dto.getUserEmail());
 				}
@@ -294,7 +322,7 @@ public class UserController {
 		component.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
 				UserDto changedUser = form.getValue();
-				FacadeProvider.getUserFacade().saveUser(changedUser);
+				FacadeProvider.getUserFacade().saveUser(changedUser, true);
 				I18nProperties.setUserLanguage(changedUser.getLanguage());
 				FacadeProvider.getI18nFacade().setUserLanguage(changedUser.getLanguage());
 				Page.getCurrent().reload();

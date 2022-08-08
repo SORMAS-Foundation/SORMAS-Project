@@ -35,7 +35,7 @@ Feature: Create user
       | National User     |
       | POE National User |
 
-    @issue=SORDEV-9366 @env_main
+    @tmsLink=SORDEV-9366 @env_main
     Scenario: Users with limited disease
       Given I log in as a Admin User
       And I click on the Users from navbar
@@ -46,7 +46,7 @@ Feature: Create user
       Then I click on the Cases button from navbar
       And I check if user have limited disease view to Cholera only
 
-  @issue=SORDEV-5964 @env_main
+  @tmsLink=SORDEV-5964 @env_main
   Scenario: Bulk mode for Activate/deactivate user accounts
     Given I log in as a Admin User
     And I click on the Users from navbar

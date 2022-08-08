@@ -93,9 +93,7 @@ public class ChooseSourceCaseSteps implements En {
 
     When(
         "I click on the CHOOSE SOURCE CASE button from CONTACT page",
-        () ->
-            webDriverHelpers.clickWhileOtherButtonIsDisplayed(
-                CHOOSE_SOURCE_CASE_BUTTON, POPUP_YES_BUTTON));
+        () -> webDriverHelpers.clickOnWebElementBySelector(CHOOSE_SOURCE_CASE_BUTTON));
 
     When(
         "I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page",
@@ -150,9 +148,7 @@ public class ChooseSourceCaseSteps implements En {
 
     When(
         "I click on the CHANGE CASE button",
-        () ->
-            webDriverHelpers.clickWhileOtherButtonIsDisplayed(
-                CHANGE_CASE_BUTTON, POPUP_YES_BUTTON));
+        () -> webDriverHelpers.clickOnWebElementBySelector(CHANGE_CASE_BUTTON));
 
     When(
         "I click on the Remove Case CTA",
