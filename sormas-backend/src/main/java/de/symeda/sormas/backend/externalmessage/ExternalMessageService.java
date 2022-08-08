@@ -76,6 +76,10 @@ public class ExternalMessageService extends AdoServiceWithUserFilter<ExternalMes
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(labMessage.get(ExternalMessage.SAMPLE).get(Sample.UUID), criteria.getSample().getUuid()));
 		}
+		if (criteria.getCaze() != null) {
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(ExternalMessage.CAZE).get(Case.UUID), criteria.getCaze().getUuid()));
+		}
 		if (criteria.getSearchFieldLike() != null) {
 			String[] textFilters = criteria.getSearchFieldLike().split("\\s+");
 			for (String textFilter : textFilters) {
