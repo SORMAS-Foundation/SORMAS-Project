@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import org.springframework.util.CollectionUtils;
+
 import com.j256.ormlite.logger.Logger;
 import com.j256.ormlite.logger.LoggerFactory;
 
@@ -204,7 +206,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 	public int handlePulledList(AbstractAdoDao<ADO> dao, List<DTO> result)
 		throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
 
-		if (result == null) {
+		if (CollectionUtils.isEmpty(result)) {
 			return 0;
 		}
 
