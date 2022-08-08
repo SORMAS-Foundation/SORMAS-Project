@@ -1461,7 +1461,7 @@ Feature: Case end to end tests
     Then I click on Merge Duplicates on Case directory for DE
     And I check if message about long loading times appear for DE
 
-  @tmsLink=SORQA-10241 @env_de
+  @tmsLink=SORDEV-10241 @env_de
   Scenario: Hide Reception dates of paper form
     Given API: I create a new person
     And API: I check that POST call body is "OK"
