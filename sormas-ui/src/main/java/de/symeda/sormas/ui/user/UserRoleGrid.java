@@ -29,6 +29,9 @@ public class UserRoleGrid extends FilteredGrid<UserRoleDto, UserRoleCriteria> {
 		addItemClickListener(new ShowDetailsListener<>(UserRoleDto.UUID, e -> ControllerProvider.getUserRoleController().editData(e.getUuid())));
 
 		for (Column<?, ?> column : getColumns()) {
+			if (column.getId().equals(UserRoleDto.DESCRIPTION)) {
+				column.setMaximumWidth(700);
+			}
 			if (column.getId().equals(UserRoleDto.CAPTION)) {
 				column.setCaption(I18nProperties.getCaption(Captions.UserRole));
 			} else {

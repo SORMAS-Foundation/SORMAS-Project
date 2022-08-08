@@ -263,6 +263,26 @@ Feature: Sample Functionalities
     And I confirm update case result
     Then I check if Update case disease variant popup is available
 
+  @tmsLink=SORDEV-7427 @env_de
+  Scenario: Test Make date fields in sample creation mask and information non-compulsory
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    Then I click on New Sample in German
+    And I select Sent dispatched checkbox in new sample page
+    And I select Received checkbox in new sample page
+    Then I check is Sent dispatched Date and Received Date fields required
+    And I click Add Pathogen test in Sample creation page
+    And I check DATE AND TIME OF RESULT field
+    And I click on save sample button
+    Then I check error popup message in German
+
   @tmsLink=SORDEV-6849 @env_main
   Scenario: Test Lab officers should have full access to entities whose sample was assigned to the lab officers lab
     Given I log in as a Admin User

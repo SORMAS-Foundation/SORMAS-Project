@@ -556,7 +556,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public UserDto saveUser(@Valid UserDto dto) {
+	public UserDto saveUser(@Valid UserDto dto, boolean isUserSettingsUpdate) {
 
 		User oldUser = null;
 		Set<UserRight> oldUserRights = Collections.emptySet();
@@ -586,7 +586,7 @@ public class UserFacadeEjb implements UserFacade {
 			throw new ValidationException(I18nProperties.getValidationError(Validations.userNameNotUnique));
 		}
 
-		if (DataHelper.isSame(oldUser, userService.getCurrentUser())) {
+		if (DataHelper.isSame(oldUser, userService.getCurrentUser()) && !isUserSettingsUpdate) {
 
 			Set<UserRight> newUserRights = UserRoleDto.getUserRights(newRoles);
 

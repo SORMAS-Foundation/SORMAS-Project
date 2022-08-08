@@ -2314,7 +2314,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			creator.createUser(rdcf2, "Third", "User", creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		UserDto informant = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.HOSPITAL_INFORMANT));
 		informant.setAssociatedOfficer(survOff3);
-		getUserFacade().saveUser(informant);
+		getUserFacade().saveUser(informant, false);
 
 		// Reporting user is set as surveillance officer
 		CaseDataDto caze = creator.createCase(survOff2, creator.createPerson().toReference(), rdcf);

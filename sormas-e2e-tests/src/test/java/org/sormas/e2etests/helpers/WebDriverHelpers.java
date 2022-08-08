@@ -1050,4 +1050,15 @@ public class WebDriverHelpers {
                 String.format("File %s not exists after %s", file_path, seconds)),
         seconds);
   }
+
+  public void checkIsPopupContainsList(By popup, List popupElements) {
+    String popupElementXPath;
+    String popupXPath = popup.toString();
+    By lookingElement;
+    for (Object popupMessage : popupElements) {
+      popupElementXPath = popupXPath + "//li[contains(text(),'" + popupMessage + "')]";
+      lookingElement = By.xpath(popupElementXPath.replace("By.xpath:", ""));
+      Assert.assertTrue(isElementVisibleWithTimeout(lookingElement, 10),"Popup do not contains expected list of items!");
+    }
+  }
 }
