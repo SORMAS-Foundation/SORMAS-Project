@@ -423,6 +423,7 @@ public class TaskManagementSteps implements En {
     When(
         "I click on the Detailed Task Export button",
         () -> {
+            webDriverHelpers.waitUntilElementIsVisibleAndClickable(DETAILED_EXPORT_BUTTON);
           String file = "./downloads/sormas_tasks_" + LocalDate.now().format(formatter) + "_.csv";
 
           Path file_path = Paths.get(file);
