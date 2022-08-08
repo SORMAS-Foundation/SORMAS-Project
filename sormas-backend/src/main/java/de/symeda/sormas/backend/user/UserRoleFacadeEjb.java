@@ -48,6 +48,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -83,7 +84,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -344,7 +344,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<UserRole> root = cq.from(UserRole.class);
-		Join<UserRole, UserRight> userRightsJoin = root.join(UserRole.USER_RIGHTS);
+		Join<UserRole, UserRight> userRightsJoin = root.join(UserRole.USER_RIGHTS, JoinType.LEFT);
 
 		Predicate filter = null;
 
@@ -365,7 +365,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<UserRole> cq = cb.createQuery(UserRole.class);
 		Root<UserRole> userRole = cq.from(UserRole.class);
-		Join<UserRole, UserRight> userRightsJoin = userRole.join(UserRole.USER_RIGHTS);
+		Join<UserRole, UserRight> userRightsJoin = userRole.join(UserRole.USER_RIGHTS, JoinType.LEFT);
 
 		Predicate filter = null;
 
@@ -401,7 +401,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 
 		cq.select(userRole);
 
-		return QueryHelper.getResultList(em, cq, first, max, UserRoleFacadeEjb::toDto);
+		return QueryHelper.getResultList(em, cq, null, null, UserRoleFacadeEjb::toDto);
 	}
 
 	@Override
