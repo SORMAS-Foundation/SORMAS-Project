@@ -91,14 +91,9 @@ import static org.sormas.e2etests.pages.application.events.EventParticipantsPage
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_DEARCHIVE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DEARCHIVE_REASON_TEXT_AREA;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
-import static org.sormas.e2etests.steps.web.application.entries.TravelEntryDirectorySteps.userDirPath;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -539,7 +534,7 @@ public class CreateNewTravelEntrySteps implements En {
         (String name) -> {
           String uuid = aTravelEntry.getUuid();
           String filePath = uuid.substring(0, 6).toUpperCase() + "-" + name;
-            FilesHelper.waitForFileToDownload(filePath, 30);
+          FilesHelper.waitForFileToDownload(filePath, 30);
         });
     When(
         "I check if generated document based on {string} appeared in Documents tab in Edit Travel Entry directory",

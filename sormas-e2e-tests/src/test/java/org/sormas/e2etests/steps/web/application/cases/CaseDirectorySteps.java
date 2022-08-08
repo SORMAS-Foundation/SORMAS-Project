@@ -118,7 +118,9 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CA
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ARCHIVE_RELATED_CONTACTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_CASE_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_PERSON_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_CASE_POPUP_HEADER;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE_DEFINITION_TEXT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.getCaseIDPathByIndex;
@@ -135,7 +137,6 @@ import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabP
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.IMPORT_SUCCESSFUL_FACILITY_IMPORT_CSV;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.PERSON_LIKE_SEARCH_INPUT;
-import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.getCheckboxByUUID;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
@@ -256,17 +257,16 @@ public class CaseDirectorySteps implements En {
     When(
         "I check if downloaded zip file for Quarantine Order is correct",
         () -> {
-            String fileName = "sormas_documents_" + LocalDate.now() + "_.zip";
-            FilesHelper.waitForFileToDownload(fileName, 120);
-            FilesHelper.deleteFile(fileName);
-
+          String fileName = "sormas_documents_" + LocalDate.now() + "_.zip";
+          FilesHelper.waitForFileToDownload(fileName, 120);
+          FilesHelper.deleteFile(fileName);
         });
     When(
         "I check if downloaded zip file for Quarantine Order is correct for DE version",
         () -> {
-            String fileName = "sormas_dokumente_" + LocalDate.now() + "_.zip";
-            FilesHelper.waitForFileToDownload(fileName, 120);
-            FilesHelper.deleteFile(fileName);
+          String fileName = "sormas_dokumente_" + LocalDate.now() + "_.zip";
+          FilesHelper.waitForFileToDownload(fileName, 120);
+          FilesHelper.deleteFile(fileName);
         });
     When(
         "I search for the last case uuid created via Api in the CHOOSE SOURCE Contact window",
@@ -1294,6 +1294,10 @@ public class CaseDirectorySteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_CASE_CHECKBOX);
             webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
           }
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP_HEADER, 2)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+          }
         });
 
     When(
@@ -1323,6 +1327,14 @@ public class CaseDirectorySteps implements En {
         "I apply case filters",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+        });
+
+    When(
+        "I search case by user by name {string}",
+        (String firstAndLastName) -> {
+          webDriverHelpers.fillAndSubmitInWebElement(PERSON_LIKE_SEARCH_INPUT, firstAndLastName);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
   }
 

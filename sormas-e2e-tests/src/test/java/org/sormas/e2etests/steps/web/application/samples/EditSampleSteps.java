@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.samples;
 
+import static org.sormas.e2etests.pages.application.samples.CreateNewSamplePage.SAVE_EDIT_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.EditSamplePage.*;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.*;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
@@ -174,6 +175,36 @@ public class EditSampleSteps implements En {
     When(
         "I set date sample was collected to yesterday on Sample Edit page",
         () -> fillDateOfCollection(LocalDate.now().minusDays(1)));
+
+    When(
+        "I click on Received checkbox in Sample Edit page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(RECEIVED_OPTION_BUTTON));
+
+    Then(
+        "I check if {string} combobox is available",
+        (String option) -> {
+          switch (option) {
+            case ("Specimen condition"):
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(SPECIMEN_CONDITION_INPUT);
+              break;
+            case ("Date sample received at lab"):
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(DATE_SAMPLE_RECEIVED);
+              break;
+            case ("Lab sample ID"):
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(LAB_SAMPLE_ID_INPUT);
+              break;
+          }
+        });
+
+    Then(
+        "I check if Specimen condition combobox is mandatory",
+        () ->
+            webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                SPECIMEN_CONDITION_NOT_MANDATORY_COMBOBOX));
+
+    When(
+        "I click on Save Button in Sample Edit page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_EDIT_SAMPLE_BUTTON));
   }
 
   private void selectPurposeOfSample(String samplePurpose, By element) {

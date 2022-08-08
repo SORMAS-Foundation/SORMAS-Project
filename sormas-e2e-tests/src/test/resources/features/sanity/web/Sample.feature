@@ -311,3 +311,204 @@ Feature: Sample Functionalities
     When I open created Sample
     Then I set type of sample to "Sera" on Sample Edit page
     Then I set date sample was collected to yesterday on Sample Edit page
+
+  @tmsLink=SORDEV-10588 @env_main
+  Scenario: Test "Specimen condition" should not be mandatory for sample added to case
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data
+    And I collect the case person UUID displayed on Edit case page
+    And I click on New Sample
+    When I collect the sample UUID displayed on create new sample page
+    Then I create sample with "Voreingestelltes Labor" as a Laboratory
+    And I save the created sample
+    And I click on the Sample button from navbar
+    And I search for Sample using Sample UUID from the created Sample
+    When I open created Sample
+    Then I click on Received checkbox in Sample Edit page
+    Then I check if "Lab sample ID" combobox is available
+    And I check if "Date sample received at lab" combobox is available
+    And I check if "Specimen condition" combobox is available
+    And I click on Save Button in Sample Edit page
+    And I click on the Sample button from navbar
+    And I search for Sample using Sample UUID from the created Sample
+    When I open created Sample
+    Then I check if "Lab sample ID" combobox is available
+    And I check if "Date sample received at lab" combobox is available
+    And I check if "Specimen condition" combobox is available
+    And I check if Specimen condition combobox is mandatory
+    And I click on Save Button in Sample Edit page
+
+  @tmsLink=SORDEV-10588 @env_main
+  Scenario: Test "Specimen condition" should not be mandatory for sample added to contact
+    Given I log in with National User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click on SAVE new contact button
+    And I collect the contact person UUID displayed on Edit contact page
+    And I click on New Sample
+    When I collect the sample UUID displayed on create new sample page
+    Then I create sample with "Voreingestelltes Labor" as a Laboratory
+    And I save the created sample
+    And I click on the Sample button from navbar
+    And I search for Sample using Sample UUID from the created Sample
+    When I open created Sample
+    Then I click on Received checkbox in Sample Edit page
+    Then I check if "Lab sample ID" combobox is available
+    And I check if "Date sample received at lab" combobox is available
+    And I check if "Specimen condition" combobox is available
+    And I click on Save Button in Sample Edit page
+    And I click on the Sample button from navbar
+    And I search for Sample using Sample UUID from the created Sample
+    When I open created Sample
+    Then I check if "Lab sample ID" combobox is available
+    And I check if "Date sample received at lab" combobox is available
+    And I check if "Specimen condition" combobox is available
+    And I check if Specimen condition combobox is mandatory
+    And I click on Save Button in Sample Edit page
+
+  @tmsLink=SORDEV-10588 @env_main
+  Scenario: Test "Specimen condition" should not be mandatory for sample added to event
+    Given I log in with National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    And I collect the UUID displayed on Edit event page
+    And I add a participant to the event
+    And I check if participant appears in the event participants list
+    And I click on the created event participant from the list
+    And I click on New Sample
+    When I collect the sample UUID displayed on create new sample page
+    Then I create sample with "Voreingestelltes Labor" as a Laboratory
+    And I save the created sample
+    And I click on the Sample button from navbar
+    And I search for Sample using Sample UUID from the created Sample
+    When I open created Sample
+    Then I click on Received checkbox in Sample Edit page
+    Then I check if "Lab sample ID" combobox is available
+    And I check if "Date sample received at lab" combobox is available
+    And I check if "Specimen condition" combobox is available
+    And I click on Save Button in Sample Edit page
+    And I click on the Sample button from navbar
+    And I search for Sample using Sample UUID from the created Sample
+    When I open created Sample
+    Then I check if "Lab sample ID" combobox is available
+    And I check if "Date sample received at lab" combobox is available
+    And I check if "Specimen condition" combobox is available
+    And I check if Specimen condition combobox is mandatory
+    And I click on Save Button in Sample Edit page
+
+  @tmsLink=SORDEV-10588 @env_main
+  Scenario: Test "Specimen condition" should not be mandatory for sample added to case
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data
+    And I collect the case person UUID displayed on Edit case page
+    And I click on New Sample
+    When I collect the sample UUID displayed on create new sample page
+    Then I create sample with "Voreingestelltes Labor" as a Laboratory
+    And I save the created sample
+    And I click on the Sample button from navbar
+    And I search for Sample using Sample UUID from the created Sample
+    When I open created Sample
+    Then I click on Received checkbox in Sample Edit page
+    Then I check if "Lab sample ID" combobox is available
+    And I check if "Date sample received at lab" combobox is available
+    And I check if "Specimen condition" combobox is available
+    And I click on Save Button in Sample Edit page
+    And I click on the Sample button from navbar
+    And I search for Sample using Sample UUID from the created Sample
+    When I open created Sample
+    Then I check if "Lab sample ID" combobox is available
+    And I check if "Date sample received at lab" combobox is available
+    And I check if "Specimen condition" combobox is available
+    And I check if Specimen condition combobox is mandatory
+    And I click on Save Button in Sample Edit page
+
+  @tmsLink=SORDEV-10588 @env_main
+  Scenario: Test "Specimen condition" should not be mandatory for sample added to contact
+    Given I log in with National User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click on SAVE new contact button
+    And I collect the contact person UUID displayed on Edit contact page
+    And I click on New Sample
+    When I collect the sample UUID displayed on create new sample page
+    Then I create sample with "Voreingestelltes Labor" as a Laboratory
+    And I save the created sample
+    And I click on the Sample button from navbar
+    And I search for Sample using Sample UUID from the created Sample
+    When I open created Sample
+    Then I click on Received checkbox in Sample Edit page
+    Then I check if "Lab sample ID" combobox is available
+    And I check if "Date sample received at lab" combobox is available
+    And I check if "Specimen condition" combobox is available
+    And I click on Save Button in Sample Edit page
+    And I click on the Sample button from navbar
+    And I search for Sample using Sample UUID from the created Sample
+    When I open created Sample
+    Then I check if "Lab sample ID" combobox is available
+    And I check if "Date sample received at lab" combobox is available
+    And I check if "Specimen condition" combobox is available
+    And I check if Specimen condition combobox is mandatory
+    And I click on Save Button in Sample Edit page
+
+  @tmsLink=SORDEV-10588 @env_main
+  Scenario: Test "Specimen condition" should not be mandatory for sample added to event
+    Given I log in with National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    And I collect the UUID displayed on Edit event page
+    And I add a participant to the event
+    And I check if participant appears in the event participants list
+    And I click on the created event participant from the list
+    And I click on New Sample
+    When I collect the sample UUID displayed on create new sample page
+    Then I create sample with "Voreingestelltes Labor" as a Laboratory
+    And I save the created sample
+    And I click on the Sample button from navbar
+    And I search for Sample using Sample UUID from the created Sample
+    When I open created Sample
+    Then I click on Received checkbox in Sample Edit page
+    Then I check if "Lab sample ID" combobox is available
+    And I check if "Date sample received at lab" combobox is available
+    And I check if "Specimen condition" combobox is available
+    And I click on Save Button in Sample Edit page
+    And I click on the Sample button from navbar
+    And I search for Sample using Sample UUID from the created Sample
+    When I open created Sample
+    Then I check if "Lab sample ID" combobox is available
+    And I check if "Date sample received at lab" combobox is available
+    And I check if "Specimen condition" combobox is available
+    And I check if Specimen condition combobox is mandatory
+    And I click on Save Button in Sample Edit page
+
+  @tmsLink=SORDEV-10588 @env_main @testIt
+  Scenario: Test "Specimen condition" should not be mandatory for sample added to case import
+    Given I log in as a Admin User
+    Then I click on the Cases button from navbar
+    And I click on the Import button from Case directory
+    And I click on the detailed button from import Case tab
+    Then I check is possible to set Value Separator to Semicolon
+    Then I select the "Import_specimen_condition.csv" CSV file in the file picker
+    And I click on the "START DATA IMPORT" button from the Import Detailed Case popup
+    Then I check if csv file for detailed case is imported successfully
+    And I search case by user by name "Testung Release"
+    Then I click on the first Case ID from Case Directory
+    When I click on edit Sample
+    Then I check if "Lab sample ID" combobox is available
+    And I check if "Date sample received at lab" combobox is available
+    And I check if "Specimen condition" combobox is available
+    And I check if Specimen condition combobox is mandatory
+    And I click on Save Button in Sample Edit page
