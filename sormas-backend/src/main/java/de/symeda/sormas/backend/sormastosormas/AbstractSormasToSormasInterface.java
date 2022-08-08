@@ -426,12 +426,28 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 				.persistSyncData(data, syncData.getShareData().getOriginInfo(), syncData.getCriteria(), existingEntities));
 	}
 
+	/**
+	 * Called by frontend to get all the shares of an object
+	 * 
+	 * @param uuid
+	 *            of the object
+	 * @return list of share trees (shares and shares of shares)
+	 */
 	@Override
-	@PermitAll
+	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
 	public List<SormasToSormasShareTree> getAllShares(String uuid) {
 		return getShareTrees(new ShareTreeCriteria(uuid), true);
 	}
 
+	/**
+	 * Called only by the backend to collect all shares from different servers
+	 * 
+	 * @param encryptedCriteria
+	 *            criteria containing uuid of shared object
+	 * @return list of share trees (shares and shares of shares)
+	 * @throws SormasToSormasException
+	 *             if unexpected arror happens
+	 */
 	@Override
 	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_CLIENT)
 	public SormasToSormasEncryptedDataDto getShareTrees(SormasToSormasEncryptedDataDto encryptedCriteria) throws SormasToSormasException {

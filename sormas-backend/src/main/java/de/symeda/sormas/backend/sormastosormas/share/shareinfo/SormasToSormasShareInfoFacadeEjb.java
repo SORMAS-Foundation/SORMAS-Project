@@ -35,10 +35,12 @@ import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoFacade;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "SormasToSormasShareInfoFacade")
 public class SormasToSormasShareInfoFacadeEjb implements SormasToSormasShareInfoFacade {
@@ -53,7 +55,7 @@ public class SormasToSormasShareInfoFacadeEjb implements SormasToSormasShareInfo
 	private SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 
 	@Override
-	@PermitAll
+	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
 	public List<SormasToSormasShareInfoDto> getIndexList(SormasToSormasShareInfoCriteria criteria, Integer first, Integer max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SormasToSormasShareInfo> cq = cb.createQuery(SormasToSormasShareInfo.class);
@@ -70,33 +72,27 @@ public class SormasToSormasShareInfoFacadeEjb implements SormasToSormasShareInfo
 	}
 
 	@Override
-	@PermitAll
-	public SormasToSormasShareInfoDto getShareInfoByUuid(String uuid) {
-		return toDto(shareInfoService.getByUuid(uuid));
-	}
-
-	@Override
-	@PermitAll
+	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
 	public SormasToSormasShareInfoDto getCaseShareInfoByOrganization(CaseReferenceDto caze, String organizationId) {
 		SormasToSormasShareInfo shareInfo = shareInfoService.getByCaseAndOrganization(caze.getUuid(), organizationId);
 		return toDto(shareInfo);
 	}
 
 	@Override
-	@PermitAll
+	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
 	public SormasToSormasShareInfoDto getContactShareInfoByOrganization(ContactReferenceDto contact, String organizationId) {
 		SormasToSormasShareInfo shareInfo = shareInfoService.getByContactAndOrganization(contact.getUuid(), organizationId);
 		return toDto(shareInfo);
 	}
 
 	@Override
-	@PermitAll
+	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
 	public SormasToSormasShareInfoDto getEventShareInfoByOrganization(EventReferenceDto event, String organizationId) {
 		SormasToSormasShareInfo shareInfo = shareInfoService.getByEventAndOrganization(event.getUuid(), organizationId);
 		return toDto(shareInfo);
 	}
 
-	@PermitAll
+	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
 	public SormasToSormasShareInfoDto toDto(SormasToSormasShareInfo source) {
 		if (source == null) {
 			return null;

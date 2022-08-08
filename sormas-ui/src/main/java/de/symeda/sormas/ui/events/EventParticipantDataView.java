@@ -163,7 +163,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			sormasToSormasLocLayout.setMargin(false);
 			sormasToSormasLocLayout.setSpacing(false);
 
-			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(eventParticipant, sormasToSormasEnabled);
+			SormasToSormasListComponent sormasToSormasListComponent = new SormasToSormasListComponent(eventParticipant);
 			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
 			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
 
