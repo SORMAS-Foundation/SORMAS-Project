@@ -1216,7 +1216,7 @@ public class EventDirectorySteps implements En {
         "I click on the Basic Event Export button",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(BASIC_EVENT_EXPORT_BUTTON);
-          TimeUnit.SECONDS.sleep(2); // wait for download
+          TimeUnit.SECONDS.sleep(3); // wait for download
         });
 
     When(
