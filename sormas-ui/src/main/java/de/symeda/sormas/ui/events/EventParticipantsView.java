@@ -29,6 +29,8 @@ import java.util.stream.Collectors;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.ViewBeforeLeaveEvent;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
@@ -384,15 +386,14 @@ public class EventParticipantsView extends AbstractEventView {
 
 		updateStatusButtons();
 
-		if (eventParticipantRelevanceStatusFilter != null && criteria.getRelevanceStatus() == null) {
-			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
-			boolean archived = FacadeProvider.getEventFacade().isArchived(getEventRef().getUuid());
-			eventParticipantRelevanceStatusFilter.setValue(archived ? EntityRelevanceStatus.ALL : criteria.getRelevanceStatus());
-		} else {
+		if (eventParticipantRelevanceStatusFilter != null) {
 			if (criteria.getRelevanceStatus() == null) {
 				criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+				boolean archived = FacadeProvider.getEventFacade().isArchived(getEventRef().getUuid());
+				eventParticipantRelevanceStatusFilter.setValue(archived ? EntityRelevanceStatus.ALL : criteria.getRelevanceStatus());
+			} else {
+				eventParticipantRelevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 			}
-			eventParticipantRelevanceStatusFilter.setValue(criteria.getRelevanceStatus());
 		}
 
 		filterForm.setValue(criteria);
@@ -406,5 +407,18 @@ public class EventParticipantsView extends AbstractEventView {
 			activeStatusButton
 				.setCaption(I18nProperties.getCaption(Captions.all) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
+	}
+
+	@Override
+	public void beforeLeave(ViewBeforeLeaveEvent event) {
+		if (!((Navigator) event.getSource()).getStateParameterMap()
+			.keySet()
+			.iterator()
+			.next()
+			.contains(EVENTPARTICIPANTS + "/" + getEventRef().getUuid())) {
+			criteria.relevanceStatus(null);
+		}
+
+		super.beforeLeave(event);
 	}
 }
