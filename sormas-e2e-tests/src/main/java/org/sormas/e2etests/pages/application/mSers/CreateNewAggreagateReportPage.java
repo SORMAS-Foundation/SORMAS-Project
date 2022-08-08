@@ -9,6 +9,9 @@ public class CreateNewAggreagateReportPage {
   public static final By DISTRICT_COMBOBOX_POPUP =
       By.xpath(
           "//div[contains(@class,\"v-window v-widget\")]//span[text()=\"district\"]/..//following-sibling::div//input");
+  public static final By DUPLICATE_DETECTION_TEXT =
+      By.xpath(
+          "//div[text()=\"Attention: Duplicate reports have been found for the above criteria. Diseases marked with red already have reports.\"]");
 
   public static By getDeathInputByDisease(String disease) {
     return By.xpath(String.format("//div[text()='%s']/../..//input[@id=\"deaths\"]", disease));

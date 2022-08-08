@@ -42,7 +42,7 @@ public interface UserFacade {
 
 	UserDto getByUuid(String uuid);
 
-	UserDto saveUser(@Valid UserDto dto);
+	UserDto saveUser(@Valid UserDto dto, boolean isCurrentUser);
 
 	boolean isLoginUnique(String uuid, String userName);
 

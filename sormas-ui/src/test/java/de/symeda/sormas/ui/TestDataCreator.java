@@ -141,7 +141,7 @@ public class TestDataCreator {
 			}
 		}
 		user.setLanguage(language);
-		user = FacadeProvider.getUserFacade().saveUser(user);
+		user = FacadeProvider.getUserFacade().saveUser(user, false);
 
 		return user;
 	}

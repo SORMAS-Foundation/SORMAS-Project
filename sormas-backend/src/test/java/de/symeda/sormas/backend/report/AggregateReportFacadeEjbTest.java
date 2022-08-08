@@ -68,7 +68,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 			"One",
 			creator.getUserRoleReference(DefaultUserRole.HOSPITAL_INFORMANT));
 		informant1.setAssociatedOfficer(officer.toReference());
-		getUserFacade().saveUser(informant1);
+		getUserFacade().saveUser(informant1, false);
 
 		informant2 = creator.createUser(
 			rdcf.region.getUuid(),
@@ -78,7 +78,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 			"Two",
 			creator.getUserRoleReference(DefaultUserRole.HOSPITAL_INFORMANT));
 		informant2.setAssociatedOfficer(officer.toReference());
-		getUserFacade().saveUser(informant2);
+		getUserFacade().saveUser(informant2, false);
 
 	}
 
