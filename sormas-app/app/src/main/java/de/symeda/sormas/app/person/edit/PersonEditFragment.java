@@ -581,6 +581,8 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.personArmedForcesRelationType.setVisibility(GONE);
 		}
+		contentBinding.personCitizenship.setVisibility(GONE);
+		contentBinding.personBirthCountry.setVisibility(GONE);
 	}
 
 	@Override
