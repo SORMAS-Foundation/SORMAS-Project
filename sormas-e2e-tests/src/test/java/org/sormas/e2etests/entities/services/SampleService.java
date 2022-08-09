@@ -259,4 +259,14 @@ public class SampleService {
         .sampleType("Nasen-Abstrich")
         .build();
   }
+
+  public Sample buildSampleWithParametrizedLaboratory(String laboratory) {
+    return Sample.builder()
+        .purposeOfTheSample("EXTERNAL LAB TESTING")
+        .dateOfCollection(LocalDate.now())
+        .timeOfCollection(LocalTime.of(15, 15))
+        .sampleType("Blood")
+        .laboratory(laboratory)
+        .build();
+  }
 }

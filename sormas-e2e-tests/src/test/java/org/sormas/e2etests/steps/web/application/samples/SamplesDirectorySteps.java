@@ -49,7 +49,6 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
 import cucumber.api.java8.En;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -300,8 +299,12 @@ public class SamplesDirectorySteps implements En {
     When(
         "^I search for Sample using Sample UUID from the created Sample",
         () -> {
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
           webDriverHelpers.fillAndSubmitInWebElement(
               SAMPLE_SEARCH_INPUT, CreateNewSampleSteps.sampleId);
+          TimeUnit.SECONDS.sleep(2); // wait for reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilWebElementHasAttributeWithValue(
               SEARCH_RESULT_SAMPLE, "title", CreateNewSampleSteps.sampleId);
         });
@@ -530,8 +533,8 @@ public class SamplesDirectorySteps implements En {
     When(
         "I delete exported file from Sample Directory",
         () -> {
-            String filePath = "sormas_samples_" + LocalDate.now() + "_.csv";
-            FilesHelper.deleteFile(filePath);
+          String filePath = "sormas_samples_" + LocalDate.now() + "_.csv";
+          FilesHelper.deleteFile(filePath);
         });
   }
 

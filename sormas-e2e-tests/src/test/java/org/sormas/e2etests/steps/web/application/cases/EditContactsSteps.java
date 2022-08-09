@@ -84,9 +84,6 @@ import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -257,7 +254,7 @@ public class EditContactsSteps implements En {
         "I delete exported file from Case Contact Directory",
         () -> {
           String filePath = "sormas_contacts_" + LocalDate.now() + "_.csv";
-            FilesHelper.deleteFile(filePath);
+          FilesHelper.deleteFile(filePath);
         });
 
     When(

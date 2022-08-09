@@ -42,7 +42,7 @@ public class UserRoleFormHelper {
 		BeanFieldGroup<UserRoleDto> fieldGroup = form.getFieldGroup();
 		FieldHelper.setVisibleWhen(
 			fieldGroup,
-			UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY,
+			UserRoleDto.HAS_ASSOCIATED_DISTRICT_USER,
 			UserRoleDto.JURISDICTION_LEVEL,
 			Arrays.asList(JurisdictionLevel.COMMUNITY, JurisdictionLevel.HEALTH_FACILITY),
 			true);

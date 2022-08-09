@@ -249,7 +249,7 @@ Feature: Case end to end tests
     Given I log in with National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
-    When I create a new case with disease "ANTHRAX"
+    When I create a new case with disease "ACUTE FLACCID PARALYSIS"
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
     Then I set Present condition of Person to Dead in Case Person tab
@@ -1435,7 +1435,7 @@ Feature: Case end to end tests
     And I check if reason for deletion as "Löschen auf Anforderung einer anderen Behörde" is available
     And I check if reason for deletion as "Entität ohne Rechtsgrund angelegt" is available
     And I check if reason for deletion as "Abgabe des Vorgangs wegen Nicht-Zuständigkeit" is available
-    And I check if reason for deletion as "Löschen von Dublikaten" is available
+    And I check if reason for deletion as "Löschen von Duplikaten" is available
     And I check if reason for deletion as "Anderer Grund" is available
     Then I click on No option in Confirm deletion popup
     Then I click on Delete button from case

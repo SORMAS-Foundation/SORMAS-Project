@@ -20,8 +20,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
 import org.sormas.e2etests.helpers.files.FilesHelper;
+import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
 import org.testng.asserts.SoftAssert;
 
 @Slf4j

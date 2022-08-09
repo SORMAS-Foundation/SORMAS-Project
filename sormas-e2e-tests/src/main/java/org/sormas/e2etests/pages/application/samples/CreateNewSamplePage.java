@@ -45,6 +45,10 @@ public class CreateNewSamplePage {
       By.cssSelector(".popupContent [id='labDetails']");
   public static final By RECEIVED_OPTION_BUTTON = By.cssSelector("[id='received'] label");
   public static final By DATE_SAMPLE_RECEIVED = By.cssSelector("[id='receivedDate'] input");
+  public static final By DATE_SAMPLE_SEND_INPUT_FIELD =
+      By.xpath("//div[@id='shipmentDate' and not(contains(@class, 'v-required'))]");
+  public static final By DATE_SAMPLE_RECEIVED_INPUT_FIELD =
+      By.xpath("//div[@id='receivedDate' and not(contains(@class, 'v-required'))]");
   public static final By SPECIMEN_CONDITION_COMBOBOX =
       By.cssSelector("[id='specimenCondition'] [class='v-filterselect-button']");
   public static final By SPECIMEN_CONDITION_INPUT =
@@ -70,6 +74,7 @@ public class CreateNewSamplePage {
   public static final By TEST_RESULTS_COMMENT_AREA_INPUT = By.cssSelector("[id='testResultText']");
   public static final By SAVE_SAMPLE_BUTTON =
       By.cssSelector("[class='popupContent'] [id='commit']");
+  public static final By SAVE_EDIT_SAMPLE_BUTTON = By.cssSelector("[id='commit']");
   public static final By PATHOGEN_TEST_RESULT_COMBOBOX =
       By.cssSelector("[id='testResult'] [class='v-filterselect-button']");
   public static final By PATHOGEN_TEST_RESULT_INPUT = By.cssSelector("[id='testResult'] input");
@@ -139,4 +144,8 @@ public class CreateNewSamplePage {
       By.xpath("//div[contains(text(),'Date and time of result:')]");
   public static final By UPDATE_CASE_DISEASE_VARIANT =
       By.xpath("//*[text()='Update case disease variant']");
+  public static final By DATE_AND_TIME_OF_RESULTS_INPUT_FIELD =
+      By.xpath("//*[@id='testDateTime_date' and not(contains(@class, 'v-required'))]");
+  public static final By GENERIC_ERROR_POPUP =
+      By.xpath("//div[@class='v-Notification error v-Notification-error']");
 }

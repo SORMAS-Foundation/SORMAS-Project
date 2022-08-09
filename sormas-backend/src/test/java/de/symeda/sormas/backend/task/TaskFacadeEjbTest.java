@@ -452,7 +452,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		user.setDistrict(null);
 		user.setCommunity(null);
 		user.setHealthFacility(null);
-		getUserFacade().saveUser(user);
+		getUserFacade().saveUser(user, false);
 		UserDto userCaseOfficer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.CASE_OFFICER));
 		loginWith(user);
 

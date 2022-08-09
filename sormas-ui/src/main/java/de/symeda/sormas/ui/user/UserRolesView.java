@@ -76,12 +76,10 @@ public class UserRolesView extends AbstractUserView {
 
 		addComponent(gridLayout);
 
-		//DELETE remained things after the old export 4882
 		Button exportUserRightsButton = ButtonHelper.createIconButton(Captions.exportUserRoles, VaadinIcons.DOWNLOAD, null, ValoTheme.BUTTON_PRIMARY);
 
 		new FileDownloader(new StreamResource(() -> new DownloadUtil.DelayedInputStream((out) -> {
 			try {
-				// String documentPath = FacadeProvider.getUserRightsFacade().generateUserRightsDocument();
 				String documentPath = FacadeProvider.getUserRoleFacade().generateUserRolesDocument();
 				IOUtils.copy(Files.newInputStream(new File(documentPath).toPath()), out);
 			} catch (IOException e) {

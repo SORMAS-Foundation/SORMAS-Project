@@ -68,7 +68,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 			"One",
 			creator.getUserRoleReference(DefaultUserRole.HOSPITAL_INFORMANT));
 		informant1.setAssociatedOfficer(officer.toReference());
-		getUserFacade().saveUser(informant1);
+		getUserFacade().saveUser(informant1, false);
 
 		informant2 = creator.createUser(
 			rdcf.region.getUuid(),
@@ -78,7 +78,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 			"Two",
 			creator.getUserRoleReference(DefaultUserRole.HOSPITAL_INFORMANT));
 		informant2.setAssociatedOfficer(officer.toReference());
-		getUserFacade().saveUser(informant2);
+		getUserFacade().saveUser(informant2, false);
 
 	}
 
@@ -265,6 +265,13 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(6, indexListRegionGrouping.get(0).getNewCases());
 		Assert.assertEquals(13, indexListRegionGrouping.get(0).getDeaths());
 		Assert.assertNull(indexListRegionGrouping.get(0).getReportingUser());
+
+		criteria.setAggregateReportGroupingLevel(null);
+		List<AggregateCaseCountDto> indexListNullGrouping = getAggregateReportFacade().getIndexList(criteria);
+		Assert.assertEquals(1, indexListNullGrouping.size());
+		Assert.assertEquals(6, indexListNullGrouping.get(0).getNewCases());
+		Assert.assertEquals(13, indexListNullGrouping.get(0).getDeaths());
+		Assert.assertNull(indexListNullGrouping.get(0).getReportingUser());
 
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.DISTRICT);
 		createAggregateReport(4, 4, 4, rdcf.region, rdcf.district, null, null);

@@ -125,7 +125,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		user.getUserRoles().add(creator.getUserRoleReference(DefaultUserRole.ADMIN));
 		user.getUserRoles().add(creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
-		FacadeProvider.getUserFacade().saveUser(user);
+		FacadeProvider.getUserFacade().saveUser(user, false);
 	}
 
 	private void initH2Functions() {

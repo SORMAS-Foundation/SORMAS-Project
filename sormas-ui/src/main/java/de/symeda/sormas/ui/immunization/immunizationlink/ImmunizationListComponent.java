@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.immunization.immunizationlink;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -12,15 +13,15 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class ImmunizationListComponent extends SideComponent {
 
-	public ImmunizationListComponent(ImmunizationListCriteria immunizationListCriteria, Consumer<Runnable> actionCallback) {
+	public ImmunizationListComponent(Supplier<ImmunizationListCriteria> criteriaSupplier, Consumer<Runnable> actionCallback) {
 		super(I18nProperties.getString(Strings.entityImmunization), actionCallback);
 
-		addCreateButton(
-			I18nProperties.getCaption(Captions.immunizationNewImmunization),
-			() -> ControllerProvider.getImmunizationController().create(immunizationListCriteria.getPerson(), immunizationListCriteria.getDisease()),
-			UserRight.IMMUNIZATION_CREATE);
+		addCreateButton(I18nProperties.getCaption(Captions.immunizationNewImmunization), () -> {
+			ImmunizationListCriteria immunizationListCriteria = criteriaSupplier.get();
+			ControllerProvider.getImmunizationController().create(immunizationListCriteria.getPerson(), immunizationListCriteria.getDisease());
+		}, UserRight.IMMUNIZATION_CREATE);
 
-		ImmunizationList immunizationList = new ImmunizationList(immunizationListCriteria);
+		ImmunizationList immunizationList = new ImmunizationList(criteriaSupplier.get());
 		addComponent(immunizationList);
 		immunizationList.reload();
 	}

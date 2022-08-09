@@ -175,7 +175,7 @@ public class UserController {
 	}
 
 	private void saveUser(UserDto user) {
-		FacadeProvider.getUserFacade().saveUser(user);
+		FacadeProvider.getUserFacade().saveUser(user, false);
 		refreshView();
 	}
 
@@ -194,7 +194,7 @@ public class UserController {
 			public void onCommit() {
 				if (!createForm.getFieldGroup().isModified()) {
 					UserDto dto = createForm.getValue();
-					dto = FacadeProvider.getUserFacade().saveUser(dto);
+					dto = FacadeProvider.getUserFacade().saveUser(dto, false);
 					refreshView();
 					makeInitialPassword(dto.getUuid(), dto.getUserEmail());
 				}
@@ -322,7 +322,7 @@ public class UserController {
 		component.addCommitListener(() -> {
 			if (!form.getFieldGroup().isModified()) {
 				UserDto changedUser = form.getValue();
-				FacadeProvider.getUserFacade().saveUser(changedUser);
+				FacadeProvider.getUserFacade().saveUser(changedUser, true);
 				I18nProperties.setUserLanguage(changedUser.getLanguage());
 				FacadeProvider.getI18nFacade().setUserLanguage(changedUser.getLanguage());
 				Page.getCurrent().reload();
