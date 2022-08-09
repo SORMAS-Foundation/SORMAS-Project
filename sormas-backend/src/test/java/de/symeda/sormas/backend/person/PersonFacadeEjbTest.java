@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.utils.DataHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -66,6 +65,7 @@ import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
@@ -1125,5 +1125,4 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
 		assertFalse(isAssociated);
 	}
-
 }
