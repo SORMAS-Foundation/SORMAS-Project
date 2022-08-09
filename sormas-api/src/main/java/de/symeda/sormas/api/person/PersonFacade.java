@@ -19,6 +19,7 @@ import java.util.List;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -101,4 +102,6 @@ public interface PersonFacade {
 	PersonDto getByContext(PersonContext context, String contextUuid);
 
     boolean isEnrolledInExternalJournal(String uuid);
+
+	boolean isPersonAssociatedWithNotDeletedEntities(@NotNull String uuid);
 }
