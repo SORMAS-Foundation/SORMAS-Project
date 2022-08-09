@@ -209,9 +209,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		cbDisease.addValueChangeListener(e -> {
 			disease = (Disease) e.getProperty().getValue();
 			setVisible(disease != null, ContactDto.CONTACT_PROXIMITY);
-			if (isConfiguredServer("de") && disease == Disease.CORONAVIRUS) {
-				contactCategory.setVisible(disease != null);
-				contactProximityDetails.setVisible(disease != null);
+			if (isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
+				setVisible(disease == Disease.CORONAVIRUS, ContactDto.CONTACT_CATEGORY, ContactDto.CONTACT_PROXIMITY_DETAILS);
 			}
 			updateContactProximity();
 		});
