@@ -11876,13 +11876,34 @@ DO $$
                     INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
                     SELECT rec.id, rights.r, tstzrange(now(), null)
                     FROM (VALUES ('EVENTPARTICIPANT_VIEW')) as rights (r)
-                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                    WHERE NOT EXISTS(SELECT uur.userrole_id
+                                     FROM userroles_userrights uur
+                                     where uur.userrole_id = rec.id and uur.userright = rights.r);
                 END IF;
 
             END LOOP;
     END;
 $$ LANGUAGE plpgsql;
 
-INSERT INTO schema_version (version_number, comment) VALUES (484, '#5058 Implement user right dependencies - add more missing required rights for default roles');
+INSERT INTO schema_version (version_number, comment)
+VALUES (484, '#5058 Implement user right dependencies - add more missing required rights for default roles');
+
+-- 2022-08-09 Hide citizenship and country of birth #9598
+
+UPDATE person
+SET citizenship_id = NULL
+WHERE citizenship_id IS NOT NULL;
+UPDATE person
+SET birthcountry_id = NULL
+WHERE birthcountry_id IS NOT NULL;
+UPDATE person_history
+SET citizenship_id = NULL
+WHERE citizenship_id IS NOT NULL;
+UPDATE person_history
+SET birthcountry_id = NULL
+WHERE birthcountry_id IS NOT NULL;
+
+INSERT INTO schema_version (version_number, comment)
+VALUES (485, 'Hide citizenship and country of birth #9598');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
