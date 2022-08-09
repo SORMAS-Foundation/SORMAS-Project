@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.validation.constraints.NotNull;
@@ -348,7 +349,12 @@ public class ArchitectureTest {
 		} else {
 			// TODO - add exceptedMethods handling when needed
 
-			MethodsShouldConjunction methodChecks = methods.should().beAnnotatedWith(RightsAllowed.class).orShould().beAnnotatedWith(PermitAll.class);
+			MethodsShouldConjunction methodChecks = methods.should()
+				.beAnnotatedWith(RightsAllowed.class)
+				.orShould()
+				.beAnnotatedWith(PermitAll.class)
+				.orShould()
+				.beAnnotatedWith(DenyAll.class);
 
 			if (authMode == AuthMode.CLASS_AND_METHODS) {
 				methodChecks = methodChecks.orShould()

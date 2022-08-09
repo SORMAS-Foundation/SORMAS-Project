@@ -208,7 +208,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	@Override
 	@Transactional(rollbackOn = {
 		Exception.class })
-	@DenyAll()
+	@DenyAll
 	public void share(List<String> entityUuids, @Valid SormasToSormasOptionsDto options) throws SormasToSormasException {
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)) {
 			sendShareRequest(entityUuids, options);
