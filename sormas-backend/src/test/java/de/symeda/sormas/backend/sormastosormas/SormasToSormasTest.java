@@ -117,6 +117,24 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 		return source;
 	}
 
+	protected SormasToSormasOriginInfoDto createAndSaveSormasToSormasOriginInfo(
+		String serverId,
+		boolean ownershipHandedOver,
+		Consumer<SormasToSormasOriginInfoDto> extraConfig) {
+		SormasToSormasOriginInfoDto originInfo = new SormasToSormasOriginInfoDto();
+		originInfo.setUuid(DataHelper.createUuid());
+		originInfo.setSenderName("Test Name");
+		originInfo.setSenderEmail("test@email.com");
+		originInfo.setOrganizationId(serverId);
+		originInfo.setOwnershipHandedOver(ownershipHandedOver);
+
+		if (extraConfig != null) {
+			extraConfig.accept(originInfo);
+		}
+
+		return getSormasToSormasOriginInfoFacade().saveOriginInfo(originInfo);
+	}
+
 	protected PersonDto createPersonDto(TestDataCreator.RDCF rdcf) {
 		PersonDto person = PersonDto.build();
 		person.setFirstName("John");

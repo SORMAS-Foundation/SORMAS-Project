@@ -100,6 +100,13 @@ public class SormasToSormasOriginInfoFacadeEjb implements SormasToSormasOriginIn
 		return target;
 	}
 
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_SHARE,
+		UserRight._SORMAS_TO_SORMAS_CLIENT })
+	public boolean exists(String uuid) {
+		return originInfoService.exists(uuid);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class SormasToSormasOriginInfoFacadeEjbLocal extends SormasToSormasOriginInfoFacadeEjb {

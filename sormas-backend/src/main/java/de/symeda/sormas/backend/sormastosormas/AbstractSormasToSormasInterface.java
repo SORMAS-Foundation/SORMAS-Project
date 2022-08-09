@@ -103,6 +103,7 @@ import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.entities.SyncDataDto;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
@@ -132,6 +133,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	private UserService userService;
 	@Inject
 	private SormasToSormasRestClient sormasToSormasRestClient;
+	@EJB
+	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 	@EJB
 	private SormasToSormasOriginInfoService originInfoService;
 	@EJB
@@ -378,7 +381,10 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		throws SormasToSormasException, SormasToSormasValidationException {
 		decryptAndPersist(
 			encryptedData,
-			(data, existingData) -> processedEntitiesPersister.persistSharedData(data, data.getOriginInfo(), existingData));
+			(data, existingData) -> {
+				originInfoFacade.saveOriginInfo(data.getOriginInfo());
+				processedEntitiesPersister.persistSharedData(data, data.getOriginInfo(), existingData);
+			});
 
 		return sormasToSormasEncryptionEjb
 			.signAndEncrypt(new ShareRequestAcceptData(null, configFacadeEjb.getS2SConfig().getDistrictExternalId()), encryptedData.getSenderId());
