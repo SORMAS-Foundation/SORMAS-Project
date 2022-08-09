@@ -11766,7 +11766,7 @@ $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (482, 'Turn OccupationType into a customizable enum #5015', true);
 
--- 2022-08-04 #5058 Implement user right dependencies - add missing required rights foor default roles
+-- 2022-08-04 #5058 Implement user right dependencies - add missing required rights for default roles
 
 DO $$
     DECLARE rec RECORD;
@@ -11828,6 +11828,61 @@ DO $$
     END;
 $$ LANGUAGE plpgsql;
 
-INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (483, '#5058 Implement user right dependencies - add missing required rights foor default roles', false);
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (483, '#5058 Implement user right dependencies - add missing required rights for default roles', false);
+
+-- 2022-08-04 #5058 Implement user right dependencies - add more missing required rights for default roles
+
+DO $$
+    DECLARE rec RECORD;
+    BEGIN
+        FOR rec IN SELECT id FROM userroles
+            LOOP
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'CASE_DELETE')) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('THERAPY_VIEW'), ('CLINICAL_COURSE_VIEW')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT')) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('EVENTPARTICIPANT_EDIT')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'CASE_IMPORT')) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('CASE_VIEW')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'CONTACT_IMPORT')) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('CONTACT_VIEW')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'EVENT_IMPORT')) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('EVENT_VIEW')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+                IF ((SELECT exists(SELECT userrole_id FROM userroles_userrights where userrole_id = rec.id and userright = 'EVENTPARTICIPANT_IMPORT')) = true) THEN
+                    INSERT INTO userroles_userrights (userrole_id, userright, sys_period)
+                    SELECT rec.id, rights.r, tstzrange(now(), null)
+                    FROM (VALUES ('EVENTPARTICIPANT_VIEW')) as rights (r)
+                    WHERE NOT EXISTS(SELECT uur.userrole_id FROM userroles_userrights uur where uur.userrole_id = rec.id and uur.userright = rights.r);
+                END IF;
+
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+INSERT INTO schema_version (version_number, comment) VALUES (484, '#5058 Implement user right dependencies - add more missing required rights for default roles');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

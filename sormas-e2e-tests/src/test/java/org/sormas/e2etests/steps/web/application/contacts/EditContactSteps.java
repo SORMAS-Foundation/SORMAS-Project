@@ -818,7 +818,6 @@ public class EditContactSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(ALL_CHECKBOX);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_FOR_POPUP_WINDOWS);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
     When(
         "^I check if there are entities assigned to new created case from contact$",

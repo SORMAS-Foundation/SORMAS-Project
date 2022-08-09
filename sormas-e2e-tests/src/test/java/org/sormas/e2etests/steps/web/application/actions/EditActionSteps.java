@@ -27,9 +27,6 @@ import static org.sormas.e2etests.pages.application.configuration.DocumentTempla
 import static org.sormas.e2etests.steps.web.application.cases.CreateNewCaseSteps.userDirPath;
 
 import cucumber.api.java8.En;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
@@ -41,7 +38,6 @@ import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.steps.BaseSteps;
-import org.testng.Assert;
 
 public class EditActionSteps implements En {
 
@@ -84,8 +80,8 @@ public class EditActionSteps implements En {
     When(
         "I check if ([^\"]*) file is downloaded correctly from Event Action tab",
         (String filename) -> {
-            FilesHelper.waitForFileToDownload(filename, 50);
-            FilesHelper.deleteFile(filename);
+          FilesHelper.waitForFileToDownload(filename, 50);
+          FilesHelper.deleteFile(filename);
         });
     When(
         "I download last updated document file from Event Action tab",

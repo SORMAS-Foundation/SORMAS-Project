@@ -18,6 +18,7 @@ import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactFollowUpDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactLogic;
@@ -69,8 +70,8 @@ public class ContactFollowUpGrid extends FilteredGrid<ContactFollowUpDto, Contac
 
 		for (Column<ContactFollowUpDto, ?> column : getColumns()) {
 			final String columnId = column.getId();
-			final String i18nPrefix = columnId.equals(FollowUpDto.REPORT_DATE) ? FollowUpDto.I18N_PREFIX : ContactFollowUpDto.I18N_PREFIX;
-			column.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, columnId, column.getCaption()));
+			column.setCaption(
+				I18nProperties.findPrefixCaptionWithDefault(columnId, column.getCaption(), ContactDto.I18N_PREFIX, FollowUpDto.I18N_PREFIX));
 			if (!dateColumnIds.contains(columnId)) {
 				column.setStyleGenerator(FieldAccessColumnStyleGenerator.getDefault(getBeanType(), columnId));
 			}

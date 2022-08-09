@@ -290,49 +290,49 @@ public class CreateNewSampleSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
         });
 
-      When(
-              "I create a new pathogen test result with {string} as disease and {string} as a test type",
-              (String diseaseType, String testType) -> {
-                  sample = sampleService.buildPathogenTestResultTypeVerified(diseaseType, testType);
-                  selectTypeOfTest(sample.getTypeOfTest());
-                  selectTestedDisease(sample.getTestedDisease());
-                  selectTestResult(sample.getSampleTestResults());
-                  selectResultVerifiedByLabSupervisor(
-                          sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
-              });
+    When(
+        "I create a new pathogen test result with {string} as disease and {string} as a test type",
+        (String diseaseType, String testType) -> {
+          sample = sampleService.buildPathogenTestResultTypeVerified(diseaseType, testType);
+          selectTypeOfTest(sample.getTypeOfTest());
+          selectTestedDisease(sample.getTestedDisease());
+          selectTestResult(sample.getSampleTestResults());
+          selectResultVerifiedByLabSupervisor(
+              sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+        });
 
-      When(
-              "I create new sample with pathogen test with {string} as disease and {string} as type of test",
-              (String diseaseType, String typeOfTest) -> {
-                  sample =
-                          sampleService.buildGeneratedSampleWithTestResultForSelectedDiseaseAndTestType(
-                                  diseaseType, typeOfTest);
-                  selectPurposeOfSample(sample.getPurposeOfTheSample(), SAMPLE_PURPOSE_OPTIONS);
-                  fillDateOfCollection(sample.getDateOfCollection());
-                  selectSampleType(sample.getSampleType());
-                  webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST);
-                  selectTestedDisease(sample.getTestedDisease());
-                  selectTypeOfTest(sample.getTypeOfTest());
-                  selectTestResult(sample.getSampleTestResults());
-                  fillDateOfResult(sample.getDateOfResult(), Locale.ENGLISH);
-                  selectLaboratory(sample.getLaboratory());
-                  selectResultVerifiedByLabSupervisor(
-                          sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
-              });
+    When(
+        "I create new sample with pathogen test with {string} as disease and {string} as type of test",
+        (String diseaseType, String typeOfTest) -> {
+          sample =
+              sampleService.buildGeneratedSampleWithTestResultForSelectedDiseaseAndTestType(
+                  diseaseType, typeOfTest);
+          selectPurposeOfSample(sample.getPurposeOfTheSample(), SAMPLE_PURPOSE_OPTIONS);
+          fillDateOfCollection(sample.getDateOfCollection());
+          selectSampleType(sample.getSampleType());
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST);
+          selectTestedDisease(sample.getTestedDisease());
+          selectTypeOfTest(sample.getTypeOfTest());
+          selectTestResult(sample.getSampleTestResults());
+          fillDateOfResult(sample.getDateOfResult(), Locale.ENGLISH);
+          selectLaboratory(sample.getLaboratory());
+          selectResultVerifiedByLabSupervisor(
+              sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+        });
 
-      When(
-              "I set PCR RT PCR Test specification to {string} option",
-              (String option) -> {
-                  webDriverHelpers.selectFromCombobox(PCR_TEST_SPECIFICATION_COMBOBOX_DIV, option);
-              });
+    When(
+        "I set PCR RT PCR Test specification to {string} option",
+        (String option) -> {
+          webDriverHelpers.selectFromCombobox(PCR_TEST_SPECIFICATION_COMBOBOX_DIV, option);
+        });
 
-      When(
-              "I set Tested disease variant as {string}",
-              (String variant) -> {
-                  webDriverHelpers.selectFromCombobox(TESTED_DISEASE_VARIANT, variant);
-              });
+    When(
+        "I set Tested disease variant as {string}",
+        (String variant) -> {
+          webDriverHelpers.selectFromCombobox(TESTED_DISEASE_VARIANT, variant);
+        });
 
-      When(
+    When(
         "^I validate date and time is present on sample card$",
         () -> {
           String dateAndTimeVisible =
@@ -706,12 +706,12 @@ public class CreateNewSampleSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });
 
-      When(
-              "I confirm case with positive test result",
-              () -> {
-                  webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
-                  webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
-              });
+    When(
+        "I confirm case with positive test result",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
+        });
 
     When(
         "I confirm the Create case from event participant with positive test result",
@@ -875,7 +875,7 @@ public class CreateNewSampleSteps implements En {
 
   private void fillReceivedDate(LocalDate receivedDate) {
     webDriverHelpers.clearAndFillInWebElement(
-            DATE_SAMPLE_RECEIVED, DATE_FORMATTER.format(receivedDate));
+        DATE_SAMPLE_RECEIVED, DATE_FORMATTER.format(receivedDate));
   }
 
   public void selectLaboratoryName(String laboratoryName) {

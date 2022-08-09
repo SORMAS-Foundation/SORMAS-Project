@@ -2,7 +2,6 @@ package de.symeda.sormas.backend.externalmessage;
 
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
-import de.symeda.sormas.backend.caze.Case;
 import java.util.Date;
 import java.util.List;
 
@@ -32,6 +31,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SpecimenCondition;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.externalmessage.labmessage.TestReport;
 import de.symeda.sormas.backend.sample.Sample;
@@ -74,6 +74,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	public static final String REPORT_ID = "reportId";
 	public static final String SAMPLE_OVERALL_TEST_RESULT = "sampleOverallTestResult";
 	public static final String SAMPLE = "sample";
+	public static final String CAZE = "caze";
 	public static final String ASSIGNEE = "assignee";
 
 	private ExternalMessageType type;
@@ -206,10 +207,7 @@ public class ExternalMessage extends AbstractDomainObject {
 	}
 
 	@Type(type = "list-array")
-	@Column(
-			name = "reporterexternalids",
-			columnDefinition = "VARCHAR(255) ARRAY"
-	)
+	@Column(name = "reporterexternalids", columnDefinition = "VARCHAR(255) ARRAY")
 	public List<String> getReporterExternalIds() {
 		return reporterExternalIds;
 	}

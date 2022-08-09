@@ -1381,7 +1381,6 @@ public interface Captions {
 	String FollowUp_followUpUntil = "FollowUp.followUpUntil";
 	String FollowUp_person = "FollowUp.person";
 	String FollowUp_reportDate = "FollowUp.reportDate";
-	String FollowUp_uuid = "FollowUp.uuid";
 	String formatNumberOfVisitsFormat = "formatNumberOfVisitsFormat";
 	String formatNumberOfVisitsLongFormat = "formatNumberOfVisitsLongFormat";
 	String formatSimpleNumberFormat = "formatSimpleNumberFormat";
