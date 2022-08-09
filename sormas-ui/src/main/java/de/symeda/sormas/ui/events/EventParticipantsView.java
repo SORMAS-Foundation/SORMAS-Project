@@ -29,8 +29,6 @@ import java.util.stream.Collectors;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.navigator.Navigator;
-import com.vaadin.navigator.ViewBeforeLeaveEvent;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
@@ -407,18 +405,5 @@ public class EventParticipantsView extends AbstractEventView {
 			activeStatusButton
 				.setCaption(I18nProperties.getCaption(Captions.all) + LayoutUtil.spanCss(CssStyles.BADGE, String.valueOf(grid.getItemCount())));
 		}
-	}
-
-	@Override
-	public void beforeLeave(ViewBeforeLeaveEvent event) {
-		if (!((Navigator) event.getSource()).getStateParameterMap()
-			.keySet()
-			.iterator()
-			.next()
-			.contains(EVENTPARTICIPANTS + "/" + getEventRef().getUuid())) {
-			criteria.relevanceStatus(null);
-		}
-
-		super.beforeLeave(event);
 	}
 }
