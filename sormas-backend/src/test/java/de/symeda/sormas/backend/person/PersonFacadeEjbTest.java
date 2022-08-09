@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.utils.DataHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -1047,6 +1048,18 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		personIndexDtos = getPersonFacade().getIndexList(criteria, 0, 100, null);
 		assertEquals(1, personIndexDtos.size());
 		assertEquals(personWithDengue.getFirstName(), personIndexDtos.get(0).getFirstName());
+	}
+
+	@Test
+	public void testPersonAssociatedWithNullId() {
+		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(null);
+		assertFalse(isAssociated);
+	}
+
+	@Test
+	public void testPersonAssociatedWithUnexistingId() {
+		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(DataHelper.createUuid());
+		assertFalse(isAssociated);
 	}
 
 	@Test

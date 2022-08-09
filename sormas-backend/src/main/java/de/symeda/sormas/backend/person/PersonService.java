@@ -916,7 +916,6 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		ExternalDataUtil.updateExternalData(externalData, this::getByUuids, this::ensurePersisted);
 	}
 
-	//TODO info de aici
 	public Long getIdByUuid(@NotNull String uuid) {
 
 		if (uuid == null) {
@@ -1008,6 +1007,10 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	}
 
 	public boolean isPersonAssociatedWithNotDeletedEntities(@NotNull String uuid) {
+
+		if (uuid == null) {
+			return false;
+		}
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		ParameterExpression<String> uuidParam = cb.parameter(String.class, AbstractDomainObject.UUID);
