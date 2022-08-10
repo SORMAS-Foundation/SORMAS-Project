@@ -115,44 +115,49 @@ $v-table-border-width: 1px;
 }
 
 
-.highcharts-data-table table {
-    border-collapse: collapse;
-    border-spacing: 0;
-    background: white;
-    min-width: 25%;
-    margin-top: 10px;
-    font-family: sans-serif;
-    font-size: 0.9em;
-    
-     display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 99999999; /* Sit on top */
-  //padding-top: 100px; /* Location of the box */
-  left: 0;
-  top: 0;
- // width: 100%; /* Full width */
- // height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-  top: 50%; /* Center div to middle page */
-  left: 50%; /*  Center div to middle page */
-  margin-left: -100px; /*  Center div to middle page */
-  margin-right: -250px; /*  Center div to middle page */
-  
+.highcharts-data-table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	background: white;
+	min-width: 25%;
+	margin-top: 10%;
+	font-family: sans-serif;
+	font-size: 0.9em;
+	display: none;
+	position: fixed;
+	z-index: 100000000;
+	left: 0;
+	top: 0;
+	overflow: auto;
+	background-color: black;
+	background-color: rgba(0, 0, 0, 0.4);
+	margin-left: 50%;
 }
+
+[id^="highcharts-data-table-"]{
+	background-color: white;
+	width: 100%;
+}
+
+.highcharts-table-caption{
+	background-color: white;
+}
+
 
 .highcharts-data-table td,
 .highcharts-data-table th,
 .highcharts-data-table caption {
     border: 1px solid silver;
     padding: 0.5em;
-    background-color: white;
 }
 
 .highcharts-data-table tr:nth-child(even),
 .highcharts-data-table thead tr {
     background: #f8f8f8;
+}
+
+.highcharts-data-table tr {
+    cursor: pointer;
 }
 
 .highcharts-data-table tr:hover {
@@ -163,4 +168,12 @@ $v-table-border-width: 1px;
     border-bottom: none;
     font-size: 1.1em;
     font-weight: bold;
+}
+
+.highcharts-sort-ascending::after {
+    content: " ↓";
+}
+
+.highcharts-sort-descending::after {
+    content: " ↑";
 }

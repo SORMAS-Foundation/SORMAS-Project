@@ -211,8 +211,8 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 		this.dcode = dcode;
 	}
 
-	public int getCcode() {
-		return Integer.parseInt(ccode+"");
+	public Long getCcode() {
+		return ccode;//Integer.parseInt(ccode+"");
 	}
 
 	public void setCcode(Long ccode) {

@@ -87,7 +87,8 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 			CampaignFormDataIndexDto.COMMUNITY,
 			CampaignFormDataIndexDto.CCODE,
 			CampaignFormDataIndexDto.FORM_DATE,
-			CampaignFormDataIndexDto.FORM_TYPE);
+			CampaignFormDataIndexDto.FORM_TYPE
+			);
 		//getColumn(EDIT_BTN_ID).setWidth(40).setStyleGenerator(item -> CssStyles.GRID_CELL_LINK);
 
 		((Column<CampaignFormDataIndexDto, Date>) getColumn(CampaignFormDataIndexDto.FORM_DATE))
@@ -95,9 +96,10 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 		
 
 		for (Column<?, ?> column : getColumns()) {
-			column.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataIndexDto.I18N_PREFIX, column.getId(), column.getCaption())).setSortable(true);
+			column.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));//.setSortable(true);
 			column.setDescriptionGenerator(CampaignFormDataIndexDto -> column.getCaption()); //set the description of default columns #94-iyanuu
 			column.setSortable(true);
+			
 		}
 	}
 
@@ -114,7 +116,8 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 					query.getLimit(),
 					query.getSortOrders()
 						.stream()
-						.map(sortOrder -> new SortProperty(sortOrder.getSorted()))
+						//.map(sortOrder -> new SortProperty(sortOrder.getSorted()))
+						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
 						.collect(Collectors.toList()))
 				.stream(),
 			query -> (int) FacadeProvider.getCampaignFormDataFacade().count(query.getFilter().orElse(null)));
