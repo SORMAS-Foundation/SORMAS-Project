@@ -17,6 +17,7 @@ public class MSersDirectoryPage {
       By.xpath("//label[text()=\"Display only duplicate reports\"]");
   public static final By DELETE_ICON = By.xpath("(//div[@class=\"component-wrap\"]//div)[1]");
   public static final By EDIT_ICON = By.xpath("(//div[@class=\"component-wrap\"]//div)[1]");
+  public static final By DISEASE_COMBOBOX = By.cssSelector("#disease div");
 
   public static By getEditButtonByIndex(int idx) {
     return By.xpath(
