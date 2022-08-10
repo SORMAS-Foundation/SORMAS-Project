@@ -80,6 +80,7 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 			if(column.getCaption().equalsIgnoreCase("Name")) {
 				column.setCaption("Cluster");
 			}
+			//this is a bit hacky
 			if(column.getCaption().equalsIgnoreCase("External ID")) {
 				column.setCaption("CCode");
 			}
