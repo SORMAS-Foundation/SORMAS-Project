@@ -1785,6 +1785,7 @@ public class EditCaseSteps implements En {
     When(
         "^I click on the Cancel Follow-up button from Edit case page$",
         () -> webDriverHelpers.clickOnWebElementBySelector(CANCEL_FOLLOW_UP_BUTTON));
+
     Then(
         "^I check that Date of Follow-up Status Change and Responsible User are correctly displayed on Edit case page$",
         () -> {
@@ -2168,6 +2169,13 @@ public class EditCaseSteps implements En {
               actualImmunizationUUID,
               "Means of immunization is not equal");
           softly.assertAll();
+        });
+
+    And(
+        "I check elements order on page before General comment field in DE",
+        () -> {
+          Assert.assertTrue(
+              webDriverHelpers.isElementEnabled(SURVEILLANCE_OFFICER_FIELD_ABOVE_GENERAL_COMMENT));
         });
 
     When(
