@@ -294,7 +294,8 @@ public class CampaignDashboardDataProvider {
 						{
 							if (populationGroup.isPresent()) {
 								percentageDiagramData = FacadeProvider.getCampaignFormDataFacade()
-									.getDiagramDataByAgeGroup(
+										//check to be sure this works fine
+									.getDiagramDataByAgeGroupCard(
 										(CampaignDiagramSeries) populationGroup.get(),
 										campaignDashboardDiagramDto.getCampaignDiagramDefinitionDto().getCampaignDiagramSeries().get(0),
 										new CampaignDiagramCriteria(campaign, area, region, district, campaignJurisdictionLevelGroupBy));
