@@ -28,6 +28,9 @@ public class CreateNewUserPage {
   public static final By PHONE_INPUT = By.id("phone");
   public static final By COUNTRY_COMBOBOX = By.cssSelector(".v-window #country div");
   public static final By REGION_COMBOBOX = By.cssSelector(".v-window #region div");
+  public static final By SECOND_REGION_COMBOBOX =
+      By.xpath(
+          "//div[@tabindex='-1']/div/div/div/div[@location='region']//div[@id='region']/div[@class='v-filterselect-button']");
   public static final By DISTRICT_COMBOBOX = By.cssSelector(".v-window #district div");
   public static final By COMMUNITY_COMBOBOX = By.cssSelector("#community div");
   public static final By FACILITY_CATEGORY_COMBOBOX = By.cssSelector("#typeGroup div");
