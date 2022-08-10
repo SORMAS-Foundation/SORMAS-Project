@@ -125,6 +125,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.TOTAL_A
 import static org.sormas.e2etests.pages.application.events.EditEventPage.TYPE_OF_PLACE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.TYPE_OF_PLACE_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UNLINK_EVENT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.VACCINATION_STATUS_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.VERIFICATION_OF_AT_LEAST_TWO_INFECTED_OR_DISEASED_PERSONS_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.VERIFICATION_ON_MATERIALS_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.WATER_SAMPLE_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
@@ -773,6 +774,35 @@ public class EditEventSteps implements En {
         });
 
     When(
+        "I add a participant to the event in DE",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
+          webDriverHelpers.fillInWebElement(PARTICIPANT_FIRST_NAME_INPUT, faker.name().firstName());
+          webDriverHelpers.fillInWebElement(PARTICIPANT_LAST_NAME_INPUT, faker.name().lastName());
+          webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, GenderValues.getRandomGenderDE());
+          webDriverHelpers.selectFromCombobox(
+              PARTICIPANT_REGION_COMBOBOX, RegionsValues.VoreingestellteBundeslander.getName());
+          webDriverHelpers.selectFromCombobox(
+              PARTICIPANT_DISTRICT_COMBOBOX, DistrictsValues.VoreingestellterLandkreis.getName());
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP, 15)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_RADIO_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
+          }
+
+          person = collectPersonUuid();
+        });
+
+    Then(
+        "I set participant vaccination status to ([^\"]*)",
+        (String vaccinationStatus) -> {
+          webDriverHelpers.selectFromCombobox(VACCINATION_STATUS_COMBOBOX, vaccinationStatus);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
+        });
+
+    When(
         "I check that the value selected from Disease combobox is {string} on Edit Event page",
         (String disease) -> {
           String chosenDisease =
@@ -1066,8 +1096,8 @@ public class EditEventSteps implements En {
           String uuid =
               eventParticipantData.substring(
                   eventParticipantData.indexOf("(") + 1, eventParticipantData.indexOf(")"));
-         String filePath = uuid.toUpperCase() + "-" + name;
-         FilesHelper.waitForFileToDownload(filePath, 120);
+          String filePath = uuid.toUpperCase() + "-" + name;
+          FilesHelper.waitForFileToDownload(filePath, 120);
         });
     When(
         "I check if generated document for Event Participant based on {string} contains all required fields",
@@ -1177,7 +1207,7 @@ public class EditEventSteps implements En {
               eventParticipantData.substring(
                   eventParticipantData.indexOf("(") + 1, eventParticipantData.indexOf(")"));
           String filePath = uuid.toUpperCase() + "-" + name;
-            FilesHelper.deleteFile(filePath);
+          FilesHelper.deleteFile(filePath);
         });
     When(
         "^I create a new event group$",
@@ -1309,9 +1339,8 @@ public class EditEventSteps implements En {
         "I verify that the event document is downloaded and correctly named",
         () -> {
           String uuid = webDriverHelpers.getValueFromWebElement(EditEventPage.UUID_INPUT);
-          String filePath =  uuid.substring(0, 6).toUpperCase()
-                  + "-"
-                  + aEventHandout.getDocumentTemplate();
+          String filePath =
+              uuid.substring(0, 6).toUpperCase() + "-" + aEventHandout.getDocumentTemplate();
           FilesHelper.waitForFileToDownload(filePath, 120);
         });
     When(

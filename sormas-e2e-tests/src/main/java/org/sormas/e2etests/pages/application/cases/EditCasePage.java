@@ -296,6 +296,8 @@ public class EditCasePage {
       By.xpath(
           "//div[contains(@location,\"vaccinations\")]//div[contains(@id,\"edit-vaccination\")]");
   public static final By GENERAL_COMMENT_TEXT_AREA = By.id("additionalDetails");
+  public static final By VACCINATION_STATUS_COMBOBOX =
+      By.xpath("//div[@id='vaccinationStatus']/div");
 
   public static By getCaseIDPathByIndex(int index) {
     return By.xpath(String.format("//table/tbody/tr[%s]/td[1]/a", index));

@@ -52,6 +52,7 @@ import com.vaadin.v7.ui.TextField;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -307,12 +308,17 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		personContactDetailsField.setCaption(null);
 		personContactDetailsField.setPseudonymized(isPseudonymized);
 
-		addFields(
-			PersonDto.OCCUPATION_TYPE,
-			PersonDto.OCCUPATION_DETAILS,
-			PersonDto.ARMED_FORCES_RELATION_TYPE,
-			PersonDto.EDUCATION_TYPE,
-			PersonDto.EDUCATION_DETAILS);
+		ComboBox occupationTypeField = addField(PersonDto.OCCUPATION_TYPE, ComboBox.class);
+		TextField occupationTypeDetailsField = addField(PersonDto.OCCUPATION_DETAILS, TextField.class);
+		occupationTypeDetailsField.setVisible(false);
+		FieldHelper
+			.updateItems(occupationTypeField, FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.OCCUPATION_TYPE, null));
+		occupationTypeField.addValueChangeListener(e -> {
+			OccupationType occupationType = (OccupationType) e.getProperty().getValue();
+			occupationTypeDetailsField.setVisible(occupationType != null && occupationType.matchPropertyValue(OccupationType.HAS_DETAILS, true));
+		});
+
+		addFields(PersonDto.ARMED_FORCES_RELATION_TYPE, PersonDto.EDUCATION_TYPE, PersonDto.EDUCATION_DETAILS);
 
 		List<CountryReferenceDto> countries = FacadeProvider.getCountryFacade().getAllActiveAsReference();
 		addInfrastructureField(PersonDto.BIRTH_COUNTRY).addItems(countries);
@@ -357,7 +363,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, PersonDto.SEX);
 		setVisible(
 			false,
-			PersonDto.OCCUPATION_DETAILS,
 			PersonDto.DEATH_DATE,
 			PersonDto.DEATH_PLACE_TYPE,
 			PersonDto.DEATH_PLACE_DESCRIPTION,
@@ -430,10 +435,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		});
 
 		addFieldListeners(PersonDto.DEATH_DATE, e -> updateApproximateAge());
-		addFieldListeners(PersonDto.OCCUPATION_TYPE, e -> {
-			updateOccupationFieldCaptions();
-			toggleOccupationMetaFields();
-		});
 
 		addListenersToInfrastructureFields(
 			cbPlaceOfBirthRegion,
@@ -726,27 +727,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		approximateAgeTypeSelect.setReadOnly(true);
 	}
 
-	private void toggleOccupationMetaFields() {
-		OccupationType type = (OccupationType) ((AbstractSelect) getFieldGroup().getField(PersonDto.OCCUPATION_TYPE)).getValue();
-		if (type != null) {
-			switch (type) {
-			case BUSINESSMAN_WOMAN:
-			case TRANSPORTER:
-			case OTHER:
-				setVisible(true, PersonDto.OCCUPATION_DETAILS);
-				break;
-			case HEALTHCARE_WORKER:
-				setVisible(true, PersonDto.OCCUPATION_DETAILS);
-				break;
-			default:
-				setVisible(false, PersonDto.OCCUPATION_DETAILS);
-				break;
-			}
-		} else {
-			setVisible(false, PersonDto.OCCUPATION_DETAILS);
-		}
-	}
-
 	private void updateFacilityDetailsVisibility(TextField detailsField, FacilityReferenceDto facility) {
 		if (facility == null) {
 			detailsField.setVisible(false);
@@ -816,30 +796,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				if (isVisibleAllowed(causeOfDeathDetailsField)) {
 					causeOfDeathDetailsField.setVisible(true);
 				}
-			}
-		}
-	}
-
-	private void updateOccupationFieldCaptions() {
-		OccupationType type = (OccupationType) ((AbstractSelect) getFieldGroup().getField(PersonDto.OCCUPATION_TYPE)).getValue();
-		if (type != null) {
-			Field<?> od = getFieldGroup().getField(PersonDto.OCCUPATION_DETAILS);
-			switch (type) {
-			case BUSINESSMAN_WOMAN:
-				od.setCaption(I18nProperties.getCaption(getPropertyI18nPrefix() + ".business." + PersonDto.OCCUPATION_DETAILS));
-				break;
-			case TRANSPORTER:
-				od.setCaption(I18nProperties.getCaption(getPropertyI18nPrefix() + ".transporter." + PersonDto.OCCUPATION_DETAILS));
-				break;
-			case OTHER:
-				od.setCaption(I18nProperties.getCaption(getPropertyI18nPrefix() + ".other." + PersonDto.OCCUPATION_DETAILS));
-				break;
-			case HEALTHCARE_WORKER:
-				od.setCaption(I18nProperties.getCaption(getPropertyI18nPrefix() + ".healthcare." + PersonDto.OCCUPATION_DETAILS));
-				break;
-			default:
-				od.setCaption(I18nProperties.getCaption(getPropertyI18nPrefix() + "." + PersonDto.OCCUPATION_DETAILS));
-				break;
 			}
 		}
 	}

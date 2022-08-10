@@ -52,6 +52,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATI
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CASE_OR_EVENT_INFORMATION_CONTACT_TEXT_AREA;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.EXTERNAL_TOKEN_CONTACT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RELATIONSHIP_WITH_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
@@ -189,7 +190,7 @@ public class EditContactSteps implements En {
         (String name) -> {
           String uuid = apiState.getCreatedContact().getUuid();
           String pathToFile = uuid.substring(0, 6).toUpperCase() + "-" + name;
-            FilesHelper.waitForFileToDownload(pathToFile, 50);
+          FilesHelper.waitForFileToDownload(pathToFile, 50);
         });
     When(
         "I check if generated document for contact based on {string} contains all required fields",
@@ -714,7 +715,7 @@ public class EditContactSteps implements En {
         "I check if downloaded file is correct for {string} Quarantine Order in Edit Contact directory",
         (String name) -> {
           String uuid = apiState.getCreatedContact().getUuid();
-          String filePath =  uuid.substring(0, 6).toUpperCase() + "-" + name;
+          String filePath = uuid.substring(0, 6).toUpperCase() + "-" + name;
           FilesHelper.waitForFileToDownload(filePath, 50);
         });
     When(
@@ -817,7 +818,6 @@ public class EditContactSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(ALL_CHECKBOX);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_FOR_POPUP_WINDOWS);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
     When(
         "^I check if there are entities assigned to new created case from contact$",
@@ -1130,6 +1130,13 @@ public class EditContactSteps implements En {
               webDriverHelpers.isElementEnabled(CASE_OR_EVENT_INFORMATION_CONTACT_TEXT_AREA),
               "Case or event information text area is enabled");
           softly.assertAll();
+        });
+
+    And(
+        "I set contact vaccination status to ([^\"]*)",
+        (String vaccinationStatus) -> {
+          webDriverHelpers.selectFromCombobox(VACCINATION_STATUS_COMBOBOX, vaccinationStatus);
+          webDriverHelpers.clickOnWebElementBySelector(COMMIT_BUTTON);
         });
 
     And(

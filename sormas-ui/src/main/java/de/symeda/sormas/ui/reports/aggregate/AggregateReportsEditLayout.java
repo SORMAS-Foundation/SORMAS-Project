@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.vaadin.server.ErrorMessage;
@@ -209,6 +212,7 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		}
 
 		List<Disease> diseaseList = FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, null, false, true);
+		Map<Disease, Set<String>> diseasesWithReports = new HashMap<>();
 		diseaseMap = diseaseList.stream().collect(Collectors.toMap(Disease::toString, disease -> disease));
 		diseaseMap.values().forEach(disease -> {
 			List<String> ageGroups = FacadeProvider.getDiseaseConfigurationFacade().getAgeGroups(disease);
@@ -235,6 +239,8 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 				editForm.setDeaths(report.getDeaths());
 				editForms.add(editForm);
 				diseaseAgeGroupsWithoutReport.remove(new DiseaseAgeGroup(report.getDisease(), report.getAgeGroup()));
+				diseasesWithReports.putIfAbsent(report.getDisease(), new HashSet<>());
+				diseasesWithReports.get(report.getDisease()).add(report.getAgeGroup());
 				diseasesWithoutReport.remove(report.getDisease());
 			}
 		}
@@ -253,6 +259,20 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 			}
 		}
 
+		for (Disease disease : diseasesWithReports.keySet()) {
+
+			List<String> ageGroups = FacadeProvider.getDiseaseConfigurationFacade().getAgeGroups(disease);
+			if (ageGroups != null) {
+				int i = 0;
+				for (String ageGroup : ageGroups) {
+					if (!diseasesWithReports.get(disease).contains(ageGroup)) {
+						editForms.add(new AggregateReportEditForm(disease, ageGroup, i == 0));
+					}
+					i++;
+				}
+			}
+		}
+
 		Label legend = new Label(
 			String.format(
 				I18nProperties.getString(Strings.aggregateReportLegend),
@@ -265,11 +285,13 @@ public class AggregateReportsEditLayout extends VerticalLayout {
 		addComponent(legend);
 		legend.addStyleName(CssStyles.VSPACE_TOP_1);
 
-		editForms.stream()
+		editForms = editForms.stream()
 			.sorted(
 				Comparator.comparing(AggregateReportEditForm::getDisease, Comparator.nullsFirst(Comparator.comparing(Disease::toString)))
 					.thenComparing(AggregateReportEditForm::getAgeGroup, AgeGroupUtils.getComparator()))
-			.forEach(this::addComponent);
+			.collect(Collectors.toList());
+
+		editForms.forEach(this::addComponent);
 
 		if (!editForms.isEmpty()) {
 			editForms.get(0).addStyleName(CssStyles.VSPACE_TOP_1);

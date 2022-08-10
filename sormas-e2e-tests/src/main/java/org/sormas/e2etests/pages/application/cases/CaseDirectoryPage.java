@@ -188,6 +188,10 @@ public class CaseDirectoryPage {
   public static final By CREATE_NEW_PERSON_CHECKBOX_DE =
       By.xpath("//label[text()='Eine neue Person anlegen']");
 
+  public static By getVaccinationStatusCasesByText(String status) {
+    return By.xpath(String.format("//td[contains(text(), '%s')]", status));
+  }
+
   public static By getCheckboxByIndex(String idx) {
     return By.xpath(String.format("(//input[@type=\"checkbox\"])[%s]", idx));
   }

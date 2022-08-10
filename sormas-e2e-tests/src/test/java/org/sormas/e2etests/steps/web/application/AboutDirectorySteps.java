@@ -21,6 +21,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.files.FilesHelper;
+import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
 import org.testng.asserts.SoftAssert;
 
 @Slf4j
@@ -258,6 +259,14 @@ public class AboutDirectorySteps implements En {
               readXlsxFile(DATA_DICTIONARY_FILE_PATH, recordName, disease),
               disease + " exists in " + recordName);
           softly.assertAll();
+        });
+
+    Then(
+        "^I check that Surveillance Dashboard header is correctly displayed in Urdu language$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.isElementVisibleWithTimeout(
+              SurveillanceDashboardPage.SURVEILLANCE_DASHBOARD_NAME_URDU, 5);
         });
   }
 

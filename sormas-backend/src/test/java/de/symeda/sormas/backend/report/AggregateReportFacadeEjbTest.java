@@ -38,11 +38,17 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 
 public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 
 	TestDataCreator.RDCF rdcf;
 	FacilityDto facility2;
+	Region region2;
+	District district2;
 	private UserDto officer;
 	private UserDto informant1;
 	private UserDto informant2;
@@ -51,6 +57,8 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 	public void setupData() {
 
 		rdcf = creator.createRDCF("Region", "District", "Community", "Facility", "PointOfEntry");
+		region2 = creator.createRegion("Region2");
+		district2 = creator.createDistrict("District2", region2);
 		facility2 = creator.createFacility("Facility2", rdcf.region, rdcf.district, rdcf.community);
 		officer = creator.createUser(
 			rdcf.region.getUuid(),
@@ -68,7 +76,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 			"One",
 			creator.getUserRoleReference(DefaultUserRole.HOSPITAL_INFORMANT));
 		informant1.setAssociatedOfficer(officer.toReference());
-		getUserFacade().saveUser(informant1);
+		getUserFacade().saveUser(informant1, false);
 
 		informant2 = creator.createUser(
 			rdcf.region.getUuid(),
@@ -78,7 +86,7 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 			"Two",
 			creator.getUserRoleReference(DefaultUserRole.HOSPITAL_INFORMANT));
 		informant2.setAssociatedOfficer(officer.toReference());
-		getUserFacade().saveUser(informant2);
+		getUserFacade().saveUser(informant2, false);
 
 	}
 
@@ -227,6 +235,26 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testAggregateReportsSummarizeAllWhenNoGrouping() {
+		loginWith(informant1);
+
+		createAggregateReport(1, 1, 1, rdcf.region, rdcf.district, facility2.toReference(), null);
+		createAggregateReport(2, 2, 2, rdcf.region, rdcf.district, rdcf.facility, null);
+		createAggregateReport(3, 10, 3, rdcf.region, rdcf.district, null, rdcf.pointOfEntry);
+		createAggregateReport(11, 10, 3, RegionFacadeEjb.toReferenceDto(region2), DistrictFacadeEjb.toReferenceDto(district2), null, null);
+
+		AggregateReportCriteria criteria = new AggregateReportCriteria();
+		criteria.setShowZeroRows(false);
+		criteria.epiWeekFrom(DateHelper.getEpiWeek(new Date())).epiWeekTo(DateHelper.getEpiWeek(new Date()));
+
+		criteria.setAggregateReportGroupingLevel(null);
+		List<AggregateCaseCountDto> indexList = getAggregateReportFacade().getIndexList(criteria);
+		Assert.assertEquals(1, indexList.size());
+		Assert.assertEquals(17, indexList.get(0).getNewCases());
+		Assert.assertNull(indexList.get(0).getReportingUser());
+	}
+
+	@Test
 	public void testAggregateReportsSummarizeMultipleSubJurisdictions() {
 		loginWith(informant1);
 
@@ -265,6 +293,13 @@ public class AggregateReportFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(6, indexListRegionGrouping.get(0).getNewCases());
 		Assert.assertEquals(13, indexListRegionGrouping.get(0).getDeaths());
 		Assert.assertNull(indexListRegionGrouping.get(0).getReportingUser());
+
+		criteria.setAggregateReportGroupingLevel(null);
+		List<AggregateCaseCountDto> indexListNullGrouping = getAggregateReportFacade().getIndexList(criteria);
+		Assert.assertEquals(1, indexListNullGrouping.size());
+		Assert.assertEquals(6, indexListNullGrouping.get(0).getNewCases());
+		Assert.assertEquals(13, indexListNullGrouping.get(0).getDeaths());
+		Assert.assertNull(indexListNullGrouping.get(0).getReportingUser());
 
 		criteria.setAggregateReportGroupingLevel(AggregateReportGroupingLevel.DISTRICT);
 		createAggregateReport(4, 4, 4, rdcf.region, rdcf.district, null, null);
