@@ -393,14 +393,7 @@ public class CreateNewUserSteps implements En {
           for (String temp : roles) {
             selectUserRole(temp);
             if (temp.equals("Clinician")) {
-              switch (jurisdiction) {
-                case "Bayern":
-                  selectSecondRegion("Bayern");
-                  break;
-                case "Saarland":
-                  selectSecondRegion("Saarland");
-                  break;
-              }
+              selectSecondRegion(jurisdiction);
             }
           }
 

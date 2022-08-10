@@ -540,8 +540,6 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
-
-          TimeUnit.SECONDS.sleep(2);
         });
 
     When("I choose {string} as a disease", (String disease) -> fillDisease(disease));
