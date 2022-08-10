@@ -1461,6 +1461,18 @@ Feature: Case end to end tests
     Then I click on Merge Duplicates on Case directory for DE
     And I check if message about long loading times appear for DE
 
+  @tmsLink=SORDEV-10241 @env_de
+  Scenario: Hide Reception dates of paper form
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    Then I navigate to the last created case via the url
+    And I check elements order on page before General comment field in DE
+
     @tmsLink=SORDEV-10361 @env_main
     Scenario: Test Hide "buried" within Person present condition for Covid-19 for Cases
       Given I log in as a Admin User

@@ -11885,6 +11885,12 @@ $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (484, '#5058 Implement user right dependencies - add more missing required rights for default roles');
 
+-- 2022-08-10 S2S_deactivate share parameter 'share associated contacts' (for cases) #9146 - remove disabled feature messages
+ALTER TABLE sormastosormassharerequest DROP COLUMN shareassociatedcontactsdisabled;
+ALTER TABLE sormastosormassharerequest_history DROP COLUMN shareassociatedcontactsdisabled;
+
+INSERT INTO schema_version (version_number, comment) VALUES (485, 'S2S_deactivate share parameter ''share associated contacts'' (for cases) #9146 - remove disabled feature messages');
+
 -- 2022-08-09 Hide citizenship and country of birth #9598
 
 UPDATE person SET citizenship_id = NULL WHERE citizenship_id IS NOT NULL;
@@ -11892,6 +11898,6 @@ UPDATE person SET birthcountry_id = NULL WHERE birthcountry_id IS NOT NULL;
 UPDATE person_history SET citizenship_id = NULL WHERE citizenship_id IS NOT NULL;
 UPDATE person_history SET birthcountry_id = NULL WHERE birthcountry_id IS NOT NULL;
 
-INSERT INTO schema_version (version_number, comment) VALUES (485, 'Hide citizenship and country of birth #9598');
+INSERT INTO schema_version (version_number, comment) VALUES (486, 'Hide citizenship and country of birth #9598');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

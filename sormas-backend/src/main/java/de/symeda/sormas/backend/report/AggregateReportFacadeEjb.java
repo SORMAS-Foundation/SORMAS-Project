@@ -194,10 +194,10 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 				root.get(AggregateReport.EPI_WEEK),
 				root.get(AggregateReport.AGE_GROUP)));
 
-		final AggregateReportGroupingLevel groupingLevel = criteria != null && criteria.getAggregateReportGroupingLevel() != null
-			? criteria.getAggregateReportGroupingLevel()
-			: AggregateReportGroupingLevel.REGION;
+		final AggregateReportGroupingLevel groupingLevel =
+			criteria != null && criteria.getAggregateReportGroupingLevel() != null ? criteria.getAggregateReportGroupingLevel() : null;
 
+		if (groupingLevel != null) {
 			if (groupingLevel.equals(AggregateReportGroupingLevel.REGION)) {
 				filter = CriteriaBuilderHelper.and(
 					cb,
@@ -223,26 +223,27 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 			if (groupingLevel.equals(AggregateReportGroupingLevel.POINT_OF_ENTRY)) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.isNotNull(root.get(AggregateReport.POINT_OF_ENTRY))));
 			}
+		}
 
-			Join<AggregateReport, Region> regionJoin = root.join(AggregateReport.REGION, JoinType.LEFT);
-			List<Path<Object>> regionPath = Arrays.asList(regionJoin.get(Region.NAME), regionJoin.get(Region.ID));
-			expressions.addAll(regionPath);
-			selectionList.addAll(regionPath);
+		Join<AggregateReport, Region> regionJoin = root.join(AggregateReport.REGION, JoinType.LEFT);
+		List<Path<Object>> regionPath = Arrays.asList(regionJoin.get(Region.NAME), regionJoin.get(Region.ID));
+		expressions.addAll(regionPath);
+		selectionList.addAll(regionPath);
 
-			Join<AggregateReport, District> districtJoin = root.join(AggregateReport.DISTRICT, JoinType.LEFT);
-			List<Path<Object>> districtPath = Arrays.asList(districtJoin.get(District.NAME), districtJoin.get(District.ID));
-			expressions.addAll(districtPath);
-			selectionList.addAll(districtPath);
+		Join<AggregateReport, District> districtJoin = root.join(AggregateReport.DISTRICT, JoinType.LEFT);
+		List<Path<Object>> districtPath = Arrays.asList(districtJoin.get(District.NAME), districtJoin.get(District.ID));
+		expressions.addAll(districtPath);
+		selectionList.addAll(districtPath);
 
-			Join<AggregateReport, Facility> facilityJoin = root.join(AggregateReport.HEALTH_FACILITY, JoinType.LEFT);
-			List<Path<Object>> facilityPath = Arrays.asList(facilityJoin.get(Facility.NAME), facilityJoin.get(Facility.ID));
-			expressions.addAll(facilityPath);
-			selectionList.addAll(facilityPath);
+		Join<AggregateReport, Facility> facilityJoin = root.join(AggregateReport.HEALTH_FACILITY, JoinType.LEFT);
+		List<Path<Object>> facilityPath = Arrays.asList(facilityJoin.get(Facility.NAME), facilityJoin.get(Facility.ID));
+		expressions.addAll(facilityPath);
+		selectionList.addAll(facilityPath);
 
-			Join<AggregateReport, PointOfEntry> pointOfEntryJoin = root.join(AggregateReport.POINT_OF_ENTRY, JoinType.LEFT);
-			List<Path<Object>> pointOfEntryPath = Arrays.asList(pointOfEntryJoin.get(PointOfEntry.NAME), pointOfEntryJoin.get(PointOfEntry.ID));
-			expressions.addAll(pointOfEntryPath);
-			selectionList.addAll(pointOfEntryPath);
+		Join<AggregateReport, PointOfEntry> pointOfEntryJoin = root.join(AggregateReport.POINT_OF_ENTRY, JoinType.LEFT);
+		List<Path<Object>> pointOfEntryPath = Arrays.asList(pointOfEntryJoin.get(PointOfEntry.NAME), pointOfEntryJoin.get(PointOfEntry.ID));
+		expressions.addAll(pointOfEntryPath);
+		selectionList.addAll(pointOfEntryPath);
 
 		selectionList.addAll(
 			Arrays.asList(
@@ -369,7 +370,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	}
 
 	private List<AggregateCaseCountDto> summarizeAggregateData(
-		final AggregateReportGroupingLevel groupingLevel,
+		final AggregateReportGroupingLevel finalGroupingLevel,
 		List<AggregateCaseCountDto> queryResult) {
 		final List<AggregateCaseCountDto> resultList = new ArrayList<>();
 		final Map<AggregateCaseCountDto, List<AggregateCaseCountDto>> reportsToBeSummed = new HashMap<>();
@@ -378,7 +379,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		for (AggregateCaseCountDto dto : queryResult) {
 
 			// Would be faster to sort the query results by jurisdiction and only check the last resultList entry for similarity instead of always going through the whole list.
-			final Optional<AggregateCaseCountDto> optionalDto = resultList.stream().filter(a -> dto.similar(a, groupingLevel)).findAny();
+			final Optional<AggregateCaseCountDto> optionalDto = resultList.stream().filter(a -> dto.similar(a, finalGroupingLevel)).findAny();
 			if (optionalDto.isPresent()) {
 				final AggregateCaseCountDto similar = optionalDto.get();
 				if (dto.hasEqualJurisdiction(similar)) { // for exact same jurisdiction we use the most recent data
@@ -388,11 +389,11 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 						reportsToBeSummed.remove(similar);
 					}
 				} else {
-					if (dto.hasHigherJurisdictionLevel(similar)) { // higher jurisdiction level data exists we do not take into consideration lower level data
+					if (dto.hasHigherJurisdictionLevel(similar) && finalGroupingLevel != null) { // higher jurisdiction level data exists we do not take into consideration lower level data
 						resultList.remove(similar);
 						resultList.add(dto);
 						reportsToBeSummed.remove(similar);
-					} else if (dto.hasSameJurisdictionLevel(similar)) { // same jurisdiction level we sum data (for example data for 2 facilities in one district)
+					} else if (dto.hasSameJurisdictionLevel(similar) || finalGroupingLevel == null) { // same jurisdiction level we sum data (for example data for 2 facilities in one district)
 						if (reportsToBeSummed.containsKey(similar)) {
 							final List<AggregateCaseCountDto> sumList = reportsToBeSummed.get(similar);
 							final Optional<AggregateCaseCountDto> equalReportOptional =
@@ -437,6 +438,11 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 				&& aggregatedCaseCountDto.getHealthFacilityId() == null) {
 				aggregatedCaseCountDto.setDistrictId(null);
 				aggregatedCaseCountDto.setDistrictName(null);
+			} else if (aggregatedCaseCountDto.getRegionId() != null && aggregatedCaseCountDto.getDistrictId() == null) {
+				aggregatedCaseCountDto.setRegionId(null);
+				aggregatedCaseCountDto.setRegionName(null);
+				aggregatedCaseCountDto.setDistrictId(null);
+				aggregatedCaseCountDto.setDistrictName(null);
 			}
 			aggregatedCaseCountDto.setReportingUser(null);
 			resultList.add(aggregatedCaseCountDto);
@@ -445,7 +451,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		// remove reporting user from rows that have been summerized/aggregated
 		resultList.forEach(aggregatedCaseCountDto -> {
 			if (aggregatedCaseCountDto.getReportingUser() != null
-				&& AggregateReportGroupingLevel.getByJurisdictionLevel(aggregatedCaseCountDto.getJurisdictionlevel()) != groupingLevel) {
+				&& AggregateReportGroupingLevel.getByJurisdictionLevel(aggregatedCaseCountDto.getJurisdictionlevel()) != finalGroupingLevel) {
 				aggregatedCaseCountDto.setReportingUser(null);
 			}
 		});
