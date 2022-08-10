@@ -33,6 +33,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CON
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISCARD_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_PERSON_RADIOBUTTON_DE;
 
 import com.github.javafaker.Faker;
@@ -513,6 +514,23 @@ public class CreateNewContactSteps implements En {
           }
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
+        });
+
+    Then(
+        "^I check the wording of the last two entries for type of contact$",
+        () -> {
+          webDriverHelpers.checkWebElementContainsText(
+              TYPE_OF_CONTACT_MEDICAL_PERSONEL_SAME_ROOM_CHECKBOX,
+              "Medical personnel at safe proximity (> 2 meter) or with protective equipment");
+          webDriverHelpers.checkWebElementContainsText(
+              TYPE_OF_CONTACT_MEDICAL_PERSONEL_WITHOUT_DIRECT_CONTACT_CHECKBOX,
+              "Medical personnel at safe proximity (> 2 meter), without direct contact with secretions or excretions of the patient and without aerosol exposure");
+        });
+
+    When(
+        "^I click on Discard button in Create New Contact form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_TASK_BUTTON);
         });
   }
 

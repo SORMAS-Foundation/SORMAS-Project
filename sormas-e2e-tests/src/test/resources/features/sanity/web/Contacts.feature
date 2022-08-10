@@ -1146,3 +1146,16 @@ Feature: Contacts end to end tests
     And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab for UI created contact in Edit Contact directory for DE
     And I navigate to the last created contact via the url
     And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab in Edit Contact directory for DE
+
+  @tmsLink=SORDEV-12133 @env_de
+  Scenario: Test spelling correction on new contact creation form
+    Given I log in as a Admin User
+    When I click on the User Settings button from navbar
+    And I select "English" language from Combobox in User settings
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I choose "COVID-19" as a disease
+    Then I check the wording of the last two entries for type of contact
+    When I click on Discard button in Create New Contact form
+    And I click on the User Settings button from navbar
+    And I select "Deutsch" language from Combobox in User settings
