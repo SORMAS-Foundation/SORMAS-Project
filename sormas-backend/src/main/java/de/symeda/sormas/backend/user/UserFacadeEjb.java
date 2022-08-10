@@ -48,6 +48,7 @@ import org.apache.commons.beanutils.BeanUtils;
 
 import com.vladmihalcea.hibernate.type.util.SQLExtractor;
 
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
@@ -713,4 +714,21 @@ public class UserFacadeEjb implements UserFacade {
 	public static class UserFacadeEjbLocal extends UserFacadeEjb {
 
 	}
+
+	@Override
+	public String changePassword(String uuid, String pass) {
+		User user = userService.getByUserName(uuid);
+		if (user == null) {
+//			logger.warn("resetPassword() for unknown user '{}'", realmUserUuid);
+			return "not changed";
+		}
+
+		
+		user.setSeed(PasswordHelper.createPass(16));
+		user.setPassword(PasswordHelper.encodePassword(pass, user.getSeed()));
+		return "Changed";
+	}
+
+	
+	
 }

@@ -223,7 +223,7 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 		}
 	}
 
-	protected ComboBox addInfrastructureField(String fieldId) {
+	protected ComboBox addInfrastructureField(String fieldId) { 
 		//System.out.println("=========================== "+fieldId);
 		ComboBox field = addField(fieldId, ComboBox.class);
 		// Make sure that the ComboBox still contains a pre-selected inactive infrastructure entity
@@ -234,6 +234,7 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 				inactiveValue.setCaption(value.getCaption() + " (" + I18nProperties.getString(Strings.inactive) + ")");
 				field.addItem(inactiveValue);
 			}
+			
 		});
 		return field;
 	}

@@ -30,7 +30,6 @@ public class UserSettingsForm extends AbstractEditForm<UserDto> {
 
 	public UserSettingsForm() {
 		super(UserDto.class, UserDto.I18N_PREFIX);
-
 		setWidth(480, Unit.PIXELS);
 	}
 
@@ -49,7 +48,7 @@ public class UserSettingsForm extends AbstractEditForm<UserDto> {
 	}
 
 	@Override
-	protected String createHtmlLayout() {
+	protected String createHtmlLayout() { //password
 		return HTML_LAYOUT;
 	}
 

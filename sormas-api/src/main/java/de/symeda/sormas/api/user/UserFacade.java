@@ -40,6 +40,8 @@ public interface UserFacade {
 	boolean isLoginUnique(String uuid, String userName);
 
 	String resetPassword(String uuid);
+	
+	String changePassword(String uuid, String pass);
 
 	List<UserDto> getAllAfter(Date date); 
 

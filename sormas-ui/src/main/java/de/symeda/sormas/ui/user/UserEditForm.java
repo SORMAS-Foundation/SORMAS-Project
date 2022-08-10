@@ -129,6 +129,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         Label userEmailDesc = new Label(I18nProperties.getString(Strings.infoUserEmail));
         getContent().addComponent(userEmailDesc, USER_EMAIL_DESC_LOC);
         Label userPhoneDesc = new Label(I18nProperties.getString(Strings.infoUserPhoneNumber));
+        userPhoneDesc.addStyleName("unwrapLabel");
         getContent().addComponent(userPhoneDesc, USER_PHONE_DESC_LOC);
 
         ComboBox cbLanguage = addField(UserDto.LANGUAGE, ComboBox.class);
@@ -191,7 +192,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         // for informant
         ComboBox associatedOfficer = addField(UserDto.ASSOCIATED_OFFICER, ComboBox.class);
         ComboBox healthFacility = addInfrastructureField(UserDto.HEALTH_FACILITY);
-        ComboBox cbPointOfEntry = addInfrastructureField(UserDto.POINT_OF_ENTRY);
+        ComboBox cbPointOfEntry = addInfrastructureField(UserDto.POINT_OF_ENTRY); //white-space: nowrap;
         
         district.addValueChangeListener(e -> {
             FieldHelper.removeItems(healthFacility);

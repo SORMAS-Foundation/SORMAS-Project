@@ -30,6 +30,7 @@ public interface Captions {
 	String aboutTechnicalManual = "aboutTechnicalManual";
 	String aboutWhatsNew = "aboutWhatsNew";
 	String Action = "Action";
+	String Account = "account";
 	String Action_actionContext = "Action.actionContext";
 	String Action_actionMeasure = "Action.actionMeasure";
 	String Action_actionStatus = "Action.actionStatus";

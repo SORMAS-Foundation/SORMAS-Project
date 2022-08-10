@@ -544,6 +544,8 @@ public interface Strings {
 	String headingNewCases = "headingNewCases";
 	String headingNewEvents = "headingNewEvents";
 	String headingNewPassword = "headingNewPassword";
+	String headingChangePassword = "headingChangePassword";
+	String headingChangePasswordConfirm = "headingChangePasswordConfirm";
 	String headingNewSourceCases = "headingNewSourceCases";
 	String headingNewTestResults = "headingNewTestResults";
 	String headingNoCaseFound = "headingNoCaseFound";
@@ -901,6 +903,7 @@ public interface Strings {
 	String messageConvertEventParticipantToCaseDifferentDiseases = "messageConvertEventParticipantToCaseDifferentDiseases";
 	String messageConvertEventParticipantToCaseNoDisease = "messageConvertEventParticipantToCaseNoDisease";
 	String messageCopyPassword = "messageCopyPassword";
+	String messageChangePassword = "messageChangePassword";
 	String messageCountCasesAlreadyInEvent = "messageCountCasesAlreadyInEvent";
 	String messageCountCasesNotDeleted = "messageCountCasesNotDeleted";
 	String messageCountContactsAlreadyInEvent = "messageCountContactsAlreadyInEvent";

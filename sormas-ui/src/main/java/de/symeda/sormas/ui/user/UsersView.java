@@ -172,7 +172,7 @@ public class UsersView extends AbstractView {
 				ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
 			btnLeaveBulkEditMode.setVisible(ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class).isInEagerMode());
 
-			addHeaderComponent(btnLeaveBulkEditMode);
+			addHeaderComponent(btnLeaveBulkEditMode); 
 
 			btnEnterBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(true);

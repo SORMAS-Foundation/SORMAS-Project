@@ -84,7 +84,7 @@ public final class I18nProperties {
 			language = getDefaultLanguage();
 		}
 
-		userLanguage.set(language);
+		userLanguage.set(language); //Should write an expression that checks the value of user language and sets the styling of the body for RTL in Pashto and Dari
 
 		return language;
 	}

@@ -42,6 +42,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.dashboard.surveillance.SurveillanceDashboardView;
 import de.symeda.sormas.ui.login.LoginHelper;
+import de.symeda.sormas.ui.user.UserAccountView;
 import de.symeda.sormas.ui.user.UserSettingsForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -181,6 +182,18 @@ public class Menu extends CssLayout {
 		window.setContent(component);
 		UI.getCurrent().addWindow(window);
 	}
+	
+	private void showUserAccountPopup() {
+		Window window = VaadinUiUtil.createPopupWindow();
+		window.setCaption(I18nProperties.getString(Strings.headingUserSettings));
+		window.setModal(true);
+
+		CommitDiscardWrapperComponent<UserAccountView> component = ControllerProvider.getUserController()
+				.getUserAccountSettingsComponent(() -> window.close());
+
+		window.setContent(component);
+		UI.getCurrent().addWindow(window);
+	}
 
 	/**
 	 * Register a pre-created view instance in the navigation menu and in the
@@ -233,6 +246,16 @@ public class Menu extends CssLayout {
 
 		Button button = ButtonHelper.createIconButtonWithCaption(name, caption, icon,
 				event -> showSettingsPopup());
+		button.setPrimaryStyleName(ValoTheme.MENU_ITEM);
+
+		menuItemsLayout.addComponent(button);
+		viewButtons.put(name, button);
+	}
+	
+	public void createAccountViewButton(final String name, String caption, Resource icon) {
+
+		Button button = ButtonHelper.createIconButtonWithCaption(name, caption, icon,
+				event -> showUserAccountPopup());
 		button.setPrimaryStyleName(ValoTheme.MENU_ITEM);
 
 		menuItemsLayout.addComponent(button);
