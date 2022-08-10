@@ -193,7 +193,7 @@ public class UserRoleNotificationCheckboxSet extends CustomField<UserRoleDto.Not
 
 			HorizontalLayout spacer = new HorizontalLayout();
 			addComponent(spacer);
-			setExpandRatio(spacer, 0.1f);
+			setExpandRatio(spacer, 0.01f);
 
 			checkboxes.add(left);
 
@@ -208,7 +208,7 @@ public class UserRoleNotificationCheckboxSet extends CustomField<UserRoleDto.Not
 			}
 
 			addComponent(rightComponent);
-			setExpandRatio(rightComponent, 0.45f);
+			setExpandRatio(rightComponent, 0.54f);
 		}
 
 		public void checkAll() {
