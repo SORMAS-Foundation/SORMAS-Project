@@ -11885,4 +11885,10 @@ $$ LANGUAGE plpgsql;
 
 INSERT INTO schema_version (version_number, comment) VALUES (484, '#5058 Implement user right dependencies - add more missing required rights for default roles');
 
+-- 2022-08-10 S2S_deactivate share parameter 'share associated contacts' (for cases) #9146 - remove disabled feature messages
+ALTER TABLE sormastosormassharerequest DROP COLUMN shareassociatedcontactsdisabled;
+ALTER TABLE sormastosormassharerequest_history DROP COLUMN shareassociatedcontactsdisabled;
+
+INSERT INTO schema_version (version_number, comment) VALUES (485, 'S2S_deactivate share parameter ''share associated contacts'' (for cases) #9146 - remove disabled feature messages');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
