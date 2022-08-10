@@ -286,7 +286,18 @@ public class CampaignStatisticsService {
 			.append(CampaignFormElement.TYPE)
 			.append("') = '")
 			.append(CampaignFormElementType.NUMBER.toString())
-			.append("' THEN sum(cast_to_int(jsonData->>'")
+			.append("' OR ")
+			.append("(jsonMeta ->> '")
+			.append(CampaignFormElement.TYPE)
+			.append("') = '")
+			.append(CampaignFormElementType.DECIMAL.toString())
+			.append("' OR ")
+			.append("(jsonMeta ->> '")
+			.append(CampaignFormElement.TYPE)
+			.append("') = '")
+			.append(CampaignFormElementType.RANGE.toString())
+			//.append("' OR ")
+			.append("'  THEN sum(cast_to_int(jsonData->>'")
 			.append(CampaignFormDataEntry.VALUE)
 			.append("', 0))")
 			
@@ -329,6 +340,8 @@ public class CampaignStatisticsService {
 			*/	
 			
 			.append(" END as sumValue");
+		
+		System.out.println("))))))))))))))))))))))))))))))))))))))))))))))))))))) "+jsonQueryExpression);
 		return jsonQueryExpression.toString();
 	}
 	

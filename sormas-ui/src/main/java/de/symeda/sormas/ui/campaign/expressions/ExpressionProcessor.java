@@ -59,7 +59,7 @@ public class ExpressionProcessor {
 		final Map<String, Field<?>> fields = campaignFormBuilder.getFields();
 		final List<CampaignFormElement> formElements = campaignFormBuilder.getFormElements();
 		formElements.stream()
-			.filter(formElement -> formElement.getExpression() == null)
+			//.filter(formElement -> formElement.getExpression() == null)
 			.filter(formElement -> fields.get(formElement.getId()) != null)
 			.forEach(formElement -> {
 				fields.get(formElement.getId()).addValueChangeListener((Property.ValueChangeListener) valueChangeEvent -> checkExpression());
@@ -101,7 +101,7 @@ public class ExpressionProcessor {
 				//final Object valx = Precision.round((double) value, 3);
 				final List <String> opt = null;
 				
-				System.out.println(value + "  +++++   "+ expression.getExpressionString() +"  +++++  "+expression.getValue(context));
+				System.out.println(value + "  +++ range? "+e.getType().toString().equals("range")+"++   "+ expression.getExpressionString() +"  +++++  "+expression.getValue(context));
 				
 				if(e.getType().toString().equals("range")) {
 					
@@ -110,33 +110,45 @@ public class ExpressionProcessor {
 						campaignFormBuilder
 						.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 								CampaignFormElementType.fromString(e.getType()),
-								null,
+								"0.0",
 								null);
+						//return;
 					} else {
 
 						campaignFormBuilder
 						.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 								CampaignFormElementType.fromString(e.getType()),
-								value,
+								value.toString().endsWith(".0") ? value.toString().replace(".0", "") : value,
 								null);
+						//return;
 					}
 					
 					
 				
 						
-					}
-				
-					
-					
-				
-				if(valueType.isAssignableFrom(Double.class)) {
-				//	System.out.println(Double.isFinite((double) value) +" = "+ value);
+					} else if(valueType.isAssignableFrom(Double.class)) {
+					System.out.println("yes double detected "+Double.isFinite((double) value) +" = "+ value);
 				campaignFormBuilder
 					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 							CampaignFormElementType.fromString(e.getType()),
-							!Double.isFinite((double) value) ? 0.0 : Precision.round((double) value, 2),
+							!Double.isFinite((double) value) ? 0 : value.toString().endsWith(".0") ? value.toString().replace(".0", "") : Precision.round((double) value, 2),
 									null);
-				} 
+			//	return;
+				} else if(valueType.isAssignableFrom(Boolean.class)) {
+					campaignFormBuilder
+					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
+							CampaignFormElementType.fromString(e.getType()), value,
+									null);
+				//	return;
+				//	
+				} else {
+					
+					campaignFormBuilder
+					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
+							CampaignFormElementType.fromString(e.getType()), value,
+									null);
+					
+				}
 			} catch (SpelEvaluationException evaluationException) {
 				//LOG.error("Error evaluating expression: {} / {}", evaluationException.getMessageCode(), evaluationException.getMessage());
 			}

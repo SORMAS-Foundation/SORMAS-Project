@@ -22,6 +22,7 @@ public class CampaignFormElement implements Serializable {
 	public static final String EXPRESSION = "expression";
 	public static final String MAX = "max";
 	public static final String MIN = "min";
+	public static final String ERRORMESSAGE = "errormessage";
 
 	private static final long serialVersionUID = 5553496750859734167L;
 
@@ -63,6 +64,7 @@ public class CampaignFormElement implements Serializable {
 	private String[] dependingOnValues;
 	private boolean important;
 	private boolean warnonerror;
+	private String errormessage;
 
 	public String getType() {
 		return type;
@@ -172,6 +174,17 @@ public class CampaignFormElement implements Serializable {
 	public void setWarnonerror(boolean warnonerror) {
 		this.warnonerror = warnonerror;
 	}
+	
+	
+	
+
+	public String getErrormessage() {
+		return errormessage;
+	}
+
+	public void setErrormessage(String errormessage) {
+		this.errormessage = errormessage;
+	}
 
 	/**
 	 * Needed. Otherwise hibernate will persist whenever loading, because hibernate
@@ -192,12 +205,13 @@ public class CampaignFormElement implements Serializable {
 				&& Arrays.equals(constraints, that.constraints)
 				&& Objects.equals(dependingOn, that.dependingOn)
 				&& Arrays.equals(dependingOnValues, that.dependingOnValues)
-				&& Objects.equals(warnonerror, that.warnonerror);
+				&& Objects.equals(warnonerror, that.warnonerror)
+				&& Objects.equals(errormessage, that.errormessage);
 	}
 
 	@Override
 	public int hashCode() {
-		int result = Objects.hash(type, id, caption, expression, dependingOn, important, warnonerror);
+		int result = Objects.hash(type, id, caption, expression, dependingOn, important, warnonerror, errormessage);
 		result = 31 * result + Arrays.hashCode(styles);
 	//	result = 31 * result + Arrays.hashCode(options);
 		result = 31 * result + Arrays.hashCode(constraints);

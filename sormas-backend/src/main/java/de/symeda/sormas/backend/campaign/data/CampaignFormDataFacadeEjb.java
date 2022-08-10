@@ -296,7 +296,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	public List<CampaignFormDataIndexDto> getIndexList(CampaignFormDataCriteria criteria, Integer first, Integer max,
 			List<SortProperty> sortProperties) {
 
-		//System.out.println("sdddddddddddddfdsyu876456uiuytrertyuyttyukldsssssssssssssssss formValues");
+	//	System.out.println(sortProperties.size()+"sdddddddddddddfdsyu876456uiuytrertyuyttyukldsssssssssssssssss formValues"+sortProperties.get(1));
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CampaignFormDataIndexDto> cq = cb.createQuery(CampaignFormDataIndexDto.class);
@@ -348,7 +348,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					expression = regionJoin.get(Region.NAME);
 					break;
 				case CampaignFormDataIndexDto.PCODE:
-					expression = areaJoin.get(Region.EXTERNAL_ID);
+					expression = regionJoin.get(Region.EXTERNAL_ID);
 					break;
 				case CampaignFormDataIndexDto.AREA:
 					expression = areaJoin.get(Area.NAME);
@@ -360,13 +360,13 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					expression = districtJoin.get(District.NAME);
 					break;
 				case CampaignFormDataIndexDto.DCODE:
-					expression = areaJoin.get(District.EXTERNAL_ID);
+					expression = districtJoin.get(District.EXTERNAL_ID);
 					break;
 				case CampaignFormDataIndexDto.COMMUNITY:
 					expression = communityJoin.get(Community.NAME);
 					break;
 				case CampaignFormDataIndexDto.CCODE:
-					expression = areaJoin.get(Community.EXTERNAL_ID);
+					expression = communityJoin.get(Community.EXTERNAL_ID);
 					break;
 				case CampaignFormDataIndexDto.FORM_TYPE:
 					expression = campaignFormMetaJoin.get(CampaignFormMeta.FORM_TYPE);
@@ -381,7 +381,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			cq.orderBy(cb.desc(root.get(CampaignFormData.CHANGE_DATE)));
 		}
 
-		//System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf  " + SQLExtractor.from(em.createQuery(cq)));
+	//	System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf  " + SQLExtractor.from(em.createQuery(cq)));
 		return QueryHelper.getResultList(em, cq, first, max);
 	}
 
@@ -451,7 +451,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			areas.forEach(areaItem -> {
 				Integer population = populationDataFacadeEjb.getAreaPopulation(areaItem.getUuid(),
 						diagramSeriesTotal.getPopulationGroup());
-				System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>> "+population);
+			//	System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>> "+population);
 				if (population == 0) {
 					resultData.add(new CampaignDiagramDataDto(areaItem.getName(), 0, areaItem.getUuid(),
 							areaItem.getName(), diagramSeries.getFieldId(), diagramSeries.getFormId(), false));
@@ -566,7 +566,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 				Integer population = populationDataFacadeEjb.getAreaPopulationParent(areaItem.getUuid(),
 						diagramSeriesTotal.getPopulationGroup());
 				
-			//	System.out.println(">>>>>>>>>>>>>>>YEAH>>>>>>>>>>>> "+population);
+		//		System.out.println(diagramSeriesTotal.getPopulationGroup()+">>>>>>>>>>>>>>>YEAH - population = "+population);
 				
 				if (population == 0) {
 					resultData.add(new CampaignDiagramDataDto(areaItem.getName(), 0, areaItem.getUuid(),
@@ -662,7 +662,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					district.getCaption(), diagramSeries.getFieldId(), diagramSeries.getFormId(), true));
 		}
 		
-		//System.out.println("dddddddddddddddddddddd"+resultData);
+	//	System.out.println("dddddddddddddddddddddd"+resultData);
 		return resultData;
 	}
 
@@ -827,7 +827,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 			groupByBuilder.append(jurisdictionGrouping);
 
-			System.out.println("getDataDiagram "+selectBuilder.toString() + " FROM " + CampaignFormData.TABLE_NAME +" "+ joinBuilder +" "+ whereBuilder +" "+ groupByBuilder);
+		//	System.out.println("getDataDiagram "+selectBuilder.toString() + " FROM " + CampaignFormData.TABLE_NAME +" "+ joinBuilder +" "+ whereBuilder +" "+ groupByBuilder);
 			
 			// +selectBuilder.toString() + " FROM " + CampaignFormData.TABLE_NAME +
 			// joinBuilder

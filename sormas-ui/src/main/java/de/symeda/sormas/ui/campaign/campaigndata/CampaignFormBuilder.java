@@ -251,7 +251,7 @@ public class CampaignFormBuilder {
 
 				Label field = new Label(get18nCaption(formElement.getId(), formElement.getCaption()));
 				field.setId(formElement.getId());
-				prepareComponent(field, formElement.getId(), formElement.getCaption(), type, styles, true);
+				prepareComponent(field, formElement.getId(), formElement.getCaption(), type, styles, true, null);
 
 				vertical.addComponent(field);//, (currentCol + 1), currentLayout.getRows() - 1,
 						//(currentCol + 1) + (occupiedColumns - 1), currentLayout.getRows() - 1);
@@ -274,7 +274,7 @@ public class CampaignFormBuilder {
 				//}
 
 				Field<?> field = createField(formElement.getId(), formElement.getCaption(), type, styles,
-						optionsValues, formElement.isWarnonerror());
+						optionsValues, formElement.isWarnonerror(), formElement.getErrormessage());
 
 				setFieldValue(field, type, value, optionsValues);
 				field.setId(formElement.getId());
@@ -315,7 +315,7 @@ public class CampaignFormBuilder {
 
 	@SuppressWarnings("unchecked")
 	private <T extends Field<?>> T createField(String fieldId, String caption, CampaignFormElementType type,
-			List<CampaignFormElementStyle> styles, Map optionz, boolean isOnError) {
+			List<CampaignFormElementStyle> styles, Map optionz, boolean isOnError, String errormsg) {
 		SormasFieldGroupFieldFactory fieldFactory = new SormasFieldGroupFieldFactory(new FieldVisibilityCheckers(),
 				UiFieldAccessCheckers.getNoop());
 
@@ -365,15 +365,15 @@ public class CampaignFormBuilder {
 			field = null;
 		}
 
-		prepareComponent((AbstractComponent) field, fieldId, caption, type, styles, isOnError);
+		prepareComponent((AbstractComponent) field, fieldId, caption, type, styles, isOnError, errormsg);
 		return field;
 	}
 
 	@SuppressWarnings("deprecation")
 	private <T extends AbstractComponent> void prepareComponent(T field, String fieldId, String caption,
-			CampaignFormElementType type, List<CampaignFormElementStyle> styles, boolean isOnError) {
+			CampaignFormElementType type, List<CampaignFormElementStyle> styles, boolean isOnError, String errormsg) {
 		
-		//System.out.println(fieldId+" ddddddddddddddddddddddddddddddddd "+isOnError); 
+		System.out.println(fieldId+" ddddddddddddddddddddddddddddddddd "+errormsg); 
 		CampaignFormElementOptions constrainsVal = new CampaignFormElementOptions();
 
 		Styles cssStyles = Page.getCurrent().getStyles();
@@ -397,19 +397,26 @@ public class CampaignFormBuilder {
 			}
 
 			if (type == CampaignFormElementType.NUMBER) {
-				((TextField) field).addValidator(new NumberNumericValueValidator(
-						I18nProperties.getValidationError(Validations.onlyNumbersAllowed, caption)));
-			}
-			if (type == CampaignFormElementType.DECIMAL) {
 
 				((TextField) field).addValueChangeListener(e -> {
-					if (e.getProperty().getValue() != null && !e.getProperty().getValue().toString().contains(".")) {
-						e.getProperty().setValue(e.getProperty().getValue().toString() + ".0");
+					if (e.getProperty().getValue() != null && e.getProperty().getValue().toString().contains(".0")) {
+						e.getProperty().setValue(e.getProperty().getValue().toString().replace(".0", ""));
 					}
 				});
 
 				((TextField) field).addValidator(new NumberNumericValueValidator(
-						I18nProperties.getValidationError(Validations.onlyDecimalNumbersAllowed, caption), null, null,
+						I18nProperties.getValidationError(errormsg == null ? Validations.onlyNumbersAllowed : errormsg, caption)));
+			}
+			if (type == CampaignFormElementType.DECIMAL) {
+
+				/*((TextField) field).addValueChangeListener(e -> {
+					if (e.getProperty().getValue() != null && !e.getProperty().getValue().toString().contains(".")) {
+						e.getProperty().setValue(e.getProperty().getValue().toString() + ".0");
+					}
+				});*/
+
+				((TextField) field).addValidator(new NumberNumericValueValidator(
+						I18nProperties.getValidationError(errormsg == null ? Validations.onlyDecimalNumbersAllowed : errormsg, caption), null, null,
 						true));
 			}
 
@@ -453,15 +460,13 @@ public class CampaignFormBuilder {
 					
 					
 					((TextField) field).addValidator(
-							new RegexpValidator("^[1-9]\\d*$", "Number entered not in allowed range")); 
+							new RegexpValidator("^[1-9]\\d*$", errormsg.equals(null) ? "Number entered not in allowed range" : errormsg )); 
 					
 					
 				} else {
 					
 							
 						if (constrainsVal.getMin() != null || constrainsVal.getMax() != null) {
-							
-							System.out.println("_______________dddd________");
 							
 							
 							if (constrainsVal.getMin() == null) {
@@ -481,7 +486,7 @@ public class CampaignFormBuilder {
 						
 				
 					((TextField) field).addValidator(new NumberNumericValueValidator(
-							caption.toUpperCase()+": "+I18nProperties.getValidationError(validationMessageTag, validationMessageArgs),
+							caption.toUpperCase()+": " + I18nProperties.getValidationError(validationMessageTag, validationMessageArgs),
 							constrainsVal.getMin(), constrainsVal.getMax(), true, isOnError));
 					
 					
@@ -647,18 +652,12 @@ public class CampaignFormBuilder {
 					field.setEnabled(true);
 				} else if (value.equals(false)) {
 					field.setEnabled(false);
-					// Notification.show("Warning:", "Expression resulted in wrong value please
-					// check your data 4", Notification.TYPE_WARNING_MESSAGE);
 				}
 			}
 			;
 			if (value != null) {
 				String dxz = options.get(value);
-				//String dcxsq = value.toString().replace("[", "").replace("]", "").replaceAll(", ", ",");
-				//String strArraxyq[] = dcxsq.split(",");
-				//for (int i = 0; i < strArraxyq.length; i++) {
 					((ComboBox) field).select(value);
-				//}
 			}
 			;
 

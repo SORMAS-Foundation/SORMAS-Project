@@ -27,7 +27,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.area.AreaDto;
-import de.symeda.sormas.api.infrastructure.community.CommunityCriteria;
+import de.symeda.sormas.api.infrastructure.community.CommunityCriteriaNew;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -38,11 +38,11 @@ import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
-public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteria> {
+public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteriaNew> {
 
 	private static final long serialVersionUID = 3355810665696318673L;
 
-	public CommunitiesGrid(CommunityCriteria criteria) {
+	public CommunitiesGrid(CommunityCriteriaNew criteria) {
 
 		super(CommunityDto.class);
 		setSizeFull();
@@ -80,6 +80,7 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 			if(column.getCaption().equalsIgnoreCase("Name")) {
 				column.setCaption("Cluster");
 			}
+			//this is a bit hacky
 			if(column.getCaption().equalsIgnoreCase("External ID")) {
 				column.setCaption("CCode");
 			}
@@ -91,7 +92,7 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 	}
 
 	public void setLazyDataProvider() {
-		DataProvider<CommunityDto, CommunityCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+		DataProvider<CommunityDto, CommunityCriteriaNew> dataProvider = DataProvider.fromFilteringCallbacks(
 			query -> FacadeProvider.getCommunityFacade()
 				.getIndexList(
 					query.getFilter().orElse(null),
