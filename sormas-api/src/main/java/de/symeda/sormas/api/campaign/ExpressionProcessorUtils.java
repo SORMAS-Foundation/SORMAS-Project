@@ -34,13 +34,15 @@ public class ExpressionProcessorUtils {
 	private static Object parseValue(Object value) {
 		if (value instanceof String) {
 			try {
-				return Integer.parseInt(value.toString());
+				return Double.parseDouble(value.toString());
 			} catch (NumberFormatException e) {
-				try {
-					return Double.parseDouble(value.toString());
-				} catch (NumberFormatException e1) {
+			//	try {
+				//	Integer.parseInt(value.toString())
+				//	return Double.parseDouble(value.toString());
+				//} catch (NumberFormatException e1) {
+				System.out.println("Value not parseable as double #####: "+value);
 					return value;
-				}
+				//}
 			}
 		}
 		return value;

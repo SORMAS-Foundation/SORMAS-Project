@@ -101,7 +101,7 @@ public class ExpressionProcessor {
 				//final Object valx = Precision.round((double) value, 3);
 				final List <String> opt = null;
 				
-				System.out.println(value + "  +++++   "+ expression.getExpressionString() +"  +++++  "+expression.getValue(context));
+				System.out.println(value + "  +++ range? "+e.getType().toString().equals("range")+"++   "+ expression.getExpressionString() +"  +++++  "+expression.getValue(context));
 				
 				if(e.getType().toString().equals("range")) {
 					
@@ -112,33 +112,37 @@ public class ExpressionProcessor {
 								CampaignFormElementType.fromString(e.getType()),
 								"0.0",
 								null);
+						//return;
 					} else {
 
 						campaignFormBuilder
 						.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 								CampaignFormElementType.fromString(e.getType()),
-								value,
+								value.toString().endsWith(".0") ? value.toString().replace(".0", "") : value,
 								null);
+						//return;
 					}
 					
 					
 				
 						
-					}
-				
-					
-					System.out.println("value type: "+valueType);
-				
-				if(valueType.isAssignableFrom(Double.class)) {
-				//	System.out.println(Double.isFinite((double) value) +" = "+ value);
+					} else if(valueType.isAssignableFrom(Double.class)) {
+					System.out.println("yes double detected "+Double.isFinite((double) value) +" = "+ value);
 				campaignFormBuilder
 					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 							CampaignFormElementType.fromString(e.getType()),
-							!Double.isFinite((double) value) ? 0.0 : Precision.round((double) value, 2),
+							!Double.isFinite((double) value) ? 0 : value.toString().endsWith(".0") ? value.toString().replace(".0", "") : Precision.round((double) value, 2),
 									null);
-				} 
-				
-				if(valueType.isAssignableFrom(Boolean.class)) {
+			//	return;
+				} else if(valueType.isAssignableFrom(Boolean.class)) {
+					campaignFormBuilder
+					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
+							CampaignFormElementType.fromString(e.getType()), value,
+									null);
+				//	return;
+				//	
+				} else {
+					
 					campaignFormBuilder
 					.setFieldValue(campaignFormBuilder.getFields().get(e.getId()), 
 							CampaignFormElementType.fromString(e.getType()), value,
