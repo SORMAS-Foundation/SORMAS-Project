@@ -58,8 +58,6 @@ public class SormasToSormasShareRequestDto extends EntityDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String responseComment;
 
-	private boolean shareAssociatedContactsDisabled;
-
 	public ShareRequestDataType getDataType() {
 		return dataType;
 	}
@@ -122,14 +120,6 @@ public class SormasToSormasShareRequestDto extends EntityDto {
 
 	public void setResponseComment(String responseComment) {
 		this.responseComment = responseComment;
-	}
-
-	public boolean isShareAssociatedContactsDisabled() {
-		return shareAssociatedContactsDisabled;
-	}
-
-	public void setShareAssociatedContactsDisabled(boolean shareAssociatedContactsDisabled) {
-		this.shareAssociatedContactsDisabled = shareAssociatedContactsDisabled;
 	}
 
 	public void setRejected(String comment) {
