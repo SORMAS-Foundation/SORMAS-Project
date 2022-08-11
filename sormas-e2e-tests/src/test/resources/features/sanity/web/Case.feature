@@ -1642,7 +1642,6 @@ Feature: Case end to end tests
     And I save the created sample
     And I check that text appearing in hover over Expected Follow-up is based on Symptoms collection date
 
-
   @tmsLink=SORDEV-5141 @env_main
   Scenario: Check extended disease properties classification
     Given I log in with National User
@@ -1731,3 +1730,16 @@ Feature: Case end to end tests
     And I create a new case with different place of stay and Point of entry as a Case origin
     And I check the point of entry and place of stay created data are correctly displayed on Edit case page
 
+  @tmsLink=SORQA-8483 @env_main
+  Scenario: Test Assigned to user list of task should consider related entities jurisdiction
+    Given I log in as a Admin User
+    And I click on the Users from navbar
+    And I click on the NEW USER button
+    And I create new user for test with "Bayern" jurisdiction and "Clinician,Surveillance Supervisor,Contact Supervisor" roles
+    And I click on the NEW USER button
+    And I create new user for test with "Saarland" jurisdiction and "Clinician,Surveillance Supervisor,Contact Supervisor" roles
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I create a new case with specific data and Bayern region
+    And I click on New Task from Case page
+    And I check that there is only user with Bayern region for task

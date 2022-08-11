@@ -444,7 +444,7 @@ public class CaseService {
   public Case buildEditGeneratedCase() {
     return Case.builder()
         .dateOfReport(LocalDate.now().minusDays(3))
-        .caseClassification("Confirmed case with unknown symptoms")
+        .caseClassification("CONFIRMED CASE")
         .clinicalConfirmation("Yes")
         .epidemiologicalConfirmation("Yes")
         .laboratoryDiagnosticConfirmation("Yes")
@@ -472,7 +472,7 @@ public class CaseService {
         .sequelae("NO")
         .bloodOrganTissueDonationInTheLast6Months("NO")
         .vaccinationStatusForThisDisease("Unvaccinated")
-        .responsibleSurveillanceOfficer("Surveillance OFFICER - Surveillance Officer")
+        .responsibleSurveillanceOfficer("Surveillance SUPERVISOR")
         .dateReceivedAtDistrictLevel(LocalDate.now().minusDays(1))
         .dateReceivedAtRegionLevel(LocalDate.now().minusDays(2))
         .dateReceivedAtNationalLevel(LocalDate.now().minusDays(3))

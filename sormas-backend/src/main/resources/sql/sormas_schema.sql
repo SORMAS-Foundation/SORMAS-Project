@@ -11891,8 +11891,17 @@ ALTER TABLE sormastosormassharerequest_history DROP COLUMN shareassociatedcontac
 
 INSERT INTO schema_version (version_number, comment) VALUES (485, 'S2S_deactivate share parameter ''share associated contacts'' (for cases) #9146 - remove disabled feature messages');
 
+-- 2022-08-09 Hide citizenship and country of birth #9598
+
+UPDATE person SET citizenship_id = NULL WHERE citizenship_id IS NOT NULL;
+UPDATE person SET birthcountry_id = NULL WHERE birthcountry_id IS NOT NULL;
+UPDATE person_history SET citizenship_id = NULL WHERE citizenship_id IS NOT NULL;
+UPDATE person_history SET birthcountry_id = NULL WHERE birthcountry_id IS NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (486, 'Hide citizenship and country of birth #9598');
+
 -- 2022-08-08 Automatic deletion for S2S share info, origin and requests #8010
 ALTER TABLE immunization_history DROP CONSTRAINT fk_immunization_history_sormastosormasorigininfo_id;
-INSERT INTO schema_version (version_number, comment) VALUES (486, 'Automatic deletion for S2S share info, origin and requests #8010');
+INSERT INTO schema_version (version_number, comment) VALUES (487, 'Automatic deletion for S2S share info, origin and requests #8010');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
