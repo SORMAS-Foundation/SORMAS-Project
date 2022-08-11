@@ -61,9 +61,8 @@ public class CaseShareDataBuilder
 	@Override
 	protected SormasToSormasCaseDto doBuildShareData(Case caze, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
 		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
-
 		PersonDto personDto = dataBuilderHelper.getPersonDto(caze.getPerson(), pseudonymizer, requestInfo);
-		CaseDataDto cazeDto = getCazeDto(caze, pseudonymizer);
+		CaseDataDto cazeDto = getDto(caze, pseudonymizer);
 
 		dataBuilderHelper.clearIgnoredProperties(cazeDto);
 
@@ -83,9 +82,10 @@ public class CaseShareDataBuilder
 		return getCasePreview(caze, pseudonymizer);
 	}
 
-	private CaseDataDto getCazeDto(Case caze, Pseudonymizer pseudonymizer) {
-		CaseDataDto cazeDto = caseFacade.convertToDto(caze, pseudonymizer);
+	@Override
+	protected CaseDataDto getDto(Case caze, Pseudonymizer pseudonymizer) {
 
+		CaseDataDto cazeDto = caseFacade.convertToDto(caze, pseudonymizer);
 		// reporting user is not set to null here as it would not pass the validation
 		// the receiver appears to set it to SORMAS2SORMAS Client anyway
 		cazeDto.setClassificationUser(null);

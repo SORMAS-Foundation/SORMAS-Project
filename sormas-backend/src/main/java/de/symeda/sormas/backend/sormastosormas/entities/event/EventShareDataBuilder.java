@@ -52,11 +52,8 @@ public class EventShareDataBuilder
 
 	@Override
 	protected SormasToSormasEventDto doBuildShareData(Event data, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
-		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo);
-
-		EventDto eventDto = getEventDto(data, pseudonymizer);
-
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
+		EventDto eventDto = getDto(data, pseudonymizer);
 		return new SormasToSormasEventDto(eventDto);
 	}
 
@@ -67,21 +64,18 @@ public class EventShareDataBuilder
 
 	@Override
 	public SormasToSormasEventPreview doBuildShareDataPreview(Event event, ShareRequestInfo requestInfo) {
-		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo);
-
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 		return getEventPreview(event, pseudonymizer);
 	}
 
-	private EventDto getEventDto(Event event, Pseudonymizer pseudonymizer) {
-		EventDto eventDto = eventFacade.convertToDto(event, pseudonymizer);
+	@Override
+	protected EventDto getDto(Event event, Pseudonymizer pseudonymizer) {
 
+		EventDto eventDto = eventFacade.convertToDto(event, pseudonymizer);
 		// reporting user is not set to null here as it would not pass the validation
 		// the receiver appears to set it to SORMAS2SORMAS Client anyway
 		eventDto.setSormasToSormasOriginInfo(null);
-
 		dataBuilderHelper.clearIgnoredProperties(eventDto);
-
 		return eventDto;
 	}
 
