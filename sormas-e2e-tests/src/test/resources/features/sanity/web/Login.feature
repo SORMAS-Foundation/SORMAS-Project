@@ -58,3 +58,16 @@ Feature: Login with different type of users
     And I click on the User Settings button from navbar
     Then I check that Surveillance Dashboard header is correctly displayed in Urdu language
     And I select "انگریزی" language from Combobox in User settings
+
+  @env_keycloak @LoginKeycloak
+  Scenario Outline: Login with <user> user on Keycloak Environment
+    Given I navigate to SORMAS login page
+    Then I log in as <user> in Keycloak enabled environment
+    Then I am logged in with name <user>
+    And I check that English word for User Settings is present in the left main menu
+    And I click on logout button on Keycloak enabled environment
+
+    Examples:
+      | user                      |
+      | National User             |
+      | Admin User                |

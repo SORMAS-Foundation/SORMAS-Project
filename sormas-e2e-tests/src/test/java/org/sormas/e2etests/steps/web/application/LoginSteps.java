@@ -22,6 +22,7 @@ import static org.sormas.e2etests.pages.application.NavBarPage.ACTION_CONFIRM_GD
 import static org.sormas.e2etests.pages.application.NavBarPage.ACTION_CONFIRM_GDPR_POPUP_DE;
 import static org.sormas.e2etests.pages.application.NavBarPage.DISCARD_USER_SETTINGS_BUTTON;
 import static org.sormas.e2etests.pages.application.NavBarPage.GDPR_CHECKBOX;
+import static org.sormas.e2etests.pages.application.NavBarPage.LOGOUT_KEYCLOAK_BUTTON;
 import static org.sormas.e2etests.pages.application.NavBarPage.USER_SETTINGS_LANGUAGE_COMBOBOX_TEXT;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.LOGOUT_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
@@ -104,7 +105,29 @@ public class LoginSteps implements En {
           }
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 50);
         });
-
+    Given(
+        "^I log in as ([^\"]*) in Keycloak enabled environment$",
+        (String userRole) -> {
+          webDriverHelpers.accessWebSite(runningConfiguration.getEnvironmentUrlForMarket(locale));
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
+          EnvUser user = runningConfiguration.getUserByRole(locale, userRole);
+          log.info("Filling username");
+          webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, user.getUsername());
+          log.info("Filling password");
+          webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, user.getPassword());
+          log.info("Clicking on login button");
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_KEYCLOAK_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
+          if (webDriverHelpers.isElementVisibleWithTimeout(GDPR_CHECKBOX, 10)) {
+            webDriverHelpers.clickOnWebElementBySelector(GDPR_CHECKBOX);
+            if (webDriverHelpers.isElementVisibleWithTimeout(ACTION_CONFIRM_GDPR_POPUP, 5)) {
+              webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_GDPR_POPUP);
+            } else {
+              webDriverHelpers.clickOnWebElementBySelector(ACTION_CONFIRM_GDPR_POPUP_DE);
+            }
+          }
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 50);
+        });
     When(
         "I check that German word for Configuration is present in the left main menu",
         () -> {
@@ -140,6 +163,12 @@ public class LoginSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(LOGOUT_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(LoginPage.LOGIN_BUTTON);
+        });
+    And(
+        "I click on logout button on Keycloak enabled environment",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(LOGOUT_KEYCLOAK_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(LoginPage.LOGIN_KEYCLOAK_BUTTON);
         });
   }
 }
