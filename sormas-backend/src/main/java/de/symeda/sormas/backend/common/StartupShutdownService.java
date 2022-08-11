@@ -886,6 +886,7 @@ public class StartupShutdownService {
 		Arrays.stream(DefaultUserRole.values()).forEach(role -> {
 			UserRole userRole = userRoleService.getByLinkedDefaultUserRole(role);
 			userRole.setCaption(I18nProperties.getEnumCaption(role));
+			userRole.setLinkedDefaultUserRole(role);
 			userRole.setPortHealthUser(role.isPortHealthUser());
 			userRole.setHasAssociatedDistrictUser(role.hasAssociatedDistrictUser());
 			userRole.setHasOptionalHealthFacility(DefaultUserRole.hasOptionalHealthFacility(Collections.singleton(role)));
