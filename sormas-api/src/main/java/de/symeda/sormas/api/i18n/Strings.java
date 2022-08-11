@@ -314,6 +314,7 @@ public interface Strings {
 	String errorSormasToSormasAcceptContactsWithoutCaseShared = "errorSormasToSormasAcceptContactsWithoutCaseShared";
 	String errorSormasToSormasCertNotGenerated = "errorSormasToSormasCertNotGenerated";
 	String errorSormasToSormasConnection = "errorSormasToSormasConnection";
+	String errorSormasToSormasDataMissing = "errorSormasToSormasDataMissing";
 	String errorSormasToSormasDecrypt = "errorSormasToSormasDecrypt";
 	String errorSormasToSormasDeleteFromExternalSurveillanceTool = "errorSormasToSormasDeleteFromExternalSurveillanceTool";
 	String errorSormasToSormasEncrypt = "errorSormasToSormasEncrypt";
