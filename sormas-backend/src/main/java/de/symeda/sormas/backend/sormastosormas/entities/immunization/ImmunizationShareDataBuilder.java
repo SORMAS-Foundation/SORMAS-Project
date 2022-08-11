@@ -56,7 +56,9 @@ public class ImmunizationShareDataBuilder
 			dataBuilderHelper.createPseudonymizer(requestInfo);
 
 		ImmunizationDto immunizationDto = immunizationFacade.convertToDto(immunization, pseudonymizer);
-		immunizationDto.setReportingUser(null);
+
+		// reporting user is not set to null here as it would not pass the validation
+		// the receiver appears to set it to SORMAS2SORMAS Client anyway
 		immunizationDto.setSormasToSormasOriginInfo(null);
 		dataBuilderHelper.clearIgnoredProperties(immunizationDto);
 
