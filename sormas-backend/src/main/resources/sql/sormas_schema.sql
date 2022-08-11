@@ -11446,6 +11446,8 @@ ALTER TABLE userroles ADD COLUMN porthealthuser boolean default false;
 ALTER TABLE userroles_history ADD COLUMN porthealthuser boolean default false;
 ALTER TABLE userroles ADD COLUMN jurisdictionlevel varchar(255);
 ALTER TABLE userroles_history ADD COLUMN jurisdictionlevel varchar(255);
+ALTER TABLE userroles ADD COLUMN linkeddefaultuserrole varchar(255);
+ALTER TABLE userroles_history ADD COLUMN linkeddefaultuserrole varchar(255);
 
 INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'ADMIN');
 INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'NATIONAL_USER');
@@ -11899,5 +11901,26 @@ UPDATE person_history SET citizenship_id = NULL WHERE citizenship_id IS NOT NULL
 UPDATE person_history SET birthcountry_id = NULL WHERE birthcountry_id IS NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (486, 'Hide citizenship and country of birth #9598');
+
+-- 2022-08-11 User roles should have optional link to default user role #9645
+
+CREATE OR REPLACE FUNCTION add_column(in_statement TEXT, in_table TEXT, in_column TEXT, in_schema TEXT DEFAULT 'public') RETURNS BOOLEAN AS $_$
+BEGIN
+    PERFORM * FROM information_schema.columns WHERE table_name = in_table AND column_name = in_column AND table_schema = in_schema;
+    IF FOUND THEN
+        RETURN FALSE;
+    ELSE
+        EXECUTE in_statement;
+        RETURN TRUE;
+    END IF;
+END
+$_$ LANGUAGE plpgsql VOLATILE;
+
+DO $$ BEGIN
+   PERFORM add_column('ALTER TABLE userroles ADD COLUMN linkeddefaultuserrole varchar(255)', 'userroles', 'linkeddefaultuserrole');
+   PERFORM add_column('ALTER TABLE userroles_history ADD COLUMN linkeddefaultuserrole varchar(255)', 'userroles_history', 'linkeddefaultuserrole');
+END $$;
+
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (487, 'User roles should have optional link to default user role #9645', true);
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

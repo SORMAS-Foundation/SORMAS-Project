@@ -60,6 +60,7 @@ public class UserRole extends AbstractDomainObject {
 	public static final String DESCRIPTION = "description";
 	public static final String ENABLED = "enabled";
 	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
+	public static final String LINKED_DEFAULT_USER_ROLE = "linkedDefaultUserRole";
 	public static final String EMAIL_NOTIFICATIONS = "emailNotificationTypes";
 	public static final String SMS_NOTIFICATIONS = "smsNotificationTypes";
 
