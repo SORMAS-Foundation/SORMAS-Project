@@ -1,4 +1,4 @@
-@UI @Sanity @TravelEntriesUserRoles44 @add_userroles
+@UI @Sanity @TravelEntriesUserRoles @add_userroles
 Feature: Create travel entries for different user roles
 
 @tmsLink=SORDEV-10360 @env_de
