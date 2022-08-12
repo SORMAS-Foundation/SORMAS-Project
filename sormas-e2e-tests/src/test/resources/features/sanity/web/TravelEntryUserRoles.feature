@@ -35,3 +35,23 @@ Scenario Outline: Test add Date of arrival to Travel Entry and fill it when impo
     | Surveillance Officer      |
     | Surveillance Supervisor   |
     | Community Officer         |
+
+  @tmsLink=SORDEV-8266 @env_de
+  Scenario Outline: Create a Travel Entry
+    Given I log in as a <user>
+    And I click on the Entries button from navbar
+    And I click on the New Travel Entry button from Travel Entries directory
+    When I fill the required fields in a new travel entry form
+    And I click on Save button from the new travel entry form
+    Then I check the created data is correctly displayed on Edit travel entry page for DE version
+    And I navigate to person tab in Edit travel entry page
+    And I check the created data is correctly displayed on Edit travel entry person page for DE version
+
+    Examples:
+      | user                      |
+      | Admin User                |
+      | Contact Officer           |
+      | Surveillance Officer      |
+      | Surveillance Supervisor   |
+      | Community Officer         |
+      | Clinician                 |
