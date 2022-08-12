@@ -71,6 +71,8 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.vladmihalcea.hibernate.query.SQLExtractor;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -1387,6 +1389,34 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		return entries;
 	}
+
+	@Override
+    public List<CaseDataDto> getCasesForWhichVaccinationIsRelevant(VaccinationDto vaccinationDto) {
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery<Case> cq = cb.createQuery(Case.class);
+        final Root<Case> caze = cq.from(Case.class);
+        final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
+        final CaseJoins joins = caseQueryContext.getJoins();
+
+        Vaccination vaccination =  vaccinationService.getByUuid(vaccinationDto.getUuid());
+        Join<Case, Person> person = joins.getPerson();
+        Join<Person, Immunization> immunizationJoin = person.join(Person.IMMUNIZATIONS, JoinType.LEFT);
+        Join<Immunization, Vaccination> vaccinationsJoin = immunizationJoin.join(Immunization.VACCINATIONS, JoinType.LEFT);
+
+        Predicate predicate = cb.in(vaccinationsJoin).value(vaccination);
+        cq.where(predicate);
+
+        cq.select(caze);
+
+        // search cases for which the vaccination exists and is relevant
+        //Predicate predicate = vaccinationService.getRelevantVaccinationPredicate(caze, cq, cb, vaccinationsJoin);
+
+        TypedQuery query = em.createQuery(cq);
+        String sql = SQLExtractor.from(query);
+        List<Case> cases = query.getResultList();
+        List<CaseDataDto> caseDataDtos = cases.stream().map(c -> toDto(c)).collect(Collectors.toList());
+        return caseDataDtos;
+    }
 
 	@Override
 	public List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, boolean ignoreRegion) {

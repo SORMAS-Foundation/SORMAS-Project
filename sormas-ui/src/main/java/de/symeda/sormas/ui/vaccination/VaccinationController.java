@@ -15,12 +15,17 @@
 
 package de.symeda.sormas.ui.vaccination;
 
+import static de.symeda.sormas.api.FacadeProvider.getCaseFacade;
+
+import java.util.List;
 import java.util.function.Consumer;
 
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -31,6 +36,7 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -129,13 +135,39 @@ public class VaccinationController {
 			createComponent.addDeleteWithReasonListener((deleteDetails) -> {
 				popupWindow.close();
 				if (doSave) {
+					//TODO: return the cases (with all the immunizations) for which the vaccination is relevant
+					List<CaseDataDto> cases = getCaseFacade().getCasesForWhichVaccinationIsRelevant(vaccination);
 					FacadeProvider.getVaccinationFacade().deleteWithImmunization(vaccination.getUuid(), deleteDetails);
+
+					if (!cases.isEmpty()) {
+						showUpdateStatusConfirmationPopup(cases);
+					}
 				}
 				if (deleteCallback != null) {
 					deleteCallback.run();
 				}
 			}, I18nProperties.getCaption(VaccinationDto.I18N_PREFIX));
 		}
+	}
+
+	public static void showUpdateStatusConfirmationPopup(List<CaseDataDto> cases) {
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getCaption(Captions.CaseData_vaccinationStatusUpdate),
+			new Label(I18nProperties.getString(Strings.confirmationVaccinationStatusUpdate)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			600,
+			confirmedVaccinationStatusUpdate -> {
+				if (confirmedVaccinationStatusUpdate) {
+					cases.forEach(VaccinationController::updateVaccinationStatus);
+                    SormasUI.refreshView();
+				} ;
+			});
+	}
+
+	public static void updateVaccinationStatus(CaseDataDto caseDataDto) {
+		caseDataDto.setVaccinationStatus(null);
+		getCaseFacade().save(caseDataDto);
 	}
 
 	public CommitDiscardWrapperComponent<VaccinationEditForm> getVaccinationEditComponent(
