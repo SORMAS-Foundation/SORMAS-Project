@@ -18,6 +18,8 @@
 
 package org.sormas.e2etests.steps.web.application;
 
+import static org.sormas.e2etests.pages.application.LoginPage.FAILED_LOGIN_ERROR_MESSAGE;
+import static org.sormas.e2etests.pages.application.LoginPage.LOGIN_BUTTON;
 import static org.sormas.e2etests.pages.application.NavBarPage.ACTION_CONFIRM_GDPR_POPUP;
 import static org.sormas.e2etests.pages.application.NavBarPage.ACTION_CONFIRM_GDPR_POPUP_DE;
 import static org.sormas.e2etests.pages.application.NavBarPage.DISCARD_USER_SETTINGS_BUTTON;
@@ -28,21 +30,27 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.sormas.e2etests.enums.UserRoles;
 import org.sormas.e2etests.envconfig.dto.EnvUser;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.LoginPage;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
+import org.sormas.e2etests.steps.web.application.users.EditUserSteps;
 
 @Slf4j
 public class LoginSteps implements En {
 
   @Inject
-  public LoginSteps(WebDriverHelpers webDriverHelpers, RunningConfiguration runningConfiguration) {
+  public LoginSteps(
+      WebDriverHelpers webDriverHelpers,
+      RunningConfiguration runningConfiguration,
+      AssertHelpers assertHelpers) {
 
     Given(
         "^I am logged in with name ([^\"]*)$",
@@ -55,6 +63,14 @@ public class LoginSteps implements En {
         "^I navigate to SORMAS login page$",
         () -> {
           webDriverHelpers.accessWebSite(runningConfiguration.getEnvironmentUrlForMarket(locale));
+        });
+
+    Given(
+        "^I navigate to ([^\"]*) via URL append$",
+        (String path) -> {
+          webDriverHelpers.accessWebSite(
+              runningConfiguration.getEnvironmentUrlForMarket(locale) + path);
+          TimeUnit.SECONDS.sleep(2);
         });
 
     Given(
@@ -81,6 +97,22 @@ public class LoginSteps implements En {
               SurveillanceDashboardPage.LOGOUT_BUTTON, 100);
         });
 
+    And(
+        "I try to log in with {string} and password {string}",
+        (String userName, String password) -> {
+          webDriverHelpers.accessWebSite(runningConfiguration.getEnvironmentUrlForMarket(locale));
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              LoginPage.USER_NAME_INPUT, 100);
+          log.info("Filling username");
+          webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, userName);
+          log.info("Filling password");
+          webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, password);
+          log.info("Click on Login button");
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
+        });
+
     Given(
         "^I log in as a ([^\"]*)$",
         (String userRole) -> {
@@ -103,6 +135,22 @@ public class LoginSteps implements En {
             }
           }
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 50);
+        });
+
+    Then(
+        "I login with last edited user",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              LoginPage.USER_NAME_INPUT, 100);
+          log.info("Filling username");
+          webDriverHelpers.fillInWebElement(
+              LoginPage.USER_NAME_INPUT, EditUserSteps.collectedUser.getUserName());
+          log.info("Filling password");
+          webDriverHelpers.fillInWebElement(
+              LoginPage.USER_PASSWORD_INPUT, EditUserSteps.collectedUser.getPassword());
+          log.info("Click on Login button");
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
         });
 
     When(
@@ -140,6 +188,26 @@ public class LoginSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(LOGOUT_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(LoginPage.LOGIN_BUTTON);
+        });
+
+    Then(
+        "Login failed message should be displayed",
+        () -> {
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  org.testng.Assert.assertTrue(
+                      webDriverHelpers.isElementVisibleWithTimeout(FAILED_LOGIN_ERROR_MESSAGE, 5),
+                      "Login failed error message is not displayed"));
+        });
+
+    Then(
+        "Login page should be displayed",
+        () -> {
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  org.testng.Assert.assertTrue(
+                      webDriverHelpers.isElementVisibleWithTimeout(LOGIN_BUTTON, 5),
+                      "Login page is not displayed"));
         });
   }
 }
