@@ -830,7 +830,6 @@ Feature: Case end to end tests
     When I select YES from Contacts With Source Case Known
     Then I check if Contacts of Source filed is available
     When I click on the NEW CONTACT button on Epidemiological Data Tab of Edit Case Page
-    And I click on the CHOOSE SOURCE CASE button from CONTACT page
     And I click yes on the DISCARD UNSAVED CHANGES popup if it appears
     And I click on the CHOOSE CASE button in Create new contact form in Exposure for Epidemiological data tab in Cases
     And I search for the last case uuid in the CHOOSE SOURCE popup of Create Contact window
