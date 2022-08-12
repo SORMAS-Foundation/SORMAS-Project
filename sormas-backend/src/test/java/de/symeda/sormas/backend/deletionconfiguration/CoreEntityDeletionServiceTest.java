@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.deletionconfiguration;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -49,6 +50,7 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 
 public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
@@ -272,6 +274,88 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 
 		assertEquals(0, getEventService().count());
 		assertEquals(0, getEventParticipantService().count());
+	}
+
+	@Test
+	public void testEventParticipantWithEvnSampleAutomaticDeletion() {
+
+		createDeletionConfigurations();
+		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.EVENT);
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto person = creator.createPerson();
+		EventDto event = creator.createEvent(user.toReference(), Disease.EVD);
+		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
+		SampleDto sampleDto = creator.createSample(eventParticipant.toReference(), user.toReference(), rdcf.facility);
+
+		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
+		SessionImpl em = (SessionImpl) getEntityManager();
+
+		QueryImplementor evPQuery = em.createQuery("select ep from EventParticipant ep where ep.uuid=:uuid");
+		evPQuery.setParameter("uuid", eventParticipant.getUuid());
+		EventParticipant evPResult = (EventParticipant) evPQuery.getSingleResult();
+		evPResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		evPResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		em.save(evPResult);
+
+		Sample sample = getSampleService().getByUuid(sampleDto.getUuid());
+
+		assertEquals(1, getEventParticipantService().count());
+		assertNotNull(sample.getAssociatedEventParticipant());
+		assertEquals(eventParticipant.getUuid(), sample.getAssociatedEventParticipant().getUuid());
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertEquals(0, getEventParticipantService().count());
+		sample = getSampleService().getByUuid(sampleDto.getUuid());
+		assertNull(sample);
+	}
+
+	@Test
+	public void testEventParticipantWithCaseSampleAutomaticDeletion() {
+
+		createDeletionConfigurations();
+		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.EVENT);
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.ADMIN), creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto person = creator.createPerson();
+		CaseDataDto caseDataDto = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		EventDto event = creator.createEvent(user.toReference(), Disease.EVD);
+		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
+		SampleDto sampleDto = creator.createSample(caseDataDto.toReference(), user.toReference(), rdcf.facility, s -> {
+			s.setAssociatedEventParticipant(eventParticipant.toReference());
+		});
+
+		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
+		SessionImpl em = (SessionImpl) getEntityManager();
+
+		QueryImplementor evPQuery = em.createQuery("select ep from EventParticipant ep where ep.uuid=:uuid");
+		evPQuery.setParameter("uuid", eventParticipant.getUuid());
+		EventParticipant evPResult = (EventParticipant) evPQuery.getSingleResult();
+		evPResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		evPResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		em.save(evPResult);
+
+		Sample sample = getSampleService().getByUuid(sampleDto.getUuid());
+
+		assertEquals(1, getEventParticipantService().count());
+		assertNotNull(sample.getAssociatedEventParticipant());
+		assertEquals(eventParticipant.getUuid(), sample.getAssociatedEventParticipant().getUuid());
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertEquals(0, getEventParticipantService().count());
+		sample = getSampleService().getByUuid(sampleDto.getUuid());
+		assertNotNull(sample);
+		assertEquals(null, sample.getAssociatedEventParticipant());
 	}
 
 	@Test
