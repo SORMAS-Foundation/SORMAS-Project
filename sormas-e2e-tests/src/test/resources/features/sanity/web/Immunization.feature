@@ -362,7 +362,49 @@ Feature: Immunization end to end tests
     And I check that vaccination entry is greyed out in the vaccination card
     And I check if Vaccination Status is set to "" on Edit Case page
 
+  @tmsLink=SORDEV-6775 @env_main
+  Scenario: Test sorting columns in Immunization directory page
+    Given I log in as a Admin User
+    When I click on the Immunizations button from navbar
+    And I check the grid for mandatory columns on the Immunization directory page
+    And I sort all rows by "Immunization ID" in Immunization Directory
+    And I check that column 1 is sorted alphabetically in ascending order
+    And I sort all rows by "Person ID" in Immunization Directory
+    And I check that column 2 is sorted alphabetically in ascending order
+    And I sort all rows by "First name" in Immunization Directory
+    And I check that column 3 is sorted alphabetically in ascending order
+    And I sort all rows by "Last name" in Immunization Directory
+    And I check that column 4 is sorted alphabetically in ascending order
+    And I sort all rows by "Disease" in Immunization Directory
+    And I check that column 5 is sorted alphabetically in ascending order
+    And I sort all rows by "Age and birthdate" in Immunization Directory
+    And I check that column 6 is sorted by age in ascending order
+    And I sort all rows by "Sex" in Immunization Directory
+    And I check that column 7 is sorted alphabetically in ascending order
+    And I sort all rows by "District" in Immunization Directory
+    And I check that column 8 is sorted alphabetically in ascending order
+    And I sort all rows by "Means of immunization" in Immunization Directory
+    And I check that column 9 is sorted alphabetically in ascending order
+    And I sort all rows by "Management Status" in Immunization Directory
+    And I check that column 10 is sorted alphabetically in ascending order
+    And I sort all rows by "Immunization status" in Immunization Directory
+    And I check that column 11 is sorted alphabetically in ascending order
+    And I sort all rows by "Start date" in Immunization Directory
+    And I check that column 12 is sorted by date in ascending order
+    And I sort all rows by "End date" in Immunization Directory
+    And I check that column 13 is sorted by date in ascending order
+    And I sort all rows by "Type of last vaccine" in Immunization Directory
+    And I check that column 14 is sorted alphabetically in ascending order
+    And I sort all rows by "Date of recovery" in Immunization Directory
+    And I check that column 15 is sorted by date in ascending order
 
-
+  @tmsLink=SORDEV-6775 @env_main
+  Scenario: Test filters in Immunization directory page
+    Given I log in as a Admin User
+    When I click on the Immunizations button from navbar
+    And I apply Disease filter "COVID-19"
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I check that the row number 1 contains "COVID-19" in disease field
 
 
