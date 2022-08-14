@@ -111,7 +111,7 @@ public class UserController {
 			userEditForm.getFieldGroup());
 
 		// Add reset password button
-		Button resetPasswordButton = createResetPasswordButton(userUuid, userDto.getUserEmail(), editView);
+		Button resetPasswordButton = createResetPasswordButton(userUuid, userDto.getUserEmail(),userDto.getUserName(), editView);
 		editView.getButtonsPanel().addComponent(resetPasswordButton, 0);
 
 		editView.addDiscardListener(closeWindowCallback::run);
@@ -151,7 +151,7 @@ public class UserController {
 				accountView, true, accountView.getFieldGroup());
 
 		// Add reset password button
-		Button resetPasswordButton = createUserAccountResetPasswordButton(userUuid, userDto.getUserEmail(), editView);
+		Button resetPasswordButton = createUserAccountResetPasswordButton(userUuid, userDto.getUserEmail(), userDto.getUserName(), editView);
 		editView.getButtonsPanel().addComponent(resetPasswordButton, 0);
 
 		editView.addDiscardListener(closeWindowCallback::run);
@@ -217,22 +217,25 @@ public class UserController {
 		}
 	}
 
-	public void makeNewPassword(String userUuid, String userEmail) {
+	public void makeNewPassword(String userUuid, String userEmail, String userName) {
 		String newPassword = FacadeProvider.getUserFacade().resetPassword(userUuid);
 
 		if (StringUtils.isBlank(userEmail)
 				|| AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isDefaultProvider()) {
-			showPasswordResetInternalSuccessPopup(newPassword);
+			showPasswordResetInternalSuccessPopup(newPassword, userName);
 		} else {
 			showPasswordResetExternalSuccessPopup();
 		}
 	}
 
-	private void showPasswordResetInternalSuccessPopup(String newPassword) {
+	private void showPasswordResetInternalSuccessPopup(String newPassword, String userName) {
 		VerticalLayout layout = new VerticalLayout();
 		layout.addComponent(new Label(I18nProperties.getString(Strings.messageCopyPassword)));
-		Label passwordLabel = new Label(newPassword);
+		Label passwordLabel = new Label("Password:  "+newPassword);
+		Label userNameLabel = new Label("Username:  " + userName);
+		userNameLabel.addStyleName(CssStyles.H2);
 		passwordLabel.addStyleName(CssStyles.H2);
+		layout.addComponent(userNameLabel);
 		layout.addComponent(passwordLabel);
 		Window popupWindow = VaadinUiUtil.showPopupWindow(layout);
 		popupWindow.setCaption(I18nProperties.getString(Strings.headingNewPassword));
@@ -279,7 +282,7 @@ public class UserController {
 		}
 	}
 
-	public Button createResetPasswordButton(String userUuid, String userEmail,
+	public Button createResetPasswordButton(String userUuid, String userEmail, String userName,
 			CommitDiscardWrapperComponent<UserEditForm> editView) {
 
 		return ButtonHelper.createIconButton(Captions.userResetPassword, VaadinIcons.UNLOCK, new ClickListener() {
@@ -289,7 +292,7 @@ public class UserController {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				ConfirmationComponent resetPasswordComponent = getResetPasswordConfirmationComponent(userUuid,
-						userEmail, editView);
+						userEmail, userName, editView);
 				Window popupWindow = VaadinUiUtil.showPopupWindow(resetPasswordComponent);
 				resetPasswordComponent.addDoneListener(() -> popupWindow.close());
 				resetPasswordComponent.getCancelButton().addClickListener(new ClickListener() {
@@ -306,7 +309,7 @@ public class UserController {
 		}, ValoTheme.BUTTON_LINK);
 	}
 
-	public Button createUserAccountResetPasswordButton(String userUuid, String userEmail,
+	public Button createUserAccountResetPasswordButton(String userUuid, String userEmail, String userName,
 			CommitDiscardWrapperComponent<UserAccountView> accountView) {
 
 		return ButtonHelper.createIconButton(Captions.userResetPassword, VaadinIcons.UNLOCK, new ClickListener() {
@@ -316,7 +319,7 @@ public class UserController {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				ConfirmationComponent resetPasswordComponent = getUserAccountResetPasswordConfirmationComponent(
-						userUuid, userEmail, accountView);
+						userUuid, userEmail, userName, accountView);
 				Window popupWindow = VaadinUiUtil.showPopupWindow(resetPasswordComponent);
 				resetPasswordComponent.addDoneListener(() -> popupWindow.close());
 				resetPasswordComponent.getCancelButton().addClickListener(new ClickListener() {
@@ -333,7 +336,7 @@ public class UserController {
 		}, ValoTheme.BUTTON_LINK);
 	}
 
-	public ConfirmationComponent getResetPasswordConfirmationComponent(String userUuid, String userEmail,
+	public ConfirmationComponent getResetPasswordConfirmationComponent(String userUuid, String userEmail, String userName,
 			CommitDiscardWrapperComponent<UserEditForm> editView) {
 		ConfirmationComponent resetPasswordConfirmationComponent = new ConfirmationComponent(false) {
 
@@ -343,7 +346,7 @@ public class UserController {
 			protected void onConfirm() {
 				onDone();
 				editView.discard();
-				makeNewPassword(userUuid, userEmail);
+				makeNewPassword(userUuid, userEmail, userName);
 			}
 
 			@Override
@@ -358,7 +361,7 @@ public class UserController {
 		return resetPasswordConfirmationComponent;
 	}
 
-	public ConfirmationComponent getUserAccountResetPasswordConfirmationComponent(String userUuid, String userEmail,
+	public ConfirmationComponent getUserAccountResetPasswordConfirmationComponent(String userUuid, String userEmail, String userName,
 			CommitDiscardWrapperComponent<UserAccountView> accountView) {
 		ConfirmationComponent resetPasswordConfirmationComponent = new ConfirmationComponent(false) {
 
@@ -368,7 +371,7 @@ public class UserController {
 			protected void onConfirm() {
 				onDone();
 				accountView.discard();
-				makeNewPassword(userUuid, userEmail);
+				makeNewPassword(userUuid, userEmail, userName);
 			}
 
 			@Override

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About APMIS</title>
+<style type="text/css">
+@media ( max-width : 600px) {
+	.about-nav {
+		display: block !important;
+	}
+	.fullname {
+		display: block !important;
+	}
+	.firstname {
+		width: 100% !important;
+	}
+	.lastname {
+		width: 100% !important;
+	}
+	.guide-container {
+		width: 100% !important;
+	}
+	.guides {
+		margin-right: 0px !important;
+	}
+}
+</style>
+</head>
+
+<body>
+	<div class="about-container" style="padding: 40px 80px 40px 40px;">
+		<div class="about-head"
+			style="height: 9vh; background-color: #dadada;">
+
+		</div>
+		<div class="about-body">
+			<div class="about-desc" style="margin-bottom: 50px;">
+				<h1>About APMIS</h1>
+				<p style="font-size: 20px; word-wrap: normal;">
+					The Afghanistan Polio Management Information System(APMIS) is an
+					online data system for inputting, storing, managing and visualizing
+					monitoring data of polio immunization activities in Afghanistan.</p>
+			</div>
+			<div class="about-nav">
+				<div class="guides" >
+					<div class="guide-container"
+						style="background-color: green; color: white; display: block">
+						<ul style="padding: 20px; display:flex; padding: 16px; list-style: none;">
+							<li style=" margin-bottom: 5px; float: left;"><a
+								href="/sormas-ui/VAADIN/themes/sormas/img/APMIS_User_Guide.pdf"
+								style="color: white; font-size: 14px; display: block;   padding: 16px;">User Guide</a></li>
+							<li style="margin-bottom: 5px;"><a
+								href="/sormas-ui/VAADIN/themes/sormas/img/APMIS_Technical_Manual.pdf"
+								style="color: white; font-size: 14px;  display: block;   padding: 16px;">Technical Guide</a></li>
+						</ul>
+					</div>
+				</div>
+				<div class="feedback-form" style="width: 100%;">
+					<!-- <h3 style="color: green; margin-bottom: 20px;">Feedback Form</h3> -->
+					<!--Google Sheet Link : https://docs.google.com/spreadsheets/d/1Ke0cb0EnHgT0oGlWuHwrJBH-hNGrP3Jh95dtYcZaWbk/edit#gid=0 -->
+					<form method="post" id="my-form"
+						action="https://script.google.com/macros/s/AKfycbyetFZBdzt_uqvu9DLadoIaftp4hvR47n0xBrLXc8IdPgkjKlLGvM0ZsVu6AVs6YVFY/exec">
+						<div class="fullname" style="display: flex; padding-bottom:10px;">
+							<div class="firstname" style="width: 45%; margin-right: 10%;">
+								<label for="First_Name"
+									style="font-size: 14px; ">First
+									Name</label><br> <input id="First_Name" name="First_Name"
+									type="name" placeholder="First Name"
+									style="margin-top: 5px; width: 100%; height: 35px; border-radius: 5px; border: 1px solid #dadada;"
+									required>
+							</div>
+							<div class="lastname" style="width: 45%;">
+								<label for="Last_Name"
+									style="font-size: 14px; ">Last
+									Name</label><br> <input id="Last_Name" name="Last_Name"
+									type="text" placeholder="Last Name"
+									style="margin-top: 5px; width: 100%; height: 35px; border-radius: 5px; border: 1px solid #dadada;">
+							</div>
+						</div>
+
+						<label for="Email"
+							style="font-size: 14px; padding-bottom:10px;">Email</label><br>
+						<input id="Email" name="Email" type="email"
+							placeholder="Your Email Address" required
+							style="margin-top: 5px; width: 100%; height: 35px; border-radius: 5px; border: 1px solid #dadada;"><br><br>
+						<label for="Comment"
+							style="font-size: 14px; padding-bottom:10px;">Feedback</label><br>
+						<textarea id="Comment" name="Comment" type="text"
+							placeholder="Enter your feedback here" required
+							style="width: 100%; height: 20vh; margin-top: 5px; border-radius: 5px; border: 1px solid #dadada;"
+							cols="" rows="" ></textarea>
+						<br>
+						<button type="submit" value="Submit"
+							style="color: white; background-color: green; border: 2px solid green; border-radius: 5px; height: 40px; font-size: 14px ">Submit
+							Feedback</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<script type="text/javascript">
+        window.addEventListener("load", function () {
+            const form = document.getElementById('my-form');
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+                const data = new FormData(form);
+                const action = e.target.action;
+
+                fetch(action, {
+                    method: 'POST',
+                    body: data,
+                })
+                    .then(() => {
+                        alert("You have Successfully submitted your feedback!");
+
+                    })
+            });
+        });
+    </script>
+
+
+</body>
+
+</html>
