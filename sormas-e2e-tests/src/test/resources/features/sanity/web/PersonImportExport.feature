@@ -9,7 +9,7 @@ Scenario: Basic person export
   Given API: I create a new case
   Then API: I check that POST call body is "OK"
   And API: I check that POST call status code is 200
-  When I log in with National User
+  When I log in as a National User
   When I click on the Persons button from navbar
   Then I fill Year of birth filter in Persons with the year of the last created person via API
   And I fill Month of birth filter in Persons with the month of the last created person via API

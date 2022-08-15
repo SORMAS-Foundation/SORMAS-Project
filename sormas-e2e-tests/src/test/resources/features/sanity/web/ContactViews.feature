@@ -3,7 +3,7 @@ Feature: Contact view tests
 
   @tmsLink=SORDEV-8407 @env_main
   Scenario: Person ID check for Contact Directory
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Contacts button from navbar
     Then I check that Person ID column is between Contact Status and First Name of Contact Person columns
     When I click on the first Person ID from Contacts Directory
@@ -14,7 +14,7 @@ Feature: Contact view tests
 
   @tmsLink=SORDEV-6101 @env_main
   Scenario Outline: Add a filter for the relationship with case at contact directory
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Contacts button from navbar
     Then I click on the NEW CONTACT button
     And I fill only mandatory fields with and set relationship with case to <option>
