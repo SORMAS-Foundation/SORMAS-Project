@@ -130,7 +130,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 				assertThat(sharedCase.getEntity().getUuid(), is(caze.getUuid()));
 				// users should be cleaned up
-				assertThat(sharedCase.getEntity().getReportingUser(), is(nullValue()));
+				assertThat(sharedCase.getEntity().getReportingUser(), is(officer));
 				assertThat(sharedCase.getEntity().getSurveillanceOfficer(), is(nullValue()));
 				assertThat(sharedCase.getEntity().getClassificationUser(), is(nullValue()));
 
