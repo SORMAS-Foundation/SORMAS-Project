@@ -78,26 +78,6 @@ public class LoginSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON));
 
     And(
-        "I log in with National User",
-        () -> {
-          EnvUser user =
-              runningConfiguration.getUserByRole(locale, UserRoles.NationalUser.getRole());
-          webDriverHelpers.accessWebSite(runningConfiguration.getEnvironmentUrlForMarket(locale));
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              LoginPage.USER_NAME_INPUT, 100);
-          log.info("Filling username");
-          webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, user.getUsername());
-          log.info("Filling password");
-          webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, user.getPassword());
-          log.info("Click on Login button");
-          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              SurveillanceDashboardPage.LOGOUT_BUTTON, 100);
-        });
-
-    And(
         "I try to log in with {string} and password {string}",
         (String userName, String password) -> {
           webDriverHelpers.accessWebSite(runningConfiguration.getEnvironmentUrlForMarket(locale));

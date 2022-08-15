@@ -3,7 +3,7 @@ Feature: Dashboard counters
 
   @env_main
   Scenario: Check disease and new cases counter in Surveillance Dashboard
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
     When I select "COVID-19" in TabSheet of Surveillance Dashboard
     When I save value for COVID disease counter in Surveillance Dashboard
@@ -20,7 +20,7 @@ Feature: Dashboard counters
 
   @env_main
   Scenario: Check contacts counter in Contacts Dashboard
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Dashboard button from navbar and access Contacts Dashboard
     When I save value for COVID-19 contacts counter in Contacts Dashboard
     When API: I create a new person
@@ -34,7 +34,7 @@ Feature: Dashboard counters
 
   @env_main @#7440
   Scenario: Validate Surveillance Dashboard layout
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
     Then I validate contacts button is clickable on Surveillance Dashboard Page
     Then I validate filter components presence on Surveillance Dashboard Page
@@ -45,7 +45,7 @@ Feature: Dashboard counters
 
   @env_main @#7440
   Scenario: Validate show all diseases functionality
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
     Then I validate show all diseases button is available and clickable on Surveillance Dashboard Page
     When I validate only 6 disease categories are displayed on Surveillance Dashboard Page
@@ -54,7 +54,7 @@ Feature: Dashboard counters
 
   @env_main @#7440
   Scenario: Check disease information layout
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
     Then I validate name of diseases is shown on Surveillance Dashboard Page
     Then I validate total data of diseases is shown on Surveillance Dashboard Page
@@ -65,7 +65,7 @@ Feature: Dashboard counters
 
   @env_main @#7440
   Scenario: Check disease burden information table
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
     Then I switch to burden information table on Surveillance Dashboard Page
     Then I validate that all the headers are present in the burden information table on Surveillance Dashboard Page
@@ -74,7 +74,7 @@ Feature: Dashboard counters
 
   @env_main @#7440
   Scenario: Check New Cases and Events layout on surveillance dashboard
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
     Then I validate all diseases are displayed in the carousel slider options on Surveillance Dashboard Page
     Then I validate counter is present on Surveillance Dashboard Page
@@ -88,7 +88,7 @@ Feature: Dashboard counters
 
   @env_main @#7440
   Scenario: Check Epidemiological curve chart Alive or Dead option
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
     Then I click on legend case status on Surveillance Dashboard Page
     Then I check case status chart on Surveillance Dashboard Page
@@ -97,7 +97,7 @@ Feature: Dashboard counters
 
   @env_main @#7440
   Scenario: Check Epidemiological curve layout
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
     Then I validate presence of legend data on Surveillance Dashboard Page
     Then I validate presence of chart on Surveillance Dashboard Page
@@ -107,7 +107,7 @@ Feature: Dashboard counters
 
   @env_main @#7440
   Scenario: Check Case status map
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
     Then I validate presence of maps on Surveillance Dashboard Page
     Then I validate presence of map options on Surveillance Dashboard Page
@@ -116,7 +116,7 @@ Feature: Dashboard counters
 
   @env_main @#7440
   Scenario: Check components expand-collapse functionality
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
     Then I expand Epidemiological curve on Surveillance Dashboard Page
     Then I verify that only epi curve chart is displayed on Surveillance Dashboard Page
@@ -127,7 +127,7 @@ Feature: Dashboard counters
 
   @env_main @#7440
   Scenario: Overview data apply filters check
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
     Then I apply filter compare: today -> yesterday on Surveillance Dashboard Page
     Then I verify filter works on Surveillance Dashboard Page
@@ -163,14 +163,14 @@ Feature: Dashboard counters
 
   @env_de @tmsLink=SORDEV-6137
   Scenario: Test if "not a case" is excluded from the total case count
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
     And I select "COVID-19" in TabSheet of Surveillance Dashboard
     Then I check that the Total number of COVID-19 cases excludes those marked "not a case" in German
 
   @tmsLink=SORDEV-6142 @env_main
   Scenario: Check that number of cases on the dashboard map is rendered by the time filter
-      Given I log in with National User
+      Given I log in as a National User
       When I click on the Dashboard button from navbar
       And I expand Case status map on Surveillance Dashboard Page
       And I click on the Time Period combobox from Surveillance Dashboard
@@ -215,7 +215,7 @@ Feature: Dashboard counters
 
   @tmsLink=SORDEV-6142 @env_main
   Scenario: Check that number of contacts on the dashboard map is rendered by the time filter
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Dashboard button from navbar
     And I expand Case status map on Surveillance Dashboard Page
     And I click Layers button on Surveillance Dashboard Page

@@ -3,14 +3,14 @@ Feature: Create events
 
   @env_main
   Scenario: Create a new event
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
     And I create a new event with status CLUSTER
 
   @env_main
   Scenario: Create a new event and change its status multiple times
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
     When I create a new event with status CLUSTER
@@ -36,7 +36,7 @@ Feature: Create events
 
   @env_main
   Scenario: Create and check a new event data
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
     When I create a new event with specific data
@@ -47,7 +47,7 @@ Feature: Create events
 
   @env_main
   Scenario: Add a participant to an event
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
     And I create a new event with status EVENT
@@ -62,7 +62,7 @@ Feature: Create events
 
   @tmsLink=SORDEV-5475 @env_main
   Scenario: Verify error messages while adding a participant to an event
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
     And I create a new event with status EVENT
@@ -87,7 +87,7 @@ Feature: Create events
 
   @env_main
   Scenario: Create and edit a new event
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
     When I create a new event with specific data
@@ -105,7 +105,7 @@ Feature: Create events
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Events button from navbar
     Then I open the last created event via api
     And I click on New Action button from Event tab
@@ -119,7 +119,7 @@ Feature: Create events
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     Then I navigate to Event Action tab for created Event
     And I click on New Action from Event Actions tab
     And I create New Action from event tab
@@ -134,7 +134,7 @@ Feature: Create events
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     Then I navigate to Event Action tab for created Event
     And I click on New Action from Event Actions tab
     And I create New Action from event tab
@@ -163,7 +163,7 @@ Feature: Create events
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I am accessing the event tab using the created event via api
     And I click on link event group
     And I create a new event group
@@ -172,7 +172,7 @@ Feature: Create events
 
   @tmsLink=SORDEV-5496 @env_main
   Scenario: Generate and download Event document
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Events button from navbar
     And I open the first event from events list
     And I click on the Create button from Event Document Templates
@@ -181,7 +181,7 @@ Feature: Create events
 
   @tmsLink=SORDEV-5491 @env_main
   Scenario: Add a participant to an event and create case
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
     And I create a new event with specific data
@@ -197,7 +197,7 @@ Feature: Create events
 
   @tmsLink=SORDEV-9426 @env_main
   Scenario: Filter for the report date of events
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Events button from navbar
     Then I click on Show more filters in Events
     And I select Report Date among Event Reference Date options
@@ -210,7 +210,7 @@ Feature: Create events
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Events button from navbar
     And I click on GROUPS Radiobutton on Event Directory Page
     And I open the first event from events list
@@ -225,7 +225,7 @@ Feature: Create events
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Events button from navbar
     And I fill EVENT ID filter by API
     And I apply on the APPLY FILTERS button from Event
@@ -241,7 +241,7 @@ Feature: Create events
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Events button from navbar
     And I fill EVENT ID filter by API
     And I apply on the APPLY FILTERS button from Event
@@ -258,7 +258,7 @@ Feature: Create events
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Events button from navbar
     Then I open the last created event via api
     And I click on link event group
@@ -303,7 +303,7 @@ Feature: Create events
 
   @tmsLink=SORDEV-9355 @env_main
   Scenario: Day of birth filter for event participant test
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
     And I create a new event with specific data
@@ -354,7 +354,7 @@ Feature: Create events
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I am accessing the event tab using the created event via api
     And I click on link event group
     And I create a new event group
@@ -460,7 +460,7 @@ Feature: Create events
       Given API: I create a new event
       Then API: I check that POST call body is "OK"
       And API: I check that POST call status code is 200
-      Given I log in with National User
+      Given I log in as a National User
       When I am accessing the event tab using the created event via api
       And I click on link event group
       And I create a new event group
@@ -508,7 +508,7 @@ Feature: Create events
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Events button from navbar
     Then I open the last created event via api
     And I check CLUSTER option on edit Event page
@@ -535,7 +535,7 @@ Feature: Create events
 
   @tmsLink=SORDEV-8048 @env_de
   Scenario: Test Default value for disease if only one is used by the server for Events and Pathogen test
-    Given I log in with National User
+    Given I log in as a National User
     Then I click on the Events button from navbar
     When I click on the NEW EVENT button
     Then I check if default disease value is set for COVID-19
@@ -561,7 +561,7 @@ Feature: Create events
     Then API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    And I log in with National User
+    And I log in as a National User
     And I click on the Events button from navbar
     Then I open the last created event via api
     And I navigate to Event Participants tab in Edit case page
@@ -595,7 +595,7 @@ Feature: Create events
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I am accessing the event tab using the created event via api
     Then I add a participant created by API create person
     Then I check if participant appears in the participants list of event created with API
@@ -698,7 +698,7 @@ Feature: Create events
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Events button from navbar
     Then I open the last created event via api
     And I check that the value selected from Disease combobox is "COVID-19" on Edit Event page
@@ -709,7 +709,7 @@ Feature: Create events
 
   @tmsLink=SORDEV-8665 @env_main
   Scenario: Test Move the responsible user filter in the event directory next to the jurisdiction filters
-    Given I log in with National User
+    Given I log in as a National User
     Then I click on the Events button from navbar
     And I click on Show more filters in Events
     And I check that Responsible User Info icon is visible on Event Directory Page
@@ -733,7 +733,7 @@ Feature: Create events
 
   @env_main @tmsLink=SORDEV-7460
   Scenario: Test Extend the exposure and event startDate and endDate to include a startTime and endTime
-    Given I log in with National User
+    Given I log in as a National User
     Then I click on the Events button from navbar
     And I click on the NEW EVENT button
     Then I check Multi-day event checkbox and I pick Start date and End date on Create New Event Page
@@ -813,7 +813,7 @@ Feature: Create events
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Events button from navbar
     When I open the last created event via api
     Then I navigate to EVENT PARTICIPANT from edit event page
@@ -825,7 +825,7 @@ Feature: Create events
 
   @tmsLink=SORDEV-6076 @env_main
   Scenario: Test Make event report date editable
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
     When I create a new event with today for date of report and date of event
@@ -889,7 +889,7 @@ Feature: Create events
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I am accessing the event tab using the created event via api
     Then I add a participant created by API create person
     Then I collect the event participant UUID displayed in event participants list
@@ -920,13 +920,13 @@ Feature: Create events
     Then I click on the Archive event button
     Then I confirm Archive event popup
     Then I click on logout button from navbar
-    Then I log in with National User
+    Then I log in as a National User
     Then I am accessing the event tab using the created event via api
     Then I check if editable fields are read only for an archived event
 
   @tmsLink=SORDEV-7094 @env_main
   Scenario Outline: Test Event identification source fields
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
     And I create a new event with event identification source "<name>"
@@ -944,7 +944,7 @@ Feature: Create events
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When I log in with National User
+    When I log in as a National User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
     When I create a new event with specific data
@@ -996,7 +996,7 @@ Feature: Create events
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When I log in with National User
+    When I log in as a National User
     And I click on the Events button from navbar
     And I navigate to the last created through API Event page via URL
     And I click Delete button on Edit Event page

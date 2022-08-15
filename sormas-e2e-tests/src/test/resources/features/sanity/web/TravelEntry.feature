@@ -93,7 +93,7 @@ Feature: Create travel entries
 
   @tmsLink=SORDEV-9477 @env_de
   Scenario: Add a person search option on creation forms
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data for DE version
@@ -227,13 +227,13 @@ Feature: Create travel entries
 
   @tmsLink=SORDEV-7162 @env_de
   Scenario: Test column structure in Travel Entries directory
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Entries button from navbar
     Then I check that the Entries table structure is correct DE specific
 
   @tmsLink=SORDEV-9788 @env_de
   Scenario: Test Hide country specific fields in the 'Person search option' pop-up in Travel Entry directory
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Entries button from navbar
     Then I click on the New Travel Entry button from Travel Entries directory
     And I click on the person search button in create new travel entry form
@@ -266,7 +266,7 @@ Feature: Create travel entries
 
   @tmsLink=SORDEV-8411 @env_de
   Scenario: Test Travel Entry conversion to case
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Cases button from navbar
     And I click on the NEW CASE button
     And I select "EINREISEORT" as a Case Origin in Case Popup
