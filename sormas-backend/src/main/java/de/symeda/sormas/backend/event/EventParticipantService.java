@@ -516,7 +516,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 			return EditPermissionType.REFUSED;
 		}
 
-		return super.getEditPermissionType(eventParticipant);
+		return super.isEditAllowed(eventParticipant);
 	}
 
 	public Collection<EventParticipant> getByPersonUuids(List<String> personUuids) {

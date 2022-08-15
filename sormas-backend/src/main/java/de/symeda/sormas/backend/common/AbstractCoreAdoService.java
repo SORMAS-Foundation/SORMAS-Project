@@ -37,7 +37,6 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.util.IterableHelper;
 
@@ -99,7 +98,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 
 		Expression aggregatedChangeDateExpression = addChangeDates(new AggregatedChangeDateExpressionBuilder(cb), from, true).build();
 		cq.multiselect(from.get(AbstractDomainObject.UUID), cb.max(aggregatedChangeDateExpression));
-		cq.where(from.get(ADO.UUID).in(entityuuids));
+		cq.where(from.get(AbstractDomainObject.UUID).in(entityuuids));
 		cq.groupBy(from.get(AbstractDomainObject.UUID));
 
 		Map<String, Date> collect = em.createQuery(cq).getResultList().stream().collect(Collectors.toMap(r -> (String) r[0], r -> (Date) r[1]));
@@ -118,7 +117,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 		Root<ADO> root = cu.from(getElementClass());
 
 		cu.set(AbstractDomainObject.CHANGE_DATE, Timestamp.from(Instant.now()));
-		cu.set(root.get(Case.ARCHIVED), true);
+		cu.set(root.get(CoreAdo.ARCHIVED), true);
 		cu.set(root.get(CoreAdo.END_OF_PROCESSING_DATE), endOfProcessingDate);
 
 		cu.where(cb.equal(root.get(AbstractDomainObject.UUID), entityUuid));
@@ -138,7 +137,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 				Root<ADO> root = cu.from(getElementClass());
 
 				cu.set(AbstractDomainObject.CHANGE_DATE, Timestamp.from(Instant.now()));
-				cu.set(root.get(Case.ARCHIVED), true);
+				cu.set(root.get(CoreAdo.ARCHIVED), true);
 				cu.set(root.get(CoreAdo.END_OF_PROCESSING_DATE), finalEndOfProcessingDate);
 
 				cu.where(cb.equal(root.get(AbstractDomainObject.UUID), entityUuid));
@@ -156,7 +155,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 			Root<ADO> root = cu.from(getElementClass());
 
 			cu.set(AbstractDomainObject.CHANGE_DATE, Timestamp.from(Instant.now()));
-			cu.set(root.get(Case.ARCHIVED), false);
+			cu.set(root.get(CoreAdo.ARCHIVED), false);
 			cu.set(root.get(CoreAdo.END_OF_PROCESSING_DATE), (Date) null);
 			cu.set(root.get(CoreAdo.ARCHIVE_UNDONE_REASON), dearchiveReason);
 
@@ -166,7 +165,7 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 		});
 	}
 
-	public EditPermissionType getEditPermissionType(ADO entity) {
+	public EditPermissionType isEditAllowed(ADO entity) {
 		if (entity.isArchived()) {
 			return featureConfigurationFacade.isFeatureEnabled(FeatureType.EDIT_ARCHIVED_ENTITIES)
 				? EditPermissionType.ALLOWED
@@ -175,6 +174,4 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 
 		return EditPermissionType.ALLOWED;
 	}
-
-	public abstract EditPermissionType isEditAllowed(ADO entity);
 }

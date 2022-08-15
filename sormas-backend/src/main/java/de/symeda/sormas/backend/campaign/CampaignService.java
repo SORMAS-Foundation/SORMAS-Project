@@ -11,13 +11,14 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.DeletableAdo;
 
 @Stateless
 @LocalBean
@@ -33,12 +34,6 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		return createUserFilter(new CampaignQueryContext(cb, cq, from));
 	}
 
-	@Override
-	public EditPermissionType isEditAllowed(Campaign entity) {
-		// todo this case was not covered before? Feels like a bug fixed?
-		return getEditPermissionType(entity);
-	}
-
 	public Predicate createUserFilter(CampaignQueryContext queryContext) {
 		// A user who has access to CampaignView can read all campaigns
 		return null;
@@ -51,7 +46,7 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 
 		Predicate filter = null;
 		if (campaignCriteria.getDeleted() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Campaign.DELETED), campaignCriteria.getDeleted()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(DeletableAdo.DELETED), campaignCriteria.getDeleted()));
 		}
 		if (campaignCriteria.getStartDateAfter() != null || campaignCriteria.getStartDateBefore() != null) {
 			filter = CriteriaBuilderHelper.and(
@@ -72,16 +67,16 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 
 				Predicate likeFilters = cb.or(
 					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Campaign.NAME), textFilter),
-					CriteriaBuilderHelper.ilike(cb, from.get(Campaign.UUID), textFilter));
+					CriteriaBuilderHelper.ilike(cb, from.get(AbstractDomainObject.UUID), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (campaignCriteria.getRelevanceStatus() != null) {
 			if (campaignCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper
-					.and(cb, filter, cb.or(cb.equal(from.get(Campaign.ARCHIVED), false), cb.isNull(from.get(Campaign.ARCHIVED))));
+				filter =
+					CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(from.get(CoreAdo.ARCHIVED), false), cb.isNull(from.get(CoreAdo.ARCHIVED))));
 			} else if (campaignCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Campaign.ARCHIVED), true));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(CoreAdo.ARCHIVED), true));
 			}
 		}
 		return filter;
@@ -100,7 +95,7 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		}
 
 		cq.where(filter);
-		cq.select(from.get(Campaign.UUID));
+		cq.select(from.get(AbstractDomainObject.UUID));
 
 		return em.createQuery(cq).getResultList();
 	}
@@ -117,7 +112,7 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 	}
 
 	public Predicate createActiveCampaignsFilter(CriteriaBuilder cb, Root<Campaign> root) {
-		return cb.and(cb.isFalse(root.get(Campaign.ARCHIVED)), cb.isFalse(root.get(Campaign.DELETED)));
+		return cb.and(cb.isFalse(root.get(CoreAdo.ARCHIVED)), cb.isFalse(root.get(DeletableAdo.DELETED)));
 	}
 
 	@Override

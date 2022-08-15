@@ -80,9 +80,4 @@ public class TravelEntryListService extends BaseTravelEntryService {
 		return filter;
 	}
 
-	@Override
-	public EditPermissionType isEditAllowed(TravelEntry travelEntry) {
-		// todo is the following correct? This was not covered before so I think this is a bug fixed
-		return getEditPermissionType(travelEntry);
-	}
 }

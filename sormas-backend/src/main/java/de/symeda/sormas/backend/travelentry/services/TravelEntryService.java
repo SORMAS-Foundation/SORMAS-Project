@@ -202,7 +202,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 			return EditPermissionType.REFUSED;
 		}
 
-		return super.getEditPermissionType(travelEntry);
+		return super.isEditAllowed(travelEntry);
 	}
 
 	@Override

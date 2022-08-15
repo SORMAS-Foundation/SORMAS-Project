@@ -1522,11 +1522,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			return EditPermissionType.REFUSED;
 		}
 
-		return super.getEditPermissionType(caze);
+		return super.isEditAllowed(caze);
 	}
 
 	@Override
-	public EditPermissionType getEditPermissionType(Case caze) {
+	public EditPermissionType isEditAllowed(Case caze) {
 
 		if (caze.getSormasToSormasOriginInfo() != null && !caze.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
 			return EditPermissionType.REFUSED;
@@ -1536,14 +1536,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			return EditPermissionType.REFUSED;
 		}
 
-		return super.getEditPermissionType(caze);
+		return super.isEditAllowed(caze);
 
-	}
-
-	@Override
-	public EditPermissionType isEditAllowed(Case entity) {
-		// todo compared to ContactService this seems strange.
-		return getEditPermissionType(entity);
 	}
 
 	public boolean inJurisdiction(Case caze, User user) {

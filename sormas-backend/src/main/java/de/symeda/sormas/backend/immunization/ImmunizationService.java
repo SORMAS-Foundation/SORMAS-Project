@@ -577,6 +577,6 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			return EditPermissionType.REFUSED;
 		}
 
-		return super.getEditPermissionType(immunization);
+		return super.isEditAllowed(immunization);
 	}
 }

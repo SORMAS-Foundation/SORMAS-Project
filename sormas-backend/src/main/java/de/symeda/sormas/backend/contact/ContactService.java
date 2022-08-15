@@ -1564,7 +1564,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaQuery<ContactJurisdictionFlagsDto> cq = cb.createQuery(ContactJurisdictionFlagsDto.class);
 		Root<Contact> root = cq.from(Contact.class);
 		cq.multiselect(getJurisdictionSelections(new ContactQueryContext(cb, cq, root)));
-		cq.where(cb.equal(root.get(Contact.UUID), contact.getUuid()));
+		cq.where(cb.equal(root.get(AbstractDomainObject.UUID), contact.getUuid()));
 		return em.createQuery(cq).getSingleResult();
 	}
 
@@ -1587,13 +1587,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			return EditPermissionType.REFUSED;
 		}
 
-		return getEditPermissionType(contact);
+		return super.isEditAllowed(contact);
 	}
 
 	public List<Selection<?>> getJurisdictionSelections(ContactQueryContext qc) {
 
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
-		final ContactJoins joins = (ContactJoins) qc.getJoins();
+		final ContactJoins joins = qc.getJoins();
 		return Arrays.asList(
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc, userService.getCurrentUser())),
 			JurisdictionHelper.booleanSelector(
