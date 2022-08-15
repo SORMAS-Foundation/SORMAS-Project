@@ -168,7 +168,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Create n
 		
 		startDate.addValueChangeListener(e -> {
 			textField.setReadOnly(false);
-			textField.setValue(DateGetYear(startDate.getValue())+".");
+			textField.setValue(DateGetYear(startDate.getValue())+" ");
 			textField.setReadOnly(true);		
 		});
 		
