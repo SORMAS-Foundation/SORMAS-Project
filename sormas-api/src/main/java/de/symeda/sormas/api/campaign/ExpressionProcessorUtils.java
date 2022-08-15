@@ -32,7 +32,7 @@ public class ExpressionProcessorUtils {
 	}
 
 	private static Object parseValue(Object value) {
-		if (value instanceof String) {
+		if (value instanceof String && !((String) value).isEmpty()) {
 			try {
 				return Double.parseDouble(value.toString());
 			} catch (NumberFormatException e) {
@@ -40,7 +40,7 @@ public class ExpressionProcessorUtils {
 				//	Integer.parseInt(value.toString())
 				//	return Double.parseDouble(value.toString());
 				//} catch (NumberFormatException e1) {
-				System.out.println("Value not parseable as double #####: "+value);
+			//	System.out.println("Value not parseable as double #####: "+value);
 					return value;
 				//}
 			}
