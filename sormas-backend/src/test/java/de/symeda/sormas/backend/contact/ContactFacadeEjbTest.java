@@ -42,6 +42,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
+import de.symeda.sormas.api.i18n.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
