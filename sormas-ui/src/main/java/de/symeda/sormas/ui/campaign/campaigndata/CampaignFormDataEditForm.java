@@ -213,7 +213,6 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
 			List<CommunityReferenceDto> items = FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid());
 			for (CommunityReferenceDto item : items) {
-				System.out.println("|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"+item.getCaption()+" "+ item.getUuid()+" "+ item.getNumber());
 				item.setCaption(item.getNumber().toString());
 			}
 			FieldHelper.updateItems(cbCommunity, district != null ? items : null);
