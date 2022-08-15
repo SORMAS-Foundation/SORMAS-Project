@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.infrastructure.district;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.util.List;
+import java.util.ListIterator;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -58,7 +59,7 @@ public class District extends InfrastructureAdo {
 	private Long externalId;
 
 	public String getName() {
-		return name; 
+		return name;
 	}
 
 	public void setName(String name) {
@@ -109,7 +110,7 @@ public class District extends InfrastructureAdo {
 		this.growthRate = growthRate;
 	}
 
-	//@Column(length = CHARACTER_LIMIT_DEFAULT)
+	// @Column(length = CHARACTER_LIMIT_DEFAULT)
 	public Long getExternalId() {
 		return externalId;
 	}
