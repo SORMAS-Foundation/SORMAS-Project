@@ -710,6 +710,7 @@ public class EditContactSteps implements En {
         "I select {string} Quarantine Order in Create Quarantine Order form in Edit Contact directory",
         (String name) -> {
           webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, name);
+          TimeUnit.SECONDS.sleep(3);
         });
     When(
         "I check if downloaded file is correct for {string} Quarantine Order in Edit Contact directory",
