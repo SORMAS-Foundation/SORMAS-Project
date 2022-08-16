@@ -9,7 +9,7 @@ Feature: Cover Epidemiological data Tab from Contacts
     Then API: I create a new contact
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I am accessing the Epidemiological tab using of created contact via api
     And I check and fill all data for a new EpiData Exposure
     Then I am checking all data is saved and displayed on edit Exposure page
@@ -22,7 +22,7 @@ Feature: Cover Epidemiological data Tab from Contacts
     Then API: I create a new contact
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Contacts button from navbar
     And I am accessing the Epidemiological tab using of created contact via api
     And I click on Exposure details known with YES option

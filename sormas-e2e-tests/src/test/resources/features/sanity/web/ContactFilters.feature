@@ -12,7 +12,7 @@ Feature: Contact filter functionality
     Given API: I create a new contact linked to the previous created case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Contacts button from navbar
     Then I apply Id of last api created Contact on Contact Directory Page
     And I apply Contact classification filter to "Unconfirmed contact" on Contact Directory Page
@@ -53,7 +53,7 @@ Feature: Contact filter functionality
     Given API: I create a new contact linked to the previous created case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Contacts button from navbar
     Then I apply Id of last api created Contact on Contact Directory Page
     And I click APPLY BUTTON in Contact Directory Page
@@ -91,7 +91,7 @@ Feature: Contact filter functionality
     Given API: I create a new contact linked to the previous created case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Contacts button from navbar
     Then I apply Id of last api created Contact on Contact Directory Page
     And I click APPLY BUTTON in Contact Directory Page
@@ -107,7 +107,7 @@ Feature: Contact filter functionality
 
   @tmsLink=SORQA-5911 @env_de
   Scenario: Check Contact basic filters on Contact directory page for DE version
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form for DE version
@@ -153,7 +153,7 @@ Feature: Contact filter functionality
 
   @tmsLink=SORQA-5911 @env_de
   Scenario: Check checkbox filters on Contact directory page for DE version
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form for DE version
@@ -204,7 +204,7 @@ Feature: Contact filter functionality
 
   @tmsLink=SORQA-6100 @env_de
   Scenario: Add disease variant filter to the contact directory and variant to source case box for DE
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form for DE version
@@ -285,7 +285,7 @@ Feature: Contact filter functionality
     And API: I create a new contact
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     Then I search after last created contact via API by UUID and open
     And I set contact vaccination status to <status>

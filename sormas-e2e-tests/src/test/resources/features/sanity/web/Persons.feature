@@ -3,7 +3,7 @@ Feature: Edit Persons
 
   @env_main @tmsLink=SORQA-110
   Scenario: Edit existent person
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     Then I fill a new contact form
@@ -28,7 +28,7 @@ Feature: Edit Persons
     Then API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When I log in with National User
+    When I log in as a National User
     When I click on the Persons button from navbar
     Then I fill Year of birth filter in Persons with the year of the last created person via API
     And I fill Month of birth filter in Persons with the month of the last created person via API
@@ -88,7 +88,7 @@ Feature: Edit Persons
 
   @tmsLink=SORDEV-8468 @env_main
   Scenario: Edit existent person and provoke errors in the Edit Person page
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Persons button from navbar
     And I filter for persons who are alive
     And I apply on the APPLY FILTERS button
@@ -123,7 +123,7 @@ Feature: Edit Persons
     Given API: I create 1 new immunizations for last created person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     Then I navigate to the last created via api Person page via URL
     And I click on See Cases for this Person button from Edit Person page
@@ -141,7 +141,7 @@ Feature: Edit Persons
 
   @tmsLink=SORDEV-8467 @env_main
   Scenario: Test column structure in Person directory
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Persons button from navbar
     Then I check that the Person table structure is correct
 
@@ -159,7 +159,7 @@ Feature: Edit Persons
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When I log in with National User
+    When I log in as a National User
     And I click on the Events button from navbar
     And I navigate to the last created through API Event page via URL
     And I click on the Event participant tab

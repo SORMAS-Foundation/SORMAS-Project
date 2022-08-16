@@ -9,7 +9,7 @@ Feature: Case Classification functionality
     And API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    And I log in with National User
+    And I log in as a National User
     Then I open last edited case by API via URL navigation
     And For the current Case the Case Classification value should be "Not yet classified"
     And I navigate to symptoms tab
@@ -27,7 +27,7 @@ Feature: Case Classification functionality
     And API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    And I log in with National User
+    And I log in as a National User
     Then I open last edited case by API via URL navigation
     And I navigate to symptoms tab
     When I check Yes Option for Soar Throat on Symptoms tab page
