@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ SORMAS® - Surveillance Outbreak Response Management & Analysis System
+  ~ Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:descendantFocusability="beforeDescendants">
+
+    <data>
+        <variable name="currentStep" type="int" />
+        <variable name="stepNumber" type="int" />
+
+        <import type="android.view.View" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/sync_steps_changes"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/sync_steps_changes_images"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:id="@+id/step_1"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="1"
+                android:textColor="@color/whiteOpaque"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:background="@drawable/shape_circle_blue"
+                android:visibility="@{currentStep == 1 ? View.VISIBLE : View.GONE}"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/step_1_done"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:visibility="@{currentStep > 1 ? View.VISIBLE : View.GONE}"
+                android:src="@drawable/ic_baseline_check_circle_green_34dp" />
+
+            <ImageView
+                android:id="@+id/step_1_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="2dp"
+                android:src="@drawable/ic_baseline_arrow_forward_24" />
+
+            <TextView
+                android:id="@+id/step_2"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="2"
+                android:textColor="@color/whiteOpaque"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:background="@{currentStep == 2 ? @drawable/shape_circle_blue : @drawable/shape_circle_lightblue}"
+                android:visibility="@{currentStep &lt;= 2 ? View.VISIBLE : View.GONE}"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/step_2_done"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:visibility="@{currentStep > 2 ? View.VISIBLE : View.GONE}"
+                android:src="@drawable/ic_baseline_check_circle_green_34dp" />
+
+            <ImageView
+                android:id="@+id/step_2_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="2dp"
+                android:src="@drawable/ic_baseline_arrow_forward_24" />
+
+            <TextView
+                android:id="@+id/step_3"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="3"
+                android:textColor="@color/whiteOpaque"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:background="@{currentStep == 3 ? @drawable/shape_circle_blue : @drawable/shape_circle_lightblue}"
+                android:visibility="@{currentStep &lt;= 3 ? View.VISIBLE : View.GONE}"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/step_3_done"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:visibility="@{currentStep > 3 ? View.VISIBLE : View.GONE}"
+                android:src="@drawable/ic_baseline_check_circle_green_34dp" />
+
+            <ImageView
+                android:id="@+id/step_3_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="2dp"
+                android:src="@drawable/ic_baseline_arrow_forward_24" />
+
+            <TextView
+                android:id="@+id/step_4"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="4"
+                android:textColor="@color/whiteOpaque"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:background="@{currentStep == 4 ? @drawable/shape_circle_blue : @drawable/shape_circle_lightblue}"
+                android:visibility="@{currentStep &lt;= 4 ? View.VISIBLE : View.GONE}"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/step_4_done"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:visibility="@{currentStep > 4 ? View.VISIBLE : View.GONE}"
+                android:src="@drawable/ic_baseline_check_circle_green_34dp" />
+
+            <ImageView
+                android:id="@+id/step_4_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="2dp"
+                android:src="@drawable/ic_baseline_arrow_forward_24"
+                android:visibility="@{stepNumber > 4 ? View.VISIBLE : View.GONE}" />
+
+            <TextView
+                android:id="@+id/step_5"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="5"
+                android:textColor="@color/whiteOpaque"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:background="@{currentStep == 5 ? @drawable/shape_circle_blue : @drawable/shape_circle_lightblue}"
+                android:visibility="@{currentStep &lt;= 5 &amp;&amp; stepNumber > 4 ? View.VISIBLE : View.GONE}"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/step_5_done"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:visibility="@{currentStep > 5 ? View.VISIBLE : View.GONE}"
+                android:src="@drawable/ic_baseline_check_circle_green_34dp" />
+
+            <ImageView
+                android:id="@+id/step_5_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginHorizontal="2dp"
+                android:src="@drawable/ic_baseline_arrow_forward_24"
+                android:visibility="@{stepNumber > 5 ? View.VISIBLE : View.GONE}" />
+
+            <TextView
+                android:id="@+id/step_6"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="6"
+                android:textColor="@color/whiteOpaque"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:background="@{currentStep == 6 ? @drawable/shape_circle_blue : @drawable/shape_circle_lightblue}"
+                android:visibility="@{currentStep &lt;= 6 &amp;&amp; stepNumber > 5 ? View.VISIBLE : View.GONE}"
+                android:textSize="20sp" />
+
+            <ImageView
+                android:id="@+id/step_6_done"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:visibility="@{currentStep > 6 ? View.VISIBLE : View.GONE}"
+                android:src="@drawable/ic_baseline_check_circle_green_34dp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/step_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginBottom="12dp"
+            android:text="@{String.format(@string/caption_sync_send_new, '1')}"
+            android:textColor="@color/normalText"
+            android:textSize="@dimen/defaultControlTextSize" />
+
+    </LinearLayout>
+
+</layout>

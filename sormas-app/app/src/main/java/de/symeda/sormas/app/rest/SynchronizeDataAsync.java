@@ -20,10 +20,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.AddTrace;
 import com.google.firebase.perf.metrics.Trace;
+import com.j256.ormlite.logger.Logger;
+import com.j256.ormlite.logger.LoggerFactory;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -94,6 +97,7 @@ import de.symeda.sormas.app.backend.therapy.TreatmentDtoHelper;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.backend.user.UserRoleDtoHelper;
 import de.symeda.sormas.app.backend.visit.VisitDtoHelper;
+import de.symeda.sormas.app.component.dialog.SynchronizationDialog;
 import de.symeda.sormas.app.core.TaskNotificationService;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
 import de.symeda.sormas.app.util.SyncCallback;
@@ -101,6 +105,8 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
+
+	private static final Logger logger = LoggerFactory.getLogger(SynchronizeDataAsync.class);
 
 	/**
 	 * Should be set to true when the synchronization fails and reset to false as soon
@@ -111,10 +117,12 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 	private SyncMode syncMode;
 	private final Context context;
+	private final Optional<SynchronizationDialog.SynchronizationCallbacks> syncCallbacks;
 
-	private SynchronizeDataAsync(SyncMode syncMode, Context context) {
+	private SynchronizeDataAsync(SyncMode syncMode, Context context, SynchronizationDialog.SynchronizationCallbacks syncCallbacks) {
 		this.syncMode = syncMode;
 		this.context = context;
+		this.syncCallbacks = Optional.ofNullable(syncCallbacks);
 	}
 
 	@Override
@@ -129,6 +137,12 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		}
 
 		try {
+			boolean pullAndRemoveObsoleteNecessary = ConfigProvider.getLastObsoleteUuidsSyncDate() == null
+				|| DateHelper.getFullDaysBetween(ConfigProvider.getLastObsoleteUuidsSyncDate(), new Date()) >= 1;
+			syncCallbacks
+				.ifPresent(c -> c.getUpdateStepNumberCallback().accept(syncMode == SyncMode.Changes ? pullAndRemoveObsoleteNecessary ? 5 : 4 : 6));
+			syncCallbacks.ifPresent(c -> c.getShowDialogCallback().run());
+
 			Trace syncModeTrace;
 
 			switch (syncMode) {
@@ -137,15 +151,20 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				syncModeTrace.start();
 
 				// Prioritize pushing new data
+				syncCallbacks.ifPresent(c -> c.getUpdateSynchronizationStepCallback().accept(SynchronizationDialog.SynchronizationStep.PUSH_NEW));
 				pushNewData();
 				// Infrastructure always has to be pulled - otherwise referenced data may be lost (e.g. #586)
+				syncCallbacks
+					.ifPresent(c -> c.getUpdateSynchronizationStepCallback().accept(SynchronizationDialog.SynchronizationStep.PULL_INFRASTRUCTURE));
 				pullInfrastructure();
 				// Pull and remove obsolete entities when the last time this has been done is more than 24 hours ago
-				if (ConfigProvider.getLastObsoleteUuidsSyncDate() == null
-					|| DateHelper.getFullDaysBetween(ConfigProvider.getLastObsoleteUuidsSyncDate(), new Date()) >= 1) {
+				if (pullAndRemoveObsoleteNecessary) {
+					syncCallbacks
+						.ifPresent(c -> c.getUpdateSynchronizationStepCallback().accept(SynchronizationDialog.SynchronizationStep.DELETE_OBSOLETE));
 					pullAndRemoveObsoleteUuidsSince(ConfigProvider.getLastObsoleteUuidsSyncDate());
 				}
 				// Pull changed data and push existing data that has been changed on the mobile device
+				syncCallbacks.ifPresent(c -> c.getUpdateSynchronizationStepCallback().accept(SynchronizationDialog.SynchronizationStep.SYNCHRONIZE));
 				synchronizeChangedData();
 
 				syncModeTrace.stop();
@@ -154,9 +173,14 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				syncModeTrace = FirebasePerformance.getInstance().newTrace("syncModeCompleteTrace");
 				syncModeTrace.start();
 
+				syncCallbacks
+					.ifPresent(c -> c.getUpdateSynchronizationStepCallback().accept(SynchronizationDialog.SynchronizationStep.PULL_INFRASTRUCTURE));
 				pullInfrastructure(); // do before missing, because we may have a completely empty database
+				syncCallbacks.ifPresent(
+					c -> c.getUpdateSynchronizationStepCallback().accept(SynchronizationDialog.SynchronizationStep.CLEAR_UP_INFRASTRUCTURE));
 				pullMissingAndDeleteInvalidInfrastructure();
 				pushNewPullMissingAndDeleteInvalidData();
+				syncCallbacks.ifPresent(c -> c.getUpdateSynchronizationStepCallback().accept(SynchronizationDialog.SynchronizationStep.SYNCHRONIZE));
 				synchronizeChangedData();
 
 				syncModeTrace.stop();
@@ -165,10 +189,16 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				syncModeTrace = FirebasePerformance.getInstance().newTrace("syncModeCompleteAndRepullTrace");
 				syncModeTrace.start();
 
+				syncCallbacks
+					.ifPresent(c -> c.getUpdateSynchronizationStepCallback().accept(SynchronizationDialog.SynchronizationStep.PULL_INFRASTRUCTURE));
 				pullInfrastructure(); // do before missing, because we may have a completely empty database
+				syncCallbacks.ifPresent(
+					c -> c.getUpdateSynchronizationStepCallback().accept(SynchronizationDialog.SynchronizationStep.CLEAR_UP_INFRASTRUCTURE));
 				pullMissingAndDeleteInvalidInfrastructure();
+				syncCallbacks.ifPresent(c -> c.getUpdateSynchronizationStepCallback().accept(SynchronizationDialog.SynchronizationStep.REPULL));
 				repullData();
 				pushNewPullMissingAndDeleteInvalidData();
+				syncCallbacks.ifPresent(c -> c.getUpdateSynchronizationStepCallback().accept(SynchronizationDialog.SynchronizationStep.SYNCHRONIZE));
 				synchronizeChangedData();
 				ConfigProvider.setRepullNeeded(false);
 
@@ -268,26 +298,27 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 	@AddTrace(name = "pushNewDataTrace")
 	private void pushNewData() throws ServerCommunicationException, ServerConnectionException, DaoException, NoConnectionException {
 
-		new PersonDtoHelper().pushEntities(true);
-		new CaseDtoHelper().pushEntities(true);
-		new ImmunizationDtoHelper().pushEntities(true);
-		new EventDtoHelper().pushEntities(true);
-		new EventParticipantDtoHelper().pushEntities(true);
-		new SampleDtoHelper().pushEntities(true);
-		new PathogenTestDtoHelper().pushEntities(true);
-		new AdditionalTestDtoHelper().pushEntities(true);
-		new ContactDtoHelper().pushEntities(true);
-		new VisitDtoHelper().pushEntities(true);
-		new TaskDtoHelper().pushEntities(true);
-		new WeeklyReportDtoHelper().pushEntities(true);
-		new AggregateReportDtoHelper().pushEntities(true);
-		new PrescriptionDtoHelper().pushEntities(true);
-		new TreatmentDtoHelper().pushEntities(true);
-		new ClinicalVisitDtoHelper().pushEntities(true);
+		new PersonDtoHelper().pushEntities(true, syncCallbacks);
+		new CaseDtoHelper().pushEntities(true, syncCallbacks);
+		new ImmunizationDtoHelper().pushEntities(true, syncCallbacks);
+		new EventDtoHelper().pushEntities(true, syncCallbacks);
+		new EventParticipantDtoHelper().pushEntities(true, syncCallbacks);
+		new SampleDtoHelper().pushEntities(true, syncCallbacks);
+		new PathogenTestDtoHelper().pushEntities(true, syncCallbacks);
+		new AdditionalTestDtoHelper().pushEntities(true, syncCallbacks);
+		new ContactDtoHelper().pushEntities(true, syncCallbacks);
+		new VisitDtoHelper().pushEntities(true, syncCallbacks);
+		new TaskDtoHelper().pushEntities(true, syncCallbacks);
+		new WeeklyReportDtoHelper().pushEntities(true, syncCallbacks);
+		new AggregateReportDtoHelper().pushEntities(true, syncCallbacks);
+		new PrescriptionDtoHelper().pushEntities(true, syncCallbacks);
+		new TreatmentDtoHelper().pushEntities(true, syncCallbacks);
+		new ClinicalVisitDtoHelper().pushEntities(true, syncCallbacks);
 	}
 
 	@AddTrace(name = "synchronizeChangedDataTrace")
 	private void synchronizeChangedData() throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
+
 		PersonDtoHelper personDtoHelper = new PersonDtoHelper();
 		CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
 		ImmunizationDtoHelper immunizationDtoHelper = new ImmunizationDtoHelper();
@@ -307,61 +338,95 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		// order is important, due to dependencies (e.g. case & person)
 
-		new OutbreakDtoHelper().pullEntities(false, context);
-		new DiseaseConfigurationDtoHelper().pullEntities(false, context);
-		new CustomizableEnumValueDtoHelper().pullEntities(false, context);
+		new OutbreakDtoHelper().pullEntities(false, context, syncCallbacks);
+		new DiseaseConfigurationDtoHelper().pullEntities(false, context, syncCallbacks);
+		new CustomizableEnumValueDtoHelper().pullEntities(false, context, syncCallbacks);
 
-		boolean personsNeedPull = personDtoHelper.pullAndPushEntities(context);
-		boolean casesNeedPull = caseDtoHelper.pullAndPushEntities(context);
-		boolean immunizationsNeedPull = immunizationDtoHelper.pullAndPushEntities(context);
-		boolean eventsNeedPull = eventDtoHelper.pullAndPushEntities(context);
-		boolean eventParticipantsNeedPull = eventParticipantDtoHelper.pullAndPushEntities(context);
-		boolean samplesNeedPull = sampleDtoHelper.pullAndPushEntities(context);
-		boolean sampleTestsNeedPull = pathogenTestDtoHelper.pullAndPushEntities(context);
-		boolean additionalTestsNeedPull = additionalTestDtoHelper.pullAndPushEntities(context);
-		boolean contactsNeedPull = contactDtoHelper.pullAndPushEntities(context);
-		boolean visitsNeedPull = visitDtoHelper.pullAndPushEntities(context);
-		boolean tasksNeedPull = taskDtoHelper.pullAndPushEntities(context);
-		boolean weeklyReportsNeedPull = weeklyReportDtoHelper.pullAndPushEntities(context);
-		boolean aggregateReportsNeedPull = aggregateReportDtoHelper.pullAndPushEntities(context);
-		boolean prescriptionsNeedPull = prescriptionDtoHelper.pullAndPushEntities(context);
-		boolean treatmentsNeedPull = treatmentDtoHelper.pullAndPushEntities(context);
-		boolean clinicalVisitsNeedPull = clinicalVisitDtoHelper.pullAndPushEntities(context);
+		boolean personsNeedPull = personDtoHelper.pullAndPushEntities(context, syncCallbacks);
+		boolean casesNeedPull = caseDtoHelper.pullAndPushEntities(context, syncCallbacks);
+		boolean immunizationsNeedPull = immunizationDtoHelper.pullAndPushEntities(context, syncCallbacks);
+		boolean eventsNeedPull = eventDtoHelper.pullAndPushEntities(context, syncCallbacks);
+		boolean eventParticipantsNeedPull = eventParticipantDtoHelper.pullAndPushEntities(context, syncCallbacks);
+		boolean samplesNeedPull = sampleDtoHelper.pullAndPushEntities(context, syncCallbacks);
+		boolean sampleTestsNeedPull = pathogenTestDtoHelper.pullAndPushEntities(context, syncCallbacks);
+		boolean additionalTestsNeedPull = additionalTestDtoHelper.pullAndPushEntities(context, syncCallbacks);
+		boolean contactsNeedPull = contactDtoHelper.pullAndPushEntities(context, syncCallbacks);
+		boolean visitsNeedPull = visitDtoHelper.pullAndPushEntities(context, syncCallbacks);
+		boolean tasksNeedPull = taskDtoHelper.pullAndPushEntities(context, syncCallbacks);
+		boolean weeklyReportsNeedPull = weeklyReportDtoHelper.pullAndPushEntities(context, syncCallbacks);
+		boolean aggregateReportsNeedPull = aggregateReportDtoHelper.pullAndPushEntities(context, syncCallbacks);
+		boolean prescriptionsNeedPull = prescriptionDtoHelper.pullAndPushEntities(context, syncCallbacks);
+		boolean treatmentsNeedPull = treatmentDtoHelper.pullAndPushEntities(context, syncCallbacks);
+		boolean clinicalVisitsNeedPull = clinicalVisitDtoHelper.pullAndPushEntities(context, syncCallbacks);
+
+		syncCallbacks.ifPresent(c -> c.getUpdateSynchronizationStepCallback().accept(SynchronizationDialog.SynchronizationStep.PULL_MODIFIED));
 
 		casesNeedPull |= clinicalVisitsNeedPull;
 
-		if (personsNeedPull)
-			personDtoHelper.pullEntities(true, context);
-		if (casesNeedPull)
-			caseDtoHelper.pullEntities(true, context);
-		if (immunizationsNeedPull)
-			immunizationDtoHelper.pullEntities(true, context);
-		if (eventsNeedPull)
-			eventDtoHelper.pullEntities(true, context);
-		if (eventParticipantsNeedPull)
-			eventParticipantDtoHelper.pullEntities(true, context);
-		if (samplesNeedPull)
-			sampleDtoHelper.pullEntities(true, context);
-		if (sampleTestsNeedPull)
-			pathogenTestDtoHelper.pullEntities(true, context);
-		if (additionalTestsNeedPull)
-			additionalTestDtoHelper.pullEntities(true, context);
-		if (contactsNeedPull)
-			contactDtoHelper.pullEntities(true, context);
-		if (visitsNeedPull)
-			visitDtoHelper.pullEntities(true, context);
-		if (tasksNeedPull)
-			taskDtoHelper.pullEntities(true, context);
-		if (weeklyReportsNeedPull)
-			weeklyReportDtoHelper.pullEntities(true, context);
-		if (aggregateReportsNeedPull)
-			aggregateReportDtoHelper.pullEntities(true, context);
-		if (prescriptionsNeedPull)
-			prescriptionDtoHelper.pullEntities(true, context);
-		if (treatmentsNeedPull)
-			treatmentDtoHelper.pullEntities(true, context);
-		if (clinicalVisitsNeedPull)
-			clinicalVisitDtoHelper.pullEntities(true, context);
+		if (personsNeedPull) {
+			personDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		}
+		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+		if (casesNeedPull) {
+			caseDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		}
+		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+		if (immunizationsNeedPull) {
+			immunizationDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		}
+		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+		if (eventsNeedPull) {
+			eventDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		}
+		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+		if (eventParticipantsNeedPull) {
+			eventParticipantDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		}
+		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+		if (samplesNeedPull) {
+			sampleDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		}
+		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+		if (sampleTestsNeedPull) {
+			pathogenTestDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		}
+		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+		if (additionalTestsNeedPull) {
+			additionalTestDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		}
+		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+		if (contactsNeedPull) {
+			contactDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		}
+		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+		if (visitsNeedPull) {
+			visitDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		}
+		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+		if (tasksNeedPull) {
+			taskDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		}
+		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+		if (weeklyReportsNeedPull) {
+			weeklyReportDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		}
+		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+		if (aggregateReportsNeedPull) {
+			aggregateReportDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		}
+		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+		if (prescriptionsNeedPull) {
+			prescriptionDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		}
+		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+		if (treatmentsNeedPull) {
+			treatmentDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		}
+		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+		if (clinicalVisitsNeedPull) {
+			clinicalVisitDtoHelper.pullEntities(true, context, syncCallbacks, false);
+		}
+		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 
 		// Campaigns
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
@@ -369,20 +434,23 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 			// meta first
 			final CampaignFormMetaDtoHelper campaignFormMetaDtoHelper = new CampaignFormMetaDtoHelper();
 			// no meta editing in mobile app - if (campaignFormMetaDtoHelper.pullAndPushEntities(context))
-			campaignFormMetaDtoHelper.pullEntities(true, context);
+			campaignFormMetaDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 
 			final CampaignDtoHelper campaignDtoHelper = new CampaignDtoHelper();
 			// no campaign editing yet - if (campaignDtoHelper.pullAndPushEntities(context))
-			campaignDtoHelper.pullEntities(true, context);
+			campaignDtoHelper.pullEntities(true, context, syncCallbacks, false);
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 
 			final CampaignFormDataDtoHelper campaignFormDataDtoHelper = new CampaignFormDataDtoHelper();
 			if (campaignFormDataDtoHelper.pullAndPushEntities(context))
-				campaignFormDataDtoHelper.pullEntities(true, context);
+				campaignFormDataDtoHelper.pullEntities(true, context, syncCallbacks, false);
 		}
 	}
 
 	@AddTrace(name = "repullDataTrace")
 	private void repullData() throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
+
 		PersonDtoHelper personDtoHelper = new PersonDtoHelper();
 		CaseDtoHelper caseDtoHelper = new CaseDtoHelper();
 		ImmunizationDtoHelper immunizationDtoHelper = new ImmunizationDtoHelper();
@@ -402,46 +470,47 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		// order is important, due to dependencies (e.g. case & person)
 
-		new UserRoleDtoHelper().repullEntities(context);
-		new DiseaseClassificationDtoHelper().repullEntities(context);
-		new UserDtoHelper().repullEntities(context);
-		new OutbreakDtoHelper().repullEntities(context);
-		new DiseaseConfigurationDtoHelper().repullEntities(context);
-		new CustomizableEnumValueDtoHelper().repullEntities(context);
-		new FeatureConfigurationDtoHelper().repullEntities(context);
-		personDtoHelper.repullEntities(context);
-		caseDtoHelper.repullEntities(context);
-		immunizationDtoHelper.repullEntities(context);
-		eventDtoHelper.repullEntities(context);
-		eventParticipantDtoHelper.repullEntities(context);
-		sampleDtoHelper.repullEntities(context);
-		pathogenTestDtoHelper.repullEntities(context);
-		additionalTestDtoHelper.repullEntities(context);
-		contactDtoHelper.repullEntities(context);
-		visitDtoHelper.repullEntities(context);
-		taskDtoHelper.repullEntities(context);
-		weeklyReportDtoHelper.repullEntities(context);
-		aggregateReportDtoHelper.repullEntities(context);
-		prescriptionDtoHelper.repullEntities(context);
-		treatmentDtoHelper.repullEntities(context);
-		clinicalVisitDtoHelper.repullEntities(context);
+		new UserRoleDtoHelper().repullEntities(context, syncCallbacks);
+		new DiseaseClassificationDtoHelper().repullEntities(context, syncCallbacks);
+		new UserDtoHelper().repullEntities(context, syncCallbacks);
+		new OutbreakDtoHelper().repullEntities(context, syncCallbacks);
+		new DiseaseConfigurationDtoHelper().repullEntities(context, syncCallbacks);
+		new CustomizableEnumValueDtoHelper().repullEntities(context, syncCallbacks);
+		new FeatureConfigurationDtoHelper().repullEntities(context, syncCallbacks);
+		personDtoHelper.repullEntities(context, syncCallbacks);
+		caseDtoHelper.repullEntities(context, syncCallbacks);
+		immunizationDtoHelper.repullEntities(context, syncCallbacks);
+		eventDtoHelper.repullEntities(context, syncCallbacks);
+		eventParticipantDtoHelper.repullEntities(context, syncCallbacks);
+		sampleDtoHelper.repullEntities(context, syncCallbacks);
+		pathogenTestDtoHelper.repullEntities(context, syncCallbacks);
+		additionalTestDtoHelper.repullEntities(context, syncCallbacks);
+		contactDtoHelper.repullEntities(context, syncCallbacks);
+		visitDtoHelper.repullEntities(context, syncCallbacks);
+		taskDtoHelper.repullEntities(context, syncCallbacks);
+		weeklyReportDtoHelper.repullEntities(context, syncCallbacks);
+		aggregateReportDtoHelper.repullEntities(context, syncCallbacks);
+		prescriptionDtoHelper.repullEntities(context, syncCallbacks);
+		treatmentDtoHelper.repullEntities(context, syncCallbacks);
+		clinicalVisitDtoHelper.repullEntities(context, syncCallbacks);
 
 		// Campaigns
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
 			// meta first
 			final CampaignFormMetaDtoHelper campaignFormMetaDtoHelper = new CampaignFormMetaDtoHelper();
-			campaignFormMetaDtoHelper.repullEntities(context);
+			campaignFormMetaDtoHelper.repullEntities(context, syncCallbacks);
 
 			final CampaignDtoHelper campaignDtoHelper = new CampaignDtoHelper();
-			campaignDtoHelper.repullEntities(context);
+			campaignDtoHelper.repullEntities(context, syncCallbacks);
 
 			final CampaignFormDataDtoHelper campaignFormDataDtoHelper = new CampaignFormDataDtoHelper();
-			campaignFormDataDtoHelper.repullEntities(context);
+			campaignFormDataDtoHelper.repullEntities(context, syncCallbacks);
 		}
 	}
 
 	@AddTrace(name = "pullInfrastructureTrace")
 	private void pullInfrastructure() throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
+
 		if (ConfigProvider.isInitialSyncRequired()) {
 			pullInitialInfrastructure();
 		} else {
@@ -459,7 +528,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 						ConfigProvider.setInitialSyncRequired(true);
 						pullInfrastructure();
 					} else {
-						InfrastructureHelper.handlePulledInfrastructureData(infrastructureData);
+						InfrastructureHelper.handlePulledInfrastructureData(infrastructureData, syncCallbacks);
 					}
 				}
 			} catch (IOException e) {
@@ -470,20 +539,21 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 	@AddTrace(name = "pullInitialInfrastructureTrace")
 	private void pullInitialInfrastructure() throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
-		new ContinentDtoHelper().pullEntities(false, context);
-		new SubcontinentDtoHelper().pullEntities(false, context);
-		new CountryDtoHelper().pullEntities(false, context);
-		new AreaDtoHelper().pullEntities(false, context);
-		new RegionDtoHelper().pullEntities(false, context);
-		new DistrictDtoHelper().pullEntities(false, context);
-		new CommunityDtoHelper().pullEntities(false, context);
-		new FacilityDtoHelper().pullEntities(false, context);
-		new PointOfEntryDtoHelper().pullEntities(false, context);
-		new UserRoleDtoHelper().pullEntities(false, context);
-		new UserDtoHelper().pullEntities(false, context);
-		new DiseaseClassificationDtoHelper().pullEntities(false, context);
-		new DiseaseConfigurationDtoHelper().pullEntities(false, context);
-		new CustomizableEnumValueDtoHelper().pullEntities(false, context);
+
+		new ContinentDtoHelper().pullEntities(false, context, syncCallbacks);
+		new SubcontinentDtoHelper().pullEntities(false, context, syncCallbacks);
+		new CountryDtoHelper().pullEntities(false, context, syncCallbacks);
+		new AreaDtoHelper().pullEntities(false, context, syncCallbacks);
+		new RegionDtoHelper().pullEntities(false, context, syncCallbacks);
+		new DistrictDtoHelper().pullEntities(false, context, syncCallbacks);
+		new CommunityDtoHelper().pullEntities(false, context, syncCallbacks);
+		new FacilityDtoHelper().pullEntities(false, context, syncCallbacks);
+		new PointOfEntryDtoHelper().pullEntities(false, context, syncCallbacks);
+		new UserRoleDtoHelper().pullEntities(false, context, syncCallbacks);
+		new UserDtoHelper().pullEntities(false, context, syncCallbacks);
+		new DiseaseClassificationDtoHelper().pullEntities(false, context, syncCallbacks);
+		new DiseaseConfigurationDtoHelper().pullEntities(false, context, syncCallbacks);
+		new CustomizableEnumValueDtoHelper().pullEntities(false, context, syncCallbacks);
 
 		// feature configurations may be removed, so have to pull the deleted uuids
 		// this may be applied to other entities later as well
@@ -493,13 +563,14 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				.pullDeletedUuidsSince(featureConfigurationChangeDate != null ? featureConfigurationChangeDate.getTime() : 0));
 		DatabaseHelper.getFeatureConfigurationDao().delete(featureConfigurationConfigUuids);
 
-		new FeatureConfigurationDtoHelper().pullEntities(false, context);
+		new FeatureConfigurationDtoHelper().pullEntities(false, context, syncCallbacks);
 
 		ConfigProvider.setInitialSyncRequired(false);
 	}
 
 	@AddTrace(name = "pullAndRemoveObsoleteUuidsSinceTrace")
 	private void pullAndRemoveObsoleteUuidsSince(Date since) throws NoConnectionException, ServerConnectionException, ServerCommunicationException {
+
 		Log.d(SynchronizeDataAsync.class.getSimpleName(), "pullAndRemoveObsoleteUuidsSince");
 
 		try {
@@ -510,6 +581,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 					DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
 				}
 			}
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 
 			// Contacts
 			if (DtoUserRightsHelper.isViewAllowed(ContactDto.class)) {
@@ -519,6 +591,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 					DatabaseHelper.getContactDao().deleteContactAndAllDependingEntities(contactUuid);
 				}
 			}
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 
 			// Events
 			if (DtoUserRightsHelper.isViewAllowed(EventDto.class)) {
@@ -527,6 +600,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 					DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
 				}
 			}
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 
 			// EventParticipant
 			if (DtoUserRightsHelper.isViewAllowed(EventParticipantDto.class)) {
@@ -536,6 +610,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 					DatabaseHelper.getEventParticipantDao().deleteEventParticipantAndAllDependingEntities(eventParticipantUuid);
 				}
 			}
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 
 			// Immunization
 			if (DtoUserRightsHelper.isViewAllowed(ImmunizationDto.class)) {
@@ -545,6 +620,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 					DatabaseHelper.getImmunizationDao().deleteImmunizationAndAllDependingEntities(immunizationUuid);
 				}
 			}
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 
 			// Samples
 			if (DtoUserRightsHelper.isViewAllowed(SampleDto.class)) {
@@ -554,6 +630,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 					DatabaseHelper.getSampleDao().deleteSampleAndAllDependingEntities(sampleUuid);
 				}
 			}
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 
 			// Tasks
 			if (DtoUserRightsHelper.isViewAllowed(TaskDto.class)) {
@@ -562,6 +639,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 					DatabaseHelper.getTaskDao().deleteTaskAndAllDependingEntities(taskUuid);
 				}
 			}
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 
 			// Inactive outbreaks
 			if (DtoUserRightsHelper.isViewAllowed(OutbreakDto.class)) {
@@ -571,11 +649,12 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 					DatabaseHelper.getOutbreakDao().deleteOutbreakAndAllDependingEntities(outbreakUuid);
 				}
 			}
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 
 			// Aggregate reports
 			if (DtoUserRightsHelper.isViewAllowed(AggregateReportDto.class)) {
 				List<String> aggregateReportUuids = executeUuidCall(RetroProvider.getAggregateReportFacade().pullUuids());
-				DatabaseHelper.getAggregateReportDao().deleteInvalid(aggregateReportUuids);
+				DatabaseHelper.getAggregateReportDao().deleteInvalid(aggregateReportUuids, syncCallbacks);
 			}
 
 			ConfigProvider.setLastObsoleteUuidsSyncDate(new Date());
@@ -595,125 +674,130 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		// first push everything that has been CREATED by the user - otherwise this data my lose it's references to other entities.
 		// Example: Case is created using an existing person, meanwhile user loses access to the person
+		syncCallbacks.ifPresent(c -> c.getUpdateSynchronizationStepCallback().accept(SynchronizationDialog.SynchronizationStep.PUSH_NEW));
 		pushNewData();
 
 		boolean viewAllowed;
 
-		// weekly reports and entries
-		viewAllowed = DtoUserRightsHelper.isViewAllowed(WeeklyReportDto.class);
-		List<String> weeklyReportUuids = viewAllowed ? executeUuidCall(RetroProvider.getWeeklyReportFacade().pullUuids()) : new ArrayList<>();
-		DatabaseHelper.getWeeklyReportDao().deleteInvalid(weeklyReportUuids);
-		// aggregate reports
-		viewAllowed = DtoUserRightsHelper.isViewAllowed(AggregateReportDto.class);
-		List<String> aggregateReportUuids = viewAllowed ? executeUuidCall(RetroProvider.getAggregateReportFacade().pullUuids()) : new ArrayList<>();
-		DatabaseHelper.getAggregateReportDao().deleteInvalid(aggregateReportUuids);
-		// tasks
-		viewAllowed = DtoUserRightsHelper.isViewAllowed(TaskDto.class);
-		List<String> taskUuids = viewAllowed ? executeUuidCall(RetroProvider.getTaskFacade().pullUuids()) : new ArrayList<>();
-		DatabaseHelper.getTaskDao().deleteInvalid(taskUuids);
-		// visits
-		viewAllowed = DtoUserRightsHelper.isViewAllowed(VisitDto.class);
-		List<String> visitUuids = viewAllowed ? executeUuidCall(RetroProvider.getVisitFacade().pullUuids()) : new ArrayList<>();
-		DatabaseHelper.getVisitDao().deleteInvalid(visitUuids);
-		// contacts
-		viewAllowed = DtoUserRightsHelper.isViewAllowed(ContactDto.class);
-		List<String> contactUuids = viewAllowed ? executeUuidCall(RetroProvider.getContactFacade().pullUuids()) : new ArrayList<>();
-		DatabaseHelper.getContactDao().deleteInvalid(contactUuids);
-		// sample tests
-		viewAllowed = DtoUserRightsHelper.isViewAllowed(PathogenTestDto.class);
-		List<String> sampleTestUuids = viewAllowed ? executeUuidCall(RetroProvider.getSampleTestFacade().pullUuids()) : new ArrayList<>();
-		DatabaseHelper.getSampleTestDao().deleteInvalid(sampleTestUuids);
-		// additional tests
-		viewAllowed = DtoUserRightsHelper.isViewAllowed(AdditionalTestDto.class);
-		List<String> additionalTestUuids = viewAllowed ? executeUuidCall(RetroProvider.getAdditionalTestFacade().pullUuids()) : new ArrayList<>();
-		DatabaseHelper.getAdditionalTestDao().deleteInvalid(additionalTestUuids);
-		// samples
-		viewAllowed = DtoUserRightsHelper.isViewAllowed(SampleDto.class);
-		List<String> sampleUuids = viewAllowed ? executeUuidCall(RetroProvider.getSampleFacade().pullUuids()) : new ArrayList<>();
-		DatabaseHelper.getSampleDao().deleteInvalid(sampleUuids);
-		// event participants
-		viewAllowed = DtoUserRightsHelper.isViewAllowed(EventParticipantDto.class);
-		List<String> eventParticipantUuids = viewAllowed ? executeUuidCall(RetroProvider.getEventParticipantFacade().pullUuids()) : new ArrayList<>();
-		DatabaseHelper.getEventParticipantDao().deleteInvalid(eventParticipantUuids);
-		// events
-		viewAllowed = DtoUserRightsHelper.isViewAllowed(EventDto.class);
-		List<String> eventUuids = viewAllowed ? executeUuidCall(RetroProvider.getEventFacade().pullUuids()) : new ArrayList<>();
-		DatabaseHelper.getEventDao().deleteInvalid(eventUuids);
-		// treatments
-		viewAllowed = DtoUserRightsHelper.isViewAllowed(TreatmentDto.class);
-		List<String> treatmentUuids = viewAllowed ? executeUuidCall(RetroProvider.getTreatmentFacade().pullUuids()) : new ArrayList<>();
-		DatabaseHelper.getTreatmentDao().deleteInvalid(treatmentUuids);
-		// prescriptions
-		viewAllowed = DtoUserRightsHelper.isViewAllowed(PrescriptionDto.class);
-		List<String> prescriptionUuids = viewAllowed ? executeUuidCall(RetroProvider.getPrescriptionFacade().pullUuids()) : new ArrayList<>();
-		DatabaseHelper.getPrescriptionDao().deleteInvalid(prescriptionUuids);
+		syncCallbacks.ifPresent(c -> c.getUpdateSynchronizationStepCallback().accept(SynchronizationDialog.SynchronizationStep.CLEAR_UP));
+
 		// clinical visits
 		viewAllowed = DtoUserRightsHelper.isViewAllowed(ClinicalVisitDto.class);
 		List<String> clinicalVisitUuids = viewAllowed ? executeUuidCall(RetroProvider.getClinicalVisitFacade().pullUuids()) : new ArrayList<>();
-		DatabaseHelper.getClinicalVisitDao().deleteInvalid(clinicalVisitUuids);
+		DatabaseHelper.getClinicalVisitDao().deleteInvalid(clinicalVisitUuids, syncCallbacks);
+		// treatments
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(TreatmentDto.class);
+		List<String> treatmentUuids = viewAllowed ? executeUuidCall(RetroProvider.getTreatmentFacade().pullUuids()) : new ArrayList<>();
+		DatabaseHelper.getTreatmentDao().deleteInvalid(treatmentUuids, syncCallbacks);
+		// prescriptions
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(PrescriptionDto.class);
+		List<String> prescriptionUuids = viewAllowed ? executeUuidCall(RetroProvider.getPrescriptionFacade().pullUuids()) : new ArrayList<>();
+		DatabaseHelper.getPrescriptionDao().deleteInvalid(prescriptionUuids, syncCallbacks);
+		// aggregate reports
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(AggregateReportDto.class);
+		List<String> aggregateReportUuids = viewAllowed ? executeUuidCall(RetroProvider.getAggregateReportFacade().pullUuids()) : new ArrayList<>();
+		DatabaseHelper.getAggregateReportDao().deleteInvalid(aggregateReportUuids, syncCallbacks);
+		// weekly reports and entries
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(WeeklyReportDto.class);
+		List<String> weeklyReportUuids = viewAllowed ? executeUuidCall(RetroProvider.getWeeklyReportFacade().pullUuids()) : new ArrayList<>();
+		DatabaseHelper.getWeeklyReportDao().deleteInvalid(weeklyReportUuids, syncCallbacks);
+		// tasks
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(TaskDto.class);
+		List<String> taskUuids = viewAllowed ? executeUuidCall(RetroProvider.getTaskFacade().pullUuids()) : new ArrayList<>();
+		DatabaseHelper.getTaskDao().deleteInvalid(taskUuids, syncCallbacks);
+		// visits
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(VisitDto.class);
+		List<String> visitUuids = viewAllowed ? executeUuidCall(RetroProvider.getVisitFacade().pullUuids()) : new ArrayList<>();
+		DatabaseHelper.getVisitDao().deleteInvalid(visitUuids, syncCallbacks);
+		// contacts
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(ContactDto.class);
+		List<String> contactUuids = viewAllowed ? executeUuidCall(RetroProvider.getContactFacade().pullUuids()) : new ArrayList<>();
+		DatabaseHelper.getContactDao().deleteInvalid(contactUuids, syncCallbacks);
+		// additional tests
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(AdditionalTestDto.class);
+		List<String> additionalTestUuids = viewAllowed ? executeUuidCall(RetroProvider.getAdditionalTestFacade().pullUuids()) : new ArrayList<>();
+		DatabaseHelper.getAdditionalTestDao().deleteInvalid(additionalTestUuids, syncCallbacks);
+		// sample tests
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(PathogenTestDto.class);
+		List<String> sampleTestUuids = viewAllowed ? executeUuidCall(RetroProvider.getSampleTestFacade().pullUuids()) : new ArrayList<>();
+		DatabaseHelper.getSampleTestDao().deleteInvalid(sampleTestUuids, syncCallbacks);
+		// samples
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(SampleDto.class);
+		List<String> sampleUuids = viewAllowed ? executeUuidCall(RetroProvider.getSampleFacade().pullUuids()) : new ArrayList<>();
+		DatabaseHelper.getSampleDao().deleteInvalid(sampleUuids, syncCallbacks);
+		// event participants
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(EventParticipantDto.class);
+		List<String> eventParticipantUuids = viewAllowed ? executeUuidCall(RetroProvider.getEventParticipantFacade().pullUuids()) : new ArrayList<>();
+		DatabaseHelper.getEventParticipantDao().deleteInvalid(eventParticipantUuids, syncCallbacks);
+		// events
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(EventDto.class);
+		List<String> eventUuids = viewAllowed ? executeUuidCall(RetroProvider.getEventFacade().pullUuids()) : new ArrayList<>();
+		DatabaseHelper.getEventDao().deleteInvalid(eventUuids, syncCallbacks);
 		// immunizations
 		viewAllowed = DtoUserRightsHelper.isViewAllowed(ImmunizationDto.class);
 		List<String> immunizationUuids = viewAllowed ? executeUuidCall(RetroProvider.getImmunizationFacade().pullUuids()) : new ArrayList<>();
-		DatabaseHelper.getImmunizationDao().deleteInvalid(immunizationUuids);
+		DatabaseHelper.getImmunizationDao().deleteInvalid(immunizationUuids, syncCallbacks);
 		// cases
 		viewAllowed = DtoUserRightsHelper.isViewAllowed(CaseDataDto.class);
 		List<String> caseUuids = viewAllowed ? executeUuidCall(RetroProvider.getCaseFacade().pullUuids()) : new ArrayList<>();
-		DatabaseHelper.getCaseDao().deleteInvalid(caseUuids);
+		DatabaseHelper.getCaseDao().deleteInvalid(caseUuids, syncCallbacks);
 		// persons
 		viewAllowed = DtoUserRightsHelper.isViewAllowed(PersonDto.class);
 		List<String> personUuids = viewAllowed ? executeUuidCall(RetroProvider.getPersonFacade().pullUuids()) : new ArrayList<>();
-		DatabaseHelper.getPersonDao().deleteInvalid(personUuids);
+		DatabaseHelper.getPersonDao().deleteInvalid(personUuids, syncCallbacks);
 		// outbreak
 		viewAllowed = DtoUserRightsHelper.isViewAllowed(OutbreakDto.class);
 		List<String> outbreakUuids = viewAllowed ? executeUuidCall(RetroProvider.getOutbreakFacade().pullActiveUuids()) : new ArrayList<>();
-		DatabaseHelper.getOutbreakDao().deleteInvalid(outbreakUuids);
+		DatabaseHelper.getOutbreakDao().deleteInvalid(outbreakUuids, syncCallbacks);
+
+		final CampaignFormDataDtoHelper campaignFormDataDtoHelper = new CampaignFormDataDtoHelper();
+		List<String> campaignFormMetaUuids = null;
+		List<String> campaignUuids = null;
+		List<String> campaignFormDataUuids = null;
+		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
+			// campaigns
+			viewAllowed = DtoUserRightsHelper.isViewAllowed(CampaignFormMetaDto.class);
+			campaignFormMetaUuids = viewAllowed ? executeUuidCall(RetroProvider.getCampaignFormMetaFacade().pullUuids()) : new ArrayList<>();
+			DatabaseHelper.getCampaignFormMetaDao().deleteInvalid(campaignFormMetaUuids, syncCallbacks);
+			viewAllowed = DtoUserRightsHelper.isViewAllowed(CampaignDto.class);
+			campaignUuids = viewAllowed ? executeUuidCall(RetroProvider.getCampaignFacade().pullUuids()) : new ArrayList<>();
+			DatabaseHelper.getCampaignDao().deleteInvalid(campaignUuids, syncCallbacks);
+			campaignFormDataDtoHelper.pushEntities(true);
+			viewAllowed = DtoUserRightsHelper.isViewAllowed(CampaignFormDataDto.class);
+			campaignFormDataUuids = viewAllowed ? executeUuidCall(RetroProvider.getCampaignFormDataFacade().pullUuids()) : new ArrayList<>();
+			DatabaseHelper.getCampaignFormDataDao().deleteInvalid(campaignFormDataUuids, syncCallbacks);
+		}
+
+		syncCallbacks.ifPresent(c -> c.getShowNextCleanupItemsCallback().run());
 
 		// order is important, due to dependencies (e.g. case & person)
-
-		new PersonDtoHelper().pullMissing(personUuids);
-		new CaseDtoHelper().pullMissing(caseUuids);
-		new ImmunizationDtoHelper().pullMissing(caseUuids);
-		new PrescriptionDtoHelper().pullMissing(prescriptionUuids);
-		new TreatmentDtoHelper().pullMissing(treatmentUuids);
-		new EventDtoHelper().pullMissing(eventUuids);
-		new EventParticipantDtoHelper().pullMissing(eventParticipantUuids);
-		new SampleDtoHelper().pullMissing(sampleUuids);
-		new AdditionalTestDtoHelper().pullMissing(additionalTestUuids);
-		new PathogenTestDtoHelper().pullMissing(sampleTestUuids);
-		new ContactDtoHelper().pullMissing(contactUuids);
-		new VisitDtoHelper().pullMissing(visitUuids);
-		new TaskDtoHelper().pullMissing(taskUuids);
-		new WeeklyReportDtoHelper().pullMissing(weeklyReportUuids);
-		new AggregateReportDtoHelper().pullMissing(aggregateReportUuids);
-		new PrescriptionDtoHelper().pullMissing(prescriptionUuids);
-		new TreatmentDtoHelper().pullMissing(treatmentUuids);
-		new ClinicalVisitDtoHelper().pullMissing(clinicalVisitUuids);
+		new PersonDtoHelper().pullMissing(personUuids, syncCallbacks);
+		new CaseDtoHelper().pullMissing(caseUuids, syncCallbacks);
+		new ImmunizationDtoHelper().pullMissing(caseUuids, syncCallbacks);
+		new EventDtoHelper().pullMissing(eventUuids, syncCallbacks);
+		new EventParticipantDtoHelper().pullMissing(eventParticipantUuids, syncCallbacks);
+		new SampleDtoHelper().pullMissing(sampleUuids, syncCallbacks);
+		new PathogenTestDtoHelper().pullMissing(sampleTestUuids, syncCallbacks);
+		new AdditionalTestDtoHelper().pullMissing(additionalTestUuids, syncCallbacks);
+		new ContactDtoHelper().pullMissing(contactUuids, syncCallbacks);
+		new VisitDtoHelper().pullMissing(visitUuids, syncCallbacks);
+		new TaskDtoHelper().pullMissing(taskUuids, syncCallbacks);
+		new WeeklyReportDtoHelper().pullMissing(weeklyReportUuids, syncCallbacks);
+		new AggregateReportDtoHelper().pullMissing(aggregateReportUuids, syncCallbacks);
+		new PrescriptionDtoHelper().pullMissing(prescriptionUuids, syncCallbacks);
+		new TreatmentDtoHelper().pullMissing(treatmentUuids, syncCallbacks);
+		new ClinicalVisitDtoHelper().pullMissing(clinicalVisitUuids, syncCallbacks);
 
 		// CampaignData
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
 			// meta first
 			final CampaignFormMetaDtoHelper campaignFormMetaDtoHelper = new CampaignFormMetaDtoHelper();
-			// no editing of meta - campaignFormMetaDtoHelper.pushEntities(true);
-			viewAllowed = DtoUserRightsHelper.isViewAllowed(CampaignFormMetaDto.class);
-			final List<String> campaignFormMetaUuids =
-				viewAllowed ? executeUuidCall(RetroProvider.getCampaignFormMetaFacade().pullUuids()) : new ArrayList<>();
-			DatabaseHelper.getCampaignFormMetaDao().deleteInvalid(campaignFormMetaUuids);
-			campaignFormMetaDtoHelper.pullMissing(campaignFormMetaUuids);
+			campaignFormMetaDtoHelper.pullMissing(campaignFormMetaUuids, syncCallbacks);
 
 			final CampaignDtoHelper campaignDtoHelper = new CampaignDtoHelper();
-			// no editing of campaigns yet - campaignDtoHelper.pushEntities(true);
-			viewAllowed = DtoUserRightsHelper.isViewAllowed(CampaignDto.class);
-			final List<String> campaignUuids = viewAllowed ? executeUuidCall(RetroProvider.getCampaignFacade().pullUuids()) : new ArrayList<>();
-			DatabaseHelper.getCampaignDao().deleteInvalid(campaignUuids);
-			campaignDtoHelper.pullMissing(campaignUuids);
+			campaignDtoHelper.pullMissing(campaignUuids, syncCallbacks);
 
-			final CampaignFormDataDtoHelper campaignFormDataDtoHelper = new CampaignFormDataDtoHelper();
-			campaignFormDataDtoHelper.pushEntities(true);
-			viewAllowed = DtoUserRightsHelper.isViewAllowed(CampaignFormDataDto.class);
-			final List<String> campaignFormDataUuids =
-				viewAllowed ? executeUuidCall(RetroProvider.getCampaignFormDataFacade().pullUuids()) : new ArrayList<>();
-			DatabaseHelper.getCampaignFormDataDao().deleteInvalid(campaignFormDataUuids);
-			campaignFormDataDtoHelper.pullMissing(campaignFormDataUuids);
+			campaignFormDataDtoHelper.pullMissing(campaignFormDataUuids, syncCallbacks);
 		}
 	}
 
@@ -728,63 +812,64 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		// users
 		List<String> userUuids = executeUuidCall(RetroProvider.getUserFacade().pullUuids());
-		DatabaseHelper.getUserDao().deleteInvalid(userUuids);
+		DatabaseHelper.getUserDao().deleteInvalid(userUuids, syncCallbacks);
 		// disease configurations
 		List<String> diseaseConfigurationUuids = executeUuidCall(RetroProvider.getDiseaseConfigurationFacade().pullUuids());
-		DatabaseHelper.getDiseaseConfigurationDao().deleteInvalid(diseaseConfigurationUuids);
+		DatabaseHelper.getDiseaseConfigurationDao().deleteInvalid(diseaseConfigurationUuids, syncCallbacks);
 		// Disease variants
 		List<String> customizableEnumValueUuids = executeUuidCall(RetroProvider.getCustomizableEnumValueFacade().pullUuids());
-		DatabaseHelper.getCustomizableEnumValueDao().deleteInvalid(customizableEnumValueUuids);
+		DatabaseHelper.getCustomizableEnumValueDao().deleteInvalid(customizableEnumValueUuids, syncCallbacks);
 		// feature configurations
 		List<String> featureConfigurationUuids = executeUuidCall(RetroProvider.getFeatureConfigurationFacade().pullUuids());
-		DatabaseHelper.getFeatureConfigurationDao().deleteInvalid(featureConfigurationUuids);
+		DatabaseHelper.getFeatureConfigurationDao().deleteInvalid(featureConfigurationUuids, syncCallbacks);
 		// user role config
 		List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleFacade().pullUuids());
-		DatabaseHelper.getUserRoleDao().deleteInvalid(userRoleConfigUuids);
+		DatabaseHelper.getUserRoleDao().deleteInvalid(userRoleConfigUuids, syncCallbacks);
 		// points of entry
 		List<String> pointOfEntryUuids = executeUuidCall(RetroProvider.getPointOfEntryFacade().pullUuids());
-		DatabaseHelper.getPointOfEntryDao().deleteInvalid(pointOfEntryUuids);
+		DatabaseHelper.getPointOfEntryDao().deleteInvalid(pointOfEntryUuids, syncCallbacks);
 		// facilities
 		List<String> facilityUuids = executeUuidCall(RetroProvider.getFacilityFacade().pullUuids());
-		DatabaseHelper.getFacilityDao().deleteInvalid(facilityUuids);
+		DatabaseHelper.getFacilityDao().deleteInvalid(facilityUuids, syncCallbacks);
 		// communities
 		List<String> communityUuids = executeUuidCall(RetroProvider.getCommunityFacade().pullUuids());
-		DatabaseHelper.getCommunityDao().deleteInvalid(communityUuids);
+		DatabaseHelper.getCommunityDao().deleteInvalid(communityUuids, syncCallbacks);
 		// districts
 		List<String> districtUuids = executeUuidCall(RetroProvider.getDistrictFacade().pullUuids());
-		DatabaseHelper.getDistrictDao().deleteInvalid(districtUuids);
+		DatabaseHelper.getDistrictDao().deleteInvalid(districtUuids, syncCallbacks);
 		// regions
 		List<String> regionUuids = executeUuidCall(RetroProvider.getRegionFacade().pullUuids());
-		DatabaseHelper.getRegionDao().deleteInvalid(regionUuids);
+		DatabaseHelper.getRegionDao().deleteInvalid(regionUuids, syncCallbacks);
 		// areas
 		List<String> areaUuids = executeUuidCall(RetroProvider.getAreaFacade().pullUuids());
-		DatabaseHelper.getAreaDao().deleteInvalid(areaUuids);
+		DatabaseHelper.getAreaDao().deleteInvalid(areaUuids, syncCallbacks);
 		// countries
 		List<String> countryUuids = executeUuidCall(RetroProvider.getCountryFacade().pullUuids());
-		DatabaseHelper.getCountryDao().deleteInvalid(countryUuids);
+		DatabaseHelper.getCountryDao().deleteInvalid(countryUuids, syncCallbacks);
 		// subcontinents
 		List<String> subcontinentUuids = executeUuidCall(RetroProvider.getSubcontinentFacade().pullUuids());
-		DatabaseHelper.getSubcontinentDao().deleteInvalid(subcontinentUuids);
+		DatabaseHelper.getSubcontinentDao().deleteInvalid(subcontinentUuids, syncCallbacks);
 		// continents
 		List<String> continentUuids = executeUuidCall(RetroProvider.getContinentFacade().pullUuids());
-		DatabaseHelper.getContinentDao().deleteInvalid(continentUuids);
+		DatabaseHelper.getContinentDao().deleteInvalid(continentUuids, syncCallbacks);
+
+		syncCallbacks.ifPresent(c -> c.getShowNextCleanupItemsCallback().run());
 
 		// order is important, due to dependencies
-
-		new ContinentDtoHelper().pullMissing(continentUuids);
-		new SubcontinentDtoHelper().pullMissing(subcontinentUuids);
-		new CountryDtoHelper().pullMissing(countryUuids);
-		new AreaDtoHelper().pullMissing(areaUuids);
-		new RegionDtoHelper().pullMissing(regionUuids);
-		new DistrictDtoHelper().pullMissing(districtUuids);
-		new CommunityDtoHelper().pullMissing(communityUuids);
-		new FacilityDtoHelper().pullMissing(facilityUuids);
-		new PointOfEntryDtoHelper().pullMissing(pointOfEntryUuids);
-		new UserRoleDtoHelper().pullMissing(userRoleConfigUuids);
-		new UserDtoHelper().pullMissing(userUuids);
-		new DiseaseConfigurationDtoHelper().pullMissing(diseaseConfigurationUuids);
-		new CustomizableEnumValueDtoHelper().pullMissing(customizableEnumValueUuids);
-		new FeatureConfigurationDtoHelper().pullMissing(featureConfigurationUuids);
+		new ContinentDtoHelper().pullMissing(continentUuids, syncCallbacks);
+		new SubcontinentDtoHelper().pullMissing(subcontinentUuids, syncCallbacks);
+		new CountryDtoHelper().pullMissing(countryUuids, syncCallbacks);
+		new AreaDtoHelper().pullMissing(areaUuids, syncCallbacks);
+		new RegionDtoHelper().pullMissing(regionUuids, syncCallbacks);
+		new DistrictDtoHelper().pullMissing(districtUuids, syncCallbacks);
+		new CommunityDtoHelper().pullMissing(communityUuids, syncCallbacks);
+		new FacilityDtoHelper().pullMissing(facilityUuids, syncCallbacks);
+		new PointOfEntryDtoHelper().pullMissing(pointOfEntryUuids, syncCallbacks);
+		new UserRoleDtoHelper().pullMissing(userRoleConfigUuids, syncCallbacks);
+		new UserDtoHelper().pullMissing(userUuids, syncCallbacks);
+		new DiseaseConfigurationDtoHelper().pullMissing(diseaseConfigurationUuids, syncCallbacks);
+		new CustomizableEnumValueDtoHelper().pullMissing(customizableEnumValueUuids, syncCallbacks);
+		new FeatureConfigurationDtoHelper().pullMissing(featureConfigurationUuids, syncCallbacks);
 	}
 
 	private List<String> executeUuidCall(Call<List<String>> call) throws ServerConnectionException, ServerCommunicationException {
@@ -800,8 +885,13 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		return response.body();
 	}
 
-	public static void call(SyncMode syncMode, final Context context, final SyncCallback callback) {
-		new SynchronizeDataAsync(syncMode, context) {
+	public static void call(
+		SyncMode syncMode,
+		final Context context,
+		SynchronizationDialog.SynchronizationCallbacks callbacks,
+		final SyncCallback callback) {
+
+		new SynchronizeDataAsync(syncMode, context, callbacks) {
 
 			@Override
 			protected void onPostExecute(Void aVoid) {
@@ -813,6 +903,11 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				}
 			}
 		}.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	}
+
+	public static void call(SyncMode syncMode, final Context context, final SyncCallback callback) {
+
+		call(syncMode, context, null, callback);
 	}
 
 	public enum SyncMode {

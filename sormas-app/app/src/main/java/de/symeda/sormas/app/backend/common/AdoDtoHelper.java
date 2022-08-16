@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import org.springframework.util.CollectionUtils;
@@ -35,6 +36,7 @@ import android.util.Log;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.app.component.dialog.SynchronizationDialog;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.ServerCommunicationException;
@@ -86,19 +88,35 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 		return null;
 	}
 
+	public boolean pullAndPushEntities(Context context)
+		throws DaoException, ServerConnectionException, ServerCommunicationException, NoConnectionException {
+
+		return pullAndPushEntities(context, Optional.empty());
+	}
+
 	/**
 	 * @return another pull needed?
 	 * @param context
 	 */
-	public boolean pullAndPushEntities(Context context)
+	public boolean pullAndPushEntities(Context context, Optional<SynchronizationDialog.SynchronizationCallbacks> syncCallbacks)
 		throws DaoException, ServerConnectionException, ServerCommunicationException, NoConnectionException {
 
-		pullEntities(false, context);
+		pullEntities(false, context, syncCallbacks);
 
-		return pushEntities(false);
+		return pushEntities(false, syncCallbacks);
 	}
 
-	public void pullEntities(final boolean markAsRead, Context context)
+	public void pullEntities(final boolean markAsRead, Context context, Optional<SynchronizationDialog.SynchronizationCallbacks> syncCallbacks)
+		throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
+
+		pullEntities(markAsRead, context, syncCallbacks, true);
+	}
+
+	public void pullEntities(
+		final boolean markAsRead,
+		Context context,
+		Optional<SynchronizationDialog.SynchronizationCallbacks> syncCallbacks,
+		boolean callLoadNext)
 		throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
 
 		if (!isViewAllowed()) {
@@ -134,7 +152,11 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 					throw new ServerCommunicationException(e);
 				}
 
-				lastBatchSize = handlePullResponse(markAsRead, dao, response);
+				lastBatchSize = handlePullResponse(markAsRead, dao, response, syncCallbacks);
+			}
+
+			if (callLoadNext) {
+				syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 			}
 		} catch (RuntimeException e) {
 			Log.e(getClass().getName(), "Exception thrown when trying to pull entities");
@@ -142,7 +164,8 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 		}
 	}
 
-	public void repullEntities(Context context) throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
+	public void repullEntities(Context context, Optional<SynchronizationDialog.SynchronizationCallbacks> syncCallbacks)
+		throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
 
 		if (!isViewAllowed()) {
 			return;
@@ -174,9 +197,10 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 					throw new ServerCommunicationException(e);
 				}
 
-				lastBatchSize = handlePullResponse(false, dao, response);
+				lastBatchSize = handlePullResponse(false, dao, response, syncCallbacks);
 			}
 
+			syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 		} catch (RuntimeException e) {
 			Log.e(getClass().getName(), "Exception thrown when trying to pull entities");
 			throw new DaoException(e);
@@ -186,24 +210,25 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 	/**
 	 * @return Number of pulled entities
 	 */
-	protected int handlePullResponse(final boolean markAsRead, final AbstractAdoDao<ADO> dao, Response<List<DTO>> response)
+	protected int handlePullResponse(
+		final boolean markAsRead,
+		final AbstractAdoDao<ADO> dao,
+		Response<List<DTO>> response,
+		Optional<SynchronizationDialog.SynchronizationCallbacks> syncCallbacks)
 		throws ServerCommunicationException, DaoException, ServerConnectionException, NoConnectionException {
+
 		if (!response.isSuccessful()) {
 			RetroProvider.throwException(response);
 		}
 
 		final List<DTO> result = response.body();
 		if (result != null && result.size() > 0) {
-			return handlePulledList(dao, result);
+			return handlePulledList(dao, result, syncCallbacks);
 		}
 		return 0;
 	}
 
-	/**
-	 * Calls handlePulledDto for each DTO that has been pulled from the server, and returns the
-	 * number of pulled DTOs.
-	 */
-	public int handlePulledList(AbstractAdoDao<ADO> dao, List<DTO> result)
+	public int handlePulledList(AbstractAdoDao<ADO> dao, List<DTO> result, Optional<SynchronizationDialog.SynchronizationCallbacks> syncCallbacks)
 		throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
 
 		if (CollectionUtils.isEmpty(result)) {
@@ -217,6 +242,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 			while (iterator.hasNext()) {
 				final DTO dto = iterator.next();
 				handlePulledDto(dao, dto);
+				syncCallbacks.ifPresent(c -> c.getUpdatePullsCallback().accept(1));
 				// TODO #704
 //				if (entity != null && markAsRead) {
 //					dao.markAsRead(entity);
@@ -234,6 +260,16 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 	}
 
 	/**
+	 * Calls handlePulledDto for each DTO that has been pulled from the server, and returns the
+	 * number of pulled DTOs.
+	 */
+	public int handlePulledList(AbstractAdoDao<ADO> dao, List<DTO> result)
+		throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
+
+		return handlePulledList(dao, result, Optional.empty());
+	}
+
+	/**
 	 * @return The resulting entity. May be null!
 	 */
 	protected ADO handlePulledDto(AbstractAdoDao<ADO> dao, DTO dto) throws DaoException, SQLException {
@@ -247,6 +283,12 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 	 * @return true: another pull is needed, because data has been changed on the server
 	 */
 	public boolean pushEntities(boolean onlyNewEntities)
+		throws DaoException, ServerConnectionException, ServerCommunicationException, NoConnectionException {
+
+		return pushEntities(onlyNewEntities, Optional.empty());
+	}
+
+	public boolean pushEntities(boolean onlyNewEntities, Optional<SynchronizationDialog.SynchronizationCallbacks> syncCallbacks)
 		throws DaoException, ServerConnectionException, ServerCommunicationException, NoConnectionException {
 
 		if (!isEditAllowed()) {
@@ -266,6 +308,8 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 		if (modifiedDtos.isEmpty()) {
 			return false;
 		}
+
+		syncCallbacks.ifPresent(c -> c.getUpdatePushTotalCallback().accept(modifiedDtos.size()));
 
 		Call<List<PushResult>> call = pushAll(modifiedDtos);
 		Response<List<PushResult>> response;
@@ -290,6 +334,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 		dao.callBatchTasks(new Callable<Void>() {
 
 			public Void call() throws Exception {
+
 				for (int i = 0; i < modifiedAdos.size(); i++) {
 					ADO ado = modifiedAdos.get(i);
 					PushResult pushResult = pushResults.get(i);
@@ -297,6 +342,7 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 					case OK:
 						// data has been pushed, we no longer need the old unmodified version
 						dao.accept(ado);
+						syncCallbacks.ifPresent(c -> c.getUpdatePushesCallback().accept(1));
 						break;
 					case TOO_OLD:
 						pushedTooOldCount++;
@@ -316,6 +362,8 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 			Log.d(dao.getTableName(), "Pushed: " + modifiedAdos.size() + " Too old: " + pushedTooOldCount + " Erros: " + pushedErrorCount);
 		}
 
+		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
+
 		return true;
 	}
 
@@ -328,6 +376,12 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 
 	public void pullMissing(List<String> uuids) throws ServerCommunicationException, ServerConnectionException, DaoException, NoConnectionException {
 
+		pullMissing(uuids, Optional.empty());
+	}
+
+	public void pullMissing(List<String> uuids, Optional<SynchronizationDialog.SynchronizationCallbacks> syncCallbacks)
+		throws ServerCommunicationException, ServerConnectionException, DaoException, NoConnectionException {
+
 		final AbstractAdoDao<ADO> dao = DatabaseHelper.getAdoDao(getAdoClass());
 		uuids = dao.filterMissing(uuids);
 
@@ -339,8 +393,10 @@ public abstract class AdoDtoHelper<ADO extends AbstractDomainObject, DTO extends
 				throw new ServerCommunicationException(e);
 			}
 
-			handlePullResponse(false, dao, response);
+			handlePullResponse(false, dao, response, syncCallbacks);
 		}
+
+		syncCallbacks.ifPresent(c -> c.getLoadNextCallback().run());
 	}
 
 	public ADO fillOrCreateFromDto(ADO ado, DTO dto) {

@@ -1,5 +1,10 @@
 package de.symeda.sormas.app.backend.infrastructure;
 
+import java.util.Optional;
+
+import com.j256.ormlite.logger.Logger;
+import com.j256.ormlite.logger.LoggerFactory;
+
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
 import de.symeda.sormas.app.backend.classification.DiseaseClassificationDtoHelper;
@@ -17,13 +22,17 @@ import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 import de.symeda.sormas.app.backend.region.SubcontinentDtoHelper;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
 import de.symeda.sormas.app.backend.user.UserRoleDtoHelper;
+import de.symeda.sormas.app.component.dialog.SynchronizationDialog;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.ServerCommunicationException;
 import de.symeda.sormas.app.rest.ServerConnectionException;
 
 public class InfrastructureHelper {
 
+	private static final Logger logger = LoggerFactory.getLogger(InfrastructureHelper.class);
+
 	public static InfrastructureChangeDatesDto getInfrastructureChangeDates() {
+
 		InfrastructureChangeDatesDto changeDates = new InfrastructureChangeDatesDto();
 
 		changeDates.setContinentChangeDate(DatabaseHelper.getContinentDao().getLatestChangeDate());
@@ -44,24 +53,40 @@ public class InfrastructureHelper {
 		return changeDates;
 	}
 
-	public static void handlePulledInfrastructureData(InfrastructureSyncDto infrastructureData)
+	public static void handlePulledInfrastructureData(
+		InfrastructureSyncDto infrastructureData,
+		Optional<SynchronizationDialog.SynchronizationCallbacks> callbacks)
 		throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
+
 		new ContinentDtoHelper().handlePulledList(DatabaseHelper.getContinentDao(), infrastructureData.getContinents());
+		callbacks.ifPresent(c -> c.getLoadNextCallback().run());
 		new SubcontinentDtoHelper().handlePulledList(DatabaseHelper.getSubcontinentDao(), infrastructureData.getSubcontinents());
+		callbacks.ifPresent(c -> c.getLoadNextCallback().run());
 		new CountryDtoHelper().handlePulledList(DatabaseHelper.getCountryDao(), infrastructureData.getCountries());
+		callbacks.ifPresent(c -> c.getLoadNextCallback().run());
 		new AreaDtoHelper().handlePulledList(DatabaseHelper.getAreaDao(), infrastructureData.getAreas());
+		callbacks.ifPresent(c -> c.getLoadNextCallback().run());
 		new RegionDtoHelper().handlePulledList(DatabaseHelper.getRegionDao(), infrastructureData.getRegions());
+		callbacks.ifPresent(c -> c.getLoadNextCallback().run());
 		new DistrictDtoHelper().handlePulledList(DatabaseHelper.getDistrictDao(), infrastructureData.getDistricts());
+		callbacks.ifPresent(c -> c.getLoadNextCallback().run());
 		new CommunityDtoHelper().handlePulledList(DatabaseHelper.getCommunityDao(), infrastructureData.getCommunities());
+		callbacks.ifPresent(c -> c.getLoadNextCallback().run());
 		new FacilityDtoHelper().handlePulledList(DatabaseHelper.getFacilityDao(), infrastructureData.getFacilities());
+		callbacks.ifPresent(c -> c.getLoadNextCallback().run());
 		new PointOfEntryDtoHelper().handlePulledList(DatabaseHelper.getPointOfEntryDao(), infrastructureData.getPointsOfEntry());
-		new UserDtoHelper().handlePulledList(DatabaseHelper.getUserDao(), infrastructureData.getUsers());
-		new DiseaseClassificationDtoHelper()
-			.handlePulledList(DatabaseHelper.getDiseaseClassificationCriteriaDao(), infrastructureData.getDiseaseClassifications());
-		new DiseaseConfigurationDtoHelper()
-			.handlePulledList(DatabaseHelper.getDiseaseConfigurationDao(), infrastructureData.getDiseaseConfigurations());
+		callbacks.ifPresent(c -> c.getLoadNextCallback().run());
 		DatabaseHelper.getUserRoleDao().delete(infrastructureData.getDeletedUserRoleUuids());
 		new UserRoleDtoHelper().handlePulledList(DatabaseHelper.getUserRoleDao(), infrastructureData.getUserRoles());
+		callbacks.ifPresent(c -> c.getLoadNextCallback().run());
+		new UserDtoHelper().handlePulledList(DatabaseHelper.getUserDao(), infrastructureData.getUsers());
+		callbacks.ifPresent(c -> c.getLoadNextCallback().run());
+		new DiseaseClassificationDtoHelper()
+			.handlePulledList(DatabaseHelper.getDiseaseClassificationCriteriaDao(), infrastructureData.getDiseaseClassifications());
+		callbacks.ifPresent(c -> c.getLoadNextCallback().run());
+		new DiseaseConfigurationDtoHelper()
+			.handlePulledList(DatabaseHelper.getDiseaseConfigurationDao(), infrastructureData.getDiseaseConfigurations());
+		callbacks.ifPresent(c -> c.getLoadNextCallback().run());
 		DatabaseHelper.getFeatureConfigurationDao().delete(infrastructureData.getDeletedFeatureConfigurationUuids());
 		new FeatureConfigurationDtoHelper()
 			.handlePulledList(DatabaseHelper.getFeatureConfigurationDao(), infrastructureData.getFeatureConfigurations());

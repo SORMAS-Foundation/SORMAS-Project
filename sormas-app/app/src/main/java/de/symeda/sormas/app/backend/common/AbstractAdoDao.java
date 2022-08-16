@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import javax.persistence.NonUniqueResultException;
@@ -47,6 +48,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.feature.FeatureConfiguration;
+import de.symeda.sormas.app.component.dialog.SynchronizationDialog;
 import de.symeda.sormas.app.util.MetaProperty;
 
 /**
@@ -1007,31 +1009,33 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 	 *
 	 * @param validUuids
 	 */
-	public void deleteInvalid(final List<String> validUuids) throws DaoException {
-		callBatchTasks(new Callable<Void>() {
+	public void deleteInvalid(final List<String> validUuids, Optional<SynchronizationDialog.SynchronizationCallbacks> callbacks) throws DaoException {
 
-			public Void call() throws Exception {
-				QueryBuilder<ADO, Long> builder = queryBuilder();
-				builder.where().notIn(AbstractDomainObject.UUID, validUuids);
-				List<ADO> invalidEntities = builder.query();
-				int deletionCounter = 0;
-				for (ADO invalidEntity : invalidEntities) {
+		callBatchTasks((Callable<Void>) () -> {
+			QueryBuilder<ADO, Long> builder = queryBuilder();
+			builder.where().notIn(AbstractDomainObject.UUID, validUuids);
+			List<ADO> invalidEntities = builder.query();
+			int deletionCounter = 0;
+			for (ADO invalidEntity : invalidEntities) {
 
-					if (invalidEntity.isNew()) {
-						// don't delete new entities
-						continue;
-					} else {
-						// delete with all embedded entities
-						deleteCascade(invalidEntity);
-						deletionCounter++;
-					}
+				if (invalidEntity.isNew()) {
+					// don't delete new entities
+					continue;
+				} else {
+					// delete with all embedded entities
+					deleteCascade(invalidEntity);
+					deletionCounter++;
+					callbacks.ifPresent(c -> c.getUpdateDeletionsCallback().accept(1));
 				}
-
-				if (invalidEntities.size() > 0) {
-					Log.d(getTableName(), "Deleted invalid entities: " + deletionCounter + " of " + invalidEntities.size());
-				}
-				return null;
 			}
+
+			if (invalidEntities.size() > 0) {
+				Log.d(getTableName(), "Deleted invalid entities: " + deletionCounter + " of " + invalidEntities.size());
+			}
+
+			callbacks.ifPresent(c -> c.getLoadNextCallback().run());
+
+			return null;
 		});
 	}
 

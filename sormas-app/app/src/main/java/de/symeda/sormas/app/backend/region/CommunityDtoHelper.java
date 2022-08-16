@@ -17,6 +17,7 @@ package de.symeda.sormas.app.backend.region;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 import android.content.Context;
 import de.symeda.sormas.api.PushResult;
@@ -26,6 +27,7 @@ import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.component.dialog.SynchronizationDialog;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.rest.ServerCommunicationException;
@@ -77,11 +79,11 @@ public class CommunityDtoHelper extends AdoDtoHelper<Community, CommunityDto> {
 	}
 
 	@Override
-	public void pullEntities(final boolean markAsRead, Context context)
+	public void pullEntities(final boolean markAsRead, Context context, Optional<SynchronizationDialog.SynchronizationCallbacks> syncCallbacks)
 		throws DaoException, ServerCommunicationException, ServerConnectionException, NoConnectionException {
 		databaseWasEmpty = DatabaseHelper.getCommunityDao().countOf() == 0;
 		try {
-			super.pullEntities(markAsRead, context);
+			super.pullEntities(markAsRead, context, syncCallbacks);
 		} finally {
 			databaseWasEmpty = false;
 		}
