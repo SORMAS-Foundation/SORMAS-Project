@@ -26,4 +26,5 @@ public class LoginPage {
   public static final By LOGIN_BUTTON = By.id("Login.doLogIn");
   public static final By FAILED_LOGIN_ERROR_MESSAGE =
       By.xpath("//div[contains(@class, 'v-Notification-warning')]");
+  public static final By LOGIN_KEYCLOAK_BUTTON = By.id("kc-login");
 }
