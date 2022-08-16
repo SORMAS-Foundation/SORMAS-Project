@@ -54,6 +54,8 @@ public class EditCasePage {
   public static final By CASE_CLASSIFICATION_SPAN =
       By.cssSelector("#caseClassification span input:checked+label");
   public static final By CASE_CLASSIFICATION_INPUT = By.cssSelector("#caseClassification input");
+  public static final By CASE_CLASSIFICATION_RADIOBUTTON =
+      By.cssSelector("#caseClassification label");
   public static final By CASE_CONFIRMATION_BASIS_COMBOBOX =
       By.cssSelector("#caseConfirmationBasis div");
   public static final By CLINICAL_CONFIRMATION_COMBOBOX =
@@ -298,6 +300,10 @@ public class EditCasePage {
   public static final By GENERAL_COMMENT_TEXT_AREA = By.id("additionalDetails");
   public static final By VACCINATION_STATUS_COMBOBOX =
       By.xpath("//div[@id='vaccinationStatus']/div");
+
+  public static final By SURVEILLANCE_OFFICER_FIELD_ABOVE_GENERAL_COMMENT =
+      By.xpath(
+          "//div[@location= 'generalCommentLoc']/preceding-sibling::div[3]//div[@location='surveillanceOfficer']");
 
   public static By getCaseIDPathByIndex(int index) {
     return By.xpath(String.format("//table/tbody/tr[%s]/td[1]/a", index));

@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.StringUtils;
@@ -262,7 +263,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	@Required
 	private Date reportDate;
 	@Outbreaks
-	@Required
+	@NotNull(message = Validations.validReportingUser)
 	private UserReferenceDto reportingUser;
 	@HideForCountries(countries = {
 		COUNTRY_CODE_FRANCE,

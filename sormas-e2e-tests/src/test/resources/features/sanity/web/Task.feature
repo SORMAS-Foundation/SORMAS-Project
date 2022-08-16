@@ -3,7 +3,7 @@ Feature: Tasks functionalities
 
   @env_main
   Scenario: Create and check a new task data
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Tasks button from navbar
     And I click on the NEW TASK button
     When I create a new task with specific data
@@ -146,7 +146,7 @@ Feature: Tasks functionalities
 
   @env_main @tmsLink=SORDEV-9474
   Scenario: Test Modify the field allowing to designate the observers of a task
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Tasks button from navbar
     And I click on the NEW TASK button
     When I fill a new task form with specific data
@@ -162,7 +162,7 @@ Feature: Tasks functionalities
 
   @tmsLink=SORDEV-7423 @env_main
   Scenario: Test detailed task export
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Tasks button from navbar
     And I click on the NEW TASK button
     When I create a new task with specific data
@@ -173,7 +173,7 @@ Feature: Tasks functionalities
 
   @tmsLink=SORDEV-7423 @env_main
   Scenario: Test custom task export
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Tasks button from navbar
     And I click Export button in Task Directory
     When I click on the Custom Event Export button
@@ -186,7 +186,7 @@ Feature: Tasks functionalities
 
   @tmsLink=SORDEV-7423 @env_main
   Scenario: Test custom task export edit
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Tasks button from navbar
     And I click Export button in Task Directory
     When I click on the Custom Event Export button
@@ -202,7 +202,7 @@ Feature: Tasks functionalities
 
   @tmsLink=SORDEV-7423 @env_main
   Scenario: Test custom task export delete
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Tasks button from navbar
     And I click Export button in Task Directory
     When I click on the Custom Event Export button

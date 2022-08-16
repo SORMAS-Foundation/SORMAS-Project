@@ -47,7 +47,7 @@ Feature: Login with different type of users
 
   @tmsLink=SORQA-69 @env_de
   Scenario: Check German language setting
-    Given I log in with National User
+    Given I log in as a National User
     Then I check that German word for Configuration is present in the left main menu
 
   @tmsLink=SORDEV-12126 @env_main

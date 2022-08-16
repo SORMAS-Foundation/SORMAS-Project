@@ -486,9 +486,10 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 	private void checkExistingPrimaryContactDetails(PersonContactDetail item, PersonContactDetailDialog dialog, Callback callback) {
 		final List<PersonContactDetail> personContactDetails = record.getPersonContactDetails();
 		for (PersonContactDetail pcd : personContactDetails) {
-			if (pcd.getPersonContactDetailType() == item.getPersonContactDetailType()
-				&& !item.getUuid().equals(pcd.getUuid())
-				&& pcd.isPrimaryContact()) {
+			if (item.isPrimaryContact()
+				&& pcd.isPrimaryContact()
+				&& pcd.getPersonContactDetailType() == item.getPersonContactDetailType()
+				&& !item.getUuid().equals(pcd.getUuid())) {
 
 				final ConfirmationDialog confirmationDialog = new ConfirmationDialog(
 					BaseActivity.getActiveActivity(),
@@ -581,6 +582,8 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.personArmedForcesRelationType.setVisibility(GONE);
 		}
+		contentBinding.personCitizenship.setVisibility(GONE);
+		contentBinding.personBirthCountry.setVisibility(GONE);
 	}
 
 	@Override

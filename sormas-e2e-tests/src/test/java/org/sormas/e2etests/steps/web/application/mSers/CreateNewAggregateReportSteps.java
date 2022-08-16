@@ -3,10 +3,12 @@ package org.sormas.e2etests.steps.web.application.mSers;
 import static org.sormas.e2etests.pages.application.cases.LineListingPopup.LINE_LISTING_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.DELETE_AGGREGATED_REPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.DISTRICT_COMBOBOX_POPUP;
+import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.DISTRICT_COMBOBOX_POPUP_DIV;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.DUPLICATE_DETECTION_TEXT;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.EPI_WEEK_COMBOBOX_POPUP;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.EPI_WEEK_INPUT_POPUP;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.REGION_COMBOBOX_POPUP;
+import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.REGION_COMBOBOX_POPUP_DIV;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.WEEK_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.YEAR_COMBOBOX_POPUP;
 import static org.sormas.e2etests.pages.application.mSers.CreateNewAggreagateReportPage.YEAR_INPUT_POPUP;
@@ -58,6 +60,13 @@ public class CreateNewAggregateReportSteps implements En {
           softly.assertAll();
         });
     When(
+        "I set Region combobox to {string} in Create New Aggregate Report popup",
+        (String region) -> webDriverHelpers.selectFromCombobox(REGION_COMBOBOX_POPUP_DIV, region));
+    When(
+        "I set District combobox to {string} in Create New Aggregate Report popup",
+        (String region) ->
+            webDriverHelpers.selectFromCombobox(DISTRICT_COMBOBOX_POPUP_DIV, region));
+    When(
         "^I fill a new aggregate report with specific data$",
         () -> {
           report = aggregateReportService.buildGeneratedAggregateReport();
@@ -67,6 +76,12 @@ public class CreateNewAggregateReportSteps implements En {
         "^I fill a new aggregate report with specific data for duplicates$",
         () -> {
           fillFieldsForDuplicateReport(duplicateReport);
+        });
+    When(
+        "^I fill a new aggregate report with specific data for one disease",
+        () -> {
+          report = aggregateReportService.buildAggredateReportsForOneDisease();
+          fillFieldsForOneDisease(report);
         });
     When(
         "^I change all fields of aggregate report$",
@@ -194,6 +209,10 @@ public class CreateNewAggregateReportSteps implements En {
   private void fillFieldsForDuplicateReport(AggregateReport report) {
     fillYear(report.getYear());
     fillEpiWeek(report.getEpiWeek());
+    fillCasesFor("Acute Viral Hepatitis", report.getAcuteViralHepatitisCases());
+  }
+
+  private void fillFieldsForOneDisease(AggregateReport report) {
     fillCasesFor("Acute Viral Hepatitis", report.getAcuteViralHepatitisCases());
   }
 

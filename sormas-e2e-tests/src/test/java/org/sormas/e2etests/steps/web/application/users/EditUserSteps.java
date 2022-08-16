@@ -28,7 +28,7 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 
 public class EditUserSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
-  protected User collectedUser;
+  public static User collectedUser;
   private User createdUser;
 
   @Inject
@@ -48,6 +48,20 @@ public class EditUserSteps implements En {
         () -> {
           collectedUser = collectEditUserData();
           ComparisonHelper.compareEqualEntities(CreateNewUserSteps.editUser, collectedUser);
+        });
+
+    Then(
+        "^I create new user password and save it on Edit User page$",
+        () -> {
+          collectedUser = collectEditUserData();
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PASSWORD_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NEW_PASSWORD_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_GENERATED_PASSWORD_TEXT);
+          collectedUser =
+              collectedUser.toBuilder()
+                  .password(webDriverHelpers.getTextFromWebElement(NEW_GENERATED_PASSWORD_TEXT))
+                  .build();
+          webDriverHelpers.clickOnWebElementBySelector(CLOSE_PASSWORD_POPUP_BUTTON);
         });
   }
 

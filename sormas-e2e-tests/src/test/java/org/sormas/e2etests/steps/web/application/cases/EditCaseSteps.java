@@ -1482,13 +1482,10 @@ public class EditCaseSteps implements En {
           selectEpidemiologicalConfirmation(aCase.getEpidemiologicalConfirmation());
           selectLaboratoryDiagnosticConfirmation(aCase.getLaboratoryDiagnosticConfirmation());
           selectInvestigationStatus(aCase.getInvestigationStatus());
-          fillExternalId(aCase.getExternalId());
           fillExternalToken(aCase.getExternalToken());
           selectDisease(aCase.getDisease());
-          selectReinfection(aCase.getReinfection());
           selectOutcomeOfCase(aCase.getOutcomeOfCase());
           selectSequelae(aCase.getSequelae());
-          selectCaseIdentificationSource(aCase.getCaseIdentificationSource());
           selectRegion(aCase.getRegion());
           selectDistrict(aCase.getDistrict());
           selectCommunity(aCase.getCommunity());
@@ -1496,14 +1493,10 @@ public class EditCaseSteps implements En {
           selectResponsibleRegion(aCase.getResponsibleRegion());
           selectResponsibleDistrict(aCase.getResponsibleDistrict());
           selectResponsibleCommunity(aCase.getResponsibleCommunity());
-          selectProhibitionToWork(aCase.getProhibitionToWork());
-          selectHomeBasedQuarantinePossible(aCase.getHomeBasedQuarantinePossible());
           selectQuarantine(aCase.getQuarantine());
           fillReportGpsLatitude(aCase.getReportGpsLatitude());
           fillReportGpsLongitude(aCase.getReportGpsLongitude());
           fillReportGpsAccuracyInM(aCase.getReportGpsAccuracyInM());
-          selectBloodOrganTissueDonationInTheLast6Months(
-              aCase.getBloodOrganTissueDonationInTheLast6Months());
           selectVaccinationStatusForThisDisease(aCase.getVaccinationStatusForThisDisease());
           selectResponsibleSurveillanceOfficer(aCase.getResponsibleSurveillanceOfficer());
           fillDateReceivedAtDistrictLevel(aCase.getDateReceivedAtDistrictLevel());
@@ -1527,13 +1520,10 @@ public class EditCaseSteps implements En {
                   "epidemiologicalConfirmation",
                   "laboratoryDiagnosticConfirmation",
                   "investigationStatus",
-                  "externalId",
                   "externalToken",
                   "disease",
-                  "reinfection",
                   "outcomeOfCase",
                   "sequelae",
-                  "caseIdentificationSource",
                   "region",
                   "district",
                   "community",
@@ -1542,13 +1532,10 @@ public class EditCaseSteps implements En {
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
-                  "prohibitionToWork",
-                  "homeBasedQuarantinePossible",
                   "quarantine",
                   "reportGpsLatitude",
                   "reportGpsLongitude",
                   "reportGpsAccuracyInM",
-                  "bloodOrganTissueDonationInTheLast6Months",
                   "vaccinationStatusForThisDisease",
                   "responsibleSurveillanceOfficer",
                   "dateReceivedAtDistrictLevel",
@@ -1785,6 +1772,7 @@ public class EditCaseSteps implements En {
     When(
         "^I click on the Cancel Follow-up button from Edit case page$",
         () -> webDriverHelpers.clickOnWebElementBySelector(CANCEL_FOLLOW_UP_BUTTON));
+
     Then(
         "^I check that Date of Follow-up Status Change and Responsible User are correctly displayed on Edit case page$",
         () -> {
@@ -2168,6 +2156,13 @@ public class EditCaseSteps implements En {
               actualImmunizationUUID,
               "Means of immunization is not equal");
           softly.assertAll();
+        });
+
+    And(
+        "I check elements order on page before General comment field in DE",
+        () -> {
+          Assert.assertTrue(
+              webDriverHelpers.isElementEnabled(SURVEILLANCE_OFFICER_FIELD_ABOVE_GENERAL_COMMENT));
         });
 
     When(
@@ -2568,7 +2563,9 @@ public class EditCaseSteps implements En {
   private Case collectCaseData() {
     return Case.builder()
         .dateOfReport(getDateOfReport())
-        .caseClassification(webDriverHelpers.getValueFromCombobox(CASE_CLASSIFICATION_COMBOBOX))
+        .caseClassification(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                CASE_CLASSIFICATION_RADIOBUTTON))
         .clinicalConfirmation(webDriverHelpers.getValueFromCombobox(CLINICAL_CONFIRMATION_COMBOBOX))
         .epidemiologicalConfirmation(
             webDriverHelpers.getValueFromCombobox(EPIDEMIOLOGICAL_CONFIRMATION_COMBOBOX))
@@ -2577,16 +2574,11 @@ public class EditCaseSteps implements En {
         .investigationStatus(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
                 INVESTIGATION_STATUS_OPTIONS))
-        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
         .externalToken(webDriverHelpers.getValueFromWebElement(EXTERNAL_TOKEN_INPUT))
         .disease(webDriverHelpers.getValueFromCombobox(DISEASE_COMBOBOX))
-        .reinfection(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(REINFECTION_OPTIONS))
         .outcomeOfCase(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(OUTCOME_OF_CASE_OPTIONS))
         .sequelae(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SEQUELAE_OPTIONS))
-        .caseIdentificationSource(
-            webDriverHelpers.getValueFromCombobox(CASE_IDENTIFICATION_SOURCE_COMBOBOX))
         .region(webDriverHelpers.getValueFromCombobox(REGION_COMBOBOX))
         .district(webDriverHelpers.getValueFromCombobox(DISTRICT_COMBOBOX))
         .community(webDriverHelpers.getValueFromCombobox(COMMUNITY_COMBOBOX))
@@ -2594,19 +2586,11 @@ public class EditCaseSteps implements En {
         .responsibleRegion(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_REGION_COMBOBOX))
         .responsibleDistrict(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX))
         .responsibleCommunity(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX))
-        .prohibitionToWork(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(PROHIBITION_TO_WORK_OPTIONS))
-        .homeBasedQuarantinePossible(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                HOME_BASED_QUARANTINE_POSSIBLE_OPTIONS))
         .quarantine(webDriverHelpers.getValueFromCombobox(QUARANTINE_COMBOBOX))
         .reportGpsLatitude(webDriverHelpers.getValueFromWebElement(REPORT_GPS_LATITUDE_INPUT))
         .reportGpsLongitude(webDriverHelpers.getValueFromWebElement(REPORT_GPS_LONGITUDE_INPUT))
         .reportGpsAccuracyInM(
             webDriverHelpers.getValueFromWebElement(REPORT_GPS_ACCURACY_IN_M_INPUT))
-        .bloodOrganTissueDonationInTheLast6Months(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                BLOOD_ORGAN_TISSUE_DONATION_IN_THE_LAST_6_MONTHS_OPTIONS))
         .dateReceivedAtDistrictLevel(getDateReceivedAtDistrictLevel())
         .dateReceivedAtRegionLevel(getDateReceivedAtRegionLevel())
         .dateReceivedAtNationalLevel(getDateReceivedAtNationalLevel())
@@ -2823,7 +2807,7 @@ public class EditCaseSteps implements En {
   }
 
   private void selectCaseClassification(String caseClassification) {
-    webDriverHelpers.selectFromCombobox(CASE_CLASSIFICATION_COMBOBOX, caseClassification);
+    webDriverHelpers.clickWebElementByText(CASE_CLASSIFICATION_RADIOBUTTON, caseClassification);
   }
 
   private void selectClinicalConfirmation(String clinicalConfirmation) {
