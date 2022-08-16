@@ -15,10 +15,8 @@
 
 package de.symeda.sormas.ui.sormastosormas;
 
-import static de.symeda.sormas.ui.utils.CssStyles.INACCESSIBLE_LABEL;
 import static de.symeda.sormas.ui.utils.CssStyles.LABEL_WHITE_SPACE_NORMAL;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_4;
-import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_5;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_TOP_5;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
@@ -79,9 +77,8 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 	private static final Map<String, Function<SormasToSormasShareInfoDto, Object>> optionValueGetterMap = new HashMap<>();
 
 	static {
-		optionFeaturePropertyMap.put(
-			SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS,
-			OptionFeatureTypeProperty.of(FeatureTypeProperty.SHARE_ASSOCIATED_CONTACTS, Strings.messageShareAssociatedContactsDisabled));
+		optionFeaturePropertyMap
+			.put(SormasToSormasOptionsDto.WITH_ASSOCIATED_CONTACTS, OptionFeatureTypeProperty.of(FeatureTypeProperty.SHARE_ASSOCIATED_CONTACTS));
 		optionFeaturePropertyMap.put(SormasToSormasOptionsDto.WITH_SAMPLES, OptionFeatureTypeProperty.of(FeatureTypeProperty.SHARE_SAMPLES));
 		optionFeaturePropertyMap
 			.put(SormasToSormasOptionsDto.WITH_IMMUNIZATIONS, OptionFeatureTypeProperty.of(FeatureTypeProperty.SHARE_IMMUNIZATIONS));
@@ -371,13 +368,6 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 			availableCustomOptions.forEach(option -> {
 				if (allowedCustomOptions.contains(option)) {
 					addField(option);
-				} else {
-					String placeholderMessageTag = optionFeaturePropertyMap.get(option).messageTagFeatureNotEnabled;
-					if (placeholderMessageTag != null) {
-						Label placeholder = new Label(I18nProperties.getString(placeholderMessageTag));
-						placeholder.addStyleNames(VSPACE_5, INACCESSIBLE_LABEL);
-						getContent().addComponent(placeholder, option + INACTIVE_OPTION_LOC_SUFFIX);
-					}
 				}
 			});
 
@@ -445,19 +435,12 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 
 		private final FeatureTypeProperty featureTypeProperty;
 
-		private final String messageTagFeatureNotEnabled;
-
-		private OptionFeatureTypeProperty(FeatureTypeProperty featureTypeProperty, String messageTagFeatureNotEnabled) {
+		private OptionFeatureTypeProperty(FeatureTypeProperty featureTypeProperty) {
 			this.featureTypeProperty = featureTypeProperty;
-			this.messageTagFeatureNotEnabled = messageTagFeatureNotEnabled;
 		}
 
 		public static OptionFeatureTypeProperty of(FeatureTypeProperty featureTypeProperty) {
-			return new OptionFeatureTypeProperty(featureTypeProperty, null);
-		}
-
-		public static OptionFeatureTypeProperty of(FeatureTypeProperty featureTypeProperty, String messageTagFeatureNotEnabled) {
-			return new OptionFeatureTypeProperty(featureTypeProperty, messageTagFeatureNotEnabled);
+			return new OptionFeatureTypeProperty(featureTypeProperty);
 		}
 	}
 }

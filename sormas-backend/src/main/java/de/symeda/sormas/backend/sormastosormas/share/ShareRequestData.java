@@ -28,22 +28,15 @@ public class ShareRequestData implements Serializable {
 
 	private ShareRequestPreviews previews;
 
-	private boolean associatedContactShareDisabled;
-
 	private SormasToSormasOriginInfoDto originInfo;
 
 	public ShareRequestData() {
 	}
 
-	public ShareRequestData(
-		String uuid,
-		ShareRequestPreviews previews,
-		SormasToSormasOriginInfoDto originInfo,
-		boolean associatedContactShareDisabled) {
+	public ShareRequestData(String uuid, ShareRequestPreviews previews, SormasToSormasOriginInfoDto originInfo) {
 		this.requestUuid = uuid;
 		this.previews = previews;
 		this.originInfo = originInfo;
-		this.associatedContactShareDisabled = associatedContactShareDisabled;
 	}
 
 	public String getRequestUuid() {
@@ -56,9 +49,5 @@ public class ShareRequestData implements Serializable {
 
 	public SormasToSormasOriginInfoDto getOriginInfo() {
 		return originInfo;
-	}
-
-	public boolean isAssociatedContactShareDisabled() {
-		return associatedContactShareDisabled;
 	}
 }
