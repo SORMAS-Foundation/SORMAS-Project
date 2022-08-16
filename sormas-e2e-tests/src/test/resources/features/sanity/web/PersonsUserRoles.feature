@@ -42,8 +42,6 @@ Scenario Outline: Test for navigating through Case, Contact and Immunization car
     | Community Officer         |
     | Hospital Informant        |
     | Clinician                 |
-@UI @Sanity @Persons @add_userroles
-Feature: Edit Persons for different user roles
 
   @tmsLink=SORDEV-8468 @env_main
   Scenario Outline: Edit existent person and provoke errors in the Edit Person page
