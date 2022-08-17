@@ -277,7 +277,7 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testEventParticipantWithEvnSampleAutomaticDeletion() {
+	public void testEventParticipantWithEventSampleAutomaticDeletion() {
 
 		createDeletionConfigurations();
 		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.EVENT);
