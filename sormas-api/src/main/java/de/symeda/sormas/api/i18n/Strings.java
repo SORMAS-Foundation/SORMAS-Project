@@ -14,11 +14,13 @@ public interface Strings {
 	String address = "address";
 	String aggregateReportLegend = "aggregateReportLegend";
 	String and = "and";
+	String apply = "apply";
 	String at = "at";
 	String average = "average";
 	String between = "between";
 	String bpm = "bpm";
 	String by = "by";
+	String cancel = "cancel";
 	String checkboxSetTickAnAnswerForAll = "checkboxSetTickAnAnswerForAll";
 	String classificationAllOf = "classificationAllOf";
 	String classificationClassificationRules = "classificationClassificationRules";
