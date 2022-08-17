@@ -786,11 +786,22 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 				e.getEventLocation().setDistrict(rdcf.district);
 			});
 
+		EventParticipantDto eventParticipant =
+			creator.createEventParticipant(event.toReference(), creator.createPerson(), "foobar", officer.toReference());
+
+		getEventParticipantFacade().save(eventParticipant);
+
+
+		SampleDto sample = createSample(eventParticipant.toReference(), officer.toReference(), rdcf.facility);
+		sample.setLabSampleID("Test lab sample id");
+		getSampleFacade().saveSample(sample);
+
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
 
 		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
-
-		final String uuidEvent = DataHelper.createUuid();
+		options.setWithEventParticipants(true);
+		options.setWithSamples(true);
+		final String uuid = DataHelper.createUuid();
 
 		Mockito
 			.when(
@@ -800,9 +811,9 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 				SormasToSormasDto postBody = invocation.getArgument(2, SormasToSormasDto.class);
 
 				// make sure that no entities are found
-				final EventDto entity = postBody.getEvents().get(0).getEntity();
-
-				entity.setUuid(uuidEvent);
+				postBody.getEvents().get(0).getEntity().setUuid(uuid);
+				postBody.getEventParticipants().get(0).getEntity().setUuid(uuid);
+				postBody.getSamples().get(0).getEntity().setUuid(uuid);
 
 				SormasToSormasEncryptedDataDto encryptedData = encryptShareData(new ShareRequestAcceptData(null, null));
 				when(MockProducer.getPrincipal().getName()).thenReturn(s2sClientUser.getUserName());
@@ -812,8 +823,15 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 			});
 
 		getSormasToSormasEventFacade().share(Collections.singletonList(event.getUuid()), options);
-		EventDto savedEvent = getEventFacade().getByUuid(uuidEvent);
+
+		EventDto savedEvent = getEventFacade().getByUuid(uuid);
 		assertThat(savedEvent.getReportingUser(), is(s2sClientUser.toReference()));
+
+		EventParticipantDto savedEventParticipant = getEventParticipantFacade().getByUuid(uuid);
+		assertThat(savedEventParticipant.getReportingUser(), is(s2sClientUser.toReference()));
+
+		SampleDto savedSample = getSampleFacade().getSampleByUuid(uuid);
+		assertThat(savedSample.getReportingUser(), is(s2sClientUser.toReference()));
 	}
 
 	private EventDto createEventDto(TestDataCreator.RDCF rdcf) {
