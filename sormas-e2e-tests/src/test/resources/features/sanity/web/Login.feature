@@ -73,3 +73,10 @@ Feature: Login with different type of users
       | user                      |
       | Admin User                |
       | National User             |
+
+  @env_keycloak @LoginKeycloak
+  Scenario: Login on Keycloak Administrator Console
+    Given I navigate to Keycloak Administrator Console Login page
+    Then I log in as Keycloak Admin to Keycloak Administrator Console
+    Then I am logged in with Admin Keycloak in Keycloak Administrator Page
+    And I click on logout button on Keycloak Administrator Console Page
