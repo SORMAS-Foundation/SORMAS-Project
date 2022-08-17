@@ -61,13 +61,13 @@ public class ContactLineField extends CustomField<ContactLineFieldDto> {
 		binder.forField(multiDay).bind(ContactLineFieldDto.MULTI_DAY_SELECTOR);
 
 		typeOfContact.setId("typeOfContact");
-		typeOfContact.setWidth(150, Unit.PIXELS);
+		typeOfContact.setWidth(270, Unit.PIXELS);
 		typeOfContact.addStyleName(CssStyles.CAPTION_OVERFLOW);
 		binder.forField(typeOfContact).bind(ContactLineFieldDto.TYPE_OF_CONTACT);
 
 		relationToCase.setId("relationToCase");
 		relationToCase.setItems(ContactRelation.values());
-		relationToCase.setWidth(150, Unit.PIXELS);
+		relationToCase.setWidth(270, Unit.PIXELS);
 		relationToCase.addStyleName(CssStyles.CAPTION_OVERFLOW);
 		binder.forField(relationToCase).bind(ContactLineFieldDto.RELATION_TO_CASE);
 
