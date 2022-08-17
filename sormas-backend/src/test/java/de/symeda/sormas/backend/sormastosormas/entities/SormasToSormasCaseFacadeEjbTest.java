@@ -34,6 +34,7 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -1145,12 +1146,17 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 		useSurveillanceOfficerLogin(rdcf);
 
-		CaseDataDto caze = creator.createCase(officer.toReference(), creator.createPerson().toReference(), rdcf);
+		final PersonReferenceDto person = creator.createPerson().toReference();
+		CaseDataDto caze = creator.createCase(officer.toReference(), person, rdcf);
+
+		creator.createImmunization(Disease.CORONAVIRUS, person, officer.toReference(), rdcf);
 
 		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
+		options.setWithImmunizations(true);
+
 		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
 
-		final String uuidCase = DataHelper.createUuid();
+		final String uuid = DataHelper.createUuid();
 
 		Mockito
 			.when(
@@ -1162,12 +1168,14 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 				// make sure that no entities are found
 				final CaseDataDto entity = postBody.getCases().get(0).getEntity();
 
-				entity.setUuid(uuidCase);
+				entity.setUuid(uuid);
 				entity.getTherapy().setUuid(DataHelper.createUuid());
 				entity.getHealthConditions().setUuid(DataHelper.createUuid());
 				entity.getPortHealthInfo().setUuid(DataHelper.createUuid());
 				entity.getClinicalCourse().setUuid(DataHelper.createUuid());
 				entity.getMaternalHistory().setUuid(DataHelper.createUuid());
+
+				postBody.getImmunizations().get(0).getEntity().setUuid(uuid);
 
 				SormasToSormasEncryptedDataDto encryptedData = encryptShareData(new ShareRequestAcceptData(null, null));
 				when(MockProducer.getPrincipal().getName()).thenReturn(s2sClientUser.getUserName());
@@ -1177,8 +1185,12 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 			});
 
 		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
-		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(uuidCase);
+
+		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(uuid);
 		assertThat(savedCase.getReportingUser(), is(s2sClientUser.toReference()));
+
+		ImmunizationDto savedImmunization = getImmunizationFacade().getByUuid(uuid);
+		assertThat(savedImmunization.getReportingUser(), is(s2sClientUser.toReference()));
 	}
 
 	private CaseDataDto createRemoteCaseDto(TestDataCreator.RDCF remoteRdcf, PersonDto person) {
