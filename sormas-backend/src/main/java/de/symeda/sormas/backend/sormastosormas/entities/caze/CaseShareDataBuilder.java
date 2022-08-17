@@ -23,18 +23,13 @@ import javax.inject.Inject;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasCasePreview;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
-import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
@@ -80,7 +75,7 @@ public class CaseShareDataBuilder
 	protected SormasToSormasCasePreview doBuildShareDataPreview(Case caze, ShareRequestInfo requestInfo) {
 		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
-		return getCasePreview(caze, pseudonymizer);
+		return dataBuilderHelper.getCasePreview(caze, pseudonymizer);
 	}
 
 	private CaseDataDto getCazeDto(Case caze, Pseudonymizer pseudonymizer) {
@@ -94,33 +89,5 @@ public class CaseShareDataBuilder
 		cazeDto.setDontShareWithReportingTool(false);
 
 		return cazeDto;
-	}
-
-	private SormasToSormasCasePreview getCasePreview(Case caze, Pseudonymizer pseudonymizer) {
-		SormasToSormasCasePreview casePreview = new SormasToSormasCasePreview();
-
-		casePreview.setUuid(caze.getUuid());
-		casePreview.setReportDate(caze.getReportDate());
-		casePreview.setDisease(caze.getDisease());
-		casePreview.setDiseaseDetails(caze.getDiseaseDetails());
-		casePreview.setDiseaseVariant(caze.getDiseaseVariant());
-		casePreview.setCaseClassification(caze.getCaseClassification());
-		casePreview.setOutcome(caze.getOutcome());
-		casePreview.setInvestigationStatus(caze.getInvestigationStatus());
-		casePreview.setOnsetDate(caze.getSymptoms().getOnsetDate());
-		casePreview.setRegion(RegionFacadeEjb.toReferenceDto(caze.getResponsibleRegion()));
-		casePreview.setDistrict(DistrictFacadeEjb.toReferenceDto(caze.getResponsibleDistrict()));
-		casePreview.setCommunity(CommunityFacadeEjb.toReferenceDto(caze.getResponsibleCommunity()));
-		casePreview.setFacilityType(caze.getFacilityType());
-		casePreview.setHealthFacility(FacilityFacadeEjb.toReferenceDto(caze.getHealthFacility()));
-		casePreview.setHealthFacilityDetails(caze.getHealthFacilityDetails());
-		casePreview.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(caze.getPointOfEntry()));
-		casePreview.setPointOfEntryDetails(caze.getPointOfEntryDetails());
-
-		casePreview.setPerson(dataBuilderHelper.getPersonPreview(caze.getPerson()));
-
-		pseudonymizer.pseudonymizeDto(SormasToSormasCasePreview.class, casePreview, false, null);
-
-		return casePreview;
 	}
 }

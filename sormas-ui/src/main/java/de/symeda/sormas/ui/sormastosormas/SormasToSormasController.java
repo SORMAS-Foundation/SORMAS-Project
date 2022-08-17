@@ -43,13 +43,14 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
-import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoCriteria;
-import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
-import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
-import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestIndexDto;
+import de.symeda.sormas.api.sormastosormas.share.ShareRequestDetailsDto;
+import de.symeda.sormas.api.sormastosormas.share.ShareRequestIndexDto;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestDataType;
+import de.symeda.sormas.api.sormastosormas.share.incoming.ShareRequestStatus;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasContactPreview;
+import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasShareRequestDto;
+import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoCriteria;
+import de.symeda.sormas.api.sormastosormas.share.outgoing.SormasToSormasShareInfoDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
@@ -127,7 +128,7 @@ public class SormasToSormasController {
 			new SormasToSormasOptionsDto());
 	}
 
-	public void rejectShareRequest(SormasToSormasShareRequestIndexDto request, Runnable callback) {
+	public void rejectShareRequest(ShareRequestIndexDto request, Runnable callback) {
 
 		TextArea commentField = new TextArea(I18nProperties.getCaption(Captions.SormasToSormasOptions_comment));
 		commentField.setWidthFull();
@@ -150,7 +151,7 @@ public class SormasToSormasController {
 			});
 	}
 
-	public void acceptShareRequest(SormasToSormasShareRequestIndexDto request, Runnable callback) {
+	public void acceptShareRequest(ShareRequestIndexDto request, Runnable callback) {
 		boolean hasErrors = false;
 
 		if (request.getDataType() == ShareRequestDataType.CONTACT) {
@@ -329,8 +330,11 @@ public class SormasToSormasController {
 		}).toArray(Component[]::new);
 	}
 
-	public void showRequestDetails(SormasToSormasShareRequestIndexDto request) {
-		SormasToSormasShareRequestDto shareRequest = FacadeProvider.getSormasToSormasShareRequestFacade().getShareRequestByUuid(request.getUuid());
+	public void showRequestDetails(ShareRequestIndexDto request, ShareRequestViewType viewType) {
+		String requestUuid = request.getUuid();
+		ShareRequestDetailsDto shareRequest = viewType == ShareRequestViewType.INCOMING
+			? FacadeProvider.getSormasToSormasShareRequestFacade().getShareRequestDetails(requestUuid)
+			: FacadeProvider.getShareRequestInfoFacade().getShareRequestDetails(requestUuid);
 		ShareRequestLayout shareRequestLayout = new ShareRequestLayout(shareRequest);
 		shareRequestLayout.setWidth(900, Sizeable.Unit.PIXELS);
 		shareRequestLayout.setMargin(true);

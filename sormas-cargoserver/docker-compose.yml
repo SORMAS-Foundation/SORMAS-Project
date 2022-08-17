@@ -8,7 +8,7 @@ services:
       - POSTGRES_PASSWORD=sormas
       - DB_NAME=sormas_db
       - DB_NAME_AUDIT=sormas_audit_db
-      - SORMAS_POSTGRES_PASSWORD=sormas
+      - SORMAS_POSTGRES_PASSWORD=sormass
       - SORMAS_POSTGRES_USER=sormas_user
       - TZ=Europe/Berlin
     volumes:
