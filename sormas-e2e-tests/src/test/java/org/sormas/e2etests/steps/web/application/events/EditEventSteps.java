@@ -1506,7 +1506,7 @@ public class EditEventSteps implements En {
         () -> {
           webDriverHelpers.clearComboboxInput(COUNTRY_COMBOBOX_INPUT);
           //      TimeUnit.MILLISECONDS.sleep(500);
-          webDriverHelpers.clickOnWebElementBySelector(DEFAULT_COMBOBOX_VALUE);
+         // webDriverHelpers.clickOnWebElementBySelector(DEFAULT_COMBOBOX_VALUE);
         });
     When(
         "I clear Region and District fields from Edit Event Directory",
