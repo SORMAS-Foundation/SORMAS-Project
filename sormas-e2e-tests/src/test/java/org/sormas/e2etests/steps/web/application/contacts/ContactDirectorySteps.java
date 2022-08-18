@@ -937,12 +937,15 @@ public class ContactDirectorySteps implements En {
         });
     And(
         "I filter by Person's full name of last created duplicated line listing contact on Contact Directory Page",
-        () ->
-            webDriverHelpers.fillAndSubmitInWebElement(
-                PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
-                ContactsLineListingSteps.duplicatedContactLineListingDE.getFirstName()
-                    + " "
-                    + ContactsLineListingSteps.duplicatedContactLineListingDE.getLastName()));
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
+              ContactsLineListingSteps.duplicatedContactLineListingDE.getFirstName()
+                  + " "
+                  + ContactsLineListingSteps.duplicatedContactLineListingDE.getLastName());
+        });
     When(
         "^I click on Line Listing button$",
         () -> {

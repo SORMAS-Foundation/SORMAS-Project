@@ -82,7 +82,7 @@ Feature: Immunization end to end tests
     Then I navigate to last created immunization by API via URL
     Then I click on archive button from immunization tab
     Then I click on logout button from navbar
-    Then I log in with National User
+    Then I log in as a National User
     Then I navigate to last created immunization by API via URL
     Then I check if editable fields are read only for an archived immunization
 
@@ -201,7 +201,7 @@ Feature: Immunization end to end tests
 
   @tmsLink=SORDEV-8061 @env_main
   Scenario: Immunizations V: Link recovery immunizations to recovered cases
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data

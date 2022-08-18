@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.sormastosormas.share;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.backend.util.Pseudonymizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +66,7 @@ public abstract class ShareDataBuilder<DTO extends SormasToSormasShareableDto, A
 		}
 		return shared;
 	}
+	protected abstract DTO getDto(ADO ado, Pseudonymizer pseudonymizer);
 
 	protected abstract void doBusinessValidation(SHARED shared) throws ValidationRuntimeException;
 

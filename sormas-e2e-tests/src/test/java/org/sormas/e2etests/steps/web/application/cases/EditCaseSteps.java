@@ -487,6 +487,7 @@ public class EditCaseSteps implements En {
         "I click on Create button in Create Quarantine Order form DE",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_TEMPLATES_POPUP_DE);
+          TimeUnit.SECONDS.sleep(3);
         });
     When(
         "I check if generated document for Case based on {string} was downloaded properly",

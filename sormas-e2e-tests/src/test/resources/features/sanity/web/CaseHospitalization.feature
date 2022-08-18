@@ -9,7 +9,7 @@ Feature: Case hospitalization tab e2e test cases
     And API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    And I log in with National User
+    And I log in as a National User
     And I navigate to hospitalization tab for case created via api
     And I complete all hospitalization fields and save
     And I navigate to hospitalization tab for case created via api
@@ -19,7 +19,7 @@ Feature: Case hospitalization tab e2e test cases
 
   @tmsLink=SORDEV-8414 @env_main
   Scenario: Hospitalization refinements with changed place of stay from home to facility
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data
@@ -33,7 +33,7 @@ Feature: Case hospitalization tab e2e test cases
 
   @tmsLink=SORDEV-8414 @env_main
   Scenario: Hospitalization refinements
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data
@@ -49,7 +49,7 @@ Feature: Case hospitalization tab e2e test cases
 
   @tmsLink=SORDEV-9476 @env_de
   Scenario Outline: Isolation as a new reason for hospitalization
-    Given I log in with National User
+    Given I log in as a National User
     Then I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data for DE version
@@ -71,7 +71,7 @@ Feature: Case hospitalization tab e2e test cases
 
   @tmsLink=SORDEV-8405 @env_main
   Scenario: Additional fields in hospitalization and previous hospitalization
-    Given I log in with National User
+    Given I log in as a National User
     Then I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with Facility as a Place of stay
@@ -94,7 +94,7 @@ Feature: Case hospitalization tab e2e test cases
 
   @env_main @tmsLink=SORDEV-8034
   Scenario: Test Hospitalization caption refinements
-    Given I log in with National User
+    Given I log in as a National User
     Then I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with Facility as a Place of stay
