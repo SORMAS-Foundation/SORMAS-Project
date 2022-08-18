@@ -5,7 +5,6 @@ import static org.sormas.e2etests.pages.application.dashboard.Surveillance.Surve
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.LANGUAGE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.SAVE_BUTTON;
 
-import com.detectlanguage.DetectLanguage;
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -126,7 +125,8 @@ public class AboutDirectorySteps implements En {
               readXlsxDictionaryFile(DATA_DICTIONARY_FILE_PATH);
               break;
             case "Deutsch Data Dictionary":
-              readXlsxDictionaryFile(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
+              // readXlsxDictionaryFile(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
+              readXlsxDictionaryFile("sormas_data_dictionary_2022-08-18_.xlsx");
               break;
             default:
               throw new Exception("No XLSX path provided!");
@@ -157,18 +157,11 @@ public class AboutDirectorySteps implements En {
     When(
         "I detect and check language that was defined in User Settings for XLSX file content",
         () -> {
-          DetectLanguage.apiKey = "5e184341083ac27cad1fd06d6e208302";
           String[] receivedWordsFromArray = {
-            xlsxFileContentList.get(16), xlsxFileContentList.get(17)
+            xlsxFileContentList.get(3), xlsxFileContentList.get(17)
           };
           for (String word : receivedWordsFromArray) {
-            String chosenUserLanguage = language.toLowerCase().substring(0, 2);
-            String detectedLanguage = DetectLanguage.simpleDetect(word);
-            softly.assertEquals(
-                chosenUserLanguage,
-                detectedLanguage,
-                "Language in xlsx file is different then chosen bu User");
-            softly.assertAll();
+            LanguageDetectorHelper.checkLanguage(word, "German");
           }
         });
 

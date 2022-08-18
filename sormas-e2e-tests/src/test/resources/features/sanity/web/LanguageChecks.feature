@@ -21,10 +21,10 @@ Feature: Application language checks
   @tmsLink=SORDEV-6474 @env_main @issue=8069 @About
   Scenario: Check language options in Data Dictionary depending on the user language setting
     Given  I log in as a National Language User
-    And I click on the About button from navbar
-    Then I click on the User Settings button from navbar
-    And I select "Deutsch" language from Combobox in User settings
-    And I click on Deutsch Data Dictionary hyperlink and download XLSX file from About directory
+#    And I click on the About button from navbar
+#    Then I click on the User Settings button from navbar
+#    And I select "Deutsch" language from Combobox in User settings
+#    And I click on Deutsch Data Dictionary hyperlink and download XLSX file from About directory
     And I validate data from downloaded XLSX Deutsch Data Dictionary file
     And I detect and check language that was defined in User Settings for XLSX file content
     Then I delete Deutsch Data Dictionary downloaded file from About Directory
