@@ -104,9 +104,11 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 		rdcf = createRDCF(true).centralRdcf;
 
 		s2sClientUser = creator.createUser(
-				rdcf,
-				creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER),
-				creator.getUserRoleReference(DefaultUserRole.SORMAS_TO_SORMAS_CLIENT));
+			rdcf,
+			"S2S",
+			"Client",
+			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER),
+			creator.getUserRoleReference(DefaultUserRole.SORMAS_TO_SORMAS_CLIENT));
 
 		getFacilityService().createConstantFacilities();
 		getPointOfEntryService().createConstantPointsOfEntry();

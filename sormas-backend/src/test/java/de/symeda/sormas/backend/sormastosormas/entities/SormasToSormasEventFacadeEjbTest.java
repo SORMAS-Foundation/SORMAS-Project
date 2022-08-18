@@ -791,7 +791,6 @@ public class SormasToSormasEventFacadeEjbTest extends SormasToSormasTest {
 
 		getEventParticipantFacade().save(eventParticipant);
 
-
 		SampleDto sample = createSample(eventParticipant.toReference(), officer.toReference(), rdcf.facility);
 		sample.setLabSampleID("Test lab sample id");
 		getSampleFacade().saveSample(sample);
