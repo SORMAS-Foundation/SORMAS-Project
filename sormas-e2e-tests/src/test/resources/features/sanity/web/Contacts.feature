@@ -1044,7 +1044,7 @@ Feature: Contacts end to end tests
     Then I check if Present condition of person combobox has value "Buried"
     And I delete created csv file for detailed contact import
 
-  @tmsLink=SORDEV-9792 @env_de @testIt
+  @tmsLink=SORDEV-9792 @env_de
   Scenario: Test CoreAdo: Introduce "end of processing date" for contacts
     Given I log in as a Admin User
     When I click on the Contacts button from navbar
