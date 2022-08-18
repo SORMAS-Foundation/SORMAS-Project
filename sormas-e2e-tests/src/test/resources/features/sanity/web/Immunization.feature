@@ -405,6 +405,42 @@ Feature: Immunization end to end tests
     And I apply Disease filter "COVID-19"
     And I click on the APPLY FILTERS button
     And I check that number of displayed immunization results in grid is more than 0
-    And I check that the row number 1 contains "COVID-19" in disease field
-
-
+    And I check that the row number 1 contains "COVID-19" in column number 5
+    And I click on the RESET FILTERS button from Immunization
+    And I filter by "Thomas Boyde" as a Person's name on general text filter
+    And I check that number of displayed immunization results in grid is more than 0
+    And I check that the row number 1 contains "Thomas" in column number 3
+    And I click on the RESET FILTERS button from Immunization
+    And I apply "Year" filter to "2020" on Immunization directory page
+    And I apply "Month" filter to "1" on Immunization directory page
+    And I apply "Day" filter to "1" on Immunization directory page
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I check that row number 1 contains correct birthdate in column number 6
+    And I check that row number 1 contains correct age in column number 6
+    And I click SHOW MORE FILTERS button on Immunization directory page
+    And I apply "Region" filter to "Berlin" on Immunization directory page
+    And I apply "District" filter to "SK Berlin Mitte" on Immunization directory page
+    And I apply "Community" filter to "Zentrum" on Immunization directory page
+    And I apply "Facility category" filter to "Medical facility" on Immunization directory page
+    And I apply "Facility type" filter to "Hospital" on Immunization directory page
+    And I apply "Facility" filter to "Other facility" on Immunization directory page
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I check that the row number 1 contains "SK Berlin Mitte" in column number 8
+    And I click on the RESET FILTERS button from Immunization
+    And I apply "Means of immunization" filter to "Vaccination" on Immunization directory page
+     And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I check that the row number 1 contains "Vaccination" in column number 9
+    And I click on the RESET FILTERS button from Immunization
+    And I apply "Management status" filter to "Scheduled" on Immunization directory page
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I check that the row number 1 contains "Scheduled" in column number 10
+    And I click on the RESET FILTERS button from Immunization
+    And I apply "Immunization status" filter to "Pending" on Immunization directory page
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I check that the row number 1 contains "Pending" in column number 11
+    And I click on the RESET FILTERS button from Immunization
