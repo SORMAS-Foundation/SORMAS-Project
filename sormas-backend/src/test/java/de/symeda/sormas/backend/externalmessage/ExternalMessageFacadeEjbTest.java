@@ -46,12 +46,12 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		String reportId = "123456789";
 		creator.createLabMessage((lm) -> lm.setReportId(reportId));
 
-		List<ExternalMessageDto> list = getLabMessageFacade().getByReportId(null);
+		List<ExternalMessageDto> list = getExternalMessageFacade().getByReportId(null);
 
 		assertNotNull(list);
 		assertTrue(list.isEmpty());
 
-		list = getLabMessageFacade().getByReportId("");
+		list = getExternalMessageFacade().getByReportId("");
 
 		assertNotNull(list);
 		assertTrue(list.isEmpty());
@@ -67,7 +67,7 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		creator.createLabMessage(null);
 		creator.createLabMessage((lm) -> lm.setReportId("some-other-id"));
 
-		List<ExternalMessageDto> list = getLabMessageFacade().getByReportId(reportId);
+		List<ExternalMessageDto> list = getExternalMessageFacade().getByReportId(reportId);
 
 		assertNotNull(list);
 		assertFalse(list.isEmpty());
@@ -80,7 +80,7 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 
 		ExternalMessageDto labMessage = creator.createLabMessage(null);
 
-		ExternalMessageDto result = getLabMessageFacade().getByUuid(labMessage.getUuid());
+		ExternalMessageDto result = getExternalMessageFacade().getByUuid(labMessage.getUuid());
 		assertThat(result, equalTo(labMessage));
 	}
 
@@ -92,19 +92,19 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		// create noise
 		creator.createLabMessage((lm) -> lm.setStatus(ExternalMessageStatus.FORWARDED));
 
-		assertFalse(getLabMessageFacade().existsForwardedExternalMessageWith(reportId));
-		assertFalse(getLabMessageFacade().existsForwardedExternalMessageWith(null));
+		assertFalse(getExternalMessageFacade().existsForwardedExternalMessageWith(reportId));
+		assertFalse(getExternalMessageFacade().existsForwardedExternalMessageWith(null));
 
 		creator.createLabMessage((lm) -> lm.setReportId(reportId));
 
-		assertFalse(getLabMessageFacade().existsForwardedExternalMessageWith(reportId));
+		assertFalse(getExternalMessageFacade().existsForwardedExternalMessageWith(reportId));
 
 		ExternalMessageDto forwardedMessage = creator.createLabMessage((lm) -> {
 			lm.setReportId(reportId);
 			lm.setStatus(ExternalMessageStatus.FORWARDED);
 		});
 
-		assertTrue(getLabMessageFacade().existsForwardedExternalMessageWith(reportId));
+		assertTrue(getExternalMessageFacade().existsForwardedExternalMessageWith(reportId));
 	}
 
 	@Test
@@ -114,23 +114,23 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 
-		assertFalse(getLabMessageFacade().existsExternalMessageForEntity(caze.toReference()));
+		assertFalse(getExternalMessageFacade().existsExternalMessageForEntity(caze.toReference()));
 
 		// create noise
 		CaseDataDto noiseCaze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		creator.createSample(noiseCaze.toReference(), user.toReference(), rdcf.facility);
 
 		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
-		assertFalse(getLabMessageFacade().existsExternalMessageForEntity(caze.toReference()));
+		assertFalse(getExternalMessageFacade().existsExternalMessageForEntity(caze.toReference()));
 
-		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
-		assertTrue(getLabMessageFacade().existsExternalMessageForEntity(caze.toReference()));
+		creator.createLabMessageWithTestReport(sample.toReference());
+		assertTrue(getExternalMessageFacade().existsExternalMessageForEntity(caze.toReference()));
 
 		// create additional matches
-		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
+		creator.createLabMessageWithTestReport(sample.toReference());
 		SampleDto sample2 = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
-		creator.createLabMessage(lm -> lm.setSample(sample2.toReference()));
-		assertTrue(getLabMessageFacade().existsExternalMessageForEntity(caze.toReference()));
+		creator.createLabMessageWithTestReport(sample2.toReference());
+		assertTrue(getExternalMessageFacade().existsExternalMessageForEntity(caze.toReference()));
 	}
 
 	@Test
@@ -140,23 +140,23 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person = creator.createPerson();
 		ContactDto contact = creator.createContact(user.toReference(), person.toReference());
 
-		assertFalse(getLabMessageFacade().existsExternalMessageForEntity(contact.toReference()));
+		assertFalse(getExternalMessageFacade().existsExternalMessageForEntity(contact.toReference()));
 
 		// create noise
 		ContactDto noiseContact = creator.createContact(user.toReference(), person.toReference());
 		creator.createSample(noiseContact.toReference(), user.toReference(), rdcf.facility, null);
 
 		SampleDto sample = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility, null);
-		assertFalse(getLabMessageFacade().existsExternalMessageForEntity(contact.toReference()));
+		assertFalse(getExternalMessageFacade().existsExternalMessageForEntity(contact.toReference()));
 
-		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
-		assertTrue(getLabMessageFacade().existsExternalMessageForEntity(contact.toReference()));
+		creator.createLabMessageWithTestReport(sample.toReference());
+		assertTrue(getExternalMessageFacade().existsExternalMessageForEntity(contact.toReference()));
 
 		// create additional matches
-		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
+		creator.createLabMessageWithTestReport(sample.toReference());
 		SampleDto sample2 = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility, null);
-		creator.createLabMessage(lm -> lm.setSample(sample2.toReference()));
-		assertTrue(getLabMessageFacade().existsExternalMessageForEntity(contact.toReference()));
+		creator.createLabMessageWithTestReport(sample2.toReference());
+		assertTrue(getExternalMessageFacade().existsExternalMessageForEntity(contact.toReference()));
 	}
 
 	@Test
@@ -167,23 +167,23 @@ public class ExternalMessageFacadeEjbTest extends AbstractBeanTest {
 		EventDto event = creator.createEvent(user.toReference());
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
 
-		assertFalse(getLabMessageFacade().existsExternalMessageForEntity(eventParticipant.toReference()));
+		assertFalse(getExternalMessageFacade().existsExternalMessageForEntity(eventParticipant.toReference()));
 
 		// create noise
 		EventParticipantDto noiseEventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
 		creator.createSample(noiseEventParticipant.toReference(), user.toReference(), rdcf.facility);
 
 		SampleDto sample = creator.createSample(eventParticipant.toReference(), user.toReference(), rdcf.facility);
-		assertFalse(getLabMessageFacade().existsExternalMessageForEntity(eventParticipant.toReference()));
+		assertFalse(getExternalMessageFacade().existsExternalMessageForEntity(eventParticipant.toReference()));
 
-		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
-		assertTrue(getLabMessageFacade().existsExternalMessageForEntity(eventParticipant.toReference()));
+		creator.createLabMessageWithTestReport(sample.toReference());
+		assertTrue(getExternalMessageFacade().existsExternalMessageForEntity(eventParticipant.toReference()));
 
 		// create additional matches
-		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
+		creator.createLabMessageWithTestReport(sample.toReference());
 		SampleDto sample2 = creator.createSample(eventParticipant.toReference(), user.toReference(), rdcf.facility);
-		creator.createLabMessage(lm -> lm.setSample(sample2.toReference()));
-		assertTrue(getLabMessageFacade().existsExternalMessageForEntity(eventParticipant.toReference()));
+		creator.createLabMessageWithTestReport(sample2.toReference());
+		assertTrue(getExternalMessageFacade().existsExternalMessageForEntity(eventParticipant.toReference()));
 	}
 
 //	This test currently does not work because the bean tests used don't support @TransactionAttribute tags.

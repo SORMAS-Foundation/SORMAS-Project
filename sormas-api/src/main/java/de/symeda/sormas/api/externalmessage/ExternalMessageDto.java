@@ -1,27 +1,40 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.api.externalmessage;
 
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.utils.DependingOnFeatureType;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
+import org.springframework.util.CollectionUtils;
+
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
 @DependingOnFeatureType(featureType = FeatureType.EXTERNAL_MESSAGES)
@@ -31,12 +44,7 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public static final String TYPE = "type";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
-	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
-	public static final String SAMPLE_RECEIVED_DATE = "sampleReceivedDate";
-	public static final String LAB_SAMPLE_ID = "labSampleId";
-	public static final String SAMPLE_MATERIAL = "sampleMaterial";
-	public static final String SAMPLE_MATERIAL_TEXT = "sampleMaterialText";
-	public static final String SPECIMEN_CONDITION = "specimenCondition";
+
 	public static final String REPORTER_NAME = "reporterName";
 	public static final String REPORTER_EXTERNAL_ID = "reporterExternalId";
 	public static final String REPORTER_POSTAL_CODE = "reporterPostalCode";
@@ -58,19 +66,10 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	public static final String REPORT_ID = "reportId";
 	public static final String STATUS = "status";
 	public static final String ASSIGNEE = "assignee";
-	public static final String TEST_REPORTS = "testReports";
 
 	private ExternalMessageType type;
 	private Disease testedDisease;
 	private Date messageDateTime;
-	private Date sampleDateTime;
-	private Date sampleReceivedDate;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
-	private String labSampleId;
-	private SampleMaterial sampleMaterial;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
-	private String sampleMaterialText;
-	private SpecimenCondition specimenCondition;
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String reporterName;
@@ -103,17 +102,13 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String personEmail;
 
-	private SampleReferenceDto sample;
+	private List<SampleReportDto> sampleReports;
 	private CaseReferenceDto caze;
-
-	@Valid
-	private List<TestReportDto> testReports = new ArrayList<>();
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String externalMessageDetails;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String reportId;
-	private PathogenTestResultType sampleOverallTestResult;
 
 	private ExternalMessageStatus status = ExternalMessageStatus.UNPROCESSED;
 
@@ -147,50 +142,6 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.messageDateTime = messageDateTime;
 	}
 
-	public Date getSampleDateTime() {
-		return sampleDateTime;
-	}
-
-	public void setSampleDateTime(Date sampleDateTime) {
-		this.sampleDateTime = sampleDateTime;
-	}
-
-	public Date getSampleReceivedDate() {
-		return sampleReceivedDate;
-	}
-
-	public void setSampleReceivedDate(Date sampleReceivedDate) {
-		this.sampleReceivedDate = sampleReceivedDate;
-	}
-
-	public String getLabSampleId() {
-		return labSampleId;
-	}
-
-	public void setLabSampleId(String labSampleId) {
-		this.labSampleId = labSampleId;
-	}
-
-	public SampleMaterial getSampleMaterial() {
-		return sampleMaterial;
-	}
-
-	public void setSampleMaterial(SampleMaterial sampleMaterial) {
-		this.sampleMaterial = sampleMaterial;
-	}
-
-	public String getSampleMaterialText() {
-		return sampleMaterialText;
-	}
-
-	public void setSampleMaterialText(String sampleMaterialText) {
-		this.sampleMaterialText = sampleMaterialText;
-	}
-
-	public SpecimenCondition getSpecimenCondition() {
-		return specimenCondition;
-	}
-
 	public String getReporterName() {
 		return reporterName;
 	}
@@ -221,10 +172,6 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public void setReporterCity(String reporterCity) {
 		this.reporterCity = reporterCity;
-	}
-
-	public void setSpecimenCondition(SpecimenCondition specimenCondition) {
-		this.specimenCondition = specimenCondition;
 	}
 
 	public String getPersonFirstName() {
@@ -331,25 +278,6 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.personEmail = personEmail;
 	}
 
-	public List<TestReportDto> getTestReports() {
-		return testReports;
-	}
-
-	public void setTestReports(List<TestReportDto> testReports) {
-		this.testReports = testReports;
-	}
-
-	public void addTestReport(TestReportDto testReport) {
-		testReport.setLabMessage(this.toReference());
-		if (this.testReports == null) {
-			List<TestReportDto> testReports = new ArrayList();
-			testReports.add(testReport);
-			this.testReports = testReports;
-		} else {
-			this.testReports.add(testReport);
-		}
-	}
-
 	public String getExternalMessageDetails() {
 		return externalMessageDetails;
 	}
@@ -374,14 +302,6 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 		this.reportId = reportId;
 	}
 
-	public PathogenTestResultType getSampleOverallTestResult() {
-		return sampleOverallTestResult;
-	}
-
-	public void setSampleOverallTestResult(PathogenTestResultType sampleOverallTestResult) {
-		this.sampleOverallTestResult = sampleOverallTestResult;
-	}
-
 	public UserReferenceDto getAssignee() {
 		return assignee;
 	}
@@ -392,21 +312,66 @@ public class ExternalMessageDto extends SormasToSormasShareableDto {
 
 	public static ExternalMessageDto build() {
 
-		ExternalMessageDto labMessage = new ExternalMessageDto();
-		labMessage.setUuid(DataHelper.createUuid());
-		return labMessage;
+		ExternalMessageDto message = new ExternalMessageDto();
+		message.setUuid(DataHelper.createUuid());
+		return message;
 	}
 
 	public ExternalMessageReferenceDto toReference() {
 		return new ExternalMessageReferenceDto(getUuid());
 	}
 
-	public SampleReferenceDto getSample() {
-		return sample;
+	/**
+	 * This method does never return null. When there are no sample reports, a new sample report is built and returned (in a list).
+	 * Alternatively, {@link ExternalMessageDto#getSampleReports()} can be used.
+	 * 
+	 * @return List containing related sample reports or a newly built sample report
+	 */
+	public List<SampleReportDto> getSampleReportsNullSave() {
+		if (CollectionUtils.isEmpty(sampleReports)) {
+			SampleReportDto sampleReport = SampleReportDto.build();
+			sampleReport.setLabMessage(this.toReference());
+			this.sampleReports = Collections.singletonList(sampleReport);
+		}
+		return sampleReports;
 	}
 
-	public void setSample(SampleReferenceDto sample) {
-		this.sample = sample;
+	/**
+	 * Please note that this method may return null as a valid behaviour.
+	 * Alternatively {@link ExternalMessageDto#getSampleReportsNullSave()} can be used.
+	 * 
+	 * @return List of related sample reports (if any)
+	 */
+	public List<SampleReportDto> getSampleReports() {
+		return sampleReports;
+	}
+
+	/**
+	 * Use this method only if you want to discard already added sample reports. In that case, remember to set the according reference in
+	 * the sample report ({@link SampleReportDto#setLabMessage(ExternalMessageReferenceDto)}).
+	 * Otherwise, use the {@link ExternalMessageDto#addSampleReport(SampleReportDto)}.
+	 *
+	 * @param sampleReports
+	 */
+	public void setSampleReports(List<SampleReportDto> sampleReports) {
+		this.sampleReports = sampleReports;
+	}
+
+	public void addSampleReport(SampleReportDto sampleReport) {
+
+		sampleReport.setLabMessage(this.toReference());
+		if (sampleReports == null) {
+			sampleReports = Collections.singletonList(sampleReport);
+		} else {
+			try {
+				sampleReports.add(sampleReport);
+			} catch (UnsupportedOperationException e) {
+				ArrayList<SampleReportDto> newList = new ArrayList<>(this.sampleReports);
+				newList.add(sampleReport);
+				this.sampleReports = newList;
+			}
+
+		}
 	}
 
 	public CaseReferenceDto getCaze() {

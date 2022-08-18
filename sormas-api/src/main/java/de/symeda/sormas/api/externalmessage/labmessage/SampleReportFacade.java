@@ -19,10 +19,10 @@ import javax.ejb.Remote;
 import javax.validation.Valid;
 
 @Remote
-public interface TestReportFacade {
+public interface SampleReportFacade {
 
-	TestReportDto getByUuid(String uuid);
+	SampleReportDto getByUuid(String Uuid);
 
-	TestReportDto saveTestReport(@Valid TestReportDto dto);
+	SampleReportDto saveSampleReport(@Valid SampleReportDto sampleReport);
 
 }

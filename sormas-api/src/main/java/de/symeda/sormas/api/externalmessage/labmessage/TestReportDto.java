@@ -6,7 +6,6 @@ import java.util.List;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.externalmessage.ExternalMessageReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
@@ -20,6 +19,8 @@ import de.symeda.sormas.api.utils.Required;
 @DependingOnFeatureType(featureType = FeatureType.EXTERNAL_MESSAGES)
 public class TestReportDto extends EntityDto {
 
+	private static final long serialVersionUID = 3377642632219354380L;
+
 	public static final String I18N_PREFIX = "TestReport";
 
 	public static final String TEST_LAB_NAME = "testLabName";
@@ -32,7 +33,7 @@ public class TestReportDto extends EntityDto {
 	public static final String TEST_PCR_TEST_SPECIFICATION = "testPcrTestSpecification";
 
 	@Required
-	private ExternalMessageReferenceDto labMessage;
+	private SampleReportReferenceDto sampleReport;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String testLabName;
 	private List<String> testLabExternalIds;
@@ -61,12 +62,12 @@ public class TestReportDto extends EntityDto {
 	private Boolean preliminary;
 	private PCRTestSpecification testPcrTestSpecification;
 
-	public ExternalMessageReferenceDto getLabMessage() {
-		return labMessage;
+	public SampleReportReferenceDto getSampleReport() {
+		return sampleReport;
 	}
 
-	public void setLabMessage(ExternalMessageReferenceDto labMessage) {
-		this.labMessage = labMessage;
+	public void setSampleReport(SampleReportReferenceDto sampleReport) {
+		this.sampleReport = sampleReport;
 	}
 
 	public String getTestLabName() {

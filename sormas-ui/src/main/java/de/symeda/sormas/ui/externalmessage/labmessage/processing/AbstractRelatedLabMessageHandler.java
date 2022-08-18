@@ -112,7 +112,8 @@ public abstract class AbstractRelatedLabMessageHandler {
 						chainHandler));
 
 			for (PathogenTestDto p : relatedEntities.pathogenTests) {
-				Optional<TestReportDto> testReport = labMessage.getTestReports().stream().filter(t -> matchPathogenTest(t, p)).findFirst();
+				Optional<TestReportDto> testReport =
+					labMessage.getSampleReportsNullSave().get(0).getTestReports().stream().filter(t -> matchPathogenTest(t, p)).findFirst();
 				if (testReport.isPresent()) {
 					correctionFlow = correctionFlow.thenCompose(
 						testCorrectionResult -> doPathogenTestCorrection(
@@ -335,9 +336,11 @@ public abstract class AbstractRelatedLabMessageHandler {
 	// related entities
 	public RelatedEntities getRelatedEntities(ExternalMessageDto labMessage) {
 		String reportId = labMessage.getReportId();
-		String labSampleId = labMessage.getLabSampleId();
+		String labSampleId = labMessage.getSampleReportsNullSave().get(0).getLabSampleId();
 
-		if (StringUtils.isBlank(reportId) || StringUtils.isBlank(labSampleId)) {
+		if (StringUtils.isBlank(reportId) || StringUtils.isBlank(labSampleId))
+
+		{
 			return null;
 		}
 
@@ -369,7 +372,7 @@ public abstract class AbstractRelatedLabMessageHandler {
 		List<TestReportDto> unmatchedTestReports = new ArrayList<>();
 		boolean pathogenTestMisMatch = false;
 
-		List<TestReportDto> testReports = labMessage.getTestReports();
+		List<TestReportDto> testReports = labMessage.getSampleReportsNullSave().get(0).getTestReports();
 		List<PathogenTestDto> samplePathogenTests = FacadeProvider.getPathogenTestFacade().getAllBySample(relatedSample.toReference());
 
 		for (TestReportDto testReport : testReports) {

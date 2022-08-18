@@ -6,12 +6,12 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.ui.TestDataCreator;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,17 +27,17 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumFacadeEjb;
 import de.symeda.sormas.ui.AbstractBeanTest;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import de.symeda.sormas.ui.TestDataCreator;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class ExternalMessageMapperTest extends AbstractBeanTest {
@@ -60,11 +60,11 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 
 		TestReportDto testReport1 = TestReportDto.build();
 		testReport1.setTestResult(PathogenTestResultType.POSITIVE);
-		labMessage.addTestReport(testReport1);
+		labMessage.getSampleReports().get(0).addTestReport(testReport1);
 
 		TestReportDto testReport2 = TestReportDto.build();
 		testReport2.setTestResult(PathogenTestResultType.POSITIVE);
-		labMessage.addTestReport(testReport2);
+		labMessage.getSampleReports().get(0).addTestReport(testReport2);
 
 		SampleDto sample = new SampleDto();
 		mapper.mapToSample(sample);
@@ -78,15 +78,15 @@ public class ExternalMessageMapperTest extends AbstractBeanTest {
 
 		TestReportDto testReport1 = TestReportDto.build();
 		testReport1.setTestResult(PathogenTestResultType.POSITIVE);
-		labMessage.addTestReport(testReport1);
+		labMessage.getSampleReports().get(0).addTestReport(testReport1);
 
 		TestReportDto testReport2 = TestReportDto.build();
 		testReport2.setTestResult(PathogenTestResultType.POSITIVE);
-		labMessage.addTestReport(testReport2);
+		labMessage.getSampleReports().get(0).addTestReport(testReport2);
 
 		TestReportDto testReport3 = TestReportDto.build();
 		testReport3.setTestResult(PathogenTestResultType.NEGATIVE);
-		labMessage.addTestReport(testReport3);
+		labMessage.getSampleReports().get(0).addTestReport(testReport3);
 
 		ExternalMessageMapper mapper = ExternalMessageMapper.forLabMessage(labMessage);
 

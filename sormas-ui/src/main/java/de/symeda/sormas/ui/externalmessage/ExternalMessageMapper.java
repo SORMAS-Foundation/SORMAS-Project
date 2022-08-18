@@ -117,36 +117,51 @@ public class ExternalMessageMapper {
 	public List<String[]> mapToSample(SampleDto sample) {
 		List<String[]> changedFields = map(
 			Stream.of(
-				Mapping.of(sample::setSampleDateTime, sample.getSampleDateTime(), externalMessage.getSampleDateTime(), SampleDto.SAMPLE_DATE_TIME),
-				Mapping.of(sample::setSampleMaterial, sample.getSampleMaterial(), externalMessage.getSampleMaterial(), SampleDto.SAMPLE_MATERIAL),
+				Mapping.of(
+					sample::setSampleDateTime,
+					sample.getSampleDateTime(),
+					externalMessage.getSampleReportsNullSave().get(0).getSampleDateTime(),
+					SampleDto.SAMPLE_DATE_TIME),
+				Mapping.of(
+					sample::setSampleMaterial,
+					sample.getSampleMaterial(),
+					externalMessage.getSampleReportsNullSave().get(0).getSampleMaterial(),
+					SampleDto.SAMPLE_MATERIAL),
 				Mapping.of(
 					sample::setSampleMaterialText,
 					sample.getSampleMaterialText(),
-					externalMessage.getSampleMaterialText(),
+					externalMessage.getSampleReportsNullSave().get(0).getSampleMaterialText(),
 					SampleDto.SAMPLE_MATERIAL_TEXT),
 				Mapping.of(
 					sample::setSpecimenCondition,
 					sample.getSpecimenCondition(),
-					externalMessage.getSpecimenCondition(),
+					externalMessage.getSampleReportsNullSave().get(0).getSpecimenCondition(),
 					SampleDto.SPECIMEN_CONDITION),
 				Mapping.of(sample::setLab, sample.getLab(), getLabReference(externalMessage.getReporterExternalIds()), SampleDto.LAB),
 				Mapping.of(sample::setLabDetails, sample.getLabDetails(), externalMessage.getReporterName(), SampleDto.LAB_DETAILS)));
 
-		if (externalMessage.getSampleReceivedDate() != null) {
+		if (externalMessage.getSampleReportsNullSave().get(0).getSampleReceivedDate() != null) {
 			changedFields.addAll(
 				map(
 					Stream.of(
 						Mapping.of(sample::setReceived, sample.isReceived(), true, SampleDto.RECEIVED),
-						Mapping
-							.of(sample::setReceivedDate, sample.getReceivedDate(), externalMessage.getSampleReceivedDate(), SampleDto.RECEIVED_DATE),
-						Mapping.of(sample::setLabSampleID, sample.getLabSampleID(), externalMessage.getLabSampleId(), SampleDto.LAB_SAMPLE_ID))));
+						Mapping.of(
+							sample::setReceivedDate,
+							sample.getReceivedDate(),
+							externalMessage.getSampleReportsNullSave().get(0).getSampleReceivedDate(),
+							SampleDto.RECEIVED_DATE),
+						Mapping.of(
+							sample::setLabSampleID,
+							sample.getLabSampleID(),
+							externalMessage.getSampleReportsNullSave().get(0).getLabSampleId(),
+							SampleDto.LAB_SAMPLE_ID))));
 		}
 
 		PathogenTestResultType pathogenTestResult = null;
-		if (externalMessage.getSampleOverallTestResult() != null) {
-			pathogenTestResult = externalMessage.getSampleOverallTestResult();
+		if (externalMessage.getSampleReportsNullSave().get(0).getSampleOverallTestResult() != null) {
+			pathogenTestResult = externalMessage.getSampleReportsNullSave().get(0).getSampleOverallTestResult();
 		} else if (homogenousTestResultTypesIn(externalMessage)) {
-			pathogenTestResult = externalMessage.getTestReports().get(0).getTestResult();
+			pathogenTestResult = externalMessage.getSampleReportsNullSave().get(0).getTestReports().get(0).getTestResult();
 		}
 
 		changedFields.addAll(
@@ -372,7 +387,7 @@ public class ExternalMessageMapper {
 	}
 
 	private boolean homogenousTestResultTypesIn(ExternalMessageDto labMessage) {
-		List<TestReportDto> testReports = labMessage.getTestReports();
+		List<TestReportDto> testReports = labMessage.getSampleReportsNullSave().get(0).getTestReports();
 		if (testReports != null && !testReports.isEmpty()) {
 			List<PathogenTestResultType> testResultTypes = testReports.stream().map(TestReportDto::getTestResult).collect(Collectors.toList());
 			return testResultTypes.stream().distinct().count() <= 1;

@@ -62,6 +62,7 @@ import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.externalmessage.ExternalMessageStatus;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -596,24 +597,24 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		}).when(handleCreateSampleAndPathogenTests).handle(any(), any(), any(), any());
 
 		ExternalMessageDto labMessage = createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED);
-		labMessage.setSampleDateTime(new Date());
-		labMessage.setSampleMaterial(SampleMaterial.BLOOD);
+		labMessage.getSampleReports().get(0).setSampleDateTime(new Date());
+		labMessage.getSampleReports().get(0).setSampleMaterial(SampleMaterial.BLOOD);
 
 		TestReportDto testReport1 = TestReportDto.build();
 		testReport1.setTestType(PathogenTestType.CULTURE);
 		testReport1.setTestResult(PathogenTestResultType.NEGATIVE);
-		labMessage.getTestReports().add(testReport1);
+		labMessage.getSampleReports().get(0).getTestReports().add(testReport1);
 
 		TestReportDto testReport2 = TestReportDto.build();
 		testReport2.setTestResult(PathogenTestResultType.PENDING);
-		labMessage.getTestReports().add(testReport2);
+		labMessage.getSampleReports().get(0).getTestReports().add(testReport2);
 
 		ProcessingResult<SampleAndPathogenTests> result = runFlow(labMessage);
 
 		assertThat(result.getStatus(), is(DONE));
 		verify(handleCreateSampleAndPathogenTests).handle(argThat(sample -> {
 			assertThat(sample.getAssociatedCase(), is(caseCaptor.getValue().toReference()));
-			assertThat(sample.getSampleDateTime(), is(labMessage.getSampleDateTime()));
+			assertThat(sample.getSampleDateTime(), is(labMessage.getSampleReports().get(0).getSampleDateTime()));
 			assertThat(sample.getSampleMaterial(), is(SampleMaterial.BLOOD));
 			assertThat(sample.getReportingUser(), is(user.toReference()));
 
@@ -655,8 +656,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		}).when(handleCreateSampleAndPathogenTests).handle(any(), any(), any(), any());
 
 		ExternalMessageDto labMessage = createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED);
-		labMessage.setSampleDateTime(new Date());
-		labMessage.setSampleMaterial(SampleMaterial.BLOOD);
+		labMessage.getSampleReports().get(0).setSampleDateTime(new Date());
+		labMessage.getSampleReports().get(0).setSampleMaterial(SampleMaterial.BLOOD);
 
 		ProcessingResult<SampleAndPathogenTests> result = runFlow(labMessage);
 
@@ -740,20 +741,20 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		}).when(handleCreateSampleAndPathogenTests).handle(any(), any(), any(), any());
 
 		ExternalMessageDto labMessage = createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED);
-		labMessage.setSampleDateTime(new Date());
-		labMessage.setSampleMaterial(SampleMaterial.BLOOD);
+		labMessage.getSampleReports().get(0).setSampleDateTime(new Date());
+		labMessage.getSampleReports().get(0).setSampleMaterial(SampleMaterial.BLOOD);
 
 		TestReportDto testReport = TestReportDto.build();
 		testReport.setTestType(PathogenTestType.CULTURE);
 		testReport.setTestResult(PathogenTestResultType.NEGATIVE);
-		labMessage.getTestReports().add(testReport);
+		labMessage.getSampleReports().get(0).getTestReports().add(testReport);
 
 		ProcessingResult<SampleAndPathogenTests> result = runFlow(labMessage);
 
 		assertThat(result.getStatus(), is(DONE));
 		verify(handleCreateSampleAndPathogenTests).handle(argThat(sample -> {
 			assertThat(sample.getAssociatedContact(), is(contactCaptor.getValue().toReference()));
-			assertThat(sample.getSampleDateTime(), is(labMessage.getSampleDateTime()));
+			assertThat(sample.getSampleDateTime(), is(labMessage.getSampleReports().get(0).getSampleDateTime()));
 			assertThat(sample.getSampleMaterial(), is(SampleMaterial.BLOOD));
 			assertThat(sample.getReportingUser(), is(user.toReference()));
 
@@ -952,20 +953,20 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		}).when(handleCreateSampleAndPathogenTests).handle(any(), any(), any(), any());
 
 		ExternalMessageDto labMessage = createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED);
-		labMessage.setSampleDateTime(new Date());
-		labMessage.setSampleMaterial(SampleMaterial.BLOOD);
+		labMessage.getSampleReports().get(0).setSampleDateTime(new Date());
+		labMessage.getSampleReports().get(0).setSampleMaterial(SampleMaterial.BLOOD);
 
 		TestReportDto testReport = TestReportDto.build();
 		testReport.setTestType(PathogenTestType.CULTURE);
 		testReport.setTestResult(PathogenTestResultType.NEGATIVE);
-		labMessage.getTestReports().add(testReport);
+		labMessage.getSampleReports().get(0).getTestReports().add(testReport);
 
 		ProcessingResult<SampleAndPathogenTests> result = runFlow(labMessage);
 
 		assertThat(result.getStatus(), is(DONE));
 		verify(handleCreateSampleAndPathogenTests).handle(argThat(sample -> {
 			assertThat(sample.getAssociatedEventParticipant(), is(eventParticipantCaptor.getValue().toReference()));
-			assertThat(sample.getSampleDateTime(), is(labMessage.getSampleDateTime()));
+			assertThat(sample.getSampleDateTime(), is(labMessage.getSampleReports().get(0).getSampleDateTime()));
 			assertThat(sample.getSampleMaterial(), is(SampleMaterial.BLOOD));
 			assertThat(sample.getReportingUser(), is(user.toReference()));
 
@@ -1207,19 +1208,20 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		}).when(handleEditSample).handle(editedSampleCaptor.capture(), editedTestsCaptor.capture(), any());
 
 		ExternalMessageDto labMessage = createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED, l -> {
-			l.setLabSampleId(sample.getLabSampleID());
-			l.setSampleMaterial(SampleMaterial.RECTAL_SWAB);
-			l.setSpecimenCondition(SpecimenCondition.NOT_ADEQUATE);
+			l.addSampleReport(SampleReportDto.build());
+			l.getSampleReports().get(0).setLabSampleId(sample.getLabSampleID());
+			l.getSampleReports().get(0).setSampleMaterial(SampleMaterial.RECTAL_SWAB);
+			l.getSampleReports().get(0).setSpecimenCondition(SpecimenCondition.NOT_ADEQUATE);
 		});
 
 		TestReportDto testReport1 = TestReportDto.build();
 		testReport1.setTestType(PathogenTestType.CULTURE);
 		testReport1.setTestResult(PathogenTestResultType.NEGATIVE);
-		labMessage.getTestReports().add(testReport1);
+		labMessage.getSampleReports().get(0).addTestReport(testReport1);
 
 		TestReportDto testReport2 = TestReportDto.build();
 		testReport2.setTestResult(PathogenTestResultType.PENDING);
-		labMessage.getTestReports().add(testReport2);
+		labMessage.getSampleReports().get(0).addTestReport(testReport2);
 
 		ProcessingResult<SampleAndPathogenTests> result = runFlow(labMessage);
 
@@ -1346,19 +1348,20 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		}).when(handleEditSample).handle(editedSampleCaptor.capture(), editedTestsCaptor.capture(), any());
 
 		ExternalMessageDto labMessage = createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED, l -> {
-			l.setLabSampleId(sample.getLabSampleID());
-			l.setSampleMaterial(SampleMaterial.RECTAL_SWAB);
-			l.setSpecimenCondition(SpecimenCondition.NOT_ADEQUATE);
+			l.addSampleReport(SampleReportDto.build());
+			l.getSampleReports().get(0).setLabSampleId(sample.getLabSampleID());
+			l.getSampleReports().get(0).setSampleMaterial(SampleMaterial.RECTAL_SWAB);
+			l.getSampleReports().get(0).setSpecimenCondition(SpecimenCondition.NOT_ADEQUATE);
 		});
 
 		TestReportDto testReport1 = TestReportDto.build();
 		testReport1.setTestType(PathogenTestType.CULTURE);
 		testReport1.setTestResult(PathogenTestResultType.NEGATIVE);
-		labMessage.getTestReports().add(testReport1);
+		labMessage.getSampleReports().get(0).addTestReport(testReport1);
 
 		TestReportDto testReport2 = TestReportDto.build();
 		testReport2.setTestResult(PathogenTestResultType.PENDING);
-		labMessage.getTestReports().add(testReport2);
+		labMessage.getSampleReports().get(0).addTestReport(testReport2);
 
 		ProcessingResult<SampleAndPathogenTests> result = runFlow(labMessage);
 
@@ -1437,7 +1440,8 @@ public class AbstractLabMessageProcessingFlowTest extends AbstractBeanTest {
 		}).when(handleEditSample).handle(any(), any(), any());
 
 		ExternalMessageDto externalMessage = createLabMessage(Disease.CORONAVIRUS, "test-report-id", ExternalMessageStatus.UNPROCESSED, m -> {
-			m.setLabSampleId(similarSample.getLabSampleID());
+			m.addSampleReport(SampleReportDto.build());
+			m.getSampleReports().get(0).setLabSampleId(similarSample.getLabSampleID());
 		});
 
 		ProcessingResult<SampleAndPathogenTests> result = runFlow(externalMessage);

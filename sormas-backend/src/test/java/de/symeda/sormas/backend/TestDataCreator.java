@@ -72,7 +72,8 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.exposure.TypeOfAnimal;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
-import de.symeda.sormas.api.externalmessage.ExternalMessageReferenceDto;
+import de.symeda.sormas.api.externalmessage.ExternalMessageType;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
 import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
@@ -1953,16 +1954,43 @@ public class TestDataCreator {
 			customSettings.accept(labMessage);
 		}
 
-		beanTest.getLabMessageFacade().save(labMessage);
+		beanTest.getExternalMessageFacade().save(labMessage);
 
 		return labMessage;
 	}
 
-	public TestReportDto createTestReport(ExternalMessageReferenceDto labMessage) {
+	public ExternalMessageDto createLabMessageWithTestReport(SampleReferenceDto sample) {
+		ExternalMessageDto labMessage = createLabMessage(lm -> lm.setType(ExternalMessageType.LAB_MESSAGE));
+		SampleReportDto sampleReport = createSampleReport(labMessage, sample);
+		createTestReport(sampleReport);
+		return labMessage;
+
+	}
+
+	public SampleReportDto createSampleReport(ExternalMessageDto labMessage, SampleReferenceDto sample) {
+		SampleReportDto sampleReport = createSampleReport(labMessage);
+		sampleReport.setSample(sample);
+		sampleReport.setChangeDate(new Date());
+		beanTest.getSampleReportFacade().saveSampleReport(sampleReport);
+		return sampleReport;
+	}
+
+	public SampleReportDto createSampleReport(ExternalMessageDto labMessage) {
+		SampleReportDto sampleReport = SampleReportDto.build();
+		labMessage.addSampleReport(sampleReport);
+		beanTest.getSampleReportFacade().saveSampleReport(sampleReport);
+		labMessage.setChangeDate(new Date());
+		beanTest.getExternalMessageFacade().save(labMessage);
+		return sampleReport;
+	}
+
+	public TestReportDto createTestReport(SampleReportDto sampleReport) {
 		TestReportDto testReport = TestReportDto.build();
-		testReport.setLabMessage(labMessage);
+		sampleReport.addTestReport(testReport);
 
 		beanTest.getTestReportFacade().saveTestReport(testReport);
+		sampleReport.setChangeDate(new Date());
+		beanTest.getSampleReportFacade().saveSampleReport(sampleReport);
 
 		return testReport;
 	}

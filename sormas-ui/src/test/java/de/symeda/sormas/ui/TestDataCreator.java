@@ -19,6 +19,7 @@ package de.symeda.sormas.ui;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,6 +48,9 @@ import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportDto;
+import de.symeda.sormas.api.externalmessage.labmessage.SampleReportReferenceDto;
+import de.symeda.sormas.api.externalmessage.labmessage.TestReportDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
@@ -735,6 +739,12 @@ public class TestDataCreator {
 		labMessage = FacadeProvider.getExternalMessageFacade().save(labMessage);
 
 		return labMessage;
+	}
+
+	public SampleReportDto createSampleReport(SampleReferenceDto sample) {
+		SampleReportDto sampleReport = SampleReportDto.build();
+		sampleReport.setSample(sample);
+		return sampleReport;
 	}
 
 	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, UserReferenceDto user, Consumer<PathogenTestDto> config) {

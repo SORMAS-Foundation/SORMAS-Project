@@ -52,6 +52,8 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.RequestContextHolder;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -964,7 +966,9 @@ public class SampleService extends AbstractDeletableAdoService<Sample>
 
 		// Remove the reference from all lab messages
 		externalMessageService.getForSample(new SampleReferenceDto(sample.getUuid())).forEach(labMessage -> {
-			labMessage.setSample(null);
+			if (CollectionUtils.isNotEmpty(labMessage.getSampleReports())) {
+				labMessage.getSampleReports().get(0).setSample(null);
+			}
 			externalMessageService.ensurePersisted(labMessage);
 		});
 	}

@@ -28,7 +28,8 @@ import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.externalmessage.labmessage.TestReportService;
+import de.symeda.sormas.backend.externalmessage.labmessage.SampleReport;
+import de.symeda.sormas.backend.externalmessage.labmessage.SampleReportService;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
 
@@ -37,7 +38,7 @@ import de.symeda.sormas.backend.user.User;
 public class ExternalMessageService extends AdoServiceWithUserFilter<ExternalMessage> {
 
 	@EJB
-	private TestReportService testReportService;
+	private SampleReportService sampleReportService;
 
 	public ExternalMessageService() {
 		super(ExternalMessage.class);
@@ -45,8 +46,6 @@ public class ExternalMessageService extends AdoServiceWithUserFilter<ExternalMes
 
 	@Override
 	public void deletePermanent(ExternalMessage externalMessage) {
-
-		externalMessage.getTestReports().forEach(t -> testReportService.deletePermanent(t));
 
 		super.deletePermanent(externalMessage);
 	}
@@ -73,8 +72,11 @@ public class ExternalMessageService extends AdoServiceWithUserFilter<ExternalMes
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(ExternalMessage.STATUS), criteria.getExternalMessageStatus()));
 		}
 		if (criteria.getSample() != null) {
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.equal(labMessage.get(ExternalMessage.SAMPLE).get(Sample.UUID), criteria.getSample().getUuid()));
+
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.equal(labMessage.join(ExternalMessage.SAMPLE_REPORTS).get(SampleReport.SAMPLE).get(Sample.UUID), criteria.getSample().getUuid()));
 		}
 		if (criteria.getCaze() != null) {
 			filter =
@@ -201,7 +203,8 @@ public class ExternalMessageService extends AdoServiceWithUserFilter<ExternalMes
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<ExternalMessage> labMessageRoot = cq.from(ExternalMessage.class);
-		Join<ExternalMessage, Sample> sampleJoin = labMessageRoot.join(ExternalMessage.SAMPLE, JoinType.LEFT);
+		Join<ExternalMessage, SampleReport> sampleReportJoin = labMessageRoot.join(ExternalMessage.SAMPLE_REPORTS, JoinType.LEFT);
+		Join<SampleReport, Sample> sampleJoin = sampleReportJoin.join(SampleReport.SAMPLE, JoinType.LEFT);
 		Join<Sample, Case> caseJoin = sampleJoin.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 
 		cq.where(caseJoin.get(AbstractDomainObject.UUID).in(Collections.singleton(caseUuid)));
@@ -214,7 +217,8 @@ public class ExternalMessageService extends AdoServiceWithUserFilter<ExternalMes
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<ExternalMessage> labMessageRoot = cq.from(ExternalMessage.class);
-		Join<ExternalMessage, Sample> sampleJoin = labMessageRoot.join(ExternalMessage.SAMPLE, JoinType.LEFT);
+		Join<ExternalMessage, SampleReport> sampleReportJoin = labMessageRoot.join(ExternalMessage.SAMPLE_REPORTS, JoinType.LEFT);
+		Join<SampleReport, Sample> sampleJoin = sampleReportJoin.join(SampleReport.SAMPLE, JoinType.LEFT);
 		Join<Sample, Contact> contactJoin = sampleJoin.join(Sample.ASSOCIATED_CONTACT, JoinType.LEFT);
 
 		cq.where(contactJoin.get(AbstractDomainObject.UUID).in(Collections.singleton(contactUuid)));
@@ -227,7 +231,8 @@ public class ExternalMessageService extends AdoServiceWithUserFilter<ExternalMes
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<ExternalMessage> labMessageRoot = cq.from(ExternalMessage.class);
-		Join<ExternalMessage, Sample> sampleJoin = labMessageRoot.join(ExternalMessage.SAMPLE, JoinType.LEFT);
+		Join<ExternalMessage, SampleReport> sampleReportJoin = labMessageRoot.join(ExternalMessage.SAMPLE_REPORTS, JoinType.LEFT);
+		Join<SampleReport, Sample> sampleJoin = sampleReportJoin.join(SampleReport.SAMPLE, JoinType.LEFT);
 		Join<Sample, EventParticipant> eventParticipantJoin = sampleJoin.join(Sample.ASSOCIATED_EVENT_PARTICIPANT, JoinType.LEFT);
 
 		cq.where(eventParticipantJoin.get(AbstractDomainObject.UUID).in(Collections.singleton(eventParticipantUuid)));

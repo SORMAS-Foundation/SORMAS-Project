@@ -165,7 +165,7 @@ public class ExternalMessageController {
 	}
 
 	public void markExternalMessageAsProcessed(ExternalMessageDto externalMessage, SampleReferenceDto sample) {
-		externalMessage.setSample(sample);
+		externalMessage.getSampleReportsNullSave().get(0).setSample(sample);
 		externalMessage.setStatus(ExternalMessageStatus.PROCESSED);
 		FacadeProvider.getExternalMessageFacade().save(externalMessage);
 	}

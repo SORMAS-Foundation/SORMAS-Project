@@ -15,18 +15,12 @@
 
 package de.symeda.sormas.ui.externalmessage.labmessage.processing;
 
-import de.symeda.sormas.ui.externalmessage.processing.AbstractProcessingFlow;
-import de.symeda.sormas.ui.externalmessage.processing.PersonAndPickOrCreateEntryResult;
-import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
-import de.symeda.sormas.ui.externalmessage.processing.flow.FlowThen;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
-import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
-import de.symeda.sormas.api.sample.SampleCriteria;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -47,11 +41,17 @@ import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.externalmessage.ExternalMessageMapper;
-import java.util.stream.Collectors;
+import de.symeda.sormas.ui.externalmessage.processing.AbstractProcessingFlow;
+import de.symeda.sormas.ui.externalmessage.processing.PersonAndPickOrCreateEntryResult;
+import de.symeda.sormas.ui.externalmessage.processing.PickOrCreateEntryResult;
+import de.symeda.sormas.ui.externalmessage.processing.flow.FlowThen;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResult;
+import de.symeda.sormas.ui.externalmessage.processing.flow.ProcessingResultStatus;
 
 /**
  * Abstract class defining the flow of processing a lab message allowing to choose between multiple options like create or select a
@@ -122,10 +122,12 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 						(vf, v) -> doPickOrCreateSampleFlow(
 							c -> c.sampleCriteria(new SampleCriteria().eventParticipant(v.getEventParticipant())),
 							() -> {
-							EventDto event = FacadeProvider.getEventFacade().getEventByUuid(p.getEvent().getUuid(), false);
+								EventDto event = FacadeProvider.getEventFacade().getEventByUuid(p.getEvent().getUuid(), false);
 
-							return createSampleAndPathogenTests(v.getEventParticipant(), event, labMessage, false);
-						}, vf, labMessage))
+								return createSampleAndPathogenTests(v.getEventParticipant(), event, labMessage, false);
+							},
+							vf,
+							labMessage))
 					.when(
 						EventValidationResult::isEventSelectionCanceled,
 						(vf, v) -> vf.then(ignored -> doCreateEventParticipantFlow(flow, labMessage).getResult()))
@@ -485,9 +487,9 @@ public abstract class AbstractLabMessageProcessingFlow extends AbstractProcessin
 	private SampleSimilarityCriteria createSampleCriteria(ExternalMessageDto labMessage) {
 
 		SampleSimilarityCriteria sampleCriteria = new SampleSimilarityCriteria();
-		sampleCriteria.setLabSampleId(labMessage.getLabSampleId());
-		sampleCriteria.setSampleDateTime(labMessage.getSampleDateTime());
-		sampleCriteria.setSampleMaterial(labMessage.getSampleMaterial());
+		sampleCriteria.setLabSampleId(labMessage.getSampleReportsNullSave().get(0).getLabSampleId());
+		sampleCriteria.setSampleDateTime(labMessage.getSampleReportsNullSave().get(0).getSampleDateTime());
+		sampleCriteria.setSampleMaterial(labMessage.getSampleReportsNullSave().get(0).getSampleMaterial());
 
 		return sampleCriteria;
 	}
