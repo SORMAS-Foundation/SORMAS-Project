@@ -69,26 +69,6 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 	@EJB
 	private SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 
-	private static SormasToSormasShareRequestDto toDto(SormasToSormasShareRequest source) {
-		if (source == null) {
-			return null;
-		}
-		SormasToSormasShareRequestDto target = new SormasToSormasShareRequestDto();
-		DtoHelper.fillDto(target, source);
-
-		target.setDataType(source.getDataType());
-		target.setStatus(source.getStatus());
-		target.setOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getOriginInfo()));
-		target.setCases(source.getCasesList());
-		target.setContacts(source.getContactsList());
-		target.setEvents(source.getEventsList());
-		target.setEventParticipants(source.getEventParticipantsList());
-		target.setResponseComment(source.getResponseComment());
-		target.setShareAssociatedContactsDisabled(source.isShareAssociatedContactsDisabled());
-
-		return target;
-	}
-
 	@Override
 	@RightsAllowed({
 		UserRight._SORMAS_TO_SORMAS_SHARE,
