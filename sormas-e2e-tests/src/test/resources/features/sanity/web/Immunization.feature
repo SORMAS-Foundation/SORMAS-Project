@@ -430,7 +430,7 @@ Feature: Immunization end to end tests
     And I check that the row number 1 contains "SK Berlin Mitte" in column number 8
     And I click on the RESET FILTERS button from Immunization
     And I apply "Means of immunization" filter to "Vaccination" on Immunization directory page
-     And I click on the APPLY FILTERS button
+    And I click on the APPLY FILTERS button
     And I check that number of displayed immunization results in grid is more than 0
     And I check that the row number 1 contains "Vaccination" in column number 9
     And I click on the RESET FILTERS button from Immunization
