@@ -105,8 +105,7 @@ public class ShareRequestGrid extends FilteredGrid<ShareRequestIndexDto, ShareRe
 					: I18nProperties.findPrefixCaption(column.getId(), ShareRequestIndexDto.I18N_PREFIX, SormasToSormasShareRequestDto.I18N_PREFIX));
 		}
 
-		setSortOrder(
-			Collections.singletonList(new GridSortOrder<>(getColumn(ShareRequestIndexDto.CREATION_DATE), SortDirection.DESCENDING)));
+		setSortOrder(Collections.singletonList(new GridSortOrder<>(getColumn(ShareRequestIndexDto.CREATION_DATE), SortDirection.DESCENDING)));
 	}
 
 	private Component createActionButtons(ShareRequestIndexDto indexDto) {
@@ -150,11 +149,8 @@ public class ShareRequestGrid extends FilteredGrid<ShareRequestIndexDto, ShareRe
 				.stream()
 				.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
 				.collect(Collectors.toList());
-			return (viewType == ShareRequestViewType.INCOMING
-				? FacadeProvider.getSormasToSormasShareRequestFacade()
-					.getIndexList(query.getFilter().orElse(null), query.getOffset(), query.getLimit(), sortProperties)
-				: FacadeProvider.getShareRequestInfoFacade()
-					.getIndexList(query.getFilter().orElse(null), query.getOffset(), query.getLimit(), sortProperties)).stream();
+
+			return loadShareRequests(query.getFilter().orElse(null), query.getOffset(), query.getLimit(), sortProperties).stream();
 		},
 			query -> (int) (viewType == ShareRequestViewType.INCOMING
 				? FacadeProvider.getSormasToSormasShareRequestFacade().count(query.getFilter().orElse(null))
@@ -163,10 +159,18 @@ public class ShareRequestGrid extends FilteredGrid<ShareRequestIndexDto, ShareRe
 		setSelectionMode(SelectionMode.NONE);
 	}
 
+	private List<ShareRequestIndexDto> loadShareRequests(
+		ShareRequestCriteria criteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties) {
+		return viewType == ShareRequestViewType.INCOMING
+			? FacadeProvider.getSormasToSormasShareRequestFacade().getIndexList(criteria, offset, size, sortProperties)
+			: FacadeProvider.getShareRequestInfoFacade().getIndexList(criteria, offset, size, sortProperties);
+	}
+
 	public void setEagerDataProvider() {
-		List<ShareRequestIndexDto> indexList = viewType == ShareRequestViewType.INCOMING
-			? FacadeProvider.getSormasToSormasShareRequestFacade().getIndexList(getCriteria(), null, null, null)
-			: FacadeProvider.getShareRequestInfoFacade().getIndexList(getCriteria(), null, null, null);
+		List<ShareRequestIndexDto> indexList = loadShareRequests(getCriteria(), null, null, null);
 		ListDataProvider<ShareRequestIndexDto> dataProvider = DataProvider.fromStream(indexList.stream());
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.MULTI);

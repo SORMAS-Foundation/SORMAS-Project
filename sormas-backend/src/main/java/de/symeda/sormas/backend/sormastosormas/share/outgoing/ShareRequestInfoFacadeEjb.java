@@ -37,8 +37,6 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.share.ShareRequestCriteria;
 import de.symeda.sormas.api.sormastosormas.share.ShareRequestDetailsDto;
@@ -126,6 +124,7 @@ public class ShareRequestInfoFacadeEjb implements ShareRequestInfoFacade {
 		}
 
 		cq.orderBy(order);
+		cq.distinct(true);
 
 		List<ShareRequestIndexDto> requests = QueryHelper.getResultList(em, cq, offset, size);
 
@@ -174,7 +173,7 @@ public class ShareRequestInfoFacadeEjb implements ShareRequestInfoFacade {
 		details.setDataType(requestInfo.getDataType());
 		details.setStatus(requestInfo.getRequestStatus());
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 		details.setCases(
 			requestInfo.getShares()
 				.stream()
