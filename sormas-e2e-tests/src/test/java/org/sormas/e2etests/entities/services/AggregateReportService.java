@@ -175,4 +175,10 @@ public class AggregateReportService {
         .acuteViralHepatitisCases(faker.number().numberBetween(2, 12))
         .build();
   }
+
+  public AggregateReport buildAggredateReportsForOneDisease() {
+    return AggregateReport.builder()
+        .acuteViralHepatitisCases(faker.number().numberBetween(2, 12))
+        .build();
+  }
 }

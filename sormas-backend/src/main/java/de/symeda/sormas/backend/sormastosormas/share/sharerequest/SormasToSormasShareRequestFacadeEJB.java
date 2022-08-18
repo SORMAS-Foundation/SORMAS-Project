@@ -230,7 +230,26 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 			.collect(Collectors.toList());
 	}
 
-	private SormasToSormasShareRequest fromDto(@NotNull SormasToSormasShareRequestDto source, boolean checkChangeDate) {
+	public static SormasToSormasShareRequestDto toDto(SormasToSormasShareRequest source) {
+		if (source == null) {
+			return null;
+		}
+		SormasToSormasShareRequestDto target = new SormasToSormasShareRequestDto();
+		DtoHelper.fillDto(target, source);
+
+		target.setDataType(source.getDataType());
+		target.setStatus(source.getStatus());
+		target.setOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getOriginInfo()));
+		target.setCases(source.getCasesList());
+		target.setContacts(source.getContactsList());
+		target.setEvents(source.getEventsList());
+		target.setEventParticipants(source.getEventParticipantsList());
+		target.setResponseComment(source.getResponseComment());
+
+		return target;
+	}
+
+	public SormasToSormasShareRequest fromDto(@NotNull SormasToSormasShareRequestDto source, boolean checkChangeDate) {
 
 		SormasToSormasShareRequest target =
 			DtoHelper.fillOrBuildEntity(source, shareRequestService.getByUuid(source.getUuid()), SormasToSormasShareRequest::new, checkChangeDate);
@@ -243,7 +262,6 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		target.setEventsList(source.getEvents());
 		target.setEventParticipantsList(source.getEventParticipants());
 		target.setResponseComment(source.getResponseComment());
-		target.setShareAssociatedContactsDisabled(source.isShareAssociatedContactsDisabled());
 
 		return target;
 	}

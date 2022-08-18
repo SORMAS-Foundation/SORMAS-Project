@@ -1,29 +1,15 @@
 @UI @Sanity @About
 Feature: About Directory end to end tests
 
-  #fails due to known defect, downloaded file is not in german, is in english.
-  @tmsLink=SORDEV-6474 @env_main @issue=8069
-  Scenario: Check language options in Data Dictionary depending on the user language setting
-    Given  I log in as a National Language User
-    And I click on the About button from navbar
-    Then I click on the User Settings button from navbar
-    And I select "Deutsch" language from Combobox in User settings
-    And I click on Deutsch Data Dictionary hyperlink and download XLSX file from About directory
-    And I validate data from downloaded XLSX Deutsch Data Dictionary file
-    And I detect and check language that was defined in User Settings for XLSX file content
-    Then I delete Deutsch Data Dictionary downloaded file from About Directory
-    Then I click on the User Settings button from navbar
-    And I set on default language as English in User settings
-
   @tmsLink=SORQA-219 @env_main @precon
   Scenario: Check current Sormas version is show
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the About button from navbar
     Then I check that current Sormas version is shown on About directory page
 
   @env_main @#8399
   Scenario: Check all main important redirects in About section
-    Given I log in with National User
+    Given I log in as a National User
     Then I click on the About button from navbar
     Then I click on Sormas version in About directory and i get redirected to github
     Then I click on What's new in About directory and i get redirected to Sormas what's new page
@@ -35,7 +21,7 @@ Feature: About Directory end to end tests
 
   @env_de @#8399
   Scenario: Check important redirects in About section for DE
-    Given I log in with National User
+    Given I log in as a National User
     Then I click on the About button from navbar
     Then I click on Sormas version in About directory and i get redirected to github
     And I click on Deutsch Data Dictionary hyperlink and download XLSX file from About directory

@@ -1741,7 +1741,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public void validate(CaseDataDto caze) throws ValidationRuntimeException {
+	public void validate(@Valid CaseDataDto caze) throws ValidationRuntimeException {
 
 		// Check whether any required field that does not have a not null constraint in
 		// the database is empty

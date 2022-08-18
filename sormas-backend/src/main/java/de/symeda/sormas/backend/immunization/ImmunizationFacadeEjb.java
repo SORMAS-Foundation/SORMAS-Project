@@ -394,7 +394,7 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	public void validate(ImmunizationDto immunizationDto) throws ValidationRuntimeException {
+	public void validate(@Valid ImmunizationDto immunizationDto) throws ValidationRuntimeException {
 		if (DateHelper.isStartDateBeforeEndDate(immunizationDto.getStartDate(), immunizationDto.getEndDate())) {
 			String validationError = String.format(
 				I18nProperties.getValidationError(Validations.afterDate),

@@ -991,7 +991,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
-	public void validate(EventDto event) throws ValidationRuntimeException {
+	public void validate(@Valid EventDto event) throws ValidationRuntimeException {
 
 		// Check whether any required field that does not have a not null constraint in
 		// the database is empty

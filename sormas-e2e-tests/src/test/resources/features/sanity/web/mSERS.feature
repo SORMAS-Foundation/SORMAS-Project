@@ -78,3 +78,112 @@ Feature: mSERS functionalities
     And I click on the APPLY FILTERS button
     Then I click to edit 1 result in mSers directory page
     And I click to delete aggregated report
+
+  @tmsLink=SORDEV-12132 @env_main
+  Scenario: Test Limited disease user property should not be applied to mSERS aggregated reporting
+    Given I log in as a National User
+    When I click on the mSERS button from navbar
+    When I click on the NEW AGGREGATE REPORT button
+    Then I set Region combobox to "Baden-Württemberg" in Create New Aggregate Report popup
+    And I set District combobox to "LK Alb-Donau-Kreis" in Create New Aggregate Report popup
+    And I fill a new aggregate report with specific data for one disease
+    And I click to save aggregated report
+    And I navigate to Report data tab
+    Then I select ARI (Acute Respiratory Infections) disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Buruli Ulcer disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Chikungunya disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Diarrhea w/ Blood (Shigella) disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Diarrhea w/ Dehydration (< 5) disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Diphteria disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select FHA (Functional Hypothalamic Amenorrhea) disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select HIV disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Leprosy disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Leprosy disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Lymphatic Filariasis disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Malaria disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Maternal Deaths disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Neonatal Tetanus disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Non-Neonatal Tetanus disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Onchocerciasis disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Perinatal Deaths disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Pertussis disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Post-immunization adverse events mild disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Post-immunization adverse events severe disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Post-immunization adverse events severe disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Rubella disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Schistosomiasis disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Snake Bite disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Soil-Transmitted Helminths disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Trachoma disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Trypanosomiasis disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Tuberculosis disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Typhoid Fever disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Yaws and Endemic Syphilis disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Yaws and Endemic Syphilis disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 0
+    Then I select Acute Viral Hepatitis disease from Disease combobox
+    And I click on the APPLY FILTERS button
+    And I check if there number of results in grid in mSers directory is 1
+    Then I click to edit 1 result in mSers directory page
+    And I click to delete aggregated report

@@ -3,7 +3,7 @@ Feature: Sample Functionalities
 
   @env_main
   Scenario: Edit a new case Sample
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data
@@ -20,7 +20,7 @@ Feature: Sample Functionalities
 
   @tmsLink=SORDEV-5471 @env_main
   Scenario: Edit a new contact Sample
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form
@@ -38,7 +38,7 @@ Feature: Sample Functionalities
 
   @tmsLink=SORDEV-5471 @env_main
   Scenario: Edit a new contact Sample with alternate purpose
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form
@@ -55,7 +55,7 @@ Feature: Sample Functionalities
 
   @tmsLink=SORDEV-5471 @env_main
   Scenario: Edit a new event participant Sample
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
     And I create a new event with specific data
@@ -87,7 +87,7 @@ Feature: Sample Functionalities
     And API: I create a new sample
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When I log in with National User
+    When I log in as a National User
     And I click on the Sample button from navbar
     And I am opening the last created via API Sample by url navigation
     And I click on the new pathogen test from the Edit Sample page
@@ -105,7 +105,7 @@ Feature: Sample Functionalities
     Given API: I create a new sample
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Sample button from navbar
     Then I open the last created sample via API
     Then I delete the sample
@@ -179,7 +179,7 @@ Feature: Sample Functionalities
     Then API: I create a new contact
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When I log in with National User
+    When I log in as a National User
     Then I navigate to the last created contact via the url
     Then I click on New Sample
     Then I collect the sample UUID displayed on create new sample page
@@ -207,7 +207,7 @@ Feature: Sample Functionalities
     Then API: I create a new contact
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When I log in with National User
+    When I log in as a National User
     Then I navigate to the last created contact via the url
     Then I click on New Sample
     Then I collect the sample UUID displayed on create new sample page
@@ -218,7 +218,7 @@ Feature: Sample Functionalities
 
   @tmsLink=SORDEV-5669 @env_main
     Scenario: Add variant specific Nucleic acid detection methods while creating sample
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data
@@ -231,7 +231,7 @@ Feature: Sample Functionalities
 
   @tmsLink=SORDEV-5669 @env_main
   Scenario: Add variant specific Nucleic acid detection methods after creating sample
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data
@@ -248,7 +248,7 @@ Feature: Sample Functionalities
 
   @tmsLink=SORDEV-5669 @env_main
   Scenario: Add variant specific Nucleic acid detection methods
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create new case with COVID-19 and variant "B.1.1.529.5 - BA.5 (Omicron)"
@@ -271,7 +271,7 @@ Feature: Sample Functionalities
     Then API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I open the last created Case via API
     Then I click on New Sample in German
@@ -314,7 +314,7 @@ Feature: Sample Functionalities
 
   @tmsLink=SORDEV-10588 @env_main
   Scenario: Test "Specimen condition" should not be mandatory for sample added to case
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data
@@ -342,7 +342,7 @@ Feature: Sample Functionalities
 
   @tmsLink=SORDEV-10588 @env_main
   Scenario: Test "Specimen condition" should not be mandatory for sample added to contact
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form
@@ -371,7 +371,7 @@ Feature: Sample Functionalities
 
   @tmsLink=SORDEV-10588 @env_main
   Scenario: Test "Specimen condition" should not be mandatory for sample added to event
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
     And I create a new event with specific data

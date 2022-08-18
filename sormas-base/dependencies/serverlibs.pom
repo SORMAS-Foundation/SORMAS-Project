@@ -147,12 +147,12 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- Fix invalid relative system path. This dependency is not part of the serverlibs, though -->
+		<!-- Fix invalid relative system path. This dependency is not part of the serverlibs, though
 		<dependency>
 			<groupId>info.novatec</groupId>
 			<artifactId>bean-test</artifactId>
 			<systemPath>${project.basedir}/bean-test-0.2.Final.jar</systemPath>
-		</dependency>
+		</dependency> -->
 	</dependencies>
 
 	<build>

@@ -7,7 +7,7 @@ Scenario: Event - follow-up of actions: attach documents at the level of the act
 Given API: I create a new event
 Then API: I check that POST call body is "OK"
 And API: I check that POST call status code is 200
-Given I log in with National User
+Given I log in as a National User
 Then I navigate to Event Action tab for created Event
 And I click on New Action from Event Actions tab
 And I create New Action from event tab

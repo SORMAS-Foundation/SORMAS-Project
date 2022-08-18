@@ -439,7 +439,7 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public void validate(EventParticipantDto eventParticipant) throws ValidationRuntimeException {
+	public void validate(@Valid EventParticipantDto eventParticipant) throws ValidationRuntimeException {
 
 		// Check whether any required field that does not have a not null constraint in the database is empty
 		if (eventParticipant.getPerson() == null) {

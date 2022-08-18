@@ -942,6 +942,19 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		super.delete(sample, deletionDetails);
 	}
 
+	public void unlinkFromEventParticipant(Sample sample) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Sample> cu = cb.createCriteriaUpdate(Sample.class);
+		Root<Sample> root = cu.from(Sample.class);
+
+		cu.set(Sample.ASSOCIATED_EVENT_PARTICIPANT, null);
+
+		cu.where(cb.equal(root.get(Sample.UUID), sample.getUuid()));
+
+		em.createQuery(cu).executeUpdate();
+
+	}
+
 	private void deleteSampleLinks(Sample sample) {
 
 		// Remove the reference from another sample to this sample if existing

@@ -3,7 +3,7 @@ Feature: Case reinfection end to end tests
 
 @tmsLink=SORDEV-9153 @env_de
 Scenario: Test Add reinfection details and status to cases
-  Given I log in with National User
+  Given I log in as a National User
   And I click on the Cases button from navbar
   And I click on the NEW CASE button
   When I create a new case with specific data for DE version with saved person details

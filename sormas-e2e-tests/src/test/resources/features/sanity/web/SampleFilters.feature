@@ -6,7 +6,7 @@ Feature: Sample filter functionality
     Given API: I create 10 new cases with a new sample foreach of them
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    And I log in with National User
+    And I log in as a National User
     And I click on the Sample button from navbar
     When I search for samples created with the API
     Then I check the displayed test results filter dropdown
@@ -26,7 +26,7 @@ Feature: Sample filter functionality
     Given API: I create a new sample
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Sample button from navbar
     Then I fill full name of last created via API Person into Sample Directory
     And I select Test result filter value with the value for pathogen test result of last created via API Sample in Sample Directory
@@ -85,7 +85,7 @@ Feature: Sample filter functionality
     Given API: I create a new sample
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Sample button from navbar
     Then I fill full name of last created via API Person into Sample Directory
     And I select Test result filter value with the value for pathogen test result of last created via API Sample in Sample Directory for DE version

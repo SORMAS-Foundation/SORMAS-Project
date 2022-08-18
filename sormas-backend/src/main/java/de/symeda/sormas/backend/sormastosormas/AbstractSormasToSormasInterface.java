@@ -47,7 +47,6 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
@@ -246,14 +245,9 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 
 		ShareRequestPreviews previewsToSend = shareDataBuilder.buildShareDataPreview(shareRequestInfo);
 		SormasToSormasOriginInfoDto originInfo = dataBuilderHelper.createSormasToSormasOriginInfo(currentUser, options);
-		boolean isAssociatedContactShareEnabled =
-			featureConfigurationFacade.isPropertyValueTrue(FeatureType.SORMAS_TO_SORMAS_SHARE_CASES, FeatureTypeProperty.SHARE_ASSOCIATED_CONTACTS);
 
-		sormasToSormasRestClient.post(
-			options.getOrganization().getId(),
-			requestEndpoint,
-			new ShareRequestData(requestUuid, previewsToSend, originInfo, !isAssociatedContactShareEnabled),
-			null);
+		sormasToSormasRestClient
+			.post(options.getOrganization().getId(), requestEndpoint, new ShareRequestData(requestUuid, previewsToSend, originInfo), null);
 
 		shareRequestInfoService.ensurePersisted(shareRequestInfo);
 	}
@@ -699,7 +693,6 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		ShareRequestPreviews previews = shareData.getPreviews();
 		request.setCases(previews.getCases());
 		request.setContacts(previews.getContacts());
-		request.setShareAssociatedContactsDisabled(shareData.isAssociatedContactShareDisabled());
 
 		request.setEvents(previews.getEvents());
 		request.setEventParticipants(previews.getEventParticipants());
