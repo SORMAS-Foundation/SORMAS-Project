@@ -42,5 +42,8 @@ public class NavBarPage {
   public static final By DISCARD_USER_SETTINGS_BUTTON = By.id("discard");
   public static final By GDPR_CHECKBOX = By.cssSelector(".popupContent input + label");
   public static final By ACTION_CONFIRM_GDPR_POPUP = By.cssSelector(".popupContent #Confirm");
+  public static final By ACTION_CONFIRM_GDPR_POPUP_DE =
+      By.cssSelector(".popupContent #Best\u00E4tigen");
   public static final By MSERS_BUTTON = By.cssSelector("div #aggregatereports");
+  public static final By LOGOUT_KEYCLOAK_BUTTON = By.cssSelector("[id='actionLogout-2']");
 }

@@ -9,7 +9,7 @@ Feature: Epidemiological data coverage
     And API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     When I am accessing via URL the Epidemiological data tab of the created case
     Then I create a new Exposure for Epidemiological data tab and fill all the data
@@ -30,7 +30,7 @@ Feature: Epidemiological data coverage
     And API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     When I am accessing via URL the Epidemiological data tab of the created case
     And I click on Exposure details known with UNKNOWN option
@@ -65,7 +65,7 @@ Feature: Epidemiological data coverage
     Then API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     When I am accessing via URL the Epidemiological data tab of the created case
     And I click on Exposure details known with NO option
@@ -109,7 +109,7 @@ Feature: Epidemiological data coverage
 
   @tmsLink=SORDEV-5523 @env_de
   Scenario: Enter an exposure data in Case Directory for DE version
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data for DE version
@@ -167,7 +167,7 @@ Feature: Epidemiological data coverage
 
   @tmsLink=SORDEV-5525 @env_de
   Scenario: Enter an activity as case in Epidemiological data tab in Cases for DE version
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data for DE version
@@ -193,7 +193,7 @@ Feature: Epidemiological data coverage
     And API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     When I am accessing via URL the Epidemiological data tab of the created case
     Then I create a new Exposure for Epidemiological data
@@ -210,7 +210,7 @@ Feature: Epidemiological data coverage
     And API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     When I am accessing via URL the Epidemiological data tab of the created case
     Then I create a new Exposure for Epidemiological data tab and fill all the data
@@ -228,7 +228,7 @@ Feature: Epidemiological data coverage
     Then API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     When I am accessing via URL the Epidemiological data tab of the created case
     Then I click on Activity details known with UNKNOWN option
@@ -307,7 +307,7 @@ Feature: Epidemiological data coverage
     And API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     When I am accessing via URL the Epidemiological data tab of the created case
     And I click on Exposure details known with YES option

@@ -20,9 +20,8 @@ import org.openqa.selenium.By;
 public class SurveillanceDashboardPage {
 
   public static final By SURVEILLANCE_DASHBOARD_NAME =
-      By.xpath("//div[contains(text(),'Surveillance Dashboard')]");
-  public static final By SURVEILLANCE_DASHBOARD_NAME_URDU =
-      By.xpath("//div[contains(text(),'نگرانی کا ڈیش بورڈ')]");
+      By.xpath(
+          "//div[@class='v-label v-widget h1 v-label-h1 vspace-none v-label-vspace-none v-label-undef-w']");
   public static final By SURVEILLANCE_BUTTON =
       By.xpath("(//div[contains(@class,'v-select-optiongroup')]//span)[1]");
   public static final By CONTACTS_BUTTON =

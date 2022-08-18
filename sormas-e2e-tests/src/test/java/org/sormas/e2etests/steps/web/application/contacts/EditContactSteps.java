@@ -710,6 +710,7 @@ public class EditContactSteps implements En {
         "I select {string} Quarantine Order in Create Quarantine Order form in Edit Contact directory",
         (String name) -> {
           webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, name);
+          TimeUnit.SECONDS.sleep(3);
         });
     When(
         "I check if downloaded file is correct for {string} Quarantine Order in Edit Contact directory",
@@ -1195,11 +1196,10 @@ public class EditContactSteps implements En {
     When(
         "I filter with last created contact using contact UUID",
         () -> {
-          TimeUnit.SECONDS.sleep(2); // wait for the system
-          webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, contactUUID);
-          TimeUnit.SECONDS.sleep(2); // wait for the system
+          TimeUnit.SECONDS.sleep(1); // long system reaction
+          webDriverHelpers.clearAndFillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, contactUUID);
           webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
-          TimeUnit.SECONDS.sleep(4); // wait for reaction
+          TimeUnit.SECONDS.sleep(5); // wait for the system
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
