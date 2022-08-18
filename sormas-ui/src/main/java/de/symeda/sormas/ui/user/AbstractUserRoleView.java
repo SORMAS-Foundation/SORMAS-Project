@@ -15,21 +15,59 @@
 
 package de.symeda.sormas.ui.user;
 
+import com.vaadin.ui.Button;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.ui.SubMenu;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
+import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public abstract class AbstractUserRoleView extends AbstractDetailView<UserRoleReferenceDto> {
 
 	public static final String ROOT_VIEW_NAME = "userrole";
+	protected UserRoleTemplateSelectionField userRoleTemplateSelectionField;
+	private Button applyUserRoleTemplate;
 
 	protected AbstractUserRoleView(String viewName) {
 		super(viewName);
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.USER_ROLE_EDIT)) {
+			userRoleTemplateSelectionField = new UserRoleTemplateSelectionField();
+
+			applyUserRoleTemplate = ButtonHelper.createButton(
+				Captions.userrole_applyUserRoleTemplate,
+				e -> VaadinUiUtil.showConfirmationPopup(
+					I18nProperties.getCaption(Captions.userrole_applyUserRoleTemplate),
+					userRoleTemplateSelectionField,
+					I18nProperties.getString(Strings.apply),
+					I18nProperties.getString(Strings.cancel),
+					720,
+					confirmed -> {
+						if (Boolean.TRUE.equals(confirmed)) {
+							if (userRoleTemplateSelectionField.getUserRoleEditForm() != null) {
+								userRoleTemplateSelectionField.getUserRoleEditForm()
+									.applyTemplateData(
+										FacadeProvider.getUserRoleFacade().getByUuid(userRoleTemplateSelectionField.getValue().getUuid()));
+							} else {
+								userRoleTemplateSelectionField.getUserRoleNotificationsForm()
+									.applyTemplateData(
+										FacadeProvider.getUserRoleFacade().getByUuid(userRoleTemplateSelectionField.getValue().getUuid()));
+							}
+						}
+						return true;
+					}));
+
+			addHeaderComponent(applyUserRoleTemplate);
+		}
 	}
 
 	@Override

@@ -30,6 +30,7 @@ public class UserRoleTemplateSelectionField extends CustomField<UserRoleReferenc
 	private VerticalLayout mainLayout;
 	private ComboBox templateRoleCombo;
 	private UserRoleEditForm userRoleEditForm;
+	private UserRoleNotificationsForm userRoleNotificationsForm;
 
 	@Override
 	protected void doSetValue(UserRoleReferenceDto userRoleReferenceDto) {
@@ -53,7 +54,7 @@ public class UserRoleTemplateSelectionField extends CustomField<UserRoleReferenc
 		return mainLayout;
 	}
 
-    @Override
+	@Override
 	public UserRoleReferenceDto getValue() {
 		return (UserRoleReferenceDto) templateRoleCombo.getValue();
 	}
@@ -64,5 +65,13 @@ public class UserRoleTemplateSelectionField extends CustomField<UserRoleReferenc
 
 	public void setUserRoleEditForm(UserRoleEditForm userRoleEditForm) {
 		this.userRoleEditForm = userRoleEditForm;
+	}
+
+	public UserRoleNotificationsForm getUserRoleNotificationsForm() {
+		return userRoleNotificationsForm;
+	}
+
+	public void setUserRoleNotificationsForm(UserRoleNotificationsForm userRoleNotificationsForm) {
+		this.userRoleNotificationsForm = userRoleNotificationsForm;
 	}
 }

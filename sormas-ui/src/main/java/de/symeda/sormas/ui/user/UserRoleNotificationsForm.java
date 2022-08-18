@@ -20,6 +20,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Label;
+
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRoleDto;
@@ -30,6 +31,8 @@ public class UserRoleNotificationsForm extends AbstractEditForm<UserRoleDto> {
 	private static final String INFO_LABEL_LOC = "infoLabbelLoc";
 
 	private static final String HTML_LAYOUT = fluidRowLocs(INFO_LABEL_LOC) + fluidRowLocs(UserRoleDto.NOTIFICATION_TYPES);
+
+	private UserRoleNotificationCheckboxSet notificationTypesCbSet;
 
 	protected UserRoleNotificationsForm() {
 		super(UserRoleDto.class, UserRoleDto.I18N_PREFIX);
@@ -46,7 +49,13 @@ public class UserRoleNotificationsForm extends AbstractEditForm<UserRoleDto> {
 			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getDescription(Descriptions.userRoleTemplate), ContentMode.HTML);
 		getContent().addComponent(infoLabel, INFO_LABEL_LOC);
 
-		UserRoleNotificationCheckboxSet notificationTypesCbSet = addField(UserRoleDto.NOTIFICATION_TYPES, UserRoleNotificationCheckboxSet.class);
+		notificationTypesCbSet = addField(UserRoleDto.NOTIFICATION_TYPES, UserRoleNotificationCheckboxSet.class);
 		notificationTypesCbSet.setCaption(null);
+	}
+
+	void applyTemplateData(UserRoleDto templateRole) {
+		if (templateRole != null) {
+			notificationTypesCbSet.setInternalValue(templateRole.getNotificationTypes());
+		}
 	}
 }
