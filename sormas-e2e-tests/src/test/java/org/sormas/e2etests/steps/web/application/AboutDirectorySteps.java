@@ -1,6 +1,7 @@
 package org.sormas.e2etests.steps.web.application;
 
 import static org.sormas.e2etests.pages.application.AboutPage.*;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.SURVEILLANCE_DASHBOARD_NAME;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.LANGUAGE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.SAVE_BUTTON;
 
@@ -8,9 +9,7 @@ import com.detectlanguage.DetectLanguage;
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +20,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.files.FilesHelper;
-import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
+import org.sormas.e2etests.helpers.strings.LanguageDetectorHelper;
 import org.testng.asserts.SoftAssert;
 
 @Slf4j
@@ -263,11 +262,13 @@ public class AboutDirectorySteps implements En {
         });
 
     Then(
-        "^I check that Surveillance Dashboard header is correctly displayed in Urdu language$",
-        () -> {
+        "^I check that Surveillance Dashboard header is correctly displayed in ([^\"]*) language$",
+        (String language) -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          webDriverHelpers.isElementVisibleWithTimeout(
-              SurveillanceDashboardPage.SURVEILLANCE_DASHBOARD_NAME_URDU, 5);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SURVEILLANCE_DASHBOARD_NAME, 30);
+          LanguageDetectorHelper.checkLanguage(
+              webDriverHelpers.getTextFromWebElement(SURVEILLANCE_DASHBOARD_NAME), language);
         });
   }
 
