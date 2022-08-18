@@ -17,6 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.app.backend.user;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashSet;
@@ -28,10 +32,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.j256.ormlite.table.DatabaseTable;
-
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
@@ -66,6 +67,8 @@ public class UserRole extends AbstractDomainObject {
 	private boolean portHealthUser;
 	@Enumerated(EnumType.STRING)
 	private JurisdictionLevel jurisdictionLevel;
+	@Enumerated(EnumType.STRING)
+	private DefaultUserRole linkedDefaultUserRole;
 
 	public String getUserRightsJson() {
 		return userRightsJson;
@@ -150,6 +153,14 @@ public class UserRole extends AbstractDomainObject {
 
 	public void setJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
 		this.jurisdictionLevel = jurisdictionLevel;
+	}
+
+	public DefaultUserRole getLinkedDefaultUserRole() {
+		return linkedDefaultUserRole;
+	}
+
+	public void setLinkedDefaultUserRole(DefaultUserRole linkedDefaultUserRole) {
+		this.linkedDefaultUserRole = linkedDefaultUserRole;
 	}
 
 	public static boolean isPortHealthUser(Collection<UserRole> userRoles) {
