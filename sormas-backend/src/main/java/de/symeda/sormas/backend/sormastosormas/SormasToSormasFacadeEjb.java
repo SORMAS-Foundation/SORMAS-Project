@@ -179,12 +179,29 @@ public class SormasToSormasFacadeEjb implements SormasToSormasFacade {
 			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRequestProcessed);
 		}
 
-		for (ShareRequestInfo request : pendingRequests) {
-			sormasToSormasRestClient.post(shareInfo.getOrganizationId(), REVOKE_REQUEST_ENDPOINT, Collections.singletonList(request.getUuid()), null);
-
-			request.setRequestStatus(ShareRequestStatus.REVOKED);
-			shareInfoService.ensurePersisted(shareInfo);
+		for (ShareRequestInfo pendingRequest : pendingRequests) {
+			revokeShareRequest(pendingRequest);
 		}
+	}
+
+	private void revokeShareRequest(ShareRequestInfo request) throws SormasToSormasException {
+		sormasToSormasRestClient
+			.post(request.getShares().get(0).getOrganizationId(), REVOKE_REQUEST_ENDPOINT, Collections.singletonList(request.getUuid()), null);
+
+		request.setRequestStatus(ShareRequestStatus.REVOKED);
+		shareRequestInfoService.ensurePersisted(request);
+	}
+
+	@Override
+	@Transactional(rollbackOn = Exception.class)
+	public void revokeShareRequest(String requestUuid) throws SormasToSormasException {
+		ShareRequestInfo request = shareRequestInfoService.getByUuid(requestUuid);
+
+		if (request.getRequestStatus() != ShareRequestStatus.PENDING) {
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasRequestProcessed);
+		}
+
+		revokeShareRequest(request);
 	}
 
 	/**

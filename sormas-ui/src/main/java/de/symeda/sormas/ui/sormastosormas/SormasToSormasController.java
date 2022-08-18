@@ -223,6 +223,20 @@ public class SormasToSormasController {
 			});
 	}
 
+	public void revokeShareRequest(String requestUuid, Runnable callback) {
+		VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getString(Strings.headingRevokeSormasToSormasShareRequest),
+			new Label(I18nProperties.getString(Strings.confirmationRevokeSormasToSormasShareRequest)),
+			I18nProperties.getString(Strings.yes),
+			I18nProperties.getString(Strings.no),
+			640,
+			confirmed -> {
+				if (confirmed) {
+					handleSormasToSormasRequest(() -> FacadeProvider.getSormasToSormasFacade().revokeShareRequest(requestUuid), callback);
+				}
+			});
+	}
+
 	private void shareToSormasFromDetailPage(HandleShareWithOptions handleShareWithOptions, SormasToSormasOptionsForm optionsForm) {
 		handleShareWithOptions(handleShareWithOptions, SormasUI::refreshView, optionsForm, new SormasToSormasOptionsDto());
 	}

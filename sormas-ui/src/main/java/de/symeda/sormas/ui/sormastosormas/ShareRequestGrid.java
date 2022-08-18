@@ -114,12 +114,18 @@ public class ShareRequestGrid extends FilteredGrid<ShareRequestIndexDto, ShareRe
 		layout.setSpacing(true);
 
 		if (indexDto.getStatus() == ShareRequestStatus.PENDING) {
-			layout.addComponent(ButtonHelper.createButton(Captions.actionAccept, (e) -> {
-				ControllerProvider.getSormasToSormasController().acceptShareRequest(indexDto, this::reload);
-			}, ValoTheme.BUTTON_SMALL));
-			layout.addComponent(ButtonHelper.createButton(Captions.actionReject, (e) -> {
-				ControllerProvider.getSormasToSormasController().rejectShareRequest(indexDto, this::reload);
-			}, ValoTheme.BUTTON_SMALL));
+			if (viewType == ShareRequestViewType.INCOMING) {
+				layout.addComponent(ButtonHelper.createButton(Captions.actionAccept, (e) -> {
+					ControllerProvider.getSormasToSormasController().acceptShareRequest(indexDto, this::reload);
+				}, ValoTheme.BUTTON_SMALL));
+				layout.addComponent(ButtonHelper.createButton(Captions.actionReject, (e) -> {
+					ControllerProvider.getSormasToSormasController().rejectShareRequest(indexDto, this::reload);
+				}, ValoTheme.BUTTON_SMALL));
+			} else {
+				layout.addComponent(ButtonHelper.createButton(Captions.sormasToSormasRevokeShare, (e) -> {
+					ControllerProvider.getSormasToSormasController().revokeShareRequest(indexDto.getUuid(), this::reload);
+				}, ValoTheme.BUTTON_SMALL));
+			}
 		}
 
 		return layout;

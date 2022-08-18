@@ -39,6 +39,8 @@ public interface SormasToSormasFacade {
 
 	void revokeShare(String shareInfoUuid) throws SormasToSormasException;
 
+	void revokeShareRequest(String requestUuid) throws SormasToSormasException;
+
 	void requestsRevoked(SormasToSormasEncryptedDataDto encryptedRequestUuid) throws SormasToSormasException;
 
 	void requestAccepted(SormasToSormasEncryptedDataDto encryptedAcceptData) throws SormasToSormasException;
