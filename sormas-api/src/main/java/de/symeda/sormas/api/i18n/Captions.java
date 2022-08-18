@@ -2017,6 +2017,9 @@ public interface Captions {
 	String SormasToSormasShareRequest_senderName = "SormasToSormasShareRequest.senderName";
 	String SormasToSormasShareRequest_status = "SormasToSormasShareRequest.status";
 	String SormasToSormasShareRequest_uuid = "SormasToSormasShareRequest.uuid";
+	String SormasToSormasShareRequestIndex_direction = "SormasToSormasShareRequestIndex.direction";
+	String SormasToSormasShareRequestIndex_organizationName = "SormasToSormasShareRequestIndex.organizationName";
+	String SormasToSormasShareRequestIndex_uuid = "SormasToSormasShareRequestIndex.uuid";
 	String sormasToSormasSync = "sormasToSormasSync";
 	String statisticsAddFilter = "statisticsAddFilter";
 	String statisticsAttribute = "statisticsAttribute";
