@@ -1732,7 +1732,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public boolean isPersonAssociatedWithNotDeletedEntities(@NotNull String uuid) {
+	public boolean isPersonAssociatedWithNotDeletedEntities(String uuid) {
 		return personService.isPersonAssociatedWithNotDeletedEntities(uuid);
 	}
 

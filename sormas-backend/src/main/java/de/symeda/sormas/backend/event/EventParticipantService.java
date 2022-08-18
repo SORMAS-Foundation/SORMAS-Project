@@ -323,10 +323,13 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 
 	@Override
 	public void deletePermanent(EventParticipant eventParticipant) {
-		eventParticipant.getSamples()
-			.stream()
-			.filter(sample -> sample.getAssociatedCase() == null && sample.getAssociatedContact() == null)
-			.forEach(sample -> sampleService.deletePermanent(sample));
+		for (Sample sample : eventParticipant.getSamples()) {
+			if (sample.getAssociatedCase() == null && sample.getAssociatedContact() == null) {
+				sampleService.deletePermanent(sample);
+			} else {
+				sampleService.unlinkFromEventParticipant(sample);
+			}
+		}
 
 		sormasToSormasShareInfoService.getByAssociatedEntity(SormasToSormasShareInfo.EVENT_PARTICIPANT, eventParticipant.getUuid()).forEach(s -> {
 			s.setEventParticipant(null);

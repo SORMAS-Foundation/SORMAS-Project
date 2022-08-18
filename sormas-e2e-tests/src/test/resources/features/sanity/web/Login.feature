@@ -44,3 +44,18 @@ Feature: Login with different type of users
       | Point of Entry Supervisor |
       | Admin User                |
       | Rest AUTOMATION           |
+
+  @env_keycloak @LoginKeycloak
+  Scenario Outline: Login with <user> user on Keycloak Environment
+    Given I navigate to SORMAS login page
+    Then I log in as <user> in Keycloak enabled environment
+    Then I am logged in with name <user>
+    And I check that German word for User Settings is present in the left main menu
+    Then I click on the User Settings button from navbar
+    And I check that Deutsch language is selected in User Settings
+    And I click on logout button on Keycloak enabled environment
+
+    Examples:
+      | user                      |
+      | Admin User                |
+      | National User             |
