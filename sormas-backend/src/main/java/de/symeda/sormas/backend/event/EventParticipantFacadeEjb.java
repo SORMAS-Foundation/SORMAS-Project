@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.event;
 
+import de.symeda.sormas.backend.sample.SampleService;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
@@ -174,6 +175,9 @@ public class EventParticipantFacadeEjb
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 	@EJB
 	private VaccinationService vaccinationService;
+
+	@EJB
+	private SampleService sampleService;
 
 	public EventParticipantFacadeEjb() {
 	}
@@ -513,6 +517,7 @@ public class EventParticipantFacadeEjb
 			person.get(Person.APPROXIMATE_AGE_TYPE),
 			eventParticipant.get(EventParticipant.INVOLVEMENT_DESCRIPTION),
 			eventParticipant.get(EventParticipant.VACCINATION_STATUS),
+			joins.getEventParticipantReportingUser().get(User.ID),
 			joins.getEventParticipantReportingUser().get(User.UUID),
 			inJurisdictionSelector,
 			inJurisdictionOrOwnedSelector);
@@ -524,7 +529,7 @@ public class EventParticipantFacadeEjb
 				.and(cb, filter, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), eventParticipantCriteria.getPathogenTestResult()));
 		}
 
-		Subquery latestSampleSubquery = createSubqueryLatestSample(cq, cb, eventParticipant);
+		Subquery latestSampleSubquery = sampleService.createSubqueryLatestSample(cq, cb, eventParticipant);
 		Predicate latestSamplePredicate = cb.equal(samples.get(Sample.SAMPLE_DATE_TIME), latestSampleSubquery);
 
 		filter = CriteriaBuilderHelper.and(cb, filter, latestSamplePredicate);
@@ -582,17 +587,6 @@ public class EventParticipantFacadeEjb
 		pseudonymizer.pseudonymizeDtoCollection(EventParticipantIndexDto.class, indexList, p -> p.getInJurisdictionOrOwned(), null);
 
 		return indexList;
-	}
-
-	private Subquery createSubqueryLatestSample(CriteriaQuery cq, CriteriaBuilder cb, Root<EventParticipant> eventParticipant) {
-		final Subquery subquery = cq.subquery(Date.class);
-		final Root<Sample> subRoot = subquery.from(Sample.class);
-
-		subquery.select(cb.max(subRoot.get(Sample.SAMPLE_DATE_TIME)));
-		subquery.where(
-			cb.and(cb.isFalse(subRoot.get(Sample.DELETED))),
-			cb.equal(subRoot.get(Sample.ASSOCIATED_EVENT_PARTICIPANT), eventParticipant.get(AbstractDomainObject.ID)));
-		return subquery;
 	}
 
 	@Override
