@@ -82,9 +82,6 @@ dependencies {
 	implementation group: 'org.apache.tika', name: 'tika-langdetect', version: '2.3.0', ext: 'pom'
 	implementation group: 'org.apache.tika', name: 'tika-core', version: '2.3.0'
 
-
-
-
 }
 
 task format(type: GoogleJavaFormat) {

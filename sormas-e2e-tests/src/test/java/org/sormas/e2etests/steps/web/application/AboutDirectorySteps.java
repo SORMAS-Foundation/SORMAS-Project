@@ -9,9 +9,7 @@ import com.detectlanguage.DetectLanguage;
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +18,9 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.tika.language.detect.LanguageDetector;
-import org.apache.tika.language.detect.LanguageResult;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.helpers.files.FilesHelper;
+import org.sormas.e2etests.helpers.strings.LanguageDetectorHelper;
 import org.testng.asserts.SoftAssert;
 
 @Slf4j
@@ -264,16 +261,13 @@ public class AboutDirectorySteps implements En {
         });
 
     Then(
-        "^I check that Surveillance Dashboard header is correctly displayed in Urdu language$",
-        () -> {
+        "^I check that Surveillance Dashboard header is correctly displayed in ([^\"]*) language$",
+        (String language) -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               SURVEILLANCE_DASHBOARD_NAME, 30);
-          LanguageDetector detector = LanguageDetector.getDefaultLanguageDetector().loadModels();
-          LanguageResult languageResult = detector.detect("urdu");
-          webDriverHelpers.checkWebElementContainsText(
-              SURVEILLANCE_DASHBOARD_NAME,
-              "\\u0646\\u06AF\\u0631\\u0627\\u0646\\u06CC \\u06A9\\u0627 \\u0688\\u06CC\\u0634 \\u0628\\u0648\\u0631\\u0688");
+          LanguageDetectorHelper.checkLanguage(
+              webDriverHelpers.getTextFromWebElement(SURVEILLANCE_DASHBOARD_NAME), language);
         });
   }
 
