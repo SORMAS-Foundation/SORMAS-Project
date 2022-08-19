@@ -1352,6 +1352,30 @@ public class TestDataCreator {
 		return sample;
 	}
 
+	public SampleDto createSample(
+		EventParticipantReferenceDto associatedEventParticipant,
+		Date sampleDateTime,
+		Date reportDateTime,
+		UserReferenceDto reportingUser,
+		SampleMaterial sampleMaterial,
+		FacilityReferenceDto lab,
+		Consumer<SampleDto> customConfig) {
+
+		SampleDto sample = SampleDto.build(reportingUser, associatedEventParticipant);
+		sample.setSampleDateTime(sampleDateTime);
+		sample.setReportDateTime(reportDateTime);
+		sample.setSampleMaterial(sampleMaterial);
+		sample.setSamplePurpose(SamplePurpose.EXTERNAL);
+		sample.setLab(lab);
+
+		if (customConfig != null) {
+			customConfig.accept(sample);
+		}
+
+		sample = beanTest.getSampleFacade().saveSample(sample);
+		return sample;
+	}
+
 	public PathogenTestDto createPathogenTest(
 		SampleReferenceDto sample,
 		PathogenTestType testType,

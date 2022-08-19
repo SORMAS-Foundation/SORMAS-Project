@@ -531,7 +531,6 @@ public class EventParticipantFacadeEjb
 
 		Subquery latestSampleSubquery = sampleService.createSubqueryLatestSample(cq, cb, eventParticipant);
 		Predicate latestSamplePredicate = cb.equal(samples.get(Sample.SAMPLE_DATE_TIME), latestSampleSubquery);
-
 		filter = CriteriaBuilderHelper.and(cb, filter, latestSamplePredicate);
 
 		if (filter != null) {
