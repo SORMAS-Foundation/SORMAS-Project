@@ -1125,4 +1125,18 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
 		assertFalse(isAssociated);
 	}
+
+	@Test
+	public void testPersonAssociatedWithImmunization() {
+		UserDto userDto = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personDto = creator.createPerson("Person", "Test");
+		ImmunizationDto immunizationDto = creator.createImmunization(Disease.CORONAVIRUS, personDto.toReference(), userDto.toReference(), rdcf);
+
+		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		assertTrue(isAssociated);
+
+		getImmunizationFacade().delete(immunizationDto.getUuid(), new DeletionDetails());
+		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		assertFalse(isAssociated);
+	}
 }

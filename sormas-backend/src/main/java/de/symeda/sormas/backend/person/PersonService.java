@@ -1026,6 +1026,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			cb.isFalse(joins.getCaze().get(Case.DELETED)),
 			cb.isFalse(joins.getContact().get(Contact.DELETED)),
 			cb.isFalse(joins.getTravelEntry().get(TravelEntry.DELETED)),
+			cb.isFalse(joins.getImmunization().get(Immunization.DELETED)),
 			cb.isFalse(joins.getEventParticipant().get(EventParticipant.DELETED)));
 		predicate = cb.and(cb.equal(from.get(AbstractDomainObject.UUID), uuidParam), predicate);
 
