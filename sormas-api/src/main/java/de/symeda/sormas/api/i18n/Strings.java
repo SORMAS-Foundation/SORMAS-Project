@@ -903,6 +903,7 @@ public interface Strings {
 	String messageAdditionalTestSaved = "messageAdditionalTestSaved";
 	String messageAggregatedReportEpiWeekFilterNotFilled = "messageAggregatedReportEpiWeekFilterNotFilled";
 	String messageAggregateReportDelete = "messageAggregateReportDelete";
+	String messageAggregateReportExpiredAgeGroups = "messageAggregateReportExpiredAgeGroups";
 	String messageAggregateReportFound = "messageAggregateReportFound";
 	String messageAllCampaignFormsValid = "messageAllCampaignFormsValid";
 	String messageAllCasesAlreadyInEvent = "messageAllCasesAlreadyInEvent";
