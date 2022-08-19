@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.event;
 
-import de.symeda.sormas.backend.sample.SampleService;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
@@ -127,6 +126,7 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.user.User;
@@ -530,7 +530,8 @@ public class EventParticipantFacadeEjb
 		}
 
 		Subquery latestSampleSubquery = sampleService.createSubqueryLatestSample(cq, cb, eventParticipant);
-		Predicate latestSamplePredicate = cb.equal(samples.get(Sample.SAMPLE_DATE_TIME), latestSampleSubquery);
+		Predicate latestSamplePredicate =
+			cb.or(cb.isNull(samples.get(Sample.SAMPLE_DATE_TIME)), cb.equal(samples.get(Sample.SAMPLE_DATE_TIME), latestSampleSubquery));
 		filter = CriteriaBuilderHelper.and(cb, filter, latestSamplePredicate);
 
 		if (filter != null) {
