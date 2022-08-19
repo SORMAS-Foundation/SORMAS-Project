@@ -210,7 +210,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 			.collect(Collectors.toList());
 	}
 
-	public static SormasToSormasShareRequestDto toDto(SormasToSormasShareRequest source) {
+	private static SormasToSormasShareRequestDto toDto(SormasToSormasShareRequest source) {
 		if (source == null) {
 			return null;
 		}
@@ -229,7 +229,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		return target;
 	}
 
-	public SormasToSormasShareRequest fromDto(@NotNull SormasToSormasShareRequestDto source, boolean checkChangeDate) {
+	private SormasToSormasShareRequest fromDto(@NotNull SormasToSormasShareRequestDto source, boolean checkChangeDate) {
 
 		SormasToSormasShareRequest target =
 			DtoHelper.fillOrBuildEntity(source, shareRequestService.getByUuid(source.getUuid()), SormasToSormasShareRequest::new, checkChangeDate);
