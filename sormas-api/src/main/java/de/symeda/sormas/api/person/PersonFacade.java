@@ -23,7 +23,6 @@ import javax.validation.Valid;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -101,4 +100,6 @@ public interface PersonFacade {
 	PersonDto getByContext(PersonContext context, String contextUuid);
 
     boolean isEnrolledInExternalJournal(String uuid);
+
+	boolean isPersonAssociatedWithNotDeletedEntities(String uuid);
 }

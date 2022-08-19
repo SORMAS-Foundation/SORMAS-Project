@@ -278,7 +278,7 @@ public class EventParticipantsView extends AbstractEventView {
 			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 			setSubComponent(gridLayout);
 			gridLayout
-				.setEnabled(!isEventDeleted() && (isEventEditAllowed() || UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT)));
+				.setEnabled(!isEventDeleted() && isEventEditAllowed() && UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT));
 		}
 
 		if (params.startsWith("?")) {

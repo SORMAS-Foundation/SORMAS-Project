@@ -15,16 +15,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-
-package org.sormas.e2etests.pages.application;
+package org.sormas.e2etests.pages.application.keycloak;
 
 import org.openqa.selenium.By;
 
-public class LoginPage {
-  public static final By USER_NAME_INPUT = By.id("username");
-  public static final By USER_PASSWORD_INPUT = By.id("password");
-  public static final By LOGIN_BUTTON = By.id("Login.doLogIn");
-  public static final By FAILED_LOGIN_ERROR_MESSAGE =
-      By.xpath("//div[contains(@class, 'v-Notification-warning')]");
+public class KeycloakLoginPage {
+  public static final By USERNAME_INPUT = By.cssSelector("input#username");
+  public static final By PASSWORD_INPUT = By.cssSelector("input#password");
   public static final By LOGIN_KEYCLOAK_BUTTON = By.id("kc-login");
+  public static final By USERNAME_TEXT = By.cssSelector("a.dropdown-toggle.ng-binding");
+  public static final By LOGOUT_BUTTON = By.cssSelector("a.ng-binding");
 }

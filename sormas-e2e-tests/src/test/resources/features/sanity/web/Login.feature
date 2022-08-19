@@ -45,16 +45,24 @@ Feature: Login with different type of users
       | Admin User                |
       | Rest AUTOMATION           |
 
-  @tmsLink=SORQA-69 @env_de
-  Scenario: Check German language setting
-    Given I log in as a National User
-    Then I check that German word for Configuration is present in the left main menu
+  @env_keycloak @LoginKeycloak
+  Scenario Outline: Login with <user> user on Keycloak Environment
+    Given I navigate to SORMAS login page
+    Then I log in as <user> in Keycloak enabled environment
+    Then I am logged in with name <user>
+    And I check that German word for User Settings is present in the left main menu
+    Then I click on the User Settings button from navbar
+    And I check that Deutsch language is selected in User Settings
+    And I click on logout button on Keycloak enabled environment
 
-  @tmsLink=SORDEV-12126 @env_main
-  Scenario: Test new language (Urdu-Pk)
-    Given I log in as a Admin User
-    When I click on the User Settings button from navbar
-    And I select "Urdu" language from Combobox in User settings
-    And I click on the User Settings button from navbar
-    Then I check that Surveillance Dashboard header is correctly displayed in Urdu language
-    And I select "انگریزی" language from Combobox in User settings
+    Examples:
+      | user                      |
+      | Admin User                |
+      | National User             |
+
+  @env_keycloak @LoginKeycloak
+  Scenario: Login on Keycloak Administrator Console
+    Given I navigate to Keycloak Administrator Console Login page
+    Then I log in as Keycloak Admin to Keycloak Administrator Console
+    Then I am logged in with Admin Keycloak in Keycloak Administrator Page
+    And I click on logout button on Keycloak Administrator Console Page

@@ -1732,6 +1732,11 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
+	public boolean isPersonAssociatedWithNotDeletedEntities(String uuid) {
+		return personService.isPersonAssociatedWithNotDeletedEntities(uuid);
+	}
+
+	@Override
 	public PersonDto getByContext(PersonContext context, String contextUuid) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Person> cq = cb.createQuery(Person.class);
