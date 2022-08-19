@@ -807,6 +807,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return natUser;
 	}
 
+
 	protected UserDto useNationalAdminLogin() {
 		UserDto natUser = creator.createUser(
 			"",
