@@ -259,7 +259,7 @@ public class MainScreen extends HorizontalLayout {
 
 		
 		menu.addView(LogoutView.class, LogoutView.VIEW_NAME,
-				I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName() + ")",
+				I18nProperties.getCaption(Captions.actionLogout) + " | " + UserProvider.getCurrent().getUserName(),
 				VaadinIcons.POWER_OFF);
 		/*
 		 * //trying to include a javascript from this method
