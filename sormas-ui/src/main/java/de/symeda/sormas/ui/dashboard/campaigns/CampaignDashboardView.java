@@ -210,9 +210,8 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 			final CssLayout diagramsLayout = new CssLayout();
 			diagramsLayout.setSizeFull();
-			final String gridCssClass = (tabId + subTabId).replaceAll("[^a-zA-Z]+", "") + generateRandomString() + GRID_CONTAINER;//+" default-height-720px";
+			final String gridCssClass = (tabId + subTabId).replaceAll("[^a-zA-Z]+", "") + generateRandomString() + GRID_CONTAINER;// +" dashgrid ";//+" default-height-720px";
 		
-			//final String newstyle = "newstyle";
 			
 			styles.add( //add style to the grid created by the grid template area creator
 				createDiagramGridStyle(
@@ -221,9 +220,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 					gridTemplateAreaCreator.getGridRows(),
 					gridTemplateAreaCreator.getGridColumns())
 					);
-			//styles.add(createDiagramGridNewStyle(newstyle));
 			
-			//styles.add(newstyle);
 			diagramsLayout.setStyleName(gridCssClass);
 			
 			//diagramsLayout.setStyleName(newstyle);
@@ -240,6 +237,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 				
 				styles.add(createDiagramStyle(diagramCssClass, diagramId));
 				diagramComponent.setStyleName(diagramCssClass);
+				diagramComponent.setStyleName("dashgrid");
 
 				diagramsLayout.addComponent(diagramComponent);
 			});

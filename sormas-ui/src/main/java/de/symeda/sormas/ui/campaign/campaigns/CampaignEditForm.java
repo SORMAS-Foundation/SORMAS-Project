@@ -69,7 +69,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
-public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Create new campaign
+public class CampaignEditForm extends AbstractEditForm<CampaignDto> {
 
 	private static final long serialVersionUID = 7762204114905664597L;
 
@@ -160,12 +160,9 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Create n
 		DateField endDate = addField(CampaignDto.END_DATE, DateField.class);
 		endDate.removeAllValidators();
 		
-		//addField(CampaignDto.CAMPAIGN_YEAR);
-		
 		TextField textField = addField(CampaignDto.CAMPAIGN_YEAR);
 		textField.setReadOnly(true);
-		//textField.setEnabled(false);
-		
+
 		startDate.addValueChangeListener(e -> {
 			textField.setReadOnly(false);
 			textField.setValue(DateGetYear(startDate.getValue())+" ");
@@ -190,23 +187,11 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Create n
 
 		addField(CampaignDto.NAME);
 		
-		
-		//add textfied for cluster
 		ComboBox clusterfield = addField(CampaignDto.ROUND, ComboBox.class);
 		clusterfield.addItem("NID");
 		clusterfield.addItem("SNID");
 		clusterfield.addItem("Case Respond");
 		clusterfield.addItem("Mopping-Up");
-		
-		
-		//CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
-		
-		
-		
-		//CssStyles.style(clusterfieldx, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
-		//CssStyles.style(clusterfieldx, CssStyles.OPTIONGROUP_CAPTION_INLINE, CssStyles.FLOAT_RIGHT);
-		
-		
 		
 		TextArea description = addField(CampaignDto.DESCRIPTION, TextArea.class);
 		description.setRows(6);
@@ -216,16 +201,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Create n
 		final Label spacerx = new Label();
 		spacerx.setHeight("10%");
 		getContent().addComponent(spacerx, SPACE_LOCX);
-	/*	
-		clusterfieldx = new OptionGroup(); 
-		clusterfieldx = addField(CampaignDto.CAMPAIGN_TYPES, OptionGroup.class);
-		CssStyles.style(clusterfieldx, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
-		clusterfieldx.addItem("Pre-Campaign");
-		clusterfieldx.addItem("Intra-Campaign");
-		clusterfieldx.addItem("Post-Campaign");
-		//clusterfieldx.setDescription("Campaign Switch");
-		//clusterfieldx.setEnabled(true);
-		*/
+
 		setReadOnly(true, CampaignDto.UUID, CampaignDto.CREATING_USER);
 		setVisible(!isCreateForm, CampaignDto.UUID, CampaignDto.CREATING_USER);
 

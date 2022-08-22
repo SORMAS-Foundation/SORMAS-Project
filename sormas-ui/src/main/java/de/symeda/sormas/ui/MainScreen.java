@@ -24,11 +24,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.vaadin.annotations.StyleSheet;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.navigator.ViewProvider;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -99,6 +101,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
  * Content of the UI when the user is logged in.
  */
 @SuppressWarnings("serial")
+@StyleSheet("vaadin://map/trlImplementation.css")
 public class MainScreen extends HorizontalLayout {
 
 	// Add new views to this set to make sure that the right error page is shown
@@ -111,6 +114,8 @@ public class MainScreen extends HorizontalLayout {
 		CssLayout viewContainer = new CssLayout();
 		viewContainer.setSizeFull();
 		viewContainer.addStyleName("sormas-content");
+		viewContainer.setId("sormas-oya");
+		
 
 		final Navigator navigator = new Navigator(ui, viewContainer);
 		navigator.setErrorProvider(new ViewProvider() {
@@ -120,7 +125,7 @@ public class MainScreen extends HorizontalLayout {
 				return viewAndParameters;
 			}
 
-			@Override
+			@Override //screen.css
 			public View getView(String viewName) {
 				try {
 					Class<? extends View> errViewType;

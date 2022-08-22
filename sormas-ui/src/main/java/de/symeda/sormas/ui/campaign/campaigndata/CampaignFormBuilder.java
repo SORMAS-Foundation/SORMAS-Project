@@ -398,6 +398,8 @@ public class CampaignFormBuilder {
 						e.getProperty().setValue(e.getProperty().getValue().toString().replace(".0", ""));
 					}
 				});*/
+				((TextField) field).addValidator(
+						new RegexpValidator("^[0-9]\\d*$", errormsg == null ? Validations.onlyNumbersAllowed : errormsg )); 
 
 				((TextField) field).addValidator(new NumberNumericValueValidator(
 						I18nProperties.getValidationError(errormsg == null ? Validations.onlyNumbersAllowed : errormsg, caption)));
@@ -409,6 +411,9 @@ public class CampaignFormBuilder {
 						e.getProperty().setValue(e.getProperty().getValue().toString() + ".0");
 					}
 				});*/
+				
+				((TextField) field).addValidator(
+						new RegexpValidator("^[0-9]\\d*$", errormsg == null ? Validations.onlyDecimalNumbersAllowed : errormsg )); 
 
 				((TextField) field).addValidator(new NumberNumericValueValidator(
 						I18nProperties.getValidationError(errormsg == null ? Validations.onlyDecimalNumbersAllowed : errormsg, caption), null, null,
