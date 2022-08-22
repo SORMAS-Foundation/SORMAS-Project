@@ -189,25 +189,29 @@ public class CaseImportExportSteps implements En {
           Files.delete(path);
           softly.assertEquals(
               reader.getUuid(), apiState.getCreatedCase().getUuid(), "UUIDs are not equal");
-
-          softly.assertEquals(
-              reader.getUuid(), apiState.getCreatedCase().getUuid(), "UUIDs are not equal");
-          softly.assertEquals(
-              reader.getDisease(),
-              DiseasesValues.getCaptionForName(apiState.getCreatedCase().getDisease()),
-              "Diseases are not equal");
-          softly.assertEquals(
-              reader.getCaseClassification(),
-              CaseClassification.getUIValueForGivenAPIValue(
-                  apiState.getCreatedCase().getCaseClassification()),
-              "Cases Classification are not equal");
-
+            softly.assertTrue(
+                    reader.getInvestigationStatus().contains(""), "There is no Investigation Status");
           softly.assertTrue(
-              reader
-                  .getInvestigationStatus()
-                  .toLowerCase()
-                  .contains(apiState.getCreatedCase().getInvestigationStatus().toLowerCase()),
-              "Investigation Status are not equal");
+              reader.getInvestigatedDate().contains(""), "There is no Investigated Date");
+          softly.assertTrue(reader.getSequelae().contains(""), "There is no Seqielae Data");
+          softly.assertTrue(
+              reader.getProhibitionToWork().contains(""), "There is no Prohibition to Work Data");
+          softly.assertTrue(
+              reader.getQuarantineHelpNeeded().contains(""), "There is no Quarantine Help Needed Data");
+          softly.assertTrue(
+              reader.getSymptoms_temperatureclinicianName().contains(""), "There is no Symptoms Data");
+          softly.assertTrue(
+              reader.getClinicianPhone().contains(""), "There is no Clinician Phone Data");
+          softly.assertTrue(
+              reader.getClinicianEmail().contains(""), "There is no Clinician Email Data");
+          softly.assertTrue(
+              reader.getReportingUserName().contains(""), "There is no Reporting User Name");
+          softly.assertTrue(
+              reader.getReportingUserRoles().contains(""), "There is no Reporting User Role");
+          softly.assertTrue(
+              reader.getFollowUpStatusChangeUserName().contains(""), "There is no Responsible User Name");
+          softly.assertTrue(
+              reader.getFollowUpStatusChangeUserRoles().contains(""), "There is no Responsible User Role");
           softly.assertAll();
         });
 
@@ -313,14 +317,18 @@ public class CaseImportExportSteps implements En {
       builder =
           Case.builder()
               .uuid(values[2])
-              .disease(values[7])
-              .caseClassification(values[36])
-              .outcomeOfCase(values[42])
               .investigationStatus(values[40])
-              .firstName(String.format(values[12], Locale.GERMAN))
-              .lastName(String.format(values[13], Locale.GERMAN))
-              .responsibleDistrict(String.format(values[25], Locale.GERMAN))
-              .pointOfEntry(values[33])
+              .investigatedDate(values[41])
+              .sequelae(values[44])
+              .prohibitionToWork(values[49])
+              .quarantineHelpNeeded(values[62])
+              .symptoms_temperatureclinicianName(values[115])
+              .clinicianPhone(values[315])
+              .clinicianEmail(values[316])
+              .reportingUserName(values[317])
+              .reportingUserRoles(values[318])
+              .followUpStatusChangeUserName(values[319])
+              .followUpStatusChangeUserRoles(values[320])
               .build();
     } catch (NullPointerException e) {
       log.error("Null pointer exception parseCustomCaseExport: {}", e.getCause());
