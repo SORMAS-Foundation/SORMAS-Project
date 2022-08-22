@@ -65,7 +65,8 @@ public enum UserRole
 	IMPORT_USER(false, false, false, false, JurisdictionLevel.NONE),
 	REST_USER(false, false, false, false, JurisdictionLevel.NONE),
 	//SORMAS_TO_SORMAS_CLIENT(false, false, false, true, JurisdictionLevel.NATION),
-	BAG_USER(false, false, false, false, JurisdictionLevel.NONE);
+	BAG_USER(false, false, false, false, JurisdictionLevel.NONE),
+	POST_CAMPAIGN_USER(false, false, false, false, JurisdictionLevel.NATION);
 	//REST_EXTERNAL_VISITS_USER(false, false, false, true, JurisdictionLevel.NATION),;
 	
 	
@@ -106,6 +107,7 @@ public enum UserRole
 	public static final String _AREA_STATE_OBSERVER = AREA_STATE_OBSERVER.name();
 	public static final String _AREA_ADMIN_SUPERVISOR = AREA_ADMIN_SUPERVISOR.name();
 	
+	public static final String _POST_CAMPAIGN_USER = POST_CAMPAIGN_USER.name();
 
 	private Set<UserRight> defaultUserRights = null;
 
@@ -245,6 +247,9 @@ public enum UserRole
 	//		break;
 		case BAG_USER:
 			collection.add(BAG_USER);
+			break;
+		case POST_CAMPAIGN_USER:
+			collection.add(POST_CAMPAIGN_USER);
 			break;
 		default:
 			break;

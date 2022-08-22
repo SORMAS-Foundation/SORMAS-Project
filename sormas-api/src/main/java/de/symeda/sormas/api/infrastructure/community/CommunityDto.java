@@ -138,7 +138,7 @@ public class CommunityDto extends EntityDto {
 	}
 
 	public CommunityReferenceDto toReference() {
-		return new CommunityReferenceDto(getUuid(), getName(), getExternalId());
+		return new CommunityReferenceDto(getUuid(), getName(), getExternalId(), getClusterNumber());
 	}
 
 	@Override

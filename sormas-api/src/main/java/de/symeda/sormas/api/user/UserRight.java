@@ -47,7 +47,7 @@ import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_SUPERVISOR;
 import static de.symeda.sormas.api.user.UserRole.AREA_SURVEILLANCE_SUPERVISOR;
 import static de.symeda.sormas.api.user.UserRole.AREA_STATE_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.AREA_ADMIN_SUPERVISOR;
-
+import static de.symeda.sormas.api.user.UserRole.POST_CAMPAIGN_USER;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -1528,9 +1528,12 @@ public enum UserRight {
 			ADMIN_SUPERVISOR, AREA_ADMIN_SUPERVISOR,
 			NATIONAL_USER
 	),
+	POST_CAMPAIGN_VIEW(
+			POST_CAMPAIGN_USER
+			),
 	TRAVEL_ENTRY_ARCHIVE(
 			ADMIN
-	);
+	), ;
 	//@formatter:on
 
 	private final Set<UserRole> defaultUserRoles;

@@ -19,6 +19,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.NoResultException;
@@ -61,7 +62,7 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 	public static final String CAMPAIGN_FORM_LOC = "campaignFormLoc";
 	private AreaReferenceDto area;
 	public static final String AREA = "area";
-	
+
 	private DateField dates;
 
 	public AreaReferenceDto getArea() {
@@ -72,10 +73,11 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		this.area = area;
 	}
 
-	private static final String HTML_LAYOUT = fluidRowLocs(CampaignFormDataDto.FORM_DATE//, CampaignFormDataDto.LATITUDE,
-			//CampaignFormDataDto.LONGITUDE
-			) + fluidRowLocs(CampaignFormDataEditForm.AREA, CampaignFormDataDto.REGION)// ,
-																													// CampaignFormDataDto.FORM_TYPE)
+	private static final String HTML_LAYOUT = fluidRowLocs(CampaignFormDataDto.FORM_DATE// ,
+																						// CampaignFormDataDto.LATITUDE,
+	// CampaignFormDataDto.LONGITUDE
+	) + fluidRowLocs(CampaignFormDataEditForm.AREA, CampaignFormDataDto.REGION)// ,
+																				// CampaignFormDataDto.FORM_TYPE)
 			+ fluidRowLocs(CampaignFormDataDto.DISTRICT, CampaignFormDataDto.COMMUNITY)// ,
 																						// CampaignFormDataDto.FORM_TYPE)
 			+ loc(CAMPAIGN_FORM_LOC);
@@ -98,8 +100,8 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		ComboBox cbCampaign = addField(CampaignFormDataDto.CAMPAIGN, ComboBox.class);
 		cbCampaign.addItems(FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference());
 
-	//	addField(CampaignFormDataDto.LONGITUDE, TextField.class);
-	//	addField(CampaignFormDataDto.LATITUDE, TextField.class);
+		// addField(CampaignFormDataDto.LONGITUDE, TextField.class);
+		// addField(CampaignFormDataDto.LATITUDE, TextField.class);
 		ComboBox cbRegion = addInfrastructureField(CampaignFormDataDto.REGION);
 		ComboBox cbArea = addInfrastructureField(CampaignFormDataDto.AREA);
 		ComboBox cbDistrict = addInfrastructureField(CampaignFormDataDto.DISTRICT);
@@ -113,11 +115,10 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		 * clusterfieldx.addItem("Intra-Campign");
 		 * clusterfieldx.addItem("Post-Campaign");
 		 */
-		
-		dates = addField(CampaignFormDataDto.FORM_DATE, DateField.class);
-		
 
-		//addField(CampaignFormDataDto.FORM_DATE, DateField.class);
+		dates = addField(CampaignFormDataDto.FORM_DATE, DateField.class);
+
+		// addField(CampaignFormDataDto.FORM_DATE, DateField.class);
 
 		setRequired(true, CampaignFormDataDto.CAMPAIGN, CampaignFormDataDto.FORM_DATE, CampaignFormDataDto.REGION,
 				CampaignFormDataDto.AREA, CampaignFormDataDto.DISTRICT, CampaignFormDataDto.COMMUNITY);
@@ -210,9 +211,11 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 
 		cbDistrict.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
-			FieldHelper.updateItems(cbCommunity,
-					district != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid())
-							: null);
+			List<CommunityReferenceDto> items = FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid());
+			for (CommunityReferenceDto item : items) {
+				item.setCaption(item.getNumber().toString());
+			}
+			FieldHelper.updateItems(cbCommunity, district != null ? items : null);
 		});
 		System.out.println(Page.getCurrent().getLocation());
 		URI location = Page.getCurrent().getLocation();
@@ -221,46 +224,47 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 
 			// }
 
-			
 			cbCommunity.addValueChangeListener(e -> {
-				
-				 if (cbCommunity.getValue() != null && cbDistrict.getValue() != null) {
 
-				System.out.println(dates.getValue()+"||||||||||||||||||||||||||||" + super.getValue().getCampaignFormMeta().getUuid()
-						+ "||||||||||||" +super.getValue().getCampaign().getUuid());
-				CampaignFormMetaDto campaignForm = FacadeProvider.getCampaignFormMetaFacade()
-						.getCampaignFormMetaByUuid(super.getValue().getCampaignFormMeta().getUuid());
+				if (cbCommunity.getValue() != null && cbDistrict.getValue() != null) {
 
-				CampaignDto campaign = FacadeProvider.getCampaignFacade()
-						.getByUuid(super.getValue().getCampaign().getUuid());
+					System.out.println(dates.getValue() + "||||||||||||||||||||||||||||"
+							+ super.getValue().getCampaignFormMeta().getUuid() + "||||||||||||"
+							+ super.getValue().getCampaign().getUuid());
+					CampaignFormMetaDto campaignForm = FacadeProvider.getCampaignFormMetaFacade()
+							.getCampaignFormMetaByUuid(super.getValue().getCampaignFormMeta().getUuid());
 
-				CommunityReferenceDto community = (CommunityReferenceDto) cbCommunity.getValue();
+					CampaignDto campaign = FacadeProvider.getCampaignFacade()
+							.getByUuid(super.getValue().getCampaign().getUuid());
 
-				System.out.println(community.getCaption()+"??????????????????>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> " + campaignForm.getFormName()
-						+ campaign.getName());
-				String formuuid = FacadeProvider.getCampaignFormDataFacade().getByClusterDropDown(community,
-						campaignForm, campaign);
+					CommunityReferenceDto community = (CommunityReferenceDto) cbCommunity.getValue();
 
-				if (!formuuid.equals("nul")) {
-					//Page.getCurrent().get
-					ControllerProvider.getCampaignController().navigateToFormDataView(formuuid);
-				} else {
-					System.out.println(
-							">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-					Page.getCurrent().getJavaScript().execute("$(document).ready(function() {"
-							// + "alert();"
-							// + "document.querySelector(\".v-slot.v-align-right.v-align-bottom\").show();"
-							// +
-							// "$('.v-slot.v-align-right.v-align-bottom').toggleClass('v-align-center').addClass('v-align-right');"
-							+ "$('.v-verticallayout.v-layout.v-vertical.v-widget.v-has-width.v-has-height.v-margin-top.v-margin-right.v-margin-bottom.v-margin-left').show();"
-							+ "$('.v-verticallayout.v-layout.v-vertical.v-widget.v-has-width.v-has-height.v-margin-top.v-margin-right.v-margin-bottom.v-margin-left').show();"
-					// +"$('#formidx').find('td:contains('Void')').parent('tr').hide();"
-							+ "});");
-				}}
+					System.out.println(community.getCaption() + "??????????????????>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> "
+							+ campaignForm.getFormName() + campaign.getName());
+					String formuuid = FacadeProvider.getCampaignFormDataFacade().getByClusterDropDown(community,
+							campaignForm, campaign);
+
+					if (!formuuid.equals("nul")) {
+						// Page.getCurrent().get
+						ControllerProvider.getCampaignController().navigateToFormDataView(formuuid);
+					} else {
+						System.out.println(
+								">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+						Page.getCurrent().getJavaScript().execute("$(document).ready(function() {"
+								// + "alert();"
+								// + "document.querySelector(\".v-slot.v-align-right.v-align-bottom\").show();"
+								// +
+								// "$('.v-slot.v-align-right.v-align-bottom').toggleClass('v-align-center').addClass('v-align-right');"
+								+ "$('.v-verticallayout.v-layout.v-vertical.v-widget.v-has-width.v-has-height.v-margin-top.v-margin-right.v-margin-bottom.v-margin-left').show();"
+								+ "$('.v-verticallayout.v-layout.v-vertical.v-widget.v-has-width.v-has-height.v-margin-top.v-margin-right.v-margin-bottom.v-margin-left').show();"
+						// +"$('#formidx').find('td:contains('Void')').parent('tr').hide();"
+								+ "});");
+					}
+				}
 			});
-			
+
 		}
-			 
+
 		;
 
 	}

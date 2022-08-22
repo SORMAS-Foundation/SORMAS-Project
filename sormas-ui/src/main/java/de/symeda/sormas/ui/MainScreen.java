@@ -36,6 +36,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.UI;
@@ -103,7 +104,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 @SuppressWarnings("serial")
 @StyleSheet("vaadin://map/trlImplementation.css")
 public class MainScreen extends HorizontalLayout {
-
+	
 	// Add new views to this set to make sure that the right error page is shown
 	private static final Set<String> KNOWN_VIEWS = initKnownViews();
 
@@ -221,6 +222,7 @@ public class MainScreen extends HorizontalLayout {
 		//menu.addView(CampaignGisView.class, CampaignGisView.VIEW_NAME, I18nProperties.getCaption("GIS"),
 			//	VaadinIcons.MAP_MARKER);
 
+
 		if (permitted(FeatureType.WEEKLY_REPORTING, UserRight.WEEKLYREPORT_VIEW)) {
 			menu.addView(ReportsView.class, ReportsView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuReports),
 					VaadinIcons.FILE_TEXT);
@@ -260,10 +262,39 @@ public class MainScreen extends HorizontalLayout {
 		// I18nProperties.getCaption("GIS"),
 		// VaadinIcons.MAP_MARKER);
 
+		
 		menu.addView(LogoutView.class, LogoutView.VIEW_NAME,
 				I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName() + ")",
 				VaadinIcons.POWER_OFF);
-
+		/*
+		 * //trying to include a javascript from this method
+		 MainScreenAbstract dd = new MainScreenAbstract();
+		menu.addComponent(dd);
+		
+		UI.getCurrent().setResponsive(true);
+		
+		JavaScript.getCurrent().execute("setTimeout(myStopFunction, 4000);"
+				+ "function myStopFunction() {"
+				+ "console.log('adding transalator div');"
+				+ "		const h2 = document.getElementById('dashboard_logout');\n"
+				+ "		let html = \"<div id='google_translate_element'></div>\";\n"
+				+ "		h2.insertAdjacentHTML('afterend', html);"
+				+ "console.log('done');"
+				+ "}"
+				
+				
+				+ ""
+				+ "setTimeout(googleTranslateElementInitLer, 5000);"
+				+ "function googleTranslateElementInitLer(){"
+				+ "googleTranslateElementInit_()"
+				+ "}"
+				+ " function googleTranslateElementInit_() { \n"
+				+ "            new google.translate.TranslateElement({pageLanguage: 'en', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element'"
+				+ "            ); \n"
+				+ "        } ");
+		
+		
+*/
 		navigator.addViewChangeListener(viewChangeListener);
 
 		// Add GDPR window

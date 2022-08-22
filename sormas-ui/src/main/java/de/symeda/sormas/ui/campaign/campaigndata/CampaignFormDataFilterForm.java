@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.campaign.campaigndata;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -176,7 +177,13 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 				districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(userRegion.getUuid()));
 				if (userDistrict != null) {
 				districtFilter.setEnabled(false);
+				//can I set the caption of all the items here before adding
+				//List<CommunityReferenceDto> items = FacadeProvider.getCommunityFacade().getAllActiveByDistrict(userDistrict.getUuid());
+				//for(CommunityReferenceDto item : items) {
+					//item.setCaption(item.getNumber().toString());
+				//}
 				communityFilter.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(userDistrict.getUuid()));
+				
 				if (userCommunity != null) {
 					communityFilter.setEnabled(false);
 				}

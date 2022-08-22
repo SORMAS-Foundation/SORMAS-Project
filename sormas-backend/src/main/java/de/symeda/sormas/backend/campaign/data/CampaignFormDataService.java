@@ -72,53 +72,70 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 		super(CampaignFormData.class);
 	}
 
-	public Predicate createCriteriaFilter(CampaignFormDataCriteria criteria, CriteriaBuilder cb, Root<CampaignFormData> root) {
+	public Predicate createCriteriaFilter(CampaignFormDataCriteria criteria, CriteriaBuilder cb,
+			Root<CampaignFormData> root) {
 		Join<CampaignFormData, Campaign> campaignJoin = root.join(CampaignFormData.CAMPAIGN, JoinType.LEFT);
-		Join<CampaignFormData, CampaignFormMeta> campaignFormJoin = root.join(CampaignFormData.CAMPAIGN_FORM_META, JoinType.LEFT);
+		Join<CampaignFormData, CampaignFormMeta> campaignFormJoin = root.join(CampaignFormData.CAMPAIGN_FORM_META,
+				JoinType.LEFT);
 		Join<CampaignFormData, Area> areaJoin = root.join(CampaignFormData.AREA, JoinType.LEFT);
 		Join<CampaignFormData, Region> regionJoin = root.join(CampaignFormData.REGION, JoinType.LEFT);
 		Join<CampaignFormData, District> districtJoin = root.join(CampaignFormData.DISTRICT, JoinType.LEFT);
 		Join<CampaignFormData, Community> communityJoin = root.join(CampaignFormData.COMMUNITY, JoinType.LEFT);
 		Predicate filter = null;
-		
-	//	System.out.println(criteria.getCampaign()+"  ===========_++++++++++++++_================ "+criteria.getFormType());
-		
-		if (criteria.getCampaign() != null && criteria.getFormType() == null) {
 
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(campaignJoin.get(Campaign.UUID), criteria.getCampaign().getUuid()));
-		} else if (criteria.getCampaign() != null && criteria.getFormType() != null && !"ALL PHASES".equals(criteria.getFormType())) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.and(cb.equal(campaignFormJoin.get(CampaignFormMeta.FORM_TYPE), criteria.getFormType().toLowerCase())), cb.equal(campaignJoin.get(Campaign.UUID), criteria.getCampaign().getUuid()));
-		} else if (criteria.getCampaign() == null && criteria.getFormType() != null  && !"ALL PHASES".equals(criteria.getFormType())) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(campaignFormJoin.get(CampaignFormMeta.FORM_TYPE), criteria.getFormType().toLowerCase()));
+		if (criteria.getCampaign() != null && criteria.getFormType() == null) {
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.equal(campaignJoin.get(Campaign.UUID), criteria.getCampaign().getUuid()));
+		} else if (criteria.getCampaign() != null && criteria.getFormType() != null
+				&& !"ALL PHASES".equals(criteria.getFormType())) {
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.and(cb.equal(campaignFormJoin.get(CampaignFormMeta.FORM_TYPE),
+							criteria.getFormType().toLowerCase())),
+					cb.equal(campaignJoin.get(Campaign.UUID), criteria.getCampaign().getUuid()),
+					cb.isFalse(campaignJoin.get(Campaign.ARCHIVED)));
+		} else if (criteria.getCampaign() == null && criteria.getFormType() != null
+				&& !"ALL PHASES".equals(criteria.getFormType())) {
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.and(cb.equal(campaignFormJoin.get(CampaignFormMeta.FORM_TYPE),
+							criteria.getFormType().toLowerCase()), cb.isFalse(campaignJoin.get(Campaign.ARCHIVED)),
+							cb.isFalse(campaignJoin.get(Campaign.DELETED))));
 		} else {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(campaignJoin.get(Campaign.ARCHIVED), false), cb.isNull(campaignJoin.get(Campaign.ARCHIVED))));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(campaignJoin.get(Campaign.ARCHIVED), false),
+					cb.isNull(campaignJoin.get(Campaign.ARCHIVED))));
+
 		}
-		
-		if (criteria.getCampaignFormMeta() != null) { 
-		//	System.out.println("=======%%%%%%%%%%%%%%%======= "+criteria.getCampaignFormMeta().getUuid());
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(campaignFormJoin.get(CampaignFormMeta.UUID), criteria.getCampaignFormMeta().getUuid()));
+
+		if (criteria.getCampaignFormMeta() != null) {
+			// System.out.println("=======%%%%%%%%%%%%%%%=======
+			// "+criteria.getCampaignFormMeta().getUuid());
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.equal(campaignFormJoin.get(CampaignFormMeta.UUID), criteria.getCampaignFormMeta().getUuid()));
 		}
 		if (criteria.getArea() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(areaJoin.get(Area.UUID), criteria.getArea().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.equal(areaJoin.get(Area.UUID), criteria.getArea().getUuid()));
 		}
 		if (criteria.getRegion() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(regionJoin.get(Region.UUID), criteria.getRegion().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.equal(regionJoin.get(Region.UUID), criteria.getRegion().getUuid()));
 		}
 		if (criteria.getDistrict() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(districtJoin.get(District.UUID), criteria.getDistrict().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.equal(districtJoin.get(District.UUID), criteria.getDistrict().getUuid()));
 		}
 		if (criteria.getCommunity() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(communityJoin.get(Community.UUID), criteria.getCommunity().getUuid()));
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.equal(communityJoin.get(Community.UUID), criteria.getCommunity().getUuid()));
 		}
 		if (criteria.getFormDate() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.greaterThanOrEqualTo(root.get(CampaignFormData.FORM_DATE), DateHelper.getStartOfDay(criteria.getFormDate())),
-				cb.lessThanOrEqualTo(root.get(CampaignFormData.FORM_DATE), DateHelper.getEndOfDay(criteria.getFormDate())));
+			filter = CriteriaBuilderHelper.and(cb, filter,
+					cb.greaterThanOrEqualTo(root.get(CampaignFormData.FORM_DATE),
+							DateHelper.getStartOfDay(criteria.getFormDate())),
+					cb.lessThanOrEqualTo(root.get(CampaignFormData.FORM_DATE),
+							DateHelper.getEndOfDay(criteria.getFormDate())));
 		}
-		
-	//	System.out.println(filter);
+
+		// System.out.println(filter);
 
 		return filter;
 	}
@@ -138,25 +155,29 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 			case AREA:
 				final Area area = currentUser.getArea();
 				if (area != null) {
-					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(campaignPath.get(CampaignFormData.AREA).get(Area.ID), area.getId()));
+					filter = CriteriaBuilderHelper.or(cb, filter,
+							cb.equal(campaignPath.get(CampaignFormData.AREA).get(Area.ID), area.getId()));
 				}
 				break;
 			case REGION:
 				final Region region = currentUser.getRegion();
 				if (region != null) {
-					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(campaignPath.get(CampaignFormData.REGION).get(Region.ID), region.getId()));
+					filter = CriteriaBuilderHelper.or(cb, filter,
+							cb.equal(campaignPath.get(CampaignFormData.REGION).get(Region.ID), region.getId()));
 				}
 				break;
 			case DISTRICT:
 				final District district = currentUser.getDistrict();
 				if (district != null) {
-					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(campaignPath.get(CampaignFormData.DISTRICT).get(District.ID), district.getId()));
+					filter = CriteriaBuilderHelper.or(cb, filter,
+							cb.equal(campaignPath.get(CampaignFormData.DISTRICT).get(District.ID), district.getId()));
 				}
 				break;
 			case COMMUNITY:
 				final Community community = currentUser.getCommunity();
 				if (community != null) {
-					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(campaignPath.get(CampaignFormData.COMMUNITY).get(Community.ID), community.getId()));
+					filter = CriteriaBuilderHelper.or(cb, filter, cb
+							.equal(campaignPath.get(CampaignFormData.COMMUNITY).get(Community.ID), community.getId()));
 				}
 				break;
 			default:
@@ -209,7 +230,7 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	public List<CampaignFormData> getAllActive() {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CampaignFormData> cq = cb.createQuery(CampaignFormData.class);
@@ -227,7 +248,7 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	public List<CampaignFormData> getByCampaignFormMeta_id(Long meta_id) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CampaignFormData> cq = cb.createQuery(CampaignFormData.class);
@@ -235,45 +256,34 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 
 		Predicate filter = cb.and();
 
-		//if (getCurrentUser() != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
-			filter = CriteriaBuilderHelper.and(cb, cb.isFalse(from.get(CampaignFormData.ARCHIVED)), userFilter );
-	//	}
-		
-		Predicate predicateForMetaId
-		  = cb.equal(from.get(CampaignFormMeta.ID), meta_id);
-		
-		Predicate finalPredicate
-		  = cb.and(filter, predicateForMetaId);
-		
-		
+		// if (getCurrentUser() != null) {
+		Predicate userFilter = createUserFilter(cb, cq, from);
+		filter = CriteriaBuilderHelper.and(cb, cb.isFalse(from.get(CampaignFormData.ARCHIVED)), userFilter);
+		// }
+
+		Predicate predicateForMetaId = cb.equal(from.get(CampaignFormMeta.ID), meta_id);
+
+		Predicate finalPredicate = cb.and(filter, predicateForMetaId);
+
 		cq.where(finalPredicate);
 		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
 
 		return em.createQuery(cq).getResultList();
 	}
-	
+
 	public List<MapCampaignDataDto> getCampaignFormDataForMap() {
 
-		
-		
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<MapCampaignDataDto> cq = cb.createQuery(MapCampaignDataDto.class);
 		Root<CampaignFormData> caze = cq.from(getElementClass());
 
-		
 		List<MapCampaignDataDto> result;
-		
-			cq.multiselect(
-				caze.get(CampaignFormData.UUID),
-				caze.get(CampaignFormData.LAT),
-				caze.get(CampaignFormData.LON));
 
-			result = em.createQuery(cq).getResultList();
-		
+		cq.multiselect(caze.get(CampaignFormData.UUID), caze.get(CampaignFormData.LAT), caze.get(CampaignFormData.LON));
+
+		result = em.createQuery(cq).getResultList();
 
 		return result;
 	}
-	
-	
+
 }

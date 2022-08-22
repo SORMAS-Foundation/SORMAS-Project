@@ -360,7 +360,7 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 			return null;
 		}
 		
-		CommunityReferenceDto dto = new CommunityReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalId());
+		CommunityReferenceDto dto = new CommunityReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalId(), entity.getClusterNumber());
 		return dto;
 	}
 

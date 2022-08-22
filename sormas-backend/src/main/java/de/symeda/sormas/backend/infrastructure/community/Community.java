@@ -48,7 +48,7 @@ public class Community extends InfrastructureAdo {
 	private Integer clusterNumber;
 
 	public String getName() {
-		return name;
+			return name;
 	}
 
 	public void setName(String name) {

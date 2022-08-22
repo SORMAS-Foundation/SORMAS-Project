@@ -19,6 +19,7 @@ public abstract class InfrastructureDataReferenceDto extends ReferenceDto implem
 
 	private static final long serialVersionUID = -3451269378082767059L;
 	private transient Long externalId;
+	private Integer number;
 
 	protected InfrastructureDataReferenceDto() {
 	}
@@ -28,12 +29,22 @@ public abstract class InfrastructureDataReferenceDto extends ReferenceDto implem
 	}
 
 	protected InfrastructureDataReferenceDto(String uuid, String caption, Long externalId) {
-		super(uuid, caption); 
+		super(uuid, caption);
 		this.externalId = externalId;
 	}
 
+	protected InfrastructureDataReferenceDto(String uuid, String caption, Long externalId, Integer number) {
+		super(uuid, caption);
+		this.externalId = externalId;
+		this.number = number;
+	}
+
 	public Long getExternalId() {
-	return externalId;
+		return externalId;
+	}
+
+	public Integer getNumber() {
+		return number;
 	}
 
 	@Override

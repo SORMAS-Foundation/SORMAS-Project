@@ -42,6 +42,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.Valid;
@@ -308,7 +309,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		Join<CampaignFormData, Region> regionJoin = root.join(CampaignFormData.REGION, JoinType.LEFT);
 		Join<CampaignFormData, District> districtJoin = root.join(CampaignFormData.DISTRICT, JoinType.LEFT);
 		Join<CampaignFormData, Community> communityJoin = root.join(CampaignFormData.COMMUNITY, JoinType.LEFT);
-
+		
 		cq.multiselect(root.get(CampaignFormData.UUID), campaignJoin.get(Campaign.NAME),
 				campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME),
 				criteria.getCampaignFormMeta() != null ? root.get(CampaignFormData.FORM_VALUES)
@@ -320,11 +321,16 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 						root.get(CampaignFormData.FORM_DATE),
 				campaignFormMetaJoin.get(CampaignFormMeta.FORM_TYPE));
 
+		
 		Predicate filter = CriteriaBuilderHelper.and(cb,
 				campaignFormDataService.createCriteriaFilter(criteria, cb, root),
 				campaignFormDataService.createUserFilter(cb, cq, root));
+
+
+
 		if (filter != null) {
 			cq.where(filter);
+			//cq.where(typeClause); //can write another filter to remove if archive is true
 		} else {
 			//System.out.println("DEBUGGER ASDHFUASDFHAS: Filter is null");
 		}
@@ -380,7 +386,8 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		} else {
 			cq.orderBy(cb.desc(root.get(CampaignFormData.CHANGE_DATE)));
 		}
-
+		
+		//Can add where clause to compare boolean for archive
 	//	System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf  " + SQLExtractor.from(em.createQuery(cq)));
 		return QueryHelper.getResultList(em, cq, first, max);
 	}
