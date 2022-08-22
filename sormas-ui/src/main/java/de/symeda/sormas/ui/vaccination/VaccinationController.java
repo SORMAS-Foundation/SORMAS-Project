@@ -135,7 +135,6 @@ public class VaccinationController {
 			createComponent.addDeleteWithReasonListener((deleteDetails) -> {
 				popupWindow.close();
 				if (doSave) {
-					//TODO: return the cases (with all the immunizations) for which the vaccination is relevant
 					List<CaseDataDto> cases = getCaseFacade().getCasesForWhichVaccinationIsRelevant(vaccination);
 					FacadeProvider.getVaccinationFacade().deleteWithImmunization(vaccination.getUuid(), deleteDetails);
 
@@ -160,7 +159,7 @@ public class VaccinationController {
 			confirmedVaccinationStatusUpdate -> {
 				if (confirmedVaccinationStatusUpdate) {
 					cases.forEach(VaccinationController::updateVaccinationStatus);
-                    SormasUI.refreshView();
+					SormasUI.refreshView();
 				} ;
 			});
 	}
