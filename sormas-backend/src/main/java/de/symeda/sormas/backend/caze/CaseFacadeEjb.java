@@ -71,7 +71,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.vaccination.VaccinationDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -205,6 +204,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.UserRightFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -1390,26 +1390,26 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-    public List<CaseDataDto> getCasesForWhichVaccinationIsRelevant(VaccinationDto vaccinationDto) {
-        final CriteriaBuilder cb = em.getCriteriaBuilder();
-        final CriteriaQuery<Case> cq = cb.createQuery(Case.class);
-        final Root<Case> caze = cq.from(Case.class);
-        final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-        final CaseJoins joins = caseQueryContext.getJoins();
+	public List<CaseDataDto> getCasesForWhichVaccinationIsRelevant(VaccinationDto vaccinationDto) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Case> cq = cb.createQuery(Case.class);
+		final Root<Case> caze = cq.from(Case.class);
+		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
+		final CaseJoins joins = caseQueryContext.getJoins();
 
-        Vaccination vaccination =  vaccinationService.getByUuid(vaccinationDto.getUuid());
-        Join<Case, Person> person = joins.getPerson();
-        Join<Person, Immunization> immunizationJoin = person.join(Person.IMMUNIZATIONS, JoinType.LEFT);
-        Join<Immunization, Vaccination> vaccinationsJoin = immunizationJoin.join(Immunization.VACCINATIONS, JoinType.LEFT);
+		Vaccination vaccination = vaccinationService.getByUuid(vaccinationDto.getUuid());
+		Join<Case, Person> person = joins.getPerson();
+		Join<Person, Immunization> immunizationJoin = person.join(Person.IMMUNIZATIONS, JoinType.LEFT);
+		Join<Immunization, Vaccination> vaccinationsJoin = immunizationJoin.join(Immunization.VACCINATIONS, JoinType.LEFT);
 
-        Predicate predicate = cb.in(vaccinationsJoin).value(vaccination);
-        cq.where(predicate);
-        cq.select(caze);
+		Predicate predicate = cb.in(vaccinationsJoin).value(vaccination);
+		cq.where(predicate);
+		cq.select(caze);
 
-        List<Case> cases = em.createQuery(cq).getResultList();
-        List<CaseDataDto> caseDataDtos = cases.stream().map(c -> toDto(c)).collect(Collectors.toList());
-        return caseDataDtos;
-    }
+		List<Case> cases = em.createQuery(cq).getResultList();
+		List<CaseDataDto> caseDataDtos = cases.stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return caseDataDtos;
+	}
 
 	@Override
 	public List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, boolean ignoreRegion) {
