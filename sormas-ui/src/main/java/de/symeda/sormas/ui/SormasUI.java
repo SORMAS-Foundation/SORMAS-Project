@@ -33,6 +33,8 @@ import de.symeda.sormas.ui.UserProvider.HasUserProvider;
 import de.symeda.sormas.ui.ViewModelProviders.HasViewModelProviders;
 import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.servlet.annotation.HttpConstraint;
 import javax.servlet.annotation.ServletSecurity;
 import javax.servlet.annotation.WebServlet;
@@ -63,6 +65,9 @@ public class SormasUI extends UI implements HasUserProvider, HasViewModelProvide
 		Responsive.makeResponsive(this);
 
 		VaadinSession.getCurrent().setConverterFactory(new SormasDefaultConverterFactory());
+		VaadinSession.getCurrent().getSession().setMaxInactiveInterval ( 
+				( int ) TimeUnit.MINUTES.toSeconds( 30 ) 
+				);
 
 		getPage().setTitle(FacadeProvider.getConfigFacade().getSormasInstanceName());
 
@@ -111,5 +116,7 @@ public class SormasUI extends UI implements HasUserProvider, HasViewModelProvide
 				+ "$('.v-verticallayout.v-layout.v-vertical.v-widget.v-has-width.v-has-height.v-margin-top.v-margin-right.v-margin-bottom.v-margin-left').show();"
 		// +"$('#formidx').find('td:contains('Void')').parent('tr').hide();"
 				+ "});");
+		
+		
 	}
 }
