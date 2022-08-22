@@ -1390,7 +1390,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public List<CaseDataDto> getCasesForWhichVaccinationIsRelevant(VaccinationDto vaccinationDto) {
+	public List<CaseDataDto> getRelevantCasesForVaccination(VaccinationDto vaccinationDto) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Case> cq = cb.createQuery(Case.class);
 		final Root<Case> caze = cq.from(Case.class);

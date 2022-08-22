@@ -222,9 +222,9 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<CaseDataDto> getByExternalId(String externalId);
 
-    default List<CaseDataDto> getCasesForWhichVaccinationIsRelevant(VaccinationDto vaccination){
-        return new ArrayList<>();
-    };
+	default List<CaseDataDto> getRelevantCasesForVaccination(VaccinationDto vaccination) {
+		return new ArrayList<>();
+	};
 
 	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
 
@@ -239,6 +239,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 	void dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts);
 
 	void setResultingCase(EventParticipantReferenceDto eventParticipantReferenceDto, CaseReferenceDto caseReferenceDto);
+
 	EditPermissionType isEditContactAllowed(String uuid);
 
 }

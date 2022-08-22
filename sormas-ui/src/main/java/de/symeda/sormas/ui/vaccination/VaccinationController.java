@@ -135,9 +135,8 @@ public class VaccinationController {
 			createComponent.addDeleteWithReasonListener((deleteDetails) -> {
 				popupWindow.close();
 				if (doSave) {
-					List<CaseDataDto> cases = getCaseFacade().getCasesForWhichVaccinationIsRelevant(vaccination);
+					List<CaseDataDto> cases = getCaseFacade().getRelevantCasesForVaccination(vaccination);
 					FacadeProvider.getVaccinationFacade().deleteWithImmunization(vaccination.getUuid(), deleteDetails);
-
 					if (!cases.isEmpty()) {
 						showUpdateStatusConfirmationPopup(cases);
 					}
