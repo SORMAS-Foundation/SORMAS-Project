@@ -71,7 +71,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import com.vladmihalcea.hibernate.query.SQLExtractor;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
