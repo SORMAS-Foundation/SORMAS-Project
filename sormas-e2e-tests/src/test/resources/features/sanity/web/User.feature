@@ -68,8 +68,6 @@ Feature: Create user
   Scenario Outline: Filter of User folder for user roles
     Given I log in as a Admin User
     And I click on the Users from navbar
-    And I pick "Active" value for Active filter in User Directory
-    And I pick "Inactive" value for Active filter in User Directory
     Then I set user role to "<user>"
 
     Examples:
@@ -128,8 +126,10 @@ Feature: Create user
     | Voreingestellte Bundesländer    |
 
   @tmsLink=SORQA-461 @env_main
-  Scenario: Filter of User folder for automation_admin user
+  Scenario: Filter of User folder for automation_admin user and active filter
     Given I log in as a Admin User
     And I click on the Users from navbar
     Then I search user "automation_admin"
     And I check if displayed user name is equal with searched "automation_admin"
+    And I pick "Active" value for Active filter in User Directory
+    And I pick "Inactive" value for Active filter in User Directory
