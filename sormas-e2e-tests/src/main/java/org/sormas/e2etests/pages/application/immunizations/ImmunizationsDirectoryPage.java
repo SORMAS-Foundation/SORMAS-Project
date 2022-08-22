@@ -85,4 +85,6 @@ public class ImmunizationsDirectoryPage {
       By.cssSelector("[id='region'] [class='v-filterselect-button']");
   public static final By DISTRICT_FILTER_COMBOBOX =
       By.cssSelector("[id='district'] [class='v-filterselect-button']");
+  public static final By DATE_FROM_CALENDAR_INPUT = By.cssSelector("#dateFrom input");
+  public static final By DATE_TO_CALENDAR_INPUT = By.cssSelector("#dateTo input");
 }

@@ -402,6 +402,63 @@ public class EditImmunizationSteps implements En {
               createdImmunization,
               List.of("meansOfImmunization", "startDate", "endDate"));
         });
+
+    And(
+        "I check if {string} field is set for {int} day ago from today on Edit Immunization page",
+        (String option, Integer day) -> {
+          switch (option) {
+            case "date of report":
+              String actualReportDate =
+                  webDriverHelpers.getValueFromWebElement(DATE_OF_REPORT_INPUT);
+              LocalDate reportDate = LocalDate.parse(actualReportDate, DATE_FORMATTER);
+              softly.assertEquals(reportDate, LocalDate.now().minusDays(day));
+              softly.assertAll();
+              break;
+            case "valid from":
+              String actualValidFromDate =
+                  webDriverHelpers.getValueFromWebElement(VALID_FROM_INPUT);
+              LocalDate validFromDate = LocalDate.parse(actualValidFromDate, DATE_FORMATTER);
+              softly.assertEquals(validFromDate, LocalDate.now().minusDays(day));
+              softly.assertAll();
+              break;
+            case "valid until":
+              String actualValidUntilDate =
+                  webDriverHelpers.getValueFromWebElement(VALID_UNTIL_INPUT);
+              LocalDate validUntilDate = LocalDate.parse(actualValidUntilDate, DATE_FORMATTER);
+              softly.assertEquals(validUntilDate, LocalDate.now().minusDays(day));
+              softly.assertAll();
+              break;
+          }
+        });
+
+    And(
+        "^I back to the immunization list$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(IMMUNIZATION_LIST_TAB);
+        });
+
+    And(
+        "^I fill VALID FROM to (\\d+) day ago from today$",
+        (Integer day) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(VALID_FROM_INPUT);
+          webDriverHelpers.fillInWebElement(
+              VALID_FROM_INPUT, DATE_FORMATTER.format(LocalDate.now().minusDays(day)));
+        });
+
+    And(
+        "^I fill VALID UNTIL to (\\d+) day ago from today$",
+        (Integer day) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(VALID_UNTIL_INPUT);
+          webDriverHelpers.fillInWebElement(
+              VALID_UNTIL_INPUT, DATE_FORMATTER.format(LocalDate.now().minusDays(day)));
+        });
+
+    And(
+        "^I close immunization data popup alert message in Edit Immunization page$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(ALERT_MESSAGE);
+          webDriverHelpers.clickOnWebElementBySelector(ALERT_MESSAGE);
+        });
   }
 
   private Immunization collectImmunizationDataWithImmunizationPeriod() {

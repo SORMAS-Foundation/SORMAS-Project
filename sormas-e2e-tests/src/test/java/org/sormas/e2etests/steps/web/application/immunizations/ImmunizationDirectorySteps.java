@@ -4,7 +4,10 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW
 import static org.sormas.e2etests.pages.application.immunizations.ImmunizationsDirectoryPage.ADD_NEW_IMMUNIZATION_BUTTON;
 import static org.sormas.e2etests.pages.application.immunizations.ImmunizationsDirectoryPage.AGE_AND_BIRTHDATE_COLUMN_HEADER;
 import static org.sormas.e2etests.pages.application.immunizations.ImmunizationsDirectoryPage.COMMUNITY_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.immunizations.ImmunizationsDirectoryPage.DATA_TYPE_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.immunizations.ImmunizationsDirectoryPage.DATE_FROM_CALENDAR_INPUT;
 import static org.sormas.e2etests.pages.application.immunizations.ImmunizationsDirectoryPage.DATE_OF_RECOVERY_COLUMN_HEADER;
+import static org.sormas.e2etests.pages.application.immunizations.ImmunizationsDirectoryPage.DATE_TO_CALENDAR_INPUT;
 import static org.sormas.e2etests.pages.application.immunizations.ImmunizationsDirectoryPage.DISEASE_COLUMN_HEADER;
 import static org.sormas.e2etests.pages.application.immunizations.ImmunizationsDirectoryPage.DISTRICT_COLUMN_HEADER;
 import static org.sormas.e2etests.pages.application.immunizations.ImmunizationsDirectoryPage.DISTRICT_FILTER_COMBOBOX;
@@ -187,15 +190,15 @@ public class ImmunizationDirectorySteps implements En {
 
     And(
         "^I check that the row number (\\d+) contains \"([^\"]*)\" in column number (\\d+)$",
-        (Integer rowNumber, String expectedDisease, Integer columnNumber) -> {
-          String actualDisease =
+        (Integer rowNumber, String expectedResult, Integer columnNumber) -> {
+          String actualResult =
               webDriverHelpers.getTextFromWebElement(
                   By.xpath("//tbody//tr[" + rowNumber + "]//td[" + columnNumber + "]"));
           assertHelpers.assertWithPoll(
               () ->
                   Assert.assertEquals(
-                      actualDisease,
-                      expectedDisease,
+                      actualResult,
+                      expectedResult,
                       "Number of results visible in grid different than expected"),
               10);
         });
@@ -207,7 +210,7 @@ public class ImmunizationDirectorySteps implements En {
               GENERAL_SEARCH_INPUT, 50);
           webDriverHelpers.fillAndSubmitInWebElement(GENERAL_SEARCH_INPUT, name);
           TimeUnit.SECONDS.sleep(2);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60); // sprawdz ile czasu potrzeba
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(90);
         });
 
     And(
@@ -216,6 +219,7 @@ public class ImmunizationDirectorySteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               RESET_FILTERS_BUTTON, 30);
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_BUTTON);
+          TimeUnit.SECONDS.sleep(3);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
 
@@ -254,6 +258,7 @@ public class ImmunizationDirectorySteps implements En {
     And(
         "^I click SHOW MORE FILTERS button on Immunization directory page$",
         () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SHOW_MORE_LESS_FILTERS);
           webDriverHelpers.clickOnWebElementBySelector(SHOW_MORE_LESS_FILTERS);
         });
 
@@ -298,7 +303,40 @@ public class ImmunizationDirectorySteps implements En {
             case "Facility":
               webDriverHelpers.selectFromCombobox(FACILITY_FILTER_COMBOBOX, filterValue);
               break;
+            case "Immunization reference date":
+              webDriverHelpers.selectFromCombobox(DATA_TYPE_FILTER_COMBOBOX, filterValue);
+              break;
           }
+        });
+
+    And(
+        "I set {int} day ago from today as a Immunization reference {string} on Immunization directory page",
+        (Integer day, String dateFromOrTo) -> {
+          switch (dateFromOrTo) {
+            case "Date From":
+              webDriverHelpers.fillInWebElement(
+                  DATE_FROM_CALENDAR_INPUT,
+                  DATE_FORMATTER_DE.format(LocalDate.now().minusDays(day)));
+              break;
+            case "Date To":
+              webDriverHelpers.fillInWebElement(
+                  DATE_TO_CALENDAR_INPUT, DATE_FORMATTER_DE.format(LocalDate.now().minusDays(day)));
+              break;
+          }
+        });
+
+    And(
+        "I check that the row number {int} contains {int} day ago from today date in column number {int}",
+        (Integer rowNumber, Integer day, Integer columnNumber) -> {
+          String actualDate =
+              webDriverHelpers.getTextFromWebElement(
+                  By.xpath("//tbody//tr[" + rowNumber + "]//td[" + columnNumber + "]"));
+          String expectedDate = DATE_FORMATTER.format(LocalDate.now().minusDays(day));
+
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertEquals(actualDate, expectedDate, "Date is different than expected"),
+              10);
         });
   }
 

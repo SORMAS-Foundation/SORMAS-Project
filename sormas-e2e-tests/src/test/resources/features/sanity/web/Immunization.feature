@@ -444,3 +444,63 @@ Feature: Immunization end to end tests
     And I check that number of displayed immunization results in grid is more than 0
     And I check that the row number 1 contains "Pending" in column number 11
     And I click on the RESET FILTERS button from Immunization
+    And I click SHOW MORE FILTERS button on Immunization directory page
+    And I apply "Immunization reference date" filter to "Date of report" on Immunization directory page
+    And I set 1 day ago from today as a Immunization reference "Date From" on Immunization directory page
+    And I set 1 day ago from today as a Immunization reference "Date To" on Immunization directory page
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I open first immunization from grid from Immunization tab
+    And I check if "date of report" field is set for 1 day ago from today on Edit Immunization page
+    And I back to the immunization list
+    And I click on the RESET FILTERS button from Immunization
+    And I click SHOW MORE FILTERS button on Immunization directory page
+    And I apply "Immunization reference date" filter to "End of immunization" on Immunization directory page
+    And I set 1 day ago from today as a Immunization reference "Date From" on Immunization directory page
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I check that the row number 1 contains 1 day ago from today date in column number 13
+    And I open first immunization from grid from Immunization tab
+    And I fill VALID FROM to 1 day ago from today
+    And I fill VALID UNTIL to 1 day ago from today
+    And I click SAVE button on Edit Immunization Page
+    And I close immunization data popup alert message in Edit Immunization page
+    And I back to the immunization list
+    And I click on the RESET FILTERS button from Immunization
+    And I click SHOW MORE FILTERS button on Immunization directory page
+    And I apply "Immunization reference date" filter to "Valid until" on Immunization directory page
+    And I set 1 day ago from today as a Immunization reference "Date From" on Immunization directory page
+    And I set 1 day ago from today as a Immunization reference "Date To" on Immunization directory page
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I open first immunization from grid from Immunization tab
+    And I check if "valid until" field is set for 1 day ago from today on Edit Immunization page
+    And I back to the immunization list
+    And I apply "Immunization reference date" filter to "Date of recovery" on Immunization directory page
+    And I set 1 day ago from today as a Immunization reference "Date From" on Immunization directory page
+    And I set 1 day ago from today as a Immunization reference "Date To" on Immunization directory page
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I check that the row number 1 contains 1 day ago from today date in column number 15
+    And I click on the NEW IMMUNIZATION button
+    When I create a new immunization with specific data
+    Then I check the created data is correctly displayed on Edit immunization page
+    And I click on New Entry button in Vaccination tab
+    Then I fill new vaccination data in new Vaccination form
+    And I click SAVE button in new Vaccination form
+    Then I check that number of added Vaccinations is 1
+    Then I set Number of doses to 3 on Edit Immunization Page
+    And I click SAVE button on Edit Immunization Page
+    And I back to the immunization list
+    And I apply "Immunization reference date" filter to "Date of last vaccination" on Immunization directory page
+    And I set 1 day ago from today as a Immunization reference "Date From" on Immunization directory page
+    And I set 1 day ago from today as a Immunization reference "Date To" on Immunization directory page
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I click on the RESET FILTERS button from Immunization
+    And I click SHOW MORE FILTERS button on Immunization directory page
+    And I apply "Immunization reference date" filter to "Date of first vaccination" on Immunization directory page
+    And I set 1 day ago from today as a Immunization reference "Date From" on Immunization directory page
+    And I set 1 day ago from today as a Immunization reference "Date To" on Immunization directory page
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0

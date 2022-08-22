@@ -65,4 +65,8 @@ public class EditImmunizationPage {
   public static By ADDITIONAL_DETAILS = By.cssSelector("#additionalDetails");
   public static final By START_DATE_INPUT = By.cssSelector("#startDate input");
   public static final By END_DATE_INPUT = By.cssSelector("#endDate input");
+  public static final By IMMUNIZATION_LIST_TAB = By.cssSelector("#tab-immunizations");
+  public static final By VALID_FROM_INPUT = By.cssSelector("#validFrom input");
+  public static final By VALID_UNTIL_INPUT = By.cssSelector("#validUntil input");
+  public static final By ALERT_MESSAGE = By.xpath("//div[@role='alert']");
 }
