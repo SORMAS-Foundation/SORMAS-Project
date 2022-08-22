@@ -1405,15 +1405,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
         Predicate predicate = cb.in(vaccinationsJoin).value(vaccination);
         cq.where(predicate);
-
         cq.select(caze);
 
-        // search cases for which the vaccination exists and is relevant
-        //Predicate predicate = vaccinationService.getRelevantVaccinationPredicate(caze, cq, cb, vaccinationsJoin);
-
-        TypedQuery query = em.createQuery(cq);
-        String sql = SQLExtractor.from(query);
-        List<Case> cases = query.getResultList();
+        List<Case> cases = em.createQuery(cq).getResultList();
         List<CaseDataDto> caseDataDtos = cases.stream().map(c -> toDto(c)).collect(Collectors.toList());
         return caseDataDtos;
     }
