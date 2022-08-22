@@ -1,8 +1,8 @@
 package de.symeda.sormas.ui.reports.aggregate;
 
+import com.vaadin.ui.CustomLayout;
 import org.apache.commons.lang3.StringUtils;
 
-import com.vaadin.ui.CustomLayout;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.TextField;
 
@@ -34,15 +34,13 @@ public class AggregateReportEditForm extends AbstractEditForm<AggregateReportDto
 	private TextField caseField;
 	private TextField labField;
 	private TextField deathField;
-	private boolean expiredAgeGroup;
 
-	public AggregateReportEditForm(Disease disease, String ageGroup, boolean firstGroup, boolean expiredAgeGroup) {
+	public AggregateReportEditForm(Disease disease, String ageGroup, boolean firstGroup) {
 		super(AggregateReportDto.class, AggregateReportDto.I18N_PREFIX);
 
 		this.disease = disease;
 		this.ageGroup = ageGroup;
 		this.firstGroup = firstGroup;
-		this.expiredAgeGroup = expiredAgeGroup;
 
 		initialized = true;
 		addFields();
@@ -52,28 +50,25 @@ public class AggregateReportEditForm extends AbstractEditForm<AggregateReportDto
 	protected String createHtmlLayout() {
 		if (ageGroup == null) {
 			return LayoutUtil.fluidRow(
-				LayoutUtil.oneOfThreeCol(DISEASE_LOC),
+				LayoutUtil.oneOfTwoCol(DISEASE_LOC),
 				LayoutUtil.oneOfSixCol(AggregateReportDto.NEW_CASES),
 				LayoutUtil.oneOfSixCol(AggregateReportDto.LAB_CONFIRMATIONS),
-				LayoutUtil.oneOfSixCol(AggregateReportDto.DEATHS),
-				LayoutUtil.oneOfSixCol(AggregateReportDto.EXPIRED_AGE_GROUP));
+				LayoutUtil.oneOfSixCol(AggregateReportDto.DEATHS));
 		} else {
 			return this.firstGroup
 				? LayoutUtil.fluidRow(LayoutUtil.oneOfTwoCol(DISEASE_LOC))
 					+ StringUtils.EMPTY
 					+ LayoutUtil.fluidRow(
-						LayoutUtil.oneOfThreeCol(AGE_GROUP_LOC),
+						LayoutUtil.oneOfTwoCol(AGE_GROUP_LOC),
 						LayoutUtil.oneOfSixCol(AggregateReportDto.NEW_CASES),
 						LayoutUtil.oneOfSixCol(AggregateReportDto.LAB_CONFIRMATIONS),
-						LayoutUtil.oneOfSixCol(AggregateReportDto.DEATHS),
-						LayoutUtil.oneOfSixCol(AggregateReportDto.EXPIRED_AGE_GROUP))
+						LayoutUtil.oneOfSixCol(AggregateReportDto.DEATHS))
 				: StringUtils.EMPTY
 					+ LayoutUtil.fluidRow(
-						LayoutUtil.oneOfThreeCol(AGE_GROUP_LOC),
+						LayoutUtil.oneOfTwoCol(AGE_GROUP_LOC),
 						LayoutUtil.oneOfSixCol(AggregateReportDto.NEW_CASES),
 						LayoutUtil.oneOfSixCol(AggregateReportDto.LAB_CONFIRMATIONS),
-						LayoutUtil.oneOfSixCol(AggregateReportDto.DEATHS),
-						LayoutUtil.oneOfSixCol(AggregateReportDto.EXPIRED_AGE_GROUP));
+						LayoutUtil.oneOfSixCol(AggregateReportDto.DEATHS));
 		}
 	}
 
@@ -86,7 +81,7 @@ public class AggregateReportEditForm extends AbstractEditForm<AggregateReportDto
 
 		getContent().setWidth(520, Unit.PIXELS);
 
-		if (ageGroup == null && !isExpiredAgeGroup()) {
+		if (ageGroup == null) {
 			addDiseaseLabel();
 		} else {
 			if (firstGroup) {
@@ -107,12 +102,6 @@ public class AggregateReportEditForm extends AbstractEditForm<AggregateReportDto
 		deathField.setInputPrompt(I18nProperties.getCaption(Captions.aggregateReportDeathsShort));
 		deathField.setConversionError(I18nProperties.getValidationError(Validations.onlyIntegerNumbersAllowed, deathField.getCaption()));
 		CssStyles.style(CssStyles.CAPTION_HIDDEN, caseField, labField, deathField);
-
-		if (isExpiredAgeGroup()) {
-			Label expiredAgeGroupLabel = new Label("expired");
-			expiredAgeGroupLabel.addStyleName(CssStyles.LABEL_BOLD);
-			getContent().addComponent(expiredAgeGroupLabel, AggregateReportDto.EXPIRED_AGE_GROUP);
-		}
 	}
 
 	private void addDiseaseLabel() {
@@ -151,10 +140,6 @@ public class AggregateReportEditForm extends AbstractEditForm<AggregateReportDto
 
 	public boolean isFirstGroup() {
 		return firstGroup;
-	}
-
-	public boolean isExpiredAgeGroup() {
-		return expiredAgeGroup;
 	}
 
 	@Override

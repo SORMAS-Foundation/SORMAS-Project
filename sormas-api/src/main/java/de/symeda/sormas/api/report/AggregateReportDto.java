@@ -29,7 +29,6 @@ public class AggregateReportDto extends EntityDto {
 	public static final String LAB_CONFIRMATIONS = "labConfirmations";
 	public static final String DEATHS = "deaths";
 	public static final String AGE_GROUP = "ageGroup";
-	public static final String EXPIRED_AGE_GROUP = "expiredAgeGroup";
 
 	private UserReferenceDto reportingUser;
 	private Disease disease;
@@ -44,7 +43,6 @@ public class AggregateReportDto extends EntityDto {
 	private Integer deaths;
 	private String ageGroup;
 	private boolean duplicate;
-	private boolean expiredAgeGroup;
 
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;
@@ -148,14 +146,6 @@ public class AggregateReportDto extends EntityDto {
 
 	public void setDuplicate(boolean duplicate) {
 		this.duplicate = duplicate;
-	}
-
-	public boolean isExpiredAgeGroup() {
-		return expiredAgeGroup;
-	}
-
-	public void setExpiredAgeGroup(boolean expiredAgeGroup) {
-		this.expiredAgeGroup = expiredAgeGroup;
 	}
 
 	public static AggregateReportDto build() {
