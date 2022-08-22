@@ -126,7 +126,6 @@ public class UserController {
 				if (existingUser.getDistrict() != null && user.getDistrict() == null) {
 					openRemoveUserAsOfficerPrompt(result -> {
 						if (result) {
-							saveUser(user);
 							FacadeProvider.getUserFacade().removeUserAsSurveillanceAndContactOfficer(user.getUuid());
 							closeWindowCallback.run();
 						}
