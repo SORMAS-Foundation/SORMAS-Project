@@ -37,6 +37,7 @@ import javax.inject.Inject;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.entities.pojo.User;
 import org.sormas.e2etests.entities.services.UserService;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.LoginPage;
 import org.sormas.e2etests.pages.application.users.CreateNewUserPage;
@@ -59,6 +60,7 @@ public class CreateNewUserSteps implements En {
       WebDriverHelpers webDriverHelpers,
       UserService userService,
       BaseSteps baseSteps,
+      AssertHelpers assertHelpers,
       SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
@@ -405,6 +407,36 @@ public class CreateNewUserSteps implements En {
               String.format(user.getFirstName() + " " + user.getLastName().toUpperCase()),
               jurisdiction);
           closeNewPasswordPopUp();
+        });
+
+    When(
+        "I set user role to {string}",
+        (String userRole) -> {
+          webDriverHelpers.selectFromCombobox(USER_ROLE_COMBOBOX, userRole);
+        });
+
+    When(
+        "I set region filter to {string}",
+        (String region) -> {
+          webDriverHelpers.selectFromCombobox(REGION_FILTER_COMBOBOX, region);
+        });
+
+    When(
+        "I search user {string}",
+        (String uName) -> {
+          webDriverHelpers.fillAndSubmitInWebElement(USER_INPUT_SEARCH, uName);
+          TimeUnit.SECONDS.sleep(2); // wait for system reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I check if displayed user name is equal with searched {string}",
+        (String uname) -> {
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(TABLE_USER_NAME),
+              uname,
+              "Users name are not equal");
+          softly.assertAll();
         });
   }
 
