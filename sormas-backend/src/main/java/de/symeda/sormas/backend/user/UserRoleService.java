@@ -84,6 +84,7 @@ public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
 		CriteriaQuery<UserRole> cq = cb.createQuery(UserRole.class);
 		Root<UserRole> from = cq.from(UserRole.class);
 		cq.where(cb.equal(from.get(UserRole.LINKED_DEFAULT_USER_ROLE), linkedDefaultUserRole));
+		cq.orderBy(cb.asc(from.get(UserRole.CREATION_DATE)));
 
 		UserRole entity = em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
 

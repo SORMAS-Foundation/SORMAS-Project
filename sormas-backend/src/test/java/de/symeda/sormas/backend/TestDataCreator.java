@@ -157,6 +157,7 @@ public class TestDataCreator {
 			userRoleDto.setCaption(defaultUserRole.toString());
 			userRoleDto.setEnabled(true);
 			userRoleDto.setPortHealthUser(defaultUserRole.isPortHealthUser());
+			userRoleDto.setLinkedDefaultUserRole(defaultUserRole);
 			userRoleDto.setHasAssociatedDistrictUser(defaultUserRole.hasAssociatedDistrictUser());
 			userRoleDto.setHasOptionalHealthFacility(defaultUserRole.hasOptionalHealthFacility());
 			userRoleDto.setEmailNotificationTypes(defaultUserRole.getEmailNotificationTypes());

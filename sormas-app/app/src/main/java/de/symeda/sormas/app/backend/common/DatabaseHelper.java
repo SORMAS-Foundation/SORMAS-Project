@@ -3029,7 +3029,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 341:
 				currentVersion = 341;
-				getDao(UserRole.class).executeRaw("ALTER TABLE userRoles ADD COLUMN linkedDefaultUserRole varchar(255)");;
+				getDao(UserRole.class).executeRaw("ALTER TABLE userRoles ADD COLUMN linkedDefaultUserRole varchar(255);");
 
 				// ATTENTION: break should only be done after last version
 				break;
