@@ -182,10 +182,14 @@ public class CaseImportExportSteps implements En {
               "C:\\Users\\lukas\\Downloads\\sormas_f\u00E4lle_"
                   + LocalDate.now().format(formatter)
                   + "_.csv";
+          TimeUnit.SECONDS.sleep(15);
 
           Case reader = parseDetailedCaseExport(file);
           Path path = Paths.get(file);
           Files.delete(path);
+          softly.assertEquals(
+              reader.getUuid(), apiState.getCreatedCase().getUuid(), "UUIDs are not equal");
+
           softly.assertEquals(
               reader.getUuid(), apiState.getCreatedCase().getUuid(), "UUIDs are not equal");
           softly.assertEquals(
@@ -197,18 +201,13 @@ public class CaseImportExportSteps implements En {
               CaseClassification.getUIValueForGivenAPIValue(
                   apiState.getCreatedCase().getCaseClassification()),
               "Cases Classification are not equal");
-          softly.assertEquals(
-              reader.getPointOfEntry(),
-              apiState.getCreatedCase().getPointOfEntryDetails(),
-              "Point of entries of case are not equal");
-          softly.assertEquals(
-              String.format(reader.getFirstName(), Locale.GERMAN),
-              String.format(apiState.getLastCreatedPerson().getFirstName(), Locale.GERMAN),
-              "First names are not equal");
-          softly.assertEquals(
-              String.format(reader.getLastName(), Locale.GERMAN),
-              String.format(apiState.getLastCreatedPerson().getLastName(), Locale.GERMAN),
-              "Last names are not equal");
+
+          softly.assertTrue(
+              reader
+                  .getInvestigationStatus()
+                  .toLowerCase()
+                  .contains(apiState.getCreatedCase().getInvestigationStatus().toLowerCase()),
+              "Investigation Status are not equal");
           softly.assertAll();
         });
 
@@ -295,7 +294,7 @@ public class CaseImportExportSteps implements En {
     List<String[]> r = null;
     String[] values = new String[] {};
     Case builder = null;
-    CSVParser csvParser = new CSVParserBuilder().withSeparator(',').build();
+    CSVParser csvParser = new CSVParserBuilder().withSeparator(';').build();
     try (CSVReader reader =
         new CSVReaderBuilder(new FileReader(fileName))
             .withCSVParser(csvParser)
@@ -313,15 +312,15 @@ public class CaseImportExportSteps implements En {
       }
       builder =
           Case.builder()
-              .uuid(values[0])
-              .disease(values[3])
-              .caseClassification(values[5])
-              .outcomeOfCase(values[6])
-              .investigationStatus(values[7])
-              .firstName(String.format(values[9], Locale.GERMAN))
-              .lastName(String.format(values[10], Locale.GERMAN))
-              .responsibleDistrict(String.format(values[11], Locale.GERMAN))
-              .pointOfEntry(values[13])
+              .uuid(values[2])
+              .disease(values[7])
+              .caseClassification(values[36])
+              .outcomeOfCase(values[42])
+              .investigationStatus(values[40])
+              .firstName(String.format(values[12], Locale.GERMAN))
+              .lastName(String.format(values[13], Locale.GERMAN))
+              .responsibleDistrict(String.format(values[25], Locale.GERMAN))
+              .pointOfEntry(values[33])
               .build();
     } catch (NullPointerException e) {
       log.error("Null pointer exception parseCustomCaseExport: {}", e.getCause());
