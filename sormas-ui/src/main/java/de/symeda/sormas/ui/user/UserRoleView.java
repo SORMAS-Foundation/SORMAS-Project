@@ -52,4 +52,9 @@ public class UserRoleView extends AbstractUserRoleView {
 
 		container.addComponent(editComponent);
 	}
+
+	@Override
+	protected AbstractUserRoleForm getForm() {
+		return userRoleTemplateSelectionField.getUserRoleEditForm();
+	}
 }

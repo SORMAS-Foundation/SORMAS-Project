@@ -40,6 +40,7 @@ public interface Captions {
 	String Action_title = "Action.title";
 	String actionAccept = "actionAccept";
 	String actionAdjustChanges = "actionAdjustChanges";
+	String actionApply = "actionApply";
 	String actionApplyDateFilter = "actionApplyDateFilter";
 	String actionApplyFilters = "actionApplyFilters";
 	String actionArchiveCoreEntity = "actionArchiveCoreEntity";

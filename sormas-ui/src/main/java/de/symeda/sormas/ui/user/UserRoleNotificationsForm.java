@@ -24,9 +24,8 @@ import com.vaadin.ui.Label;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRoleDto;
-import de.symeda.sormas.ui.utils.AbstractEditForm;
 
-public class UserRoleNotificationsForm extends AbstractEditForm<UserRoleDto> {
+public class UserRoleNotificationsForm extends AbstractUserRoleForm {
 
 	private static final String INFO_LABEL_LOC = "infoLabbelLoc";
 

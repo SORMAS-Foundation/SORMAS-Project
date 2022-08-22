@@ -50,4 +50,9 @@ public class UserRoleNotificationsView extends AbstractUserRoleView {
 
 		container.addComponent(editComponent);
 	}
+
+	@Override
+	protected AbstractUserRoleForm getForm() {
+		return userRoleTemplateSelectionField.getUserRoleNotificationsForm();
+	}
 }

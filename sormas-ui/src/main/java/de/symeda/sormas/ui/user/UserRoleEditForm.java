@@ -38,11 +38,10 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
-import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.components.CheckboxSet;
 
-public class UserRoleEditForm extends AbstractEditForm<UserRoleDto> {
+public class UserRoleEditForm extends AbstractUserRoleForm {
 
 	private static final long serialVersionUID = 8099247063020818190L;
 

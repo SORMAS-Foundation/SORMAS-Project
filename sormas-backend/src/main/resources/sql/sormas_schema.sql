@@ -11904,21 +11904,21 @@ INSERT INTO schema_version (version_number, comment) VALUES (486, 'Hide citizens
 
 -- 2022-08-11 User roles should have optional link to default user role #9645
 
-CREATE OR REPLACE FUNCTION add_column(in_statement TEXT, in_table TEXT, in_column TEXT, in_schema TEXT DEFAULT 'public') RETURNS BOOLEAN AS $_$
+CREATE OR REPLACE FUNCTION add_column_if_not_exists(in_table TEXT, in_column TEXT, column_type TEXT, in_schema TEXT DEFAULT 'public') RETURNS BOOLEAN AS $_$
 BEGIN
     PERFORM * FROM information_schema.columns WHERE table_name = in_table AND column_name = in_column AND table_schema = in_schema;
     IF FOUND THEN
         RETURN FALSE;
     ELSE
-        EXECUTE in_statement;
+        EXECUTE format('ALTER TABLE %s ADD COLUMN %s %s', in_table, in_column, column_type);
         RETURN TRUE;
     END IF;
 END
 $_$ LANGUAGE plpgsql VOLATILE;
 
 DO $$ BEGIN
-   PERFORM add_column('ALTER TABLE userroles ADD COLUMN linkeddefaultuserrole varchar(255)', 'userroles', 'linkeddefaultuserrole');
-   PERFORM add_column('ALTER TABLE userroles_history ADD COLUMN linkeddefaultuserrole varchar(255)', 'userroles_history', 'linkeddefaultuserrole');
+   PERFORM add_column_if_not_exists( 'userroles', 'linkeddefaultuserrole', 'varchar(255)');
+   PERFORM add_column_if_not_exists( 'userroles_history', 'linkeddefaultuserrole', 'varchar(255)');
 END $$;
 
 INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (487, 'User roles should have optional link to default user role #9645', true);

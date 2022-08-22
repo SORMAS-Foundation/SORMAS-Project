@@ -20,7 +20,6 @@ import com.vaadin.ui.Button;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
@@ -48,20 +47,13 @@ public abstract class AbstractUserRoleView extends AbstractDetailView<UserRoleRe
 				e -> VaadinUiUtil.showConfirmationPopup(
 					I18nProperties.getCaption(Captions.userrole_applyUserRoleTemplate),
 					userRoleTemplateSelectionField,
-					I18nProperties.getString(Strings.apply),
-					I18nProperties.getString(Strings.cancel),
+					I18nProperties.getCaption(Captions.actionApply),
+					I18nProperties.getCaption(Captions.actionCancel),
 					720,
 					confirmed -> {
 						if (Boolean.TRUE.equals(confirmed)) {
-							if (userRoleTemplateSelectionField.getUserRoleEditForm() != null) {
-								userRoleTemplateSelectionField.getUserRoleEditForm()
-									.applyTemplateData(
-										FacadeProvider.getUserRoleFacade().getByUuid(userRoleTemplateSelectionField.getValue().getUuid()));
-							} else {
-								userRoleTemplateSelectionField.getUserRoleNotificationsForm()
-									.applyTemplateData(
-										FacadeProvider.getUserRoleFacade().getByUuid(userRoleTemplateSelectionField.getValue().getUuid()));
-							}
+							getForm()
+								.applyTemplateData(FacadeProvider.getUserRoleFacade().getByUuid(userRoleTemplateSelectionField.getValue().getUuid()));
 						}
 						return true;
 					}));
@@ -69,6 +61,8 @@ public abstract class AbstractUserRoleView extends AbstractDetailView<UserRoleRe
 			addHeaderComponent(applyUserRoleTemplate);
 		}
 	}
+	
+	protected abstract AbstractUserRoleForm getForm();
 
 	@Override
 	protected UserRoleReferenceDto getReferenceByUuid(String uuid) {
