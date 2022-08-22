@@ -43,6 +43,10 @@ public abstract class LanguageDetectorHelper {
   }
 
   private static boolean isConfidenceHigh(String textToScan) {
-    return detector.detect(textToScan).getConfidence().toString().equalsIgnoreCase("HIGH");
+    return detector
+        .detect(textToScan.replaceAll("[^A-Za-z]", ""))
+        .getConfidence()
+        .toString()
+        .equalsIgnoreCase("HIGH");
   }
 }
