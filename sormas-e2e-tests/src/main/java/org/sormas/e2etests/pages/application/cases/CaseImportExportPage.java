@@ -45,4 +45,9 @@ public class CaseImportExportPage {
   public static final By CUSTOM_CASE_DELETE_BUTTON =
       By.xpath(
           "//div[@class='popupContent']//div[@class='v-horizontallayout v-layout v-horizontal v-widget']//div[5]");
+
+  public static By getCustomExportCheckboxByText(String text) {
+    return By.xpath(
+        String.format("//span[@class='v-checkbox v-widget']/label[contains(text(), '%s')]", text));
+  }
 }
