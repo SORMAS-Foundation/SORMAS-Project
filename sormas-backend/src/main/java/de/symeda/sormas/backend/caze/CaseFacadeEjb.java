@@ -1407,8 +1407,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		cq.select(caze);
 
 		List<Case> cases = em.createQuery(cq).getResultList();
-		List<CaseDataDto> caseDataDtos = cases.stream().map(this::toDto).collect(Collectors.toList());
-		return caseDataDtos;
+		return cases.stream().filter(c -> vaccinationService.isVaccinationRelevant(c, vaccination)).map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Override
