@@ -1219,7 +1219,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			caze1.getReportingUser(),
 			immunization.toReference(),
 			HealthConditionsDto.build(),
-			DateHelper.subtractDays(new Date(), 1),
+			new Date(),
 			Vaccine.MRNA_1273,
 			VaccineManufacturer.MODERNA,
 			VaccinationInfoSource.UNKNOWN,
@@ -1231,7 +1231,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		List<CaseDataDto> cases1 = new ArrayList<>();
 		cases1.add(caze1);
 		assertEquals(getCaseFacade().getRelevantCasesForVaccination(firstRelevantVaccinationForCase1), cases1);
-		//assertTrue(getCaseFacade().getRelevantCasesForVaccination(notRelevantVaccinationForCase1).isEmpty());
+		assertTrue(getCaseFacade().getRelevantCasesForVaccination(notRelevantVaccinationForCase1).isEmpty());
 	}
 
 	/**
