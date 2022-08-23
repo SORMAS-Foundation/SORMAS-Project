@@ -19,6 +19,7 @@ import static de.symeda.sormas.api.FacadeProvider.getCaseFacade;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Window;
@@ -135,8 +136,11 @@ public class VaccinationController {
 			createComponent.addDeleteWithReasonListener((deleteDetails) -> {
 				popupWindow.close();
 				if (doSave) {
-					List<CaseDataDto> cases = getCaseFacade().getRelevantCasesForVaccination(vaccination);
-					if (!cases.isEmpty() && !getCaseFacade().hasOtherValidVaccination(cases.get(0), vaccination.getUuid())) {
+					List<CaseDataDto> cases = getCaseFacade().getRelevantCasesForVaccination(vaccination)
+						.stream()
+						.filter(c -> !getCaseFacade().hasOtherValidVaccination(c, vaccination.getUuid()))
+						.collect(Collectors.toList());
+					if (!cases.isEmpty()) {
 						showUpdateStatusConfirmationPopup(cases);
 					}
 					FacadeProvider.getVaccinationFacade().deleteWithImmunization(vaccination.getUuid(), deleteDetails);

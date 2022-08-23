@@ -246,7 +246,7 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 		return false;
 	}
 
-	public List<Vaccination> getVaccinationListForACase(Case caze) {
+	public List<Vaccination> getRelevantVaccinationsForCase(Case caze) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Vaccination> cq = cb.createQuery(Vaccination.class);
 		final Root<Case> root = cq.from(Case.class);
@@ -261,7 +261,8 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 		cq.where(predicate);
 		cq.select(vaccination);
 
-		return em.createQuery(cq).getResultList();
+		List<Vaccination> vaccinations = em.createQuery(cq).getResultList();
+		return vaccinations.stream().filter(v -> isVaccinationRelevant(caze, v)).collect(Collectors.toList());
 	}
 
 	public List<Vaccination> getRelevantSortedVaccinations(List<Vaccination> vaccinations, Date... relevanceFilterDates) {

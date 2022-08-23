@@ -1415,7 +1415,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	public boolean hasOtherValidVaccination(CaseDataDto caze, String vaccinationUuid) {
 		List<VaccinationDto> relevantVaccinationsForCase = vaccinationFacade.getRelevantVaccinationsForCase(caze);
 		//checking if the vaccination selected for delete is in the relevant vaccinations of the case
-		return relevantVaccinationsForCase.stream().anyMatch(v -> v.getUuid().equals(vaccinationUuid)) && relevantVaccinationsForCase.size() > 1;
+		return relevantVaccinationsForCase.stream().anyMatch(v -> !v.getUuid().equals(vaccinationUuid));
 	}
 
 	@Override

@@ -301,10 +301,14 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	@Override
 	public List<VaccinationDto> getRelevantVaccinationsForCase(CaseDataDto cazeDto) {
 		Case caze = caseService.getByUuid(cazeDto.getUuid());
-		List<Vaccination> vaccinations = vaccinationService.getVaccinationListForACase(caze);
-		List<VaccinationDto> vaccinationDtos = convertToDtoList(vaccinations);
+		List<Vaccination> vaccinations = vaccinationService.getRelevantVaccinationsForCase(caze);
+		return convertToDtoList(vaccinations);
+	}
 
-		return vaccinationDtos.stream().filter(v -> isVaccinationRelevant(cazeDto, v)).collect(Collectors.toList());
+	public List<VaccinationDto> convertToDtoList(List<Vaccination> vaccinations) {
+		Pseudonymizer defaultPseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+
+		return vaccinations.stream().map(v -> convertToDto(v, defaultPseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -368,11 +372,6 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 							? Strings.messageVaccinationNotRelevantForEventParticipant
 							: Strings.messageVaccinationNoDateNotRelevantForEventParticipant)))
 			.collect(Collectors.toList());
-	}
-
-	public List<VaccinationDto> convertToDtoList(List<Vaccination> vaccinations) {
-		Pseudonymizer defaultPseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return vaccinations.stream().map(v -> convertToDto(v, defaultPseudonymizer)).collect(Collectors.toList());
 	}
 
 	public VaccinationDto convertToDto(Vaccination source, Pseudonymizer pseudonymizer) {
