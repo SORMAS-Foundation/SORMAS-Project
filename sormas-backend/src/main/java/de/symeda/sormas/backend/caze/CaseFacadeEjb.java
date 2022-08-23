@@ -204,9 +204,11 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.UserRightFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.classification.CaseClassificationFacadeEjb.CaseClassificationFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistoryFacadeEjb.MaternalHistoryFacadeEjbLocal;
@@ -1388,6 +1390,34 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
+	public List<CaseDataDto> getRelevantCasesForVaccination(VaccinationDto vaccinationDto) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Case> cq = cb.createQuery(Case.class);
+		final Root<Case> caze = cq.from(Case.class);
+		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
+		final CaseJoins joins = caseQueryContext.getJoins();
+
+		Vaccination vaccination = vaccinationService.getByUuid(vaccinationDto.getUuid());
+		Join<Case, Person> person = joins.getPerson();
+		Join<Person, Immunization> immunizationJoin = person.join(Person.IMMUNIZATIONS, JoinType.LEFT);
+		Join<Immunization, Vaccination> vaccinationsJoin = immunizationJoin.join(Immunization.VACCINATIONS, JoinType.LEFT);
+
+		Predicate predicate = cb.in(vaccinationsJoin).value(vaccination);
+		cq.where(predicate);
+		cq.select(caze);
+
+		List<Case> cases = em.createQuery(cq).getResultList();
+		return cases.stream().filter(c -> vaccinationService.isVaccinationRelevant(c, vaccination)).map(this::toDto).collect(Collectors.toList());
+	}
+
+	@Override
+	public boolean hasOtherValidVaccination(CaseDataDto caze, String vaccinationUuid) {
+		List<VaccinationDto> relevantVaccinationsForCase = vaccinationFacade.getRelevantVaccinationsForCase(caze);
+		//checking if the vaccination selected for delete is in the relevant vaccinations of the case
+		return relevantVaccinationsForCase.stream().anyMatch(v -> !v.getUuid().equals(vaccinationUuid));
+	}
+
+	@Override
 	public List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, boolean ignoreRegion) {
 
 		return service.getCasesForDuplicateMerging(criteria, ignoreRegion, configFacade.getNameSimilarityThreshold());
@@ -1576,6 +1606,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		throws ValidationRuntimeException {
 
 		Case existingCase = service.getByUuid(dto.getUuid());
+		FacadeHelper.checkCreateAndEditRights(existingCase, userService, UserRight.CASE_CREATE, UserRight.CASE_EDIT);
 
 		if (!systemSave && internal && existingCase != null && !service.getEditPermissionType(existingCase).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorCaseNotEditable));
@@ -1739,7 +1770,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public void validate(CaseDataDto caze) throws ValidationRuntimeException {
+	public void validate(@Valid CaseDataDto caze) throws ValidationRuntimeException {
 
 		// Check whether any required field that does not have a not null constraint in
 		// the database is empty
@@ -1835,7 +1866,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 							I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY)));
 				}
 
-				if (!userService.hasRight(UserRight.CASE_TRANSFER)) {
+				if (existingCaze.getHealthFacility() != null && !userService.hasRight(UserRight.CASE_TRANSFER)) {
 					throw new AccessDeniedException(
 						String.format(
 							I18nProperties.getString(Strings.errorNoRightsForChangingField),
@@ -2157,7 +2188,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					newCase.getDisease().toString());
 
 				notificationService.sendNotifications(
-					NotificationType.DISEASE_CHANGED,
+					NotificationType.CASE_DISEASE_CHANGED,
 					JurisdictionHelper.getCaseRegions(newCase),
 					null,
 					MessageSubject.DISEASE_CHANGED,

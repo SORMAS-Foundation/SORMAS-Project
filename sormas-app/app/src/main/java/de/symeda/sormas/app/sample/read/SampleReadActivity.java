@@ -24,11 +24,13 @@ import java.util.List;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.BaseReadActivity;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.sample.Sample;
 import de.symeda.sormas.app.backend.sample.SampleEditAuthorization;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
@@ -109,7 +111,7 @@ public class SampleReadActivity extends BaseReadActivity<Sample> {
 		final Sample selectedSample = DatabaseHelper.getSampleDao().getByReferenceDto(referenceDto);
 
 		if (editMenu != null) {
-			if (SampleEditAuthorization.isSampleEditAllowed(selectedSample)) {
+			if (ConfigProvider.hasUserRight(UserRight.SAMPLE_EDIT) && SampleEditAuthorization.isSampleEditAllowed(selectedSample)) {
 				editMenu.setVisible(true);
 			} else {
 				editMenu.setVisible(false);

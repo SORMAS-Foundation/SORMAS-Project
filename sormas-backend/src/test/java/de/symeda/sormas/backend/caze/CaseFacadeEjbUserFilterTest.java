@@ -138,7 +138,7 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 
 		labUser = creator.createUser(null, null, null, "Lab", "Off", creator.getUserRoleReference(DefaultUserRole.LAB_USER));
 		labUser.setLaboratory(rdcf1.facility);
-		getUserFacade().saveUser(labUser);
+		getUserFacade().saveUser(labUser, false);
 
 	}
 
@@ -242,8 +242,6 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetUsersHavingJurisdictionOverCase() {
-		loginWith(nationalUser);
-
 		CaseDataDto caze = createCase(rdcf1, districtUser1);
 
 		UserDto inactiveUser =
@@ -373,8 +371,6 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetCaseUsersWithoutUsesLimitedToOthersDiseses() {
-		loginWith(nationalUser);
-
 		CaseDataDto caze = createCase(rdcf1, districtUser1);
 		UserDto limitedCovidNationalUser = creator.createUser(
 			rdcf1,

@@ -16,6 +16,7 @@ package de.symeda.sormas.backend.user;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -75,6 +76,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseJurisdictionPredicateValidator;
@@ -554,22 +556,28 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public UserDto saveUser(@Valid UserDto dto) {
+	public UserDto saveUser(@Valid UserDto dto, boolean isUserSettingsUpdate) {
 
 		User oldUser = null;
+		Set<UserRight> oldUserRights = Collections.emptySet();
 		if (dto.getCreationDate() != null) {
 			try {
 				oldUser = (User) BeanUtils.cloneBean(userService.getByUuid(dto.getUuid()));
+				oldUserRights = UserRole.getUserRights(oldUser.getUserRoles());
 			} catch (Exception e) {
 				throw new IllegalArgumentException("Invalid bean access", e);
 			}
 		}
 
-		User user = fromDto(dto, true);
+		// current user should be able to edit itself
+		if (!DataHelper.isSame(userService.getCurrentUser(), dto)) {
+			FacadeHelper.checkCreateAndEditRights(oldUser, userService, UserRight.USER_CREATE, UserRight.USER_EDIT);
+		}
+
+		Collection<UserRoleDto> newRoles = userRoleFacade.getByReferences(dto.getUserRoles());
 
 		try {
-			userRoleFacade.validateUserRoleCombination(
-				user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toDto(userRole)).collect(Collectors.toSet()));
+			userRoleFacade.validateUserRoleCombination(newRoles);
 		} catch (UserRoleDto.UserRoleValidationException e) {
 			throw new ValidationException(e);
 		}
@@ -578,6 +586,18 @@ public class UserFacadeEjb implements UserFacade {
 			throw new ValidationException(I18nProperties.getValidationError(Validations.userNameNotUnique));
 		}
 
+		if (DataHelper.isSame(oldUser, userService.getCurrentUser()) && !isUserSettingsUpdate) {
+
+			Set<UserRight> newUserRights = UserRoleDto.getUserRights(newRoles);
+
+			if (oldUserRights.contains(UserRight.USER_ROLE_EDIT) && !newUserRights.contains(UserRight.USER_ROLE_EDIT)) {
+				throw new ValidationException(I18nProperties.getValidationError(Validations.removeUserRightEditRightFromOwnUser));
+			} else if (!newUserRights.contains(UserRight.USER_EDIT)) {
+				throw new ValidationException(I18nProperties.getValidationError(Validations.removeUserEditRightFromOwnUser));
+			}
+		}
+
+		User user = fromDto(dto, true);
 		userService.ensurePersisted(user);
 
 		if (oldUser == null) {
@@ -677,7 +697,7 @@ public class UserFacadeEjb implements UserFacade {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	private User fromDto(UserDto source, boolean checkChangeDate) {
+	public User fromDto(UserDto source, boolean checkChangeDate) {
 
 		User target = DtoHelper.fillOrBuildEntity(source, userService.getByUuid(source.getUuid()), userService::createUser, checkChangeDate);
 
@@ -852,6 +872,16 @@ public class UserFacadeEjb implements UserFacade {
 
 			userUpdateEvent.fire(new UserUpdateEvent(oldUser, user));
 		}
+	}
+
+	@Override
+	public long getUserCountHavingRole(UserRoleReferenceDto userRoleRef) {
+		return userService.countWithRole(userRoleRef);
+	}
+
+	@Override
+	public List<UserReferenceDto> getUsersHavingOnlyRole(UserRoleReferenceDto userRoleRef) {
+		return userService.getAllWithOnlyRole(userRoleRef).stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	public interface JurisdictionOverEntitySubqueryBuilder<ADO extends AbstractDomainObject> {

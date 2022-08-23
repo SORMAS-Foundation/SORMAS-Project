@@ -33,6 +33,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CON
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISCARD_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_PERSON_RADIOBUTTON_DE;
 
 import com.github.javafaker.Faker;
@@ -48,6 +49,7 @@ import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.services.ContactService;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
 
@@ -152,6 +154,29 @@ public class CreateNewContactSteps implements En {
           fillFirstName(contact.getFirstName());
           fillLastName(contact.getLastName());
           fillDateOfBirth(contact.getDateOfBirth(), Locale.GERMAN);
+          selectSex(contact.getSex());
+          fillPrimaryPhoneNumber(contact.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(contact.getPrimaryEmailAddress());
+          selectReturningTraveler(contact.getReturningTraveler());
+          fillDateOfReport(contact.getReportDate(), Locale.GERMAN);
+          fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
+          fillCaseIdInExternalSystem(contact.getCaseIdInExternalSystem());
+          fillDateOfLastContact(contact.getDateOfLastContact(), Locale.GERMAN);
+          fillCaseOrEventInformation(contact.getCaseOrEventInformation());
+          selectResponsibleRegion(contact.getResponsibleRegion());
+          selectResponsibleDistrict(contact.getResponsibleDistrict());
+          selectResponsibleCommunity(contact.getResponsibleCommunity());
+          selectTypeOfContact(contact.getTypeOfContact());
+          fillAdditionalInformationOnTheTypeOfContact(
+              contact.getAdditionalInformationOnContactType());
+          selectContactCategory(contact.getContactCategory().toUpperCase());
+          fillRelationshipWithCase(contact.getRelationshipWithCase());
+          fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
+        });
+    When(
+        "^I fill a new contact form for DE version without person data$",
+        () -> {
+          contact = contactService.buildGeneratedContactDE();
           selectSex(contact.getSex());
           fillPrimaryPhoneNumber(contact.getPrimaryPhoneNumber());
           fillPrimaryEmailAddress(contact.getPrimaryEmailAddress());
@@ -446,6 +471,66 @@ public class CreateNewContactSteps implements En {
           softly.assertEquals(disease, getDisease, "Diseases are not equal");
           softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_DISCARD_BUTTON);
+        });
+
+    And(
+        "^I change a Report Date to the current date for DE$",
+        () -> {
+          DateTimeFormatter formatter;
+          formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+          webDriverHelpers.clearAndFillInWebElement(
+              DATE_OF_REPORT_INPUT, formatter.format(LocalDate.now()));
+        });
+
+    And(
+        "^I fill a mandatory fields for a new contact and date of report to yesterday$",
+        () -> {
+          contact = contactService.buildGeneratedContact();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          fillFirstName(contact.getFirstName());
+          fillLastName(contact.getLastName());
+          selectSex(contact.getSex());
+          fillDateOfReport(LocalDate.now().minusDays(1), Locale.ENGLISH);
+          fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
+          selectResponsibleRegion(contact.getResponsibleRegion());
+          selectResponsibleDistrict(contact.getResponsibleDistrict());
+        });
+
+    And(
+        "^I change disease to \"([^\"]*)\" in the Edit contact page$",
+        (String option) -> {
+          webDriverHelpers.selectFromCombobox(EditContactPage.DISEASE_COMBOBOX, option);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    And(
+        "^I click on SAVE new contact button and choose create new person in duplication detection$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP_HEADER, 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+          }
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
+        });
+
+    Then(
+        "^I check the wording of the last two entries for type of contact$",
+        () -> {
+          webDriverHelpers.checkWebElementContainsText(
+              TYPE_OF_CONTACT_MEDICAL_PERSONEL_SAME_ROOM_CHECKBOX,
+              "Medical personnel at safe proximity (> 2 meter) or with protective equipment");
+          webDriverHelpers.checkWebElementContainsText(
+              TYPE_OF_CONTACT_MEDICAL_PERSONEL_WITHOUT_DIRECT_CONTACT_CHECKBOX,
+              "Medical personnel at safe proximity (> 2 meter), without direct contact with secretions or excretions of the patient and without aerosol exposure");
+        });
+
+    When(
+        "^I click on Discard button in Create New Contact form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_TASK_BUTTON);
         });
   }
 

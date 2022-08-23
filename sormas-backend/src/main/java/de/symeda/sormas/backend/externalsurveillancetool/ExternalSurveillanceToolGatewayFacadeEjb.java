@@ -25,6 +25,7 @@ import javax.ejb.Stateless;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
@@ -39,10 +40,8 @@ import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRes
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.share.ExternalShareStatus;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
-import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 
@@ -73,11 +72,6 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 		params.setArchived(archived);
 
 		sendRequest(params);
-
-		caseUuids.forEach(uuid -> {
-			Case caze = caseService.getByUuid(uuid);
-			shareInfoService.createAndPersistShareInfo(caze, ExternalShareStatus.SHARED);
-		});
 	}
 
 	@Override
@@ -87,11 +81,6 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 		params.setArchived(archived);
 
 		sendRequest(params);
-
-		eventUuids.forEach(uuid -> {
-			Event event = eventService.getByUuid(uuid);
-			shareInfoService.createAndPersistShareInfo(event, ExternalShareStatus.SHARED);
-		});
 	}
 
 	private void sendRequest(ExportParameters params) throws ExternalSurveillanceToolException {
@@ -172,13 +161,17 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 	private void sendDeleteRequest(DeleteParameters params) throws ExternalSurveillanceToolException {
 		String serviceUrl = configFacade.getExternalSurveillanceToolGatewayUrl().trim();
-		Response response = ClientBuilder.newBuilder()
-			.connectTimeout(30, TimeUnit.SECONDS)
-			.build()
-			.target(serviceUrl)
-			.path("delete")
-			.request()
-			.post(Entity.json(params));
+
+		Invocation.Builder request =
+			ClientBuilder.newBuilder().connectTimeout(30, TimeUnit.SECONDS).build().target(serviceUrl).path("delete").request();
+
+		Response response;
+		try {
+			response = request.post(Entity.json(params));
+		} catch (Exception e) {
+			logger.error("Failed to send delete request to external surveillance tool", e);
+			throw new ExternalSurveillanceToolException(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorDeleting));
+		}
 
 		int statusCode = response.getStatus();
 

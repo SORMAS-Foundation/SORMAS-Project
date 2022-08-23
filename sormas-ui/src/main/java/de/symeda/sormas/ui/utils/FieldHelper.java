@@ -504,6 +504,20 @@ public final class FieldHelper {
 		setEnabledWhen(sourceField, sourceValues, targetFields, clearOnDisabled);
 	}
 
+	public static void setDisabledWhen(
+		FieldGroup fieldGroup,
+		String sourceFieldId,
+		Object sourceValue,
+		String targetPropertyId,
+		boolean clearOnDisabled) {
+
+		final Field<?> sourceField = fieldGroup.getField(sourceFieldId);
+		final List<Object> sourceValues = Collections.singletonList(sourceValue);
+		final List<Field<?>> targetFields = Collections.singletonList(fieldGroup.getField(targetPropertyId));
+
+		setDisabledWhen(sourceField, sourceValues, targetFields, clearOnDisabled);
+	}
+
 	/**
 	 * Sets the target fields to enabled when the source field has a value that's
 	 * contained in the sourceValues list.
@@ -541,6 +555,34 @@ public final class FieldHelper {
 			for (Field<?> targetField : targetFields) {
 				targetField.setEnabled(enabled);
 				if (!enabled && clearOnDisabled) {
+					targetField.clear();
+				}
+			}
+		});
+	}
+
+	public static void setDisabledWhen(Field<?> sourceField, final List<?> sourceValues, List<Field<?>> targetFields, boolean clearOnDisabled) {
+
+		if (sourceField instanceof AbstractField<?>) {
+			((AbstractField<?>) sourceField).setImmediate(true);
+		}
+
+		// initialize
+		{
+			boolean disabled = sourceValues.contains(getNullableSourceFieldValue(sourceField));
+			for (Field<?> targetField : targetFields) {
+				targetField.setEnabled(!disabled);
+				if (disabled && clearOnDisabled) {
+					targetField.clear();
+				}
+			}
+		}
+
+		sourceField.addValueChangeListener(event -> {
+			boolean disabled = sourceValues.contains(getNullableSourceFieldValue(((Field) event.getProperty())));
+			for (Field<?> targetField : targetFields) {
+				targetField.setEnabled(!disabled);
+				if (disabled && clearOnDisabled) {
 					targetField.clear();
 				}
 			}

@@ -185,19 +185,11 @@
 	</security-role>
 
 	<security-role>
-		<role-name>CONTACT_ASSIGN</role-name>
-	</security-role>
-
-	<security-role>
 		<role-name>CONTACT_EDIT</role-name>
 	</security-role>
 
 	<security-role>
 		<role-name>CONTACT_DELETE</role-name>
-	</security-role>
-
-	<security-role>
-		<role-name>CONTACT_CLASSIFY</role-name>
 	</security-role>
 
 	<security-role>
@@ -362,6 +354,18 @@
 
 	<security-role>
 		<role-name>USER_VIEW</role-name>
+	</security-role>
+
+    <security-role>
+        <role-name>USER_ROLE_VIEW</role-name>
+    </security-role>
+
+	<security-role>
+		<role-name>USER_ROLE_EDIT</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>USER_ROLE_DELETE</role-name>
 	</security-role>
 
 	<security-role>

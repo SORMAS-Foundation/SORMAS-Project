@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.74.2</version>
+	<version>1.75.0</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -377,7 +377,6 @@
 				<groupId>commons-codec</groupId>
 				<artifactId>commons-codec</artifactId>
 				<version>1.15</version>
-				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>commons-collections</groupId>
@@ -556,7 +555,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.3.3</version>
+				<version>42.4.1</version>
 				<scope>provided</scope>
 				<exclusions>
 					<exclusion>

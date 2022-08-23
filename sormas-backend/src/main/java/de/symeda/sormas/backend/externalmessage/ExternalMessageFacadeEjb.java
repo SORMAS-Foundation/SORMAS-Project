@@ -168,7 +168,7 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	private ExternalMessageDto saveWithFallback(ExternalMessageDto dto) {
 		try {
-			return save(dto, true);
+			return save(dto, true, true);
 		} catch (Exception e) {
 			logger.error(
 				String.format(
@@ -188,15 +188,13 @@ public class ExternalMessageFacadeEjb implements ExternalMessageFacade {
 
 	@Override
 	public ExternalMessageDto save(@Valid ExternalMessageDto dto) {
-
-		return save(dto, false);
+		return save(dto, true, false);
 	}
 
-	public ExternalMessageDto save(@Valid ExternalMessageDto dto, boolean newTransaction) {
-
+	public ExternalMessageDto save(@Valid ExternalMessageDto dto, boolean checkChangeDate, boolean newTransaction) {
 		ExternalMessage externalMessage = externalMessageService.getByUuid(dto.getUuid());
 
-		externalMessage = fromDto(dto, externalMessage, true);
+		externalMessage = fromDto(dto, externalMessage, checkChangeDate);
 		if (newTransaction) {
 			externalMessageService.ensurePersistedInNewTransaction(externalMessage);
 		} else {

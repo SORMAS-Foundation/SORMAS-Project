@@ -9,7 +9,7 @@ Feature: Epidemiological data coverage
     And API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     When I am accessing via URL the Epidemiological data tab of the created case
     Then I create a new Exposure for Epidemiological data tab and fill all the data
@@ -22,7 +22,7 @@ Feature: Epidemiological data coverage
     Then I am checking all Activity data is saved and displayed
 
     #TODO to be investigated if is defect
-    @issue=SORDEV-5522 @env_main
+    @tmsLink=SORDEV-5522 @env_main
   Scenario: Validate all fields are present and functional on Epidemiological page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -30,7 +30,7 @@ Feature: Epidemiological data coverage
     And API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     When I am accessing via URL the Epidemiological data tab of the created case
     And I click on Exposure details known with UNKNOWN option
@@ -57,7 +57,7 @@ Feature: Epidemiological data coverage
     And I open saved activity from Epidemiological Data
     Then I am checking all Activity data is saved and displayed
 
-  @issue=SORDEV-5523 @env_main
+  @tmsLink=SORDEV-5523 @env_main
   Scenario: Enter an exposure data in Case Directory
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -65,7 +65,7 @@ Feature: Epidemiological data coverage
     Then API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     When I am accessing via URL the Epidemiological data tab of the created case
     And I click on Exposure details known with NO option
@@ -107,9 +107,9 @@ Feature: Epidemiological data coverage
     And I search and chose the last case uuid created via API in the CHOOSE CASE Contact window
     And I click on SAVE button in create contact form
 
-  @issue=SORDEV-5523 @env_de
+  @tmsLink=SORDEV-5523 @env_de
   Scenario: Enter an exposure data in Case Directory for DE version
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data for DE version
@@ -165,9 +165,9 @@ Feature: Epidemiological data coverage
     And I search and chose the last case uuid created via UI in the CHOOSE CASE Contact window
     And I click on SAVE button in create contact form
 
-  @issue=SORDEV-5525 @env_de
+  @tmsLink=SORDEV-5525 @env_de
   Scenario: Enter an activity as case in Epidemiological data tab in Cases for DE version
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data for DE version
@@ -185,7 +185,7 @@ Feature: Epidemiological data coverage
     And  I click on save button in Exposure for Epidemiological data tab in Cases
     And I check if created Activity as Case appears in a grid for Epidemiological data tab in Cases
 
-  @issue=SORDEV-5839 @env_main
+  @tmsLink=SORDEV-5839 @env_main
   Scenario: Make facility selection on LocationForm more intuitive
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -193,7 +193,7 @@ Feature: Epidemiological data coverage
     And API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     When I am accessing via URL the Epidemiological data tab of the created case
     Then I create a new Exposure for Epidemiological data
@@ -202,7 +202,7 @@ Feature: Epidemiological data coverage
     Then I set Facility Type as a Hospital in a new Exposure for Epidemiological data
     And I check if Facility field has blue exclamation mark and displays correct message
 
-  @issue=SORDEV-5977 @env_main
+  @tmsLink=SORDEV-5977 @env_main
   Scenario: Improve exposure table display
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -210,7 +210,7 @@ Feature: Epidemiological data coverage
     And API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     When I am accessing via URL the Epidemiological data tab of the created case
     Then I create a new Exposure for Epidemiological data tab and fill all the data
@@ -220,7 +220,7 @@ Feature: Epidemiological data coverage
     Then I check if data is correctly displayed in Exposures table in Epidemiological data tab
 
 
-  @issue=SORDEV-5524 @env_main @ignore
+  @tmsLink=SORDEV-5524 @env_main @ignore
   Scenario: Enter an activity as case in Epidemiological data tab in Cases
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -228,7 +228,7 @@ Feature: Epidemiological data coverage
     Then API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Cases button from navbar
     When I am accessing via URL the Epidemiological data tab of the created case
     Then I click on Activity details known with UNKNOWN option
@@ -264,7 +264,7 @@ Feature: Epidemiological data coverage
     And I click on save button in Exposure for Epidemiological data tab in Cases
     And I check that edit Activity as Case vision button is visible and clickable
 
-  @issue=SORDEV-5563 @env_de
+  @tmsLink=SORDEV-5563 @env_de
   Scenario: Add contact person details to facilities case exposure investigation and activity as case
     Given I log in as a Admin User
     Then I click on the Configuration button from navbar
@@ -298,3 +298,30 @@ Feature: Epidemiological data coverage
     Then I search last created facility
     Then I click on edit button for the last searched facility
     And I archive facility
+
+  @tmsLink=SORDEV-5204 @env_main
+  Scenario: Test continent and subcontinent in location entry in exposure and activity as case
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    And I click on the Cases button from navbar
+    When I am accessing via URL the Epidemiological data tab of the created case
+    And I click on Exposure details known with YES option
+    And I click on New Entry in Exposure Details Known
+    And I check if the continent combobox is available in the location section in Exposure form
+    And I check if the subcontinent combobox is available in the location section in Exposure form
+    And I select "Ukraine" as a country in Exposure form
+    And I check that continent is automatically selected as "Europe"
+    And I check that subcontinent is automatically selected as "Eastern Europe"
+    And I click on discard button from Epidemiological Data Exposure popup
+    And I click on Activity details known with YES option
+    And I click on New Entry in Activity as Case in Cases directory
+    And I check if the continent combobox is available in the location section in Exposure form
+    And I check if the subcontinent combobox is available in the location section in Exposure form
+    And I select "Chile" as a country in Exposure form
+    And I check that continent is automatically selected as "America"
+    And I check that subcontinent is automatically selected as "South America"

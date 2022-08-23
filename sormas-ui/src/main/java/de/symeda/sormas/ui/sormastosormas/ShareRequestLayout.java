@@ -20,6 +20,8 @@ import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
@@ -48,14 +50,16 @@ public class ShareRequestLayout extends VerticalLayout {
 			CasePreviewGrid casesGrid = new CasePreviewGrid(cases);
 			addComponent(casesGrid);
 
-			ContactsPreviewGrid contactsGrid = addContactsGrid(Collections.emptyList());
-			casesGrid.getSelectionModel().addSelectionListener(event -> {
-				event.getFirstSelectedItem().ifPresent(casePreview -> {
-					if (shareRequest.getContacts() != null) {
-						contactsGrid.setItems(shareRequest.getContacts().stream().filter(c -> DataHelper.isSame(c.getCaze(), casePreview)));
-					}
+			List<SormasToSormasContactPreview> contacts = shareRequest.getContacts();
+
+			if (CollectionUtils.isNotEmpty(contacts)) {
+				ContactsPreviewGrid contactsGrid = addContactsGrid(Collections.emptyList());
+				casesGrid.getSelectionModel().addSelectionListener(event -> {
+					event.getFirstSelectedItem().ifPresent(casePreview -> {
+						contactsGrid.setItems(contacts.stream().filter(c -> DataHelper.isSame(c.getCaze(), casePreview)));
+					});
 				});
-			});
+			}
 
 			if (cases.size() > 0) {
 				casesGrid.getSelectionModel().select(cases.get(0));

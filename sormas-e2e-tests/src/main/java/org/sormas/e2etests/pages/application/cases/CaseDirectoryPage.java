@@ -152,6 +152,8 @@ public class CaseDirectoryPage {
   public static final By ALL_RESULTS_CHECKBOX =
       By.xpath("//th[@role='columnheader']//input[@type='checkbox']/../..");
   public static final By NEW_EVENT_CHECKBOX = By.xpath("//*[contains(text(),'New event')]/..");
+  public static final By NEW_EVENT_CHECKBOX_DE =
+      By.xpath("//*[contains(text(),'Neues Ereignis')]/..");
   public static final By FIRST_RESULT_IN_GRID =
       By.xpath("//div[contains(@class, 'popupContent')]//tr[@role='row']");
   public static final By SEARCH_BUTTON = By.id("search");
@@ -178,11 +180,17 @@ public class CaseDirectoryPage {
   public static final By CASE_ACTION_CANCEL = By.id("actionCancel");
   public static final By UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX =
       By.xpath("//label[text()='Also upload the generated documents to the selected entities']");
+  public static final By UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX_DE =
+      By.xpath("//label[text()='Generierte Dokumente auch den Entit\u00E4ten anh\u00E4ngen']");
   public static final By CLOSE_FORM_BUTTON = By.xpath("//div[@class='v-window-closebox']");
   public static final By REINFECTION_STATUS_COMBOBOX =
       By.cssSelector("[id='reinfectionStatus'] [class='v-filterselect-button']");
   public static final By CREATE_NEW_PERSON_CHECKBOX_DE =
       By.xpath("//label[text()='Eine neue Person anlegen']");
+
+  public static By getVaccinationStatusCasesByText(String status) {
+    return By.xpath(String.format("//td[contains(text(), '%s')]", status));
+  }
 
   public static By getCheckboxByIndex(String idx) {
     return By.xpath(String.format("(//input[@type=\"checkbox\"])[%s]", idx));

@@ -4,9 +4,7 @@ import org.openqa.selenium.By;
 
 public class AboutPage {
   public static final By DATA_DICTIONARY_BUTTON = By.id("aboutDataDictionary");
-  public static final By SORMAS_VERSION_HYPERLINK =
-      // By.xpath("//div[@class='v-link v-widget vspace-3 v-link-vspace-3']//span");
-      By.xpath("//div[@class='v-slot v-slot-vspace-3']");
+  public static final By DATA_PROTECTION_DICTIONARY_BUTTON = By.id("aboutDataProtectionDictionary");
   public static final By CASE_CLASSIFICATION_RULES_HYPERLINK =
       By.id("aboutCaseClassificationRules");
   public static final By SORMAS_VERSION_LINK =

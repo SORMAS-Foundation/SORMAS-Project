@@ -18,9 +18,11 @@ package de.symeda.sormas.app.visit.read;
 import android.os.Bundle;
 
 import de.symeda.sormas.api.VisitOrigin;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.BaseReadFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
+import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.visit.Visit;
 import de.symeda.sormas.app.databinding.FragmentVisitReadLayoutBinding;
 
@@ -62,7 +64,7 @@ public class VisitReadFragment extends BaseReadFragment<FragmentVisitReadLayoutB
 		AbstractDomainObject ado = getActivityRootData();
 		if (ado instanceof Visit) {
 			Visit visit = (Visit) getActivityRootData();
-			return VisitOrigin.USER.equals(visit.getOrigin());
+			return VisitOrigin.USER.equals(visit.getOrigin()) && ConfigProvider.hasUserRight(UserRight.VISIT_EDIT);
 		}
 		return true;
 	}

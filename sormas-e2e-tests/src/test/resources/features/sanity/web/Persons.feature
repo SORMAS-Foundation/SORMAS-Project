@@ -1,9 +1,9 @@
 @UI @Sanity @Persons
 Feature: Edit Persons
 
-  @env_main @issue=SORQA-110
+  @env_main @tmsLink=SORQA-110
   Scenario: Edit existent person
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     Then I fill a new contact form
@@ -20,7 +20,7 @@ Feature: Edit Persons
     Then I click on save button from Edit Person page
     And I check that previous edited person is correctly displayed in Edit Person page
 
-  @issue=SORDEV-8466 @env_main
+  @tmsLink=SORDEV-8466 @env_main
   Scenario: Check Filters on Person page work as expected
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -28,7 +28,7 @@ Feature: Edit Persons
     Then API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When I log in with National User
+    When I log in as a National User
     When I click on the Persons button from navbar
     Then I fill Year of birth filter in Persons with the year of the last created person via API
     And I fill Month of birth filter in Persons with the month of the last created person via API
@@ -86,9 +86,9 @@ Feature: Edit Persons
     And I apply on the APPLY FILTERS button
     And I click on the RESET FILTERS button for Person
 
-  @issue=SORDEV-8468 @env_main
+  @tmsLink=SORDEV-8468 @env_main
   Scenario: Edit existent person and provoke errors in the Edit Person page
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Persons button from navbar
     And I filter for persons who are alive
     And I apply on the APPLY FILTERS button
@@ -107,7 +107,7 @@ Feature: Edit Persons
     And I click the Done button in Person Contact Details popup
     Then I check that an invalid data error message appears
 
-  @issue=SORDEV-8469 @env_main
+  @tmsLink=SORDEV-8469 @env_main
   Scenario: Test for navigating through Case, Contact and Immunization cards on Edit Person Page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -123,7 +123,7 @@ Feature: Edit Persons
     Given API: I create 1 new immunizations for last created person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     Then I navigate to the last created via api Person page via URL
     And I click on See Cases for this Person button from Edit Person page
@@ -139,21 +139,146 @@ Feature: Edit Persons
     And I click on Edit Immunization button for Immunization created through API from Immunization card on Edit Person page
     Then I navigate to the last created via api Person page via URL
 
-  @issue=SORDEV-8467 @env_main
+  @tmsLink=SORDEV-8467 @env_main
   Scenario: Test column structure in Person directory
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Persons button from navbar
     Then I check that the Person table structure is correct
 
+  @tmsLink=SORDEV-5630 @env_de
+  Scenario: Test a general comment field in person entity
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a National User
+    Then I navigate to the last created via api Person page via URL
+    And I check General comment field is enabled on Edit Person page
 
-  @issue=SORDEV-7424 @env_main
+  @tmsLink=SORDEV-7424 @env_main
   Scenario: Test event participant person sex required
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When I log in with National User
+    When I log in as a National User
     And I click on the Events button from navbar
     And I navigate to the last created through API Event page via URL
     And I click on the Event participant tab
     And I add only first and last name data and check is sex combobox required for event participant creation
     When I check if error display correctly expecting sex error
+
+  @tmsLink=SORDEV-10227 @env_de
+  Scenario: Test Permanent deletion for Person for Travel Entry, Event Participant, Case and Contact combined
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Entries button from navbar
+    And I click on the New Travel Entry button from Travel Entries directory
+    When I fill the required fields in a new travel entry form without personal data
+    And I fill person data in a new travel entry form with built person shared for all entities
+    And I click on Save button from the new travel entry form
+    Then I check the created data is correctly displayed on Edit travel entry page for DE version
+    And I collect travel UUID from travel entry
+    Then I open the last created event via api
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I add only person data for event participant creation for DE with built person shared for all entities
+    And I collect the event participant person UUID displayed on Edit Event Participant page
+    Then I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I fill new case form with chosen data without personal data on Case directory page for DE
+    And I click on the person search button in new case form
+    And I search for the person data shared across all entities by First Name and Last Name in popup on Select Person window
+    And I open the first found result in the popup of Select Person window for DE version
+    Then I click on Save button in Case form
+    And I collect uuid of the case
+    Then I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    Then I fill a new contact form for DE version without person data
+    And I click on the person search button in create new contact form
+    And I search for the person data shared across all entities by First Name and Last Name in popup on Select Person window
+    And I open the first found result in the popup of Select Person window for DE version
+    And I click on SAVE new contact button
+    And I collect contact UUID displayed on Edit Contact Page
+    And I click on the Persons button from navbar
+    Then I filter by shared person data across all entities
+    And I click on All aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I click on Events aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I click on Case aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I click on Contact aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I click on Travel Entry aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I navigate to the last created UI travel entry via the url
+    Then I click on Delete button from travel entry
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    And I click on the Persons button from navbar
+    Then I filter by shared person data across all entities
+    And I click on All aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I click on Events aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I click on Case aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I click on Contact aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I click on Travel Entry aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 0
+    Then I open the last created event via api
+    Then I navigate to EVENT PARTICIPANT from edit event page
+    And I click on the first result in table from event participant
+    Then I click on Delete button from event participant
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    And I click on the Persons button from navbar
+    Then I filter by shared person data across all entities
+    And I click on All aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I click on Events aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 0
+    And I click on Case aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I click on Contact aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I click on Travel Entry aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 0
+    And I click on the Cases button from navbar
+    And I filter with first Case ID
+    And I open last created case
+    Then I click on Delete button from case
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    And I click on the Persons button from navbar
+    Then I filter by shared person data across all entities
+    And I click on All aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I click on Events aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 0
+    And I click on Case aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 0
+    And I click on Contact aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 1
+    And I click on Travel Entry aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 0
+    And I click on the Contacts button from navbar
+    Then I click on first created contact in Contact directory page by UUID
+    Then I click on Delete button from contact
+    And I set Reason for deletion as "Löschen auf Anforderung der betroffenen Person nach DSGVO"
+    And I click on Yes option in Confirm deletion popup
+    And I click on the Persons button from navbar
+    Then I filter by shared person data across all entities
+    And I click on All aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 0
+    And I click on Events aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 0
+    And I click on Case aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 0
+    And I click on Contact aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 0
+    And I click on Travel Entry aggregation button in Person Directory for DE specific
+    And I check that number of displayed Person results is 0
+
+

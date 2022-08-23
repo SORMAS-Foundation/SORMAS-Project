@@ -98,7 +98,7 @@ can be taken as a base for living documentation and executable specification.
 
 ```gherkin
   Scenario: Create a new event
-Given I log in with National User
+Given I log in as a National User
 And I click on the Events button from navbar
 When I click on the NEW EVENT button
 Then I create a new event
@@ -136,7 +136,7 @@ generated report should be opened in the default browser.
 * After running the tests you will be able to find the allure report in the root
 of the project, in the allureReports folder.
 The report works for UI and API tests as well, displaying steps, logs, failure reason and exit screenshots.
-* You can add @issue=ticketNumber
+* You can add @tmsLink=ticketNumber
 to link GitHub bugs/tickets
 
 > Allure test report example:

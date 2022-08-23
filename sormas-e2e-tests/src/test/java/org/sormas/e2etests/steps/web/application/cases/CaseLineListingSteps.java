@@ -1,6 +1,9 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_PERSON_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_POPUP_HEADER;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.cases.LineListingPopup.*;
 
 import cucumber.api.java8.En;
@@ -20,12 +23,13 @@ public class CaseLineListingSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   protected static Case caze;
   public static Case caseLineListing;
+  public static Case duplicateCaseLineListingDe;
 
   @Inject
   public CaseLineListingSteps(
       WebDriverHelpers webDriverHelpers, CaseService caseService, final SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
-
+    duplicateCaseLineListingDe = caseService.buildCaseForLineListingFeatureDE();
     When(
         "^I create a new case in line listing feature popup for DE version$",
         () -> {
@@ -43,6 +47,24 @@ public class CaseLineListingSteps implements En {
           fillDateOfBirth(caze.getDateOfBirth(), Locale.GERMAN);
           selectSex(caze.getSex());
           fillDateOfSymptom(caze.getDateOfSymptomOnset(), Locale.GERMAN);
+        });
+
+    When(
+        "^I create a new duplicate case in line listing feature popup for DE version$",
+        () -> {
+          selectRegion(duplicateCaseLineListingDe.getRegion());
+          selectDistrict(duplicateCaseLineListingDe.getDistrict());
+          selectFacilityCategory(duplicateCaseLineListingDe.getFacilityCategory());
+          selectFacilityType(duplicateCaseLineListingDe.getFacilityType());
+          fillDateOfReport(duplicateCaseLineListingDe.getDateOfReport(), Locale.GERMAN);
+          selectCommunity(duplicateCaseLineListingDe.getCommunity());
+          selectFacility("Andere Einrichtung");
+          fillFacilityName(duplicateCaseLineListingDe.getPlaceDescription());
+          fillFirstName(duplicateCaseLineListingDe.getFirstName());
+          fillLastName(duplicateCaseLineListingDe.getLastName());
+          fillDateOfBirth(duplicateCaseLineListingDe.getDateOfBirth(), Locale.GERMAN);
+          selectSex(duplicateCaseLineListingDe.getSex());
+          fillDateOfSymptom(duplicateCaseLineListingDe.getDateOfSymptomOnset(), Locale.GERMAN);
         });
 
     When(
@@ -73,7 +95,12 @@ public class CaseLineListingSteps implements En {
         "^I save the new line listing case$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(25);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP_HEADER, 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+            TimeUnit.SECONDS.sleep(1);
+          }
+          TimeUnit.SECONDS.sleep(2);
         });
 
     When(

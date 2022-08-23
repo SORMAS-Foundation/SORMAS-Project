@@ -18,7 +18,6 @@
 
 package de.symeda.sormas.ui;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.io.BufferedReader;
@@ -28,6 +27,7 @@ import java.io.Reader;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,6 +40,7 @@ import org.junit.Before;
 import com.opencsv.CSVReader;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.event.EventFacade;
@@ -52,14 +53,15 @@ import de.symeda.sormas.api.infrastructure.district.DistrictFacade;
 import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryFacade;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.CSVUtils;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.caseimport.CaseImportFacadeEjb.CaseImportFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
@@ -96,18 +98,8 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
 		System.setProperty("java.naming.factory.initial", MockProducer.class.getCanonicalName());
 		I18nProperties.setUserLanguage(Language.EN);
-		UserDto user = creator.createUser(
-			null,
-			null,
-			null,
-			null,
-			"ad",
-			"min",
-			Language.EN,
-			creator.getUserRoleReference(DefaultUserRole.ADMIN),
-			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 
-		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
+		createTestUser();
 
 		// see CurrentUserService.hasRight
 //		when(MockProducer.getSessionContext().isCallerInRole(any(String.class))).thenAnswer(invocationOnMock -> {
@@ -118,6 +110,22 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 //				.stream()
 //				.anyMatch(userRole -> userRole.getUserRights().contains(userRight));
 //		});
+	}
+
+	private void createTestUser() {
+		initTestUser();
+
+		when(MockProducer.getPrincipal().getName()).thenReturn("admin");
+
+		UserDto user = FacadeProvider.getUserFacade().getByUserName("admin");
+
+		user.setChangeDate(new Date());
+		user.setLanguage(Language.EN);
+		user.setAddress(LocationDto.build());
+		user.getUserRoles().add(creator.getUserRoleReference(DefaultUserRole.ADMIN));
+		user.getUserRoles().add(creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+
+		FacadeProvider.getUserFacade().saveUser(user, false);
 	}
 
 	private void initH2Functions() {
@@ -131,6 +139,29 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS date FOR \"de.symeda.sormas.ui.H2Function.date\"");
 		nativeQuery.executeUpdate();
+		em.getTransaction().commit();
+	}
+
+	private void initTestUser() {
+		EntityManager em = getEntityManager();
+		em.getTransaction().begin();
+
+		Query nativeQuery = em.createNativeQuery(
+			"INSERT INTO users (id, uuid, creationdate, changedate, username, firstName, lastName, password, seed, active, hasconsentedtogdpr, jurisdictionlevel) values (1, '"
+				+ DataHelper.createUuid() + "', now(), now(), 'admin', 'ad', 'min', 'testpass', 'seed', true, true, 'NONE')");
+		nativeQuery.executeUpdate();
+
+		nativeQuery = em.createNativeQuery(
+			"INSERT INTO userroles (id, uuid, creationdate, changedate, caption, jurisdictionLevel, enabled, porthealthuser, hasassociateddistrictuser, hasoptionalhealthfacility) values (1, '"
+				+ DataHelper.createUuid() + "', now(), now(), 'Admin init', 'NONE', false, false, false, false)");
+		nativeQuery.executeUpdate();
+
+		nativeQuery = em.createNativeQuery("INSERT INTO userroles_userrights (userrole_id, userright) values (1, 'USER_EDIT')");
+		nativeQuery.executeUpdate();
+
+		nativeQuery = em.createNativeQuery("INSERT INTO users_userroles (user_id, userrole_id) values (1, 1)");
+		nativeQuery.executeUpdate();
+
 		em.getTransaction().commit();
 	}
 

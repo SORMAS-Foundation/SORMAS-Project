@@ -28,6 +28,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -51,6 +52,7 @@ import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantExportDto;
+import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -59,12 +61,16 @@ import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 
 public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
@@ -169,9 +175,9 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	public void testGetMatchingEventParticipants() {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.LAB_USER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 		user.setLaboratory(rdcf.facility);
-		getUserFacade().saveUser(user);
+		getUserFacade().saveUser(user, false);
 		loginWith(user);
 
 		EventDto event = createEvent(user, rdcf);
@@ -322,6 +328,76 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
 		boolean exist = getEventParticipantFacade().exists(person.getUuid(), event.getUuid());
 		Assert.assertFalse(exist);
+	}
+
+	@Test
+	public void testEventParticipantTestResultWithMultipleSamples() {
+		RDCF rdcf = new RDCF(creator.createRDCFEntities());
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		EventDto event = creator.createEvent(user.toReference());
+		PersonDto person = creator.createPerson();
+
+		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
+
+		Calendar calendarDay1 = Calendar.getInstance();
+		calendarDay1.set(2022, 7, 1);
+
+		Calendar calendarDay10 = Calendar.getInstance();
+		calendarDay10.set(2022, 7, 10);
+
+		Calendar calendarDay15 = Calendar.getInstance();
+		calendarDay15.set(2022, 7, 15);
+
+		creator.createSample(
+			eventParticipant.toReference(),
+			calendarDay1.getTime(),
+			new Date(),
+			user.toReference(),
+			SampleMaterial.BLOOD,
+			rdcf.facility,
+			s -> s.setPathogenTestResult(PathogenTestResultType.POSITIVE));
+
+		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
+		eventParticipantCriteria.setEvent(event.toReference());
+		List<EventParticipantIndexDto> eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(1, eventParticipantIndexDtos.size());
+		assertEquals(PathogenTestResultType.POSITIVE, eventParticipantIndexDtos.get(0).getPathogenTestResult());
+		assertEquals(calendarDay1.getTime(), eventParticipantIndexDtos.get(0).getSampleDateTime());
+
+		creator.createSample(
+			eventParticipant.toReference(),
+			calendarDay10.getTime(),
+			new Date(),
+			user.toReference(),
+			SampleMaterial.BLOOD,
+			rdcf.facility,
+			s -> s.setPathogenTestResult(PathogenTestResultType.NEGATIVE));
+
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(1, eventParticipantIndexDtos.size());
+		assertEquals(PathogenTestResultType.NEGATIVE, eventParticipantIndexDtos.get(0).getPathogenTestResult());
+		assertEquals(calendarDay10.getTime(), eventParticipantIndexDtos.get(0).getSampleDateTime());
+
+		SampleDto sampleDto = creator.createSample(
+			eventParticipant.toReference(),
+			calendarDay15.getTime(),
+			new Date(),
+			user.toReference(),
+			SampleMaterial.BLOOD,
+			rdcf.facility,
+			s -> s.setPathogenTestResult(PathogenTestResultType.PENDING));
+
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(1, eventParticipantIndexDtos.size());
+		assertEquals(PathogenTestResultType.PENDING, eventParticipantIndexDtos.get(0).getPathogenTestResult());
+		assertEquals(calendarDay15.getTime(), eventParticipantIndexDtos.get(0).getSampleDateTime());
+
+		getSampleFacade().deleteSample(sampleDto.toReference(), new DeletionDetails());
+
+		eventParticipantIndexDtos = getEventParticipantFacade().getIndexList(eventParticipantCriteria, 0, 100, null);
+		assertEquals(1, eventParticipantIndexDtos.size());
+		assertEquals(PathogenTestResultType.NEGATIVE, eventParticipantIndexDtos.get(0).getPathogenTestResult());
+		assertEquals(calendarDay10.getTime(), eventParticipantIndexDtos.get(0).getSampleDateTime());
 	}
 
 	private UserDto createUser(TestDataCreator.RDCF rdcf) {

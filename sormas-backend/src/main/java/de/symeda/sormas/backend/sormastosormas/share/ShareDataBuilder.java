@@ -18,6 +18,10 @@ package de.symeda.sormas.backend.sormastosormas.share;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.symeda.sormas.backend.util.Pseudonymizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.sormastosormas.SormasToSormasEntityDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
@@ -27,8 +31,6 @@ import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class ShareDataBuilder<DTO extends SormasToSormasShareableDto, ADO extends SormasToSormasShareable, SHARED extends SormasToSormasEntityDto<DTO>, PREVIEW extends PseudonymizableDto, VALIDATOR extends SormasToSormasDtoValidator<DTO, SHARED, PREVIEW>> {
 
@@ -42,10 +44,11 @@ public abstract class ShareDataBuilder<DTO extends SormasToSormasShareableDto, A
 	protected ShareDataBuilder() {
 	}
 
-	protected abstract SHARED doBuildShareData(ADO data, ShareRequestInfo requestInfo);
+	protected abstract SHARED doBuildShareData(ADO data, ShareRequestInfo requestInfo, boolean ownerShipHandedOver);
 
-	public SHARED buildShareData(ADO data, ShareRequestInfo requestInfo) throws SormasToSormasValidationException, ValidationRuntimeException {
-		SHARED shared = doBuildShareData(data, requestInfo);
+	public SHARED buildShareData(ADO data, ShareRequestInfo requestInfo, boolean ownerShipHandedOver)
+		throws SormasToSormasValidationException, ValidationRuntimeException {
+		SHARED shared = doBuildShareData(data, requestInfo, ownerShipHandedOver);
 		logger.info("Run validation for S2S shares based on BaseFacade::validate for {}", data.getUuid());
 		try {
 			doBusinessValidation(shared);
@@ -63,6 +66,7 @@ public abstract class ShareDataBuilder<DTO extends SormasToSormasShareableDto, A
 		}
 		return shared;
 	}
+	protected abstract DTO getDto(ADO ado, Pseudonymizer pseudonymizer);
 
 	protected abstract void doBusinessValidation(SHARED shared) throws ValidationRuntimeException;
 

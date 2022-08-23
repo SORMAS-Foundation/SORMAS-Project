@@ -24,12 +24,15 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.externalmessage.ExternalMessageDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sormastosormas.externalmessage.SormasToSormasExternalMessageDto;
 import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
+import de.symeda.sormas.backend.externalmessage.ExternalMessageFacadeEjb.ExternalMessageFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.Sample;
@@ -48,6 +51,8 @@ public class ProcessedSampleDataPersister extends ProcessedDataPersister<SampleD
 	private PathogenTestFacadeEjbLocal pathogenTestFacade;
 	@EJB
 	private AdditionalTestFacadeEjbLocal additionalTestFacade;
+	@EJB
+	private ExternalMessageFacadeEjbLocal externalMessageFacade;
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
 
@@ -80,6 +85,17 @@ public class ProcessedSampleDataPersister extends ProcessedDataPersister<SampleD
 				buildValidationGroupName(Captions.AdditionalTest, additionalTest),
 				additionalTest);
 		}
+
+		for (SormasToSormasExternalMessageDto s2sExternalMessage : processedData.getExternalMessages()) {
+			ExternalMessageDto externalMessage = s2sExternalMessage.getEntity();
+
+			handleValidationError(
+				() -> externalMessageFacade.save(externalMessage, false, false),
+				Captions.ExternalMessage,
+				buildValidationGroupName(Captions.ExternalMessage, externalMessage),
+				externalMessage);
+		}
+
 	}
 
 	@Override

@@ -52,22 +52,28 @@ public class EventParticipantShareDataBuilder
 	}
 
 	@Override
-	public SormasToSormasEventParticipantDto doBuildShareData(EventParticipant data, ShareRequestInfo requestInfo) {
-		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+	public SormasToSormasEventParticipantDto doBuildShareData(
+		EventParticipant eventParticipant,
+		ShareRequestInfo requestInfo,
+		boolean ownerShipHandedOver) {
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
-		EventParticipantDto eventParticipantDto = eventParticipantFacade.convertToDto(data, pseudonymizer);
+		EventParticipantDto eventParticipantDto = getDto(eventParticipant, pseudonymizer);
+		dataBuilderHelper.pseudonymizePerson(eventParticipantDto.getPerson(), requestInfo);
 
-		eventParticipantDto.setReportingUser(null);
+		return new SormasToSormasEventParticipantDto(eventParticipantDto);
+	}
+
+	@Override
+	protected EventParticipantDto getDto(EventParticipant eventParticipant, Pseudonymizer pseudonymizer) {
+
+		EventParticipantDto eventParticipantDto = eventParticipantFacade.convertToDto(eventParticipant, pseudonymizer);
+		// reporting user is not set to null here as it would not pass the validation
+		// the receiver appears to set it to SORMAS2SORMAS Client anyway
 		eventParticipantDto.setSormasToSormasOriginInfo(null);
 		dataBuilderHelper.clearIgnoredProperties(eventParticipantDto.getPerson());
 
-		dataBuilderHelper.pseudonymiePerson(
-			eventParticipantDto.getPerson(),
-			requestInfo.isPseudonymizedPersonalData(),
-			requestInfo.isPseudonymizedSensitiveData());
-
-		return new SormasToSormasEventParticipantDto(eventParticipantDto);
+		return eventParticipantDto;
 	}
 
 	@Override
@@ -77,8 +83,7 @@ public class EventParticipantShareDataBuilder
 
 	@Override
 	public SormasToSormasEventParticipantPreview doBuildShareDataPreview(EventParticipant eventParticipant, ShareRequestInfo requestInfo) {
-		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
 		SormasToSormasEventParticipantPreview preview = new SormasToSormasEventParticipantPreview();
 

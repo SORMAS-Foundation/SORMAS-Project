@@ -70,8 +70,14 @@ public class EpidemiologicalDataCasePage {
       By.xpath("//span[@class='v-errorindicator v-errorindicator-info']");
   public static final By BLUE_ERROR_EXCLAMATION_MARK_EXPOSURE_POPUP_TEXT =
       By.xpath("//div[@class='gwt-HTML']");
-  public static final By CONTINENT_COMBOBOX = By.cssSelector(".v-window #continent div");
-  public static final By SUBCONTINENT_COMBOBOX = By.cssSelector(".v-window #subcontinent div");
+  public static final By CONTINENT_COMBOBOX =
+      By.cssSelector(".v-window [location='location'] #continent div");
+  public static final By CONTINENT_INPUT =
+      By.cssSelector(".v-window [location='location'] #continent input");
+  public static final By SUBCONTINENT_COMBOBOX =
+      By.cssSelector(".v-window [location='location'] #subcontinent div");
+  public static final By SUBCONTINENT_INPUT =
+      By.cssSelector(".v-window [location='location'] #subcontinent input");
   public static final By COUNTRY_COMBOBOX = By.cssSelector(".v-window #country div");
   public static final By DISTRICT_COMBOBOX = By.cssSelector(".v-window #district div");
   public static final By COMMUNITY_COMBOBOX = By.cssSelector(".v-window #community div");
@@ -135,4 +141,7 @@ public class EpidemiologicalDataCasePage {
   public static By getExposureTableData(Integer tdNr) {
     return By.xpath(String.format("//table[@class='v-table-table']//td[%s]", tdNr));
   }
+
+  public static final By EDIT_SOURCE_CONTACTS_BUTTON =
+      By.cssSelector("[location='sourceContacts'] #edit-task-0");
 }

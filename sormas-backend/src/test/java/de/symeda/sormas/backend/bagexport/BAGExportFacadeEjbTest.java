@@ -40,7 +40,6 @@ import de.symeda.sormas.api.contact.EndOfQuarantineReason;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
@@ -64,6 +63,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testCaseExport() {
+
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
@@ -81,8 +81,6 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 			p.setBirthdateYYYY(1978);
 			p.setBirthdateMM(10);
 			p.setBirthdateDD(22);
-
-			p.setOccupationType(OccupationType.ACCOMMODATION_AND_FOOD_SERVICES);
 
 			LocationDto workPlaceAddress = LocationDto.build();
 			workPlaceAddress.setAddressType(PersonAddressType.PLACE_OF_WORK);
@@ -192,8 +190,6 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 		assertThat(firstCase.getBirthDate().getDateOfBirthMM(), is(10));
 		assertThat(firstCase.getBirthDate().getDateOfBirthDD(), is(22));
 
-		assertThat(firstCase.getOccupationType(), is(OccupationType.ACCOMMODATION_AND_FOOD_SERVICES));
-
 		assertThat(firstCase.getWorkPlaceName(), isEmptyOrNullString());
 		assertThat(firstCase.getWorkPlaceStreet(), is("Work street"));
 		assertThat(firstCase.getWorkPlaceStreetNumber(), is("12W"));
@@ -250,6 +246,7 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testContactExport() {
+
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
@@ -268,8 +265,6 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 			p.setBirthdateYYYY(1978);
 			p.setBirthdateMM(10);
 			p.setBirthdateDD(22);
-
-			p.setOccupationType(OccupationType.ACCOMMODATION_AND_FOOD_SERVICES);
 
 			LocationDto workPlaceAddress = LocationDto.build();
 			workPlaceAddress.setAddressType(PersonAddressType.PLACE_OF_WORK);
@@ -365,8 +360,6 @@ public class BAGExportFacadeEjbTest extends AbstractBeanTest {
 		assertThat(firstContact.getBirthDate().getDateOfBirthYYYY(), is(1978));
 		assertThat(firstContact.getBirthDate().getDateOfBirthMM(), is(10));
 		assertThat(firstContact.getBirthDate().getDateOfBirthDD(), is(22));
-
-		assertThat(firstContact.getOccupationType(), is(OccupationType.ACCOMMODATION_AND_FOOD_SERVICES));
 
 		assertThat(firstContact.getWorkPlaceName(), isEmptyOrNullString());
 		assertThat(firstContact.getWorkPlacePostalCode(), is("54321"));

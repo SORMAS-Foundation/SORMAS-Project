@@ -46,6 +46,8 @@ public class Case {
   String placeDescription;
   String responsibleJurisdiction;
   String placeOfStay;
+  String placeOfStayRegion;
+  String placeOfStayDistrict;
   String region;
   String district;
   String pointOfEntry;

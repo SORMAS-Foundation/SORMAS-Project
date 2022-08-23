@@ -94,6 +94,7 @@ import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -125,6 +126,7 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.user.User;
@@ -173,6 +175,9 @@ public class EventParticipantFacadeEjb
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 	@EJB
 	private VaccinationService vaccinationService;
+
+	@EJB
+	private SampleService sampleService;
 
 	public EventParticipantFacadeEjb() {
 	}
@@ -327,6 +332,7 @@ public class EventParticipantFacadeEjb
 		UserRight._EVENTPARTICIPANT_EDIT })
 	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto, boolean checkChangeDate, boolean internal) {
 		EventParticipant existingParticipant = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
+		FacadeHelper.checkCreateAndEditRights(existingParticipant, userService, UserRight.EVENTPARTICIPANT_CREATE, UserRight.EVENTPARTICIPANT_EDIT);
 
 		if (internal && existingParticipant != null && !service.isEditAllowed(existingParticipant).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventParticipantNotEditable));
@@ -436,7 +442,7 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public void validate(EventParticipantDto eventParticipant) throws ValidationRuntimeException {
+	public void validate(@Valid EventParticipantDto eventParticipant) throws ValidationRuntimeException {
 
 		// Check whether any required field that does not have a not null constraint in the database is empty
 		if (eventParticipant.getPerson() == null) {
@@ -522,6 +528,11 @@ public class EventParticipantFacadeEjb
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), eventParticipantCriteria.getPathogenTestResult()));
 		}
+
+		Subquery latestSampleSubquery = sampleService.createSubqueryLatestSample(cq, cb, eventParticipant);
+		Predicate latestSamplePredicate =
+			cb.or(cb.isNull(samples.get(Sample.SAMPLE_DATE_TIME)), cb.equal(samples.get(Sample.SAMPLE_DATE_TIME), latestSampleSubquery));
+		filter = CriteriaBuilderHelper.and(cb, filter, latestSamplePredicate);
 
 		if (filter != null) {
 			cq.where(filter);

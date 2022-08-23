@@ -1,45 +1,37 @@
 package org.sormas.e2etests.steps.web.application;
 
-import static org.sormas.e2etests.pages.application.AboutPage.CASE_CLASSIFICATION_RULES_HYPERLINK;
-import static org.sormas.e2etests.pages.application.AboutPage.DATA_DICTIONARY_BUTTON;
-import static org.sormas.e2etests.pages.application.AboutPage.FULL_CHANGELOG_HYPERLINK;
-import static org.sormas.e2etests.pages.application.AboutPage.OFFICIAL_SORMAS_WEBSITE_HYPERLINK;
-import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_GITHUB_HYPERLINK;
-import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_HYPERLINK;
-import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_HYPERLINK_TARGET;
-import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
-import static org.sormas.e2etests.pages.application.AboutPage.WHATS_NEW_HYPERLINK;
+import static org.sormas.e2etests.pages.application.AboutPage.*;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.SURVEILLANCE_DASHBOARD_NAME;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.LANGUAGE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.SAVE_BUTTON;
 
-import com.detectlanguage.DetectLanguage;
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.sormas.e2etests.common.MoreResources;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
+import org.sormas.e2etests.helpers.strings.LanguageDetectorHelper;
 import org.testng.asserts.SoftAssert;
 
+@Slf4j
 public class AboutDirectorySteps implements En {
-  public static final String userDirPath = System.getProperty("user.dir");
   public static final List<String> xlsxFileContentList = new ArrayList<>();
-  public static String language;
-  private static final Logger log = LoggerFactory.getLogger(MoreResources.class);
+  public static final String DATA_PROTECTION_DICTIONARY_FILE_PATH =
+      String.format("sormas_data_protection_dictionary_%s_.xlsx", LocalDate.now());
+  public static final String DATA_DICTIONARY_FILE_PATH =
+      String.format("sormas_data_dictionary_%s_.xlsx", LocalDate.now());
+  public static final String DEUTSCH_DATA_DICTIONARY_FILE_PATH =
+      String.format("sormas_datenbeschreibungsverzeichnis_%s_.xlsx", LocalDate.now());
+  public static final String CASE_CLASSIFICATION_HTML_FILE_PATH = "classification_rules.html";
 
   @Inject
   public AboutDirectorySteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
@@ -47,98 +39,94 @@ public class AboutDirectorySteps implements En {
     When(
         "I check that current Sormas version is shown on About directory page",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SORMAS_VERSION_HYPERLINK);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SORMAS_VERSION_LINK);
         });
 
     When(
         "I select {string} language from Combobox in User settings",
         (String chosenLanguage) -> {
-          language = chosenLanguage;
           webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, chosenLanguage);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
     When(
-        "I set on default language as English in User settings",
-        () -> {
-          String languageDerivedFromUserChoose = language;
-          String defaultLanguage = "";
-          switch (languageDerivedFromUserChoose) {
-            case "Fran\u00E7ais":
-              defaultLanguage = "Anglais";
-              webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
+        "^I click on ([^\"]*) hyperlink and download XLSX file from About directory$",
+        (String dictionaryName) -> {
+          switch (dictionaryName) {
+            case "Data Protection Dictionary":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  DATA_PROTECTION_DICTIONARY_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(DATA_PROTECTION_DICTIONARY_BUTTON);
+              FilesHelper.waitForFileToDownload(DATA_PROTECTION_DICTIONARY_FILE_PATH, 30);
               break;
-            case "Fran\u00E7ais (Suisse)":
-              defaultLanguage = "Anglais";
-              webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
+            case "Data Dictionary":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  DATA_DICTIONARY_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(DATA_DICTIONARY_BUTTON);
+              FilesHelper.waitForFileToDownload(DATA_DICTIONARY_FILE_PATH, 30);
               break;
-            case "Deutsch":
-              defaultLanguage = "English";
-              webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
+            case "Deutsch Data Dictionary":
+              webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                  DATA_DICTIONARY_BUTTON);
+              webDriverHelpers.clickOnWebElementBySelector(DATA_DICTIONARY_BUTTON);
+              FilesHelper.waitForFileToDownload(DEUTSCH_DATA_DICTIONARY_FILE_PATH, 30);
               break;
-            case "Deutsch (Schweiz)":
-              defaultLanguage = "English";
-              webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
-              break;
-            case "Espa\u00F1ol (Ecuador)":
-              defaultLanguage = "Ingl\u00E9s";
-              webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
-              break;
-            case "Espa\u00F1ol (Cuba)":
-              defaultLanguage = "English";
-              webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
-              break;
+            default:
+              throw new Exception("No XLSX path provided!");
           }
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(5);
         });
 
     When(
-        "I click on Data Dictionary hyperlink and download XLSX file in About directory",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(DATA_DICTIONARY_BUTTON);
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              DATA_DICTIONARY_BUTTON, 50);
-          TimeUnit.SECONDS.sleep(3); // waiting for DATA_DICTIONARY_BUTTON
+        "^I validate data from downloaded XLSX ([^\"]*) file$",
+        (String dictionaryName) -> {
+          switch (dictionaryName) {
+            case "Data Protection Dictionary":
+              readXlsxDictionaryFile(DATA_PROTECTION_DICTIONARY_FILE_PATH);
+              break;
+            case "Data Dictionary":
+              readXlsxDictionaryFile(DATA_DICTIONARY_FILE_PATH);
+              break;
+            case "Deutsch Data Dictionary":
+              readXlsxDictionaryFile(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
+              break;
+            default:
+              throw new Exception("No XLSX path provided!");
+          }
+        });
+
+    Then(
+        "^I delete ([^\"]*) downloaded file from About Directory$",
+        (String dictionaryName) -> {
+          switch (dictionaryName) {
+            case "Data Protection Dictionary":
+              FilesHelper.deleteFile(DATA_PROTECTION_DICTIONARY_FILE_PATH);
+              break;
+            case "Data Dictionary":
+              FilesHelper.deleteFile(DATA_DICTIONARY_FILE_PATH);
+              break;
+            case "Deutsch Data Dictionary":
+              FilesHelper.deleteFile(DEUTSCH_DATA_DICTIONARY_FILE_PATH);
+              break;
+            case "Case Classification Html":
+              FilesHelper.deleteFile(CASE_CLASSIFICATION_HTML_FILE_PATH);
+              break;
+            default:
+              throw new Exception("No XLSX path provided!");
+          }
         });
 
     When(
-        "^I read data from downloaded XLSX Data Dictionary file$",
-        () -> {
-          readXlsxFile();
-          TimeUnit.SECONDS.sleep(5); // waiting for xlsx file is read
-        });
-
-    When(
-        "I detect and check language that was defined in User Settings for XLSX file content",
-        () -> {
-          DetectLanguage.apiKey = "5e184341083ac27cad1fd06d6e208302";
+        "^I check if last downloaded XLSX from About Directory content is translated into ([^\"]*)$",
+        (String language) -> {
           String[] receivedWordsFromArray = {
-            xlsxFileContentList.get(16), xlsxFileContentList.get(17)
+            xlsxFileContentList.get(3), xlsxFileContentList.get(17)
           };
           for (String word : receivedWordsFromArray) {
-            String chosenUserLanguage = language.toLowerCase().substring(0, 2);
-            String detectedLanguage = DetectLanguage.simpleDetect(word);
-            softly.assertEquals(
-                chosenUserLanguage,
-                detectedLanguage,
-                "Language in xlsx file is different then chosen bu User");
-            softly.assertAll();
+            LanguageDetectorHelper.checkLanguage(word, language);
           }
         });
 
-    When(
-        "I delete exported xlsx file from user downloads directory",
-        () -> {
-          File toDelete =
-              new File(
-                  userDirPath
-                      + "//downloads//sormas_datenbeschreibungsverzeichnis_"
-                      + LocalDate.now()
-                      + "_.xlsx");
-          toDelete.deleteOnExit();
-        });
     When(
         "^I click on Sormas version in About directory and i get redirected to github$",
         () -> {
@@ -214,35 +202,57 @@ public class AboutDirectorySteps implements En {
     When(
         "^I click on Case Classification Rules hyperlink and download HTML file in About directory$",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(CASE_CLASSIFICATION_RULES_HYPERLINK);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              CASE_CLASSIFICATION_RULES_HYPERLINK, 50);
+              CASE_CLASSIFICATION_RULES_HYPERLINK, 15);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_CLASSIFICATION_RULES_HYPERLINK);
         });
+
     When(
-        "^I delete the downloaded Case Classification Rules html and Data Dictionary xlsx file from download directory$",
-        () -> {
-          File html = new File(userDirPath + "//downloads//classification_rules.html");
-          File xlsx =
-              new File(
-                  userDirPath
-                      + "//downloads//sormas_data_dictionary_"
-                      + LocalDate.now()
-                      + "_.xlsx");
-          html.deleteOnExit();
-          xlsx.deleteOnExit();
+        "I check if Data Dictionary in {string} record has no {string} as a disease",
+        (String recordName, String disease) -> {
+          softly.assertFalse(
+              readXlsxFile(DATA_DICTIONARY_FILE_PATH, recordName, disease),
+              disease + " exists in " + recordName);
+          softly.assertAll();
+        });
+
+    Then(
+        "^I check that Surveillance Dashboard header is correctly displayed in ([^\"]*) language$",
+        (String language) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SURVEILLANCE_DASHBOARD_NAME, 30);
+          LanguageDetectorHelper.checkLanguage(
+              webDriverHelpers.getTextFromWebElement(SURVEILLANCE_DASHBOARD_NAME), language);
         });
   }
 
-  private static void readXlsxFile() {
+  @SneakyThrows
+  private static boolean readXlsxFile(String fileName, String recordName, String disease) {
+    List<String> diseaseList = new ArrayList<String>();
     try {
-      FileInputStream excelFile =
-          new FileInputStream(
-              new File(
-                  userDirPath
-                      + "//downloads//sormas_data_dictionary_"
-                      + LocalDate.now()
-                      + "_.xlsx"));
-      Workbook workbook = new XSSFWorkbook(excelFile);
+      Workbook workbook = FilesHelper.getExcelFile(fileName);
+      Sheet sheet = workbook.getSheetAt(0);
+      for (Row row : sheet) {
+        for (Cell cell : row) {
+          if (cell.getStringCellValue().equals(recordName)) {
+            String[] items = row.getCell(8).toString().split("\\s*,\\s*");
+            for (String item : items) diseaseList.add(item);
+          }
+        }
+      }
+    } catch (Exception any) {
+      throw new Exception(String.format("Unable to read Excel File due to: %s", any.getMessage()));
+    }
+    if (diseaseList.contains(disease)) return true;
+    else return false;
+  }
+
+  @SneakyThrows
+  private static void readXlsxDictionaryFile(String fileName) {
+    try {
+      FilesHelper.validateFileIsNotEmpty(fileName);
+      Workbook workbook = FilesHelper.getExcelFile(fileName);
       Sheet datatypeSheet = workbook.getSheetAt(0);
       Iterator<Row> iterator = datatypeSheet.iterator();
 
@@ -262,8 +272,8 @@ public class AboutDirectorySteps implements En {
         }
       }
       log.info("All data is read properly from chosen xlsx file");
-    } catch (IOException e) {
-      log.error("Exception caught: File not found", e);
+    } catch (Exception any) {
+      throw new Exception(String.format("Unable to read Excel File due to: %s", any.getMessage()));
     }
   }
 }

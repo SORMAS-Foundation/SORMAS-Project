@@ -61,9 +61,11 @@ import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
@@ -248,7 +250,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		final UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		user.setRegion(new RegionReferenceDto(rdcfEntities.region.getUuid()));
 		user.setLimitedDisease(Disease.EVD);
-		getUserFacade().saveUser(user);
+		getUserFacade().saveUser(user, false);
 		loginWith(user);
 
 		final PersonDto person1 = creator.createPerson("James", "Smith", Sex.MALE, 1920, 1, 1);
@@ -1048,4 +1050,93 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(personWithDengue.getFirstName(), personIndexDtos.get(0).getFirstName());
 	}
 
+	@Test
+	public void testPersonAssociatedWithNullId() {
+		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(null);
+		assertFalse(isAssociated);
+	}
+
+	@Test
+	public void testPersonAssociatedWithUnexistingId() {
+		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(DataHelper.createUuid());
+		assertFalse(isAssociated);
+	}
+
+	@Test
+	public void testPersonAssociatedWithCases() {
+		UserDto userDto = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personDto = creator.createPerson("Person", "Test");
+		CaseDataDto caseDataDto = creator.createCase(
+			userDto.toReference(),
+			personDto.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+
+		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		assertTrue(isAssociated);
+
+		getCaseFacade().delete(caseDataDto.getUuid(), new DeletionDetails());
+		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		assertFalse(isAssociated);
+	}
+
+	@Test
+	public void testPersonAssociatedWithContacts() {
+		UserDto userDto = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personDto = creator.createPerson("Person", "Test");
+		ContactDto contactDto = creator.createContact(rdcf, userDto.toReference(), personDto.toReference());
+
+		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		assertTrue(isAssociated);
+
+		getContactFacade().delete(contactDto.getUuid(), new DeletionDetails());
+		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		assertFalse(isAssociated);
+	}
+
+	@Test
+	public void testPersonAssociatedWithTravelEntry() {
+		UserDto userDto = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personDto = creator.createPerson("Person", "Test");
+		TravelEntryDto travelEntryDto = creator.createTravelEntry(personDto.toReference(), userDto.toReference(), rdcf, null);
+
+		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		assertTrue(isAssociated);
+
+		getTravelEntryFacade().delete(travelEntryDto.getUuid(), new DeletionDetails());
+		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		assertFalse(isAssociated);
+	}
+
+	@Test
+	public void testPersonAssociatedWithEventParticipant() {
+		UserDto userDto = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personDto = creator.createPerson("Person", "Test");
+		EventDto eventDto = creator.createEvent(userDto.toReference());
+		EventParticipantDto eventParticipantDto = creator.createEventParticipant(eventDto.toReference(), personDto, userDto.toReference());
+
+		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		assertTrue(isAssociated);
+
+		getEventParticipantFacade().delete(eventParticipantDto.getUuid(), new DeletionDetails());
+		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		assertFalse(isAssociated);
+	}
+
+	@Test
+	public void testPersonAssociatedWithImmunization() {
+		UserDto userDto = creator.createUser(rdcfEntities, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
+		PersonDto personDto = creator.createPerson("Person", "Test");
+		ImmunizationDto immunizationDto = creator.createImmunization(Disease.CORONAVIRUS, personDto.toReference(), userDto.toReference(), rdcf);
+
+		boolean isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		assertTrue(isAssociated);
+
+		getImmunizationFacade().delete(immunizationDto.getUuid(), new DeletionDetails());
+		isAssociated = getPersonFacade().isPersonAssociatedWithNotDeletedEntities(personDto.getUuid());
+		assertFalse(isAssociated);
+	}
 }

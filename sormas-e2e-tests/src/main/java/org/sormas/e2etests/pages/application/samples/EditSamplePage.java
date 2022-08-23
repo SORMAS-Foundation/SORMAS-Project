@@ -42,6 +42,8 @@ public class EditSamplePage {
   public static final By SAMPLE_TYPE_INPUT = By.cssSelector("[id='sampleMaterial'] input");
   public static final By SPECIMEN_CONDITION_INPUT =
       By.cssSelector("[id='specimenCondition'] input");
+  public static final By SPECIMEN_CONDITION_NOT_MANDATORY_COMBOBOX =
+      By.xpath("//div[@id='specimenCondition' and not(contains(@class, 'v-required'))]");
   public static final By LABORATORY_NAME_INPUT = By.cssSelector("[id='labDetails']");
   public static final By RECEIVED_OPTION_BUTTON = By.cssSelector("[id='received'] label");
   public static final By LAB_SAMPLE_ID_INPUT = By.cssSelector("[id='labSampleID']");

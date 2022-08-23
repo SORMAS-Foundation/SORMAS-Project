@@ -37,6 +37,7 @@ import javax.inject.Inject;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.entities.pojo.User;
 import org.sormas.e2etests.entities.services.UserService;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.LoginPage;
 import org.sormas.e2etests.pages.application.users.CreateNewUserPage;
@@ -52,12 +53,14 @@ public class CreateNewUserSteps implements En {
   public static String userPass;
   private final BaseSteps baseSteps;
   private static int amountOfRecords;
+  public static HashMap<String, String> userWithRegion = new HashMap<String, String>();
 
   @Inject
   public CreateNewUserSteps(
       WebDriverHelpers webDriverHelpers,
       UserService userService,
       BaseSteps baseSteps,
+      AssertHelpers assertHelpers,
       SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
@@ -348,6 +351,91 @@ public class CreateNewUserSteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 30);
         });
+
+    And(
+        "I create new user for test with {string} jurisdiction and {string} roles",
+        (String jurisdiction, String role) -> {
+          user = userService.buildGeneratedUserWithRole("Clinician");
+          fillFirstName(user.getFirstName());
+          fillLastName(user.getLastName());
+          fillEmailAddress(user.getEmailAddress());
+          fillPhoneNumber(user.getPhoneNumber());
+          selectLanguage(user.getLanguage());
+          switch (jurisdiction) {
+            case "Bayern":
+              selectCountry("Germany");
+              selectRegion("Bayern");
+              selectDistrict("LK Ansbach");
+              selectCommunity("Aurach");
+              break;
+            case "Saarland":
+              selectCountry("Germany");
+              selectRegion("Saarland");
+              selectDistrict("LK Saarlouis");
+              selectCommunity("Lebach");
+              break;
+          }
+          selectFacilityCategory(user.getFacilityCategory());
+          selectFacilityType(user.getFacilityType());
+          selectFacility(user.getFacility());
+          fillFacilityNameAndDescription(user.getFacilityNameAndDescription());
+          fillStreet(user.getStreet());
+          fillHouseNr(user.getHouseNumber());
+          fillAdditionalInformation(user.getAdditionalInformation());
+          fillPostalCode(user.getPostalCode());
+          fillCity(user.getCity());
+          selectAreaType(user.getAreaType());
+          fillGpsLatitude(user.getGpsLatitude());
+          fillGpsLongitude(user.getGpsLongitude());
+          fillGpsAccuracy(user.getGpsAccuracy());
+          selectActive(user.getActive());
+          fillUserName(user.getUserName());
+
+          List<String> roles = Arrays.asList(role.split(","));
+          for (String temp : roles) {
+            selectUserRole(temp);
+            if (temp.equals("Clinician")) {
+              selectSecondRegion(jurisdiction);
+            }
+          }
+
+          userName = user.getUserName();
+          webDriverHelpers.scrollToElement(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          userWithRegion.put(
+              String.format(user.getFirstName() + " " + user.getLastName().toUpperCase()),
+              jurisdiction);
+          closeNewPasswordPopUp();
+        });
+
+    When(
+        "I set user role to {string}",
+        (String userRole) ->
+          webDriverHelpers.selectFromCombobox(USER_ROLE_COMBOBOX, userRole));
+
+    When(
+        "I set region filter to {string}",
+        (String region) ->
+          webDriverHelpers.selectFromCombobox(REGION_FILTER_COMBOBOX, region));
+
+    When(
+        "I search user {string}",
+        (String uName) -> {
+          webDriverHelpers.fillAndSubmitInWebElement(USER_INPUT_SEARCH, uName);
+          TimeUnit.SECONDS.sleep(2); // wait for system reaction
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I check if displayed user name is equal with searched {string}",
+        (String uname) -> {
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(TABLE_USER_NAME),
+              uname,
+              "Users name are not equal");
+          softly.assertAll();
+        });
   }
 
   private void fillFirstName(String firstName) {
@@ -376,6 +464,10 @@ public class CreateNewUserSteps implements En {
 
   private void selectRegion(String region) {
     webDriverHelpers.selectFromCombobox(REGION_COMBOBOX, region);
+  }
+
+  private void selectSecondRegion(String region) {
+    webDriverHelpers.selectFromCombobox(SECOND_REGION_COMBOBOX, region);
   }
 
   private void selectSurveillanceRegion(String surveillanceRegion) {

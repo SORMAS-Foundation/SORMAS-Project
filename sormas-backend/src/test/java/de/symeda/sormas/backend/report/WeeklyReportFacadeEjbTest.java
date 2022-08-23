@@ -69,7 +69,7 @@ public class WeeklyReportFacadeEjbTest extends AbstractBeanTest {
 			"One",
 			creator.getUserRoleReference(DefaultUserRole.HOSPITAL_INFORMANT));
 		informant1.setAssociatedOfficer(officer.toReference());
-		getUserFacade().saveUser(informant1);
+		getUserFacade().saveUser(informant1, false);
 
 		informant2 = creator.createUser(
 			rdcf.region.getUuid(),
@@ -79,7 +79,7 @@ public class WeeklyReportFacadeEjbTest extends AbstractBeanTest {
 			"Two",
 			creator.getUserRoleReference(DefaultUserRole.HOSPITAL_INFORMANT));
 		informant2.setAssociatedOfficer(officer.toReference());
-		getUserFacade().saveUser(informant2);
+		getUserFacade().saveUser(informant2, false);
 
 		RDCFEntities rdcf2 = new RDCFEntities(
 			rdcf.region,
@@ -95,7 +95,7 @@ public class WeeklyReportFacadeEjbTest extends AbstractBeanTest {
 			creator.getUserRoleReference(DefaultUserRole.COMMUNITY_INFORMANT));
 		informant3.setCommunity(new CommunityReferenceDto(rdcf.community.getUuid(), null, null));
 		informant3.setAssociatedOfficer(officer.toReference());
-		getUserFacade().saveUser(informant3);
+		getUserFacade().saveUser(informant3, false);
 
 		District district2 = creator.createDistrict("District2", rdcf.region);
 		Community community2 = creator.createCommunity("Community2", district2);
@@ -109,7 +109,7 @@ public class WeeklyReportFacadeEjbTest extends AbstractBeanTest {
 			"Four",
 			creator.getUserRoleReference(DefaultUserRole.HOSPITAL_INFORMANT));
 		informant4.setAssociatedOfficer(officer.toReference());
-		getUserFacade().saveUser(informant4);
+		getUserFacade().saveUser(informant4, false);
 
 	}
 

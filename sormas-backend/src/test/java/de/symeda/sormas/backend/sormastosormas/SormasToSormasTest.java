@@ -26,6 +26,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.function.Consumer;
 
+import de.symeda.sormas.api.user.DefaultUserRole;
+import org.junit.After;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -58,6 +60,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.shareinfo.SormasToSormasShareInfoDto;
+import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestDataType;
 import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestStatus;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -82,6 +85,7 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 	public static final String SECOND_SERVER_ID = "2.sormas.id.sormas_b";
 	private ObjectMapper objectMapper;
 	protected TestDataCreator.RDCF rdcf;
+	protected UserDto s2sClientUser;
 
 	@Override
 	public void init() {
@@ -99,8 +103,22 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 		// in S2S we use external IDs
 		rdcf = createRDCF(true).centralRdcf;
 
+		s2sClientUser = creator.createUser(
+			rdcf,
+			"S2S",
+			"Client",
+			creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER),
+			creator.getUserRoleReference(DefaultUserRole.SORMAS_TO_SORMAS_CLIENT));
+
 		getFacilityService().createConstantFacilities();
 		getPointOfEntryService().createConstantPointsOfEntry();
+	}
+
+	@After
+	public void teardown() {
+		FeatureConfigurationIndexDto featureConfiguration =
+			new FeatureConfigurationIndexDto(DataHelper.createUuid(), null, null, null, null, null, false, null);
+		getFeatureConfigurationFacade().saveFeatureConfiguration(featureConfiguration, FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT);
 	}
 
 	protected boolean isAcceptRejectFeatureEnabled() {
@@ -156,7 +174,11 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 		AdditionalTestDto additionalTest = AdditionalTestDto.build(sample.toReference());
 		additionalTest.setTestDateTime(new Date());
 
-		return new SormasToSormasSampleDto(sample, Collections.singletonList(pathogenTest), Collections.singletonList(additionalTest));
+		return new SormasToSormasSampleDto(
+			sample,
+			Collections.singletonList(pathogenTest),
+			Collections.singletonList(additionalTest),
+			Collections.emptyList());
 	}
 
 	protected SormasToSormasShareInfo createShareInfo(String serverId, boolean ownershipHandedOver, Consumer<SormasToSormasShareInfo> setTarget) {
@@ -172,29 +194,27 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 	}
 
 	protected ShareRequestInfo createShareRequestInfo(
+		ShareRequestDataType dataType,
 		User sender,
 		String serverId,
 		boolean ownershipHandedOver,
 		Consumer<SormasToSormasShareInfo> setTarget) {
-		return createShareRequestInfo(sender, serverId, ownershipHandedOver, ShareRequestStatus.PENDING, setTarget);
+		return createShareRequestInfo(dataType, sender, serverId, ownershipHandedOver, ShareRequestStatus.PENDING, setTarget);
 	}
 
 	protected ShareRequestInfo createShareRequestInfo(
+		ShareRequestDataType dataType,
 		User sender,
 		String serverId,
 		boolean ownershipHandedOver,
 		ShareRequestStatus status,
 		Consumer<SormasToSormasShareInfo> setTarget) {
 
-		SormasToSormasShareInfo shareInfo = new SormasToSormasShareInfo();
-
-		shareInfo.setOwnershipHandedOver(ownershipHandedOver);
-		shareInfo.setOrganizationId(serverId);
-
-		setTarget.accept(shareInfo);
+		SormasToSormasShareInfo shareInfo = createShareInfo(serverId, ownershipHandedOver, setTarget);
 
 		ShareRequestInfo requestInfo = new ShareRequestInfo();
 		requestInfo.setUuid(DataHelper.createUuid());
+		requestInfo.setDataType(dataType);
 		requestInfo.setSender(sender);
 		requestInfo.setRequestStatus(status);
 		requestInfo.setShares(new ArrayList<>());
@@ -277,6 +297,7 @@ public abstract class SormasToSormasTest extends AbstractBeanTest {
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_TRUSTSTORE_NAME, "sormas2sormas.truststore.p12");
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_TRUSTSTORE_PASS, "password");
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS2SORMAS_ROOT_CA_ALIAS, "S2SCA");
+
 	}
 
 	protected MappableRdcf createRDCF(boolean withExternalId) {

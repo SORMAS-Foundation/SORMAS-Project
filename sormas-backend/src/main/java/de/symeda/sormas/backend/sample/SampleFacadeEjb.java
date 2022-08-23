@@ -73,6 +73,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -355,6 +356,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	public SampleDto saveSample(@Valid SampleDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal) {
 
 		Sample existingSample = sampleService.getByUuid(dto.getUuid());
+		FacadeHelper.checkCreateAndEditRights(existingSample, userService, UserRight.SAMPLE_CREATE, UserRight.SAMPLE_EDIT);
 
 		if (internal && existingSample != null && !sampleService.isSampleEditAllowed(existingSample)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorSampleNotEditable));
@@ -411,22 +413,18 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		return sampleService.findBy(criteria, userService.getCurrentUser(), AbstractDomainObject.CREATION_DATE, false)
 			.stream()
-			.collect(
-				Collectors.toMap(
-					s -> associatedObjectFn.apply(s).getUuid(),
-					s -> s,
-					(s1, s2) -> {
+			.collect(Collectors.toMap(s -> associatedObjectFn.apply(s).getUuid(), s -> s, (s1, s2) -> {
 
-						// keep the positive one
-						if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-							return s1;
-						} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-							return s2;
-						}
+				// keep the positive one
+				if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+					return s1;
+				} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+					return s2;
+				}
 
-						// ordered by creation date by default, so always keep the first one
-						return s1;
-					}))
+				// ordered by creation date by default, so always keep the first one
+				return s1;
+			}))
 			.values()
 			.stream()
 			.map(s -> convertToDto(s, pseudonymizer))
@@ -434,7 +432,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	public void validate(SampleDto sample, boolean checkAssociatedEntities) throws ValidationRuntimeException {
+	public void validate(@Valid SampleDto sample, boolean checkAssociatedEntities) throws ValidationRuntimeException {
 
 		if (sample.getAssociatedCase() == null && sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validCaseContactOrEventParticipant));
@@ -483,7 +481,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		if (sample.getLab() != null && !facilityService.exists(sample.getLab().getUuid())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noLaboratoryWithUuid));
 		}
-		if (!userService.exists(sample.getReportingUser().getUuid())) {
+		if (sample.getReportingUser() != null && !userService.exists(sample.getReportingUser().getUuid())) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.noReportingUserWithUuid));
 		}
 	}

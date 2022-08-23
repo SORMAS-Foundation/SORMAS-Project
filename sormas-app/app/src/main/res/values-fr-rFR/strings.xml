@@ -68,7 +68,7 @@
     <string name="action_markAllAsRead">Marquer tout comme lu</string>
     <string name="action_new">Nouveau</string>
     <string name="action_new_case">Nouveau Cas</string>
-    <string name="action_new_immunization">New Immunization</string>
+    <string name="action_new_immunization">Nouvelle immunisation</string>
     <string name="action_new_campaign_form_data">Données du formulaire de nouvelle campagne</string>
     <string name="action_new_contact">Nouveau Contact</string>
     <string name="action_new_event">Nouvel événement</string>
@@ -163,7 +163,7 @@
     <string name="caption_drawer_open">Ouvrir le panneau de navigation</string>
     <string name="caption_dropped">Abandonné</string>
     <string name="caption_epi_week">Semaine Epidemiologique</string>
-    <string name="caption_report">Report</string>
+    <string name="caption_report">Rapport</string>
     <string name="caption_event_description">Description</string>
     <string name="caption_event_location">Lieu</string>
     <string name="caption_event_period">Date de l\'événement</string>
@@ -273,7 +273,7 @@
     <string name="description_sormas_logo">Logo SORMAS</string>
     <string name="description_username">Nom d\'utilisateur</string>
     <string name="description_year">Année</string>
-    <string name="description_report">Report</string>
+    <string name="description_report">Rapport</string>
     <string name="entity_case">Cas</string>
     <string name="entity_contact">Contact</string>
     <string name="entity_event">Événement</string>
@@ -495,6 +495,7 @@
     <string name="main_menu_tasks">Tâches</string>
     <string name="main_menu_aggregate_reports">mSERS</string>
     <string name="message_already_saving">Déjà en train de sauvegarder..</string>
+    <string name="message_aggregate_report_found">Attention: Duplicate reports have been found for the above criteria. Diseases marked with red already have reports.</string>
     <string name="message_case_infrastructure_data_changed">Vous avez modifié les données d\'infrastructure de ce cas. Voulez-vous transférer le cas vers le nouvel établissement de santé (les données d\'hospitalisation seront mises à jour) ou voulez-vous seulement modifier les données pour corriger une erreur ?</string>
     <string name="message_download_app_failed">Le téléchargement de la nouvelle version de SORMAS a échoué. Veuillez vous assurer que vous disposez de la meilleure connexion Internet possible et réessayez ou informez un superviseur si vous continuez à obtenir cette erreur malgré une bonne connexion Internet.</string>
     <string name="message_empty_password">Veuillez entrer un mot de passe.</string>

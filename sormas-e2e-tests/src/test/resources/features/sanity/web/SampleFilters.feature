@@ -6,7 +6,7 @@ Feature: Sample filter functionality
     Given API: I create 10 new cases with a new sample foreach of them
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    And I log in with National User
+    And I log in as a National User
     And I click on the Sample button from navbar
     When I search for samples created with the API
     Then I check the displayed test results filter dropdown
@@ -15,7 +15,7 @@ Feature: Sample filter functionality
     When I search for samples created with the API
     Then I check the displayed Laboratory filter dropdown
 
-  @issue=SORDEV-5981 @env_main
+  @tmsLink=SORDEV-5981 @env_main
   Scenario: Check all filters are work properly in Samples directory
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -26,7 +26,7 @@ Feature: Sample filter functionality
     Given API: I create a new sample
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Sample button from navbar
     Then I fill full name of last created via API Person into Sample Directory
     And I select Test result filter value with the value for pathogen test result of last created via API Sample in Sample Directory
@@ -74,7 +74,7 @@ Feature: Sample filter functionality
     And I select "Referred to other lab" filter from quick filter
     And I click on reset filters button from Sample Directory
 
-  @issue=SORDEV-5982 @env_de
+  @tmsLink=SORDEV-5982 @env_de
   Scenario: Check all filters are work properly in Samples directory for DE version
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -85,7 +85,7 @@ Feature: Sample filter functionality
     Given API: I create a new sample
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     And I click on the Sample button from navbar
     Then I fill full name of last created via API Person into Sample Directory
     And I select Test result filter value with the value for pathogen test result of last created via API Sample in Sample Directory for DE version

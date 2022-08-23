@@ -84,7 +84,6 @@ import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
-import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -101,6 +100,7 @@ import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.services.ContactService;
 import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
@@ -253,9 +253,8 @@ public class EditContactsSteps implements En {
     When(
         "I delete exported file from Case Contact Directory",
         () -> {
-          File toDelete =
-              new File(userDirPath + "/downloads/sormas_contacts_" + LocalDate.now() + "_.csv");
-          toDelete.deleteOnExit();
+          String filePath = "sormas_contacts_" + LocalDate.now() + "_.csv";
+          FilesHelper.deleteFile(filePath);
         });
 
     When(
@@ -303,6 +302,12 @@ public class EditContactsSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_RADIO_BUTTON);
             webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
           }
+        });
+    When(
+        "^I collect contact UUID displayed on Edit Contact Page$",
+        () -> {
+          contactUUID = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
+          contactsUUIDList.add(contactUUID);
         });
 
     Then(

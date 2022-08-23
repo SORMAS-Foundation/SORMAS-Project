@@ -29,7 +29,6 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Timestamp;
@@ -42,11 +41,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import de.symeda.sormas.api.common.DeletionDetails;
-import de.symeda.sormas.api.common.DeletionReason;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
-import de.symeda.sormas.backend.MockProducer;
 import org.apache.http.HttpStatus;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -56,8 +50,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.action.ActionDto;
+import de.symeda.sormas.api.common.DeletionDetails;
+import de.symeda.sormas.api.common.DeletionReason;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventExportDto;
@@ -66,6 +64,7 @@ import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolRuntimeException;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -77,6 +76,7 @@ import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
@@ -144,7 +144,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		// Event should be marked as deleted; Event participant should be deleted
 		assertTrue(getEventFacade().getDeletedUuidsSince(since).contains(event.getUuid()));
 		assertTrue(getEventParticipantFacade().getDeletedUuidsSince(since).contains(eventParticipant.getUuid()));
-		assertNull(getActionFacade().getByUuid(action.getUuid()));
+		assertNotNull(getActionFacade().getByUuid(action.getUuid())); // actions get deleted only with permanent delete
 		assertEquals(DeletionReason.OTHER_REASON, getEventFacade().getByUuid(event.getUuid()).getDeletionReason());
 		assertEquals("test reason", getEventFacade().getByUuid(event.getUuid()).getOtherDeletionReason());
 	}
@@ -578,7 +578,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetEventUsersWithoutUsesLimitedToOthersDiseses() {
 		RDCF rdcf = creator.createRDCF();
-		useNationalUserLogin();
+		useNationalAdminLogin();
 		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.NATIONAL_USER));
 		EventDto event = creator.createEvent(userDto.toReference(), Disease.CORONAVIRUS);
 

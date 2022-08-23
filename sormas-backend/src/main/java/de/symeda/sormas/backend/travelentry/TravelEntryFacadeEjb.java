@@ -17,7 +17,6 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.common.Page;
@@ -36,6 +35,7 @@ import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.FacadeHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
@@ -79,6 +79,8 @@ public class TravelEntryFacadeEjb
 	private CaseService caseService;
 	@EJB
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
+	@EJB
+	private TravelEntryService travelEntryService;
 
 	public TravelEntryFacadeEjb() {
 	}
@@ -231,7 +233,7 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	public void validate(TravelEntryDto travelEntryDto) {
+	public void validate(@Valid TravelEntryDto travelEntryDto) {
 		if (travelEntryDto.getPerson() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPerson));
 		}
@@ -402,8 +404,12 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	@RightsAllowed(UserRight._TRAVEL_ENTRY_EDIT)
+	@RightsAllowed({
+		UserRight._TRAVEL_ENTRY_CREATE,
+		UserRight._TRAVEL_ENTRY_EDIT })
 	public TravelEntryDto save(@Valid @NotNull TravelEntryDto travelEntryDto) {
+		TravelEntry existingTravelEntry = travelEntryService.getByUuid(travelEntryDto.getUuid());
+		FacadeHelper.checkCreateAndEditRights(existingTravelEntry, userService, UserRight.TRAVEL_ENTRY_CREATE, UserRight.TRAVEL_ENTRY_EDIT);
 		return doSave(travelEntryDto);
 	}
 

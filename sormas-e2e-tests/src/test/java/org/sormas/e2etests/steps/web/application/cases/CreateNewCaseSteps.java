@@ -33,6 +33,7 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CASE
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONFIRM_BUTTON_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_CASE_CONFIRMATION_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_CASE_CONFIRMATION_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_BIRTH_DAY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_BIRTH_MONTH_COMBOBOX;
@@ -40,6 +41,7 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_SYMPTOM_ONSET_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DELETE_LAST_UPDATED_CASE_DOCUMENT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DIFFERENT_PLACE_OF_STAY_CHECKBOX_LABEL;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DIFFERENT_POINT_OF_ENTRY_JURISDICTION;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DISEASE_VARIANT_COMBOBOX;
@@ -52,8 +54,10 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FACI
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FACILITY_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FIRST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FIRST_NAME_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.FIRST_NAME_NO_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LAST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LAST_NAME_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LAST_NAME_NO_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LINE_LISTING_DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LINE_LISTING_DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.NATIONAL_HEALTH_ID_ATTRIBUTE;
@@ -69,6 +73,9 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERS
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PICK_AN_EXISTING_CASE_CONFIRMATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PLACE_DESCRIPTION_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PLACE_OF_STAY;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PLACE_OF_STAY_DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PLACE_OF_STAY_LABEL;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PLACE_OF_STAY_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.POINT_OF_ENTRY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.POINT_OF_ENTRY_DETAILS;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.POINT_OF_ENTRY_DISTRICT_BUTTON;
@@ -78,6 +85,7 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PRIM
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PRIMARY_PHONE_NUMBER_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.RESPONSIBLE_COMMUNITY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.RESPONSIBLE_DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.RESPONSIBLE_JURISDICTION_LABEL;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.RESPONSIBLE_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SELECT_PERSON_WINDOW_CONFIRM_BUTTON;
@@ -104,8 +112,10 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOU
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_CASE_LABEL_DE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_PERSON_LABEL_DE;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISCARD_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.SEARCH_PERSON_BY_FREE_TEXT;
 import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.aCase;
+import static org.sormas.e2etests.steps.web.application.persons.PersonDirectorySteps.personSharedForAllEntities;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -130,10 +140,12 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.services.CaseService;
+import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
+import org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps;
 import org.testng.asserts.SoftAssert;
 
 public class CreateNewCaseSteps implements En {
@@ -165,6 +177,7 @@ public class CreateNewCaseSteps implements En {
     char c = (char) (r.nextInt(26) + 'a');
     String firstName = faker.name().firstName() + c;
     String lastName = faker.name().lastName() + c;
+    String personSex = GenderValues.getRandomGenderDE();
     LocalDate dateOfBirth =
         LocalDate.of(
             faker.number().numberBetween(1900, 2002),
@@ -501,12 +514,35 @@ public class CreateNewCaseSteps implements En {
           caze = caseService.buildGeneratedCase();
           fillAllCaseFields(caze);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(
+              CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON, 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          }
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
 
           TimeUnit.SECONDS.sleep(2);
         });
+
+    Then(
+        "I create a new case with specific data and ([^\"]*) region",
+        (String region) -> {
+          caze = caseService.buildGeneratedCase();
+          fillAllCaseFieldsWithSpecificRegion(caze, region);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(
+              CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON, 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          }
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+
+    When("I choose {string} as a disease", (String disease) -> fillDisease(disease));
 
     When(
         "^I create a new case with Facility as a Place of stay$",
@@ -608,6 +644,25 @@ public class CreateNewCaseSteps implements En {
           fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
           fillPlaceDescription(caze.getPlaceDescription());
         });
+    When(
+        "^I fill new case form with chosen data without personal data on Case directory page for DE$",
+        () -> {
+          caze = caseService.buildGeneratedCaseDE();
+          selectCaseOrigin(caze.getCaseOrigin());
+          // field that is no longer available
+          // fillExternalId(caze.getExternalId());
+          fillDisease(caze.getDisease());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.GERMAN);
+          fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+          fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
+          fillPlaceDescription(caze.getPlaceDescription());
+        });
 
     When(
         "^I click on the clear button in new add new event participant form$",
@@ -640,6 +695,15 @@ public class CreateNewCaseSteps implements En {
         () -> {
           webDriverHelpers.fillInWebElement(FIRST_NAME_LIKE_INPUT, aCase.getFirstName());
           webDriverHelpers.fillInWebElement(LAST_NAME_LIKE_INPUT, aCase.getLastName());
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON);
+        });
+    When(
+        "^I search for the person data shared across all entities by First Name and Last Name in popup on Select Person window$",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              FIRST_NAME_LIKE_INPUT, personSharedForAllEntities.getFirstName());
+          webDriverHelpers.fillInWebElement(
+              LAST_NAME_LIKE_INPUT, personSharedForAllEntities.getLastName());
           webDriverHelpers.clickOnWebElementBySelector(PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON);
         });
 
@@ -700,7 +764,22 @@ public class CreateNewCaseSteps implements En {
     When(
         "^I pick a new case in pick or create a case popup$",
         () -> {
-          // webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_CASE_CONFIRMATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_CASE_CONFIRMATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+        });
+
+    When(
+        "^I pick a new case in pick or create a case popup for DE$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_CASE_CONFIRMATION_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+        });
+
+    When(
+        "^I pick an existing case in pick or create a case popup$",
+        () -> {
           webDriverHelpers.clickOnWebElementBySelector(PICK_AN_EXISTING_CASE_CONFIRMATION_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON_POPUP);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
@@ -789,6 +868,15 @@ public class CreateNewCaseSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP_HEADER, 1)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+            TimeUnit.SECONDS.sleep(1);
+            if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_CASE_POPUP_HEADER, 1)) {
+              webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_CASE_CHECKBOX);
+              webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+            }
+          }
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
@@ -980,32 +1068,264 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
 
+    When(
+        "I check if first and last person name for case person tab is correct",
+        () -> {
+          softly.assertEquals(
+              caze.getFirstName(),
+              webDriverHelpers.getValueFromWebElement(FIRST_NAME_NO_POPUP_INPUT),
+              "First names are not equal");
+          softly.assertEquals(
+              caze.getLastName(),
+              webDriverHelpers.getValueFromWebElement(LAST_NAME_NO_POPUP_INPUT),
+              "First names are not equal");
+          softly.assertAll();
+        });
+
     When("I copy url of current case", () -> currentUrl = webDriverHelpers.returnURL());
 
     When("I back to deleted case by url", () -> webDriverHelpers.accessWebSite(currentUrl));
 
-      When(
-              "^I create a new case and save phone number$",
-              () -> {
-                  caze = caseService.buildGeneratedCase();
-                  fillAllCaseFields(caze);
-                  phoneNumber = caze.getPrimaryPhoneNumber();
-                  webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-                  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
-                  webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
-                  webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
-              });
+    When(
+        "^I create a new case and save phone number$",
+        () -> {
+          caze = caseService.buildGeneratedCase();
+          fillAllCaseFields(caze);
+          phoneNumber = caze.getPrimaryPhoneNumber();
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
 
-      When(
-              "I check if phone number is displayed in Create new visit popup",
-              () -> {
-                  webDriverHelpers.waitUntilIdentifiedElementIsPresent(CONTACT_PERSONS_PHONE_NUMBER);
-                  softly.assertEquals(
-                          phoneNumber,
-                          webDriverHelpers.getTextFromPresentWebElement(CONTACT_PERSONS_PHONE_NUMBER),
-                          "Phone numbers are not equal");
-                  softly.assertAll();
-              });
+    When(
+        "I check if phone number is displayed in Create new visit popup",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CONTACT_PERSONS_PHONE_NUMBER);
+          softly.assertEquals(
+              phoneNumber,
+              webDriverHelpers.getTextFromPresentWebElement(CONTACT_PERSONS_PHONE_NUMBER),
+              "Phone numbers are not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "I create a new case with specific data for DE version with date {int} days ago",
+        (Integer daysAgo) -> {
+          caze = caseService.buildGeneratedCaseDEDaysAgo(daysAgo);
+          selectCaseOrigin(caze.getCaseOrigin());
+          fillExternalId(caze.getExternalId());
+          fillDisease(caze.getDisease());
+          fillDiseaseVariant(caze.getDiseaseVariant());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          fillDateOfBirth(caze.getDateOfBirth(), Locale.GERMAN);
+          selectSex(caze.getSex());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.GERMAN);
+          fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+          fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
+          fillPlaceDescription(caze.getPlaceDescription());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+
+    When(
+        "I filter with last created case using case UUID",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, casesUUID.get(0));
+          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    And(
+        "^I fill only mandatory fields for a new case form for DE$",
+        () -> {
+          LocalDate reportDate = LocalDate.now().minusDays(2);
+          caze =
+              caseService.buildGeneratedCaseDEForOnePerson(
+                  firstName, lastName, dateOfBirth, reportDate, personSex);
+          selectCaseOrigin(caze.getCaseOrigin());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
+        });
+
+    And(
+        "^I click SAVE button on Create New Case form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+        });
+
+    And(
+        "^I create a new case with specific mandatory fields with saved person details from contact for DE$",
+        () -> {
+          selectResponsibleRegion(CreateNewContactSteps.contact.getResponsibleRegion());
+          selectResponsibleDistrict(CreateNewContactSteps.contact.getResponsibleDistrict());
+          selectPlaceOfStay("ZUHAUSE");
+          fillFirstName(CreateNewContactSteps.contact.getFirstName());
+          fillLastName(CreateNewContactSteps.contact.getLastName());
+          fillDateOfBirth(caze.getDateOfBirth(), Locale.GERMAN);
+          selectSex(CreateNewContactSteps.contact.getSex());
+          fillDateOfReport(LocalDate.now().minusDays(189), Locale.GERMAN);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
+
+    When(
+        "I click on Discard button in Create New Case form",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_TASK_BUTTON);
+        });
+
+    Then(
+        "^I check if place of stay is split to responsible jurisdiction and place of stay$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(RESPONSIBLE_JURISDICTION_LABEL);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(PLACE_OF_STAY);
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(RESPONSIBLE_JURISDICTION_LABEL),
+              "Responsible jurisdiction");
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(PLACE_OF_STAY_LABEL), "Place of stay");
+          softly.assertAll();
+        });
+
+    And(
+        "^I fill new case form without epid number$",
+        () -> {
+          caze = caseService.buildGeneratedCase();
+          selectCaseOrigin(caze.getCaseOrigin());
+          fillDisease(caze.getDisease());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
+          selectSex(caze.getSex());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
+          fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+          fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+          fillPlaceDescription(caze.getPlaceDescription());
+        });
+
+    And(
+        "^I click on Place of stay of this case differs from its responsible jurisdiction in New case form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DIFFERENT_PLACE_OF_STAY_CHECKBOX_LABEL);
+        });
+
+    And(
+        "^I fill new case form with different place of stay region and district$",
+        () -> {
+          caze = caseService.buildGeneratedCaseWithDifferentPlaceOfStay();
+          selectCaseOrigin(caze.getCaseOrigin());
+          fillDisease(caze.getDisease());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+          selectPlaceOfStayRegion(caze.getPlaceOfStayRegion());
+          selectPlaceOfStayDistrict(caze.getPlaceOfStayDistrict());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
+          selectSex(caze.getSex());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
+          fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+          fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+          fillPlaceDescription(caze.getPlaceDescription());
+        });
+
+    And(
+        "^I create a new case with different place of stay and Facility as a Place of stay$",
+        () -> {
+          caze = caseService.buildCaseWithFacilityAndDifferentPlaceOfStay();
+          fillAllCaseFieldsForFacilityAndDifferentPlaceOfStay(caze);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
+
+    And(
+        "^I set Place of stay to ([^\"]*) in New case form$",
+        (String option) -> {
+          selectPlaceOfStay(option);
+        });
+
+    And(
+        "I check that {string} option is available in Facility dropdown",
+        (String facilityOption) -> {
+          webDriverHelpers.selectFromCombobox(FACILITY_COMBOBOX, facilityOption);
+        });
+
+    And(
+        "I set Responsible region to {string} and District to {string}",
+        (String aRegion, String aDistrict) -> {
+          selectResponsibleRegion(aRegion);
+          selectResponsibleDistrict(aDistrict);
+        });
+
+    And(
+        "I set Place of stay region to {string} and Place of stay district to {string}",
+        (String aRegion, String arDistrict) -> {
+          selectPlaceOfStayRegion(aRegion);
+          selectPlaceOfStayDistrict(arDistrict);
+        });
+
+    And(
+        "I check that {string} option is available in Point of entry dropdown",
+        (String pointOfEntryOption) -> {
+          webDriverHelpers.selectFromCombobox(POINT_OF_ENTRY_COMBOBOX, pointOfEntryOption);
+        });
+
+    And(
+        "^I create a new case with different place of stay and Point of entry as a Case origin$",
+        () -> {
+          caze = caseService.buildCaseWithPointOfEntryAndDifferentPlaceOfStay();
+          fillAllCaseFieldsForPointOfEntryAndDifferentPlaceOfStay(caze);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
+
+    And(
+        "I fill only mandatory fields for a new case form and set {string} as a last name",
+        (String surname) -> {
+          caze = caseService.buildGeneratedCaseForOnePerson(firstName, surname, dateOfBirth);
+          selectCaseOrigin(caze.getCaseOrigin());
+          fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+          fillDisease(caze.getDisease());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          selectSex(caze.getSex());
+        });
+  }
+
+  private void selectPlaceOfStayDistrict(String placeOfStayDistrict) {
+    webDriverHelpers.selectFromCombobox(PLACE_OF_STAY_DISTRICT_COMBOBOX, placeOfStayDistrict);
+  }
+
+  private void selectPlaceOfStayRegion(String placeOfStayRegion) {
+    webDriverHelpers.selectFromCombobox(PLACE_OF_STAY_REGION_COMBOBOX, placeOfStayRegion);
   }
 
   private void fillPointOfEntryDetails(String pointOfEntryDetails) {
@@ -1152,6 +1472,34 @@ public class CreateNewCaseSteps implements En {
     fillPlaceDescription(caze.getPlaceDescription());
   }
 
+  private void fillAllCaseFieldsWithSpecificRegion(Case caze, String region) {
+    selectCaseOrigin(caze.getCaseOrigin());
+    fillDisease(caze.getDisease());
+    switch (region) {
+      case "Bayern":
+        selectResponsibleRegion("Bayern");
+        selectResponsibleDistrict("LK Ansbach");
+        selectResponsibleCommunity("Aurach");
+        break;
+      case "Saarland":
+        selectResponsibleRegion("Saarland");
+        selectResponsibleDistrict("LK Saarlouis");
+        selectResponsibleCommunity("Lebach");
+        break;
+    }
+    selectPlaceOfStay(caze.getPlaceOfStay());
+    fillFirstName(caze.getFirstName());
+    fillLastName(caze.getLastName());
+    fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
+    selectSex(caze.getSex());
+    selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+    fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
+    fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+    fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+    fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+    fillPlaceDescription(caze.getPlaceDescription());
+  }
+
   private void fillAllCaseFieldsForFacility(Case caze) {
     selectCaseOrigin(caze.getCaseOrigin());
     fillDisease(caze.getDisease());
@@ -1170,6 +1518,37 @@ public class CreateNewCaseSteps implements En {
     fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
     selectFacility(caze.getFacility());
     fillPlaceDescription(caze.getFacilityNameAndDescription());
+  }
+
+  private void fillAllCaseFieldsForFacilityAndDifferentPlaceOfStay(Case caze) {
+    selectCaseOrigin(caze.getCaseOrigin());
+    fillDisease(caze.getDisease());
+    selectResponsibleRegion(caze.getResponsibleRegion());
+    selectResponsibleDistrict(caze.getResponsibleDistrict());
+    selectPlaceOfStay(caze.getPlaceOfStay());
+    selectPlaceOfStayRegion(caze.getPlaceOfStayRegion());
+    selectPlaceOfStayDistrict(caze.getPlaceOfStayDistrict());
+    fillFirstName(caze.getFirstName());
+    fillLastName(caze.getLastName());
+    fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
+    selectSex(caze.getSex());
+    fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+    selectFacility(caze.getFacility());
+  }
+
+  private void fillAllCaseFieldsForPointOfEntryAndDifferentPlaceOfStay(Case caze) {
+    selectCaseOrigin(caze.getCaseOrigin());
+    fillDisease(caze.getDisease());
+    selectResponsibleRegion(caze.getResponsibleRegion());
+    selectResponsibleDistrict(caze.getResponsibleDistrict());
+    selectPlaceOfStayRegion(caze.getPlaceOfStayRegion());
+    selectPlaceOfStayDistrict(caze.getPlaceOfStayDistrict());
+    fillFirstName(caze.getFirstName());
+    fillLastName(caze.getLastName());
+    fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
+    selectSex(caze.getSex());
+    fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+    selectPointOfEntry(caze.getPointOfEntry());
   }
 
   private List<WebElement> getTableRows() {

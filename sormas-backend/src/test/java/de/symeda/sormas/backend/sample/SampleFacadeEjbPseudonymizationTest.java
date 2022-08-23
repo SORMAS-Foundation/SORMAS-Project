@@ -63,7 +63,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 	private UserDto user1;
 	private UserDto user2;
 	private UserDto labUser;
-	private UserDto observerUser;
+	private UserDto nationalClinician;
 
 	@Override
 	public void init() {
@@ -88,10 +88,10 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
 		labUser = creator.createUser(null, null, null, "Lab", "Off", creator.getUserRoleReference(DefaultUserRole.LAB_USER));
 		labUser.setLaboratory(rdcf1.facility);
-		getUserFacade().saveUser(labUser);
+		getUserFacade().saveUser(labUser, false);
 
-		observerUser = creator
-			.createUser(null, null, null, null, "National", "Observer", creator.getUserRoleReference(DefaultUserRole.NATIONAL_OBSERVER));
+		nationalClinician =
+			creator.createUser(null, null, null, null, "National", "Observer", creator.getUserRoleReference(DefaultUserRole.NATIONAL_CLINICIAN));
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}
@@ -368,7 +368,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		CaseDataDto caze = creator.createCase(user1.toReference(), creator.createPerson("John", "Smith").toReference(), rdcf1);
 		SampleDto sample = createCaseSample(caze, user1);
 
-		loginWith(observerUser);
+		loginWith(nationalClinician);
 
 		sample.setReportLat(null);
 		sample.setReportLon(null);

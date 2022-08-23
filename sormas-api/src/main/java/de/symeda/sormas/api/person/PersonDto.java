@@ -364,10 +364,10 @@ public class PersonDto extends PseudonymizableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String internalToken;
 
-	@HideForCountriesExcept
+	@HideForCountriesExcept(countries = {})
 	@SensitiveData
 	private CountryReferenceDto birthCountry;
-	@HideForCountriesExcept
+	@HideForCountriesExcept(countries = {})
 	@SensitiveData
 	private CountryReferenceDto citizenship;
 	@SensitiveData
