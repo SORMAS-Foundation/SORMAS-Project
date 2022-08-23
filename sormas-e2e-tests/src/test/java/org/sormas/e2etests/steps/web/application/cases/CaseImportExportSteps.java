@@ -81,7 +81,19 @@ public class CaseImportExportSteps implements En {
 
     When(
         "I click on the Detailed Case Export button",
-        () -> webDriverHelpers.clickOnWebElementBySelector(DETAILED_CASE_EXPORT_BUTTON));
+        () -> {
+            String file = "./downloads/sormas_fälle_" + LocalDate.now().format(formatter) +
+                    "_.csv";
+            Path file_path = Paths.get(file);
+            if (webDriverHelpers.isFileExists(file_path)) {
+                Files.delete(file_path);
+            }
+            TimeUnit.SECONDS.sleep(2);
+            webDriverHelpers.clickOnWebElementBySelector(DETAILED_CASE_EXPORT_BUTTON);
+            TimeUnit.SECONDS.sleep(2);
+            webDriverHelpers.waitForFileExists(file_path, 90);
+
+        });
 
     When(
         "I click on the Basic Case Export button",
