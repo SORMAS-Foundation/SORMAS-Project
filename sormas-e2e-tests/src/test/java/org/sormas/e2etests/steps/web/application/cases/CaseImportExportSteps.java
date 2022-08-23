@@ -201,15 +201,6 @@ public class CaseImportExportSteps implements En {
         () -> {
            String file = "./downloads/sormas_fälle_" + LocalDate.now().format(formatter) +
           "_.csv";
-            /*
-          String file =
-              "C:\\Users\\lukas\\Downloads\\sormas_f\u00E4lle_"
-                  + LocalDate.now().format(formatter)
-                  + "_.csv";
-
-             */
-          //TimeUnit.SECONDS.sleep(15);
-
           Case reader = parseDetailedCaseExport(file);
           Path path = Paths.get(file);
           Files.delete(path);
@@ -250,15 +241,6 @@ public class CaseImportExportSteps implements En {
         () -> {
            String file = "./downloads/sormas_fälle_" + LocalDate.now().format(formatter) +
            "_.csv";
-          /*
-           String file =
-              "C:\\Users\\lukas\\Downloads\\sormas_f\u00E4lle_"
-                  + LocalDate.now().format(formatter)
-                  + "_.csv";
-
-           */
-          //TimeUnit.SECONDS.sleep(15);
-
           Case reader = parseExtendCustomCaseExport(file);
           Path path = Paths.get(file);
           Files.delete(path);
