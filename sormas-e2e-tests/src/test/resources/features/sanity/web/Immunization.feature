@@ -504,3 +504,44 @@ Feature: Immunization end to end tests
     And I set 1 day ago from today as a Immunization reference "Date To" on Immunization directory page
     And I click on the APPLY FILTERS button
     And I check that number of displayed immunization results in grid is more than 0
+    And I click on the RESET FILTERS button from Immunization
+    And I click SHOW MORE FILTERS button on Immunization directory page
+    And I click on checkbox to only show persons with overdue immunization
+    And I click on the APPLY FILTERS button
+    And I check that number of displayed immunization results in grid is more than 0
+    And I check that the row number 1 contains "Ongoing" in column number 10
+    And I check that the row number 1 contains any date before current day in column 13
+
+  @tmsLink=SORDEV-6775 @env_main
+  Scenario: Test New Immunization form
+    Given I log in as a Admin User
+    When I click on the Immunizations button from navbar
+    And I click on the NEW IMMUNIZATION button
+    And I check that required fields are marked as mandatory on Create new immunization form
+    And I check if Management status is set to "read only" on Create new immunization form
+    And I check if Management status is set to "Scheduled" on Create new immunization form
+    And I check if Immunization status is set to "Pending" on Create new immunization form
+    And I check if "MEANS OF IMMUNIZATION combobox" is available on Create new immunization form
+    And I select "Other" means of immunization on Create new immunization form
+    And I check if "MEANS OF IMMUNIZATION DETAILS field" is available on Create new immunization form
+    And I select "Recovery" means of immunization on Create new immunization form
+    And I check if Management status is set to "Completed" on Create new immunization form
+    And I check if "OVERWRITE IMMUNIZATION MANAGEMENT STATUS checkbox" is available on Create new immunization form
+    And I check Overwrite immunization management status option
+    And I check if Management status is set to "editable" on Create new immunization form
+    And I select "Ongoing" management status on Create new immunization form
+    And I check if Immunization status is set to "Pending" on Create new immunization form
+    And I select "Completed" management status on Create new immunization form
+    And I check if Immunization status is set to "Acquired" on Create new immunization form
+    And I select "Canceled" management status on Create new immunization form
+    And I check if Immunization status is set to "Not acquired" on Create new immunization form
+    And I check if "EXTERNAL ID field" is available on Create new immunization form
+    And I check if "RESPONSIBLE REGION field" is available on Create new immunization form
+    And I check if "RESPONSIBLE DISTRICT field" is available on Create new immunization form
+    And I check if "RESPONSIBLE COMMUNITY field" is available on Create new immunization form
+    And I check if "FACILITY field" is available on Create new immunization form
+    And I check if "START DATE field" is available on Create new immunization form
+    And I check if "END DATE field" is available on Create new immunization form
+    And I fill a new immunization form with specific data
+    And I click on SAVE new immunization button
+    And I check the created data is correctly displayed on Edit immunization page

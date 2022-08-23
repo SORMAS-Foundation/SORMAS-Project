@@ -87,4 +87,6 @@ public class ImmunizationsDirectoryPage {
       By.cssSelector("[id='district'] [class='v-filterselect-button']");
   public static final By DATE_FROM_CALENDAR_INPUT = By.cssSelector("#dateFrom input");
   public static final By DATE_TO_CALENDAR_INPUT = By.cssSelector("#dateTo input");
+  public static final By ONLY_SHOW_PERSONS_WITH_OVERDUE_VACCINATION_LABEL =
+      By.cssSelector("#onlyPersonsWithOverdueImmunization label");
 }

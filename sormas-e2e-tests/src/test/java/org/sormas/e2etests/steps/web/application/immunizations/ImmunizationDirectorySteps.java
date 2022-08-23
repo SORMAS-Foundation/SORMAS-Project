@@ -33,6 +33,7 @@ import static org.sormas.e2etests.pages.application.immunizations.ImmunizationsD
 import static org.sormas.e2etests.pages.application.immunizations.ImmunizationsDirectoryPage.MANAGEMENT_STATUS_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.immunizations.ImmunizationsDirectoryPage.MEANS_OF_IMMUNIZATION_COLUMN_HEADER;
 import static org.sormas.e2etests.pages.application.immunizations.ImmunizationsDirectoryPage.MEANS_OF_IMMUNIZATION_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.immunizations.ImmunizationsDirectoryPage.ONLY_SHOW_PERSONS_WITH_OVERDUE_VACCINATION_LABEL;
 import static org.sormas.e2etests.pages.application.immunizations.ImmunizationsDirectoryPage.PERSON_ID_COLUMN_HEADER;
 import static org.sormas.e2etests.pages.application.immunizations.ImmunizationsDirectoryPage.REGION_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.immunizations.ImmunizationsDirectoryPage.RESULTS_IN_GRID;
@@ -336,6 +337,29 @@ public class ImmunizationDirectorySteps implements En {
           assertHelpers.assertWithPoll(
               () ->
                   Assert.assertEquals(actualDate, expectedDate, "Date is different than expected"),
+              10);
+        });
+
+    And(
+        "^I click on checkbox to only show persons with overdue immunization$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ONLY_SHOW_PERSONS_WITH_OVERDUE_VACCINATION_LABEL);
+          webDriverHelpers.clickOnWebElementBySelector(
+              ONLY_SHOW_PERSONS_WITH_OVERDUE_VACCINATION_LABEL);
+        });
+
+    And(
+        "^I check that the row number (\\d+) contains any date before current day in column (\\d+)$",
+        (Integer rowNumber, Integer columnNumber) -> {
+          String actualResult =
+              webDriverHelpers.getTextFromWebElement(
+                  By.xpath("//tbody//tr[" + rowNumber + "]//td[" + columnNumber + "]"));
+          LocalDate actualDate = LocalDate.parse(actualResult, DATE_FORMATTER);
+
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(actualDate.isBefore(LocalDate.now()), "The date is incorrect!"),
               10);
         });
   }

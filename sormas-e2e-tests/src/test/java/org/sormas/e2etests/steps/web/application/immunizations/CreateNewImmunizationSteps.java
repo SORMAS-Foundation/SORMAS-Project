@@ -1,5 +1,10 @@
 package org.sormas.e2etests.steps.web.application.immunizations;
 
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_PERSON_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_POPUP_HEADER;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.START_DATA_INPUT;
 import static org.sormas.e2etests.pages.application.immunizations.CreateNewImmunizationPage.*;
 
@@ -8,6 +13,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.web.Immunization;
 import org.sormas.e2etests.entities.services.ImmunizationService;
@@ -62,10 +68,10 @@ public class CreateNewImmunizationSteps implements En {
     When(
         "I check if Overwrite immunization management status is unchecked by Management Status",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MANAGEMENT_STATUS);
-          webDriverHelpers.scrollToElement(MANAGEMENT_STATUS);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MANAGEMENT_STATUS_INPUT);
+          webDriverHelpers.scrollToElement(MANAGEMENT_STATUS_INPUT);
           softly.assertFalse(
-              webDriverHelpers.isElementEnabled(MANAGEMENT_STATUS),
+              webDriverHelpers.isElementEnabled(MANAGEMENT_STATUS_INPUT),
               "Expected management status is not correct");
           softly.assertAll();
         });
@@ -114,6 +120,144 @@ public class CreateNewImmunizationSteps implements En {
           fillStartData(immunization.getStartDate());
           fillEndData(immunization.getEndDate());
           webDriverHelpers.clickOnWebElementBySelector(IMMUNIZATION_POPUP_SAVE_BUTTON);
+        });
+
+    And(
+        "^I check that required fields are marked as mandatory on Create new immunization form$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CREATE_NEW_IMMUNIZATION_TITLE);
+          webDriverHelpers.checkWebElementContainsText(RESPONSIBLE_REGION_TITLE, "*");
+          webDriverHelpers.checkWebElementContainsText(RESPONSIBLE_DISTRICT_TITLE, "*");
+          webDriverHelpers.checkWebElementContainsText(DATE_OF_REPORT_TITLE, "*");
+          webDriverHelpers.checkWebElementContainsText(DISEASE_TITLE, "*");
+        });
+
+    And(
+        "I check if {string} is available on Create new immunization form",
+        (String element) -> {
+          switch (element) {
+            case "means of immunization combobox":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(MEANS_OF_IMMUNIZATIONS_COMBOBOX);
+              break;
+            case "MEANS OF IMMUNIZATION DETAILS field":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+                  MEANS_OF_IMMUNIZATION_DETAILS_INPUT);
+              break;
+            case "OVERWRITE IMMUNIZATION MANAGEMENT STATUS checkbox":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+                  OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS_INPUT);
+              break;
+            case "EXTERNAL ID field":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(EXTERNAL_ID_INPUT);
+              break;
+            case "RESPONSIBLE REGION field":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(RESPONSIBLE_REGION_COMBOBOX);
+              break;
+            case "RESPONSIBLE DISTRICT field":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(RESPONSIBLE_DISTRICT_COMBOBOX);
+              break;
+            case "RESPONSIBLE COMMUNITY field":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(RESPONSIBLE_COMMUNITY_COMBOBOX);
+              break;
+            case "FACILITY field":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(FACILITY_COMBOBOX);
+              break;
+            case "START DATE field":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(START_DATE_INPUT);
+              break;
+            case "END DATE field":
+              webDriverHelpers.waitUntilIdentifiedElementIsPresent(END_DATA_INPUT);
+              break;
+          }
+        });
+
+    And(
+        "^I select \"([^\"]*)\" means of immunization on Create new immunization form$",
+        (String option) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              MEANS_OF_IMMUNIZATIONS_COMBOBOX);
+          webDriverHelpers.selectFromCombobox(MEANS_OF_IMMUNIZATIONS_COMBOBOX, option);
+        });
+
+    And(
+        "I check if Management status is set to {string} on Create new immunization form",
+        (String option) -> {
+          webDriverHelpers.getValueFromWebElement(MANAGEMENT_STATUS_INPUT);
+        });
+
+    And(
+        "I check if Management status is {string} on Create new immunization form",
+        (String option) -> {
+          switch (option) {
+            case "editable":
+              softly.assertTrue(
+                  webDriverHelpers.isElementEnabled(MANAGEMENT_STATUS_INPUT),
+                  "Management status field is not editable!");
+              softly.assertAll();
+              break;
+            case "read only":
+              softly.assertFalse(
+                  webDriverHelpers.isElementEnabled(MANAGEMENT_STATUS_INPUT),
+                  "Management status field is not read only!");
+              softly.assertAll();
+              break;
+          }
+        });
+
+    And(
+        "^I check if Immunization status is set to \"([^\"]*)\" on Create new immunization form$",
+        (String expected) -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(IMMUNIZATION_STATUS_INPUT),
+              expected,
+              "Immunization status is different than expected");
+          softly.assertAll();
+        });
+
+    And(
+        "^I select \"([^\"]*)\" management status on Create new immunization form$",
+        (String option) -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MANAGEMENT_STATUS_COMBOBOX);
+          webDriverHelpers.selectFromCombobox(MANAGEMENT_STATUS_COMBOBOX, option);
+        });
+
+    And(
+        "^I click on SAVE new immunization button$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              IMMUNIZATION_POPUP_SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(IMMUNIZATION_POPUP_SAVE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP_HEADER, 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+            TimeUnit.SECONDS.sleep(1);
+          }
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
+        });
+
+    And(
+        "^I fill a new immunization form with specific data$",
+        () -> {
+          immunization = immunizationService.buildGeneratedImmunization();
+          fillDateOfReport(immunization.getDateOfReport());
+          fillExternalId(immunization.getExternalId());
+          fillDisease(immunization.getDisease());
+          fillMeansOfImmunization(immunization.getMeansOfImmunization());
+          selectResponsibleRegion(immunization.getResponsibleRegion());
+          selectResponsibleDistrict(immunization.getResponsibleDistrict());
+          selectResponsibleCommunity(immunization.getResponsibleCommunity());
+          selectFacilityCategory(immunization.getFacilityCategory());
+          selectFacilityType(immunization.getFacilityType());
+          selectFacilityName(immunization.getFacility());
+          fillFacilityNameAndDescription(immunization.getFacilityDescription());
+          fillFirstName(immunization.getFirstName());
+          fillLastName(immunization.getLastName());
+          fillDateOfBirth(immunization.getDateOfBirth());
+          selectSex(immunization.getSex());
+          selectPresentConditionOfPerson(immunization.getPresentConditionOfPerson());
+          fillPrimaryPhoneNumber(immunization.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(immunization.getPrimaryEmailAddress());
         });
   }
 
