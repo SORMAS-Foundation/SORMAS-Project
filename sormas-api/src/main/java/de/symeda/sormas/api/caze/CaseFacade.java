@@ -18,7 +18,6 @@
 package de.symeda.sormas.api.caze;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -222,9 +221,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<CaseDataDto> getByExternalId(String externalId);
 
-	default List<CaseDataDto> getRelevantCasesForVaccination(VaccinationDto vaccination) {
-		return new ArrayList<>();
-	};
+	List<CaseDataDto> getRelevantCasesForVaccination(VaccinationDto vaccination);
 
 	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
 
