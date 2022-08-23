@@ -211,3 +211,15 @@ Feature: Tasks functionalities
     And I add "Task context" data to export in existing Export Configuration for Custom Task Export
     And I save Export Configuration for Custom Task Export
     And I delete all created custom task export configs
+
+  @tmsLink=SORDEV-3384 @env_main
+  Scenario: Verify that Task assignee cannot be left empty via bulk edit mode
+    Given I log in as a Admin User
+    And I click on the Tasks button from navbar
+    And I click on Enter Bulk Edit Mode from Tasks Directory
+    And I select first 1 results in grid in Task Directory
+    And I click on Bulk Actions combobox in Task Directory
+    And I click on Edit button from Bulk Actions Combobox in Task Directory
+    And I click the Change assignee Checkbox
+    And I click on Save button in New Task form
+    And I check if popup message after bulk edit is "Please check the input data"

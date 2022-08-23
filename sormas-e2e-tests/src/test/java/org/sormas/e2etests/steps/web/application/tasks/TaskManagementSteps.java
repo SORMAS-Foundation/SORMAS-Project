@@ -241,6 +241,7 @@ public class TaskManagementSteps implements En {
         "^I select first (\\d+) results in grid in Task Directory$",
         (Integer number) -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          TimeUnit.SECONDS.sleep(3);
           for (int i = 2; i <= number + 1; i++) {
             webDriverHelpers.scrollToElement(getCheckboxByIndex(String.valueOf(i)));
             webDriverHelpers.clickOnWebElementBySelector(getCheckboxByIndex(String.valueOf(i)));
@@ -263,12 +264,12 @@ public class TaskManagementSteps implements En {
               "Bulk action went wrong");
           softly.assertAll();
         });
-    When(
+    And(
         "I check if popup message after bulk edit is {string}",
         (String expectedText) -> {
+          TimeUnit.SECONDS.sleep(2);
           softly.assertEquals(
-              webDriverHelpers.getTextFromPresentWebElement(
-                  By.cssSelector(".v-Notification-caption")),
+              webDriverHelpers.getTextFromPresentWebElement(Notification_Caption),
               expectedText,
               "Bulk edit went wrong");
           softly.assertAll();
@@ -291,6 +292,12 @@ public class TaskManagementSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CHANGE_ASSIGNEE_CHECKBOX);
           webDriverHelpers.selectFromCombobox(TASK_ASSIGNEE_COMBOBOX, "Surveillance SUPERVISOR");
+        });
+    And(
+        "I click the Change assignee Checkbox",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CHANGE_ASSIGNEE_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(CHANGE_ASSIGNEE_CHECKBOX);
         });
     When(
         "I click to bulk change priority for selected tasks",
