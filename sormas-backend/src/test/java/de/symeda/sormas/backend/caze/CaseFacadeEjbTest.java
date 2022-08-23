@@ -1180,6 +1180,60 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(exportDto.isTraveled());
 	}
 
+	@Test
+	public void testGeRelevantCasesForVaccination() {
+		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCF rdcf = new RDCF(rdcfEntities);
+		UserDto user = createUser(rdcfEntities);
+
+		PersonDto cazePerson1 = creator.createPerson("Case1", "Person1");
+		CaseDataDto caze1 = createCase(user, cazePerson1, rdcfEntities);
+
+		ImmunizationDto immunization = creator.createImmunization(
+			caze1.getDisease(),
+			caze1.getPerson(),
+			caze1.getReportingUser(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf,
+			DateHelper.subtractDays(new Date(), 10),
+			DateHelper.subtractDays(new Date(), 5),
+			DateHelper.subtractDays(new Date(), 1),
+			null);
+
+		VaccinationDto firstRelevantVaccinationForCase1 = creator.createVaccinationWithDetails(
+			caze1.getReportingUser(),
+			immunization.toReference(),
+			HealthConditionsDto.build(),
+			DateHelper.subtractDays(new Date(), 7),
+			Vaccine.OXFORD_ASTRA_ZENECA,
+			VaccineManufacturer.ASTRA_ZENECA,
+			VaccinationInfoSource.UNKNOWN,
+			"inn1",
+			"123",
+			"code123",
+			"3");
+
+		VaccinationDto notRelevantVaccinationForCase1 = creator.createVaccinationWithDetails(
+			caze1.getReportingUser(),
+			immunization.toReference(),
+			HealthConditionsDto.build(),
+			new Date(),
+			Vaccine.MRNA_1273,
+			VaccineManufacturer.MODERNA,
+			VaccinationInfoSource.UNKNOWN,
+			"inn2",
+			"456",
+			"code456",
+			"2");
+
+		List<CaseDataDto> cases1 = new ArrayList<>();
+		cases1.add(caze1);
+		assertEquals(getCaseFacade().getRelevantCasesForVaccination(firstRelevantVaccinationForCase1), cases1);
+		assertTrue(getCaseFacade().getRelevantCasesForVaccination(notRelevantVaccinationForCase1).isEmpty());
+	}
+
 	/**
 	 * Test with {@link CaseExportType#CASE_MANAGEMENT} and full export columns.
 	 */

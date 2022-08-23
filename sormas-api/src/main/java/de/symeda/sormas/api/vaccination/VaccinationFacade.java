@@ -24,6 +24,7 @@ import javax.validation.Valid;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.DeletionDetails;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -64,6 +65,8 @@ public interface VaccinationFacade {
 
 	List<VaccinationListEntryDto> getEntriesList(VaccinationListCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
+	List<VaccinationDto> getRelevantVaccinationsForCase(CaseDataDto cazeDto);
+
 	List<VaccinationListEntryDto> getEntriesListWithRelevance(
 		CaseReferenceDto caseReferenceDto,
 		VaccinationListCriteria criteria,
@@ -95,4 +98,6 @@ public interface VaccinationFacade {
 	VaccinationDto getByUuid(String uuid);
 
 	VaccinationDto postUpdate(String uuid, JsonNode vaccinationDtoJson);
+
+	boolean isVaccinationRelevant(CaseDataDto caze, VaccinationDto vaccination);
 }
