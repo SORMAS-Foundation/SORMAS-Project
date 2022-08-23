@@ -65,7 +65,7 @@ public interface VaccinationFacade {
 
 	List<VaccinationListEntryDto> getEntriesList(VaccinationListCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	List<VaccinationDto> getVaccinationListWithRelevanceForACase(CaseDataDto cazeDto);
+	List<VaccinationDto> getRelevantVaccinationsForCase(CaseDataDto cazeDto);
 
 	List<VaccinationListEntryDto> getEntriesListWithRelevance(
 		CaseReferenceDto caseReferenceDto,
@@ -99,7 +99,5 @@ public interface VaccinationFacade {
 
 	VaccinationDto postUpdate(String uuid, JsonNode vaccinationDtoJson);
 
-	default boolean isVaccinationRelevant(CaseDataDto caze, VaccinationDto vaccination) {
-		return true;
-	}
+	boolean isVaccinationRelevant(CaseDataDto caze, VaccinationDto vaccination);
 }

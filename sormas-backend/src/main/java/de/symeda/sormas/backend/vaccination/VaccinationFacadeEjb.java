@@ -299,7 +299,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	}
 
 	@Override
-	public List<VaccinationDto> getVaccinationListWithRelevanceForACase(CaseDataDto cazeDto) {
+	public List<VaccinationDto> getRelevantVaccinationsForCase(CaseDataDto cazeDto) {
 		Case caze = caseService.getByUuid(cazeDto.getUuid());
 		List<Vaccination> vaccinations = vaccinationService.getVaccinationListForACase(caze);
 		List<VaccinationDto> vaccinationDtos = convertToDtoList(vaccinations);
