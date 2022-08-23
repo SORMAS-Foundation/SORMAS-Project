@@ -210,7 +210,6 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		target.setEvents(source.getEventsList());
 		target.setEventParticipants(source.getEventParticipantsList());
 		target.setResponseComment(source.getResponseComment());
-		target.setShareAssociatedContactsDisabled(source.isShareAssociatedContactsDisabled());
 
 		return target;
 	}
@@ -228,7 +227,6 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		target.setEventsList(source.getEvents());
 		target.setEventParticipantsList(source.getEventParticipants());
 		target.setResponseComment(source.getResponseComment());
-		target.setShareAssociatedContactsDisabled(source.isShareAssociatedContactsDisabled());
 
 		return target;
 	}

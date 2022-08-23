@@ -6,7 +6,7 @@ Feature: Event Directory filters check
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When I log in with National User
+    When I log in as a National User
     And I click on the Events button from navbar
     Then I select random Risk level filter among the filter options from API
     And I fill EVENT ID filter by API
@@ -48,7 +48,7 @@ Feature: Event Directory filters check
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When I log in with National User
+    When I log in as a National User
     And I click on the Events button from navbar
     Then I select a German Risk level filter based on the event created with API
     And I fill EVENT ID filter by API
@@ -90,7 +90,7 @@ Feature: Event Directory filters check
     When API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When I log in with National User
+    When I log in as a National User
     And I click on the Events button from navbar
     And I open the last created event via api
     And I add a participant to the event
@@ -138,7 +138,7 @@ Feature: Event Directory filters check
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When I log in with National User
+    When I log in as a National User
     And I click on the Events button from navbar
     And I fill EVENT ID filter by API
     And I click on Show more filters in Events

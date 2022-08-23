@@ -75,8 +75,6 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 
 	private String responseComment;
 
-	private boolean shareAssociatedContactsDisabled;
-
 	private List<SormasToSormasCasePreview> casesList;
 	private List<SormasToSormasContactPreview> contactsList;
 	private List<SormasToSormasEventPreview> eventsList;
@@ -166,15 +164,6 @@ public class SormasToSormasShareRequest extends AbstractDomainObject {
 
 	public void setResponseComment(String responseComment) {
 		this.responseComment = responseComment;
-	}
-
-	@Column
-	public boolean isShareAssociatedContactsDisabled() {
-		return shareAssociatedContactsDisabled;
-	}
-
-	public void setShareAssociatedContactsDisabled(boolean shareAssoicatedContactsDisabled) {
-		this.shareAssociatedContactsDisabled = shareAssoicatedContactsDisabled;
 	}
 
 	@Transient

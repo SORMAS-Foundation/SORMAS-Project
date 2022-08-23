@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +34,7 @@ import java.util.List;
 
 import javax.ws.rs.core.Response;
 
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
@@ -130,7 +132,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 				assertThat(sharedCase.getEntity().getUuid(), is(caze.getUuid()));
 				// users should be cleaned up
-				assertThat(sharedCase.getEntity().getReportingUser(), is(nullValue()));
+				assertThat(sharedCase.getEntity().getReportingUser(), is(officer));
 				assertThat(sharedCase.getEntity().getSurveillanceOfficer(), is(nullValue()));
 				assertThat(sharedCase.getEntity().getClassificationUser(), is(nullValue()));
 
@@ -1136,6 +1138,59 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		assertThat(shares[0].getReShares().get(0).getShare().getTargetDescriptor().getId(), is("dummy SORMAS"));
 		assertThat(shares[0].getReShares().get(0).getShare().isOwnershipHandedOver(), is(false));
 		assertThat(shares[0].getReShares().get(0).getReShares(), hasSize(0));
+	}
+
+	@Test
+	public void testReportingUserIsIncludedButUpdated() throws SormasToSormasException {
+		UserDto officer = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER));
+
+		useSurveillanceOfficerLogin(rdcf);
+
+		final PersonReferenceDto person = creator.createPerson().toReference();
+		CaseDataDto caze = creator.createCase(officer.toReference(), person, rdcf);
+
+		creator.createImmunization(Disease.CORONAVIRUS, person, officer.toReference(), rdcf);
+
+		SormasToSormasOptionsDto options = new SormasToSormasOptionsDto();
+		options.setWithImmunizations(true);
+
+		options.setOrganization(new SormasServerDescriptor(SECOND_SERVER_ID));
+
+		final String uuid = DataHelper.createUuid();
+
+		Mockito
+			.when(
+				MockProducer.getSormasToSormasClient()
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+			.thenAnswer(invocation -> {
+				SormasToSormasDto postBody = invocation.getArgument(2, SormasToSormasDto.class);
+
+				// make sure that no entities are found
+				final CaseDataDto entity = postBody.getCases().get(0).getEntity();
+
+				entity.setUuid(uuid);
+				entity.getTherapy().setUuid(DataHelper.createUuid());
+				entity.getHealthConditions().setUuid(DataHelper.createUuid());
+				entity.getPortHealthInfo().setUuid(DataHelper.createUuid());
+				entity.getClinicalCourse().setUuid(DataHelper.createUuid());
+				entity.getMaternalHistory().setUuid(DataHelper.createUuid());
+
+				postBody.getImmunizations().get(0).getEntity().setUuid(uuid);
+
+				SormasToSormasEncryptedDataDto encryptedData = encryptShareData(new ShareRequestAcceptData(null, null));
+				when(MockProducer.getPrincipal().getName()).thenReturn(s2sClientUser.getUserName());
+				getSormasToSormasCaseFacade().saveSharedEntities(encryptShareData(postBody));
+				when(MockProducer.getPrincipal().getName()).thenReturn(officer.getUserName());
+				return encryptedData;
+			});
+
+		getSormasToSormasCaseFacade().share(Collections.singletonList(caze.getUuid()), options);
+
+		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(uuid);
+		assertThat(savedCase.getReportingUser(), is(s2sClientUser.toReference()));
+
+		ImmunizationDto savedImmunization = getImmunizationFacade().getByUuid(uuid);
+		assertThat(savedImmunization.getReportingUser(), is(s2sClientUser.toReference()));
 	}
 
 	private CaseDataDto createRemoteCaseDto(TestDataCreator.RDCF remoteRdcf, PersonDto person) {

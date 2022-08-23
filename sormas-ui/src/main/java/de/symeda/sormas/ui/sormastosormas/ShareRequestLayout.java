@@ -15,12 +15,12 @@
 
 package de.symeda.sormas.ui.sormastosormas;
 
-import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
-import static de.symeda.sormas.ui.utils.CssStyles.INACCESSIBLE_LABEL;
 
 import java.util.Collections;
 import java.util.List;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -50,18 +50,13 @@ public class ShareRequestLayout extends VerticalLayout {
 			CasePreviewGrid casesGrid = new CasePreviewGrid(cases);
 			addComponent(casesGrid);
 
-			if (shareRequest.isShareAssociatedContactsDisabled()) {
-				Label contactsPlaceholder = new Label(I18nProperties.getString(Strings.messageShareAssociatedContactsDisabledOnSourceSystem));
-				contactsPlaceholder.addStyleNames(INACCESSIBLE_LABEL, FORCE_CAPTION);
+			List<SormasToSormasContactPreview> contacts = shareRequest.getContacts();
 
-				addComponent(contactsPlaceholder);
-			} else {
+			if (CollectionUtils.isNotEmpty(contacts)) {
 				ContactsPreviewGrid contactsGrid = addContactsGrid(Collections.emptyList());
 				casesGrid.getSelectionModel().addSelectionListener(event -> {
 					event.getFirstSelectedItem().ifPresent(casePreview -> {
-						if (shareRequest.getContacts() != null) {
-							contactsGrid.setItems(shareRequest.getContacts().stream().filter(c -> DataHelper.isSame(c.getCaze(), casePreview)));
-						}
+						contactsGrid.setItems(contacts.stream().filter(c -> DataHelper.isSame(c.getCaze(), casePreview)));
 					});
 				});
 			}

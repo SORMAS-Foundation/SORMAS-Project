@@ -31,6 +31,8 @@ import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Task;
 import org.sormas.e2etests.entities.services.TaskService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.steps.web.application.users.CreateNewUserSteps;
+import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 public class CreateNewTaskSteps implements En {
@@ -161,6 +163,26 @@ public class CreateNewTaskSteps implements En {
           }
           softly.assertTrue(elementVisible, option + " is visible!");
           softly.assertAll();
+        });
+    And(
+        "I check that there is only user with ([^\"]*) region for task",
+        (String expectedRegion) -> {
+          CreateNewUserSteps.userWithRegion.forEach(
+              (userName, userRegion) -> {
+                userName = String.format(userName + " (0)");
+                if (userRegion.equals(expectedRegion)) {
+                  Assert.assertTrue(
+                      webDriverHelpers.checkIfElementExistsInCombobox(
+                          ASSIGNED_TO_COMBOBOX, userName),
+                      "There is no expected user name in list");
+
+                } else {
+                  Assert.assertFalse(
+                      webDriverHelpers.checkIfElementExistsInCombobox(
+                          ASSIGNED_TO_COMBOBOX, userName),
+                      "There is user from another region");
+                }
+              });
         });
   }
 

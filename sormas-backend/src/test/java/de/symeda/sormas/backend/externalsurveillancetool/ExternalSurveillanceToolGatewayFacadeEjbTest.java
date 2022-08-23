@@ -49,7 +49,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.share.ExternalShareInfoService;
 
 public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTest {
 
@@ -83,6 +82,23 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 	}
 
 	@Test
+	public void testSendingCasesOneCaseOk() throws ExternalSurveillanceToolException {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserReferenceDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		CaseDataDto case1 = creator.createCase(user, rdcf, null);
+
+		stubFor(
+			post(urlEqualTo("/export")).withRequestBody(containing(case1.getUuid()))
+				.withRequestBody(containing("caseUuids"))
+				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+
+		subjectUnderTest.sendCases(Arrays.asList(case1.getUuid()), true);
+
+		ExternalShareInfoCriteria externalShareInfoCriteria1 = new ExternalShareInfoCriteria().caze(case1.toReference());
+		assertThat(getExternalShareInfoFacade().getIndexList(externalShareInfoCriteria1, 0, 100), hasSize(1));
+	}
+
+	@Test
 	public void testSendingCasesOk() throws ExternalSurveillanceToolException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserReferenceDto user = creator.createUser(rdcf, creator.getUserRoleReference(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
@@ -97,8 +113,8 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 
 		subjectUnderTest.sendCases(Arrays.asList(case1.getUuid(), case2.getUuid()), true);
 
-		assertThat(getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().caze(case1.toReference()), 0, 100), hasSize(2));
-		assertThat(getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().caze(case2.toReference()), 0, 100), hasSize(2));
+		assertThat(getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().caze(case1.toReference()), 0, 100), hasSize(1));
+		assertThat(getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().caze(case2.toReference()), 0, 100), hasSize(1));
 	}
 
 	@Test
@@ -117,14 +133,15 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 
 	@Test
 	public void testSendingEventsOk() throws ExternalSurveillanceToolException {
-		stubFor(
-			post(urlEqualTo("/export")).withRequestBody(containing("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY"))
-				.withRequestBody(containing("VXAERX-5RCKFA-G5DVXH-DPHPCAFB"))
-				.withRequestBody(containing("eventUuids"))
-				.willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
-		subjectUnderTest.sendEvents(Arrays.asList("XRJOEJ-P2OY5E-CA5MYT-LSVCCGVY", "VXAERX-5RCKFA-G5DVXH-DPHPCAFB"), true);
+        EventDto event1 = createEventDto("event1", "description1", "Event1", "Event1", "123");
 
-		assertThat(getBean(ExternalShareInfoService.class).getAll(), hasSize(2));
+        stubFor(
+                post(urlEqualTo("/export")).withRequestBody(containing(event1.getUuid()))
+                        .withRequestBody(containing("eventUuids"))
+                        .willReturn(aResponse().withStatus(HttpStatus.SC_OK)));
+        subjectUnderTest.sendEvents(Arrays.asList(event1.getUuid()), true);
+
+		assertThat(getExternalShareInfoFacade().getIndexList(new ExternalShareInfoCriteria().event(event1.toReference()), 0, 100), hasSize(1));
 	}
 
 	@Test

@@ -377,7 +377,6 @@
 				<groupId>commons-codec</groupId>
 				<artifactId>commons-codec</artifactId>
 				<version>1.15</version>
-				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>commons-collections</groupId>
@@ -556,7 +555,7 @@
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.3.3</version>
+				<version>42.4.1</version>
 				<scope>provided</scope>
 				<exclusions>
 					<exclusion>

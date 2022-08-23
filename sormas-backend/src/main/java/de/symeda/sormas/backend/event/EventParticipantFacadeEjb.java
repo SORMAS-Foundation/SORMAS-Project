@@ -126,6 +126,7 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.user.User;
@@ -174,6 +175,9 @@ public class EventParticipantFacadeEjb
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 	@EJB
 	private VaccinationService vaccinationService;
+
+	@EJB
+	private SampleService sampleService;
 
 	public EventParticipantFacadeEjb() {
 	}
@@ -438,7 +442,7 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public void validate(EventParticipantDto eventParticipant) throws ValidationRuntimeException {
+	public void validate(@Valid EventParticipantDto eventParticipant) throws ValidationRuntimeException {
 
 		// Check whether any required field that does not have a not null constraint in the database is empty
 		if (eventParticipant.getPerson() == null) {
@@ -524,6 +528,11 @@ public class EventParticipantFacadeEjb
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), eventParticipantCriteria.getPathogenTestResult()));
 		}
+
+		Subquery latestSampleSubquery = sampleService.createSubqueryLatestSample(cq, cb, eventParticipant);
+		Predicate latestSamplePredicate =
+			cb.or(cb.isNull(samples.get(Sample.SAMPLE_DATE_TIME)), cb.equal(samples.get(Sample.SAMPLE_DATE_TIME), latestSampleSubquery));
+		filter = CriteriaBuilderHelper.and(cb, filter, latestSamplePredicate);
 
 		if (filter != null) {
 			cq.where(filter);

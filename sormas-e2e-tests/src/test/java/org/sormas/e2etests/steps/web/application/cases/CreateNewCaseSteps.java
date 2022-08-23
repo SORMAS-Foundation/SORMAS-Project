@@ -526,6 +526,22 @@ public class CreateNewCaseSteps implements En {
           TimeUnit.SECONDS.sleep(2);
         });
 
+    Then(
+        "I create a new case with specific data and ([^\"]*) region",
+        (String region) -> {
+          caze = caseService.buildGeneratedCase();
+          fillAllCaseFieldsWithSpecificRegion(caze, region);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(
+              CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON, 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_PERSON_CONFIRMATION_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          }
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+
     When("I choose {string} as a disease", (String disease) -> fillDisease(disease));
 
     When(
@@ -852,6 +868,15 @@ public class CreateNewCaseSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP_HEADER, 1)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+            TimeUnit.SECONDS.sleep(1);
+            if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_CASE_POPUP_HEADER, 1)) {
+              webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_CASE_CHECKBOX);
+              webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+            }
+          }
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
@@ -1434,6 +1459,34 @@ public class CreateNewCaseSteps implements En {
     selectResponsibleRegion(caze.getResponsibleRegion());
     selectResponsibleDistrict(caze.getResponsibleDistrict());
     selectResponsibleCommunity(caze.getResponsibleCommunity());
+    selectPlaceOfStay(caze.getPlaceOfStay());
+    fillFirstName(caze.getFirstName());
+    fillLastName(caze.getLastName());
+    fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
+    selectSex(caze.getSex());
+    selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+    fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
+    fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+    fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+    fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+    fillPlaceDescription(caze.getPlaceDescription());
+  }
+
+  private void fillAllCaseFieldsWithSpecificRegion(Case caze, String region) {
+    selectCaseOrigin(caze.getCaseOrigin());
+    fillDisease(caze.getDisease());
+    switch (region) {
+      case "Bayern":
+        selectResponsibleRegion("Bayern");
+        selectResponsibleDistrict("LK Ansbach");
+        selectResponsibleCommunity("Aurach");
+        break;
+      case "Saarland":
+        selectResponsibleRegion("Saarland");
+        selectResponsibleDistrict("LK Saarlouis");
+        selectResponsibleCommunity("Lebach");
+        break;
+    }
     selectPlaceOfStay(caze.getPlaceOfStay());
     fillFirstName(caze.getFirstName());
     fillLastName(caze.getLastName());

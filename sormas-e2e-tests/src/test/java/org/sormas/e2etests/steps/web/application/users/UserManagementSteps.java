@@ -22,6 +22,7 @@ import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.*;
 import static org.sormas.e2etests.pages.application.users.UserManagementPage.*;
 
 import cucumber.api.java8.En;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 
@@ -31,12 +32,20 @@ public class UserManagementSteps implements En {
   @Inject
   public UserManagementSteps(WebDriverHelpers webDriverHelpers) {
     this.webDriverHelpers = webDriverHelpers;
+
     When(
         "^I click on the NEW USER button$",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_USER_BUTTON);
           webDriverHelpers.clickWhileOtherButtonIsDisplayed(
               NEW_USER_BUTTON, FIRST_NAME_OF_USER_INPUT);
+        });
+
+    Then(
+        "^I set active inactive filter to ([^\"]*) in User Management directory$",
+        (String activeInactive) -> {
+          webDriverHelpers.selectFromCombobox(ACTIVE_INACTIVE_COMBOBOX, activeInactive);
+          TimeUnit.SECONDS.sleep(2); // needed for table to refresh
         });
 
     When(
