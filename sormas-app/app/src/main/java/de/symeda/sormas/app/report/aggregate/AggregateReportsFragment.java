@@ -20,6 +20,8 @@ import android.view.LayoutInflater;
 import androidx.databinding.DataBindingUtil;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.report.DiseaseAgeGroup;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -314,6 +316,9 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 					binding.aggregateReportDeaths.setEnabled(enabled);
 					binding.aggregateReportLabConfirmations.setEnabled(enabled);
 					binding.aggregateReportNewCases.setEnabled(enabled);
+					if (!DatabaseHelper.getAggregateReportDao().isCurrentAgeGroup(disease, report.getAgeGroup())) {
+						binding.expired.setText(I18nProperties.getCaption(Captions.aggregateReportExpiredAgeGroups));
+					}
 					contentBinding.submitReport.setEnabled(enabled);
 					String ageGroup = report.getAgeGroup();
 					if (ageGroup != null) {
@@ -363,6 +368,9 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 					binding.aggregateReportDeaths.setEnabled(enabled);
 					binding.aggregateReportLabConfirmations.setEnabled(enabled);
 					binding.aggregateReportNewCases.setEnabled(enabled);
+					if (!DatabaseHelper.getAggregateReportDao().isCurrentAgeGroup(disease, ageGroup)) {
+						binding.expired.setText(I18nProperties.getCaption(Captions.aggregateReportExpiredAgeGroups));
+					}
 					contentBinding.submitReport.setEnabled(enabled);
 					AggregateReport data = DatabaseHelper.getAggregateReportDao().build(disease, epiWeek, selectedInfrastructure);
 					data.setAgeGroup(ageGroup);
