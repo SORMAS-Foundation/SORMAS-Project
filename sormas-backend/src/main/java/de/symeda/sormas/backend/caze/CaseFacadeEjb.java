@@ -204,6 +204,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.UserRightFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -1386,6 +1387,34 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		pseudonymizer.pseudonymizeDtoCollection(CaseSelectionDto.class, entries, CaseSelectionDto::isInJurisdiction, null);
 
 		return entries;
+	}
+
+	@Override
+	public List<CaseDataDto> getRelevantCasesForVaccination(VaccinationDto vaccinationDto) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Case> cq = cb.createQuery(Case.class);
+		final Root<Case> caze = cq.from(Case.class);
+		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
+		final CaseJoins joins = caseQueryContext.getJoins();
+
+		Vaccination vaccination = vaccinationService.getByUuid(vaccinationDto.getUuid());
+		Join<Case, Person> person = joins.getPerson();
+		Join<Person, Immunization> immunizationJoin = person.join(Person.IMMUNIZATIONS, JoinType.LEFT);
+		Join<Immunization, Vaccination> vaccinationsJoin = immunizationJoin.join(Immunization.VACCINATIONS, JoinType.LEFT);
+
+		Predicate predicate = cb.in(vaccinationsJoin).value(vaccination);
+		cq.where(predicate);
+		cq.select(caze);
+
+		List<Case> cases = em.createQuery(cq).getResultList();
+		return cases.stream().filter(c -> vaccinationService.isVaccinationRelevant(c, vaccination)).map(this::toDto).collect(Collectors.toList());
+	}
+
+	@Override
+	public boolean hasOtherValidVaccination(CaseDataDto caze, String vaccinationUuid) {
+		List<VaccinationDto> relevantVaccinationsForCase = vaccinationFacade.getRelevantVaccinationsForCase(caze);
+		//checking if the vaccination selected for delete is in the relevant vaccinations of the case
+		return relevantVaccinationsForCase.stream().anyMatch(v -> !v.getUuid().equals(vaccinationUuid));
 	}
 
 	@Override
