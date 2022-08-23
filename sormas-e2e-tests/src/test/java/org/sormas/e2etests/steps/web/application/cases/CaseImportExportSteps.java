@@ -125,13 +125,13 @@ public class CaseImportExportSteps implements En {
         });
 
     And(
-        "I add ([^\"]*) data to export in existing Export Configuration for Custom Case Export",
+        "I select ([^\"]*) data to export in existing Export Configuration for Custom Case Export",
         (String customExportConfigurationCheckbox) ->
             webDriverHelpers.clickOnWebElementBySelector(
                 getCustomExportCheckboxByText(customExportConfigurationCheckbox)));
 
     Then(
-        "I save Custom Export Configuration",
+        "I click Save Button from Custom Case Export Configuration",
         () -> webDriverHelpers.clickOnWebElementBySelector(NEW_EXPORT_CONFIGURATION_SAVE_BUTTON));
 
     When(
