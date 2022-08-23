@@ -242,4 +242,6 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	EditPermissionType isEditContactAllowed(String uuid);
 
+	boolean hasOtherValidVaccination(CaseDataDto caze, String vaccinationUuid);
+
 }

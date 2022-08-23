@@ -35,6 +35,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.Vaccine;
@@ -291,6 +292,22 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	}
 
 	@Override
+	public boolean isVaccinationRelevant(CaseDataDto cazeDto, VaccinationDto vaccinationDto) {
+		Case caze = caseService.getByUuid(cazeDto.getUuid());
+		Vaccination vaccination = vaccinationService.getByUuid(vaccinationDto.getUuid());
+		return vaccinationService.isVaccinationRelevant(caze, vaccination);
+	}
+
+	@Override
+	public List<VaccinationDto> getVaccinationListWithRelevanceForACase(CaseDataDto cazeDto) {
+		Case caze = caseService.getByUuid(cazeDto.getUuid());
+		List<Vaccination> vaccinations = vaccinationService.getVaccinationListForACase(caze);
+		List<VaccinationDto> vaccinationDtos = convertToDtoList(vaccinations);
+
+		return vaccinationDtos.stream().filter(v -> isVaccinationRelevant(cazeDto, v)).collect(Collectors.toList());
+	}
+
+	@Override
 	public List<VaccinationListEntryDto> getEntriesListWithRelevance(
 		CaseReferenceDto caseReferenceDto,
 		VaccinationListCriteria criteria,
@@ -351,6 +368,11 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 							? Strings.messageVaccinationNotRelevantForEventParticipant
 							: Strings.messageVaccinationNoDateNotRelevantForEventParticipant)))
 			.collect(Collectors.toList());
+	}
+
+	public List<VaccinationDto> convertToDtoList(List<Vaccination> vaccinations) {
+		Pseudonymizer defaultPseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		return vaccinations.stream().map(v -> convertToDto(v, defaultPseudonymizer)).collect(Collectors.toList());
 	}
 
 	public VaccinationDto convertToDto(Vaccination source, Pseudonymizer pseudonymizer) {

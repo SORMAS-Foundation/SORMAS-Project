@@ -136,10 +136,10 @@ public class VaccinationController {
 				popupWindow.close();
 				if (doSave) {
 					List<CaseDataDto> cases = getCaseFacade().getRelevantCasesForVaccination(vaccination);
-					FacadeProvider.getVaccinationFacade().deleteWithImmunization(vaccination.getUuid(), deleteDetails);
-					if (!cases.isEmpty()) {
+					if (!cases.isEmpty() && !getCaseFacade().hasOtherValidVaccination(cases.get(0), vaccination.getUuid())) {
 						showUpdateStatusConfirmationPopup(cases);
 					}
+					FacadeProvider.getVaccinationFacade().deleteWithImmunization(vaccination.getUuid(), deleteDetails);
 				}
 				if (deleteCallback != null) {
 					deleteCallback.run();
