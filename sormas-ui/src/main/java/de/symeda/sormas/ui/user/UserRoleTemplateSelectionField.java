@@ -15,13 +15,17 @@
 
 package de.symeda.sormas.ui.user;
 
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserRoleReferenceDto;
 
@@ -44,6 +48,10 @@ public class UserRoleTemplateSelectionField extends CustomField<UserRoleReferenc
 		mainLayout.setMargin(false);
 		mainLayout.setSizeFull();
 		mainLayout.setWidthFull();
+
+		Label infoLabel =
+			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getDescription(Descriptions.userRoleTemplate), ContentMode.HTML);
+		mainLayout.addComponent(infoLabel);
 
 		templateRoleCombo = new ComboBox();
 		templateRoleCombo.setWidth(300, Unit.PIXELS);

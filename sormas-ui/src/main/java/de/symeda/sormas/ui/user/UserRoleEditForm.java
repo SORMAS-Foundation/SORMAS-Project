@@ -46,13 +46,12 @@ public class UserRoleEditForm extends AbstractUserRoleForm {
 	private static final long serialVersionUID = 8099247063020818190L;
 
 	private static final String USER_RIGHTS_LABEL_LOC = "userRightsLabel";
-	private static final String TEMPLATE_INFO_LOC = "templateInfo";
 	private static final String VERSION_UPDATE_INFO_LOC = "versionUpdateInfoLoc";
 
 	private final static List<String> defaultRightsOrder = Arrays.asList("_VIEW", "_EDIT", "_CREATE");
 
-	private static final String HTML_LAYOUT = fluidRowLocs(TEMPLATE_INFO_LOC)
-		+ fluidRowLocs(UserRoleDto.CAPTION, UserRoleDto.JURISDICTION_LEVEL)
+	private static final String HTML_LAYOUT =
+		 fluidRowLocs(UserRoleDto.CAPTION, UserRoleDto.JURISDICTION_LEVEL)
 		+ fluidRowLocs(UserRoleDto.LINKED_DEFAULT_USER_ROLE, VERSION_UPDATE_INFO_LOC)
 		+ fluidRowLocs(UserRoleDto.DESCRIPTION)
 		+ fluidRowLocs(UserRoleDto.HAS_OPTIONAL_HEALTH_FACILITY)
@@ -88,10 +87,6 @@ public class UserRoleEditForm extends AbstractUserRoleForm {
 		Label userRightsLabel = new Label(I18nProperties.getCaption(Captions.UserRole_userRights), ContentMode.HTML);
 		userRightsLabel.addStyleNames(CssStyles.H2);
 		getContent().addComponent(userRightsLabel, USER_RIGHTS_LABEL_LOC);
-
-		Label templateInfoLabel =
-			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getDescription(Descriptions.userRoleTemplate), ContentMode.HTML);
-		getContent().addComponent(templateInfoLabel, TEMPLATE_INFO_LOC);
 
 		Label versionUpdateInfoLabel =
 			new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getDescription(Descriptions.userRoleVersionUpdate), ContentMode.HTML);
