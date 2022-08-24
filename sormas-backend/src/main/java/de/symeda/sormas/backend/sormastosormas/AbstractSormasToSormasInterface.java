@@ -36,6 +36,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import ca.uhn.fhir.rest.gclient.IFetchConformanceTyped;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -311,6 +312,9 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		String requestUuid = sormasToSormasEncryptionEjb.decryptAndVerify(encryptedRequestUuid, String.class);
 		ShareRequestInfo requestInfo = shareRequestInfoService.getByUuid(requestUuid);
 
+		if (requestInfo == null) {
+			throw SormasToSormasException.fromStringProperty(Strings.errorSormasToSormasShare);
+		}
 		validateEntitiesBeforeSend(requestInfo.getShares());
 
 		// update share request: add new samples, immunizations, etc.

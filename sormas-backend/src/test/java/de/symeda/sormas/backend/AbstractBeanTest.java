@@ -25,6 +25,9 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoFacade;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import org.junit.Before;
 
 import de.symeda.sormas.api.ConfigFacade;
@@ -810,7 +813,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 		return natUser;
 	}
-
 
 	protected UserDto useNationalAdminLogin() {
 		UserDto natUser = creator.createUser(
