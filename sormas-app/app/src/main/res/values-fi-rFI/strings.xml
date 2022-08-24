@@ -496,6 +496,7 @@
     <string name="main_menu_aggregate_reports">mSERS</string>
     <string name="message_already_saving">Tallennetaan jo..</string>
     <string name="message_aggregate_report_found">Attention: Duplicate reports have been found for the above criteria. Diseases marked with red already have reports.</string>
+    <string name="message_aggregate_report_expired_age_groups">Age groups marked \"Expired\" are based on existing data for an age group that is no longer used.</string>
     <string name="message_case_infrastructure_data_changed">Olet muuttanut tämän potilaan perusrakenteen tietoja. Haluatko siirtää potilaan uuteen hoitolaitokseen (sairaalahoitotiedot päivitetään) vai haluatko muokata tietoja korjataksesi virheen?</string>
     <string name="message_download_app_failed">Uuden SORMAS version lataus epäonnistui. Varmista, että sinulla on paras mahdollinen internet-yhteys ja yritä uudestaan tai informoi valvojaa jos sama virhe toistuu huolimatta hyvästä internet-yhteydestä.</string>
     <string name="message_empty_password">Syötä salasana.</string>
