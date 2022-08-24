@@ -20,9 +20,8 @@ import org.openqa.selenium.By;
 public class SurveillanceDashboardPage {
 
   public static final By SURVEILLANCE_DASHBOARD_NAME =
-      By.xpath("//div[contains(text(),'Surveillance Dashboard')]");
-  public static final By SURVEILLANCE_DASHBOARD_NAME_URDU =
-      By.xpath("//div[contains(text(),'نگرانی کا ڈیش بورڈ')]");
+      By.xpath(
+          "//div[@class='v-label v-widget h1 v-label-h1 vspace-none v-label-vspace-none v-label-undef-w']");
   public static final By SURVEILLANCE_BUTTON =
       By.xpath("(//div[contains(@class,'v-select-optiongroup')]//span)[1]");
   public static final By CONTACTS_BUTTON =
@@ -60,12 +59,6 @@ public class SurveillanceDashboardPage {
       By.cssSelector("[class='v-verticallayout v-layout v-vertical v-widget v-has-width']");
   public static final By DISEASE_CATEGORIES =
       By.cssSelector("[class='col-lg-6 col-xs-12 '][location='burden'] >div>div>div>div>div");
-  public static final By AFP_DISEASE_BOX = By.xpath("//div[contains(text(),'AFP')]");
-  public static final By ANTHRAX_DISEASE_BOX = By.xpath("//div[contains(text(),'Anthrax')]");
-  public static final By COVID_19_DISEASE_BOX = By.xpath("//div[contains(text(),'COVID-19')]");
-  public static final By CHOLERA_DISEASE_BOX = By.xpath("//div[contains(text(),'Cholera')]");
-  public static final By CRS_DISEASE_BOX = By.xpath("//div[contains(text(),'CRS')]");
-  public static final By DENGUE_DISEASE_BOX = By.xpath("//div[contains(text(),'Dengue')]");
   public static final By FIRST_DISEASE_BOX =
       By.xpath(
           "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]");
@@ -257,18 +250,11 @@ public class SurveillanceDashboardPage {
       By.xpath(
           "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[3]/div[1]/div[2]/div[1]/div[1]/div[3]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]");
   public static final By STATISTICS_CHARTS = By.cssSelector("[id^='highchart_']");
-  public static final By DIFFERENCE_IN_NUMBER_OF_CASES_GRAPH =
-      By.xpath(
-          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]");
   public static final By CASES_METRICS_MAIN_BOX =
       By.xpath(
           "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[3]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]");
-  public static final By CASES_METRICS_CONFIRMED_NO_SYMPTOMS_BOX =
-      By.xpath("//div[contains(text(),'Confirmed no symptoms')]");
   public static final By CASES_METRICS_CONFIRMED_BOX =
       By.xpath("//div[contains(text(),'Confirmed')]");
-  public static final By CASES_METRICS_CONFIRMED_UNKNOWN_SYMPTOMS_BOX =
-      By.xpath("//div[contains(text(),'Confirmed unknown symptoms')]");
   public static final By CASES_METRICS_PROBABLE_BOX =
       By.xpath("//div[contains(text(),'Probable')]");
   public static final By CASES_METRICS_SUSPECT_BOX = By.xpath("//div[contains(text(),'Suspect')]");
@@ -336,9 +322,6 @@ public class SurveillanceDashboardPage {
   public static final By LEGEND_CHART_CASE_STATUS_CONFIRMED =
       By.cssSelector(
           "g.highcharts-legend-item.highcharts-column-series.highcharts-color-undefined.highcharts-series-3 > text > tspan");
-  public static final By LEGEND_CHART_CASE_STATUS_CONFIRMED_UNKNOWN_SYMPTOMS =
-      By.cssSelector(
-          "g.highcharts-legend-item.highcharts-column-series.highcharts-color-undefined.highcharts-series-3 > text > tspan");
   public static final By LEGEND_CHART_CASE_STATUS_SUSPECT =
       By.cssSelector(
           "g.highcharts-legend-item.highcharts-column-series.highcharts-color-undefined.highcharts-series-1 > text > tspan");
@@ -361,7 +344,6 @@ public class SurveillanceDashboardPage {
   public static final By ZOOM_OUT_BUTTON_ON_MAP = By.cssSelector("[title='Zoom out']");
   public static final By FULL_SCREEN_BUTTON_ON_MAP = By.cssSelector("[title='View Fullscreen']");
   public static final By EXIT_FULL_SCREEN_BUTTON_ON_MAP =
-      // By.cssSelector("a[title='Exit Fullscreen']");
       By.cssSelector(".leaflet-control-fullscreen.leaflet-control");
   public static final By EXPAND_MAP_BUTTON = By.cssSelector("#expandMap");
   public static final By COLLAPSE_MAP_BUTTON = By.cssSelector("#collapseMap");
@@ -415,10 +397,8 @@ public class SurveillanceDashboardPage {
   public static final By DASHBOARD_TODAY = By.cssSelector("#dashboardToday");
   public static final By DASHBOARD_DAY_BEFORE = By.cssSelector("#dashboardDayBefore");
   public static final By DASHBOARD_THIS_WEEK = By.cssSelector("#dashboardThisWeek");
-  public static final By DASHBOARD_LAST_WEEK = By.cssSelector("#dashboardLastWeek");
   public static final By REGION_COMBOBOX_DROPDOWN =
       By.cssSelector("[location='regionFilter'] > div > div");
-  public static final By DATE_TYPE_COMBOBOX_DROPDOWN = By.cssSelector("#dateType div");
 
   public static final By CONFIRMED_COUNTER_LABEL_ON_SURVEILLANCE_DASHBOARD =
       By.xpath("//div[contains(text(),'Confirmed')]/parent::div/parent::div");

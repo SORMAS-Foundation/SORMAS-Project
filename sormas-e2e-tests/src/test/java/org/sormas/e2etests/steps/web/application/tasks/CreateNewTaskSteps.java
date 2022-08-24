@@ -173,12 +173,14 @@ public class CreateNewTaskSteps implements En {
                 if (userRegion.equals(expectedRegion)) {
                   Assert.assertTrue(
                       webDriverHelpers.checkIfElementExistsInCombobox(
-                          ASSIGNED_TO_COMBOBOX, userName),"There is no expected user name in list");
+                          ASSIGNED_TO_COMBOBOX, userName),
+                      "There is no expected user name in list");
 
                 } else {
                   Assert.assertFalse(
                       webDriverHelpers.checkIfElementExistsInCombobox(
-                          ASSIGNED_TO_COMBOBOX, userName), "There is user from another region");
+                          ASSIGNED_TO_COMBOBOX, userName),
+                      "There is user from another region");
                 }
               });
         });

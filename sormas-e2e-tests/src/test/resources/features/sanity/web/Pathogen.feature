@@ -13,7 +13,7 @@ Feature: Pathogen Functionalities
     And API: I create a new sample
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When I log in with National User
+    When I log in as a National User
     And I click on the Sample button from navbar
     And I am opening the last created via API Sample by url navigation
     And I click on the new pathogen test from the Edit Sample page
@@ -33,7 +33,7 @@ Feature: Pathogen Functionalities
     And API: I create a new sample
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When I log in with National User
+    When I log in as a National User
     And I click on the Sample button from navbar
     And I am opening the last created via API Sample by url navigation
     Then I click on the new pathogen test from the Edit Sample page
@@ -53,7 +53,7 @@ Feature: Pathogen Functionalities
     And API: I create a new sample
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When I log in with National User
+    When I log in as a National User
     And I click on the Sample button from navbar
     And I am opening the last created via API Sample by url navigation
     Then I click on the new pathogen test from the Edit Sample page
@@ -73,7 +73,7 @@ Feature: Pathogen Functionalities
     And API: I create a new sample
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When I log in with National User
+    When I log in as a National User
     And I click on the Sample button from navbar
     And I am opening the last created via API Sample by url navigation
     Then I click on the new pathogen test from the Edit Sample page
@@ -93,7 +93,7 @@ Feature: Pathogen Functionalities
     And API: I create a new sample
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When I log in with National User
+    When I log in as a National User
     And I click on the Sample button from navbar
     And I am opening the last created via API Sample by url navigation
     Then I click on the new pathogen test from the Edit Sample page
@@ -113,7 +113,7 @@ Feature: Pathogen Functionalities
     And API: I create a new sample
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When I log in with National User
+    When I log in as a National User
     And I click on the Sample button from navbar
     And I am opening the last created via API Sample by url navigation
     Then I click on the new pathogen test from the Edit Sample page
@@ -133,7 +133,7 @@ Feature: Pathogen Functionalities
     And API: I create a new sample
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When I log in with National User
+    When I log in as a National User
     And I click on the Sample button from navbar
     And I am opening the last created via API Sample by url navigation
     Then I click on the new pathogen test from the Edit Sample page
@@ -150,7 +150,7 @@ Feature: Pathogen Functionalities
     And API: I create a new contact
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I click on the Contacts button from navbar
     Then I search after last created contact via API by UUID and open
     And I click on New Sample
@@ -175,7 +175,7 @@ Feature: Pathogen Functionalities
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I am accessing the event tab using the created event via api
     Then I add a participant to the event
     Then I check if participant appears in the event participants list
@@ -205,7 +205,7 @@ Feature: Pathogen Functionalities
       And API: I create a new sample
       Then API: I check that POST call body is "OK"
       And API: I check that POST call status code is 200
-      When I log in with National User
+      When I log in as a National User
       And I click on the Sample button from navbar
       And I am opening the last created via API Sample by url navigation
       Then I click on the new pathogen test from the Edit Sample page for DE version

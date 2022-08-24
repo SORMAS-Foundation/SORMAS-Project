@@ -34,6 +34,7 @@ import javax.ejb.Stateless;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.sample.SampleCriteria;
@@ -48,6 +49,8 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareReque
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.contact.Contact;
@@ -62,6 +65,8 @@ import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasSha
 import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequest;
 import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequestService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "SormasToSormasContactFacade")
 public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterface<Contact, ContactDto, SormasToSormasContactDto>
@@ -85,6 +90,8 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 	private SormasToSormasShareRequestService shareRequestService;
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
+	@EJB
+	private UserService userService;
 
 	public SormasToSormasContactFacadeEjb() {
 		super(
@@ -95,6 +102,18 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 			CONTACT_SHARES_ENDPOINT,
 			Captions.Contact,
 			ShareRequestDataType.CONTACT);
+	}
+
+	@Override
+	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
+	public void share(List<String> entityUuids, SormasToSormasOptionsDto options) throws SormasToSormasException {
+		if (!userService.hasRight(UserRight.CONTACT_EDIT)
+			|| (options.isWithSamples() && !userService.hasRight(UserRight.SAMPLE_EDIT))
+			|| (options.isWithImmunizations() && !userService.hasRight(UserRight.IMMUNIZATION_EDIT))) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorForbidden));
+		}
+
+		super.share(entityUuids, options);
 	}
 
 	@Override
@@ -170,7 +189,7 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 	}
 
 	@Override
-	public Contact extractFromShareInfo(SormasToSormasShareInfo shareInfo) {
+	protected Contact extractFromShareInfo(SormasToSormasShareInfo shareInfo) {
 		return shareInfo.getContact();
 	}
 

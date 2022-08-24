@@ -57,14 +57,26 @@ public class ContactShareDataBuilder
 
 	@Override
 	protected SormasToSormasContactDto doBuildShareData(Contact contact, ShareRequestInfo requestInfo, boolean ownerShipHandedOver) {
-		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo);
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
-		PersonDto personDto = dataBuilderHelper
-			.getPersonDto(contact.getPerson(), pseudonymizer, requestInfo);
-		ContactDto contactDto = dataBuilderHelper.getContactDto(contact, pseudonymizer);
+		PersonDto personDto = dataBuilderHelper.getPersonDto(contact.getPerson(), pseudonymizer, requestInfo);
+		ContactDto contactDto = getDto(contact, pseudonymizer);
 
 		return new SormasToSormasContactDto(personDto, contactDto);
+	}
+
+	@Override
+	protected ContactDto getDto(Contact contact, Pseudonymizer pseudonymizer) {
+
+		ContactDto contactDto = contactFacade.convertToDto(contact, pseudonymizer);
+		// reporting user is not set to null here as it would not pass the validation
+		// the receiver appears to set it to SORMAS2SORMAS Client anyway
+		contactDto.setContactOfficer(null);
+		contactDto.setResultingCaseUser(null);
+		contactDto.setSormasToSormasOriginInfo(null);
+		dataBuilderHelper.clearIgnoredProperties(contactDto);
+
+		return contactDto;
 	}
 
 	@Override
@@ -75,8 +87,7 @@ public class ContactShareDataBuilder
 
 	@Override
 	public SormasToSormasContactPreview doBuildShareDataPreview(Contact contact, ShareRequestInfo requestInfo) {
-		Pseudonymizer pseudonymizer =
-			dataBuilderHelper.createPseudonymizer(requestInfo);
+		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
 		return dataBuilderHelper.getContactPreview(contact, pseudonymizer);
 

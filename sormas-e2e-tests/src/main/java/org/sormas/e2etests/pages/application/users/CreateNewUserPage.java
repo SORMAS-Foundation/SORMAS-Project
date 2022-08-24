@@ -73,4 +73,7 @@ public class CreateNewUserPage {
       By.xpath("(//div[@location='region']//div[@class='v-captionwrapper'])[2]/div[2]/div");
   public static final By SURVEILLANCE_DISTRICT =
       By.xpath("(//div[@location='district']//div[@class='v-captionwrapper'])[2]/div[2]/div");
+  public static final By USER_ROLE_COMBOBOX = By.cssSelector("[id='userRoles'] div");
+  public static final By REGION_FILTER_COMBOBOX = By.cssSelector("#region div");
+  public static final By TABLE_USER_NAME = By.xpath("//table//td[5]");
 }
