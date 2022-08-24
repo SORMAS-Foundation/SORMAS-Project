@@ -123,7 +123,7 @@ Feature: Tasks functionalities
     And I click to bulk change priority for selected tasks
     And I click to bulk change status for selected tasks
     And I click on Save button in New Task form
-    And I check if popup message after bulk edit is "All tasks have been edited"
+    And I check if popup message from Edit Task Form after bulk edit is "All tasks have been edited"
     And I check that number of displayed tasks results is 0
 
   @tmsLink=SORDEV-9156 @env_main
@@ -212,7 +212,7 @@ Feature: Tasks functionalities
     And I save Export Configuration for Custom Task Export
     And I delete all created custom task export configs
 
-  @tmsLink=SORDEV-3384 @env_main
+  @3384 @env_main
   Scenario: Verify that Task assignee cannot be left empty via bulk edit mode
     Given I log in as a Admin User
     And I click on the Tasks button from navbar
@@ -220,6 +220,6 @@ Feature: Tasks functionalities
     And I select first 1 results in grid in Task Directory
     And I click on Bulk Actions combobox in Task Directory
     And I click on Edit button from Bulk Actions Combobox in Task Directory
-    And I click the Change assignee Checkbox
+    And I click the Change assignee Checkbox in the Edit Task Form
     And I click on Save button in New Task form
-    And I check if popup message after bulk edit is "Please check the input data"
+    And I check if popup message from Edit Task Form after bulk edit is "Please check the input data"

@@ -241,8 +241,9 @@ public class TaskManagementSteps implements En {
         "^I select first (\\d+) results in grid in Task Directory$",
         (Integer number) -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-          TimeUnit.SECONDS.sleep(3);
           for (int i = 2; i <= number + 1; i++) {
+            webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                getCheckboxByIndex(String.valueOf(i)));
             webDriverHelpers.scrollToElement(getCheckboxByIndex(String.valueOf(i)));
             webDriverHelpers.clickOnWebElementBySelector(getCheckboxByIndex(String.valueOf(i)));
           }
@@ -265,11 +266,11 @@ public class TaskManagementSteps implements En {
           softly.assertAll();
         });
     And(
-        "I check if popup message after bulk edit is {string}",
+        "I check if popup message from Edit Task Form after bulk edit is {string}",
         (String expectedText) -> {
-          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NOTIFICATION_POPUP);
           softly.assertEquals(
-              webDriverHelpers.getTextFromPresentWebElement(Notification_Caption),
+              webDriverHelpers.getTextFromPresentWebElement(NOTIFICATION_POPUP),
               expectedText,
               "Bulk edit went wrong");
           softly.assertAll();
@@ -294,7 +295,7 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.selectFromCombobox(TASK_ASSIGNEE_COMBOBOX, "Surveillance SUPERVISOR");
         });
     And(
-        "I click the Change assignee Checkbox",
+        "I click the Change assignee Checkbox in the Edit Task Form",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(CHANGE_ASSIGNEE_CHECKBOX);
           webDriverHelpers.clickOnWebElementBySelector(CHANGE_ASSIGNEE_CHECKBOX);
