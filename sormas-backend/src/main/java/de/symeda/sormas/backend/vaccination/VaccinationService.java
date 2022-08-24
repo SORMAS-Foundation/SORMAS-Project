@@ -258,7 +258,7 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 		Join<Immunization, Vaccination> vaccination = immunization.join(Immunization.VACCINATIONS, JoinType.LEFT);
 
 		Predicate predicate = cb.in(root).value(caze);
-		cq.where(predicate);
+		cq.where(cb.and(predicate, cb.isNotNull(vaccination)));
 		cq.select(vaccination);
 
 		List<Vaccination> vaccinations = em.createQuery(cq).getResultList();
