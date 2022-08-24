@@ -814,7 +814,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return natUser;
 	}
 
-
 	protected UserDto useNationalAdminLogin() {
 		UserDto natUser = creator.createUser(
 			"",
@@ -895,10 +894,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public SormasToSormasShareRequestFacade getSormasToSormasShareRequestFacade() {
 		return getBean(SormasToSormasShareRequestFacadeEJBLocal.class);
-	}
-
-	public SormasToSormasOriginInfoFacade getSormasToSormasOriginInfoFacade() {
-		return getBean(SormasToSormasOriginInfoFacadeEjbLocal.class);
 	}
 
 	public SormasToSormasShareRequestService getSormasToSormasShareRequestService() {
