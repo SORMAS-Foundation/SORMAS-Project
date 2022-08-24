@@ -496,6 +496,7 @@
     <string name="main_menu_aggregate_reports">mSERS</string>
     <string name="message_already_saving">Guardando ya..</string>
     <string name="message_aggregate_report_found">Atención: Se han encontrado informes duplicados para los criterios anteriores. Las enfermedades marcadas con rojo ya tienen informes.</string>
+    <string name="message_aggregate_report_expired_age_groups">Age groups marked \"Expired\" are based on existing data for an age group that is no longer used.</string>
     <string name="message_case_infrastructure_data_changed">Ha cambiado los datos de infraestructura de este caso. ¿Desea transferir el caso al nuevo centro de salud (los datos de hospitalización serán actualizados) o sólo desea editar los datos para corregir un error?</string>
     <string name="message_download_app_failed">La descarga de la nueva versión de SORMAS falló. Por favor, asegúrese de tener la mejor conexión a internet posible e inténtelo de nuevo o informe a un supervisor si sigue recibiendo este error a pesar de una buena conexión a internet.</string>
     <string name="message_empty_password">Por favor, ingrese una contraseña.</string>
