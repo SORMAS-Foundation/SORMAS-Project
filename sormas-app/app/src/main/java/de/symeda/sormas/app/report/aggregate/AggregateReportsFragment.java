@@ -219,6 +219,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 		Date latestLocalChangeDate = null;
 		User user = ConfigProvider.getUser();
 		boolean triggerDuplicateWarning = false;
+		boolean triggerExpiredWarning = false;
 
 		final Map<Disease, List<AggregateReport>> reportsByDisease = new HashMap<>();
 		final EpiWeek epiWeek = (EpiWeek) contentBinding.aggregateReportsWeek.getValue();
@@ -318,6 +319,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 					binding.aggregateReportNewCases.setEnabled(enabled);
 					if (!DatabaseHelper.getAggregateReportDao().isCurrentAgeGroup(disease, report.getAgeGroup())) {
 						binding.expired.setText(I18nProperties.getCaption(Captions.aggregateReportExpiredAgeGroups));
+						triggerExpiredWarning = true;
 					}
 					contentBinding.submitReport.setEnabled(enabled);
 					String ageGroup = report.getAgeGroup();
@@ -370,6 +372,7 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 					binding.aggregateReportNewCases.setEnabled(enabled);
 					if (!DatabaseHelper.getAggregateReportDao().isCurrentAgeGroup(disease, ageGroup)) {
 						binding.expired.setText(I18nProperties.getCaption(Captions.aggregateReportExpiredAgeGroups));
+						triggerExpiredWarning = true;
 					}
 					contentBinding.submitReport.setEnabled(enabled);
 					AggregateReport data = DatabaseHelper.getAggregateReportDao().build(disease, epiWeek, selectedInfrastructure);
@@ -390,6 +393,18 @@ public class AggregateReportsFragment extends BaseReportFragment<FragmentReports
 
 		if (triggerDuplicateWarning) {
 			NotificationHelper.showNotification((NotificationContext) getActivity(), WARNING, getString(R.string.message_aggregate_report_found));
+		}
+
+		if (triggerExpiredWarning) {
+			if (triggerDuplicateWarning) {
+				NotificationHelper.showNotification(
+					(NotificationContext) getActivity(),
+					WARNING,
+					getString(R.string.message_aggregate_report_found) + "<br>" + getString(R.string.message_aggregate_report_expired_age_groups));
+			} else {
+				NotificationHelper
+					.showNotification((NotificationContext) getActivity(), WARNING, getString(R.string.message_aggregate_report_expired_age_groups));
+			}
 		}
 	}
 
