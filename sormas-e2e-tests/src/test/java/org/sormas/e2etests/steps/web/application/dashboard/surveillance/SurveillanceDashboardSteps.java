@@ -23,7 +23,6 @@ import static org.sormas.e2etests.pages.application.dashboard.Surveillance.Surve
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONFIRMED_COUNTER_LABEL_ON_SURVEILLANCE_DASHBOARD_DE;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONFIRMED_COUNTER_ON_SURVEILLANCE_DASHBOARD;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONFIRMED_COUNTER_ON_SURVEILLANCE_DASHBOARD_DE;
-import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONFIRMED_CURVE_ON_SURVEILLANCE_DASHBOARD;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONTACT_STATUS_MAP_POINTS;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.COVID_19_BOX_IN_CAROUSEL_SLIDER_BAR;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CRS_BOX_IN_CAROUSEL_SLIDER_BAR;
@@ -1085,11 +1084,8 @@ public class SurveillanceDashboardSteps implements En {
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               CONFIRMED_COUNTER_LABEL_ON_SURVEILLANCE_DASHBOARD);
-          webDriverHelpers.getWebElement(CONFIRMED_COUNTER_LABEL_ON_SURVEILLANCE_DASHBOARD);
           confirmedCases_EN =
               webDriverHelpers.getWebElement(CONFIRMED_COUNTER_ON_SURVEILLANCE_DASHBOARD).getText();
-
-          webDriverHelpers.getWebElement(CONFIRMED_CURVE_ON_SURVEILLANCE_DASHBOARD);
         });
 
     Then(
@@ -1097,13 +1093,10 @@ public class SurveillanceDashboardSteps implements En {
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               CONFIRMED_COUNTER_LABEL_ON_SURVEILLANCE_DASHBOARD_DE);
-          webDriverHelpers.getWebElement(CONFIRMED_COUNTER_LABEL_ON_SURVEILLANCE_DASHBOARD_DE);
           confirmedCases_DE =
               webDriverHelpers
                   .getWebElement(CONFIRMED_COUNTER_ON_SURVEILLANCE_DASHBOARD_DE)
                   .getText();
-
-          webDriverHelpers.getWebElement(CONFIRMED_CURVE_ON_SURVEILLANCE_DASHBOARD);
         });
     And(
         "I compare English and German confirmed counter",

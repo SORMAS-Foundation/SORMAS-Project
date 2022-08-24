@@ -11902,6 +11902,10 @@ UPDATE person_history SET birthcountry_id = NULL WHERE birthcountry_id IS NOT NU
 
 INSERT INTO schema_version (version_number, comment) VALUES (486, 'Hide citizenship and country of birth #9598');
 
+-- 2022-08-08 Automatic deletion for S2S share info, origin and requests #8010
+ALTER TABLE immunization_history DROP CONSTRAINT fk_immunization_history_sormastosormasorigininfo_id;
+INSERT INTO schema_version (version_number, comment) VALUES (487, 'Automatic deletion for S2S share info, origin and requests #8010');
+
 -- 2022-08-11 User roles should have optional link to default user role #9645
 
 CREATE OR REPLACE FUNCTION add_column_if_not_exists(in_table TEXT, in_column TEXT, column_type TEXT, in_schema TEXT DEFAULT 'public') RETURNS BOOLEAN AS $_$
@@ -11921,6 +11925,6 @@ DO $$ BEGIN
    PERFORM add_column_if_not_exists( 'userroles_history', 'linkeddefaultuserrole', 'varchar(255)');
 END $$;
 
-INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (487, 'User roles should have optional link to default user role #9645', true);
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (488, 'User roles should have optional link to default user role #9645', true);
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

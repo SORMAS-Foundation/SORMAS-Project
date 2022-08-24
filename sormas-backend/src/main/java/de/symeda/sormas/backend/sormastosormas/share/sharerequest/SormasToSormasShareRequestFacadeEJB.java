@@ -43,6 +43,7 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.ShareRequestCriteria;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestFacade;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasShareRequestIndexDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
@@ -51,6 +52,7 @@ import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFa
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
+import de.symeda.sormas.backend.util.RightsAllowed;
 
 @Stateless(name = "SormasToSormasShareRequestFacade")
 public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareRequestFacade {
@@ -68,6 +70,9 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 	private SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 
 	@Override
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_SHARE,
+		UserRight._SORMAS_TO_SORMAS_CLIENT })
 	public SormasToSormasShareRequestDto saveShareRequest(@Valid SormasToSormasShareRequestDto dto) {
 		SormasToSormasShareRequest request = fromDto(dto, true);
 
@@ -77,6 +82,8 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_SHARE })
 	public SormasToSormasShareRequestDto getShareRequestByUuid(String uuid) {
 		SormasToSormasShareRequest request = shareRequestService.getByUuid(uuid);
 
@@ -84,6 +91,8 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_SHARE })
 	public List<SormasToSormasShareRequestIndexDto> getIndexList(
 		ShareRequestCriteria criteria,
 		Integer first,
@@ -158,6 +167,8 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_SHARE })
 	public long count(ShareRequestCriteria criteria) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
@@ -177,6 +188,8 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		return em.createQuery(cq).getSingleResult();
 	}
 
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_SHARE })
 	public Page<SormasToSormasShareRequestIndexDto> getIndexPage(
 		ShareRequestCriteria criteria,
 		Integer first,
@@ -188,6 +201,8 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 	}
 
 	@Override
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_SHARE })
 	public List<SormasToSormasShareRequestDto> getShareRequestsForCase(CaseReferenceDto caze) {
 		return shareRequestService.getShareRequestsForCase(caze)
 			.stream()
@@ -195,7 +210,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 			.collect(Collectors.toList());
 	}
 
-	public static SormasToSormasShareRequestDto toDto(SormasToSormasShareRequest source) {
+	private static SormasToSormasShareRequestDto toDto(SormasToSormasShareRequest source) {
 		if (source == null) {
 			return null;
 		}
@@ -214,7 +229,7 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		return target;
 	}
 
-	public SormasToSormasShareRequest fromDto(@NotNull SormasToSormasShareRequestDto source, boolean checkChangeDate) {
+	private SormasToSormasShareRequest fromDto(@NotNull SormasToSormasShareRequestDto source, boolean checkChangeDate) {
 
 		SormasToSormasShareRequest target =
 			DtoHelper.fillOrBuildEntity(source, shareRequestService.getByUuid(source.getUuid()), SormasToSormasShareRequest::new, checkChangeDate);
@@ -231,6 +246,8 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 		return target;
 	}
 
+	@RightsAllowed({
+		UserRight._SORMAS_TO_SORMAS_CLIENT })
 	public List<SormasToSormasShareRequestDto> getShareRequestsByUuids(List<String> uuids) {
 		return shareRequestService.getByUuids(uuids).stream().map(SormasToSormasShareRequestFacadeEJB::toDto).collect(Collectors.toList());
 	}

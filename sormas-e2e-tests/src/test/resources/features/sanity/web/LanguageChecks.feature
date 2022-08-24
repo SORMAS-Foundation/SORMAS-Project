@@ -26,10 +26,10 @@ Feature: Application language checks
     And I select "Deutsch" language from Combobox in User settings
     And I click on Deutsch Data Dictionary hyperlink and download XLSX file from About directory
     And I validate data from downloaded XLSX Deutsch Data Dictionary file
-    And I detect and check language that was defined in User Settings for XLSX file content
+    And I check if last downloaded XLSX from About Directory content is translated into German
     Then I delete Deutsch Data Dictionary downloaded file from About Directory
     Then I click on the User Settings button from navbar
-    And I set on default language as English in User settings
+    And I select "English" language from Combobox in User settings
 
   @tmsLink=SORQA-7139 @env_de @Configuration
   Scenario: Check continent display language in German

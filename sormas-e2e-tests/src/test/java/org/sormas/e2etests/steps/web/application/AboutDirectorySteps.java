@@ -5,7 +5,6 @@ import static org.sormas.e2etests.pages.application.dashboard.Surveillance.Surve
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.LANGUAGE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.SAVE_BUTTON;
 
-import com.detectlanguage.DetectLanguage;
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -26,7 +25,6 @@ import org.testng.asserts.SoftAssert;
 @Slf4j
 public class AboutDirectorySteps implements En {
   public static final List<String> xlsxFileContentList = new ArrayList<>();
-  public static String language;
   public static final String DATA_PROTECTION_DICTIONARY_FILE_PATH =
       String.format("sormas_data_protection_dictionary_%s_.xlsx", LocalDate.now());
   public static final String DATA_DICTIONARY_FILE_PATH =
@@ -47,45 +45,9 @@ public class AboutDirectorySteps implements En {
     When(
         "I select {string} language from Combobox in User settings",
         (String chosenLanguage) -> {
-          language = chosenLanguage;
           webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, chosenLanguage);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
-        });
-
-    When(
-        "I set on default language as English in User settings",
-        () -> {
-          String languageDerivedFromUserChoose = language;
-          String defaultLanguage = "";
-          switch (languageDerivedFromUserChoose) {
-            case "Fran\u00E7ais":
-              defaultLanguage = "Anglais";
-              webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
-              break;
-            case "Fran\u00E7ais (Suisse)":
-              defaultLanguage = "Anglais";
-              webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
-              break;
-            case "Deutsch":
-              defaultLanguage = "English";
-              webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
-              break;
-            case "Deutsch (Schweiz)":
-              defaultLanguage = "English";
-              webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
-              break;
-            case "Espa\u00F1ol (Ecuador)":
-              defaultLanguage = "Ingl\u00E9s";
-              webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
-              break;
-            case "Espa\u00F1ol (Cuba)":
-              defaultLanguage = "English";
-              webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
-              break;
-          }
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(5);
         });
 
     When(
@@ -155,20 +117,13 @@ public class AboutDirectorySteps implements En {
         });
 
     When(
-        "I detect and check language that was defined in User Settings for XLSX file content",
-        () -> {
-          DetectLanguage.apiKey = "5e184341083ac27cad1fd06d6e208302";
+        "^I check if last downloaded XLSX from About Directory content is translated into ([^\"]*)$",
+        (String language) -> {
           String[] receivedWordsFromArray = {
-            xlsxFileContentList.get(16), xlsxFileContentList.get(17)
+            xlsxFileContentList.get(3), xlsxFileContentList.get(17)
           };
           for (String word : receivedWordsFromArray) {
-            String chosenUserLanguage = language.toLowerCase().substring(0, 2);
-            String detectedLanguage = DetectLanguage.simpleDetect(word);
-            softly.assertEquals(
-                chosenUserLanguage,
-                detectedLanguage,
-                "Language in xlsx file is different then chosen bu User");
-            softly.assertAll();
+            LanguageDetectorHelper.checkLanguage(word, language);
           }
         });
 
