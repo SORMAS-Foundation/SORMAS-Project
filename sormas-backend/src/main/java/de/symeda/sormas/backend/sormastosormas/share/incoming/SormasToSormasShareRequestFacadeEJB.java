@@ -191,6 +191,9 @@ public class SormasToSormasShareRequestFacadeEJB implements SormasToSormasShareR
 				case SormasToSormasOriginInfo.OWNERSHIP_HANDED_OVER:
 					expression = originInfo.get(sortProperty.propertyName);
 					break;
+				case ShareRequestIndexDto.ORGANIZATION_NAME:
+					expression = originInfo.get(SormasToSormasOriginInfo.ORGANIZATION_ID);
+					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}

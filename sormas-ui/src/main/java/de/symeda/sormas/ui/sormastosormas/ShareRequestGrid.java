@@ -95,12 +95,11 @@ public class ShareRequestGrid extends FilteredGrid<ShareRequestIndexDto, ShareRe
 		((Column<ShareRequestIndexDto, String>) getColumn(ExternalMessageIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<ShareRequestIndexDto, Date>) getColumn(ShareRequestIndexDto.CREATION_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
-		getColumn(ShareRequestIndexDto.ORGANIZATION_NAME).setSortable(false);
 		getColumn(ShareRequestIndexDto.OWNERSHIP_HANDED_OVER).setRenderer(new BooleanRenderer());
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(
-				column.getId().equals(COLUMN_ACTIONS)
+				column.getId().equals(COLUMN_ACTIONS) || column.getId().equals(SHOW_MESSAGE)
 					? ""
 					: I18nProperties.findPrefixCaption(column.getId(), ShareRequestIndexDto.I18N_PREFIX, SormasToSormasShareRequestDto.I18N_PREFIX));
 		}
@@ -135,6 +134,7 @@ public class ShareRequestGrid extends FilteredGrid<ShareRequestIndexDto, ShareRe
 
 		Column<ShareRequestIndexDto, String> showColumn = addColumn(entry -> VaadinIcons.EYE.getHtml(), new HtmlRenderer());
 		showColumn.setId(SHOW_MESSAGE);
+		showColumn.setCaption("");
 		showColumn.setSortable(false);
 		showColumn.setWidth(20);
 

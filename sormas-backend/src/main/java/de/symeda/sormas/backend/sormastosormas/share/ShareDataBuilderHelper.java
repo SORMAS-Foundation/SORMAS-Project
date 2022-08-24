@@ -33,26 +33,12 @@ import de.symeda.sormas.api.sormastosormas.SormasServerDescriptor;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOptionsDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
-import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasCasePreview;
-import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasContactPreview;
-import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasEventParticipantPreview;
-import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasEventPreview;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasPersonPreview;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.PersonalDataFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldaccess.checkers.SensitiveDataFieldAccessChecker;
-import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
-import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventFacadeEjb;
-import de.symeda.sormas.backend.event.EventParticipant;
-import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
@@ -138,34 +124,6 @@ public class ShareDataBuilderHelper {
 		return sormasToSormasOriginInfo;
 	}
 
-	public SormasToSormasCasePreview getCasePreview(Case caze, Pseudonymizer pseudonymizer) {
-		SormasToSormasCasePreview casePreview = new SormasToSormasCasePreview();
-
-		casePreview.setUuid(caze.getUuid());
-		casePreview.setReportDate(caze.getReportDate());
-		casePreview.setDisease(caze.getDisease());
-		casePreview.setDiseaseDetails(caze.getDiseaseDetails());
-		casePreview.setDiseaseVariant(caze.getDiseaseVariant());
-		casePreview.setCaseClassification(caze.getCaseClassification());
-		casePreview.setOutcome(caze.getOutcome());
-		casePreview.setInvestigationStatus(caze.getInvestigationStatus());
-		casePreview.setOnsetDate(caze.getSymptoms().getOnsetDate());
-		casePreview.setRegion(RegionFacadeEjb.toReferenceDto(caze.getResponsibleRegion()));
-		casePreview.setDistrict(DistrictFacadeEjb.toReferenceDto(caze.getResponsibleDistrict()));
-		casePreview.setCommunity(CommunityFacadeEjb.toReferenceDto(caze.getResponsibleCommunity()));
-		casePreview.setFacilityType(caze.getFacilityType());
-		casePreview.setHealthFacility(FacilityFacadeEjb.toReferenceDto(caze.getHealthFacility()));
-		casePreview.setHealthFacilityDetails(caze.getHealthFacilityDetails());
-		casePreview.setPointOfEntry(PointOfEntryFacadeEjb.toReferenceDto(caze.getPointOfEntry()));
-		casePreview.setPointOfEntryDetails(caze.getPointOfEntryDetails());
-
-		casePreview.setPerson(getPersonPreview(caze.getPerson()));
-
-		pseudonymizer.pseudonymizeDto(SormasToSormasCasePreview.class, casePreview, false, null);
-
-		return casePreview;
-	}
-
 	public SormasToSormasPersonPreview getPersonPreview(Person person) {
 		SormasToSormasPersonPreview personPreview = new SormasToSormasPersonPreview();
 
@@ -178,59 +136,6 @@ public class ShareDataBuilderHelper {
 		personPreview.setAddress(LocationFacadeEjb.toDto(person.getAddress()));
 
 		return personPreview;
-	}
-
-	public SormasToSormasContactPreview getContactPreview(Contact contact, Pseudonymizer pseudonymizer) {
-		SormasToSormasContactPreview contactPreview = new SormasToSormasContactPreview();
-
-		contactPreview.setUuid(contact.getUuid());
-		contactPreview.setReportDateTime(contact.getReportDateTime());
-		contactPreview.setDisease(contact.getDisease());
-		contactPreview.setDiseaseDetails(contact.getDiseaseDetails());
-		contactPreview.setLastContactDate(contact.getLastContactDate());
-		contactPreview.setContactClassification(contact.getContactClassification());
-		contactPreview.setContactCategory(contact.getContactCategory());
-		contactPreview.setContactStatus(contact.getContactStatus());
-
-		contactPreview.setRegion(RegionFacadeEjb.toReferenceDto(contact.getRegion()));
-		contactPreview.setDistrict(DistrictFacadeEjb.toReferenceDto(contact.getDistrict()));
-		contactPreview.setCommunity(CommunityFacadeEjb.toReferenceDto(contact.getCommunity()));
-
-		contactPreview.setPerson(getPersonPreview(contact.getPerson()));
-
-		contactPreview.setCaze(CaseFacadeEjb.toReferenceDto(contact.getCaze()));
-
-		pseudonymizer.pseudonymizeDto(SormasToSormasContactPreview.class, contactPreview, false, null);
-
-		return contactPreview;
-	}
-
-	public SormasToSormasEventPreview getEventPreview(Event event, Pseudonymizer pseudonymizer) {
-		SormasToSormasEventPreview preview = new SormasToSormasEventPreview();
-
-		preview.setUuid(event.getUuid());
-		preview.setReportDateTime(event.getReportDateTime());
-		preview.setEventTitle(event.getEventTitle());
-		preview.setEventDesc(event.getEventDesc());
-		preview.setDisease(event.getDisease());
-		preview.setDiseaseDetails(event.getDiseaseDetails());
-		preview.setEventLocation(LocationFacadeEjb.toDto(event.getEventLocation()));
-
-		pseudonymizer.pseudonymizeDto(SormasToSormasEventPreview.class, preview, false, null);
-
-		return preview;
-	}
-
-	public SormasToSormasEventParticipantPreview getEventParticipantPreview(EventParticipant eventParticipant, Pseudonymizer pseudonymizer) {
-		SormasToSormasEventParticipantPreview preview = new SormasToSormasEventParticipantPreview();
-
-		preview.setUuid(eventParticipant.getUuid());
-		preview.setPerson(getPersonPreview(eventParticipant.getPerson()));
-		preview.setEvent(EventFacadeEjb.toReferenceDto(eventParticipant.getEvent()));
-
-		pseudonymizer.pseudonymizeDto(SormasToSormasEventParticipantPreview.class, preview, false, null);
-
-		return preview;
 	}
 
 	public SormasToSormasOptionsDto createOptionsFormShareRequestInfo(ShareRequestInfo requestInfo) {

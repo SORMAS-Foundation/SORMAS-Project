@@ -25,8 +25,12 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasContactPreview;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
@@ -75,7 +79,32 @@ public class ContactShareDataBuilder
 	public SormasToSormasContactPreview doBuildShareDataPreview(Contact contact, ShareRequestInfo requestInfo) {
 		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
-		return dataBuilderHelper.getContactPreview(contact, pseudonymizer);
+		return getContactPreview(contact, pseudonymizer);
 
+	}
+
+	public SormasToSormasContactPreview getContactPreview(Contact contact, Pseudonymizer pseudonymizer) {
+		SormasToSormasContactPreview contactPreview = new SormasToSormasContactPreview();
+
+		contactPreview.setUuid(contact.getUuid());
+		contactPreview.setReportDateTime(contact.getReportDateTime());
+		contactPreview.setDisease(contact.getDisease());
+		contactPreview.setDiseaseDetails(contact.getDiseaseDetails());
+		contactPreview.setLastContactDate(contact.getLastContactDate());
+		contactPreview.setContactClassification(contact.getContactClassification());
+		contactPreview.setContactCategory(contact.getContactCategory());
+		contactPreview.setContactStatus(contact.getContactStatus());
+
+		contactPreview.setRegion(RegionFacadeEjb.toReferenceDto(contact.getRegion()));
+		contactPreview.setDistrict(DistrictFacadeEjb.toReferenceDto(contact.getDistrict()));
+		contactPreview.setCommunity(CommunityFacadeEjb.toReferenceDto(contact.getCommunity()));
+
+		contactPreview.setPerson(dataBuilderHelper.getPersonPreview(contact.getPerson()));
+
+		contactPreview.setCaze(CaseFacadeEjb.toReferenceDto(contact.getCaze()));
+
+		pseudonymizer.pseudonymizeDto(SormasToSormasContactPreview.class, contactPreview, false, null);
+
+		return contactPreview;
 	}
 }

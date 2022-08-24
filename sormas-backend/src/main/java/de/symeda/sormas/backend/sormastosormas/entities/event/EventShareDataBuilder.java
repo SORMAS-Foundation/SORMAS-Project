@@ -26,6 +26,7 @@ import de.symeda.sormas.api.sormastosormas.share.incoming.SormasToSormasEventPre
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
+import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
 import de.symeda.sormas.backend.sormastosormas.share.outgoing.ShareRequestInfo;
@@ -67,7 +68,7 @@ public class EventShareDataBuilder
 	public SormasToSormasEventPreview doBuildShareDataPreview(Event event, ShareRequestInfo requestInfo) {
 		Pseudonymizer pseudonymizer = dataBuilderHelper.createPseudonymizer(requestInfo);
 
-		return dataBuilderHelper.getEventPreview(event, pseudonymizer);
+		return getEventPreview(event, pseudonymizer);
 	}
 
 	private EventDto getEventDto(Event event, Pseudonymizer pseudonymizer) {
@@ -79,5 +80,21 @@ public class EventShareDataBuilder
 		dataBuilderHelper.clearIgnoredProperties(eventDto);
 
 		return eventDto;
+	}
+
+	public SormasToSormasEventPreview getEventPreview(Event event, Pseudonymizer pseudonymizer) {
+		SormasToSormasEventPreview preview = new SormasToSormasEventPreview();
+
+		preview.setUuid(event.getUuid());
+		preview.setReportDateTime(event.getReportDateTime());
+		preview.setEventTitle(event.getEventTitle());
+		preview.setEventDesc(event.getEventDesc());
+		preview.setDisease(event.getDisease());
+		preview.setDiseaseDetails(event.getDiseaseDetails());
+		preview.setEventLocation(LocationFacadeEjb.toDto(event.getEventLocation()));
+
+		pseudonymizer.pseudonymizeDto(SormasToSormasEventPreview.class, preview, false, null);
+
+		return preview;
 	}
 }

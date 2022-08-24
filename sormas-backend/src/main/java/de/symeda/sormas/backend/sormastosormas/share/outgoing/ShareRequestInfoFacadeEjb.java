@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.sormastosormas.share.outgoing;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,6 +45,10 @@ import de.symeda.sormas.api.sormastosormas.share.ShareRequestIndexDto;
 import de.symeda.sormas.api.sormastosormas.share.outgoing.ShareRequestInfoFacade;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoveryService;
+import de.symeda.sormas.backend.sormastosormas.entities.caze.CaseShareDataBuilder;
+import de.symeda.sormas.backend.sormastosormas.entities.contact.ContactShareDataBuilder;
+import de.symeda.sormas.backend.sormastosormas.entities.event.EventShareDataBuilder;
+import de.symeda.sormas.backend.sormastosormas.entities.eventparticipant.EventParticipantShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.share.ShareDataBuilderHelper;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -65,6 +70,14 @@ public class ShareRequestInfoFacadeEjb implements ShareRequestInfoFacade {
 	private SormasToSormasDiscoveryService sormasToSormasDiscoveryService;
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
+	@EJB
+	private CaseShareDataBuilder caseShareDataBuilder;
+	@EJB
+	private ContactShareDataBuilder contactShareDataBuilder;
+	@EJB
+	private EventShareDataBuilder eventShareDataBuilder;
+	@EJB
+	private EventParticipantShareDataBuilder eventParticipantShareDataBuilder;
 	@EJB
 	private UserService userService;
 
@@ -96,6 +109,13 @@ public class ShareRequestInfoFacadeEjb implements ShareRequestInfoFacade {
 		}
 
 		List<Order> order = new ArrayList<>();
+		String organizationOrderExpr = sormasToSormasDiscoveryService.getAllAvailableServers()
+			.stream()
+			.sorted(Comparator.comparing(SormasServerDescriptor::getName))
+			.map(SormasServerDescriptor::getId)
+			.map(i -> "'" + i + "'")
+			.collect(Collectors.joining(","));
+
 		if (sortProperties != null && sortProperties.size() > 0) {
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
@@ -115,6 +135,9 @@ public class ShareRequestInfoFacadeEjb implements ShareRequestInfoFacade {
 				case ShareRequestIndexDto.ORGANIZATION_ID:
 				case ShareRequestIndexDto.OWNERSHIP_HANDED_OVER:
 					expression = sharesJoin.get(sortProperty.propertyName);
+					break;
+				case ShareRequestIndexDto.ORGANIZATION_NAME:
+					expression = sharesJoin.get(ShareRequestIndexDto.ORGANIZATION_ID);
 					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
@@ -179,28 +202,28 @@ public class ShareRequestInfoFacadeEjb implements ShareRequestInfoFacade {
 				.stream()
 				.map(SormasToSormasShareInfo::getCaze)
 				.filter(Objects::nonNull)
-				.map(c -> dataBuilderHelper.getCasePreview(c, pseudonymizer))
+				.map(c -> caseShareDataBuilder.getCasePreview(c, pseudonymizer))
 				.collect(Collectors.toList()));
 		details.setContacts(
 			requestInfo.getShares()
 				.stream()
 				.map(SormasToSormasShareInfo::getContact)
 				.filter(Objects::nonNull)
-				.map(c -> dataBuilderHelper.getContactPreview(c, pseudonymizer))
+				.map(c -> contactShareDataBuilder.getContactPreview(c, pseudonymizer))
 				.collect(Collectors.toList()));
 		details.setEvents(
 			requestInfo.getShares()
 				.stream()
 				.map(SormasToSormasShareInfo::getEvent)
 				.filter(Objects::nonNull)
-				.map(c -> dataBuilderHelper.getEventPreview(c, pseudonymizer))
+				.map(c -> eventShareDataBuilder.getEventPreview(c, pseudonymizer))
 				.collect(Collectors.toList()));
 		details.setEventParticipants(
 			requestInfo.getShares()
 				.stream()
 				.map(SormasToSormasShareInfo::getEventParticipant)
 				.filter(Objects::nonNull)
-				.map(c -> dataBuilderHelper.getEventParticipantPreview(c, pseudonymizer))
+				.map(c -> eventParticipantShareDataBuilder.getEventParticipantPreview(c, pseudonymizer))
 				.collect(Collectors.toList()));
 
 		return details;
