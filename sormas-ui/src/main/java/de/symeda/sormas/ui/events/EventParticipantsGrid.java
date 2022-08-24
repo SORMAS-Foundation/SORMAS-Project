@@ -16,9 +16,11 @@
 package de.symeda.sormas.ui.events;
 
 import java.util.Date;
+import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -33,6 +35,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CaseUuidRenderer;
@@ -55,12 +58,13 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 
 		setInEagerMode(true);
 		setCriteria(criteria);
-		setEagerDataProvider();
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT)) {
+		if (isInEagerMode() && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT)) {
 			setSelectionMode(SelectionMode.MULTI);
+			setEagerDataProvider();
 		} else {
 			setSelectionMode(SelectionMode.NONE);
+			setLazyDataProvider();
 		}
 
 		Column<EventParticipantIndexDto, String> caseIdColumn = addColumn(entry -> {
@@ -134,6 +138,24 @@ public class EventParticipantsGrid extends FilteredGrid<EventParticipantIndexDto
 			new ShowDetailsListener<>(
 				EventParticipantIndexDto.UUID,
 				e -> ControllerProvider.getEventParticipantController().navigateToData(e.getUuid())));
+	}
+
+	public void setLazyDataProvider() {
+		DataProvider<EventParticipantIndexDto, EventParticipantCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
+			query -> FacadeProvider.getEventParticipantFacade()
+				.getIndexList(
+					query.getFilter().orElse(null),
+					query.getOffset(),
+					query.getLimit(),
+					query.getSortOrders()
+						.stream()
+						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
+						.collect(Collectors.toList()))
+				.stream(),
+			query -> (int) FacadeProvider.getEventParticipantFacade().count(query.getFilter().orElse(null)));
+
+		setDataProvider(dataProvider);
+		setSelectionMode(SelectionMode.NONE);
 	}
 
 	public void setEagerDataProvider() {
