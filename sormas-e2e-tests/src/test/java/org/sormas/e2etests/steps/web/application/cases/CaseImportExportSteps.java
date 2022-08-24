@@ -55,6 +55,7 @@ import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.enums.CaseClassification;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.helpers.files.FilesHelper;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
 
@@ -82,17 +83,15 @@ public class CaseImportExportSteps implements En {
     When(
         "I click on the Detailed Case Export button",
         () -> {
-            String file = "./downloads/sormas_fälle_" + LocalDate.now().format(formatter) +
+            String file_name = "sormas_fälle_" + LocalDate.now().format(formatter) +
                     "_.csv";
-            Path file_path = Paths.get(file);
-            if (webDriverHelpers.isFileExists(file_path)) {
-                Files.delete(file_path);
+            if (webDriverHelpers.isFileExists(Paths.get(String.format("./downloads/%s", file_name )))) {
+                FilesHelper.deleteFile(file_name);
             }
             TimeUnit.SECONDS.sleep(2);
             webDriverHelpers.clickOnWebElementBySelector(DETAILED_CASE_EXPORT_BUTTON);
             TimeUnit.SECONDS.sleep(2);
-            webDriverHelpers.waitForFileExists(file_path, 90);
-
+            FilesHelper.waitForFileToDownload(file_name, 90);
         });
 
     When(
