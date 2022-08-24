@@ -496,6 +496,7 @@
     <string name="main_menu_aggregate_reports">mSERS</string>
     <string name="message_already_saving">پہلے ہی محفوظ کر رہا ہے..</string>
     <string name="message_aggregate_report_found">دھیان دیں: مندرجہ بالا معیار کے لیے ڈپلیکیٹ رپورٹس مل گئی ہیں۔ سرخ نشان زدہ بیماریوں کی رپورٹس پہلے سے موجود ہیں۔</string>
+    <string name="message_aggregate_report_expired_age_groups">Age groups marked \"Expired\" are based on existing data for an age group that is no longer used.</string>
     <string name="message_case_infrastructure_data_changed">آپ نے اس کیس کا انفراسٹرکچر ڈیٹا تبدیل کر دیا ہے۔ کیا آپ کیس کو صحت کی نئی سہولت گاہ میں منتقل کرنا چاہتے ہیں (اسپتال میں داخے کا ڈیٹا اپ ڈیٹ کیا جائے گا) یا آپ صرف غلطی کو درست کرنے کے لیے ڈیٹا میں ترمیم کرنا چاہتے ہیں؟</string>
     <string name="message_download_app_failed">نئے سورماس ورژن کا ڈاؤن لوڈ ناکام ہو گیا۔ براہ مہربانی یقینی بنائیں کہ آپ کے پاس ممکنہ طور پر بہترین انٹرنیٹ کنکشن ہے اور دوبارہ کوشش کریں یا کسی سپروائزر کو مطلع کریں اگر آپ اچھے انٹرنیٹ کنکشن کے باوجود یہ خرابی ملتی رہتی ہے۔</string>
     <string name="message_empty_password">براہ مہربانی پاس ورڈ درج کریں۔</string>
