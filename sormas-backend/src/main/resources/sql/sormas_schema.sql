@@ -11446,33 +11446,35 @@ ALTER TABLE userroles ADD COLUMN porthealthuser boolean default false;
 ALTER TABLE userroles_history ADD COLUMN porthealthuser boolean default false;
 ALTER TABLE userroles ADD COLUMN jurisdictionlevel varchar(255);
 ALTER TABLE userroles_history ADD COLUMN jurisdictionlevel varchar(255);
+ALTER TABLE userroles ADD COLUMN linkeddefaultuserrole varchar(255);
+ALTER TABLE userroles_history ADD COLUMN linkeddefaultuserrole varchar(255);
 
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'ADMIN');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'NATIONAL_USER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'SURVEILLANCE_SUPERVISOR');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'ADMIN_SUPERVISOR');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'SURVEILLANCE_OFFICER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'HOSPITAL_INFORMANT');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'COMMUNITY_OFFICER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'COMMUNITY_INFORMANT');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'CASE_SUPERVISOR');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'CASE_OFFICER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'CONTACT_SUPERVISOR');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'CONTACT_OFFICER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'EVENT_OFFICER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'LAB_USER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'EXTERNAL_LAB_USER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'NATIONAL_OBSERVER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'STATE_OBSERVER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISTRICT_OBSERVER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'NATIONAL_CLINICIAN');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'POE_INFORMANT');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'POE_SUPERVISOR');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'POE_NATIONAL_USER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'IMPORT_USER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'REST_EXTERNAL_VISITS_USER');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'SORMAS_TO_SORMAS_CLIENT');
-INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'BAG_USER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'ADMIN', 'ADMIN');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'NATIONAL_USER', 'NATIONAL_USER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'SURVEILLANCE_SUPERVISOR', 'SURVEILLANCE_SUPERVISOR');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'ADMIN_SUPERVISOR', 'ADMIN_SUPERVISOR');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'SURVEILLANCE_OFFICER', 'SURVEILLANCE_OFFICER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'HOSPITAL_INFORMANT', 'HOSPITAL_INFORMANT');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'COMMUNITY_OFFICER', 'COMMUNITY_OFFICER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'COMMUNITY_INFORMANT', 'COMMUNITY_INFORMANT');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'CASE_SUPERVISOR', 'CASE_SUPERVISOR');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'CASE_OFFICER', 'CASE_OFFICER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'CONTACT_SUPERVISOR', 'CONTACT_SUPERVISOR');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'CONTACT_OFFICER', 'CONTACT_OFFICER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'EVENT_OFFICER', 'EVENT_OFFICER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'LAB_USER', 'LAB_USER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'EXTERNAL_LAB_USER', 'EXTERNAL_LAB_USER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'NATIONAL_OBSERVER', 'NATIONAL_OBSERVER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'STATE_OBSERVER', 'STATE_OBSERVER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISTRICT_OBSERVER', 'DISTRICT_OBSERVER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'NATIONAL_CLINICIAN', 'NATIONAL_CLINICIAN');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'POE_INFORMANT', 'POE_INFORMANT');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'POE_SUPERVISOR', 'POE_SUPERVISOR');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'POE_NATIONAL_USER', 'POE_NATIONAL_USER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'IMPORT_USER', 'IMPORT_USER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'REST_EXTERNAL_VISITS_USER', 'REST_EXTERNAL_VISITS_USER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'SORMAS_TO_SORMAS_CLIENT', 'SORMAS_TO_SORMAS_CLIENT');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption, linkeddefaultuserrole ) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'BAG_USER', 'BAG_USER');
 
 ALTER TABLE users_userroles ADD COLUMN userrole_id bigint;
 ALTER TABLE ONLY users_userroles RENAME CONSTRAINT fk_userroles_user_id TO fk_users_userroles_user_id;
@@ -11903,5 +11905,26 @@ INSERT INTO schema_version (version_number, comment) VALUES (486, 'Hide citizens
 -- 2022-08-08 Automatic deletion for S2S share info, origin and requests #8010
 ALTER TABLE immunization_history DROP CONSTRAINT fk_immunization_history_sormastosormasorigininfo_id;
 INSERT INTO schema_version (version_number, comment) VALUES (487, 'Automatic deletion for S2S share info, origin and requests #8010');
+
+-- 2022-08-11 User roles should have optional link to default user role #9645
+
+CREATE OR REPLACE FUNCTION add_column_if_not_exists(in_table TEXT, in_column TEXT, column_type TEXT, in_schema TEXT DEFAULT 'public') RETURNS BOOLEAN AS $_$
+BEGIN
+    PERFORM * FROM information_schema.columns WHERE table_name = in_table AND column_name = in_column AND table_schema = in_schema;
+    IF FOUND THEN
+        RETURN FALSE;
+    ELSE
+        EXECUTE format('ALTER TABLE %s ADD COLUMN %s %s', in_table, in_column, column_type);
+        RETURN TRUE;
+    END IF;
+END
+$_$ LANGUAGE plpgsql VOLATILE;
+
+DO $$ BEGIN
+   PERFORM add_column_if_not_exists( 'userroles', 'linkeddefaultuserrole', 'varchar(255)');
+   PERFORM add_column_if_not_exists( 'userroles_history', 'linkeddefaultuserrole', 'varchar(255)');
+END $$;
+
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (488, 'User roles should have optional link to default user role #9645', true);
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

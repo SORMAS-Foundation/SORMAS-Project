@@ -232,6 +232,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		target.setEmailNotificationTypes(source.getEmailNotificationTypes());
 		target.setSmsNotificationTypes(source.getSmsNotificationTypes());
 		target.setJurisdictionLevel(source.getJurisdictionLevel());
+		target.setLinkedDefaultUserRole(source.getLinkedDefaultUserRole());
 
 		return target;
 	}
@@ -255,6 +256,7 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		target.setEmailNotificationTypes(new HashSet<>(source.getEmailNotificationTypes()));
 		target.setSmsNotificationTypes(new HashSet<>(source.getSmsNotificationTypes()));
 		target.setJurisdictionLevel(source.getJurisdictionLevel());
+		target.setLinkedDefaultUserRole(source.getLinkedDefaultUserRole());
 
 		return target;
 	}

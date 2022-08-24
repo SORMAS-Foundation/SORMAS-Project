@@ -15,34 +15,14 @@
 
 package de.symeda.sormas.ui.user;
 
-import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-
 import de.symeda.sormas.api.user.UserRoleDto;
+import de.symeda.sormas.ui.utils.AbstractEditForm;
 
-public class UserRoleNotificationsForm extends AbstractUserRoleForm {
+public abstract class AbstractUserRoleForm extends AbstractEditForm<UserRoleDto> {
 
-	private static final String HTML_LAYOUT = fluidRowLocs(UserRoleDto.NOTIFICATION_TYPES);
-
-	private UserRoleNotificationCheckboxSet notificationTypesCbSet;
-
-	protected UserRoleNotificationsForm() {
-		super(UserRoleDto.class, UserRoleDto.I18N_PREFIX);
+	protected AbstractUserRoleForm(Class<UserRoleDto> type, String propertyI18nPrefix) {
+		super(type, propertyI18nPrefix);
 	}
 
-	@Override
-	protected String createHtmlLayout() {
-		return HTML_LAYOUT;
-	}
-
-	@Override
-	protected void addFields() {
-		notificationTypesCbSet = addField(UserRoleDto.NOTIFICATION_TYPES, UserRoleNotificationCheckboxSet.class);
-		notificationTypesCbSet.setCaption(null);
-	}
-
-	void applyTemplateData(UserRoleDto templateRole) {
-		if (templateRole != null) {
-			notificationTypesCbSet.setInternalValue(templateRole.getNotificationTypes());
-		}
-	}
+	abstract void applyTemplateData(UserRoleDto dto);
 }
