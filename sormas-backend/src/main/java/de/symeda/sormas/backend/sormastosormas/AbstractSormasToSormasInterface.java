@@ -36,7 +36,6 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
-import ca.uhn.fhir.rest.gclient.IFetchConformanceTyped;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -257,7 +256,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 		if (options.isHandOverOwnership()) {
 			options.setPseudonymizeData(false);
 
-			if (SormasToSormasCaseDto[].class.isAssignableFrom(getShareDataClass())) {
+			if (SormasToSormasCaseDto[].class.isAssignableFrom(getShareDataClass())
+				|| SormasToSormasContactDto[].class.isAssignableFrom(getShareDataClass())) {
 				options.setWithSamples(true);
 				options.setWithImmunizations(true);
 			}
@@ -377,12 +377,10 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	@RightsAllowed(UserRight._SORMAS_TO_SORMAS_CLIENT)
 	public SormasToSormasEncryptedDataDto saveSharedEntities(SormasToSormasEncryptedDataDto encryptedData)
 		throws SormasToSormasException, SormasToSormasValidationException {
-		decryptAndPersist(
-			encryptedData,
-			(data, existingData) -> {
-				originInfoFacade.saveOriginInfo(data.getOriginInfo());
-				processedEntitiesPersister.persistSharedData(data, data.getOriginInfo(), existingData);
-			});
+		decryptAndPersist(encryptedData, (data, existingData) -> {
+			originInfoFacade.saveOriginInfo(data.getOriginInfo());
+			processedEntitiesPersister.persistSharedData(data, data.getOriginInfo(), existingData);
+		});
 
 		return sormasToSormasEncryptionEjb
 			.signAndEncrypt(new ShareRequestAcceptData(null, configFacadeEjb.getS2SConfig().getDistrictExternalId()), encryptedData.getSenderId());

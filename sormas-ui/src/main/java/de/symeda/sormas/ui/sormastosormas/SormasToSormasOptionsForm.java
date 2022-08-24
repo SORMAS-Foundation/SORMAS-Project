@@ -195,7 +195,39 @@ public class SormasToSormasOptionsForm extends AbstractEditForm<SormasToSormasOp
 			true,
 			Arrays.asList(SormasToSormasOptionsDto.WITH_SAMPLES, SormasToSormasOptionsDto.WITH_IMMUNIZATIONS),
 			FeatureType.SORMAS_TO_SORMAS_SHARE_CONTACTS,
-			null);
+			(form) -> {
+				if (form.allowedCustomOptions.contains(SormasToSormasOptionsDto.WITH_SAMPLES)) {
+					FieldHelper.setEnabledWhen(
+						form.getFieldGroup(),
+						SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
+						Boolean.FALSE,
+						SormasToSormasOptionsDto.WITH_SAMPLES,
+						false);
+
+					FieldHelper.setValueWhen(
+						form.getFieldGroup(),
+						SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
+						Boolean.TRUE,
+						SormasToSormasOptionsDto.WITH_SAMPLES,
+						Boolean.TRUE);
+				}
+
+				if (form.allowedCustomOptions.contains(SormasToSormasOptionsDto.WITH_IMMUNIZATIONS)) {
+					FieldHelper.setEnabledWhen(
+						form.getFieldGroup(),
+						SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
+						Boolean.FALSE,
+						SormasToSormasOptionsDto.WITH_IMMUNIZATIONS,
+						false);
+
+					FieldHelper.setValueWhen(
+						form.getFieldGroup(),
+						SormasToSormasOptionsDto.HAND_OVER_OWNERSHIP,
+						Boolean.TRUE,
+						SormasToSormasOptionsDto.WITH_IMMUNIZATIONS,
+						Boolean.TRUE);
+				}
+			});
 
 		if (contact != null) {
 			// in case of bulk send, only backend validation is possible
